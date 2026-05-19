@@ -70,7 +70,11 @@ if (-not (Test-Path $composePath)) {
 }
 
 try {
-    $null = & docker info 2>&1
+    # PowerShell 5.1 wraps native stderr lines as NativeCommandError ErrorRecords
+    # even on exit 0, and $ErrorActionPreference=Stop kills the script. Bypass
+    # via cmd /c so stderr is redirected inside cmd.exe before PS ever sees it.
+    # Brain: powershell-stderr-wrap / SESSION-START\03-GOTCHAS.md.
+    cmd /c 'docker info >NUL 2>NUL'
     if ($LASTEXITCODE -ne 0) {
         Fail "Docker Desktop does not look ready. Start it (whale icon -> 'Docker Desktop is running') and re-run."
     }
@@ -99,7 +103,10 @@ foreach ($p in @($VaultRoot, $vaultGitea, $vaultGiteaData, $vaultGiteaConfig)) {
 Push-Location $SanctumGitDir
 try {
     Write-Step "stopping sanctum-git container (best effort)"
-    $null = & docker compose down 2>&1
+    # cmd /c bypass: avoid PS 5.1 NativeCommandError wrap of docker's
+    # progress-to-stderr lines (e.g. 'Container sanctum-git Stopping').
+    # Brain: powershell-stderr-wrap.
+    cmd /c 'docker compose down >NUL 2>NUL'
     if ($LASTEXITCODE -ne 0) {
         Write-Warn2 "docker compose down returned non-zero -- container may not have been running. Continuing."
     } else {
@@ -203,7 +210,10 @@ if ($changed) {
 Push-Location $SanctumGitDir
 try {
     Write-Step "starting sanctum-git container (docker compose up -d)"
-    & docker compose up -d
+    # cmd /c bypass: docker compose 'up -d' writes progress to stderr even on
+    # success ('Creating sanctum-git ... done'). PS 5.1 wraps each as
+    # NativeCommandError and $ErrorActionPreference=Stop kills the script.
+    cmd /c 'docker compose up -d >NUL 2>NUL'
     if ($LASTEXITCODE -ne 0) {
         Fail "docker compose up -d failed"
     }
