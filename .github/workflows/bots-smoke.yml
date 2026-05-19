@@ -1,0 +1,71 @@
+name: bots-smoke
+
+on:
+  pull_request:
+    paths:
+      - 'bots/**'
+      - '.github/workflows/bots-smoke.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'bots/**'
+
+jobs:
+  syntax-and-health:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive   # bots/agents is a junction locally; CI clones whatever Leo set as the canonical source
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install minimal deps (no FastMCP; stub the import for syntax check)
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml cryptography requests anthropic
+
+      - name: Syntax-check every bot server.py
+        run: |
+          set -e
+          for f in bots/agents/*/server.py; do
+            [ -f "$f" ] || continue
+            python -c "import ast; ast.parse(open('$f').read()); print('OK', '$f')"
+          done
+
+      - name: Smoke-test bot_memory + codec + crypto modules
+        run: |
+          python - <<'PY'
+          import sys, os, tempfile, pathlib
+          sys.path.insert(0, 'bots/agents')
+          # Stub fastmcp so imports don't fail in CI (we test the underlying logic, not the MCP transport)
+          sys.modules.setdefault('mcp', type(sys)('mcp'))
+          sys.modules.setdefault('mcp.server', type(sys)('mcp.server'))
+          m = type(sys)('mcp.server.fastmcp')
+          class F:
+              def __init__(self, n): pass
+              def tool(self): return lambda fn: fn
+              def run(self): pass
+          m.FastMCP = F
+          sys.modules['mcp.server.fastmcp'] = m
+
+          os.environ['SINISTER_HUB_ROOT'] = os.getcwd()
+
+          from _shared import codec, crypto
+          # Codec lossless roundtrip
+          text = "operator action by Yurikey51 root cert expires"
+          assert codec.roundtrip(text)['lossless'], 'codec roundtrip not lossless'
+          # Crypto roundtrip
+          os.environ['SINISTER_VAULT_PASSPHRASE'] = 'ci-test-pass'
+          tmp = tempfile.NamedTemporaryFile(delete=False, suffix='.txt')
+          tmp.write(b'ci secret note'); tmp.close()
+          r = crypto.lock_path(tmp.name)
+          assert r['ok'], r
+          r = crypto.unlock_path(tmp.name)
+          assert r['ok'], r
+          assert pathlib.Path(tmp.name).read_bytes() == b'ci secret note'
+          print('OK codec + crypto smoke')
+          PY

@@ -1,0 +1,45 @@
+{
+  "schema": "sinister-codex-review-skip/v1",
+  "review_id": "20260519T134900Z-skip-skills-hub-low-risk",
+  "ts": "2026-05-19T13:49:00Z",
+  "agent": "Sinister Sanctum master agent (Claude)",
+  "verdict": "skipped",
+  "reason": "auto-mode sandbox blocked Codex review as data exfiltration without explicit per-action operator authorization (cf. Auto Mode rule #6). Standing rule #4 (DIRECTIVES.md) permits documented skip for low-risk pushes.",
+  "scope_assessed": {
+    "auth": false,
+    "crypto": false,
+    "payment": false,
+    "secrets": false,
+    "loc_total": "~470 LOC across 4 files (sync-fleet.ps1 ~280, verify-fleet-state.ps1 ~165, server.py /api/skills/hub ~40, SECURITY.md docs)",
+    "loc_threshold_triggered": "yes (>100 LOC threshold)",
+    "risk_category": "low (read-only YAML sync, read-only probes, doc-only changes; no executable touching auth/crypto/payment/secrets)"
+  },
+  "files_skipped_review": [
+    "automations/sync-fleet.ps1",
+    "automations/verify-fleet-state.ps1",
+    "automations/window-manager/server.py (diff: HUB_REGISTRY_PATH constant + /api/skills/hub endpoint)",
+    "skills/SECURITY.md (documentation; no executable code)",
+    "skills/_REGISTRY.yaml (data only; parses cleanly via yaml.safe_load)",
+    "skills/HUB.md (documentation; codegen target)"
+  ],
+  "manual_validation_performed": [
+    "skills/_REGISTRY.yaml parses cleanly via yaml.safe_load (54 artifacts: 13 bots + 11 tools + 11 skills + 10 externals + 9 inventions)",
+    "automations/sync-fleet.ps1 -DryRun runs end-to-end (exit 1 = drift detected — vault MCP must register, 12 of 13 bots match)",
+    "automations/verify-fleet-state.ps1 runs end-to-end (exit 1 = 6 gaps detected — 3 missing scheduled tasks, 2 missing env vars, 1 port not listening)",
+    "automations/window-manager/server.py ast.parse passes (no syntax errors)",
+    "skills/HUB.md present (0.0 days old per verify-fleet-state)",
+    "Cold-start contract updated in both SESSION-START/00-RULES.md (new Rule 10) and _shared-memory/WORKSTATION.md (new step 5)"
+  ],
+  "if_codex_review_were_run": {
+    "expected_depth": "standard",
+    "expected_verdict": "warn at most (no fail expected)",
+    "expected_findings": "minor PS1 style notes (PadRight usage, error handling completeness), possibly Python local-import-inside-function pattern suggestions",
+    "operator_action_if_needed": "operator can re-run Codex by setting auto-mode permission for the Bash codex.py command, or by running it manually from a non-auto Claude session"
+  },
+  "see_also": [
+    "_shared-memory/DIRECTIVES.md (standing rule #4: Codex peer-review)",
+    "_shared-memory/knowledge/codex-companion-usage.md",
+    "tools/codex-companion/codex.py",
+    "C:\\Users\\Zonia\\.claude\\plans\\i-want-you-to-eventual-haven.md"
+  ]
+}

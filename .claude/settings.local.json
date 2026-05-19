@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rmdir \"_shared-memory/external-imports/ruflo/.git\")",
+      "Bash(rm \"automations/window-manager/_daemon-logs/console-~0,8LOCAL_DT\")"
+    ]
+  }
+}
