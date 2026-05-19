@@ -159,3 +159,15 @@ _shared-memory/external-imports/*/README.md
 
 # preserved upstream-clone .git history (renamed to neutralize embedded-repo detection)
 _shared-memory/external-imports/*/.git-clone-backup/
+
+# external-imports/<slug>/ — additional upstream dotfiles + manifests + hidden dirs that the
+# clone brings in but we don't want vendored into Sanctum
+_shared-memory/external-imports/*/.agents/
+_shared-memory/external-imports/*/.github/
+_shared-memory/external-imports/*/.claude/
+_shared-memory/external-imports/*/.gitignore
+_shared-memory/external-imports/*/.npmignore
+_shared-memory/external-imports/*/.npmrc
+_shared-memory/external-imports/*/.editorconfig
+_shared-memory/external-imports/*/.prettierrc*
+_shared-memory/external-imports/*/.eslintrc*
