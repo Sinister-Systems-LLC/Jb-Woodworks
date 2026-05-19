@@ -49,54 +49,44 @@ Operator feedback: "two tabs i told you to make with a complex header with funct
 
 ---
 
-## 2026-05-19 14:35 — shipped: pushed Sanctum to GitHub (4 commits) + Install-Claude-Plugins.bat (clipboard helper for 172 marketplace plugins)
+## 2026-05-19 14:35 — shipped: pushed Sanctum to GitHub (4 commits) + Install-Claude-Plugins.bat (PURGED 11:35 — see top entry)
 
-Operator: "push everything to github again and make sure its all there now i ran all the bats" → then "do this for all" referencing the `/plugin install <name>@<marketplace>` flow.
+> NOTE: the `Install-Claude-Plugins.bat` shipped here was purged at 11:35 per marketplace plugin cancer purge entry. Bulk-install scaffolding archived to `_archive/automations/2026-05-19-plugin-installer-purged/`. DO NOT recreate.
 
 ### Push to GitHub (Sanctum-Systems-LLC/Sinister-Sanctum, Private)
 
-**Pre-push debugging chain (worth capturing for the brain):**
-1. **`sanctum-auto-push.ps1` em-dash parse fail** — line 165 has `—` (em-dash) and the file lacked UTF-8 BOM, so PS5 read it as CP1252 garbage and choked on the commit-message-building branch. Fix: re-encoded with BOM via Python (`utf-8-sig`). The brain entry `powershell-emdash-non-ascii.md` covers this gotcha exactly; the daemon also predates that fix. After BOM add, daemon's NEXT issue surfaced (#2).
-2. **`sanctum-auto-push.ps1` git-fetch-stderr capture** — `git fetch` writes informational "From https://..." to stderr; daemon's exception handler caught it as error and bailed. Not fixed this session (logged, deferred). Bypassed by manual commit/push.
-3. **`.gitignore` line 131 swallowed the audit trail** — `_shared-memory/external-imports/` was wholly gitignored, meaning CANDIDATES.md / README.md / per-slug ATTRIBUTION.md / brain entries from the inflow loop were NEVER committed. Replaced with granular rules (KEEP audit trail, EXCLUDE upstream clone source: v3/, node_modules/, .agents/, .github/, .claude/, bin/, docs/, plugin/, plugins/, scripts/, tests/, package*.json, lockfiles, *.rvf, *.gif, CLAUDE*.md, AGENTS.md, SECURITY.md, CHANGELOG.md, README.md in subdirs).
-4. **`_shared-memory/external-imports/ruflo/` was embedded git repo** — sibling cloned with `git clone`, leaving inner `.git/`. `git add -A` treated it as submodule pointer; ATTRIBUTION.md + LICENSE couldn't be staged as individual files. Fix: renamed `.git/` to `.git-clone-backup/` (reversible) + .gitignore'd the backup. Now ruflo/ is a regular subtree; granular rules apply.
-5. **Two botched-format daemon log filenames** — `tools/sinister-vault/_daemon-logs/vault-~0,8LOCAL_DT` and `automations/window-manager/_daemon-logs/console-~0,8LOCAL_DT` — both 0 bytes, literal `~0,8LOCAL_DT` text where a PowerShell `Get-Date -Format` was supposed to expand. Deleted; .gitignore'd the glob `**/_daemon-logs/*~0,8LOCAL_DT`. The format-string bug in the daemons themselves wasn't chased (separate fix).
-6. **Stale `.git/index.lock` x3** — parallel sibling agent's `git commit` was holding the lock during a Phase 6 cross-agent ask sweep. Cleared via `[System.IO.File]::Delete` once sibling's commit finished (~6 sec wait).
-7. **`workflow` OAuth scope missing** — sibling's commit 2fae82d added `.github/workflows/bots-smoke.yml`; GitHub rejected the push because `gh` token has only `gist, read:org, repo`. **Path B taken (non-destructive):** dropped the workflow file from main via `git rm` + commit, push succeeded. File preserved in git history at 2fae82d — restore command in the commit message.
+**Pre-push debugging chain:**
+1. **`sanctum-auto-push.ps1` em-dash parse fail** (line 165 `—`, no UTF-8 BOM → CP1252 garbage). Fix: re-encoded with BOM via Python (`utf-8-sig`). Brain: `powershell-emdash-non-ascii.md`.
+2. **`sanctum-auto-push.ps1` git-fetch-stderr capture** — `git fetch` informational stderr caught as exception. DEFERRED. Bypassed by manual push.
+3. **`.gitignore` line 131 swallowed audit trail** — `_shared-memory/external-imports/` was wholly gitignored. Replaced with granular rules: KEEP audit trail (CANDIDATES.md / README.md / ATTRIBUTION.md), EXCLUDE upstream clone source (v3/, node_modules/, .agents/, .github/, .claude/, bin/, docs/, plugin/, plugins/, scripts/, tests/, package*.json, lockfiles, *.rvf, *.gif, CLAUDE*.md, AGENTS.md, SECURITY.md, CHANGELOG.md, README.md in subdirs).
+4. **`_shared-memory/external-imports/ruflo/` was embedded git repo** — `.git/` renamed to `.git-clone-backup/` (reversible) + .gitignore'd. Now a regular subtree.
+5. **Two botched-format daemon log filenames** — `vault-~0,8LOCAL_DT` + `console-~0,8LOCAL_DT` (literal `~0,8LOCAL_DT` text, `Get-Date` failed to expand). Deleted; .gitignore'd `**/_daemon-logs/*~0,8LOCAL_DT`. Format-string bug in daemons deferred.
+6. **Stale `.git/index.lock` x3** — sibling held lock during Phase 6. Cleared via `[System.IO.File]::Delete` after ~6 sec.
+7. **`workflow` OAuth scope missing** — sibling's 2fae82d added `.github/workflows/bots-smoke.yml`; `gh` token has only `gist, read:org, repo`. **Path B (non-destructive):** dropped file via `git rm` + commit; push succeeded. File preserved at 2fae82d.
 
-**Result — 4 commits landed on `origin/main` (verified via `gh api`):**
+**4 commits landed on `origin/main` (verified via `gh api`):**
 - `5471fb9` (sibling) master sweep: RKOJ rebuild + runtime heartbeats + fleet-state SSE + vault modal + Wire-The-Rest.bat
 - `2fae82d` (sibling) master sweep: Phase 6 cross-agent asks + Phase 9.4 broadcast + Codex audit log
 - `f34f8fc` (master) chore(gitignore): un-block external-imports audit trail + ignore upstream clone bulk
 - `a30a253` (master) chore: drop .github/workflows/bots-smoke.yml pending workflow OAuth scope refresh
 
-GitHub status: `pushed_at = 2026-05-19T14:34:09Z`. Repo `Sinister-Systems-LLC/Sinister-Sanctum` (Private, default branch `main`).
+GitHub `pushed_at = 2026-05-19T14:34:09Z`. Repo `Sinister-Systems-LLC/Sinister-Sanctum` (Private, default `main`). Sanctum Gitea mirror (`localhost:3000`) offline; re-mirror once up via `git push sanctum main`.
 
-Sanctum Gitea mirror (`localhost:3000`) was offline (Docker stack down), so the `sanctum` remote push gracefully no-op'd (`Failed to connect to localhost port 3000`). Re-mirror once Gitea is up via `git push sanctum main`.
+### Install-Claude-Plugins.bat — PURGED 2026-05-19 11:35
 
-### Install-Claude-Plugins.bat (operator: "do this for all" — referencing `/plugin install frontend-design@claude-plugins-official`)
+The shipped scaffolding (`automations/install-claude-plugins.ps1` + Desktop bat + `plugin-install-list.md`) was archived at 11:35 per the marketplace plugin cancer purge — see top entry + DIRECTIVES "Plugin discipline" rule. Archive: `_archive/automations/2026-05-19-plugin-installer-purged/`. Rule: NEVER bulk-install plugins from any marketplace; per-plugin operator approval mandatory.
 
-Built one-click clipboard helper for bulk plugin install:
-- `D:\Sinister Sanctum\automations\install-claude-plugins.ps1` — reads `~\.claude\plugins\marketplaces\claude-plugins-official\.claude-plugin\marketplace.json` (172 plugins across 12 categories) via Python helper (PS5's `ConvertFrom-Json` chokes on duplicate keys `.c`/`.C` — case-insensitive bug). Diffs against `installed_plugins.json` to skip already-installed. Copies generated `/plugin install <name>@claude-plugins-official` commands to clipboard. Supports `-List` (show categories + counts), `-Category <name>` (single category), default = all.
-- `C:\Users\Zonia\Desktop\Install-Claude-Plugins.bat` — trampoline.
-- `D:\Sinister Sanctum\automations\plugin-install-list.md` — 401-line categorized reference (also has paste-friendly bulk block at the bottom).
+### Operator's pending follow-up
 
-Workflow: operator double-clicks `Install-Claude-Plugins.bat` → 171 commands copied to clipboard → alt-tab to Claude Code → paste → Claude Code processes sequentially → `/reload-plugins` to activate.
-
-Categories breakdown: database(16), deployment(5), design(3), development(78), learning(2), location(1), math(1), monitoring(8), productivity(33), security(10), testing(1), uncategorized(14). Total 172, minus 1 already installed (`frontend-design` per operator's screenshot) = 171 fresh installs.
-
-### Operator's pending follow-up (after this push)
-
-1. **Run `gh auth refresh -h github.com -s workflow`** (browser prompt, ~30 sec) — adds `workflow` scope so the `.github/workflows/bots-smoke.yml` file can be restored:
+1. **`gh auth refresh -h github.com -s workflow`** — adds `workflow` scope to restore `.github/workflows/bots-smoke.yml`:
    ```
    git show 2fae82d:.github/workflows/bots-smoke.yml > .github/workflows/bots-smoke.yml
    git add .github/workflows/bots-smoke.yml
    git commit -m "restore bots-smoke workflow after auth refresh"
    git push origin main
    ```
-2. **Double-click `C:\Users\Zonia\Desktop\Install-Claude-Plugins.bat`** to bulk-copy + paste in Claude Code for the 171 plugin installs.
-3. **Fix `sanctum-auto-push.ps1` git-fetch-stderr** — separate sprint; the daemon's try/catch needs to ignore git's informational stderr OR pipe stderr differently. Current symptom: daemon errors out on every run when working tree has changes (it never successfully auto-pushes; my manual push covered this round).
-4. **Fix the daemon log filename format-string bug** — both `tools/sinister-vault/` daemon and `automations/window-manager/` daemon emit `~0,8LOCAL_DT` literal text. Search for the broken `Get-Date` format somewhere in those daemons.
+2. **Fix `sanctum-auto-push.ps1` git-fetch-stderr** — daemon try/catch needs to ignore git's informational stderr.
+3. **Fix daemon log filename format-string bug** — both `tools/sinister-vault/` + `automations/window-manager/` daemons emit `~0,8LOCAL_DT` literal text.
 
 ---
 

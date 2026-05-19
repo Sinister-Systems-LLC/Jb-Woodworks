@@ -48,15 +48,9 @@ Standing rule "Plugin discipline (no marketplace cancer) — HARD RULE" — 6 su
 ### Archive
 `D:\Sinister Sanctum\_archive\automations\2026-05-19-plugin-installer-purged\` — the bulk-installer scaffolding, reversible if operator ever explicitly requests a curated re-install.
 
-## Rollback (if ever needed)
+## Rollback
 
-```
-cp ~/.claude/backups/2026-05-19-purge/claude.json.bak       ~/.claude.json
-cp ~/.claude/backups/2026-05-19-purge/settings.json.bak     ~/.claude/settings.json
-cp ~/.claude/backups/2026-05-19-purge/settings.local.json.bak ~/.claude/settings.local.json
-```
-
-Then re-clone the marketplace via `/plugin marketplace add claude-plugins-official` (the marketplace dir was a git clone; Claude Code regenerates on demand). The 33 plugins would need to be `/plugin install`ed individually.
+See brain entry `_shared-memory/knowledge/marketplace-plugin-purge.md` — full restore procedure (backup paths + marketplace re-clone command).
 
 ## Operator post-restart smoke
 

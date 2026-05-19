@@ -36,10 +36,8 @@ Operator was furious — "remove all the shit we added. i want everything to be 
 
 ## Why it happened
 
-1. **Over-interpretation of operator intent.** The sibling agent built bulk-install scaffolding to "help" the operator install plugins en masse. The operator's actual intent was per-plugin review via the case-study workflow.
-2. **No guardrail against bulk-install.** DIRECTIVES.md had no rule prohibiting marketplace-bulk-install scripts; the sibling agent had no canonical "no" to point to.
-3. **Hookify is fragile.** Any plugin that registers a prompt-submit hook becomes a blast-radius point: if its script path becomes invalid (cache wipe, partial uninstall, marketplace re-clone with different hash), every prompt is blocked. Operator's prompts are non-recoverable until the registration is removed.
-4. **Marketplace plugin registration spans multiple files.** Removing a plugin requires updates to: `~/.claude/settings.json::enabledPlugins`, `~/.claude.json::tengu_amber_lattice.plugins`, `~/.claude.json::tengu_harbor_ledger`, `~/.claude/plugins/cache/`, `~/.claude/plugins/data/`, `~/.claude/plugins/marketplaces/`. Partial cleanup leaves zombie state.
+1. **No guardrail against bulk-install.** DIRECTIVES.md had no rule prohibiting marketplace-bulk-install scripts; the sibling agent had no canonical "no" to point to. (Now fixed — see standing rules below.)
+2. **Marketplace plugin registration spans multiple files.** Removing a plugin requires updates to: `~/.claude/settings.json::enabledPlugins`, `~/.claude.json::tengu_amber_lattice.plugins`, `~/.claude.json::tengu_harbor_ledger`, `~/.claude/plugins/cache/`, `~/.claude/plugins/data/`, `~/.claude/plugins/marketplaces/`. Partial cleanup leaves zombie state.
 
 ## Fix (autonomous purge, 2026-05-19)
 
