@@ -69,7 +69,8 @@ try {
 
     Write-Info ('LastRunTime    : ' + $lastRun)
     Write-Info ('NextRunTime    : ' + $nextRun)
-    Write-Info ('LastTaskResult : ' + $lastResult + (if ($lastResult -eq 0) { ' (success)' } else { ' (failure)' }))
+    $resultLabel = if ($lastResult -eq 0) { ' (success)' } else { ' (failure)' }
+    Write-Info ('LastTaskResult : ' + $lastResult + $resultLabel)
     Write-Info ('NumberOfMissedRuns: ' + $info.NumberOfMissedRuns)
 
     $stale = $false

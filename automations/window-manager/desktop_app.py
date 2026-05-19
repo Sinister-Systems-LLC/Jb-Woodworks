@@ -29,6 +29,33 @@ from pathlib import Path
 multiprocessing.freeze_support()
 
 
+# ---- Bootloader-error capture: redirect early-boot exceptions to a log file
+# next to the EXE BEFORE any other import that could fail. This catches
+# ModuleNotFoundError thrown by PyInstaller's bootstrap (e.g. 'select',
+# 'selectors') which fire BEFORE our excepthook is installed.
+# Author: Sinister Sanctum master agent (Claude) :: 2026-05-19
+def _early_boot_log(msg: str) -> None:
+    try:
+        if getattr(sys, "frozen", False):
+            log_dir = Path(sys.executable).resolve().parent
+        else:
+            log_dir = Path(__file__).resolve().parent / "_daemon-logs"
+        try:
+            log_dir.mkdir(parents=True, exist_ok=True)
+        except Exception:
+            return
+        with open(log_dir / "_exe-boot.log", "a", encoding="utf-8") as f:
+            f.write(f"[{time.time():.3f}] {msg}\n")
+    except Exception:
+        pass
+
+
+try:
+    _early_boot_log(f"boot: frozen={getattr(sys, 'frozen', False)} argv={sys.argv}")
+except Exception:
+    pass
+
+
 # ---- Patch None stdout/stderr in PyInstaller windowed builds ----
 # In console=False frozen builds, ALL of sys.stdout/stderr/__stdout__/__stderr__
 # are None. uvicorn's DefaultFormatter calls sys.stdout.isatty() at config time

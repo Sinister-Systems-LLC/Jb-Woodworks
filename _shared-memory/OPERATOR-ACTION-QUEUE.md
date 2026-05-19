@@ -10,9 +10,13 @@ The Sanctum-side mirror of `SESSION-START/02-OPERATOR-QUEUE.md`, with checkboxes
 
 ---
 
+## 2026-05-19 — One-click bundle (master complete-everything sweep)
+
+- [ ] **DOUBLE-CLICK** `C:\Users\Zonia\Desktop\Wire-The-Rest.bat` — interactive prompts walk through all 7 operator-gated items below in one bat. Every step is skippable + idempotent. Master agent shipped this 2026-05-19 14:15 as the operator-facing bundle for the items the sandbox blocked from direct execution.
+
 ## 2026-05-19 — RKOJ + Vault wire-up (after today's full-day sprint)
 
-- [ ] **Install RKOJ auto-start task** — `powershell -ExecutionPolicy Bypass -File "D:\Sinister Sanctum\automations\window-manager\install-rkoj-task.ps1" -BatPath "D:\Sinister Sanctum\automations\window-manager\console-daemon.bat"`  (new canonical name, gold-standard mirror of `install-vault-task.ps1`; legacy `install-console-task.ps1` still present + identical task name `RKOJ`)
+- [ ] **Install RKOJ auto-start task** — `powershell -ExecutionPolicy Bypass -File "D:\Sinister Sanctum\automations\window-manager\install-rkoj-task.ps1" -BatPath "D:\Sinister Sanctum\automations\window-manager\console-daemon.bat"`  (canonical; legacy `install-console-task.ps1` now archived to `_archive/automations/window-manager/`)
 - [ ] **Install SinisterVault auto-start task** — `powershell -ExecutionPolicy Bypass -File "D:\Sinister Sanctum\tools\sinister-vault\install-vault-task.ps1" -BatPath "D:\Sinister Sanctum\tools\sinister-vault\vault-daemon.bat"`
 - [ ] **Install Syncthing service** (admin) — `powershell -ExecutionPolicy Bypass -File "D:\Sinister Sanctum\tools\sinister-vault\syncthing\install.ps1"`
 - [ ] **Move Gitea data into vault** — `powershell -ExecutionPolicy Bypass -File "D:\Sinister Sanctum\tools\sanctum-git\setup-vault-data-dir.ps1"` (Gitea down briefly)
@@ -82,9 +86,16 @@ The Sanctum-side mirror of `SESSION-START/02-OPERATOR-QUEUE.md`, with checkboxes
 
 ## 🟠 High — NEW gates surfaced by today's sweep
 
-- [ ] **Run `automations/verify-auto-push.ps1`** to see the SinisterSanctumAutoPush gap with your own eyes; then re-register the task per the script's suggested fix.
-- [ ] **Read `tools/sinister-vault/INSTALL-MCP.md`** and run `wire-everything.ps1` to bridge the Vault MCP gap. Three minutes + Claude Code restart.
-- [ ] **Decide Ruflo install model** (per the open question in `C:\Users\Zonia\.claude\plans\review-everything-and-create-cryptic-rose.md`): MCP-only OR MCP + fork 5-7 highest-value skills into `skills/sk-*/`. Default recommendation: both (MCP for speed, fork for durability).
+- [x] **Decide Ruflo install model** — operator chose: **both** (MCP-only + 5 fork case-studies). Master executed Phases B + C 2026-05-19T13:45Z.
+- [x] **Wire Ruflo MCP** — `claude mcp add ruflo -s user -- npx ruflo@latest mcp start` shipped. Entry confirmed in `~/.claude.json`.
+- [x] **Wire Vault MCP** — `claude mcp add vault ...` shipped (via `bots/agents/vault/launch-mcp.bat` wrapper). Entry confirmed.
+- [x] **Register SinisterSanctumAutoPush** — task Ready, first-ran 09:45:45, next-run 10:15:15.
+
+## 🟠 High — NEW operator clicks (post wire-up session)
+
+- [ ] **Double-click `C:\Users\Zonia\Desktop\Sanctum-Wire-Tasks-AsAdmin.bat`** — one UAC prompt registers both `RKOJ` and `SinisterVault` scheduled tasks (RunLevel Highest needs admin; current non-admin shell silently dropped them).
+- [ ] **Restart Claude Code** so the newly-registered `ruflo` + `vault` MCP servers load. After restart, `ToolSearch select:ruflo` + `ToolSearch select:vault.health` should return schemas.
+- [ ] **Thumb the 5 Ruflo skill case-studies** at `_shared-memory/case-studies/2026-05-19-sk-{swarm-coord,vector-memory,federation,observability,aidefence}.md`. Each is `status: candidate` until you 👍 / 👎. Per case-study: 5-section structured verdict + recommendation. All 5 default to `KEEP-WITH-CHANGES`; federation suggests PARK until 2-machine workload exists.
 
 ### 2026-05-19 (morning — first-push + LetsText + hub sprint)
 

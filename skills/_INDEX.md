@@ -37,4 +37,28 @@ Two tables — **folder-shaped skills** live in `skills/<slug>/` with their own 
 | eveObservations | `D:\Sinister Sanctum\tools\sinister-chatbot\src\services\eveObservations.ts` | Server-side Eve derivation — `deriveEveObservations(fan)` returns top-3 observations (tone-priority `accent > success > warning > info`). Pure function ported from `dashboard-skeleton/components/eve/eve-observations-card.tsx`; flavors LLM system prompts so AI tone tracks operator's UI signal. | fixed | native |
 | kameleo | `D:\Sinister Sanctum\tools\sinister-chatbot\src\services\kameleo.ts` | Antidetect browser client — axios wrapper over the Kameleo CLI (port 5050). Picks Windows + Chrome desktop fingerprints; creates / starts / stops profiles with HTTP-proxy attach; auto-tiles browser windows; exposes `findProfileByName` / `purgeAllSnapProfiles`. Requires operator to have logged in via Kameleo GUI once. | fixed | native |
 | codex-review | `D:\Sinister Sanctum\tools\codex-companion\codex.py` | OpenAI-powered peer-review skill. `review(content, *, context, language, depth)` calls a Codex-grade model (gpt-4o-mini / gpt-4o / o1-mini per depth tier) and returns `{verdict: pass\|warn\|fail, findings:[...], summary}`. Every review logged append-only to `_shared-memory/codex-reviews/`. Graceful no-API-key behavior. Exposed via Sanctum Console at `POST /api/codex/review`. | fixed | native |
-| viewer | `D:\
+| viewer | `D:\Sinister Sanctum\tools\sinister-phone-viewer\viewer.py` | Per-phone ADB + scrcpy helper. `list_devices()` parses `adb devices -l`; `start_view(serial, ...)` spawns scrcpy mirroring the **physical** display (`--display-id 0`) — never a virtual display; `stop_view(pid)` per-pid only; `get_phone_state(serial)` reads `_shared-memory/notes/phones/<serial>.md`; `push_frida_to(serial, local)` / `adb_push_file(serial, local, dest)` are explicit per-serial; `forbid_global_adb(cmd)` raises if `adb` is invoked without `-s <serial>`. Stdlib-only. | fixed | native |
+| git-mirror | `D:\Sinister Sanctum\automations\git-mirror.ps1` | Mirror Sinister projects to the self-hosted Gitea (`sanctum-git`) on `http://localhost:3000`. Subcommands: `init <key>`, `push <key>`, `push-all`, `status`. Every run logs to `12_LLM_ORCHESTRATION\runtime-state\script-runs\git-mirror-<UTC>.json` tagged with `$env:SINISTER_AGENT_NAME`. Gracefully no-ops when `.env` is missing. | fixed | native |
+
+---
+
+## How to add a new skill
+
+### Folder-shaped (new capability bundle)
+1. Create `skills/<slug>/` with README.md (tool-card pattern; see `tools/_TEMPLATE.md`).
+2. Drop source files.
+3. Add authorship line to every new `.bat`/`.md`/`.ps1` (per DIRECTIVES standing rule).
+4. Append a row to the "Folder-shaped skills" table above.
+5. If external import (from Ruflo / MCP Registry / Cookbook): also update `_shared-memory/external-imports/CANDIDATES.md` and run case-study per `DIRECTIVES.md:7-19`.
+
+### Code-library (new module called by tools)
+1. Place module at its consuming tool's source tree (or `bots/agents/_shared/` if cross-bot).
+2. Append a row to the "Code-library skills" table above.
+3. Document the public API in 1 sentence ("`functionA(arg)` returns ...").
+
+## See also
+
+- `_shared-memory/external-imports/CANDIDATES.md` — master list of external imports across all skills/tools/MCPs
+- `_shared-memory/DIRECTIVES.md:7-19` — case-study workflow gate for any external imports
+- `tools/_INDEX.md` — companion catalog for tools (vs. skills)
+- `inventions/` — invention cards for novel patterns; once shipped, the implementation lands here

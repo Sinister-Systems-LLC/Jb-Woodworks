@@ -126,10 +126,11 @@ Per the cold-start phrase the launcher injects, every Claude session on cold-sta
 2. Read OPERATOR-DIRECTIVES.md (master memory)
 3. Read PARALLEL-AGENT-COORDINATION.md (ownership zones)
 4. Read `_shared-memory/DIRECTIVES.md` + `WORK-TOWARD.md` + `WORKSTATION.md` (this file)
-5. Log progress to `_shared-memory/PROGRESS/<your-name>.md` for every milestone
-6. Add agent-authorship to every .bat/.md/.ps1 created
-7. Use the Sanctum brain (`_shared-memory/knowledge/`) — write discoveries, read before risky actions
-8. Use per-agent branches when pushing
+5. **Read `skills/HUB.md`** (the Skills Hub — single discovery surface for every bot/tool/skill/external/invention; source of truth at `skills/_REGISTRY.yaml`; regen via `automations/sync-fleet.ps1 -Apply`). Added 2026-05-19 per Rule 10.
+6. Log progress to `_shared-memory/PROGRESS/<your-name>.md` for every milestone
+7. Add agent-authorship to every .bat/.md/.ps1 created
+8. Use the Sanctum brain (`_shared-memory/knowledge/`) — write discoveries, read before risky actions
+9. Use per-agent branches when pushing
 
 ## Aspirational stack (next 90 days)
 

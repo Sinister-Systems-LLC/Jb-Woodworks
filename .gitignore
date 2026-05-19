@@ -126,6 +126,36 @@ projects/*/source/source/
 # by tiktok-emu agent). Excluding the whole tree from Sanctum.
 projects/sinister-tiktok-emu/
 
-# External clones (third-party repos pulled in for reference/integration); not Sanctum's
-# to vendor. Add their own submodule entry deliberately if a clone needs to ship.
-_shared-memory/external-imports/
+# External-imports inflow loop — KEEP operator-authored audit trail
+# (CANDIDATES.md, README.md, per-slug ATTRIBUTION.md, notes.md, etc.);
+# EXCLUDE upstream-cloned source code (bulky, may pattern-match secrets in
+# test fixtures, not Sanctum's to vendor). Add a submodule deliberately if a
+# clone needs to ship. Updated 2026-05-19 by master to un-block the audit trail.
+_shared-memory/external-imports/*/v3/
+_shared-memory/external-imports/*/node_modules/
+_shared-memory/external-imports/*/bin/
+_shared-memory/external-imports/*/build/
+_shared-memory/external-imports/*/dist/
+_shared-memory/external-imports/*/docs/
+_shared-memory/external-imports/*/plugin/
+_shared-memory/external-imports/*/plugins/
+_shared-memory/external-imports/*/ruflo/
+_shared-memory/external-imports/*/scripts/
+_shared-memory/external-imports/*/tests/
+_shared-memory/external-imports/*/verification/
+_shared-memory/external-imports/*/*.rvf
+_shared-memory/external-imports/*/*.rvf.lock
+_shared-memory/external-imports/*/*.gif
+_shared-memory/external-imports/*/*.png
+_shared-memory/external-imports/*/package*.json
+_shared-memory/external-imports/*/pnpm-lock.yaml
+_shared-memory/external-imports/*/yarn.lock
+_shared-memory/external-imports/*/tsconfig*.json
+_shared-memory/external-imports/*/CLAUDE*.md
+_shared-memory/external-imports/*/AGENTS.md
+_shared-memory/external-imports/*/SECURITY.md
+_shared-memory/external-imports/*/CHANGELOG.md
+_shared-memory/external-imports/*/README.md
+
+# preserved upstream-clone .git history (renamed to neutralize embedded-repo detection)
+_shared-memory/external-imports/*/.git-clone-backup/

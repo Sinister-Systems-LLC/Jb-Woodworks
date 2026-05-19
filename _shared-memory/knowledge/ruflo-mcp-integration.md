@@ -5,7 +5,9 @@
 **Slug:** ruflo-mcp-integration
 **First discovered:** 2026-05-19 12:30 by Sinister Sanctum
 **Last updated:** 2026-05-19 12:30 by Sinister Sanctum
-**Status:** workaround (will flip to `fixed` once 5-7 highest-value skills are forked into `skills/sk-*/`)
+**Status:** workaround (flips to `fixed` once operator thumbs-up on the 5 case-study verdicts at `_shared-memory/case-studies/2026-05-19-sk-{swarm-coord,vector-memory,federation,observability,aidefence}.md`)
+
+**Phase B+C state (2026-05-19T13:35Z, this session):** Ruflo MCP wired at user scope (`claude mcp add ruflo -s user -- npx ruflo@latest mcp start`); entry confirmed in `~/.claude.json`. 5 skill fork READMEs + 5 case-study verdicts shipped under `skills/sk-*/` + `_shared-memory/case-studies/`. Operator restart of Claude Code loads ruflo MCP tools into next session. Per-skill operator thumbs determine final `fixed` status.
 **Tags:** ruflo, mcp, claude-code, swarm, orchestration, multi-agent, vector-memory, external-import, standing-rule
 
 ## Problem

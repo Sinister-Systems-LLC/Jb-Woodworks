@@ -47,6 +47,9 @@ The Sanctum repo's `.github/workflows/bots-smoke.yml` triggers this on the first
 
 ## Discoveries (append-only log, most-recent at top)
 
+### 2026-05-19 09:57 EDT by Sinister TikTok API
+Tripped again during a cross-zone push of the Sanctum tree from this agent. Token scope unchanged since 02:00 (`gist, read:org, repo` only). Workaround used: `git rm --cached .github/workflows/bots-smoke.yml` → `git commit --amend --no-edit` → push lands cleanly. Workflow file stays on disk and gets re-committed in a follow-up push after operator runs `gh auth refresh -h github.com -s workflow`. Confirms: each new agent / machine combination hits this fresh until the operator does the refresh once.
+
 ### 2026-05-19 02:00 by Sinister Sanctum
 First documented. Operator hit this when pushing the Sanctum repo's initial commit including the `bots-smoke.yml` CI workflow. `gh auth refresh -s workflow` resolved cleanly; no token rotation needed.
 

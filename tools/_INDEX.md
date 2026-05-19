@@ -15,3 +15,5 @@ Running catalog of every registered tool in the Sanctum. Append-only. See `READM
 | codex-companion | tools/codex-companion/ | D:\Sinister Sanctum\tools\codex-companion\codex.py | shipped | 2026-05-19 |
 | sanctum-git | tools/sanctum-git/ | D:\Sinister Sanctum\tools\sanctum-git\docker-compose.yml | shipped | 2026-05-19 |
 | panel-config | tools/panel-config/ | D:\Sinister Sanctum\tools\panel-config\panel-config.json | shipped | 2026-05-19 |
+| sanctum-self-heal | tools/sanctum-self-heal/ | D:\Sinister Sanctum\tools\sanctum-self-heal\heal.ps1 | shipped | 2026-05-19 |
+| mcp-discover | tools/mcp-discover/ | D:\Sinister Sanctum\tools\mcp-discover\discover.py | shipped | 2026-05-19 |

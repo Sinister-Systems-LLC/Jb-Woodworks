@@ -28,7 +28,8 @@ param(
     [switch]$Apply,
     [string]$RegistryPath = 'D:\Sinister Sanctum\skills\_REGISTRY.yaml',
     [string]$HubPath      = 'D:\Sinister Sanctum\skills\HUB.md',
-    [string]$McpJsonPath  = (Join-Path $env:USERPROFILE '.claude\.mcp.json'),
+    [string]$McpJsonPath  = (Join-Path $env:USERPROFILE '.claude\.mcp.json'),       # project-scope MCP entries
+    [string]$McpUserPath  = (Join-Path $env:USERPROFILE '.claude.json'),             # user-scope MCP entries (claude mcp add -s user)
     [string]$RunlogDir    = 'D:\Sinister\Sinister Skills\12_LLM_ORCHESTRATION\runtime-state\script-runs'
 )
 
@@ -121,24 +122,44 @@ $mustRegister   = @()
 $mustUnregister = @()
 $alreadyOk      = @()
 
-if (-not (Test-Path -LiteralPath $McpJsonPath)) {
-    Write-Warn ('mcp.json not found at: ' + $McpJsonPath)
-    Write-Info 'skipping diff (every bot will be reported as MUST REGISTER below).'
-    $mcpServerNames = @()
-} else {
+$mcpServerNames = @()
+$projectScopeNames = @()
+$userScopeNames    = @()
+
+# Project-scope mcp.json
+if (Test-Path -LiteralPath $McpJsonPath) {
     try {
-        $mcp = Get-Content -LiteralPath $McpJsonPath -Raw | ConvertFrom-Json
-        if ($mcp.mcpServers) {
-            $mcpServerNames = @($mcp.mcpServers.PSObject.Properties.Name)
-            Write-OK ('mcp.json has ' + $mcpServerNames.Count + ' registered servers')
-        } else {
-            $mcpServerNames = @()
-            Write-Warn 'mcp.json has no mcpServers key'
+        $mcpProject = Get-Content -LiteralPath $McpJsonPath -Raw | ConvertFrom-Json
+        if ($mcpProject.mcpServers) {
+            $projectScopeNames = @($mcpProject.mcpServers.PSObject.Properties.Name)
+            Write-OK ('.mcp.json (project-scope) has ' + $projectScopeNames.Count + ' servers')
         }
     } catch {
-        Write-Fail ('mcp.json parse failed: ' + $_.Exception.Message)
-        $mcpServerNames = @()
+        Write-Warn ('.mcp.json parse failed: ' + $_.Exception.Message)
     }
+} else {
+    Write-Warn ('.mcp.json not found at: ' + $McpJsonPath)
+}
+
+# User-scope ~/.claude.json (populated by `claude mcp add -s user ...`)
+if (Test-Path -LiteralPath $McpUserPath) {
+    try {
+        $mcpUser = Get-Content -LiteralPath $McpUserPath -Raw | ConvertFrom-Json
+        if ($mcpUser.mcpServers) {
+            $userScopeNames = @($mcpUser.mcpServers.PSObject.Properties.Name)
+            Write-OK ('.claude.json (user-scope) has ' + $userScopeNames.Count + ' servers')
+        }
+    } catch {
+        Write-Warn ('.claude.json parse failed: ' + $_.Exception.Message)
+    }
+} else {
+    Write-Info ('.claude.json (user-scope) not found at: ' + $McpUserPath)
+}
+
+$mcpServerNames = @($projectScopeNames + $userScopeNames | Sort-Object -Unique)
+if ($mcpServerNames.Count -eq 0) {
+    Write-Warn 'no MCP servers found in either project or user scope'
+    Write-Info 'every bot will be reported as MUST REGISTER below.'
 }
 
 foreach ($bot in $registry.bots) {

@@ -4,6 +4,277 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-19 14:20 — shipped: complete-everything sweep — 9 phases — operator unblocked from DLL/select crash + 4 brain entries + Wire-The-Rest.bat
+Operator ask was "make plan to complete everything" with `/effort max`. Wrote the 9-phase plan to `~/.claude/plans/make-plan-to-complete-foamy-squid.md`; operator approved via ExitPlanMode. Mid-sweep, operator hit `Failed to load Python DLL` + `ModuleNotFoundError: No module named 'select'` repeatedly when launching RKOJ.exe — pivoted to fix that live.
+
+**Shipped (10 items):**
+1. **RKOJ.exe rebuilt + bundle gap CLOSED** — `dist/RKOJ/_internal/sanctum_shared/{__init__,cycle_points,scheduler}.py` confirmed present. Added `select` / `_socket` / `socket` / `selectors` / `multiprocessing.*` / `asyncio.*` to `RKOJ.spec` hiddenimports (fixed operator's live crash). Manual cp from `build/RKOJ/` to `dist/RKOJ/` (COLLECT didn't finish copy). `robocopy /MIR` to Desktop (509 files, 0 failed). New EXE 7.58 MB; boot smoke green (heartbeat ticking @ uptime 92s, /api/health 200).
+2. **Runtime liveness heartbeats** — `server.py:_runtime_heartbeat_loop` writes `_shared-memory/heartbeats/rkoj-runtime.beat` every 30s. `install-rkoj-task.ps1:116` reference updated. Brain: `runtime-liveness-heartbeats.md`.
+3. **Fleet-state SSE** — `_compute_fleet_snapshot` + `_fleet_state_loop` + `/api/fleet-stream` + `/api/fleet-snapshot`. Aligned event name `fleet-update` with existing `web/fleet-state.js` client. Replaced 2 setIntervals in `app.js`. Brain: `rkoj-fleet-state-sse.md`.
+4. **Vault commit modal** — `web/app.js:openCommitModal()` clones `tpl-vault-commit-modal` + repo dropdown from `/api/launcher/options` + POSTs `/api/vault/commit`. Brain: `vault-commit-modal-pattern.md`.
+5. **Inbox multi-send** — wired `case 'inbox-all'` to existing `openBroadcastModal()` (was TODO toast).
+6. **Bootstrap-error logging** — `desktop_app.py:_early_boot_log` writes `_exe-boot.log` BEFORE anything else can fail. Operator's "add logging so you get all these errors too" ask covered.
+7. **Legacy cleanup** — `install-console-task.ps1` + `uninstall-console-task.ps1` → `_archive/automations/window-manager/` + `_archived.md` reason file.
+8. **Build script quoting fix** — `build-sanctum-console.sh` lines 96/107/132 unquoted `$PYTHON` (broke on path-with-spaces). All three fixed.
+9. **`Wire-The-Rest.bat`** at `C:\Users\Zonia\Desktop\` — 9 interactive prompts bundling: SinisterRKOJ task / SinisterVault task / vault daemon restart / Syncthing install (admin) / Gitea data migration / bootstrap-users / MCP proposal paste / env var sets / reminder cards. Sandbox blocked direct `Register-ScheduledTask` despite EXPANDED AUTHORITY — bundled for operator click.
+10. **Brain + queue sweep** — 4 new brain entries (`runtime-liveness-heartbeats`, `rkoj-fleet-state-sse`, `vault-commit-modal-pattern`, `complete-everything-sweep-pattern`). `_INDEX.md` updated. `OPERATOR-ACTION-QUEUE.md` updated with `Wire-The-Rest.bat` at top + "Recently closed" section.
+
+**Cross-agent asks delivered** (filesystem inbox):
+- → Sinister Snap API: SS03 unblock decision
+- → Sinister TikTok API: RKA daemon respin + Wave 2/3 status
+- → Sinister Panel: -analytics SUPER_ADMIN role decision
+- → Sinister Kernel APK: P-A2..P-A11 + PI 0/3 status
+
+**Global broadcast** — `_shared-memory/cross-agent/2026-05-19T1420Z-sanctum-broadcast-sweep-shipped.md`.
+
+**Codex peer-review** — `standard` depth, 91 KB delta, verdict `warn` (no high-severity), 2 medium + 2 low findings (all pre-existing patterns or general suggestions, none of my new code). Review id `20260519T141628Z-05a9880785`. Push not blocked per standing rule #4.
+
+**Sequencing notes (learnings):**
+- Plan agent caught ordering bug pre-execution: Phase 2 (build) MUST precede Phase 3 (task install).
+- Naming suffix `-runtime.beat` vs `-build.beat` keeps liveness vs build artifacts grep-able.
+- Auto-push daemon rolled prior parallel-agent work into main commit `386e488` mid-sweep + switched current branch from `agent/sinister-sanctum/master-sweep-2026-05-19` to `main`. Codex review + audit log still complete.
+
+**Operator-pending now** (all in OPERATOR-ACTION-QUEUE.md + Wire-The-Rest.bat): scheduled-task installs, Syncthing (admin), Gitea migration, bootstrap-users, MCP register, env vars, Restart Claude Code, phone PI re-auth.
+
+---
+
+## 2026-05-19 14:35 — shipped: LetsText Round 52 finish-everything sweep (cross-lane, 5 parallel agents, tsc+lint+doctrine all green)
+
+Operator (verbatim): "in parrallel find everything we need to do for lets tedt still and create a plan to complete it fully" → "do everything in parrallel"
+
+Pipeline: cold-scan (background Explore agent) → punch list → `C:\Users\Zonia\.claude\plans\round-52-letstext-finish.md` → 5 parallel `general-purpose` agents on non-overlapping LetsText file scopes → gate sweep → memory roll → skeleton mirror. **Branch `chore/round-52-letstext-finish` created in LetsText repo; no commits made (operator owns LetsText git).**
+
+**5 parallel agents shipped:**
+- **A** (Block 1 + 2.4): `scripts/probe-routes.mjs` (PROBE_URL 4567→6060, timeout 30s→90s, PROBE_WARMUP=1 two-pass mode) + `components/primitives/status-pill.tsx` (tone-matched labels + `tone?` prop default 'accent' for back-compat) + `CLAUDE.md` (Money doctrine aligned to actual code: `text-accent + font-mono`, not Georgia-serif) + QueryProvider verify (already shipped previously — no-op confirms Phase 5.2 done).
+- **B** (Block 2.5 skeleton sweep): LoadingState JSX renders were already replaced in prior rounds; R52 cleaned **14 orphan imports** across `admin-page.tsx` / `analytics/page.tsx` / `agency/tabs/fans-tab.tsx` etc. One intentional usage preserved at `agency/page.tsx:309` (full-page auth gate).
+- **C** (Block 2.6 DMCA): **NEW** `app/(legal)/dmca/page.tsx` (react-hook-form + zod, 9 form fields incl. 2 sworn-statement `z.literal(true)` checkboxes + e-signature) + **NEW** `app/api/legal/dmca/route.ts` (zod validation → `DMCA-<ts_b36>-<rand4>` ticket → `lib/compliance-events.ts:recordEventAsync` audit → Resend email to `process.env.DMCA_AGENT_EMAIL || '<<DMCA_AGENT_EMAIL>>'`). One deviation: `TabHeader` doesn't accept `subtitle` (strict rule) — subtitle rendered as separate `<p>` caption below.
+- **D** (Block 3.7a+b inbox+vault optimistic): `chat-area.tsx:726-823` sendMutation was already optimistic with `mark-as-failed-for-retry` (exceeds spec; no-op). `vault/page.tsx` got 3 new mutations: `toggleNsfwMutation` (L434-461), `EditDialog saveMutation` (L1909-1940) for rename+retag via `getQueriesData/setQueriesData` across paginated keys, `useMutation` import + `onToggleNsfw` callsite rewire.
+- **E** (Block 3.7c+d employee+ppv optimistic): `admin/employees/[id]/page.tsx` got `suspendMutation` (L124-174) snapshotting `['admin-all-users']` + `['employee-detail',userId]` + local isSuspended/localStorage, with rollback toast + settle invalidate trio. Suspend/Reinstate button (L259-274) wired with disabled+opacity-60+cursor-wait. `templates/page.tsx:192-240` `updateMutation` rewritten with full optimistic shape via `getQueriesData` splice across paginated `['sequences', …]` keys + settle invalidate `['sequences']` + `['sequences-inbox']`.
+
+**Gates (run from `D:\LetsText\2.0\dashboard-local`):**
+- `npx tsc --noEmit` → **exit 0**
+- `npx eslint .` → **exit 0**
+- `node scripts/doctrine-audit.mjs --strict` → **exit 0** (one TRACK-level warn: raw-hex 72/16-files vs target 65; brand-color + landing-gradient exemptions documented in obsidian-vault)
+- `npm run probe:routes` → **DEFERRED** (dev server DOWN this session; operator runs after `letstext-dev-fresh.bat`)
+
+**Memory roll:**
+- `D:\LetsText\.claude\memory\s.md` — appended Round 52 closeout YAML block (1645 → 1811 lines) with full shipped/deferred/blocked breakdown
+- `D:\LetsText\.claude\memory\t.md` — flipped `prod_readiness_2026_05_18.status` from `in_progress` to `mostly_done`; added `done_in_round_52` section with 7 items; slimmed `remaining_blockers_before_push` to operator-action items + the deferred tooltip restyle (Phase 5.4)
+- `C:\Users\Zonia\Desktop\dashboard-skeleton\.claude\memory\s.md` — mirrored the status-pill theme change (one-liner per durable directive 2026-05-18 R4)
+
+**Still open after R52 (operator-side):**
+- Phase 5.4 tooltips restyle to `.lg-popover` + `<KeyboardTooltip>` variant (~1-2h, defer to R53)
+- Phase 4.7 Termly (register Termly.io + `NEXT_PUBLIC_TERMLY_UUID` env var)
+- 8 legal-doc placeholders to fill (`<<COMPANY_LEGAL_NAME>>`, address, DMCA agent contact, jurisdiction, arbitration provider)
+- Round 21 cutover blocked on operator iPhone-side mobile farm hardware
+
+**LetsText git state:** Branch `chore/round-52-letstext-finish` exists. `2.0/dashboard-local/` tree is UNTRACKED in git (pre-existing operator decision; D: pivot wasn't committed to LetsText repo). R52 work landed on disk + verified gates but operator owns the decision to commit/PR — I made no commits on the LetsText repo.
+
+**Plan file shipped:** `C:\Users\Zonia\.claude\plans\round-52-letstext-finish.md` (the comprehensive 4-block punch list the operator approved for parallel execution).
+
+---
+
+## 2026-05-19 14:12 — shipped: one-click `Sanctum-Skills-Hub.bat` on Desktop (interactive operator menu)
+
+Operator (verbatim): "place a one click bat on desktop for me to run."
+
+Built `C:\Users\Zonia\Desktop\Sanctum-Skills-Hub.bat` (5-line trampoline) + `D:\Sinister Sanctum\automations\sanctum-skills-hub.ps1` (~220 LOC, UTF-8 BOM, ASCII banner, parse-check passes).
+
+Menu options (interactive loop):
+1. **Status** — runs `verify-fleet-state.ps1` + `sync-fleet.ps1` dry-run (read-only)
+2. **Regen HUB** — `sync-fleet.ps1 -Apply` (overwrites `skills/HUB.md` from registry; prompts first)
+3. **Install MCPs** — `install-mcp-servers.ps1` (Image 2's 4 vendor MCPs; .mcp.json backup; reminds operator to restart Claude Code)
+4. **Reg tasks** — UAC self-elevation via `Start-Process -Verb RunAs`; registers RKOJ + SinisterVault scheduled tasks (the sibling agent's bat that PROGRESS claimed was on Desktop is NOT actually there — this fills the gap; also operator already ran a different UAC path at 14:05 per the parallel entry below, so this option may now be redundant)
+5. **Open HUB** — notepad `skills/HUB.md`
+6. **Open folder** — explorer `skills/`
+7. **Env vars** — prints `[Environment]::SetEnvironmentVariable(...)` commands for the 4 vars (ANTHROPIC_API_KEY / SINISTER_VAULT_PASSPHRASE / OPENAI_API_KEY / LEO_ANTHROPIC_API_KEY); shows current set/unset state per var
+8. **Case studies** — lists the 5 Phase-C Ruflo verdicts; opens all 5 in notepad on confirm
+q. **Quit**
+
+Read-only by default; every write/install action is gated behind explicit y/N confirmation. UAC elevation only fires for option 4.
+
+**Files (2):**
+- `C:\Users\Zonia\Desktop\Sanctum-Skills-Hub.bat` (NEW; thin trampoline, purple console color, points at the PS1)
+- `D:\Sinister Sanctum\automations\sanctum-skills-hub.ps1` (NEW; menu loop + self-elevation handler; parse-checked via `[System.Management.Automation.Language.Parser]::ParseFile`)
+
+Operator workflow: double-click the Desktop bat → pick a menu number → done. Closes the loop on the post-Hub operator queue (Image 2 install, env vars, case-study review). Co-shipped during the sibling agent's 14:05 self-heal/mcp-discover sprint; menu options 1+2 invoke the sibling's tooling via the `sync-fleet.ps1` engine already in place.
+
+---
+
+## 2026-05-19 14:05 — shipped: Phase H sanctum-self-heal + Phase D mcp-discover + 2 Desktop bats (operator: "done continue work")
+Operator ran the UAC bat. RKOJ + SinisterVault tasks both Running (started via Start-ScheduledTask). Auto-push exit-1 confirmed = "skipped: not on main" per the existing brain entry — working as designed, no bug. Then continued with the two "work forever" backbone tools the plan called for.
+
+**Phase H — `tools/sanctum-self-heal/`** (read-only hourly drift detector):
+- `heal.ps1` (~210 LOC) — 7 check categories: scheduled tasks (4 expected), MCP entries (parse + cwd-resolve across `.claude.json` AND `.claude/.mcp.json`), `tools/_INDEX.md` row paths, `skills/_INDEX.md` row paths, auto-push log freshness, per-project CLAUDE.md presence, heartbeat freshness. Pass/Warn/Fail per row; output `_shared-memory/self-heal-<UTC>.md` with rolling 30-day retention.
+- Smoke green: **23 PASS / 6 WARN / 0 FAIL**. Report at `_shared-memory/self-heal-2026-05-19T140005Z.md`.
+- `README.md` — table of checks, exit codes, schedule command, lane discipline.
+- Complements the sibling agent's `automations/verify-fleet-state.ps1` (MCP-focused); self-heal is broader + retention-aware.
+
+**Phase D — `tools/mcp-discover/`** (read-only registry discovery):
+- `discover.py` (~150 LOC) — paginated `GET https://registry.modelcontextprotocol.io/v0/servers`, diff vs `mcpServers` keys in BOTH `~/.claude.json` AND `~/.claude/.mcp.json` (catches the user-vs-project scope split). Filters: `--limit N` + `--keyword substring`. Output: `_shared-memory/external-imports/mcp-candidates.md`.
+- Smoke green: 21 registered across 2 config files, fetched 30 entries.
+- `README.md` — API contract documented + schedule + lane discipline.
+
+**Desktop bats:**
+- `C:\Users\Zonia\Desktop\Sanctum-Self-Heal.bat`
+- `C:\Users\Zonia\Desktop\Sanctum-MCP-Discover.bat`
+
+**Catalogs:** `tools/_INDEX.md` +2 rows (sanctum-self-heal, mcp-discover; both shipped).
+
+**Side fix:** `automations/verify-auto-push.ps1` had a `$(...)`-subexpression bug in the LastTaskResult line — fixed, re-smoked clean.
+
+**Operator-pending now (in priority order):**
+1. **Restart Claude Code** — picks up ruflo + vault MCP. After restart `ToolSearch select:ruflo` + `ToolSearch select:vault.health` return schemas.
+2. **Thumb the 5 Ruflo case-studies** at `_shared-memory/case-studies/2026-05-19-sk-*.md` (👍 / 👎 / freeform per skill).
+3. **Optional**: register `SanctumSelfHeal` hourly task + `SanctumMCPDiscover` weekly task per the respective READMEs.
+
+---
+
+## 2026-05-19 13:55 — shipped: Sanctum Skills Hub (the "ONE PLACE we grow that all agents can use") :: 11 files + cold-start contract update + RKOJ endpoint
+
+Operator (verbatim): "review where we are. all tools we have built and just review and expand and add all tools into once place we grow that all agents can use start with ruflo claude skill. make sure its all secure and easy to use and we have everything we need ... review this [Image 2: Mcp, Playwright, Context7, Sequential thinking, Codex, KG memory] and other skills we have and lets make our claude agent as most efficient and effective as possible."
+
+### Plan + decisions
+
+Plan drafted to `C:\Users\Zonia\.claude\plans\i-want-you-to-eventual-haven.md`; operator approved 3 clarifying questions via AskUserQuestion:
+1. Ruflo integration = MCP-wire + fork top skills (Phase B + C).
+2. Image 1 creative tools (Blender/Adobe/Autodesk Fusion) = scout-only this pass.
+3. "ONE place" surface = Markdown HUB + YAML registry + sync script. RKOJ UI tab deferred.
+
+### What master shipped this session (parallel to the sibling sanctum agent at 13:45 — see entry below)
+
+**WP-1 — Skills Hub (the "ONE PLACE"):**
+- `skills/_REGISTRY.yaml` (NEW; 59 artifacts: 13 bots + 11 tools + 16 skills + 10 externals + 9 inventions; YAML schema v1; parses cleanly).
+- `skills/HUB.md` (NEW; v1 hand-written w/ rich context; future regens via `sync-fleet.ps1 -Apply`).
+- `automations/sync-fleet.ps1` (NEW; idempotent sync engine; reads `_REGISTRY.yaml` via temp-file Python helper — sidesteps PS1-here-string quote mangling when shelling to `python -c`; diffs `bots[*]` against BOTH project-scope `~/.claude/.mcp.json` AND user-scope `~/.claude.json` (`claude mcp add -s user`); prints MUST REGISTER list; writes runlog manifest; `-Apply` regenerates HUB. Tested: 59 artifacts, 0 MUST REGISTER after both-scope check, 7 informational operator-private MCPs, exit 0 clean).
+- `automations/window-manager/server.py` — added `HUB_REGISTRY_PATH` constant (after `SANCTUM_ROOT`) + `GET /api/skills/hub` endpoint (parses YAML via local `import yaml`; returns counts + categories + mtime; 503 if pyyaml absent; ast.parse passes).
+- `SESSION-START/00-RULES.md` — appended **Rule 10** ("Read the Skills Hub on cold-start") with rationale + source-of-truth + add-new-artifact workflow.
+- `_shared-memory/WORKSTATION.md` — added step 5 to the cold-start contract (read HUB.md after DIRECTIVES + WORK-TOWARD).
+
+**WP-2 — Image 2 MCP set (Playwright + Context7 + Sequential-thinking + KG-memory):**
+- `_shared-memory/knowledge/image2-mcp-set.md` (NEW; status `workaround` until operator runs install script; decision tree for when-to-use-which; what-they-don't-replace; KG-memory storage path).
+- Install script `automations/install-mcp-servers.ps1` already shipped earlier; operator click pending.
+
+**WP-3 — Ruflo Phase 0 + A (sibling agent did Phase B + C in parallel — see 13:45 entry):**
+- Phase 0: WebFetch verified MIT + install command + commit SHA `c292e5fcf563b1639ea2ce7842c8f4a110c3ad39` (2026-05-19T02:18:38Z, "ADR-123 — RuFlo Graph Intelligence Engine"), v3.7.0-alpha.33.
+- Phase A: `_shared-memory/external-imports/ruflo/ATTRIBUTION.md` (NEW; full license + SHA + fork pattern + license-compliance + rollback). `_shared-memory/external-imports/CANDIDATES.md` UPDATED with SHA pin + Phase B/C state.
+- **Surprise discovery:** 38+ claude-flow Claude Code skills are ALREADY loaded in this session (visible via system-reminder skill list — `agentdb-*`, `agentic-jujutsu`, `flow-nexus-*`, `github-*`, `hive-mind-advanced`, `reasoningbank-*`, `swarm-*`, `v3-*`, `skill-builder`, etc.). Distinct from the MCP wire; invokable via `Skill` tool right now.
+
+**WP-4 — Foundation gaps:**
+- `automations/verify-fleet-state.ps1` (NEW; read-only fleet-wide probe; 5 sections: scheduled tasks, env vars (presence-only never values), MCP cwd resolution, Skills Hub artifacts, listening ports; prints exact fix commands; exit 1 on gaps). Tested: found 6 gaps after sibling agent's wire-everything (still missing: SinisterMdSweep + RKOJ + SinisterVault tasks, ANTHROPIC_API_KEY + SINISTER_VAULT_PASSPHRASE env vars, RKOJ.exe :5077 port).
+
+**WP-5 — Security overview:**
+- `skills/SECURITY.md` (NEW; 10 sections — deny-list, allow-list scope, Vault Fernet + PBKDF2, Codex peer-review gate, lane discipline, external-imports workflow, MCP hygiene, cross-agent etiquette, audit trails, what's-NOT-covered). Cross-linked from HUB.md.
+
+**WP-6 — Image 1 scout (Blender / Adobe / Autodesk Fusion):**
+- `_shared-memory/external-imports/CANDIDATES.md` — appended 3 scout rows under new section "Image 1 directive queue" with state=scouted + "operator confirms use case" pending field + plausible use-case bullets per tool.
+
+**Cross-agent integration with sibling sanctum agent (13:45):**
+- After detecting the sibling shipped 5 Phase C forks (`skills/sk-{swarm-coord,vector-memory,federation,observability,aidefence}/` + 5 case-studies), master added all 5 to `_REGISTRY.yaml` under `skills:` (status `candidate`; install_state `pending`; awaits operator thumb), flipped `Ruflo` external `status: shipped, install_state: registered` (MCP wired user-scope by sibling), and flipped `Vault` bot `install_state: registered` (sibling wired via launch-mcp.bat wrapper). Result: registry-truth and on-disk-truth now match.
+- `sync-fleet.ps1` patched to read both project-scope `~/.claude/.mcp.json` AND user-scope `~/.claude.json` (the `claude mcp add -s user` location). Final dry-run: exit 0; 0 MUST REGISTER; all 13 bots accounted for.
+
+**Codex peer-review (auto-mode skip, documented):**
+- `_shared-memory/codex-reviews/20260519T134900Z-skip-skills-hub-low-risk.json` (NEW; auto-mode sandbox blocked external transmission to OpenAI; documented skip per standing-rule-4 graceful-degradation path. ~470 LOC scope but no auth/crypto/payment/secrets — read-only YAML sync, read-only probes, doc-only. Manual validations performed: YAML parse, sync-fleet dry-run, verify-fleet-state, server.py ast.parse, HUB.md presence, cold-start contract updated in 2 files.
+
+### Verifications passed
+
+| Verification | Result |
+|---|---|
+| `python -c "import yaml; yaml.safe_load(...)"` | OK — 59 artifacts (13/11/16/10/9) |
+| `sync-fleet.ps1` (dry-run) | exit 0 (after 5 sk-* added + Ruflo/Vault status flips); 13/13 bots match; 7 informational non-Sanctum MCPs |
+| `verify-fleet-state.ps1` | exit 1 (6 gaps: 3 tasks + 2 env vars + 1 port); auto-push task now Ready (sibling registered) |
+| `ast.parse(server.py)` | OK |
+| `skills/HUB.md` presence | 0.0 days old |
+| Cold-start contract updated in 2 files | confirmed (Rule 10 in 00-RULES.md, step 5 in WORKSTATION.md) |
+
+### Files shipped (11 net-new + 4 edits)
+
+**NEW (11):**
+- `skills/_REGISTRY.yaml`, `skills/HUB.md`, `skills/SECURITY.md`
+- `automations/sync-fleet.ps1`, `automations/verify-fleet-state.ps1`
+- `_shared-memory/external-imports/ruflo/ATTRIBUTION.md`
+- `_shared-memory/knowledge/image2-mcp-set.md`
+- `_shared-memory/codex-reviews/20260519T134900Z-skip-skills-hub-low-risk.json`
+- `C:\Users\Zonia\.claude\plans\i-want-you-to-eventual-haven.md` (plan file)
+
+**EDIT (4):**
+- `automations/window-manager/server.py` (HUB_REGISTRY_PATH + /api/skills/hub endpoint)
+- `_shared-memory/external-imports/CANDIDATES.md` (Ruflo SHA pin + Image 1 scout section)
+- `SESSION-START/00-RULES.md` (Rule 10)
+- `_shared-memory/WORKSTATION.md` (cold-start step 5)
+
+### Pending operator clicks (highest leverage first)
+
+1. **Restart Claude Code** so the sibling-wired Ruflo + Vault MCP servers load + `ToolSearch +ruflo` / `+vault.health` return matches in a fresh session.
+2. **Run `automations/install-mcp-servers.ps1`** then restart — wires Image 2's MCP set (Playwright + Context7 + Sequential-thinking + KG-memory).
+3. **Double-click `C:\Users\Zonia\Desktop\Sanctum-Wire-Tasks-AsAdmin.bat`** (shipped by sibling agent) — UAC-elevated; registers RKOJ + SinisterVault scheduled tasks in one prompt.
+4. **Set env vars** per `docs/ENV-VARIABLES.md`: `ANTHROPIC_API_KEY` (unlocks Scribe + Curator + Chatbot LLM), `SINISTER_VAULT_PASSPHRASE` (at-rest Fernet).
+5. **Thumb each of the 5 sibling-shipped case-studies** at `_shared-memory/case-studies/2026-05-19-sk-*.md` (👍 KEEP-WITH-CHANGES / 👎 archive / freeform).
+6. **(Optional)** Run `automations/sync-fleet.ps1 -Apply` to regenerate HUB.md from the registry (replaces the v1 hand-written version with the auto-gen).
+
+### Why this matters (operator's efficiency goal)
+
+Before this session: agents grepped `.mcp.json` + `tools/_INDEX.md` + `skills/_INDEX.md` + `inventions/` + `_shared-memory/external-imports/CANDIDATES.md` separately. No single discovery surface. No fleet-wide state probe. No single security doc.
+
+After: every cold-start agent reads `skills/HUB.md` (per new Rule 10) and sees all 59 artifacts in one place with status + install_state + security + when-to-use. Operator edits `_REGISTRY.yaml` to grow the fleet; `sync-fleet.ps1` propagates and diff-reports drift. `verify-fleet-state.ps1` answers "is the fleet OK right now" in 5 seconds. `SECURITY.md` is the one place for the security posture. RKOJ proxies `GET /api/skills/hub` for any future UI.
+
+The fleet is now organized so the next "what tools can I use?" question resolves in one read.
+
+---
+
+## 2026-05-19 13:45 — shipped: wire-everything (Ruflo MCP + Vault MCP + 1/3 admin-required scheduled task) + 5 Ruflo-fork case-studies
+Operator: "both, wire everything up." Default plan recommendation taken: Phase B (MCP-only) AND Phase C (5 highest-value skill forks). Executed both, plus the runtime gaps from the morning audit.
+
+**MCP wire-up (Phase B):**
+- `claude mcp add ruflo -s user -- npx ruflo@latest mcp start` — confirmed entry in `~/.claude.json` (user scope; visible across all sessions). Ruflo MIT-licensed; npx-fetched on next session boot.
+- `claude mcp add -s user vault -- cmd /c "<launch-mcp.bat>"` — needed a 4-line bat wrapper at `bots/agents/vault/launch-mcp.bat` because the CLI's `-e` arg parser chokes on env-var values with spaces (`SINISTER_HUB_ROOT="D:/Sinister/Sinister Skills"`). Wrapper sets env then execs `python bots/agents/vault/server.py`. Also needed `MSYS_NO_PATHCONV=1` to prevent bash auto-translating `/c` → `C:/`. Entry confirmed clean in `.claude.json`.
+- System Python already has `mcp>=0.9.0` + `httpx>=0.28.1` — no venv creation needed.
+
+**Scheduled tasks (Expanded Authority — master registered directly):**
+- `SinisterSanctumAutoPush` — REGISTERED via `automations/install-auto-push-task.ps1`. State: Ready. First-ran at 09:45:45. Next-run 10:15:15. Now firing every 30 min per canonical-14 rule #14.
+- `SinisterVault` — install-vault-task.ps1 ran inside wire-everything.ps1 but task did NOT land — RunLevel Highest requires admin elevation; current shell is non-admin (confirmed via `WindowsPrincipal.IsInRole`).
+- `RKOJ` — install-rkoj-task.ps1 ran [OK] but task did NOT land — same admin gap.
+- **Operator click required:** double-click `C:\Users\Zonia\Desktop\Sanctum-Wire-Tasks-AsAdmin.bat` (shipped this session). Self-elevates via UAC, runs both install scripts in one prompt, verifies, prints state. One click = both tasks land.
+
+**Phase C — 5 Ruflo skill forks shipped as candidates:**
+- `skills/sk-swarm-coord/` (ruflo:ruflo-swarm) — multi-agent swarm topologies + consensus + worktree isolation
+- `skills/sk-vector-memory/` (ruflo:ruflo-agentdb) — vector substrate (28 MCP tools, ONNX MiniLM, HNSW, RaBitQ 32× memory reduction); the brain upgrade
+- `skills/sk-federation/` (ruflo:ruflo-federation) — multi-machine zero-trust comms for operator+Leo
+- `skills/sk-observability/` (ruflo:ruflo-observability) — OTel tracing + metrics + anomaly detection (closes fleet-monitor gap)
+- `skills/sk-aidefence/` (ruflo:ruflo-aidefence) — PII / prompt-injection / runtime hardening (loader-hijack denylist closes RCE vector exposed by `--dangerously-skip-permissions` default)
+
+Per skill: README at `skills/sk-<slug>/README.md` + case-study verdict at `_shared-memory/case-studies/2026-05-19-sk-<slug>.md` (5-section structured review with concrete strengths/weaknesses/proposal/recommendation). Each is `status: candidate` in `skills/_INDEX.md`; flips to `fixed` only on operator thumbs-up per the standing case-study workflow.
+
+Total recommendations: 5 × KEEP-WITH-CHANGES (proposals range 50-90 LOC of Sanctum-specific adapters per skill). Federation recommended PARK until 2-machine workload actually exists.
+
+**Files shipped (10+):**
+- `bots/agents/vault/launch-mcp.bat` — vault MCP launch wrapper
+- `automations/verify-auto-push.ps1` — bug fixed (`$(...)` subexpression for inline if-else)
+- `C:\Users\Zonia\Desktop\Sanctum-Wire-Tasks-AsAdmin.bat` — UAC-elevated one-click for the 2 admin-required tasks
+- `skills/sk-{swarm-coord,vector-memory,federation,observability,aidefence}/README.md` (5)
+- `_shared-memory/case-studies/2026-05-19-sk-{swarm-coord,vector-memory,federation,observability,aidefence}.md` (5)
+- `skills/_INDEX.md` — 5 new candidate rows in folder-shaped table
+- `_shared-memory/knowledge/ruflo-mcp-integration.md` — status note updated with Phase B+C state
+- `_shared-memory/external-imports/ruflo/` — full git clone snapshot (cloned this session; supplements the parallel agent's ATTRIBUTION.md)
+
+**Per-skill case-study TL;DR (for operator scan):**
+| Skill | Recommendation | Adapter size | Codex tier |
+|---|---|---|---|
+| sk-swarm-coord | KEEP-WITH-CHANGES | ~60 LOC | deep (multi-agent coord) |
+| sk-vector-memory | KEEP-WITH-CHANGES | ~80 LOC | deep (touches storage boundary) |
+| sk-federation | KEEP-WITH-CHANGES (park until 2-machine) | ~70 LOC | deep (auth boundary) |
+| sk-observability | KEEP-WITH-CHANGES | ~90 LOC | standard |
+| sk-aidefence | KEEP-WITH-CHANGES | ~60 LOC | deep (security boundary) |
+
+**What still needs operator clicks:**
+1. Restart Claude Code so ruflo + vault MCP load in fresh sessions.
+2. Double-click `Sanctum-Wire-Tasks-AsAdmin.bat` so RKOJ + SinisterVault auto-start tasks register (one UAC).
+3. Thumb each of the 5 case-studies (👍 KEEP-WITH-CHANGES / 👎 archive / freeform).
+4. Set `ANTHROPIC_API_KEY` per `docs/ENV-VARIABLES.md` (blocks Scribe/Curator/Chatbot).
+5. (Optional) `CLAUDE_FLOW_ENCRYPT_AT_REST=1` if going to enable sk-aidefence's at-rest encryption.
+
+---
+
 ## 2026-05-19 13:35 — shipped: LetsText v4 + JOKR v1 session launchers (Sanctum-style 4-question wizard + git-bash auto-spawn + claude --dangerously-skip-permissions + Desktop bats)
 
 Operator (verbatim): "i need you to fix the lketstext session start to work just like the sinsiter one. as it does not now and it needs to start me off so i can get back to work on that. do the same for jokr panel agent and its project folder and place both on desktop"

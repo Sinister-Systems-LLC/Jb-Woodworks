@@ -34,6 +34,27 @@ hiddenimports = [
     'websockets',
     'httptools',
     'multiprocessing',
+    # 2026-05-19 master sweep: bootloader crash repro showed
+    # `ModuleNotFoundError: No module named 'select'` during
+    # pyi_rth_multiprocessing -> selectors.py:12. PyInstaller's autodetect
+    # missed it on this build; declare the stdlib network/select chain
+    # explicitly so it ships in _internal/.
+    'select',
+    '_socket',
+    'socket',
+    'selectors',
+    'multiprocessing.context',
+    'multiprocessing.reduction',
+    'multiprocessing.popen_spawn_win32',
+    'multiprocessing.queues',
+    'multiprocessing.synchronize',
+    'multiprocessing.connection',
+    'multiprocessing.shared_memory',
+    'multiprocessing.heap',
+    'asyncio',
+    'asyncio.selector_events',
+    'asyncio.windows_events',
+    'asyncio.proactor_events',
 ]
 
 # --- sanctum_shared: explicit collection so cycle_points + scheduler ship in
@@ -94,7 +115,13 @@ a = Analysis(
         '_pytest',
         'setuptools',     # no runtime install
         'pip',            # no runtime install
-        'distutils',      # no runtime install
+        # 'distutils' INTENTIONALLY NOT EXCLUDED here -- PyInstaller's own
+        # hook-distutils.py aliases distutils to a vendored name during the
+        # pre_safe_import_module phase. If we exclude distutils first, that
+        # alias fails with "Target module 'distutils' already imported as
+        # 'ExcludedModule'". Brain entry: distutils-exclude-collision.md.
+        # The actual cost of including distutils is tiny (~50KB), not worth
+        # the build failure. Reproduced 2026-05-19 with PyInstaller 6.20.0.
         'pydoc',          # no in-EXE doc browser
         'pydoc_data',
         'doctest',        # no doctests in EXE

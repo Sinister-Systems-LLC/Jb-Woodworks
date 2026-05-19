@@ -1,8 +1,8 @@
-# docker-compose.yml - sanctum-git :: self-hosted Gitea for the Sinister Sanctum
+﻿# docker-compose.yml - sanctum-git :: self-hosted Gitea for the Sinister Sanctum
 # Author: Sinister Sanctum master agent (Claude) :: 2026-05-19
 #
-# Brings up a single-container Gitea (rootless variant — runs as UID/GID 1000, no
-# sudo / no root drift on the host). SQLite backend — no separate DB service.
+# Brings up a single-container Gitea (rootless variant â€” runs as UID/GID 1000, no
+# sudo / no root drift on the host). SQLite backend â€” no separate DB service.
 #
 # First run: `docker compose up -d`, then open http://localhost:3000 and complete
 # the install wizard. After wizard: create admin user matching .env, then run
@@ -20,14 +20,14 @@ services:
       # Run as host UID/GID 1000 so files in ./data are operator-readable.
       USER_UID: "1000"
       USER_GID: "1000"
-      # SQLite — no separate DB container needed. Data file lives in ./data/gitea.db.
+      # SQLite â€” no separate DB container needed. Data file lives in ./data/gitea.db.
       GITEA__database__DB_TYPE: sqlite3
-      # Server identity — localhost only by default. Edit ROOT_URL if exposing on LAN.
+      # Server identity â€” localhost only by default. Edit ROOT_URL if exposing on LAN.
       GITEA__server__DOMAIN: localhost
       GITEA__server__ROOT_URL: "http://localhost:3000/"
       GITEA__server__SSH_PORT: "2222"
       GITEA__server__SSH_LISTEN_PORT: "2222"
-      # Disable open signups by default — operator's instance, operator's users.
+      # Disable open signups by default â€” operator's instance, operator's users.
       GITEA__service__DISABLE_REGISTRATION: "true"
       GITEA__service__REQUIRE_SIGNIN_VIEW: "false"
       # Friendly app name in the UI.
@@ -39,9 +39,9 @@ services:
       - "2222:22"
     volumes:
       # Gitea data: repos, LFS, attachments, sqlite db.
-      - "D:/Sinister Sanctum/tools/sanctum-git/data:/var/lib/gitea"
+      - "D:/sinister-vault/gitea/data:/var/lib/gitea"
       # Gitea config: app.ini, custom templates.
-      - "D:/Sinister Sanctum/tools/sanctum-git/config:/etc/gitea"
+      - "D:/sinister-vault/gitea/config:/etc/gitea"
       # Host time, so commit timestamps match the operator's clock.
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
@@ -81,3 +81,4 @@ networks:
   sanctum-git-net:
     name: sanctum-git-net
     driver: bridge
+

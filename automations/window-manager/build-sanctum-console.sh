@@ -93,7 +93,7 @@ fi
 if [[ -z "$PYTHON" ]]; then
     die "no usable python on PATH (.venv missing AND no py/python)"
 fi
-PYTHON_VER="$($PYTHON --version 2>&1 || echo unknown)"
+PYTHON_VER="$("$PYTHON" --version 2>&1 || echo unknown)"
 ok "using: $PYTHON ($PYTHON_VER)"
 S2_MS="$(t1)"
 record_step 2 resolve-python 1 "${S2_MS%ms}" "$PYTHON_VER"
@@ -104,7 +104,7 @@ step 3 "Warm-path probe"
 t0
 WARM=0
 HOOK_FILE="$SCRIPT_DIR/.venv/Lib/site-packages/PyInstaller/hooks/pre_safe_import_module/hook-tomli.py"
-if $PYTHON -c "import fastapi, uvicorn, webview, qrcode, PyInstaller, PyInstaller.hooks.pre_safe_import_module" >/dev/null 2>&1; then
+if "$PYTHON" -c "import fastapi, uvicorn, webview, qrcode, PyInstaller, PyInstaller.hooks.pre_safe_import_module" >/dev/null 2>&1; then
     if [[ -f "$HOOK_FILE" ]]; then
         WARM=1
     fi
@@ -129,7 +129,7 @@ if (( ! WARM )); then
         if command -v py >/dev/null 2>&1; then
             py -3.12 -m venv "$SCRIPT_DIR/.venv" || die "py -3.12 -m venv failed"
         else
-            $PYTHON -m venv "$SCRIPT_DIR/.venv" || die "python -m venv failed"
+            "$PYTHON" -m venv "$SCRIPT_DIR/.venv" || die "python -m venv failed"
         fi
         ok "created .venv"
     else

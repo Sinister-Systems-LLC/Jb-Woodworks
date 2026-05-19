@@ -175,13 +175,13 @@ bots:
     status: shipped
     description: "Unified façade: daemon, Gitea, Syncthing, filesystem. Tier 1, $0/call."
     path: "D:\\Sinister Sanctum\\bots\\agents\\vault"
-    install_state: pending  # operator-click: tools/sinister-vault/wire-everything.ps1
+    install_state: registered  # wired by parallel sibling agent 2026-05-19 13:45 via `claude mcp add -s user vault` + launch-mcp.bat wrapper (env-vars with spaces); user scope in ~/.claude.json
     security:
       codex_review: "n/a"
       vault_uses: ["D:\\sinister-vault\\"]
       lane_note: "shared; multi-account (operator + leo)"
     depends_on: ["vault-daemon-5078"]
-    see_also: ["tools/sinister-vault/INSTALL-MCP.md", "knowledge/sinister-vault-architecture.md"]
+    see_also: ["tools/sinister-vault/INSTALL-MCP.md", "knowledge/sinister-vault-architecture.md", "bots/agents/vault/launch-mcp.bat"]
 
 # ============================================================================
 # TOOLS — operator-facing entry points (from tools/_INDEX.md)
@@ -344,6 +344,77 @@ skills:
     depends_on: []
     see_also: ["docs/UI-DESIGN-SYSTEM.md", "SANCTUM.md"]
 
+  # ---- Forked from Ruflo (Phase C, 2026-05-19; per-skill case-study gate; await operator thumb to flip status to shipped) ----
+  - name: sk-swarm-coord
+    slug: sk-swarm-coord
+    kind: skill
+    status: candidate  # flips to shipped on operator thumb-up; case-study at _shared-memory/case-studies/2026-05-19-sk-swarm-coord.md
+    description: "Multi-agent swarm coordination: 12 MCP tools, 6 topologies, 5 consensus strategies, git-worktree isolation per agent."
+    path: "D:\\Sinister Sanctum\\skills\\sk-swarm-coord"
+    install_state: pending  # awaits operator thumb on case-study
+    security:
+      codex_review: "pending (deep — multi-agent coord boundary)"
+      vault_uses: []
+      lane_note: "augments cross-agent-coordination; shared"
+    depends_on: ["ruflo"]
+    see_also: ["_shared-memory/case-studies/2026-05-19-sk-swarm-coord.md", "knowledge/cross-agent-coordination.md"]
+
+  - name: sk-vector-memory
+    slug: sk-vector-memory
+    kind: skill
+    status: candidate
+    description: "Vector substrate (28 MCP tools): AgentDB + ONNX MiniLM + HNSW + RaBitQ (32x memory reduction). Brain upgrade from grep to semantic."
+    path: "D:\\Sinister Sanctum\\skills\\sk-vector-memory"
+    install_state: pending
+    security:
+      codex_review: "pending (deep — touches storage boundary)"
+      vault_uses: []
+      lane_note: "shared; storage boundary"
+    depends_on: ["ruflo"]
+    see_also: ["_shared-memory/case-studies/2026-05-19-sk-vector-memory.md", "bots/agents/librarian"]
+
+  - name: sk-federation
+    slug: sk-federation
+    kind: skill
+    status: candidate  # recommended PARK until 2-machine workload exists
+    description: "Cross-installation federation: zero-trust mTLS+ed25519, 5-tier trust, PII pipeline (14 types), Byzantine BFT consensus, budget circuit breaker."
+    path: "D:\\Sinister Sanctum\\skills\\sk-federation"
+    install_state: pending  # park until 2-machine workload lands
+    security:
+      codex_review: "pending (deep — auth boundary)"
+      vault_uses: []
+      lane_note: "shared; multi-machine"
+    depends_on: ["ruflo"]
+    see_also: ["_shared-memory/case-studies/2026-05-19-sk-federation.md"]
+
+  - name: sk-observability
+    slug: sk-observability
+    kind: skill
+    status: candidate
+    description: "OpenTelemetry-compatible structured logging + distributed tracing + metrics. Closes fleet-monitor visibility gap, no SaaS."
+    path: "D:\\Sinister Sanctum\\skills\\sk-observability"
+    install_state: pending
+    security:
+      codex_review: "pending (standard)"
+      vault_uses: []
+      lane_note: "shared"
+    depends_on: ["ruflo"]
+    see_also: ["_shared-memory/case-studies/2026-05-19-sk-observability.md"]
+
+  - name: sk-aidefence
+    slug: sk-aidefence
+    kind: skill
+    status: candidate
+    description: "AI safety: PII detection + prompt-injection defense + runtime hardening (LD_PRELOAD/NODE_OPTIONS denylist, file mode 0600, AES-256-GCM at-rest opt-in)."
+    path: "D:\\Sinister Sanctum\\skills\\sk-aidefence"
+    install_state: pending
+    security:
+      codex_review: "pending (deep — security boundary)"
+      vault_uses: ["CLAUDE_FLOW_ENCRYPT_AT_REST (optional)"]
+      lane_note: "shared; necessary gate when --dangerously-skip-permissions is launcher default"
+    depends_on: ["ruflo"]
+    see_also: ["_shared-memory/case-studies/2026-05-19-sk-aidefence.md", "skills/SECURITY.md"]
+
   # ---- Code-library modules ----
   - name: bot_memory
     slug: bot_memory
@@ -469,14 +540,14 @@ externals:
   - name: Ruflo
     slug: ruflo
     kind: external
-    status: scouted  # flips to shipped after Phase B operator click + Claude restart
+    status: shipped  # Phase B done by parallel sibling agent 2026-05-19 13:45 (claude mcp add ruflo -s user); flips back if MCP fails to load on next restart
     description: "Multi-agent orchestration platform for Claude Code. Swarm + vector memory + neural patterns + zero-trust federation."
     path: "https://github.com/ruvnet/ruflo"
-    install_state: operator-click  # claude mcp add ruflo -- npx ruflo@latest mcp start
+    install_state: registered  # entry in ~/.claude.json (user scope)
     security:
-      codex_review: "pending (Phase C per-skill)"
+      codex_review: "per Phase-C skill (sk-swarm-coord/sk-vector-memory/sk-federation/sk-observability/sk-aidefence)"
       vault_uses: []
-      lane_note: "external; case-study gate per skill"
+      lane_note: "external; per-skill case-study gate"
     depends_on: ["nodejs", "npm/npx"]
     see_also:
       - "_shared-memory/external-imports/CANDIDATES.md"
@@ -487,6 +558,8 @@ externals:
       pinned_sha: "c292e5fcf563b1639ea2ce7842c8f4a110c3ad39"
       pinned_date: "2026-05-19T02:18:38Z"
       version: "v3.7.0-alpha.33"
+      mcp_register_command: "claude mcp add ruflo -s user -- npx ruflo@latest mcp start"
+      phase_c_forks: ["sk-swarm-coord", "sk-vector-memory", "sk-federation", "sk-observability", "sk-aidefence"]
 
   - name: Playwright MCP
     slug: playwright

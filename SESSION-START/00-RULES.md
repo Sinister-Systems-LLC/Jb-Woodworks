@@ -69,3 +69,17 @@ To ask ANOTHER session: `sinister-bus.delegate_to agent_name="<other>" prompt="<
 **Persistent vs ephemeral:** operator-started sessions persist until operator closes them. `delegate_to` only spawns NEW subprocesses; never kills existing ones.
 
 Full design: `D:\Sinister Sanctum\docs\AGENT-MESSAGING.md`.
+
+## Rule 10 â€” Read the Skills Hub on cold-start (Phase 8af, 2026-05-19)
+
+After reading `_shared-memory/DIRECTIVES.md` + `_shared-memory/WORK-TOWARD.md` on cold-start, every agent ALSO reads `D:\Sinister Sanctum\skills\HUB.md`.
+
+The Skills Hub is the single discovery surface for every bot, tool, skill, external import, and invention currently available in Sanctum. Status / install_state / security posture / one-line "when to use it" for each artifact in one place.
+
+**Source of truth:** `D:\Sinister Sanctum\skills\_REGISTRY.yaml` (YAML registry). `skills\HUB.md` is regenerated from it by `D:\Sinister Sanctum\automations\sync-fleet.ps1 -Apply`.
+
+**Why it matters:** without HUB, agents grep `.mcp.json` + `tools/_INDEX.md` + `skills/_INDEX.md` + `inventions/` separately to know what's available. With HUB, one read tells you the full surface area + what's pending operator click + what security gates apply.
+
+**Adding a new artifact:** append a row to `_REGISTRY.yaml` (one entry per artifact), then `sync-fleet.ps1 -Apply`. Never hand-edit `HUB.md` once sync-fleet is live â€” the next regen overwrites manual changes.
+
+Full posture: `D:\Sinister Sanctum\skills\SECURITY.md` covers deny-list / allow-list / Vault / Codex / lane / external-imports / MCP hygiene in one doc.
