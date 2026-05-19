@@ -1,0 +1,61 @@
+﻿{
+    "_comment":  "Persistent project registry for Start-Sinister-Session. Add new projects by appending to projects array OR via launcher\u0027s \u0027add new project\u0027 flow (option 8).",
+    "version":  1,
+    "default":  "sanctum",
+    "projects":  [
+                     {
+                         "key":  "sanctum",
+                         "display":  "Sanctum",
+                         "tag":  "orchestration / hub / all Sinister projects connect here",
+                         "root":  "D:\\Sinister Sanctum",
+                         "session_start":  "D:\\Sinister Sanctum\\SESSION-START\\README.md",
+                         "claude_md":  "D:\\Sinister Sanctum\\CLAUDE.md",
+                         "github":  "Sinister-Systems-LLC/Sinister-Sanctum"
+                     },
+                     {
+                         "key":  "snap-emu",
+                         "display":  "Snap EMU",
+                         "tag":  "Sinister Snap API EMU (8 ahead, ready to push)",
+                         "root":  "D:\\Sinister Sanctum\\projects\\sinister-snap-emu\\source",
+                         "session_start":  "D:\\Sinister Sanctum\\projects\\sinister-snap-emu\\source\\SESSION-START.md",
+                         "claude_md":  "D:\\Sinister Sanctum\\projects\\sinister-snap-emu\\source\\CLAUDE.md",
+                         "github":  "Sinister-Systems-LLC/Sinister-Snap-API-EMU"
+                     },
+                     {
+                         "key":  "tiktok-emu",
+                         "display":  "TikTok EMU",
+                         "tag":  "Sinister TikTok API EMU",
+                         "root":  "D:\\Sinister Sanctum\\projects\\sinister-tiktok-emu\\source",
+                         "session_start":  "D:\\Sinister Sanctum\\projects\\sinister-tiktok-emu\\source\\SESSION-START.md",
+                         "claude_md":  "D:\\Sinister Sanctum\\projects\\sinister-tiktok-emu\\source\\CLAUDE.md",
+                         "github":  "Sinister-Systems-LLC/Sinister-TikTok-API-EMU"
+                     },
+                     {
+                         "key":  "panel",
+                         "display":  "Panel",
+                         "tag":  "Sinister Control Center @ snap.sinijkr.com",
+                         "root":  "D:\\Sinister Sanctum\\projects\\sinister-panel\\source",
+                         "session_start":  "",
+                         "claude_md":  "D:\\Sinister Sanctum\\projects\\sinister-panel\\source\\CLAUDE.md",
+                         "github":  "Sinister-Systems-LLC/Sinister-Panel"
+                     },
+                     {
+                         "key":  "kernel-apk",
+                         "display":  "Kernel APK",
+                         "tag":  "Sinister Kernel APK / KernelSU / DETECTOR",
+                         "root":  "D:\\Sinister Sanctum\\projects\\sinister-kernel-apk\\source",
+                         "session_start":  "",
+                         "claude_md":  "D:\\Sinister Sanctum\\projects\\sinister-kernel-apk\\source\\CLAUDE.md",
+                         "github":  "Sinister-Systems-LLC/Sinister-Kernel-APK"
+                     },
+                     {
+                         "key":  "sinister-bumble-emu",
+                         "display":  "Sinister Bumble EMU",
+                         "tag":  "Sinister Bumble API Creation",
+                         "root":  "D:\\Sinister Sanctum\\projects\\sinister-bumble-emu",
+                         "session_start":  "",
+                         "claude_md":  "D:\\Sinister Sanctum\\projects\\sinister-bumble-emu\\CLAUDE.md",
+                         "github":  "Sinister-Systems-LLC/Sinister-Bumble-Emu"
+                     }
+                 ]
+}

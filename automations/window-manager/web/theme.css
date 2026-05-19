@@ -1,0 +1,2528 @@
+/* Author: Sinister Sanctum master agent (Claude) :: 2026-05-19 */
+/* RKOJ.exe theme — 2-tab workbench + Excel-style ribbon + Liquid Glass primitives
+   + dev-tools rail + popout-mode + command palette.
+
+   Imports tokens.css first (tokens.css must be linked BEFORE this file).
+   Sanctum purple is the binding accent (per docs/UI-DESIGN-SYSTEM.md
+   master-surface rule). No iOS blue leakage.
+
+   Structure (in order):
+     1.  Reset / body
+     2.  Liquid Glass primitives (.lg-*)
+     3.  RKOJ ribbon (top sticky bar — Row 1 + Row 2)
+     4.  2-tab layout (.rkoj-tabs)
+     5.  2-tab content panes (.rkoj-tab-pane)
+     6.  Dev-tools rail (.rkoj-devtools)
+     7.  Alert strip (.rkoj-alert-strip)
+     8.  Devices tab specifics
+     9.  Agents tab specifics
+    10.  Popout-mode (body.rkoj-popout)
+    11.  Command palette (.rkoj-palette)
+    12.  Existing UI primitives (preserved + retokenized)
+    13.  Density / reduced-motion
+    14.  Keyframes
+*/
+
+/* ============================================================
+   1. RESET / BODY
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: var(--surface-0);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    font-size: 13px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow: hidden;
+}
+
+body {
+    background:
+        radial-gradient(ellipse at top left, color-mix(in oklab, var(--accent) 6%, transparent), transparent 40%),
+        radial-gradient(ellipse at bottom right, color-mix(in oklab, var(--accent-pressed) 4%, transparent), transparent 50%),
+        var(--surface-0);
+}
+
+::selection {
+    background-color: var(--accent);
+    color: #FFFFFF;
+}
+
+/* ---- global scrollbar ---- */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+    background: var(--surface-3);
+    border-radius: var(--radius-pill);
+}
+::-webkit-scrollbar-thumb:hover {
+    background: color-mix(in oklab, var(--accent) 60%, var(--surface-3));
+}
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--surface-3) transparent;
+}
+
+/* ============================================================
+   2. LIQUID GLASS PRIMITIVES (doctrine recipes)
+   ============================================================ */
+
+.lg-card {
+    background: color-mix(in oklab, var(--surface-1) 70%, transparent);
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+    border: 1px solid color-mix(in oklab, white 10%, transparent);
+    box-shadow:
+        inset 0 1px 0 0 color-mix(in oklab, white 14%, transparent),
+        inset 0 0 50px -30px color-mix(in oklab, var(--accent) 10%, transparent),
+        0 10px 32px -12px color-mix(in oklab, var(--accent) 20%, rgba(0, 0, 0, 0.5));
+    border-radius: var(--radius-lg);
+    padding: var(--row-px);
+    transition: border-color var(--motion-fast) var(--motion-ease),
+                transform var(--motion-fast) var(--motion-ease),
+                box-shadow var(--motion-fast) var(--motion-ease);
+}
+.lg-card:hover {
+    border-color: color-mix(in oklab, white 14%, transparent);
+}
+
+.lg-card-hero {
+    background: color-mix(in oklab, var(--surface-1) 72%, transparent);
+    backdrop-filter: blur(32px) saturate(190%);
+    -webkit-backdrop-filter: blur(32px) saturate(190%);
+    border: 1px solid color-mix(in oklab, white 12%, transparent);
+    box-shadow:
+        inset 0 1px 0 0 color-mix(in oklab, white 16%, transparent),
+        inset 0 0 60px -20px color-mix(in oklab, var(--accent) 14%, transparent),
+        0 16px 40px -14px color-mix(in oklab, var(--accent) 22%, rgba(0, 0, 0, 0.55));
+    border-radius: var(--radius-xl);
+    padding: var(--row-px);
+    animation: lg-hero-breathe 10s var(--motion-ease) infinite;
+}
+
+.lg-rail {
+    background: color-mix(in oklab, var(--surface-1) 72%, transparent);
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+    border: 1px solid color-mix(in oklab, white 6%, transparent);
+    box-shadow: var(--shadow-rail);
+}
+
+.lg-popover {
+    background: color-mix(in oklab, var(--surface-1) 96%, transparent);
+    backdrop-filter: blur(36px) saturate(180%);
+    -webkit-backdrop-filter: blur(36px) saturate(180%);
+    border: 1px solid color-mix(in oklab, white 14%, transparent);
+    box-shadow: var(--shadow-popover);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    padding: 14px 16px;
+}
+
+.lg-pill {
+    background: color-mix(in oklab, var(--surface-2) 70%, transparent);
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    border: 1px solid color-mix(in oklab, white 8%, transparent);
+    box-shadow: inset 0 1px 0 0 color-mix(in oklab, white 10%, transparent);
+    border-radius: var(--radius-pill);
+    padding: 6px 14px;
+    color: var(--text-secondary);
+    font-family: var(--font-sans);
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: color var(--motion-fast) var(--motion-ease),
+                background var(--motion-fast) var(--motion-ease),
+                border-color var(--motion-fast) var(--motion-ease);
+}
+.lg-pill:hover {
+    color: var(--text-primary);
+    border-color: color-mix(in oklab, var(--accent) 30%, transparent);
+}
+
+.lg-pill-active {
+    background: color-mix(in oklab, var(--accent) 22%, color-mix(in oklab, var(--surface-2) 70%, transparent));
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    border: 1px solid color-mix(in oklab, var(--accent) 38%, transparent);
+    box-shadow:
+        inset 0 1px 0 0 color-mix(in oklab, white 16%, transparent),
+        0 2px 6px -2px color-mix(in oklab, var(--accent) 28%, transparent);
+    border-radius: var(--radius-pill);
+    padding: 6px 14px;
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.lg-button {
+    background: color-mix(in oklab, var(--surface-1) 80%, transparent);
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    border: 1px solid color-mix(in oklab, var(--accent) 50%, transparent);
+    box-shadow:
+        inset 0 1px 0 0 color-mix(in oklab, white 18%, transparent),
+        0 4px 12px -4px color-mix(in oklab, var(--accent) 32%, rgba(0, 0, 0, 0.45));
+    color: var(--text-primary);
+    border-radius: var(--radius-pill);
+    padding: 7px 16px;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: transform var(--motion-fast) var(--motion-ease),
+                box-shadow var(--motion-fast) var(--motion-ease),
+                background var(--motion-fast) var(--motion-ease);
+}
+.lg-button:hover {
+    box-shadow:
+        inset 0 1px 0 0 color-mix(in oklab, white 22%, transparent),
+        0 6px 16px -4px color-mix(in oklab, var(--accent) 42%, rgba(0, 0, 0, 0.5));
+}
+.lg-button:active {
+    transform: scale(0.97);
+}
+.lg-button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+.lg-button.ghost {
+    background: transparent;
+    border-color: color-mix(in oklab, white 8%, transparent);
+    box-shadow: none;
+    color: var(--text-secondary);
+}
+.lg-button.ghost:hover {
+    background: color-mix(in oklab, var(--accent) 8%, transparent);
+    border-color: color-mix(in oklab, var(--accent) 30%, transparent);
+    color: var(--text-primary);
+    box-shadow: none;
+}
+.lg-button.primary {
+    background: var(--accent);
+    border-color: var(--accent-hover);
+    color: #FFFFFF;
+    box-shadow:
+        inset 0 1px 0 0 color-mix(in oklab, white 24%, transparent),
+        0 6px 18px -4px color-mix(in oklab, var(--accent) 50%, transparent);
+}
+.lg-button.primary:hover {
+    background: var(--accent-hover);
+    box-shadow:
+        inset 0 1px 0 0 color-mix(in oklab, white 28%, transparent),
+        0 8px 22px -4px color-mix(in oklab, var(--accent) 60%, transparent);
+}
+.lg-button.danger {
+    border-color: color-mix(in oklab, var(--danger) 50%, transparent);
+    color: var(--danger);
+    box-shadow:
+        inset 0 1px 0 0 color-mix(in oklab, white 18%, transparent),
+        0 4px 12px -4px color-mix(in oklab, var(--danger) 30%, rgba(0, 0, 0, 0.45));
+}
+.lg-button.danger:hover {
+    background: color-mix(in oklab, var(--danger) 14%, transparent);
+}
+.lg-button.default { /* explicit default — same as base lg-button */ }
+
+.lg-input,
+.lg-textarea,
+.lg-select {
+    background: color-mix(in oklab, var(--surface-1) 75%, transparent);
+    border: 1px solid color-mix(in oklab, white 6%, transparent);
+    backdrop-filter: blur(12px) saturate(150%);
+    -webkit-backdrop-filter: blur(12px) saturate(150%);
+    border-radius: var(--radius);
+    color: var(--text-primary);
+    padding: 7px 11px;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    transition: border-color var(--motion-fast) var(--motion-ease),
+                background var(--motion-fast) var(--motion-ease);
+    appearance: none;
+    -webkit-appearance: none;
+}
+.lg-input::placeholder,
+.lg-textarea::placeholder { color: var(--text-tertiary); }
+.lg-input:focus,
+.lg-input:focus-visible,
+.lg-textarea:focus,
+.lg-textarea:focus-visible,
+.lg-select:focus,
+.lg-select:focus-visible {
+    outline: none;
+    border-color: var(--border-focus);
+    background: color-mix(in oklab, var(--surface-1) 85%, transparent);
+}
+.lg-textarea { resize: vertical; min-height: 80px; line-height: 1.45; }
+.lg-select {
+    padding-right: 28px;
+    background-image: linear-gradient(45deg, transparent 50%, var(--text-secondary) 50%),
+                      linear-gradient(135deg, var(--text-secondary) 50%, transparent 50%);
+    background-position: calc(100% - 14px) 50%, calc(100% - 9px) 50%;
+    background-size: 5px 5px;
+    background-repeat: no-repeat;
+}
+
+/* ============================================================
+   3. RKOJ RIBBON — sticky top 2-row strip
+   ============================================================ */
+.rkoj-ribbon {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ---- Row 1: brand + tabs + global icons ---- */
+.rkoj-ribbon-row-1 {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    height: var(--ribbon-row-1-h);
+    padding: 0 14px;
+    background: color-mix(in oklab, var(--surface-1) 86%, transparent);
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+    border-bottom: 1px solid var(--border-default);
+}
+.rkoj-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    user-select: none;
+}
+.rkoj-brand img {
+    width: 26px;
+    height: 26px;
+    filter: drop-shadow(0 0 8px color-mix(in oklab, var(--accent) 60%, transparent));
+}
+.rkoj-brand .rkoj-title {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    color: var(--text-primary);
+}
+.rkoj-brand .rkoj-title .accent { color: var(--accent-hover); }
+
+.rkoj-ribbon-row-1 .rkoj-ribbon-spacer { flex: 1; }
+
+.rkoj-ribbon-row-1 .rkoj-global-icons {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.rkoj-icon-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--text-secondary);
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    position: relative;
+    transition: background var(--motion-fast) var(--motion-ease),
+                border-color var(--motion-fast) var(--motion-ease),
+                color var(--motion-fast) var(--motion-ease);
+}
+.rkoj-icon-btn:hover {
+    background: color-mix(in oklab, var(--accent) 10%, transparent);
+    border-color: color-mix(in oklab, var(--accent) 30%, transparent);
+    color: var(--text-primary);
+}
+.rkoj-icon-btn .rkoj-icon-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: var(--danger);
+    color: #FFFFFF;
+    font-size: 9px;
+    font-weight: 700;
+    border-radius: var(--radius-pill);
+    padding: 1px 5px;
+    min-width: 14px;
+    text-align: center;
+    line-height: 1.2;
+    pointer-events: none;
+}
+.rkoj-icon-btn .rkoj-icon-badge.hidden { display: none; }
+
+.rkoj-health {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: var(--radius-pill);
+    background: color-mix(in oklab, var(--success) 12%, transparent);
+    border: 1px solid color-mix(in oklab, var(--success) 35%, transparent);
+    color: var(--success);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 1px;
+}
+.rkoj-health::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--success);
+    box-shadow: 0 0 6px color-mix(in oklab, var(--success) 70%, transparent);
+}
+.rkoj-health.bad {
+    background: color-mix(in oklab, var(--danger) 12%, transparent);
+    border-color: color-mix(in oklab, var(--danger) 40%, transparent);
+    color: var(--danger);
+}
+.rkoj-health.bad::before {
+    background: var(--danger);
+    box-shadow: 0 0 6px color-mix(in oklab, var(--danger) 70%, transparent);
+}
+.rkoj-clock {
+    font-family: var(--font-mono);
+    color: var(--text-tertiary);
+    font-size: 11px;
+    letter-spacing: 0.5px;
+}
+
+/* ---- Row 2: ribbon groups (Excel-style) ---- */
+.rkoj-ribbon-row-2 {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    height: var(--ribbon-row-2-h);
+    padding: 6px 14px;
+    background: color-mix(in oklab, var(--surface-1) 78%, transparent);
+    backdrop-filter: blur(24px) saturate(170%);
+    -webkit-backdrop-filter: blur(24px) saturate(170%);
+    border-bottom: 1px solid var(--border-default);
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+.rkoj-ribbon-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 12px;
+    position: relative;
+}
+.rkoj-ribbon-group + .rkoj-ribbon-group::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 8px;
+    bottom: 18px;
+    width: 1px;
+    background: var(--border-default);
+}
+.rkoj-ribbon-group-label {
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin-top: 4px;
+    font-family: var(--font-mono);
+    order: 2;
+    user-select: none;
+}
+.rkoj-ribbon-group-tiles {
+    display: flex;
+    gap: 4px;
+    align-items: flex-start;
+    flex: 1;
+    order: 1;
+}
+.rkoj-ribbon-tile {
+    width: 56px;
+    height: 56px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 4px 2px;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: transform var(--motion-fast) var(--motion-ease),
+                background var(--motion-fast) var(--motion-ease),
+                border-color var(--motion-fast) var(--motion-ease),
+                color var(--motion-fast) var(--motion-ease),
+                box-shadow var(--motion-fast) var(--motion-ease);
+}
+.rkoj-ribbon-tile:hover {
+    background: color-mix(in oklab, var(--accent) 10%, transparent);
+    border-color: color-mix(in oklab, var(--accent) 30%, transparent);
+    color: var(--text-primary);
+    transform: translateY(-1px);
+    box-shadow: var(--accent-glow-soft);
+}
+.rkoj-ribbon-tile:active { transform: translateY(0) scale(0.97); }
+.rkoj-ribbon-tile:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+.rkoj-ribbon-tile.active {
+    background: color-mix(in oklab, var(--accent) 18%, transparent);
+    border-color: color-mix(in oklab, var(--accent) 45%, transparent);
+    color: var(--text-primary);
+    box-shadow:
+        inset 0 1px 0 0 color-mix(in oklab, white 14%, transparent),
+        0 2px 6px -2px color-mix(in oklab, var(--accent) 30%, transparent);
+}
+.rkoj-ribbon-tile-icon {
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: var(--accent-hover);
+    flex-shrink: 0;
+}
+.rkoj-ribbon-tile-label {
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-align: center;
+    line-height: 1.1;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ============================================================
+   4. 2-TAB LAYOUT (pill row sits in Row 1, but for the
+      tab strip directly under ribbon there's a thin band)
+   ============================================================ */
+.rkoj-tabs {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 6px;
+}
+.rkoj-tab {
+    /* inherits .lg-pill / .lg-pill-active behavior — see app.js
+       toggles `.lg-pill-active` class and removes plain `.lg-pill` */
+    font-family: var(--font-sans);
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* ============================================================
+   5. 2-TAB CONTENT PANES
+   ============================================================ */
+.rkoj-app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+.rkoj-main {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    min-height: 0;
+    overflow: hidden;
+    position: relative;
+}
+.rkoj-content {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+}
+.rkoj-tab-pane {
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+    padding: 16px;
+    opacity: 0;
+    transform: translateY(8px);
+    pointer-events: none;
+    transition: opacity var(--motion-med) var(--motion-ease),
+                transform var(--motion-med) var(--motion-ease);
+}
+.rkoj-tab-pane.active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    z-index: 1;
+}
+
+/* ============================================================
+   6. DEV-TOOLS RAIL (right side)
+   ============================================================ */
+.rkoj-devtools {
+    width: var(--devtools-w);
+    flex-shrink: 0;
+    height: 100%;
+    overflow-y: auto;
+    border-left: 1px solid var(--border-default);
+    background: color-mix(in oklab, var(--surface-1) 72%, transparent);
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+    transform: translateX(100%);
+    transition: transform var(--motion-med) var(--motion-ease);
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.rkoj-devtools.open {
+    transform: translateX(0);
+}
+.rkoj-main:not(.devtools-open) .rkoj-devtools {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+.rkoj-main.devtools-open .rkoj-devtools {
+    position: relative;
+}
+.rkoj-devtools-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-default);
+}
+.rkoj-devtools-header h3 {
+    margin: 0;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--accent-hover);
+    font-family: var(--font-mono);
+}
+.rkoj-devtools-section {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-default);
+}
+.rkoj-devtools-section:last-child { border-bottom: 0; }
+.rkoj-devtools-section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+    padding: 4px 0;
+}
+.rkoj-devtools-section-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+    font-weight: 600;
+}
+.rkoj-devtools-section-chev {
+    color: var(--text-tertiary);
+    font-size: 10px;
+    transition: transform var(--motion-fast) var(--motion-ease);
+}
+.rkoj-devtools-section.open .rkoj-devtools-section-chev {
+    transform: rotate(180deg);
+}
+.rkoj-devtools-section-body {
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 6px;
+}
+.rkoj-devtools-section.open .rkoj-devtools-section-body {
+    display: flex;
+}
+
+/* ============================================================
+   7. ALERT STRIP (operator-requests pending indicator)
+   ============================================================ */
+.rkoj-alert-strip {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 14px;
+    height: var(--alert-strip-h);
+    background: color-mix(in oklab, var(--warning) 14%, transparent);
+    border-bottom: 1px solid color-mix(in oklab, var(--warning) 40%, transparent);
+    color: var(--text-primary);
+    font-size: 12px;
+    cursor: pointer;
+    transition: background var(--motion-fast) var(--motion-ease);
+}
+.rkoj-alert-strip:hover {
+    background: color-mix(in oklab, var(--warning) 22%, transparent);
+}
+.rkoj-alert-strip.urgent {
+    background: color-mix(in oklab, var(--danger) 14%, transparent);
+    border-bottom-color: color-mix(in oklab, var(--danger) 40%, transparent);
+}
+.rkoj-alert-strip.urgent:hover {
+    background: color-mix(in oklab, var(--danger) 22%, transparent);
+}
+.rkoj-alert-strip.hidden { display: none; }
+.rkoj-alert-strip-icon { font-size: 14px; }
+.rkoj-alert-strip-count { font-weight: 700; }
+.rkoj-alert-strip-arrow { margin-left: auto; opacity: 0.6; font-size: 11px; }
+
+/* ============================================================
+   8. DEVICES TAB
+   ============================================================ */
+.rkoj-devices-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+}
+.rkoj-devices-header h2 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: var(--text-primary);
+}
+.rkoj-devices-header .count {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-tertiary);
+}
+.rkoj-devices-header .spacer { flex: 1; }
+
+.rkoj-devices-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 14px;
+}
+
+.rkoj-device-card {
+    /* inherits .lg-card */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-left: 4px solid var(--accent);
+    padding: 14px 16px;
+}
+.rkoj-device-card.viewing {
+    border-left-color: var(--success);
+    box-shadow:
+        inset 0 1px 0 0 color-mix(in oklab, white 14%, transparent),
+        0 12px 32px -10px color-mix(in oklab, var(--success) 24%, rgba(0, 0, 0, 0.5));
+}
+
+/* ============================================================
+   9. AGENTS TAB
+   ============================================================ */
+.rkoj-sessions-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+.rkoj-sessions-strip .lg-card {
+    flex: 1 1 280px;
+    min-width: 280px;
+    max-width: 360px;
+}
+
+.rkoj-launcher-wizard {
+    /* inherits .lg-card */
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.rkoj-activity-feed {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 14px;
+}
+.rkoj-activity-feed .activity-row {
+    display: flex;
+    gap: 10px;
+    padding: 8px 10px;
+    background: color-mix(in oklab, var(--surface-2) 60%, transparent);
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--accent);
+    font-size: 11px;
+    transition: background var(--motion-fast) var(--motion-ease);
+    cursor: pointer;
+}
+.rkoj-activity-feed .activity-row:hover {
+    background: color-mix(in oklab, var(--accent) 12%, transparent);
+}
+.rkoj-activity-feed .activity-row .ts {
+    color: var(--text-tertiary);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    flex-shrink: 0;
+}
+.rkoj-activity-feed .activity-row .kind {
+    color: var(--accent-hover);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    flex-shrink: 0;
+}
+.rkoj-activity-feed .activity-row .body {
+    flex: 1;
+    color: var(--text-primary);
+}
+
+/* ============================================================
+   10. POPOUT MODE (body.rkoj-popout)
+   ============================================================ */
+body.rkoj-popout .rkoj-ribbon,
+body.rkoj-popout .rkoj-alert-strip,
+body.rkoj-popout .rkoj-devtools,
+body.rkoj-popout .rkoj-tabs {
+    display: none !important;
+}
+body.rkoj-popout .rkoj-app {
+    height: 100vh;
+}
+body.rkoj-popout .rkoj-main {
+    height: 100vh;
+}
+body.rkoj-popout .rkoj-tab-pane {
+    position: relative;
+    inset: auto;
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+    height: 100vh;
+}
+body.rkoj-popout .rkoj-content {
+    height: 100vh;
+}
+
+/* ============================================================
+   11. COMMAND PALETTE (.rkoj-palette)
+   ============================================================ */
+.rkoj-palette-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--motion-med) var(--motion-ease);
+}
+.rkoj-palette-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+.rkoj-palette {
+    position: fixed;
+    top: 18vh;
+    left: 50%;
+    transform: translateX(-50%) scale(0.95);
+    width: 600px;
+    max-width: calc(100vw - 32px);
+    max-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    z-index: 1001;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--motion-med) var(--motion-ease),
+                transform var(--motion-med) var(--motion-ease);
+}
+.rkoj-palette.open {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+    pointer-events: auto;
+}
+.rkoj-palette-search {
+    /* inherits .lg-input but bigger */
+    font-size: 14px;
+    padding: 12px 16px;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+    border-bottom-color: var(--border-default);
+    width: 100%;
+}
+.rkoj-palette-results {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px;
+    background: color-mix(in oklab, var(--surface-1) 96%, transparent);
+    border: 1px solid var(--border-default);
+    border-top: 0;
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+}
+.rkoj-palette-result {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    color: var(--text-primary);
+    font-size: 12px;
+    transition: background var(--motion-fast) var(--motion-ease);
+}
+.rkoj-palette-result:hover,
+.rkoj-palette-result.selected {
+    background: color-mix(in oklab, var(--accent) 18%, transparent);
+}
+.rkoj-palette-result .kind {
+    color: var(--accent-hover);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    flex-shrink: 0;
+}
+.rkoj-palette-result .label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rkoj-palette-result .hint {
+    color: var(--text-tertiary);
+    font-size: 10px;
+    flex-shrink: 0;
+}
+
+/* ============================================================
+   12. EXISTING UI PRIMITIVES — retokenized + preserved
+   ============================================================ */
+
+/* ---- badge / health (preserved class names) ---- */
+.badge {
+    display: inline-block;
+    padding: 2px 6px;
+    font-size: 10px;
+    border-radius: var(--radius-sm);
+    letter-spacing: 1px;
+    font-family: var(--font-mono);
+}
+.badge.online {
+    background: color-mix(in oklab, var(--success) 12%, transparent);
+    color: var(--success);
+    border: 1px solid color-mix(in oklab, var(--success) 35%, transparent);
+}
+.badge.offline {
+    background: color-mix(in oklab, var(--surface-3) 30%, transparent);
+    color: var(--text-tertiary);
+    border: 1px solid var(--border-default);
+}
+.badge.warn {
+    background: color-mix(in oklab, var(--warning) 12%, transparent);
+    color: var(--warning);
+    border: 1px solid color-mix(in oklab, var(--warning) 45%, transparent);
+}
+
+.health { /* legacy alias - some old code may still use */
+    padding: 3px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    letter-spacing: 1px;
+    background: color-mix(in oklab, var(--success) 12%, transparent);
+    color: var(--success);
+    border: 1px solid color-mix(in oklab, var(--success) 35%, transparent);
+}
+.health.bad {
+    background: color-mix(in oklab, var(--danger) 12%, transparent);
+    color: var(--danger);
+    border-color: color-mix(in oklab, var(--danger) 40%, transparent);
+}
+
+/* ---- status-* (progress feed) ---- */
+.status-shipped { background: color-mix(in oklab, var(--success) 18%, transparent); color: var(--success); border: 1px solid color-mix(in oklab, var(--success) 40%, transparent); }
+.status-started { background: color-mix(in oklab, var(--accent) 18%, transparent); color: var(--accent-hover); border: 1px solid var(--border-hover); }
+.status-blocked { background: color-mix(in oklab, var(--danger) 18%, transparent); color: var(--danger); border: 1px solid color-mix(in oklab, var(--danger) 40%, transparent); }
+.status-paused  { background: color-mix(in oklab, var(--warning) 18%, transparent); color: var(--warning); border: 1px solid color-mix(in oklab, var(--warning) 40%, transparent); }
+.status-failed  { background: color-mix(in oklab, var(--danger) 18%, transparent); color: var(--danger); border: 1px solid color-mix(in oklab, var(--danger) 40%, transparent); }
+.status-note    { background: color-mix(in oklab, var(--surface-3) 30%, transparent); color: var(--text-tertiary); border: 1px solid var(--border-default); }
+.status-shipped, .status-started, .status-blocked, .status-paused, .status-failed, .status-note {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: var(--radius-sm);
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-right: 6px;
+    font-family: var(--font-mono);
+}
+
+/* ---- form-row ---- */
+.form-row {
+    display: flex;
+    gap: var(--gap-tight);
+    align-items: center;
+    flex-wrap: wrap;
+}
+.form-row input,
+.form-row select,
+.form-row textarea {
+    background: color-mix(in oklab, var(--surface-1) 75%, transparent);
+    border: 1px solid var(--border-default);
+    color: var(--text-primary);
+    padding: 6px 10px;
+    border-radius: var(--radius);
+    font-family: var(--font-mono);
+    font-size: 12px;
+}
+.form-row input:focus,
+.form-row select:focus,
+.form-row textarea:focus {
+    outline: none;
+    border-color: var(--border-focus);
+}
+.form-row button,
+button#mem-submit,
+button#inbox-send-btn,
+button#prog-submit {
+    background: var(--accent);
+    color: #FFFFFF;
+    border: 0;
+    border-radius: var(--radius);
+    padding: 6px 14px;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    font-family: var(--font-sans);
+    transition: background var(--motion-fast) var(--motion-ease);
+}
+.form-row button:hover,
+button#mem-submit:hover,
+button#inbox-send-btn:hover,
+button#prog-submit:hover {
+    background: var(--accent-hover);
+}
+
+.btn-mini {
+    background: color-mix(in oklab, var(--accent) 14%, transparent);
+    color: var(--accent-hover);
+    border: 1px solid color-mix(in oklab, var(--accent) 35%, transparent);
+    padding: 3px 10px;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: background var(--motion-fast) var(--motion-ease);
+}
+.btn-mini:hover {
+    background: color-mix(in oklab, var(--accent) 22%, transparent);
+    color: var(--text-primary);
+}
+.btn-mini:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ---- empty / pane / md ---- */
+.empty-note {
+    color: var(--text-tertiary);
+    font-size: 11px;
+    padding: 10px 4px;
+    text-align: center;
+    font-style: italic;
+}
+.pane-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border-default);
+}
+.pane-header h2 {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent-hover);
+    margin: 0;
+    font-family: var(--font-sans);
+    font-weight: 600;
+}
+.pane-header .count {
+    font-size: 10px;
+    color: var(--text-tertiary);
+    font-family: var(--font-mono);
+}
+.md-pre {
+    background: var(--surface-0);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius);
+    padding: 10px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-secondary);
+    white-space: pre-wrap;
+    overflow-y: auto;
+    max-height: 50vh;
+    margin-top: 8px;
+    line-height: 1.55;
+}
+
+/* ---- toast ---- */
+.toast {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    background: color-mix(in oklab, var(--surface-1) 96%, transparent);
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+    border: 1px solid color-mix(in oklab, var(--accent) 50%, transparent);
+    color: var(--text-primary);
+    padding: 10px 14px;
+    border-radius: var(--radius-md);
+    box-shadow: var(--accent-glow);
+    font-size: 12px;
+    z-index: 1200;
+    max-width: 320px;
+    opacity: 0;
+    transform: translateY(8px);
+    pointer-events: none;
+    transition: opacity var(--motion-med) var(--motion-ease),
+                transform var(--motion-med) var(--motion-ease);
+}
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+.toast.err {
+    border-color: color-mix(in oklab, var(--danger) 50%, transparent);
+    color: var(--danger);
+}
+
+/* ---- device-card body internals (preserved) ---- */
+.device-card {
+    /* used as a flag; combined with .lg-card via JS */
+    border-left: 4px solid var(--accent);
+}
+.device-card.viewing {
+    border-left-color: var(--success);
+}
+.device-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    border-bottom: 1px dashed var(--border-default);
+    padding-bottom: 8px;
+}
+.device-id {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    flex: 1;
+}
+.device-serial {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent-hover);
+    letter-spacing: 1px;
+    word-break: break-all;
+}
+.device-model {
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+}
+.device-meta {
+    font-size: 10px;
+    color: var(--text-tertiary);
+    font-family: var(--font-mono);
+}
+.device-actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+.device-actions .btn-mini {
+    padding: 6px 14px;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+}
+.device-actions .device-view {
+    background: color-mix(in oklab, var(--success) 14%, transparent);
+    color: var(--success);
+    border-color: color-mix(in oklab, var(--success) 45%, transparent);
+}
+.device-actions .device-view:hover:not(:disabled) {
+    background: color-mix(in oklab, var(--success) 22%, transparent);
+}
+.device-actions .device-stop {
+    background: color-mix(in oklab, var(--danger) 16%, transparent);
+    color: var(--danger);
+    border-color: color-mix(in oklab, var(--danger) 45%, transparent);
+}
+.device-actions .device-stop:hover:not(:disabled) {
+    background: color-mix(in oklab, var(--danger) 26%, transparent);
+}
+.device-actions .device-push-toggle {
+    background: color-mix(in oklab, var(--accent) 12%, transparent);
+    color: var(--accent-hover);
+    border-color: var(--border-default);
+}
+.device-actions .device-push-toggle:hover {
+    background: color-mix(in oklab, var(--accent) 22%, transparent);
+}
+.device-notes { display: none; padding: 0; }
+.device-notes.open { display: block; padding-top: 4px; }
+.device-notes-pre { max-height: 240px; margin-top: 0; }
+.device-extra-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 4px 0;
+}
+.device-extra-row .lg-pill {
+    background: color-mix(in oklab, var(--accent) 8%, transparent);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-pill);
+    padding: 2px 8px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-primary);
+}
+
+/* ---- lane chips ---- */
+.lane-chip {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border: 1px solid var(--border-default);
+    background: color-mix(in oklab, var(--accent) 10%, transparent);
+    color: var(--accent-hover);
+}
+.lane-chip.snap-emu {
+    background: rgba(255, 196, 0, 0.12);
+    color: #FFC400;
+    border-color: rgba(255, 196, 0, 0.45);
+}
+.lane-chip.tiktok-emu {
+    background: rgba(250, 56, 134, 0.12);
+    color: #FA3886;
+    border-color: rgba(250, 56, 134, 0.45);
+}
+.lane-chip.master {
+    background: color-mix(in oklab, var(--accent) 18%, transparent);
+    color: var(--accent-hover);
+    border-color: color-mix(in oklab, var(--accent) 40%, transparent);
+}
+.lane-chip.unowned {
+    background: color-mix(in oklab, var(--surface-3) 30%, transparent);
+    color: var(--text-tertiary);
+    border-color: var(--border-default);
+}
+
+.viewer-pill {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 1px;
+    background: color-mix(in oklab, var(--surface-3) 30%, transparent);
+    color: var(--text-tertiary);
+    border: 1px solid var(--border-default);
+}
+.viewer-pill.running {
+    background: color-mix(in oklab, var(--success) 14%, transparent);
+    color: var(--success);
+    border-color: color-mix(in oklab, var(--success) 45%, transparent);
+    box-shadow: 0 0 6px color-mix(in oklab, var(--success) 30%, transparent);
+}
+
+.cmd-input-row {
+    display: flex;
+    gap: 6px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--border-default);
+}
+.cmd-input-row .cmd-input { flex: 1; }
+
+.cmd-history {
+    max-height: 220px;
+    overflow-y: auto;
+    background: color-mix(in oklab, black 25%, transparent);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius);
+    padding: 6px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.cmd-history-entry {
+    padding: 4px 6px;
+    border-radius: var(--radius-sm);
+    background: color-mix(in oklab, var(--surface-2) 60%, transparent);
+    border-left: 2px solid var(--accent-hover);
+    font-family: var(--font-mono);
+    font-size: 11px;
+}
+.cmd-history-entry.err {
+    border-left-color: var(--danger);
+    background: color-mix(in oklab, var(--danger) 6%, transparent);
+}
+.cmd-line {
+    display: flex;
+    gap: 6px;
+    color: var(--text-primary);
+    align-items: baseline;
+}
+.cmd-ts { color: var(--text-tertiary); font-size: 10px; flex-shrink: 0; }
+.cmd-cmd { color: var(--accent-hover); }
+.cmd-out {
+    color: var(--text-secondary);
+    white-space: pre-wrap;
+    font-size: 10px;
+    margin-top: 3px;
+    line-height: 1.4;
+    max-height: 120px;
+    overflow-y: auto;
+}
+
+.push-picker-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    padding-top: 8px;
+    border-top: 1px dashed var(--border-default);
+}
+.push-picker-row .lg-input { flex: 1; min-width: 140px; }
+.push-picker-row.hidden { display: none; }
+
+/* ---- lane filter bar ---- */
+.lane-filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: color-mix(in oklab, var(--accent) 6%, transparent);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+.lane-filter-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--accent-hover);
+}
+.lane-filter-select {
+    background: color-mix(in oklab, var(--surface-1) 75%, transparent);
+    color: var(--text-primary);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius);
+    padding: 4px 8px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+}
+.lane-filter-select:focus { outline: none; border-color: var(--border-focus); }
+.lane-legend {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    margin-left: auto;
+}
+
+/* ---- agent-actions popover (Intelligence) ---- */
+.agent-actions h4 {
+    margin: 0 0 10px 0;
+    font-size: 12px;
+    color: var(--accent-hover);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-family: var(--font-mono);
+}
+.agent-actions h4 span { color: var(--text-primary); text-transform: none; }
+.intelligence-list {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.intelligence-list label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 12px;
+    color: var(--text-primary);
+    border: 1px solid transparent;
+    transition: background var(--motion-fast) var(--motion-ease),
+                border-color var(--motion-fast) var(--motion-ease);
+}
+.intelligence-list label:hover { background: color-mix(in oklab, var(--accent) 8%, transparent); }
+.intelligence-list label:has(input[type="radio"]:checked) {
+    border-color: color-mix(in oklab, var(--accent) 50%, transparent);
+    background: color-mix(in oklab, var(--accent) 18%, transparent);
+}
+.intelligence-list .muted { color: var(--text-secondary); font-size: 11px; margin-left: 4px; }
+.fast-toggle {
+    border-top: 1px dashed var(--border-default);
+    margin-top: 4px;
+    padding-top: 8px !important;
+    color: var(--text-secondary);
+    font-size: 11px;
+}
+.popover-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 12px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border-default);
+}
+.popover-actions .lg-button { min-width: 90px; }
+
+.agent-actions-row {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--border-default);
+    display: flex;
+    justify-content: flex-end;
+}
+.agent-actions-trigger { font-size: 10px; }
+
+/* ---- launcher wizard ---- */
+.launcher-wizard {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.lh-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--accent-hover);
+    letter-spacing: 1px;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+}
+.lh-row.checkbox-row {
+    flex-direction: row;
+    align-items: center;
+    text-transform: none;
+    color: var(--text-primary);
+    letter-spacing: 0;
+}
+.lh-input {
+    background: color-mix(in oklab, var(--surface-1) 75%, transparent);
+    border: 1px solid var(--border-default);
+    color: var(--text-primary);
+    padding: 8px 10px;
+    border-radius: var(--radius);
+    font-family: var(--font-mono);
+    font-size: 12px;
+}
+.lh-textarea { resize: vertical; min-height: 80px; }
+.lh-input:focus { outline: none; border-color: var(--border-focus); }
+.lh-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 4px;
+}
+.lh-actions .lg-button { padding: 10px 22px; font-size: 12px; }
+
+.recent-launches { display: flex; flex-direction: column; gap: 4px; }
+.recent-launch-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: var(--radius-sm);
+    background: color-mix(in oklab, var(--accent) 6%, transparent);
+    font-family: var(--font-mono);
+    font-size: 11px;
+}
+.recent-launch-row .rl-time { color: var(--text-tertiary); }
+.recent-launch-row .rl-project { color: var(--accent-hover); font-weight: 600; }
+.recent-launch-row .rl-mode { color: var(--text-primary); }
+.recent-launch-row .rl-fast { color: var(--warning); }
+.recent-launch-row .rl-pid { color: var(--text-tertiary); margin-left: auto; }
+
+/* ============================================================
+   13. DENSITY (already declared in tokens.css for vars; this section
+       reserved for density-specific UI tweaks if needed in future)
+   ============================================================ */
+
+/* ============================================================
+   14. REDUCED MOTION
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0s !important;
+        animation-delay: 0s !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0s !important;
+    }
+    .lg-card-hero {
+        animation: none !important;
+    }
+}
+
+/* ============================================================
+   15. KEYFRAMES
+   ============================================================ */
+@keyframes lg-hero-breathe {
+    0%, 100% {
+        box-shadow:
+            inset 0 1px 0 0 color-mix(in oklab, white 12%, transparent),
+            inset 0 0 60px -20px color-mix(in oklab, var(--accent) 11%, transparent),
+            0 16px 40px -14px color-mix(in oklab, var(--accent) 20%, rgba(0, 0, 0, 0.6));
+    }
+    50% {
+        box-shadow:
+            inset 0 1px 0 0 color-mix(in oklab, white 14%, transparent),
+            inset 0 0 60px -20px color-mix(in oklab, var(--accent) 14%, transparent),
+            0 16px 40px -14px color-mix(in oklab, var(--accent) 24%, rgba(0, 0, 0, 0.6));
+    }
+}
+
+@keyframes rkoj-tab-enter {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes rkoj-popover-in {
+    from { opacity: 0; transform: scale(0.95); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+/* ============================================================
+   RESPONSIVE — sub-720 collapses the dev-tools rail into a drawer
+   that slides over content (single-column main area).
+   ============================================================ */
+@media (max-width: 720px) {
+    html, body { overflow: auto; height: auto; }
+    .rkoj-app { height: auto; min-height: 100vh; }
+    .rkoj-main { flex-direction: column; }
+    .rkoj-devtools {
+        position: fixed;
+        top: 0;
+        right: 0;
+        height: 100vh;
+        z-index: 60;
+        box-shadow: -8px 0 24px rgba(0, 0, 0, 0.5);
+    }
+    .rkoj-ribbon-row-2 { padding: 6px 8px; }
+    .rkoj-devices-grid { grid-template-columns: 1fr; }
+    .rkoj-palette { width: calc(100vw - 24px); top: 12vh; max-height: 70vh; }
+}
+
+/* ===== Vault drawer ===== */
+/* RKOJ Vault UI — Sinister Sanctum master agent (Claude) :: 2026-05-19 */
+.rkoj-vault-drawer { display: flex; flex-direction: column; gap: 16px; padding: 12px; }
+.rkoj-vault-header { display: flex; justify-content: space-between; align-items: center; }
+.rkoj-vault-status { font-size: 11px; padding: 2px 8px; border-radius: 999px; }
+.rkoj-vault-status.online { background: var(--success-soft); color: var(--success); }
+.rkoj-vault-status.offline { background: var(--danger-soft); color: var(--danger); }
+.rkoj-vault-quota { padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.rkoj-vault-quota-row { display: flex; justify-content: space-between; font-size: 12px; }
+.rkoj-vault-quota-row .lbl { color: var(--text-tertiary); }
+.rkoj-vault-quota-row .val { color: var(--text-primary); font-family: var(--font-mono); }
+.rkoj-vault-quota-bar { height: 6px; background: var(--surface-3); border-radius: 999px; overflow: hidden; }
+.rkoj-vault-quota-fill { height: 100%; background: var(--accent); transition: width 300ms var(--motion-ease); }
+.rkoj-vault-quota-fill.getting-full { background: var(--warning); }
+.rkoj-vault-quota-fill.over-warn { background: var(--danger); }
+.rkoj-vault-section { display: flex; flex-direction: column; gap: 6px; }
+.rkoj-vault-section-header { display: flex; justify-content: space-between; align-items: center; }
+.rkoj-vault-section-header h5 { margin: 0; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-tertiary); }
+.rkoj-vault-list { display: flex; flex-direction: column; gap: 4px; max-height: 220px; overflow-y: auto; padding: 4px 0; }
+.rkoj-vault-audit-row { display: grid; grid-template-columns: 60px 80px 1fr 60px; gap: 8px; font-size: 11px; padding: 4px 8px; border-radius: 6px; }
+.rkoj-vault-audit-row:hover { background: var(--surface-2); }
+.rkoj-vault-audit-row .kind { font-weight: 600; }
+.rkoj-vault-audit-row .kind.kind-commit { color: var(--accent); }
+.rkoj-vault-audit-row .kind.kind-push { color: var(--success); }
+.rkoj-vault-audit-row .kind.kind-warn { color: var(--warning); }
+.rkoj-vault-audit-row .kind.kind-error { color: var(--danger); }
+.rkoj-vault-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* RKOJ embedded screen viewer — Sinister Sanctum master agent (Claude) :: 2026-05-19 */
+.embedded-screen-wrap {
+    margin-top: 12px;
+    padding: 8px;
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    background: var(--surface-2);
+}
+.embedded-screen-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 8px;
+}
+.embedded-screen-header .mono {
+    flex: 1 1 auto;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-secondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.embedded-screen {
+    max-width: 100%;
+    max-height: 600px;
+    border-radius: 8px;
+    display: block;
+    margin: 0 auto;
+    background: #000;
+}
+
+/* ============================================================
+   ===== Sinister-Panel-style skeleton =====
+   /* Panel-style redesign — Sinister Sanctum master agent (Claude) :: 2026-05-19 */
+   Sidebar-left + top-tabs + rounded-sleek + Sanctum-purple Panel layout.
+   Replaces the old ribbon-row-2 + alert-strip rows (both hidden below).
+   Reuses --accent / --surface-* / --text-* / --motion-* / --radius-* tokens.
+   ============================================================ */
+
+/* Hide the legacy ribbon chrome (replaced by skel-top). */
+.rkoj-ribbon-row-2 { display: none; }
+.rkoj-ribbon { display: none; }
+.rkoj-alert-strip { display: none; }
+
+/* Body needs scrolling now that the shell isn't a fixed flex tower. */
+html, body { overflow: auto; }
+
+/* Hairline alias — keeps spec-compatible name even though tokens use --border-default. */
+:root { --hairline: var(--border-default); }
+
+.skel-shell {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    min-height: 100vh;
+    background: var(--surface-0);
+}
+
+/* ---------- sidebar ---------- */
+.skel-sidebar {
+    display: flex;
+    flex-direction: column;
+    padding: 20px 12px;
+    gap: 14px;
+    border-right: 1px solid var(--hairline);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+}
+.skel-side-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 8px 12px;
+    border-bottom: 1px solid var(--hairline);
+}
+.skel-side-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-pill);
+    border: 2px solid var(--accent);
+    object-fit: cover;
+    box-shadow: var(--accent-glow-soft);
+}
+.skel-side-brand-title {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    color: var(--text-primary);
+}
+.skel-side-brand-title .muted { color: var(--text-tertiary); margin: 0 2px; }
+
+.skel-side-section { display: flex; flex-direction: column; gap: 2px; }
+.skel-side-label {
+    font-size: 10px;
+    letter-spacing: 1.4px;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    padding: 6px 12px 4px;
+    font-weight: 700;
+}
+.skel-side-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: var(--radius);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: background-color var(--motion-fast) var(--motion-ease),
+                color var(--motion-fast) var(--motion-ease);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    user-select: none;
+}
+.skel-side-item .ico {
+    width: 18px;
+    height: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent);
+    font-size: 12px;
+    flex-shrink: 0;
+}
+.skel-side-item:hover {
+    background: color-mix(in oklab, white 4%, transparent);
+    color: var(--text-primary);
+}
+.skel-side-item.active {
+    background: var(--accent-soft);
+    color: var(--text-primary);
+    box-shadow: inset 0 1px 0 0 color-mix(in oklab, white 10%, transparent),
+                inset 0 0 14px 0 color-mix(in oklab, var(--accent) 18%, transparent);
+}
+.skel-side-item.active .ico { color: var(--accent-hover); }
+.skel-side-badge {
+    margin-left: auto;
+    font-size: 9px;
+    color: var(--accent);
+    opacity: 0.85;
+}
+
+.skel-side-profile {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 12px;
+    border-top: 1px solid var(--hairline);
+    align-items: center;
+}
+.skel-side-role-pill {
+    padding: 4px 12px;
+    border-radius: var(--radius-pill);
+    background: color-mix(in oklab, var(--danger) 22%, transparent);
+    color: var(--danger);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+.skel-side-acct {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+.skel-side-acct .who { font-weight: 600; color: var(--text-primary); }
+.skel-side-acct .muted {
+    color: var(--text-tertiary);
+    font-size: 10px;
+    font-family: var(--font-mono);
+}
+.skel-side-signout {
+    background: none;
+    border: none;
+    color: var(--text-tertiary);
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 11px;
+    border-radius: var(--radius-sm);
+    transition: color var(--motion-fast) var(--motion-ease),
+                background-color var(--motion-fast) var(--motion-ease);
+}
+.skel-side-signout:hover {
+    color: var(--text-primary);
+    background: var(--surface-2);
+}
+
+/* ---------- main ---------- */
+.skel-main {
+    display: flex;
+    flex-direction: column;
+    padding: 22px 28px;
+    gap: 18px;
+    overflow-y: auto;
+    min-width: 0;
+}
+
+.skel-top {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+.skel-top-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+    letter-spacing: 0.2px;
+}
+.skel-top-tabs {
+    display: flex;
+    gap: 8px;
+}
+.skel-top-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    line-height: 1;
+}
+.skel-top-tab.active {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--text-primary);
+    box-shadow: inset 0 1px 0 0 color-mix(in oklab, white 10%, transparent),
+                inset 0 0 14px 0 color-mix(in oklab, var(--accent) 18%, transparent),
+                0 2px 6px -2px color-mix(in oklab, var(--accent) 30%, transparent);
+}
+.skel-tab-ico { font-size: 14px; line-height: 1; }
+.skel-top-actions {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.skel-icon-circle {
+    width: 38px;
+    height: 38px;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--hairline);
+    background: var(--surface-1);
+    color: var(--text-secondary);
+    cursor: pointer;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color var(--motion-fast) var(--motion-ease),
+                color var(--motion-fast) var(--motion-ease),
+                border-color var(--motion-fast) var(--motion-ease);
+    font-size: 14px;
+}
+.skel-icon-circle:hover {
+    background: var(--surface-2);
+    color: var(--text-primary);
+    border-color: color-mix(in oklab, var(--accent) 40%, var(--hairline));
+}
+.skel-icon-circle .badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 4px;
+    border-radius: var(--radius-pill);
+    background: var(--danger);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+.skel-icon-circle .badge.show { display: flex; }
+.skel-health {
+    font-size: 11px;
+    padding: 4px 10px;
+    color: var(--success);
+}
+.skel-health.bad { color: var(--danger); }
+.skel-clock {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-tertiary);
+    padding: 4px 8px;
+}
+
+/* ---------- hero KPI row ---------- */
+.skel-hero {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+.skel-kpi {
+    padding: 16px 18px;
+    position: relative;
+}
+.skel-kpi-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 10px;
+    letter-spacing: 1.2px;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    font-weight: 700;
+}
+.skel-kpi-num {
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1;
+    margin-top: 10px;
+    font-variant-numeric: tabular-nums;
+}
+.skel-kpi-underline {
+    width: 28px;
+    height: 2px;
+    background: var(--accent);
+    border-radius: 1px;
+    margin-top: 12px;
+    box-shadow: 0 0 8px 0 color-mix(in oklab, var(--accent) 60%, transparent);
+}
+.skel-kpi-ico {
+    font-size: 14px;
+    opacity: 0.65;
+    color: var(--accent);
+}
+
+/* ---------- content panes ---------- */
+.skel-content { flex: 1; min-width: 0; }
+.skel-tab-pane { display: flex; flex-direction: column; gap: 18px; }
+.skel-tab-pane[hidden] { display: none !important; }
+
+/* ---------- Fleet pane (2-col grid) ---------- */
+.skel-fleet-grid {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 16px;
+    align-items: start;
+}
+.skel-fleet-list { display: flex; flex-direction: column; gap: 10px; }
+.skel-fleet-search {
+    padding: 10px 14px;
+    width: 100%;
+    background: var(--surface-1);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
+    color: var(--text-primary);
+    font-size: 13px;
+}
+.skel-fleet-search:focus {
+    outline: none;
+    border-color: var(--border-focus);
+}
+.skel-fleet-tabs {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+.skel-fleet-tab {
+    font-size: 11px;
+    padding: 6px 12px;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--hairline);
+    background: var(--surface-1);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--motion-fast) var(--motion-ease);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.skel-fleet-tab:hover { color: var(--text-primary); }
+.skel-fleet-tab.active {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--text-primary);
+}
+.skel-fleet-tab-count {
+    margin-left: 4px;
+    padding: 1px 6px;
+    background: var(--surface-2);
+    border-radius: var(--radius-pill);
+    font-size: 9px;
+    color: var(--text-tertiary);
+}
+.skel-fleet-tab.active .skel-fleet-tab-count {
+    background: color-mix(in oklab, var(--accent) 30%, transparent);
+    color: var(--text-primary);
+}
+.skel-fleet-list-items {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+.skel-fleet-list-item {
+    padding: 10px 14px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--hairline);
+    background: var(--surface-1);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    transition: background-color var(--motion-fast) var(--motion-ease),
+                border-color var(--motion-fast) var(--motion-ease);
+}
+.skel-fleet-list-item:hover {
+    background: var(--surface-2);
+    border-color: color-mix(in oklab, var(--accent) 30%, var(--hairline));
+}
+.skel-fleet-list-item.active {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+}
+.skel-fleet-list-item .id {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-primary);
+}
+.skel-fleet-list-item .sub {
+    font-size: 10px;
+    color: var(--text-tertiary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.skel-fleet-list-item .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: var(--radius-pill);
+    background: var(--text-tertiary);
+    display: inline-block;
+    margin-right: 6px;
+}
+.skel-fleet-list-item .dot.online { background: var(--success); }
+.skel-fleet-list-item .dot.stale { background: var(--warning); }
+.skel-fleet-list-item .dot.offline { background: var(--danger); }
+
+.skel-fleet-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.skel-fleet-section { padding: 16px 18px; }
+.skel-fleet-section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 12px;
+    font-size: 11px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    font-weight: 700;
+}
+.skel-fleet-section-head .sub {
+    font-size: 10px;
+    color: var(--text-tertiary);
+    letter-spacing: normal;
+    text-transform: none;
+}
+.skel-fleet-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--hairline);
+    font-size: 13px;
+    gap: 12px;
+}
+.skel-fleet-row:last-child { border: none; }
+.skel-fleet-row .lbl {
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    font-size: 10px;
+    letter-spacing: 1.1px;
+    font-weight: 600;
+}
+.skel-fleet-row .val {
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ---------- responsive ---------- */
+@media (max-width: 1100px) {
+    .skel-hero { grid-template-columns: repeat(2, 1fr); }
+    .skel-fleet-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 720px) {
+    .skel-shell { grid-template-columns: 1fr; }
+    .skel-sidebar { position: relative; height: auto; }
+    .skel-hero { grid-template-columns: 1fr; }
+    .skel-main { padding: 16px; }
+}
+
+/* ============================================================
+   Codex peer-review fullpane — Sinister Sanctum master agent (Claude) :: 2026-05-19
+   Renders into agents tab when sidebar nav = "codex" (or hash=#pane=codex).
+   Severity tokens are exposed as CSS vars so other consumers (status pill,
+   history rows, finding chips) all share the same color contract.
+   ============================================================ */
+
+:root {
+    --codex-pass: #16a34a;      /* green-600 */
+    --codex-warn: #d97706;      /* amber-600 */
+    --codex-fail: #dc2626;      /* red-600 */
+    --codex-high:   #dc2626;
+    --codex-medium: #d97706;
+    --codex-low:    #6b7280;
+}
+
+.codex-fullpane {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.codex-fullpane .codex-hero {
+    padding: 18px 20px;
+    background: color-mix(in oklab, var(--surface-1) 72%, transparent);
+    backdrop-filter: blur(32px) saturate(190%);
+    -webkit-backdrop-filter: blur(32px) saturate(190%);
+    border: 1px solid color-mix(in oklab, white 12%, transparent);
+    box-shadow:
+        inset 0 1px 0 0 color-mix(in oklab, white 16%, transparent),
+        inset 0 0 60px -20px color-mix(in oklab, var(--accent) 14%, transparent),
+        0 16px 40px -14px color-mix(in oklab, var(--accent) 22%, rgba(0, 0, 0, 0.55));
+    border-radius: var(--radius-xl);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.codex-fullpane .codex-hero-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.codex-fullpane .codex-hero-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.codex-fullpane .codex-hero-title .codex-shield {
+    width: 22px;
+    height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent);
+}
+
+.codex-fullpane .codex-hero-tagline {
+    color: var(--text-secondary);
+    font-size: 12.5px;
+    line-height: 1.4;
+}
+
+.codex-fullpane .codex-hero-meta {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+    font-size: 11px;
+    color: var(--text-tertiary);
+}
+
+.codex-fullpane .codex-hero-meta code {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-secondary);
+    background: var(--surface-2);
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+}
+
+.codex-fullpane .codex-grid {
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    gap: 14px;
+    align-items: start;
+}
+
+@media (max-width: 1100px) {
+    .codex-fullpane .codex-grid { grid-template-columns: 1fr; }
+}
+
+.codex-fullpane .codex-card {
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.codex-fullpane .codex-card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: 1px solid var(--hairline, color-mix(in oklab, white 6%, transparent));
+    padding-bottom: 8px;
+    font-size: 11px;
+    letter-spacing: 1.2px;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+.codex-fullpane .codex-card-head h3 {
+    margin: 0;
+    font-size: 12.5px;
+    color: var(--text-primary);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.codex-fullpane .codex-form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.codex-fullpane .codex-form-row > label {
+    font-size: 10.5px;
+    letter-spacing: 1.1px;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    font-weight: 600;
+}
+
+.codex-fullpane .codex-form-row .lg-input,
+.codex-fullpane .codex-form-row textarea {
+    width: 100%;
+    padding: 8px 10px;
+    background: var(--surface-2);
+    border: 1px solid color-mix(in oklab, white 6%, transparent);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.45;
+    transition: border-color var(--motion-fast) var(--motion-ease);
+}
+
+.codex-fullpane .codex-form-row .lg-input:focus,
+.codex-fullpane .codex-form-row textarea:focus {
+    outline: none;
+    border-color: var(--border-focus);
+}
+
+.codex-fullpane .codex-form-row textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.codex-fullpane .codex-form-row textarea.codex-content {
+    min-height: 180px;
+    font-size: 12.5px;
+}
+
+.codex-fullpane .codex-controls-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.codex-fullpane .codex-depth-radio {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: var(--radius-pill);
+    background: var(--surface-2);
+    border: 1px solid color-mix(in oklab, white 6%, transparent);
+    font-size: 11px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--motion-fast) var(--motion-ease);
+}
+
+.codex-fullpane .codex-depth-radio:has(input:checked) {
+    background: color-mix(in oklab, var(--accent) 22%, var(--surface-2));
+    border-color: color-mix(in oklab, var(--accent) 40%, transparent);
+    color: var(--text-primary);
+}
+
+.codex-fullpane .codex-depth-radio input { display: none; }
+
+.codex-fullpane .codex-run-btn {
+    padding: 8px 18px;
+    border-radius: var(--radius-pill);
+    background: var(--accent);
+    color: #fff;
+    border: 1px solid color-mix(in oklab, var(--accent) 70%, transparent);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--motion-fast) var(--motion-ease);
+    box-shadow: 0 4px 12px -4px color-mix(in oklab, var(--accent) 50%, transparent);
+}
+
+.codex-fullpane .codex-run-btn:hover {
+    background: var(--accent-hover);
+}
+
+.codex-fullpane .codex-run-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ---- recent reviews list ---- */
+.codex-fullpane .codex-reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 480px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.codex-fullpane .codex-review-row {
+    display: grid;
+    grid-template-columns: 64px 1fr 60px;
+    gap: 10px;
+    align-items: center;
+    padding: 10px 12px;
+    background: var(--surface-1);
+    border: 1px solid color-mix(in oklab, white 4%, transparent);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background var(--motion-fast) var(--motion-ease),
+                border-color var(--motion-fast) var(--motion-ease);
+    font-size: 12px;
+}
+
+.codex-fullpane .codex-review-row:hover {
+    background: var(--surface-2);
+    border-color: color-mix(in oklab, var(--accent) 28%, transparent);
+}
+
+.codex-fullpane .codex-review-row.is-expanded {
+    grid-template-columns: 1fr;
+    cursor: default;
+}
+
+.codex-fullpane .codex-review-row .codex-row-summary {
+    color: var(--text-secondary);
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.codex-fullpane .codex-review-row .codex-row-meta {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--text-tertiary);
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 1px;
+}
+
+.codex-fullpane .codex-review-row .codex-row-meta .age {
+    color: var(--text-tertiary);
+}
+
+.codex-fullpane .codex-review-row .codex-row-meta .depth {
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    font-size: 9.5px;
+}
+
+.codex-fullpane .codex-review-expanded {
+    background: var(--surface-2);
+    padding: 12px;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    line-height: 1.55;
+    color: var(--text-secondary);
+    white-space: pre-wrap;
+    max-height: 360px;
+    overflow-y: auto;
+    border: 1px solid color-mix(in oklab, white 5%, transparent);
+}
+
+.codex-fullpane .codex-review-expanded .codex-finding-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 8px;
+    margin-right: 6px;
+    margin-bottom: 4px;
+    border-radius: var(--radius-pill);
+    font-size: 10.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.codex-fullpane .codex-review-expanded .codex-finding-chip.high {
+    background: color-mix(in oklab, var(--codex-high) 18%, transparent);
+    color: var(--codex-high);
+    border: 1px solid color-mix(in oklab, var(--codex-high) 45%, transparent);
+}
+
+.codex-fullpane .codex-review-expanded .codex-finding-chip.medium {
+    background: color-mix(in oklab, var(--codex-medium) 18%, transparent);
+    color: var(--codex-medium);
+    border: 1px solid color-mix(in oklab, var(--codex-medium) 45%, transparent);
+}
+
+.codex-fullpane .codex-review-expanded .codex-finding-chip.low {
+    background: color-mix(in oklab, var(--codex-low) 18%, transparent);
+    color: var(--codex-low);
+    border: 1px solid color-mix(in oklab, var(--codex-low) 45%, transparent);
+}
+
+.codex-fullpane .codex-review-expanded .codex-finding-body {
+    display: block;
+    margin: 6px 0 12px 0;
+    color: var(--text-primary);
+    white-space: pre-wrap;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+/* ---- verdict pill (shared with header status + history rows) ---- */
+.codex-verdict-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: var(--radius-pill);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+    font-family: var(--font-sans);
+    line-height: 1;
+}
+
+.codex-verdict-pill.pass {
+    background: color-mix(in oklab, var(--codex-pass) 18%, transparent);
+    color: var(--codex-pass);
+    border: 1px solid color-mix(in oklab, var(--codex-pass) 50%, transparent);
+}
+
+.codex-verdict-pill.warn {
+    background: color-mix(in oklab, var(--codex-warn) 18%, transparent);
+    color: var(--codex-warn);
+    border: 1px solid color-mix(in oklab, var(--codex-warn) 50%, transparent);
+}
+
+.codex-verdict-pill.fail {
+    background: color-mix(in oklab, var(--codex-fail) 18%, transparent);
+    color: var(--codex-fail);
+    border: 1px solid color-mix(in oklab, var(--codex-fail) 50%, transparent);
+}
+
+.codex-verdict-pill.unknown {
+    background: color-mix(in oklab, var(--codex-low) 18%, transparent);
+    color: var(--codex-low);
+    border: 1px solid color-mix(in oklab, var(--codex-low) 50%, transparent);
+}
+
+/* ---- top-bar Codex status pill ---- */
+.codex-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    border-radius: var(--radius-pill);
+    font-size: 11px;
+    font-family: var(--font-sans);
+    background: var(--surface-1);
+    border: 1px solid var(--hairline, color-mix(in oklab, white 6%, transparent));
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: background var(--motion-fast) var(--motion-ease),
+                border-color var(--motion-fast) var(--motion-ease),
+                color var(--motion-fast) var(--motion-ease);
+    white-space: nowrap;
+}
+
+.codex-status-pill:hover {
+    background: var(--surface-2);
+    color: var(--text-primary);
+    border-color: color-mix(in oklab, var(--accent) 40%, transparent);
+}
+
+.codex-status-pill .codex-status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--text-tertiary);
+    display: inline-block;
+}
+
+.codex-status-pill.pass .codex-status-dot { background: var(--codex-pass); }
+.codex-status-pill.warn .codex-status-dot { background: var(--codex-warn); }
+.codex-status-pill.fail .codex-status-dot { background: var(--codex-fail); }
+.codex-status-pill .codex-status-text { color: var(--text-secondary); }
+.codex-status-pill .codex-status-age { color: var(--text-tertiary); font-size: 10px; }
+
+/* ---- no-API-key card ---- */
+.codex-fullpane .codex-no-key {
+    padding: 18px;
+    background: color-mix(in oklab, var(--codex-warn) 8%, var(--surface-1));
+    border: 1px solid color-mix(in oklab, var(--codex-warn) 35%, transparent);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.codex-fullpane .codex-no-key h4 {
+    margin: 0 0 6px 0;
+    color: var(--codex-warn);
+    font-size: 13px;
+}
+
+.codex-fullpane .codex-no-key code {
+    font-family: var(--font-mono);
+    background: var(--surface-2);
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+}
+

@@ -1,0 +1,85 @@
+// Author: Sinister Sanctum master agent (Claude) :: 2026-05-19
+//
+// MINIMAL LOCAL-DEV STUB for the Sanctum copy of Sinister Chatbot.
+// The PRODUCTION Prisma schema is owned by the Panel lane at
+// `C:\Users\Zonia\Desktop\Sinister-Panel\Andrew Panel\Sinister Panel\panel\backend\prisma\schema.prisma`.
+//
+// This stub declares ONLY the three models that this folder's
+// `routes/chatbot.ts` references directly (ChatThread, ChatMessage,
+// FriendAdd). It is not authoritative. Do NOT `prisma migrate` against
+// the production database from here.
+//
+// Many other models (Account, Group, GroupAccount, TargetUser,
+// UsernameListEntry, EngagedUsername, etc.) are referenced by the COPY
+// files in `src/services/*.ts` but are intentionally omitted — they
+// belong to the Panel schema and will need to be brought across (or
+// stubbed) before this folder can `prisma generate` and run.
+// See INTEGRATION.md > "Gaps / dependencies not present in this Sanctum
+// copy" for the full list.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DB_URL")
+}
+
+// ─── ChatThread ────────────────────────────────────────────────
+// One row per (account, fanUsername) — the running state of a
+// conversation. chatEngine reads + updates this every tick.
+model ChatThread {
+  id                   String    @id @default(cuid())
+  accountId            String
+  fanUsername          String
+  fanRealName          String?
+  phase                String    @default("Building Rapport")
+  converted            Boolean   @default(false)
+  underage             Boolean   @default(false)
+  flagged              Boolean   @default(false)
+  interestLevel        Int       @default(5)
+  sessionCount         Int       @default(0)
+  messagesThisSession  Int       @default(0)
+  cooldownUntil        DateTime?
+  lastMsgAt            DateTime  @default(now())
+  createdAt            DateTime  @default(now())
+
+  messages             ChatMessage[]
+
+  @@unique([accountId, fanUsername])
+  @@index([fanUsername])
+  @@index([lastMsgAt])
+}
+
+// ─── ChatMessage ───────────────────────────────────────────────
+// One row per bubble (user-incoming OR assistant-sent). chatEngine
+// reads the most recent 30 to build prompt history.
+model ChatMessage {
+  id         String     @id @default(cuid())
+  threadId   String
+  role       String     // "user" | "assistant"
+  type       String     @default("text") // "text" | "image" | "video" | "audio"
+  content    String
+  mediaPool  String?
+  timestamp  DateTime   @default(now())
+
+  thread     ChatThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+
+  @@index([threadId, timestamp])
+}
+
+// ─── FriendAdd ─────────────────────────────────────────────────
+// One row per friend-add attempt from one of our accounts to a
+// target Snap username. Status: "sent" | "greeted" | "error:<msg>".
+// Used by runner.ts daily-cap accounting and by `bulk-greet`.
+model FriendAdd {
+  id          String   @id @default(cuid())
+  accountId   String
+  targetUser  String
+  status      String   @default("sent")
+  createdAt   DateTime @default(now())
+
+  @@index([accountId, status, createdAt])
+  @@index([targetUser, status])
+}

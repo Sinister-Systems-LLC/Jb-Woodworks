@@ -1,0 +1,3 @@
+# sinister-phone-viewer has no third-party Python deps.
+# It shells out to `adb` and `scrcpy` (both must be on PATH) and uses only the
+# Python 3.10+ standard library.

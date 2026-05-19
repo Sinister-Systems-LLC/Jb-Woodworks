@@ -1,0 +1,12 @@
+{
+  "telegram_token": "PASTE_FROM_BOTFATHER",
+  "authorized_chat_ids": [],
+  "library_root": "D:/Sinister Sanctum/library",
+  "inventions_root": "D:/Sinister Sanctum/inventions",
+  "notes_root": "D:/Sinister Sanctum/_shared-memory/notes",
+  "claude_cli": "claude",
+  "yt_dlp_cli": "yt-dlp",
+  "openai_api_key_env": "OPENAI_API_KEY",
+  "max_download_mb": 200,
+  "transcribe_max_sec": 600
+}

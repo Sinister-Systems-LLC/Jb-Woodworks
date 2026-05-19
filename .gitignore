@@ -1,0 +1,131 @@
+# Sinister LLC monorepo - global ignores
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+ENV/
+build/
+dist/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Node
+node_modules/
+.next/
+out/
+.parcel-cache/
+.turbo/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Java / Android / AOSP
+*.class
+*.jar
+*.apk
+*.aab
+*.dex
+*.o
+*.a
+.gradle/
+.idea/
+*.iml
+local.properties
+captures/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# IDE
+.vscode/
+.cursor/
+*.swp
+*.swo
+
+# Secrets - HARD RULE: nothing under these paths/patterns ever commits
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+!**/*.public.key
+credentials.json
+credentials/
+secrets/
+yurikey*.xml
+**/keybox/*.xml
+
+# Sinister-specific runtime/operator-private
+_backups/
+_logs/
+runtime-state/
+01_MEMORY/_bus/
+01_MEMORY/_consolidated/
+agents/**/learned.md
+agents/**/index/
+agents/**/findings/
+agents/**/screenshots/
+agents/**/.venv/
+01_MEMORY/_AUTOGEN-NOTE.md
+*.tmp.*
+*.bak.*
+
+# Operator-private vault (auth keys, leo handoff, desktop archive junction) — NEVER pushed
+_vault/
+
+# Sanctum runtime state (per-agent heartbeats, operator-action queue jsonl, spawned-window log, prefs)
+_shared-memory/heartbeats/
+_shared-memory/operator-requests.jsonl
+_shared-memory/spawned-windows.jsonl
+_shared-memory/agent-prefs.json
+_shared-memory/.auto-push.lock
+_shared-memory/auto-push.log
+_shared-memory/auto-push.log.*
+
+# Built artifacts (rebuildable; should not be in source control)
+automations/window-manager/_build-logs/
+automations/window-manager/dist/
+*.exe
+
+# RKOJ source-only asset originals (large .bak / .webp masters); kept on
+# disk for re-export but excluded from EXE bundle + git. See agent A note
+# 2026-05-19: web/_assets-src/ replaced loose web/*.bak + _logo-source.webp.
+automations/window-manager/web/_assets-src/
+
+# Captured / experimental
+captures/
+*-capture-*.json
+*-debug-*.json
+
+# Knowledge graph + Obsidian local-only
+.obsidian/workspace*.json
+.obsidian/cache
+06_UNDERSTAND/**/graph.json.tmp
+
+# Nested per-project git repos under projects/ — these are junctions/clones of product
+# repos owned by per-project agents (snap-emu, panel, kernel-apk, tiktok-emu). Sanctum
+# must NOT pin them as gitlinks; lane discipline says each product repo pushes itself.
+# Scaffold READMEs / non-source content at projects/<repo>/ root stays tracked.
+projects/*/source/
+projects/*/source/source/
+
+# Sinister TikTok EMU project root holds its own .git (sister product repo, lane-owned
+# by tiktok-emu agent). Excluding the whole tree from Sanctum.
+projects/sinister-tiktok-emu/
+
+# External clones (third-party repos pulled in for reference/integration); not Sanctum's
+# to vendor. Add their own submodule entry deliberately if a clone needs to ship.
+_shared-memory/external-imports/

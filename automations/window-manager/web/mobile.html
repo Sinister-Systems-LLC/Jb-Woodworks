@@ -1,0 +1,193 @@
+<!-- Author: Sinister Sanctum master agent (Claude) :: 2026-05-19 — phone shell (Thread 1) -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#0A84FF">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Sinister Sanctum :: Phone</title>
+    <link rel="icon" href="/static/sinister-logo.png" type="image/png">
+    <link rel="stylesheet" href="/static/mobile.css">
+    <script>
+        // Token-capture + initial-view router (verbatim pattern from prior mobile.html).
+        // Also reads location.pathname so deep links like /m/inbox land on that view.
+        (function () {
+            try {
+                var params = new URLSearchParams(window.location.search);
+                var t = params.get('t');
+                if (t) {
+                    try { localStorage.setItem('sinister_token', t); } catch (e) {}
+                    // Strip ?t=... so a refresh doesn't replay it; keep the path.
+                    try { history.replaceState(null, '', window.location.pathname); } catch (e) {}
+                }
+            } catch (e) {}
+            var path = (window.location.pathname || '/m').replace(/\/+$/, '') || '/m';
+            // Map /m/<view> to the matching view id; default dashboard.
+            var view = 'dashboard';
+            var parts = path.split('/').filter(Boolean);
+            if (parts.length >= 2 && parts[0] === 'm') {
+                var v = parts[1].toLowerCase();
+                if (['requests','inbox','dashboard','progress','knowledge'].indexOf(v) !== -1) {
+                    view = v;
+                }
+            }
+            window.__SANCTUM_INITIAL_VIEW = view;
+        })();
+    </script>
+</head>
+<body>
+    <div class="m-shell">
+
+        <header class="m-header lg-rail">
+            <img class="m-logo" src="/static/sinister-logo.png" alt="Sinister Sanctum">
+            <h1 class="m-title">SANCTUM<span class="accent">::</span><span id="m-view-title">PHONE</span></h1>
+            <span id="m-online" class="lg-pill m-pill offline">OFFLINE</span>
+            <span id="m-health" class="lg-pill m-pill bad" title="server health">--</span>
+        </header>
+
+        <div class="m-ptr-hint" id="m-ptr-hint">refreshing...</div>
+
+        <main id="m-main" class="m-main" data-view="dashboard">
+            <div class="empty-note">loading...</div>
+        </main>
+
+        <nav class="m-bottom-nav lg-rail" aria-label="primary navigation">
+            <button class="m-nav-tab" data-view="requests" type="button" aria-label="Operator requests">
+                <span class="m-nav-icon">!</span>
+                <span>Requests</span>
+                <span class="m-nav-badge" id="m-req-badge">0</span>
+            </button>
+            <button class="m-nav-tab" data-view="inbox" type="button" aria-label="Inbox">
+                <span class="m-nav-icon">@</span>
+                <span>Inbox</span>
+            </button>
+            <button class="m-nav-tab active" data-view="dashboard" type="button" aria-label="Stats dashboard">
+                <span class="m-nav-icon">#</span>
+                <span>Stats</span>
+            </button>
+            <button class="m-nav-tab" data-view="progress" type="button" aria-label="Progress feed">
+                <span class="m-nav-icon">~</span>
+                <span>Progress</span>
+            </button>
+            <button class="m-nav-tab" data-view="knowledge" type="button" aria-label="Knowledge brain">
+                <span class="m-nav-icon">*</span>
+                <span>Brain</span>
+            </button>
+        </nav>
+
+        <div id="m-toast" class="m-toast" role="status" aria-live="polite"></div>
+    </div>
+
+    <!-- ============ VIEW TEMPLATES ============ -->
+
+    <template id="m-tpl-requests">
+        <section data-view="requests">
+            <div class="m-section-head">
+                <h2>Operator requests</h2>
+                <span class="count" data-bind="req-count">0 pending</span>
+            </div>
+            <div class="req-tabs" role="tablist">
+                <button class="req-tab active" data-req-filter="pending">PENDING</button>
+                <button class="req-tab" data-req-filter="approved">APPROVED</button>
+                <button class="req-tab" data-req-filter="denied">DENIED</button>
+                <button class="req-tab" data-req-filter="replied">REPLIED</button>
+            </div>
+            <div class="req-list lg-card" data-bind="req-list">
+                <div class="empty-note">loading...</div>
+            </div>
+        </section>
+    </template>
+
+    <template id="m-tpl-inbox-list">
+        <section data-view="inbox" data-step="list">
+            <div class="m-section-head">
+                <h2>Inbox</h2>
+                <span class="count" data-bind="inbox-count">0 agents</span>
+            </div>
+            <div class="inbox-list" data-bind="inbox-list">
+                <div class="empty-note">loading agents...</div>
+            </div>
+        </section>
+    </template>
+
+    <template id="m-tpl-inbox-stream">
+        <section data-view="inbox" data-step="stream">
+            <button class="inbox-back" data-bind="inbox-back" type="button">&larr; Agents</button>
+            <div class="lg-card inbox-stream">
+                <div class="inbox-stream-head">
+                    <h2 data-bind="stream-title">agent</h2>
+                </div>
+                <div class="inbox-messages" data-bind="stream-msgs">
+                    <div class="empty-note">loading...</div>
+                </div>
+                <div class="inbox-send-row">
+                    <input class="lg-input" type="text" data-bind="stream-input" placeholder="reply to agent...">
+                    <button class="lg-button" data-bind="stream-send" type="button">SEND</button>
+                </div>
+            </div>
+        </section>
+    </template>
+
+    <template id="m-tpl-dashboard">
+        <section data-view="dashboard">
+            <div class="m-section-head">
+                <h2>Trophy case</h2>
+                <span class="count" data-bind="trophy-status">--</span>
+            </div>
+            <div class="lg-card-hero">
+                <div class="trophy-grid">
+                    <div class="trophy-tile"><div class="num" data-bind="t-accts">-</div><div class="lbl">accounts</div></div>
+                    <div class="trophy-tile"><div class="num" data-bind="t-videos">-</div><div class="lbl">videos</div></div>
+                    <div class="trophy-tile"><div class="num" data-bind="t-active">-</div><div class="lbl">active</div></div>
+                    <div class="trophy-tile"><div class="num" data-bind="t-pushes">-</div><div class="lbl">pushes</div></div>
+                    <div class="trophy-tile"><div class="num" data-bind="t-banned">-</div><div class="lbl">banned</div></div>
+                    <div class="trophy-tile"><div class="num" data-bind="t-devices">-</div><div class="lbl">devices</div></div>
+                </div>
+            </div>
+            <div class="dash-meta-row">
+                <div class="meta-tile">
+                    <div class="lbl">agents online</div>
+                    <div class="val" data-bind="agents-online">-</div>
+                </div>
+                <div class="meta-tile">
+                    <div class="lbl">last update</div>
+                    <div class="val" data-bind="last-update">--:--</div>
+                </div>
+            </div>
+        </section>
+    </template>
+
+    <template id="m-tpl-progress">
+        <section data-view="progress">
+            <div class="m-section-head">
+                <h2>Progress feed</h2>
+                <span class="count" data-bind="prog-count">0</span>
+            </div>
+            <div class="progress-list" data-bind="prog-list">
+                <div class="empty-note">loading...</div>
+            </div>
+        </section>
+    </template>
+
+    <template id="m-tpl-knowledge">
+        <section data-view="knowledge">
+            <div class="m-section-head">
+                <h2>Knowledge brain</h2>
+                <span class="count" data-bind="kn-count">0</span>
+            </div>
+            <div class="kn-search-row">
+                <input class="lg-input" type="search" data-bind="kn-search" placeholder="search the brain...">
+                <button class="lg-button" data-bind="kn-search-btn" type="button">GO</button>
+            </div>
+            <div class="kn-list" data-bind="kn-list">
+                <div class="empty-note">enter a search above</div>
+            </div>
+            <div class="kn-reader hidden" data-bind="kn-reader"></div>
+        </section>
+    </template>
+
+    <script src="/static/mobile.js"></script>
+</body>
+</html>

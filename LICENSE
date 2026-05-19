@@ -1,0 +1,17 @@
+Copyright (c) 2026 Sinister LLC
+
+All rights reserved.
+
+This repository contains source code, documentation, and configuration that
+collectively constitute the proprietary work product of Sinister LLC and its
+authorized collaborators (the "Owners").
+
+PLACEHOLDER - operator to replace with one of:
+
+  Option A (recommended for collaboration with Leo): MIT License
+  Option B: Apache License 2.0
+  Option C: Proprietary - All Rights Reserved (no public license)
+
+Until the operator picks, treat the contents as ALL RIGHTS RESERVED. Do not
+publish externally. Do not push to a public remote without confirming the
+license choice + the secret-scrub checklist in docs/CONTRIBUTING.md.

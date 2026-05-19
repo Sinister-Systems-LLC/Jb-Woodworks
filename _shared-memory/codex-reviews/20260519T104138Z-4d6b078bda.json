@@ -1,0 +1,31 @@
+{
+  "ok": true,
+  "verdict": "warn",
+  "findings": [
+    {
+      "severity": "medium",
+      "area": "dispatcher logic",
+      "body": "The dispatcher logic in _resolve_captcha_solver does not validate the strategy input. Consider adding validation to ensure only supported strategies ('capsolver', '2captcha') are used."
+    },
+    {
+      "severity": "medium",
+      "area": "exception handling",
+      "body": "In the register method, the exception handling for CapSolverError assumes that the fallback to 2captcha will always succeed. Consider adding a check to ensure that the fallback is only attempted for specific error types related to unsupported captcha types."
+    },
+    {
+      "severity": "low",
+      "area": "environment variable usage",
+      "body": "The use of the environment variable SINISTER_CAPTCHA_STRATEGY in _resolve_captcha_solver is not documented. Consider adding documentation or comments to clarify its purpose and expected values."
+    }
+  ],
+  "summary": "The code changes introduce a dispatcher for captcha solving strategies and handle exceptions for captcha solving. The dispatcher logic lacks input validation, and the exception handling assumes that fallback to 2captcha will always succeed. These issues should be addressed to ensure robustness. The code is otherwise well-structured and maintains the existing functionality without introducing new bugs or security issues.",
+  "model": "gpt-4o",
+  "depth": "standard",
+  "language": "python",
+  "context": "Sinister TikTok-EMU. Changes this turn at lines 48-66 (replaced single solve_captcha import with _resolve_captcha_solver(strategy) dispatcher honoring self.captcha_strategy / SINISTER_CAPTCHA_STRATEGY env, picks _solve_via_capsolver or _solve_via_2captcha) and lines 1548-1582 (call site now: resolve solver, try-except CapSolverError -> auto-fallback to 2captcha for shape_match/rotate). File is 1700+ LOC, only the captcha dispatch path changed. Validate: dispatcher logic correct, exception flow handles all paths, no captcha-state leak, no infinite retry loop, no race between fallback and max_captcha_attempts counter.",
+  "content_sha1": "4d6b078bda0526f755feb64693574d4bb5c912b4",
+  "content_len": 88906,
+  "elapsed_s": 7.488,
+  "reviewed_at": "2026-05-19T10:41:38.814570+00:00",
+  "log_path": "D:\\Sinister Sanctum\\_shared-memory\\codex-reviews\\20260519T104138Z-4d6b078bda.json"
+}

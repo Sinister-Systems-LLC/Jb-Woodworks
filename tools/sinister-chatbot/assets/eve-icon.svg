@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Sinister Sanctum :: Sinister Chatbot
+  Author: Sinister Sanctum master agent (Claude) :: 2026-05-19
+  Source: C:\Users\Zonia\Desktop\dashboard-skeleton\components\icons\sprite.svg#i-eve
+  Extracted as a standalone SVG for use as the Sanctum-side Eve glyph.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"
+     fill="none" stroke="currentColor" stroke-width="1.5"
+     stroke-linecap="round" stroke-linejoin="round">
+  <path d="M12 2.5 20.5 7v10L12 21.5 3.5 17V7L12 2.5Z" />
+  <path d="m12 7.5 4.5 2.5v4L12 16.5 7.5 14v-4L12 7.5Z" />
+</svg>

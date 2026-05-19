@@ -1,0 +1,700 @@
+# Sanctum Skills Hub :: registry (source of truth)
+# Author: Sinister Sanctum master agent (Claude) :: 2026-05-19
+#
+# This file IS the source of truth for every artifact in the Sanctum fleet.
+# `automations/sync-fleet.ps1 -Apply` regenerates `skills/HUB.md`, refreshes
+# the `tools/_INDEX.md` + `skills/_INDEX.md` catalogs from this file, and
+# diffs the `bots[*]` list against `~/.claude/.mcp.json` (read-only — never
+# writes the MCP file; operator owns that per lane discipline).
+#
+# To add a new artifact: append an entry under the right category, run
+# `sync-fleet.ps1 -DryRun` to preview, then `-Apply` to commit the regen.
+#
+# Schema per entry:
+#   name             : human-readable name
+#   slug             : kebab-case identifier (matches folder name)
+#   kind             : bot | tool | skill | external | invention
+#   status           : scouted | candidate | shipped | archived | superseded
+#   description      : one-line "when to use it"
+#   path             : absolute Windows path to the primary artifact
+#   install_state    : registered | pending | not-applicable | operator-click
+#   security         :
+#     codex_review   : review-id (UTC-sha1) or "none" or "n/a"
+#     vault_uses     : list of _vault/ paths it reads/writes, or []
+#     lane_note      : short string (e.g. "master-only", "per-project-agent")
+#   depends_on       : list of slugs (this artifact depends on)
+#   see_also         : list of doc paths
+
+version: 1
+generated: 2026-05-19T13:30Z
+generated_by: "Sinister Sanctum master agent (Claude)"
+
+# ============================================================================
+# BOTS — MCP-server agents (the Sinister Bots fleet)
+# ============================================================================
+bots:
+
+  - name: Sentinel
+    slug: sentinel
+    kind: bot
+    status: shipped
+    description: "Date alarms (Yurikey expiry, deadlines). Tier 1, $0/call."
+    path: "D:\\Sinister\\Sinister Skills\\12_LLM_ORCHESTRATION\\agents\\sentinel"
+    install_state: registered
+    security:
+      codex_review: "n/a (Sanctum-native, pre-Codex)"
+      vault_uses: []
+      lane_note: "shared"
+    depends_on: []
+    see_also: ["SESSION-START/01-NETWORK.md"]
+
+  - name: Translator
+    slug: translator
+    kind: bot
+    status: shipped
+    description: "MCP-tool catalog search across 268+ tool names. Tier 1, $0/call."
+    path: "D:\\Sinister\\Sinister Skills\\12_LLM_ORCHESTRATION\\agents\\translator"
+    install_state: registered
+    security: {codex_review: "n/a", vault_uses: [], lane_note: "shared"}
+    depends_on: []
+    see_also: []
+
+  - name: Librarian
+    slug: librarian
+    kind: bot
+    status: shipped
+    description: "RAG over 8,500+ md archive (Ollama). Tier 2, $0/call (Ollama)."
+    path: "D:\\Sinister\\Sinister Skills\\12_LLM_ORCHESTRATION\\agents\\librarian"
+    install_state: registered
+    security: {codex_review: "n/a", vault_uses: [], lane_note: "shared"}
+    depends_on: ["ollama-stack"]
+    see_also: []
+
+  - name: Watcher
+    slug: watcher
+    kind: bot
+    status: shipped
+    description: "Source-drift detection via SHA256 manifest compare. Tier 1, $0/call."
+    path: "D:\\Sinister\\Sinister Skills\\12_LLM_ORCHESTRATION\\agents\\watcher"
+    install_state: registered
+    security: {codex_review: "n/a", vault_uses: [], lane_note: "shared"}
+    depends_on: []
+    see_also: []
+
+  - name: Auditor
+    slug: auditor
+    kind: bot
+    status: shipped
+    description: "Secrets scan + dedup + freshness check. Tier 1, $0/call."
+    path: "D:\\Sinister\\Sinister Skills\\12_LLM_ORCHESTRATION\\agents\\auditor"
+    install_state: registered
+    security: {codex_review: "n/a", vault_uses: [], lane_note: "shared"}
+    depends_on: []
+    see_also: ["skills/SECURITY.md"]
+
+  - name: Sinister-bus
+    slug: sinister-bus
+    kind: bot
+    status: shipped
+    description: "Orchestrator + runlog + codec + vault + memory garden + inbox messaging. Tier 1, $0/call."
+    path: "D:\\Sinister\\Sinister Skills\\12_LLM_ORCHESTRATION\\agents\\sinister-bus"
+    install_state: registered
+    security: {codex_review: "n/a", vault_uses: ["_vault/"], lane_note: "shared (bus owner)"}
+    depends_on: []
+    see_also: ["00-RULES.md (Rule 9)"]
+
+  - name: Triage
+    slug: triage
+    kind: bot
+    status: shipped
+    description: "File classifier (16 categories). Tier 2, $0/call (Ollama)."
+    path: "D:\\Sinister\\Sinister Skills\\12_LLM_ORCHESTRATION\\agents\\triage"
+    install_state: registered
+    security: {codex_review: "n/a", vault_uses: [], lane_note: "shared"}
+    depends_on: ["ollama-stack"]
+    see_also: []
+
+  - name: Scribe
+    slug: scribe
+    kind: bot
+    status: shipped
+    description: "Daily-digest writer. Tier 3 (Claude Haiku), ~$0.02/call."
+    path: "D:\\Sinister\\Sinister Skills\\12_LLM_ORCHESTRATION\\agents\\scribe"
+    install_state: registered
+    security: {codex_review: "n/a", vault_uses: [], lane_note: "shared"}
+    depends_on: ["ANTHROPIC_API_KEY"]
+    see_also: ["docs/ENV-VARIABLES.md"]
+
+  - name: Curator
+    slug: curator
+    kind: bot
+    status: shipped
+    description: "Code-library scout (helper-function extractor). Tier 3, ~$0.05/call."
+    path: "D:\\Sinister\\Sinister Skills\\12_LLM_ORCHESTRATION\\agents\\curator"
+    install_state: registered
+    security: {codex_review: "n/a", vault_uses: [], lane_note: "shared"}
+    depends_on: ["ANTHROPIC_API_KEY"]
+    see_also: ["docs/ENV-VARIABLES.md"]
+
+  - name: Custodian
+    slug: custodian
+    kind: bot
+    status: shipped
+    description: "Active backup to D:\\_backups\\ (SHA256 dedup). Tier 1, $0/call."
+    path: "D:\\Sinister\\Sinister Skills\\12_LLM_ORCHESTRATION\\agents\\custodian"
+    install_state: registered
+    security: {codex_review: "n/a", vault_uses: [], lane_note: "shared"}
+    depends_on: []
+    see_also: ["SESSION-START/04-RECOVERY.md"]
+
+  - name: Stealth-browser
+    slug: stealth-browser
+    kind: bot
+    status: shipped
+    description: "Undetected Chromium via nodriver + CDP. Tier 1, $0/call."
+    path: "D:\\Sinister\\Sinister Skills\\12_LLM_ORCHESTRATION\\agents\\stealth-browser"
+    install_state: registered
+    security: {codex_review: "n/a", vault_uses: [], lane_note: "shared"}
+    depends_on: []
+    see_also: []
+
+  - name: Researcher
+    slug: researcher
+    kind: bot
+    status: shipped
+    description: "Scrape -> Ollama summarize chain. Tier 2, $0/call."
+    path: "D:\\Sinister\\Sinister Skills\\12_LLM_ORCHESTRATION\\agents\\researcher"
+    install_state: registered
+    security: {codex_review: "n/a", vault_uses: [], lane_note: "shared"}
+    depends_on: ["ollama-stack", "stealth-browser"]
+    see_also: []
+
+  - name: Vault
+    slug: vault
+    kind: bot
+    status: shipped
+    description: "Unified façade: daemon, Gitea, Syncthing, filesystem. Tier 1, $0/call."
+    path: "D:\\Sinister Sanctum\\bots\\agents\\vault"
+    install_state: pending  # operator-click: tools/sinister-vault/wire-everything.ps1
+    security:
+      codex_review: "n/a"
+      vault_uses: ["D:\\sinister-vault\\"]
+      lane_note: "shared; multi-account (operator + leo)"
+    depends_on: ["vault-daemon-5078"]
+    see_also: ["tools/sinister-vault/INSTALL-MCP.md", "knowledge/sinister-vault-architecture.md"]
+
+# ============================================================================
+# TOOLS — operator-facing entry points (from tools/_INDEX.md)
+# ============================================================================
+tools:
+
+  - name: Sinister Vault
+    slug: sinister-vault
+    kind: tool
+    status: shipped
+    description: "1TB collaborative storage (daemon :5078, Gitea, Syncthing, MCP, multi-account)."
+    path: "D:\\Sinister Sanctum\\tools\\sinister-vault"
+    install_state: pending  # SinisterVault scheduled task not registered
+    security:
+      codex_review: "n/a"
+      vault_uses: ["D:\\sinister-vault\\accounts\\"]
+      lane_note: "operator + leo"
+    depends_on: ["vault (bot)"]
+    see_also: ["tools/sinister-vault/INSTALL-MCP.md"]
+
+  - name: Session Launcher
+    slug: session-launcher
+    kind: tool
+    status: shipped
+    description: "Themed cold-start session launcher (project picker, accent, mode, --model injection)."
+    path: "D:\\Sinister Sanctum\\automations\\start-sinister-session.ps1"
+    install_state: registered  # via C:\Users\Zonia\Desktop\Start-Sinister-Session.bat
+    security: {codex_review: "n/a", vault_uses: [], lane_note: "operator-facing"}
+    depends_on: []
+    see_also: ["SESSION-START/06-LAUNCHER.md"]
+
+  - name: Sanctum Console (RKOJ.exe)
+    slug: sanctum-console
+    kind: tool
+    status: shipped
+    description: "Flagship workbench: 2-tab + ribbon + cycle-points + scheduler + popout + Vault drawer."
+    path: "D:\\Sinister Sanctum\\automations\\window-manager"
+    install_state: pending  # RKOJ scheduled task not registered
+    security: {codex_review: "n/a", vault_uses: ["_vault/auth-keys.json"], lane_note: "HWID-locked"}
+    depends_on: []
+    see_also: ["docs/RKOJ-OPERATOR-GUIDE.md", "knowledge/rkoj-workbench-architecture.md"]
+
+  - name: Capture Invention
+    slug: capture-invention
+    kind: tool
+    status: shipped
+    description: "CLI to capture invention cards into inventions/YYYY-MM-DD-<slug>.md."
+    path: "D:\\Sinister Sanctum\\automations\\capture-invention.ps1"
+    install_state: registered
+    security: {codex_review: "n/a", vault_uses: [], lane_note: "operator-facing"}
+    depends_on: []
+    see_also: []
+
+  - name: MD Trash Bin
+    slug: md-trash-bin
+    kind: tool
+    status: shipped
+    description: "Auto-categorize random .md files into library/; sweep stale files to _trash/."
+    path: "D:\\Sinister Sanctum\\automations\\sweep-md-trash.ps1"
+    install_state: registered  # SinisterMdSweep scheduled task
+    security: {codex_review: "n/a", vault_uses: [], lane_note: "shared"}
+    depends_on: []
+    see_also: []
+
+  - name: Sinister Crawler
+    slug: sinister-crawler
+    kind: tool
+    status: building
+    description: "Telegram bot: /idea, /ask, /research, URL download + transcribe, plain text -> notes."
+    path: "D:\\Sinister Sanctum\\tools\\sinister-crawler"
+    install_state: pending  # BotFather token + first /start
+    security:
+      codex_review: "pending"
+      vault_uses: []
+      lane_note: "chat_id allowlist gate"
+    depends_on: []
+    see_also: ["tools/sinister-crawler/SMOKE.md"]
+
+  - name: Sinister Chatbot
+    slug: sinister-chatbot
+    kind: tool
+    status: building
+    description: "Snapchat conversational AI (Eve-powered, Kameleo-driven 2x2 grid)."
+    path: "D:\\Sinister Sanctum\\tools\\sinister-chatbot"
+    install_state: pending  # npm install + Prisma generate + first /chatbot/generate
+    security:
+      codex_review: "pending"
+      vault_uses: ["ANTHROPIC_API_KEY"]
+      lane_note: "single-operator"
+    depends_on: ["ANTHROPIC_API_KEY", "kameleo-cli-5050"]
+    see_also: ["tools/sinister-chatbot/RUN.md"]
+
+  - name: Sinister Phone Viewer
+    slug: sinister-phone-viewer
+    kind: tool
+    status: shipped
+    description: "Per-phone scrcpy + ADB (physical display only; per-serial; never bare adb)."
+    path: "D:\\Sinister Sanctum\\tools\\sinister-phone-viewer"
+    install_state: registered  # viewer.py CLI + RKOJ Console embed
+    security:
+      codex_review: "n/a"
+      vault_uses: []
+      lane_note: "per-project-agent owns adb -s <SERIAL>"
+    depends_on: []
+    see_also: ["knowledge/adb-containerization.md", "knowledge/console-phone-viewer-integration.md"]
+
+  - name: Codex Companion
+    slug: codex-companion
+    kind: tool
+    status: shipped
+    description: "OpenAI peer-review (gpt-4o-mini/4o/o1-mini). Auth/crypto/payment/>100 LOC gate."
+    path: "D:\\Sinister Sanctum\\tools\\codex-companion"
+    install_state: registered  # POST /api/codex/review + CLI fallback
+    security:
+      codex_review: "n/a (the reviewer itself)"
+      vault_uses: ["OPENAI_API_KEY"]
+      lane_note: "shared peer-review gate"
+    depends_on: ["OPENAI_API_KEY"]
+    see_also: ["knowledge/codex-companion-usage.md", "DIRECTIVES.md (standing rule #4)"]
+
+  - name: Sanctum-git (self-hosted Gitea)
+    slug: sanctum-git
+    kind: tool
+    status: shipped
+    description: "Local Gitea at :3000 + git-mirror script. Per-agent branch + double-remote push."
+    path: "D:\\Sinister Sanctum\\tools\\sanctum-git"
+    install_state: pending  # Docker Compose up + Gitea install wizard + first mirror
+    security:
+      codex_review: "n/a"
+      vault_uses: ["GITEA_ADMIN_PASSWORD"]
+      lane_note: "operator + leo"
+    depends_on: ["docker-desktop"]
+    see_also: ["tools/sanctum-git/FIRST-RUN.md", "knowledge/gitea-self-host.md"]
+
+  - name: Panel Config
+    slug: panel-config
+    kind: tool
+    status: shipped
+    description: "Loopback-first panel routing knob (primary localhost, fallback prod, source tag)."
+    path: "D:\\Sinister Sanctum\\tools\\panel-config"
+    install_state: registered  # tools/panel-config/panel-config.json + loaders
+    security: {codex_review: "n/a", vault_uses: [], lane_note: "shared"}
+    depends_on: []
+    see_also: ["knowledge/panel-localhost-routing.md"]
+
+# ============================================================================
+# SKILLS — reusable modules consumed by tools / automations / bots
+# ============================================================================
+skills:
+
+  # ---- Folder-shaped ----
+  - name: Dashboard Skeleton
+    slug: dashboard-skeleton
+    kind: skill
+    status: shipped
+    description: "Canonical Sinister UI source: tokens, primitives, Liquid Glass, 16 doctrine primitives."
+    path: "D:\\Sinister Sanctum\\skills\\dashboard-skeleton"
+    install_state: registered  # operator-owned upstream at Desktop\dashboard-skeleton\
+    security: {codex_review: "n/a", vault_uses: [], lane_note: "operator-owned upstream; Sanctum read-only mount"}
+    depends_on: []
+    see_also: ["docs/UI-DESIGN-SYSTEM.md", "SANCTUM.md"]
+
+  # ---- Code-library modules ----
+  - name: bot_memory
+    slug: bot_memory
+    kind: skill
+    status: shipped
+    description: "Per-bot facts + embeddings store with absorb()/recall(). Cross-session durable memory."
+    path: "D:\\Sinister\\Sinister Skills\\12_LLM_ORCHESTRATION\\agents\\_shared\\bot_memory.py"
+    install_state: registered  # auto-imported by Tier-3 bots
+    security: {codex_review: "n/a", vault_uses: [], lane_note: "shared"}
+    depends_on: []
+    see_also: []
+
+  - name: inbox
+    slug: inbox
+    kind: skill
+    status: shipped
+    description: "File-based inter-agent messaging + heartbeat protocol."
+    path: "D:\\Sinister\\Sinister Skills\\12_LLM_ORCHESTRATION\\agents\\_shared\\inbox.py"
+    install_state: registered
+    security: {codex_review: "n/a", vault_uses: [], lane_note: "shared"}
+    depends_on: []
+    see_also: ["00-RULES.md (Rule 9)"]
+
+  - name: runlog
+    slug: runlog
+    kind: skill
+    status: shipped
+    description: "sinister-runlog/v1 manifest reader/writer (session tool-calls/prompts/outputs)."
+    path: "D:\\Sinister\\Sinister Skills\\12_LLM_ORCHESTRATION\\agents\\_shared\\runlog.py"
+    install_state: registered
+    security: {codex_review: "n/a", vault_uses: [], lane_note: "shared"}
+    depends_on: []
+    see_also: []
+
+  - name: codec
+    slug: codec
+    kind: skill
+    status: shipped
+    description: "Memory codec: encode/decode persisted bot state blobs."
+    path: "D:\\Sinister\\Sinister Skills\\12_LLM_ORCHESTRATION\\agents\\_shared\\codec.py"
+    install_state: registered
+    security: {codex_review: "n/a", vault_uses: [], lane_note: "shared"}
+    depends_on: []
+    see_also: []
+
+  - name: crypto
+    slug: crypto
+    kind: skill
+    status: shipped
+    description: "Vault Fernet wrapper: symmetric AES-128-CBC + HMAC-SHA256, PBKDF2 200k iterations."
+    path: "D:\\Sinister\\Sinister Skills\\12_LLM_ORCHESTRATION\\agents\\_shared\\crypto.py"
+    install_state: registered
+    security:
+      codex_review: "n/a (legacy)"
+      vault_uses: ["SINISTER_VAULT_PASSPHRASE", "~/.sinister/vault-key"]
+      lane_note: "shared; passphrase chain"
+    depends_on: ["SINISTER_VAULT_PASSPHRASE"]
+    see_also: ["skills/SECURITY.md", "docs/ENV-VARIABLES.md"]
+
+  - name: eveObservations
+    slug: eveObservations
+    kind: skill
+    status: shipped
+    description: "Eve derivation: deriveEveObservations(fan) returns top-3 observations (tone-priority)."
+    path: "D:\\Sinister Sanctum\\tools\\sinister-chatbot\\src\\services\\eveObservations.ts"
+    install_state: registered  # consumed by sinister-chatbot
+    security: {codex_review: "n/a", vault_uses: [], lane_note: "shared"}
+    depends_on: []
+    see_also: []
+
+  - name: kameleo
+    slug: kameleo
+    kind: skill
+    status: shipped
+    description: "Antidetect browser client (Kameleo CLI :5050). Windows+Chrome fingerprints, 2x2 tiling."
+    path: "D:\\Sinister Sanctum\\tools\\sinister-chatbot\\src\\services\\kameleo.ts"
+    install_state: pending  # requires operator to log into Kameleo GUI once
+    security: {codex_review: "n/a", vault_uses: [], lane_note: "single-operator"}
+    depends_on: ["kameleo-cli-5050"]
+    see_also: []
+
+  - name: codex-review
+    slug: codex-review
+    kind: skill
+    status: shipped
+    description: "review(content, *, context, language, depth) -> {verdict, findings, summary}."
+    path: "D:\\Sinister Sanctum\\tools\\codex-companion\\codex.py"
+    install_state: registered  # POST /api/codex/review
+    security:
+      codex_review: "self"
+      vault_uses: ["OPENAI_API_KEY"]
+      lane_note: "shared peer-review gate"
+    depends_on: ["OPENAI_API_KEY"]
+    see_also: ["knowledge/codex-companion-usage.md", "DIRECTIVES.md (standing rule #4)"]
+
+  - name: viewer
+    slug: viewer
+    kind: skill
+    status: shipped
+    description: "Per-phone ADB + scrcpy helper. forbid_global_adb() raises on bare adb."
+    path: "D:\\Sinister Sanctum\\tools\\sinister-phone-viewer\\viewer.py"
+    install_state: registered
+    security: {codex_review: "n/a", vault_uses: [], lane_note: "per-project-agent owns serial"}
+    depends_on: []
+    see_also: ["knowledge/adb-containerization.md"]
+
+  - name: git-mirror
+    slug: git-mirror
+    kind: skill
+    status: shipped
+    description: "Mirror Sanctum projects to localhost Gitea. Subcommands: init/push/push-all/status."
+    path: "D:\\Sinister Sanctum\\automations\\git-mirror.ps1"
+    install_state: pending  # gated on sanctum-git first-run
+    security: {codex_review: "n/a", vault_uses: [], lane_note: "shared"}
+    depends_on: ["sanctum-git"]
+    see_also: []
+
+# ============================================================================
+# EXTERNALS — imported from public sources (per _shared-memory/external-imports/)
+# ============================================================================
+externals:
+
+  - name: Ruflo
+    slug: ruflo
+    kind: external
+    status: scouted  # flips to shipped after Phase B operator click + Claude restart
+    description: "Multi-agent orchestration platform for Claude Code. Swarm + vector memory + neural patterns + zero-trust federation."
+    path: "https://github.com/ruvnet/ruflo"
+    install_state: operator-click  # claude mcp add ruflo -- npx ruflo@latest mcp start
+    security:
+      codex_review: "pending (Phase C per-skill)"
+      vault_uses: []
+      lane_note: "external; case-study gate per skill"
+    depends_on: ["nodejs", "npm/npx"]
+    see_also:
+      - "_shared-memory/external-imports/CANDIDATES.md"
+      - "_shared-memory/external-imports/ruflo/ATTRIBUTION.md"
+      - "_shared-memory/knowledge/ruflo-mcp-integration.md"
+    metadata:
+      license: "MIT"
+      pinned_sha: "c292e5fcf563b1639ea2ce7842c8f4a110c3ad39"
+      pinned_date: "2026-05-19T02:18:38Z"
+      version: "v3.7.0-alpha.33"
+
+  - name: Playwright MCP
+    slug: playwright
+    kind: external
+    status: scouted  # flips to shipped after operator runs install-mcp-servers.ps1 + restart
+    description: "Browser automation. Complements stealth-browser; structured page interactions + screenshots."
+    path: "@playwright/mcp@latest (npm)"
+    install_state: operator-click  # via D:\Sinister Sanctum\automations\install-mcp-servers.ps1
+    security:
+      codex_review: "n/a (vendor MCP)"
+      vault_uses: []
+      lane_note: "shared"
+    depends_on: ["nodejs", "npm/npx", "chromium-150mb-first-use"]
+    see_also: ["_shared-memory/knowledge/image2-mcp-set.md"]
+
+  - name: Context7 MCP
+    slug: context7
+    kind: external
+    status: scouted
+    description: "Live library docs (kills hallucinations). Up-to-date API references for any package."
+    path: "@upstash/context7-mcp@latest (npm)"
+    install_state: operator-click
+    security: {codex_review: "n/a", vault_uses: [], lane_note: "shared"}
+    depends_on: ["nodejs", "npm/npx"]
+    see_also: ["_shared-memory/knowledge/image2-mcp-set.md"]
+
+  - name: Sequential Thinking MCP
+    slug: sequential-thinking
+    kind: external
+    status: scouted
+    description: "Reasoning-chain scaffold. Explicit step-by-step decomposition for complex prompts."
+    path: "@modelcontextprotocol/server-sequential-thinking (npm)"
+    install_state: operator-click
+    security: {codex_review: "n/a", vault_uses: [], lane_note: "shared"}
+    depends_on: ["nodejs", "npm/npx"]
+    see_also: ["_shared-memory/knowledge/image2-mcp-set.md"]
+
+  - name: KG-Memory MCP
+    slug: memory
+    kind: external
+    status: scouted
+    description: "Cross-session persistent knowledge graph. Augments markdown brain with semantic recall."
+    path: "@modelcontextprotocol/server-memory (npm)"
+    install_state: operator-click
+    security:
+      codex_review: "n/a"
+      vault_uses: []
+      lane_note: "shared"
+    depends_on: ["nodejs", "npm/npx"]
+    see_also: ["_shared-memory/knowledge/image2-mcp-set.md"]
+    metadata:
+      graph_path: "D:\\Sinister\\Sinister Skills\\01_MEMORY\\_kg-memory\\graph.json"
+
+  - name: Anthropic Cookbook
+    slug: anthropic-cookbook
+    kind: external
+    status: scouted  # patterns extract to brain entries; no code copy
+    description: "First-party Anthropic recipes. Pattern source for brain entries (Phase E deferred)."
+    path: "https://github.com/anthropics/claude-cookbooks"
+    install_state: not-applicable  # pattern-extract only
+    security: {codex_review: "n/a", vault_uses: [], lane_note: "shared (read-only)"}
+    depends_on: []
+    see_also: ["_shared-memory/external-imports/CANDIDATES.md"]
+
+  - name: MCP Registry
+    slug: mcp-registry
+    kind: external
+    status: scouted  # Phase D — tools/mcp-discover/ deferred
+    description: "Official MCP server registry. Recurring discovery source for new bots (Phase D)."
+    path: "https://registry.modelcontextprotocol.io/"
+    install_state: not-applicable
+    security: {codex_review: "n/a", vault_uses: [], lane_note: "shared (read-only)"}
+    depends_on: []
+    see_also: ["_shared-memory/external-imports/CANDIDATES.md"]
+
+  - name: Blender
+    slug: blender
+    kind: external
+    status: scouted  # Image 1 queue 2026-05-19; use case pending
+    description: "3D modeling / animation suite. MCP integrations exist via blender-mcp; use case TBD."
+    path: "https://www.blender.org/"
+    install_state: not-applicable
+    security: {codex_review: "n/a", vault_uses: [], lane_note: "pending operator scope"}
+    depends_on: []
+    see_also: ["_shared-memory/external-imports/CANDIDATES.md"]
+
+  - name: Adobe Creative Cloud
+    slug: adobe
+    kind: external
+    status: scouted  # Image 1 queue 2026-05-19; use case pending
+    description: "Photoshop / Premiere / After Effects automation. ExtendScript or Adobe API; use case TBD."
+    path: "https://www.adobe.com/creativecloud.html"
+    install_state: not-applicable
+    security: {codex_review: "n/a", vault_uses: [], lane_note: "pending operator scope"}
+    depends_on: []
+    see_also: ["_shared-memory/external-imports/CANDIDATES.md"]
+
+  - name: Autodesk Fusion 360
+    slug: autodesk-fusion
+    kind: external
+    status: scouted  # Image 1 queue 2026-05-19; use case pending
+    description: "CAD/CAM/CAE 3D modeling. Python API for scripting; use case TBD."
+    path: "https://www.autodesk.com/products/fusion-360/overview"
+    install_state: not-applicable
+    security: {codex_review: "n/a", vault_uses: [], lane_note: "pending operator scope"}
+    depends_on: []
+    see_also: ["_shared-memory/external-imports/CANDIDATES.md"]
+
+# ============================================================================
+# INVENTIONS — idea cards (per inventions/<date>-<slug>.md)
+# ============================================================================
+inventions:
+
+  - name: Sinister Crawler
+    slug: sinister-crawler
+    kind: invention
+    status: building
+    description: "Telegram bot for capturing ideas, asking the fleet, downloading + transcribing URLs."
+    path: "D:\\Sinister Sanctum\\inventions\\2026-05-19-sinister-crawler.md"
+    install_state: not-applicable
+    security: {codex_review: "pending", vault_uses: [], lane_note: "operator chat-id gate"}
+    depends_on: []
+    see_also: ["tools/sinister-crawler/"]
+
+  - name: Sinister Chatbot (Eve Powered)
+    slug: sinister-chatbot
+    kind: invention
+    status: building
+    description: "Kameleo-driven Snapchat conversational AI; absorbed from Panel; Eve fan-observation derivation."
+    path: "D:\\Sinister Sanctum\\inventions\\2026-05-19-sinister-chatbot.md"
+    install_state: not-applicable
+    security: {codex_review: "pending", vault_uses: ["ANTHROPIC_API_KEY"], lane_note: "single-operator"}
+    depends_on: []
+    see_also: ["tools/sinister-chatbot/"]
+
+  - name: Sinister Phone Viewer
+    slug: sinister-phone-viewer
+    kind: invention
+    status: shipped
+    description: "scrcpy --display-id 0 (physical only) replaces Panda; per-serial; never bare adb."
+    path: "D:\\Sinister Sanctum\\inventions\\2026-05-19-sinister-phone-viewer.md"
+    install_state: registered
+    security: {codex_review: "n/a", vault_uses: [], lane_note: "per-project-agent owns serial"}
+    depends_on: []
+    see_also: ["tools/sinister-phone-viewer/"]
+
+  - name: Sanctum Git (self-hosted Gitea)
+    slug: sanctum-git
+    kind: invention
+    status: shipped
+    description: "Local Gitea at :3000; per-agent branches; double-remote push to escape GH stepping-on-toes."
+    path: "D:\\Sinister Sanctum\\inventions\\2026-05-19-sanctum-git.md"
+    install_state: pending  # first-run via tools/sanctum-git/FIRST-RUN.md
+    security: {codex_review: "n/a", vault_uses: ["GITEA_ADMIN_PASSWORD"], lane_note: "operator + leo"}
+    depends_on: ["docker-desktop"]
+    see_also: ["tools/sanctum-git/"]
+
+  - name: Codex Companion
+    slug: codex-companion
+    kind: invention
+    status: shipped
+    description: "OpenAI peer-review skill; cross-checks Claude on auth/crypto/payment/>100 LOC."
+    path: "D:\\Sinister Sanctum\\inventions\\2026-05-19-codex-companion.md"
+    install_state: registered
+    security: {codex_review: "self", vault_uses: ["OPENAI_API_KEY"], lane_note: "shared peer-review gate"}
+    depends_on: ["OPENAI_API_KEY"]
+    see_also: ["tools/codex-companion/", "knowledge/codex-companion-usage.md"]
+
+  - name: Sinister Vault
+    slug: sinister-vault
+    kind: invention
+    status: shipped
+    description: "1TB collaborative storage; Gitea repos + Syncthing sync + MCP + multi-account."
+    path: "D:\\Sinister Sanctum\\inventions\\2026-05-19-sinister-vault.md"
+    install_state: pending  # SinisterVault scheduled task not registered
+    security: {codex_review: "n/a", vault_uses: ["D:\\sinister-vault\\accounts\\"], lane_note: "operator + leo"}
+    depends_on: ["vault-daemon-5078"]
+    see_also: ["tools/sinister-vault/", "knowledge/sinister-vault-architecture.md"]
+
+  - name: Claude Window Manager
+    slug: claude-window-manager
+    kind: invention
+    status: designing  # paused per operator scope
+    description: "Multi-window Claude session orchestration with cycle-points + scheduler + popout."
+    path: "D:\\Sinister Sanctum\\inventions\\2026-05-19-claude-window-manager.md"
+    install_state: not-applicable
+    security: {codex_review: "n/a", vault_uses: [], lane_note: "shared"}
+    depends_on: []
+    see_also: ["automations/window-manager/", "knowledge/rkoj-workbench-architecture.md"]
+
+  - name: Session Resume + Guided Scaffold
+    slug: session-resume-and-scaffold
+    kind: invention
+    status: building
+    description: "Cold-start session scaffold + cycle-points + CLAUDE.md auto-gen per-project."
+    path: "D:\\Sinister Sanctum\\inventions\\2026-05-19-session-resume-and-scaffold.md"
+    install_state: registered
+    security: {codex_review: "n/a", vault_uses: [], lane_note: "shared"}
+    depends_on: []
+    see_also: ["automations/start-sinister-session.ps1", "SESSION-START/06-LAUNCHER.md"]
+
+  - name: Skill Review + Case-Study Workflow
+    slug: skill-case-study
+    kind: invention
+    status: drafting
+    description: "Operator-triggered structured review of any skill/tool/invention. Thumb -> fleet/archive."
+    path: "D:\\Sinister Sanctum\\inventions\\2026-05-19-skill-case-study.md"
+    install_state: not-applicable
+    security: {codex_review: "n/a", vault_uses: [], lane_note: "master + operator"}
+    depends_on: []
+    see_also: ["_shared-memory/case-studies/", "DIRECTIVES.md"]

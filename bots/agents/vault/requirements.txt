@@ -1,0 +1,3 @@
+# Author: Sinister Sanctum / vault MCP agent (operator: sinistersocks5g@gmail.com)
+mcp>=0.9.0
+httpx>=0.27.0

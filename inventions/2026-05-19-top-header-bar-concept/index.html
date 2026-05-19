@@ -1,0 +1,521 @@
+<!doctype html>
+<!-- Author: Sinister Sanctum master agent (Claude) :: 2026-05-19 :: concept demo for operator review -->
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Top Header Bar :: Concept Studio</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root {
+    /* Sanctum purple ramp */
+    --sanctum-50:#f5f0fc; --sanctum-100:#ead9f8; --sanctum-200:#d5b4f1;
+    --sanctum-300:#b685e6; --sanctum-400:#985cd9; --sanctum-500:#7A3DD4;
+    --sanctum-600:#5d2eaa; --sanctum-700:#4b2588; --sanctum-800:#3a1c69;
+    --sanctum-900:#2a1450; --sanctum-950:#1a0b2e;
+    /* iOS blue ramp */
+    --ios-50:#e6f2ff; --ios-100:#bfdeff; --ios-200:#80beff; --ios-300:#4aa3ff;
+    --ios-400:#1f8aff; --ios-500:#0A84FF; --ios-600:#0066cc; --ios-700:#004fa3;
+    --ios-800:#003c7a; --ios-900:#002952;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    background: radial-gradient(ellipse at top, #161024 0%, #0a0612 60%, #050208 100%);
+    font-feature-settings: "ss01" on, "ss02" on;
+  }
+  .grain::before {
+    content:""; position:absolute; inset:0; pointer-events:none; opacity:.05;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100' height='100' filter='url(%23n)'/></svg>");
+  }
+  .lg-glass {
+    background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .sanctum-glow { box-shadow: 0 0 0 1px rgba(122,61,212,0.18), 0 12px 48px -8px rgba(122,61,212,0.35); }
+  .ios-glow    { box-shadow: 0 0 0 1px rgba(10,132,255,0.20), 0 12px 48px -8px rgba(10,132,255,0.35); }
+  .pulse-dot {
+    width: 7px; height: 7px; border-radius: 999px;
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:.45; transform:scale(.85); } }
+  .marquee-shadow::after {
+    content:""; position:absolute; inset:0; pointer-events:none;
+    background: linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 92%, rgba(5,2,8,1) 100%);
+  }
+  /* tiny inline icons */
+  .ic { width: 16px; height: 16px; flex: none; }
+  .ic-lg { width: 20px; height: 20px; flex: none; }
+  details > summary { list-style: none; cursor: pointer; }
+  details > summary::-webkit-details-marker { display: none; }
+  .ring-accent-p { box-shadow: 0 0 0 1.5px var(--sanctum-500), 0 0 24px -4px var(--sanctum-500); }
+  .ring-accent-b { box-shadow: 0 0 0 1.5px var(--ios-500), 0 0 24px -4px var(--ios-500); }
+  .scrollarea::-webkit-scrollbar { height: 6px; }
+  .scrollarea::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 999px; }
+  /* command palette spotlight */
+  .spotlight {
+    background: radial-gradient(180% 120% at 50% -10%, rgba(122,61,212,0.30) 0%, transparent 50%),
+                rgba(20,12,40,0.92);
+  }
+</style>
+</head>
+<body class="text-slate-100 antialiased">
+
+<header class="max-w-[1180px] mx-auto px-6 pt-14 pb-8">
+  <div class="flex items-end justify-between gap-6 flex-wrap">
+    <div>
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-9 h-9 rounded-lg flex items-center justify-center"
+             style="background:linear-gradient(135deg,var(--sanctum-500),var(--sanctum-700));">
+          <svg viewBox="0 0 24 24" fill="none" class="w-5 h-5 text-white">
+            <path d="M12 2l9 4.5v7L12 22 3 13.5v-7L12 2z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+            <path d="M12 7v7m-3.5-3.5h7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <p class="uppercase tracking-[0.22em] text-[10px] text-purple-300/70 font-medium">Sinister Sanctum :: concept studio</p>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-semibold tracking-tight leading-tight">
+        Top header bar — <span class="text-purple-300">what could it be</span>?
+      </h1>
+      <p class="mt-3 text-slate-400 max-w-2xl">
+        Six stacked variants exploring shape, density, accents, and interaction. Same eight functional zones in each;
+        what changes is rhythm. Hover anything blueish-or-purple-ish to see its hover state.
+        Press <kbd class="px-1.5 py-0.5 rounded bg-white/10 text-xs">⌘K</kbd> / <kbd class="px-1.5 py-0.5 rounded bg-white/10 text-xs">/</kbd> to summon the command palette overlay.
+      </p>
+    </div>
+    <div class="text-right text-[11px] text-slate-500 leading-relaxed">
+      <div>local: <span class="text-slate-300">http://localhost:7088/</span></div>
+      <div>file:&nbsp;<span class="text-slate-300">inventions/2026-05-19-top-header-bar-concept/</span></div>
+      <div class="mt-2"><span class="text-purple-300">○</span> purple = Sanctum &nbsp;·&nbsp; <span class="text-sky-400">○</span> ios-blue = LetsText &nbsp;·&nbsp; <span class="text-slate-300">○</span> neutral = workbench</div>
+    </div>
+  </div>
+
+  <!-- the 8 functional zones legend -->
+  <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-2 text-[11px]">
+    <span class="lg-glass rounded-md px-2.5 py-1.5"><span class="text-purple-300">1</span> brand mark</span>
+    <span class="lg-glass rounded-md px-2.5 py-1.5"><span class="text-purple-300">2</span> workspace / context</span>
+    <span class="lg-glass rounded-md px-2.5 py-1.5"><span class="text-purple-300">3</span> breadcrumb / route</span>
+    <span class="lg-glass rounded-md px-2.5 py-1.5"><span class="text-purple-300">4</span> command palette ⌘K</span>
+    <span class="lg-glass rounded-md px-2.5 py-1.5"><span class="text-purple-300">5</span> live status pills</span>
+    <span class="lg-glass rounded-md px-2.5 py-1.5"><span class="text-purple-300">6</span> agent / model chip</span>
+    <span class="lg-glass rounded-md px-2.5 py-1.5"><span class="text-purple-300">7</span> notifications</span>
+    <span class="lg-glass rounded-md px-2.5 py-1.5"><span class="text-purple-300">8</span> account / actions</span>
+  </div>
+</header>
+
+<main class="max-w-[1180px] mx-auto px-6 pb-32 space-y-14">
+
+  <!-- ──────────────────────────────────────────────────────────
+       VARIANT 1 — Sanctum master / RKOJ workbench (purple, full)
+       ────────────────────────────────────────────────────────── -->
+  <section>
+    <div class="flex items-baseline justify-between mb-3">
+      <h2 class="text-base font-medium tracking-tight"><span class="text-purple-300">01</span> &nbsp; Sanctum master / RKOJ workbench &mdash; <span class="text-slate-400">full density, purple accent</span></h2>
+      <span class="text-[11px] text-slate-500">use case: RKOJ.exe, master agent surface</span>
+    </div>
+    <div class="rounded-2xl overflow-hidden sanctum-glow grain relative">
+      <header class="lg-glass relative h-14 flex items-center px-4 gap-3"
+              style="background: linear-gradient(180deg, rgba(28,16,56,0.92), rgba(15,8,32,0.92));">
+        <!-- 1 brand mark -->
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 rounded-md grid place-items-center"
+               style="background:linear-gradient(135deg,var(--sanctum-500),var(--sanctum-700));">
+            <svg viewBox="0 0 24 24" fill="none" class="w-4 h-4 text-white"><path d="M12 2l9 4.5v7L12 22 3 13.5v-7L12 2z" stroke="currentColor" stroke-width="1.6"/></svg>
+          </div>
+          <span class="font-semibold tracking-tight text-[15px]">RKOJ<span class="text-purple-300">.exe</span></span>
+        </div>
+        <span class="w-px h-5 bg-white/10 mx-1"></span>
+        <!-- 2 workspace -->
+        <button class="flex items-center gap-1.5 text-[12px] text-slate-300 hover:text-white transition rounded-md px-2 py-1 hover:bg-white/5">
+          <span class="w-1.5 h-1.5 rounded-full bg-purple-400"></span>
+          Sanctum
+          <svg class="ic opacity-50" viewBox="0 0 20 20" fill="none"><path d="M5 8l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </button>
+        <!-- 3 breadcrumb -->
+        <nav class="hidden md:flex items-center text-[12px] text-slate-400 gap-1.5">
+          <span class="text-slate-500">/</span>
+          <a class="hover:text-white">Agents</a>
+          <span class="text-slate-500">/</span>
+          <a class="text-purple-300 hover:text-purple-200">Sinister Snap API</a>
+        </nav>
+
+        <!-- 4 palette (center grow) -->
+        <button class="ml-auto md:mx-auto md:flex-1 max-w-[420px] h-8 rounded-lg lg-glass hover:ring-1 hover:ring-purple-500/40 flex items-center gap-2 px-3 text-[12px] text-slate-400 hover:text-slate-200 transition group"
+                onclick="openPalette()">
+          <svg class="ic opacity-60" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M14 14l3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <span class="flex-1 text-left">Search files, agents, commands…</span>
+          <kbd class="px-1.5 py-0.5 text-[10px] rounded bg-white/10 text-slate-300 group-hover:bg-white/15">⌘K</kbd>
+        </button>
+
+        <!-- 5 status pills -->
+        <div class="hidden md:flex items-center gap-1.5">
+          <span class="lg-glass rounded-full px-2 py-1 flex items-center gap-1.5 text-[11px]">
+            <span class="pulse-dot bg-emerald-400"></span><span class="text-emerald-300">12 agents</span>
+          </span>
+          <span class="lg-glass rounded-full px-2 py-1 flex items-center gap-1.5 text-[11px] text-slate-300">
+            <span class="w-1.5 h-1.5 rounded-full bg-purple-400"></span> vault 4.4 KB / 1 TB
+          </span>
+        </div>
+
+        <!-- 6 agent / model chip -->
+        <button class="lg-glass rounded-md px-2 h-7 flex items-center gap-2 text-[11px] hover:ring-1 hover:ring-purple-500/40">
+          <span class="w-1.5 h-1.5 rounded-full" style="background:var(--sanctum-400)"></span>
+          opus 4.7 <span class="text-slate-500">·</span> 1M
+        </button>
+
+        <!-- 7 notifications -->
+        <button class="relative w-8 h-8 rounded-md grid place-items-center hover:bg-white/5">
+          <svg viewBox="0 0 24 24" fill="none" class="w-4 h-4 text-slate-300"><path d="M6 8a6 6 0 1112 0c0 7 3 7 3 9H3c0-2 3-2 3-9z" stroke="currentColor" stroke-width="1.6"/><path d="M10 21a2 2 0 004 0" stroke="currentColor" stroke-width="1.6"/></svg>
+          <span class="absolute top-1 right-1 w-3.5 h-3.5 rounded-full text-[9px] grid place-items-center bg-purple-500 text-white font-medium">3</span>
+        </button>
+
+        <!-- 8 account -->
+        <button class="flex items-center gap-2 pl-1 pr-2 h-8 rounded-md hover:bg-white/5">
+          <span class="w-6 h-6 rounded-full text-[11px] grid place-items-center font-medium"
+                style="background:linear-gradient(135deg,var(--sanctum-500),var(--sanctum-700));">Z</span>
+          <span class="hidden sm:block text-[11px] text-slate-300">operator</span>
+          <svg class="ic opacity-50" viewBox="0 0 20 20" fill="none"><path d="M5 8l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </button>
+      </header>
+
+      <!-- a "page" beneath so it reads as a real surface -->
+      <div class="h-32 px-6 py-5 flex items-center text-slate-500 text-sm"
+           style="background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);">
+        <span class="text-slate-400">└ page content scrolls beneath; header stays sticky.</span>
+      </div>
+    </div>
+    <p class="mt-2 text-[11px] text-slate-500">All eight zones visible. Workspace ↔ breadcrumb ↔ palette form the navigational spine. Status pills + agent chip surface live state at-a-glance. Cmd+K opens the palette.</p>
+  </section>
+
+  <!-- ──────────────────────────────────────────────────────────
+       VARIANT 2 — LetsText / dashboard (iOS blue, focused)
+       ────────────────────────────────────────────────────────── -->
+  <section>
+    <div class="flex items-baseline justify-between mb-3">
+      <h2 class="text-base font-medium tracking-tight"><span class="text-sky-400">02</span> &nbsp; LetsText / dashboard &mdash; <span class="text-slate-400">focused density, iOS-blue accent</span></h2>
+      <span class="text-[11px] text-slate-500">use case: LetsText 2.0 dashboard-local</span>
+    </div>
+    <div class="rounded-2xl overflow-hidden ios-glow grain relative">
+      <header class="lg-glass relative h-14 flex items-center px-4 gap-3"
+              style="background:linear-gradient(180deg, rgba(8,18,38,0.92), rgba(4,10,24,0.92));">
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 rounded-md grid place-items-center text-white font-bold text-[13px]"
+               style="background:linear-gradient(135deg,var(--ios-400),var(--ios-700));">L</div>
+          <span class="font-semibold tracking-tight text-[15px]">LetsText</span>
+          <span class="hidden md:inline text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-sky-500/15 text-sky-300">round 49</span>
+        </div>
+        <span class="w-px h-5 bg-white/10 mx-1"></span>
+        <button class="flex items-center gap-1.5 text-[12px] text-slate-300 hover:text-white rounded-md px-2 py-1 hover:bg-white/5">
+          <span class="w-5 h-5 rounded-full grid place-items-center text-[10px] font-medium"
+                style="background:linear-gradient(135deg,#ff9d3a,#ff5e3a);">A</span>
+          Apex Models
+          <svg class="ic opacity-50" viewBox="0 0 20 20" fill="none"><path d="M5 8l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </button>
+        <nav class="hidden md:flex items-center text-[12px] text-slate-400 gap-1.5">
+          <span class="text-slate-500">/</span><a class="hover:text-white">Inbox</a>
+          <span class="text-slate-500">/</span><a class="text-sky-300">conv_demo1</a>
+        </nav>
+        <!-- compact search (focused state) -->
+        <div class="ml-auto md:mx-auto md:flex-1 max-w-[420px] h-8 rounded-lg ring-accent-b flex items-center gap-2 px-3 text-[12px]"
+             style="background:rgba(10,132,255,0.05);">
+          <svg class="ic text-sky-400" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M14 14l3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <input class="flex-1 bg-transparent outline-none text-slate-200 placeholder-slate-500" placeholder="search fans, messages, vault…" />
+          <kbd class="px-1.5 py-0.5 text-[10px] rounded bg-white/10 text-slate-300">/</kbd>
+        </div>
+        <!-- turn-state pill (LetsText-specific) -->
+        <span class="hidden md:inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-[11px]"
+              style="background:rgba(255,159,10,0.12); color:#ffb84a; border:1px solid rgba(255,159,10,0.25);">
+          <span class="pulse-dot" style="background:#ffb84a"></span> Your turn · 14
+        </span>
+        <button class="lg-glass rounded-md px-2 h-7 flex items-center gap-2 text-[11px]">
+          <span class="w-1.5 h-1.5 rounded-full bg-sky-400"></span>
+          eve-mcp
+        </button>
+        <button class="relative w-8 h-8 rounded-md grid place-items-center hover:bg-white/5">
+          <svg viewBox="0 0 24 24" fill="none" class="w-4 h-4 text-slate-300"><path d="M6 8a6 6 0 1112 0c0 7 3 7 3 9H3c0-2 3-2 3-9z" stroke="currentColor" stroke-width="1.6"/></svg>
+          <span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-rose-500"></span>
+        </button>
+        <button class="flex items-center gap-2 pl-1 pr-2 h-8 rounded-md hover:bg-white/5">
+          <span class="w-6 h-6 rounded-full text-[11px] grid place-items-center font-medium"
+                style="background:linear-gradient(135deg,var(--ios-400),var(--ios-700));">Z</span>
+        </button>
+      </header>
+      <div class="h-32 px-6 py-5 flex items-center text-slate-500 text-sm">└ same eight zones; orange pill = Your-Turn state vs purple chip.</div>
+    </div>
+    <p class="mt-2 text-[11px] text-slate-500">Workspace pill now shows the active <em>agency</em> (Apex Models). Search bar is in focused state to demonstrate the active-input shape. "Your turn · 14" is a domain-specific status that lives in zone 5.</p>
+  </section>
+
+  <!-- ──────────────────────────────────────────────────────────
+       VARIANT 3 — Compact / focused mode (single task)
+       ────────────────────────────────────────────────────────── -->
+  <section>
+    <div class="flex items-baseline justify-between mb-3">
+      <h2 class="text-base font-medium tracking-tight"><span class="text-slate-300">03</span> &nbsp; Compact / focused mode &mdash; <span class="text-slate-400">single task, minimal chrome</span></h2>
+      <span class="text-[11px] text-slate-500">use case: editing a conversation, picking a fan, deep-link drill</span>
+    </div>
+    <div class="rounded-2xl overflow-hidden ring-1 ring-white/8">
+      <header class="lg-glass h-12 flex items-center px-4 gap-3" style="background:rgba(15,12,28,0.92);">
+        <button class="flex items-center gap-1.5 text-[12px] text-slate-400 hover:text-white">
+          <svg class="ic" viewBox="0 0 20 20" fill="none"><path d="M12 5l-5 5 5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Inbox
+        </button>
+        <span class="w-px h-4 bg-white/10"></span>
+        <span class="text-[13px] font-medium tracking-tight">Editing message · <span class="text-slate-400">@destiny_27</span></span>
+        <span class="ml-2 hidden md:inline-flex items-center gap-1 text-[11px] text-slate-500">
+          <span class="pulse-dot bg-amber-400"></span> unsaved
+        </span>
+        <div class="ml-auto flex items-center gap-2">
+          <button class="text-[12px] text-slate-400 hover:text-white px-2 h-7 rounded-md hover:bg-white/5">Discard</button>
+          <button class="text-[12px] text-white px-3 h-7 rounded-md font-medium"
+                  style="background:linear-gradient(180deg,var(--sanctum-500),var(--sanctum-600));">Send · ⌘↵</button>
+        </div>
+      </header>
+      <div class="h-24 px-6 py-4 flex items-center text-slate-500 text-sm">└ back-button is the navigation; only one primary action.</div>
+    </div>
+    <p class="mt-2 text-[11px] text-slate-500">Pattern: zones 2–7 collapse into a single context line; zone 8 becomes the primary CTA. Back-button takes you out of the focused state.</p>
+  </section>
+
+  <!-- ──────────────────────────────────────────────────────────
+       VARIANT 4 — Alert / banner state above header
+       ────────────────────────────────────────────────────────── -->
+  <section>
+    <div class="flex items-baseline justify-between mb-3">
+      <h2 class="text-base font-medium tracking-tight"><span class="text-rose-400">04</span> &nbsp; Alert + banner stacked &mdash; <span class="text-slate-400">deadline / outage / signing-key warning</span></h2>
+      <span class="text-[11px] text-slate-500">use case: Yurikey51 expires in 5 days; CCBill webhook down</span>
+    </div>
+    <div class="rounded-2xl overflow-hidden ring-1 ring-rose-500/30">
+      <div class="bg-rose-500/10 border-b border-rose-500/30 h-9 flex items-center px-4 gap-3 text-[12px]">
+        <span class="w-1.5 h-1.5 rounded-full bg-rose-400 animate-pulse"></span>
+        <span class="text-rose-200">Yurikey51 root cert expires in <span class="font-medium">4d 14h</span></span>
+        <span class="text-slate-500">· phone-stack attestation breaks server-side at expiry</span>
+        <a class="ml-auto text-rose-200 hover:text-white text-[11px] underline decoration-rose-500/40 underline-offset-2">source yurikey52 →</a>
+        <button class="text-slate-500 hover:text-slate-300 -mr-1 w-6 h-6 grid place-items-center">×</button>
+      </div>
+      <header class="lg-glass h-14 flex items-center px-4 gap-3" style="background:rgba(20,12,40,0.92);">
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 rounded-md grid place-items-center text-white text-[13px] font-bold"
+               style="background:linear-gradient(135deg,var(--sanctum-500),var(--sanctum-700));">R</div>
+          <span class="font-semibold tracking-tight text-[15px]">RKOJ<span class="text-purple-300">.exe</span></span>
+        </div>
+        <nav class="hidden md:flex items-center text-[12px] text-slate-400 gap-1.5 ml-2">
+          <span class="text-slate-500">/</span><a class="hover:text-white">Devices</a>
+          <span class="text-slate-500">/</span><a class="text-purple-300">P1 attestation</a>
+        </nav>
+        <span class="ml-auto lg-glass rounded-full px-2 py-1 flex items-center gap-1.5 text-[11px]">
+          <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
+          <span class="text-rose-300">1 critical</span>
+        </span>
+        <button class="relative w-8 h-8 rounded-md grid place-items-center hover:bg-white/5">
+          <svg viewBox="0 0 24 24" fill="none" class="w-4 h-4 text-slate-300"><path d="M6 8a6 6 0 1112 0c0 7 3 7 3 9H3c0-2 3-2 3-9z" stroke="currentColor" stroke-width="1.6"/></svg>
+          <span class="absolute top-1 right-1 w-3.5 h-3.5 rounded-full text-[9px] grid place-items-center bg-rose-500 text-white font-medium">1</span>
+        </button>
+        <button class="flex items-center gap-2 pl-1 pr-2 h-8 rounded-md hover:bg-white/5">
+          <span class="w-6 h-6 rounded-full text-[11px] grid place-items-center font-medium"
+                style="background:linear-gradient(135deg,var(--sanctum-500),var(--sanctum-700));">Z</span>
+        </button>
+      </header>
+      <div class="h-24 px-6 py-4 flex items-center text-slate-500 text-sm">└ banner is dismissible per-session but reappears each cold-start until resolved.</div>
+    </div>
+    <p class="mt-2 text-[11px] text-slate-500">Banner sits ABOVE the header so it never displaces the eight zones. Severity color (rose/amber/sky) maps to the underlying alert kind. Dismissible but persistent across sessions until the root cause clears.</p>
+  </section>
+
+  <!-- ──────────────────────────────────────────────────────────
+       VARIANT 5 — Account switcher OPEN state (multi-account)
+       ────────────────────────────────────────────────────────── -->
+  <section>
+    <div class="flex items-baseline justify-between mb-3">
+      <h2 class="text-base font-medium tracking-tight"><span class="text-purple-300">05</span> &nbsp; Account / agent switcher OPEN &mdash; <span class="text-slate-400">multi-Claude account rotation (operator + Leo)</span></h2>
+      <span class="text-[11px] text-slate-500">use case: per-user billing isolation; Leo collaborator view</span>
+    </div>
+    <div class="rounded-2xl overflow-hidden sanctum-glow grain relative">
+      <header class="lg-glass relative h-14 flex items-center px-4 gap-3"
+              style="background:linear-gradient(180deg, rgba(28,16,56,0.92), rgba(15,8,32,0.92));">
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 rounded-md grid place-items-center"
+               style="background:linear-gradient(135deg,var(--sanctum-500),var(--sanctum-700));">
+            <svg viewBox="0 0 24 24" fill="none" class="w-4 h-4 text-white"><path d="M12 2l9 4.5v7L12 22 3 13.5v-7L12 2z" stroke="currentColor" stroke-width="1.6"/></svg>
+          </div>
+          <span class="font-semibold tracking-tight text-[15px]">RKOJ<span class="text-purple-300">.exe</span></span>
+        </div>
+        <div class="ml-auto"></div>
+        <button class="relative flex items-center gap-2 pl-1 pr-2 h-8 rounded-md bg-white/5 ring-1 ring-purple-500/40">
+          <span class="w-6 h-6 rounded-full text-[11px] grid place-items-center font-medium"
+                style="background:linear-gradient(135deg,var(--sanctum-500),var(--sanctum-700));">Z</span>
+          <span class="text-[11px] text-slate-200">operator</span>
+          <svg class="ic opacity-70 rotate-180" viewBox="0 0 20 20" fill="none"><path d="M5 8l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </button>
+      </header>
+      <div class="relative">
+        <!-- the dropdown -->
+        <div class="absolute right-2 top-0 w-[280px] lg-glass rounded-xl p-1.5 shadow-2xl"
+             style="background:rgba(20,12,40,0.96);">
+          <div class="text-[10px] uppercase tracking-wider px-2 pt-1.5 pb-1 text-slate-500">accounts (HWID-locked)</div>
+          <button class="w-full flex items-center gap-3 px-2 py-2 rounded-lg bg-purple-500/10 ring-1 ring-purple-500/30">
+            <span class="w-8 h-8 rounded-full text-[12px] grid place-items-center font-medium"
+                  style="background:linear-gradient(135deg,var(--sanctum-500),var(--sanctum-700));">Z</span>
+            <div class="text-left flex-1">
+              <div class="text-[12px] text-slate-100">operator</div>
+              <div class="text-[10px] text-slate-500">sinistersocks5g@gmail.com · opus 4.7</div>
+            </div>
+            <svg class="ic text-purple-300" viewBox="0 0 20 20" fill="none"><path d="M4 10l4 4 8-8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="w-full flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-white/5">
+            <span class="w-8 h-8 rounded-full text-[12px] grid place-items-center font-medium"
+                  style="background:linear-gradient(135deg,#3aa0ff,#1664c5);">L</span>
+            <div class="text-left flex-1">
+              <div class="text-[12px] text-slate-100">leo</div>
+              <div class="text-[10px] text-slate-500">collaborator · sonnet 4.6</div>
+            </div>
+          </button>
+          <div class="h-px bg-white/8 my-1.5"></div>
+          <button class="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-[12px] text-slate-300 hover:bg-white/5">
+            <svg class="ic" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            Add new account…
+          </button>
+          <button class="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-[12px] text-slate-300 hover:bg-white/5">
+            <svg class="ic" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.6"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.6 4.6l1.4 1.4M14 14l1.4 1.4M4.6 15.4L6 14M14 6l1.4-1.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            Settings
+          </button>
+          <button class="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-[12px] text-rose-300 hover:bg-rose-500/10">
+            <svg class="ic" viewBox="0 0 20 20" fill="none"><path d="M12 4H6a2 2 0 00-2 2v8a2 2 0 002 2h6M14 7l3 3-3 3M9 10h8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Sign out operator
+          </button>
+        </div>
+        <div class="h-44 px-6 py-4 flex items-center text-slate-500 text-sm">└ same eight zones; account chip in zone 8 expanded into a popover.</div>
+      </div>
+    </div>
+    <p class="mt-2 text-[11px] text-slate-500">Each account has its own ANTHROPIC_API_KEY env (operator → <code class="text-slate-300">ANTHROPIC_API_KEY</code>, leo → <code class="text-slate-300">LEO_ANTHROPIC_API_KEY</code>). Switching rotates which key the workbench uses; no shared billing.</p>
+  </section>
+
+  <!-- ──────────────────────────────────────────────────────────
+       VARIANT 6 — Mobile / collapsed (Sanctum-LAN access)
+       ────────────────────────────────────────────────────────── -->
+  <section>
+    <div class="flex items-baseline justify-between mb-3">
+      <h2 class="text-base font-medium tracking-tight"><span class="text-emerald-300">06</span> &nbsp; Mobile / LAN-pocket &mdash; <span class="text-slate-400">phone-scan-QR view</span></h2>
+      <span class="text-[11px] text-slate-500">use case: Sanctum-LAN.bat exposes :5077; operator scans QR → console pocketed</span>
+    </div>
+    <div class="flex justify-center">
+      <div class="w-[360px] rounded-3xl overflow-hidden ring-1 ring-white/10 sanctum-glow"
+           style="background:linear-gradient(180deg,#100822,#06030f);">
+        <header class="h-12 flex items-center px-3 gap-2"
+                style="background:linear-gradient(180deg, rgba(28,16,56,0.94), rgba(15,8,32,0.94));border-bottom:1px solid rgba(255,255,255,0.06);">
+          <button class="w-8 h-8 grid place-items-center rounded-md hover:bg-white/5">
+            <svg class="ic-lg text-slate-200" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </button>
+          <div class="flex items-center gap-2 mx-auto">
+            <div class="w-6 h-6 rounded-md grid place-items-center"
+                 style="background:linear-gradient(135deg,var(--sanctum-500),var(--sanctum-700));">
+              <svg viewBox="0 0 24 24" fill="none" class="w-3.5 h-3.5 text-white"><path d="M12 2l9 4.5v7L12 22 3 13.5v-7L12 2z" stroke="currentColor" stroke-width="1.8"/></svg>
+            </div>
+            <span class="text-[13px] font-medium">Sanctum</span>
+            <span class="pulse-dot bg-emerald-400 ml-1"></span>
+          </div>
+          <button class="w-8 h-8 grid place-items-center rounded-md hover:bg-white/5 relative">
+            <svg viewBox="0 0 24 24" fill="none" class="w-4 h-4 text-slate-200"><path d="M6 8a6 6 0 1112 0c0 7 3 7 3 9H3c0-2 3-2 3-9z" stroke="currentColor" stroke-width="1.7"/></svg>
+            <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-purple-400"></span>
+          </button>
+        </header>
+        <div class="px-4 py-6 space-y-3">
+          <div class="text-[11px] uppercase tracking-wider text-slate-500">Today's focus</div>
+          <div class="text-[14px] text-slate-200">resume — LetsText launcher polish + header bar concept (you are here)</div>
+          <div class="grid grid-cols-2 gap-2 mt-4 text-[11px]">
+            <div class="lg-glass rounded-lg p-2"><div class="text-slate-500">agents online</div><div class="text-slate-100 mt-0.5 text-[14px]">12</div></div>
+            <div class="lg-glass rounded-lg p-2"><div class="text-slate-500">vault used</div><div class="text-slate-100 mt-0.5 text-[14px]">4.4&thinsp;KB</div></div>
+            <div class="lg-glass rounded-lg p-2"><div class="text-slate-500">last backup</div><div class="text-slate-100 mt-0.5 text-[14px]">3m ago</div></div>
+            <div class="lg-glass rounded-lg p-2"><div class="text-slate-500">pending ops</div><div class="text-slate-100 mt-0.5 text-[14px]">7 items</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="mt-2 text-[11px] text-slate-500 text-center">Three zones survive: hamburger (workspace+breadcrumb collapsed), centered brand+state, single right action (notifications). Tap brand to open the workspace switcher full-screen.</p>
+  </section>
+
+</main>
+
+<!-- ────────────── COMMAND PALETTE OVERLAY ────────────── -->
+<div id="palette" class="fixed inset-0 hidden items-start justify-center pt-24 z-50"
+     style="background:rgba(2,1,6,0.66); backdrop-filter: blur(6px);">
+  <div class="w-[520px] max-w-[92vw] spotlight rounded-2xl ring-1 ring-purple-500/30 shadow-2xl overflow-hidden">
+    <div class="flex items-center gap-3 px-4 h-14 border-b border-white/8">
+      <svg class="ic-lg text-purple-300" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.6"/><path d="M14 14l3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      <input id="paletteInput" class="flex-1 bg-transparent outline-none text-[15px] text-slate-100 placeholder-slate-500" placeholder="Search files, agents, projects, commands…" />
+      <kbd class="px-1.5 py-0.5 text-[10px] rounded bg-white/10 text-slate-300">esc</kbd>
+    </div>
+    <div class="p-1.5">
+      <div class="text-[10px] uppercase tracking-wider px-3 pt-2 pb-1 text-slate-500">Recent</div>
+      <button class="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/5">
+        <span class="w-7 h-7 rounded-md grid place-items-center text-[11px]" style="background:rgba(122,61,212,0.18);color:#c8a8ff">L</span>
+        <span class="flex-1 text-left text-[13px] text-slate-100">Start-LetsText-Session.bat</span>
+        <span class="text-[10px] text-slate-500">just now</span>
+      </button>
+      <button class="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/5">
+        <span class="w-7 h-7 rounded-md grid place-items-center text-[11px]" style="background:rgba(122,61,212,0.18);color:#c8a8ff">R</span>
+        <span class="flex-1 text-left text-[13px] text-slate-100">Open RKOJ workbench</span>
+        <span class="text-[10px] text-slate-500">3m ago</span>
+      </button>
+      <div class="text-[10px] uppercase tracking-wider px-3 pt-2 pb-1 text-slate-500">Agents</div>
+      <button class="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/5">
+        <span class="w-7 h-7 rounded-full text-[11px] grid place-items-center font-medium"
+              style="background:linear-gradient(135deg,#3aa0ff,#1664c5);">S</span>
+        <span class="flex-1 text-left text-[13px] text-slate-100">Switch to Sinister Snap API</span>
+        <kbd class="px-1.5 py-0.5 text-[10px] rounded bg-white/10 text-slate-300">⏎</kbd>
+      </button>
+      <button class="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/5">
+        <span class="w-7 h-7 rounded-full text-[11px] grid place-items-center font-medium"
+              style="background:linear-gradient(135deg,#ff9d3a,#ff5e3a);">T</span>
+        <span class="flex-1 text-left text-[13px] text-slate-100">Switch to Sinister TikTok API</span>
+      </button>
+      <div class="text-[10px] uppercase tracking-wider px-3 pt-2 pb-1 text-slate-500">Commands</div>
+      <button class="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/5">
+        <span class="w-7 h-7 rounded-md grid place-items-center" style="background:rgba(255,255,255,0.06)">
+          <svg class="ic text-slate-300" viewBox="0 0 20 20" fill="none"><path d="M3 5l7 5 7-5M3 5v10h14V5" stroke="currentColor" stroke-width="1.6"/></svg>
+        </span>
+        <span class="flex-1 text-left text-[13px] text-slate-100">Send broadcast to all agents</span>
+      </button>
+      <button class="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/5">
+        <span class="w-7 h-7 rounded-md grid place-items-center" style="background:rgba(255,255,255,0.06)">
+          <svg class="ic text-slate-300" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="6" stroke="currentColor" stroke-width="1.6"/><path d="M10 6v4l2.5 2.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </span>
+        <span class="flex-1 text-left text-[13px] text-slate-100">Schedule cycle-point save</span>
+      </button>
+    </div>
+    <div class="h-9 px-3 border-t border-white/8 flex items-center gap-3 text-[10px] text-slate-500">
+      <span><kbd class="px-1 py-0.5 rounded bg-white/8 text-slate-300">↑↓</kbd> navigate</span>
+      <span><kbd class="px-1 py-0.5 rounded bg-white/8 text-slate-300">⏎</kbd> run</span>
+      <span><kbd class="px-1 py-0.5 rounded bg-white/8 text-slate-300">esc</kbd> close</span>
+      <span class="ml-auto">⌘K · powered by translator MCP</span>
+    </div>
+  </div>
+</div>
+
+<footer class="max-w-[1180px] mx-auto px-6 pb-16 pt-4 text-[11px] text-slate-500 flex items-center justify-between flex-wrap gap-3">
+  <span>Concept only — not wired to backend. Source: <code class="text-slate-300">D:\Sinister Sanctum\inventions\2026-05-19-top-header-bar-concept\index.html</code></span>
+  <span>Served by <code class="text-slate-300">python -m http.server 7088</code></span>
+</footer>
+
+<script>
+  function openPalette() {
+    const p = document.getElementById('palette');
+    p.classList.remove('hidden');
+    p.classList.add('flex');
+    setTimeout(() => document.getElementById('paletteInput').focus(), 30);
+  }
+  function closePalette() {
+    const p = document.getElementById('palette');
+    p.classList.add('hidden');
+    p.classList.remove('flex');
+  }
+  document.getElementById('palette').addEventListener('click', (e) => {
+    if (e.target.id === 'palette') closePalette();
+  });
+  document.addEventListener('keydown', (e) => {
+    const k = e.key;
+    if ((e.metaKey || e.ctrlKey) && k.toLowerCase() === 'k') { e.preventDefault(); openPalette(); }
+    else if (k === '/' && document.activeElement.tagName !== 'INPUT') { e.preventDefault(); openPalette(); }
+    else if (k === 'Escape') closePalette();
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+# Sinister Vault daemon — minimal runtime deps
+# Author: Sinister Sanctum SV-A agent (Claude) :: 2026-05-19
+fastapi>=0.110
+uvicorn[standard]>=0.27
+httpx>=0.27

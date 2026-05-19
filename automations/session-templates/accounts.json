@@ -1,0 +1,29 @@
+﻿{
+    "_comment":  "Multi-account rotation registry. Each entry maps an \u0027account slot\u0027 to a CLAUDE_CONFIG_DIR. The launcher sets CLAUDE_CONFIG_DIR=\u003cconfig_dir\u003e before spawning Claude, so each window uses a different Anthropic account. To set up: (1) create the folder; (2) `set CLAUDE_CONFIG_DIR=\u003cfolder\u003e` then `claude /login` once. The rotation field controls auto-pick behavior. _last_used_index is auto-updated by the launcher.",
+    "version":  1,
+    "rotation":  "round-robin",
+    "_last_used_index":  0,
+    "accounts":  [
+                     {
+                         "id":  "default",
+                         "label":  "Default account (~/.claude/)",
+                         "config_dir":  "",
+                         "active":  true,
+                         "_note":  "config_dir empty = use the standard ~/.claude/ directory (the account you logged into normally)"
+                     },
+                     {
+                         "id":  "acct1",
+                         "label":  "Account 1",
+                         "config_dir":  "C:/Users/Zonia/.claude-acct1",
+                         "active":  false,
+                         "_note":  "set active=true after you run `set CLAUDE_CONFIG_DIR=C:/Users/Zonia/.claude-acct1` + `claude /login` once"
+                     },
+                     {
+                         "id":  "acct2",
+                         "label":  "Account 2",
+                         "config_dir":  "C:/Users/Zonia/.claude-acct2",
+                         "active":  false,
+                         "_note":  "same setup as acct1 with a different login"
+                     }
+                 ]
+}

@@ -1,0 +1,83 @@
+# docker-compose.yml - sanctum-git :: self-hosted Gitea for the Sinister Sanctum
+# Author: Sinister Sanctum master agent (Claude) :: 2026-05-19
+#
+# Brings up a single-container Gitea (rootless variant — runs as UID/GID 1000, no
+# sudo / no root drift on the host). SQLite backend — no separate DB service.
+#
+# First run: `docker compose up -d`, then open http://localhost:3000 and complete
+# the install wizard. After wizard: create admin user matching .env, then run
+# git-mirror.ps1 init <project-key> from the host to wire up each Sinister repo.
+#
+# The optional gitea-runner service (Gitea Actions, the GH-Actions-compatible CI)
+# is commented out below. Uncomment when the operator opts into local CI.
+
+services:
+  gitea:
+    image: gitea/gitea:1.22-rootless
+    container_name: sanctum-git
+    restart: unless-stopped
+    environment:
+      # Run as host UID/GID 1000 so files in ./data are operator-readable.
+      USER_UID: "1000"
+      USER_GID: "1000"
+      # SQLite — no separate DB container needed. Data file lives in ./data/gitea.db.
+      GITEA__database__DB_TYPE: sqlite3
+      # Server identity — localhost only by default. Edit ROOT_URL if exposing on LAN.
+      GITEA__server__DOMAIN: localhost
+      GITEA__server__ROOT_URL: "http://localhost:3000/"
+      GITEA__server__SSH_PORT: "2222"
+      GITEA__server__SSH_LISTEN_PORT: "2222"
+      # Disable open signups by default — operator's instance, operator's users.
+      GITEA__service__DISABLE_REGISTRATION: "true"
+      GITEA__service__REQUIRE_SIGNIN_VIEW: "false"
+      # Friendly app name in the UI.
+      GITEA__APP_NAME: "Sanctum Git"
+    ports:
+      # Web UI + HTTPS-less git clone over HTTP
+      - "3000:3000"
+      # SSH (mapped to 2222 to avoid clashing with host sshd / OpenSSH server)
+      - "2222:22"
+    volumes:
+      # Gitea data: repos, LFS, attachments, sqlite db.
+      - "D:/Sinister Sanctum/tools/sanctum-git/data:/var/lib/gitea"
+      # Gitea config: app.ini, custom templates.
+      - "D:/Sinister Sanctum/tools/sanctum-git/config:/etc/gitea"
+      # Host time, so commit timestamps match the operator's clock.
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - sanctum-git-net
+
+  # -----------------------------------------------------------------------------
+  # OPTIONAL :: Gitea Actions runner (GitHub-Actions-compatible CI for local repos)
+  # -----------------------------------------------------------------------------
+  # To enable:
+  #   1. Bring the gitea service up first; complete the wizard.
+  #   2. In the Gitea UI: Site Administration -> Actions -> Runners -> "Create new
+  #      runner". Copy the registration token.
+  #   3. Uncomment the block below, paste the token into GITEA_RUNNER_REGISTRATION_TOKEN
+  #      (or put it in .env as RUNNER_TOKEN= and refer here via ${RUNNER_TOKEN}).
+  #   4. `docker compose up -d gitea-runner`.
+  #
+  # gitea-runner:
+  #   image: gitea/act_runner:0.2.10
+  #   container_name: sanctum-git-runner
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - gitea
+  #   environment:
+  #     CONFIG_FILE: /config.yaml
+  #     GITEA_INSTANCE_URL: "http://gitea:3000"
+  #     GITEA_RUNNER_REGISTRATION_TOKEN: "${RUNNER_TOKEN:-paste-token-here}"
+  #     GITEA_RUNNER_NAME: "sanctum-runner-local"
+  #   volumes:
+  #     - "D:/Sinister Sanctum/tools/sanctum-git/runner:/data"
+  #     # The runner needs the host's docker socket to spawn job containers.
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #   networks:
+  #     - sanctum-git-net
+
+networks:
+  sanctum-git-net:
+    name: sanctum-git-net
+    driver: bridge

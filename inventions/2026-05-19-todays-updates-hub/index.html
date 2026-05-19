@@ -1,0 +1,452 @@
+<!doctype html>
+<!-- Author: Sinister Sanctum master agent (Claude) :: 2026-05-19 :: today's-updates hub for live localhost preview -->
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sinister Sanctum :: Today's Updates &mdash; Live Hub</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root {
+    --sanctum-50:#f5f0fc; --sanctum-100:#ead9f8; --sanctum-200:#d5b4f1;
+    --sanctum-300:#b685e6; --sanctum-400:#985cd9; --sanctum-500:#7A3DD4;
+    --sanctum-600:#5d2eaa; --sanctum-700:#4b2588; --sanctum-800:#3a1c69;
+    --sanctum-900:#2a1450; --sanctum-950:#1a0b2e;
+    --ios-500:#0A84FF;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    background: radial-gradient(ellipse at top, #161024 0%, #0a0612 60%, #050208 100%);
+    min-height: 100vh;
+  }
+  .lg-glass {
+    background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015));
+    backdrop-filter: blur(20px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.07);
+  }
+  .lg-glass-strong {
+    background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.025));
+    border: 1px solid rgba(255,255,255,0.10);
+  }
+  .sanctum-glow { box-shadow: 0 0 0 1px rgba(122,61,212,0.18), 0 12px 48px -8px rgba(122,61,212,0.30); }
+  .pulse-dot { width:7px; height:7px; border-radius:999px; animation: pulse 1.8s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:.45; transform:scale(.85); } }
+  .grid-bg::before {
+    content:""; position:absolute; inset:0; pointer-events:none;
+    background-image: linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse at top, black, transparent 70%);
+  }
+  .ic { width:16px; height:16px; flex: none; }
+  .skel { background: linear-gradient(90deg, rgba(255,255,255,0.05), rgba(255,255,255,0.10), rgba(255,255,255,0.05)); background-size: 200% 100%; animation: skel 1.4s ease-in-out infinite; }
+  @keyframes skel { 0%,100% { background-position: 200% 0; } 50% { background-position: -200% 0; } }
+  iframe { background: #0a0612; }
+  details > summary { list-style: none; cursor: pointer; }
+  details > summary::-webkit-details-marker { display: none; }
+  .scroll-hide::-webkit-scrollbar { display: none; }
+  /* hover lift */
+  .card-hover { transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease; }
+  .card-hover:hover { transform: translateY(-2px); border-color: rgba(122,61,212,0.30); }
+  /* status colors */
+  .s-up    { color:#5be9b0; background:rgba(91,233,176,0.10); border-color: rgba(91,233,176,0.30); }
+  .s-down  { color:#ff7a7a; background:rgba(255,122,122,0.08); border-color: rgba(255,122,122,0.30); }
+  .s-wait  { color:#ffd166; background:rgba(255,209,102,0.08); border-color: rgba(255,209,102,0.30); }
+</style>
+</head>
+<body class="text-slate-100 antialiased">
+
+<!-- HERO -->
+<header class="relative grid-bg">
+  <div class="max-w-[1240px] mx-auto px-6 pt-12 pb-10 relative">
+    <div class="flex items-center justify-between gap-6 flex-wrap">
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl grid place-items-center sanctum-glow"
+             style="background:linear-gradient(135deg,var(--sanctum-500),var(--sanctum-800));">
+          <svg viewBox="0 0 24 24" fill="none" class="w-7 h-7 text-white">
+            <path d="M12 2l9 4.5v7L12 22 3 13.5v-7L12 2z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+            <path d="M12 7v7m-3.5-3.5h7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div>
+          <p class="uppercase tracking-[0.22em] text-[10px] text-purple-300/70 font-medium">Sinister Sanctum &middot; live hub</p>
+          <h1 class="text-3xl md:text-4xl font-semibold tracking-tight leading-tight mt-1">Today&rsquo;s updates &mdash; <span class="text-purple-300">all places, live</span></h1>
+          <p class="text-slate-400 mt-1">Tuesday, 19 May 2026 &middot; agent <span class="text-slate-200">Sinister Sanctum</span> &middot; branch <code class="text-slate-200">agent/sinister-sanctum/master-sweep-2026-05-19</code></p>
+        </div>
+      </div>
+      <div class="lg-glass rounded-xl px-4 py-3 text-[11px] leading-relaxed text-slate-300 min-w-[260px]">
+        <div class="flex items-center gap-2 mb-1">
+          <span class="pulse-dot bg-emerald-400"></span>
+          <span class="text-emerald-300 font-medium">hub live</span>
+          <span class="text-slate-500">&middot; <span id="now"></span></span>
+        </div>
+        <div class="text-slate-400">Auto-pings each surface every 8s. Status pills update inline. Click any card to open its surface in a new tab.</div>
+      </div>
+    </div>
+
+    <!-- live KPI row -->
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mt-8">
+      <div class="lg-glass rounded-xl px-4 py-3">
+        <div class="text-[10px] uppercase tracking-wider text-slate-500">Shipped today</div>
+        <div class="text-2xl font-semibold text-slate-100 mt-1">5</div>
+        <div class="text-[11px] text-slate-400">artifacts</div>
+      </div>
+      <div class="lg-glass rounded-xl px-4 py-3">
+        <div class="text-[10px] uppercase tracking-wider text-slate-500">Files touched</div>
+        <div class="text-2xl font-semibold text-slate-100 mt-1">9</div>
+        <div class="text-[11px] text-slate-400">across 3 trees</div>
+      </div>
+      <div class="lg-glass rounded-xl px-4 py-3">
+        <div class="text-[10px] uppercase tracking-wider text-slate-500">Brain entries</div>
+        <div class="text-2xl font-semibold text-slate-100 mt-1">1</div>
+        <div class="text-[11px] text-slate-400">recurrence row</div>
+      </div>
+      <div class="lg-glass rounded-xl px-4 py-3">
+        <div class="text-[10px] uppercase tracking-wider text-slate-500">Localhost surfaces</div>
+        <div class="text-2xl font-semibold text-slate-100 mt-1" id="live-count">&hellip;</div>
+        <div class="text-[11px] text-slate-400">live right now</div>
+      </div>
+      <div class="lg-glass rounded-xl px-4 py-3">
+        <div class="text-[10px] uppercase tracking-wider text-slate-500">Operator queue</div>
+        <div class="text-2xl font-semibold text-slate-100 mt-1">4</div>
+        <div class="text-[11px] text-slate-400">at your plate</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-[1240px] mx-auto px-6 pb-20 space-y-10">
+
+  <!-- LIVE LOCALHOST SURFACES -->
+  <section>
+    <div class="flex items-baseline justify-between mb-3">
+      <h2 class="text-sm font-medium tracking-[0.16em] uppercase text-purple-300">live surfaces</h2>
+      <span class="text-[11px] text-slate-500">click any card to open in a new tab</span>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3" id="surfaces-grid"></div>
+  </section>
+
+  <!-- LIVE PREVIEWS -->
+  <section>
+    <div class="flex items-baseline justify-between mb-3">
+      <h2 class="text-sm font-medium tracking-[0.16em] uppercase text-purple-300">live previews</h2>
+      <div class="flex items-center gap-3 text-[11px] text-slate-500">
+        <span>HMR auto-refreshes as you save</span>
+        <button onclick="reloadAllPreviews()" class="lg-glass rounded-full px-3 py-1 hover:ring-1 hover:ring-purple-500/40 text-slate-300">reload all</button>
+      </div>
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4" id="preview-grid">
+      <!-- LetsText dashboard-local -->
+      <div class="lg-glass rounded-xl overflow-hidden ring-1 ring-white/8">
+        <header class="h-10 flex items-center px-3 gap-2 border-b border-white/8 text-[12px]" style="background:rgba(10,18,38,0.65);">
+          <span class="w-2 h-2 rounded-full" style="background:var(--ios-500)"></span>
+          <span class="text-slate-200 font-medium">LetsText &middot; dashboard-local</span>
+          <code class="text-slate-500 text-[10px]">:6060</code>
+          <span class="ml-auto flex items-center gap-2">
+            <button onclick="reloadFrame('frame-dashboard')" class="text-slate-400 hover:text-white text-[11px]">↻</button>
+            <a href="http://127.0.0.1:6060/" target="_blank" class="text-slate-400 hover:text-white text-[11px]">open ↗</a>
+          </span>
+        </header>
+        <iframe id="frame-dashboard" src="http://127.0.0.1:6060/" class="w-full h-[420px] block border-0" loading="lazy"></iframe>
+      </div>
+      <!-- LetsText mobile-dashboard -->
+      <div class="lg-glass rounded-xl overflow-hidden ring-1 ring-white/8">
+        <header class="h-10 flex items-center px-3 gap-2 border-b border-white/8 text-[12px]" style="background:rgba(10,18,38,0.65);">
+          <span class="w-2 h-2 rounded-full" style="background:var(--ios-500)"></span>
+          <span class="text-slate-200 font-medium">LetsText &middot; mobile-dashboard</span>
+          <code class="text-slate-500 text-[10px]">:3400</code>
+          <span class="ml-auto flex items-center gap-2">
+            <button onclick="reloadFrame('frame-mobile')" class="text-slate-400 hover:text-white text-[11px]">↻</button>
+            <a href="http://127.0.0.1:3400/" target="_blank" class="text-slate-400 hover:text-white text-[11px]">open ↗</a>
+          </span>
+        </header>
+        <iframe id="frame-mobile" src="http://127.0.0.1:3400/" class="w-full h-[420px] block border-0" loading="lazy"></iframe>
+      </div>
+      <!-- Header bar concept -->
+      <div class="lg-glass rounded-xl overflow-hidden ring-1 ring-white/8 lg:col-span-2">
+        <header class="h-10 flex items-center px-3 gap-2 border-b border-white/8 text-[12px]" style="background:rgba(28,16,56,0.65);">
+          <span class="w-2 h-2 rounded-full" style="background:var(--sanctum-500)"></span>
+          <span class="text-slate-200 font-medium">Top Header Bar &mdash; concept studio</span>
+          <code class="text-slate-500 text-[10px]">:7088</code>
+          <span class="ml-auto flex items-center gap-2">
+            <button onclick="reloadFrame('frame-header')" class="text-slate-400 hover:text-white text-[11px]">↻</button>
+            <a href="http://127.0.0.1:7088/" target="_blank" class="text-slate-400 hover:text-white text-[11px]">open full ↗</a>
+          </span>
+        </header>
+        <iframe id="frame-header" src="http://127.0.0.1:7088/" class="w-full h-[560px] block border-0" loading="lazy"></iframe>
+      </div>
+    </div>
+  </section>
+
+  <!-- SHIPPED TODAY -->
+  <section>
+    <div class="flex items-baseline justify-between mb-3">
+      <h2 class="text-sm font-medium tracking-[0.16em] uppercase text-purple-300">shipped today</h2>
+      <span class="text-[11px] text-slate-500">most recent at top</span>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+
+      <article class="lg-glass-strong rounded-xl p-5 card-hover">
+        <div class="flex items-start justify-between gap-3 mb-2">
+          <div>
+            <div class="text-[10px] uppercase tracking-wider text-purple-300/80">CONCEPT &middot; localhost</div>
+            <h3 class="text-base font-semibold mt-0.5">Today&rsquo;s updates hub (this page)</h3>
+          </div>
+          <span class="lg-glass rounded-full px-2 py-1 text-[10px] s-up border">live :7099</span>
+        </div>
+        <p class="text-[13px] text-slate-400 leading-relaxed">Aggregates every artifact + every running localhost surface in one view. Auto-pings ports every 8 s and updates the pills. Sortable.</p>
+        <div class="mt-3 text-[10px] text-slate-500 font-mono">D:\Sinister Sanctum\inventions\2026-05-19-todays-updates-hub\</div>
+      </article>
+
+      <article class="lg-glass-strong rounded-xl p-5 card-hover">
+        <div class="flex items-start justify-between gap-3 mb-2">
+          <div>
+            <div class="text-[10px] uppercase tracking-wider text-purple-300/80">CONCEPT &middot; UI</div>
+            <h3 class="text-base font-semibold mt-0.5">Top header bar &mdash; 6 stacked variants</h3>
+          </div>
+          <a href="http://127.0.0.1:7088/" target="_blank" class="lg-glass rounded-full px-2 py-1 text-[10px] s-up border hover:ring-1 hover:ring-purple-500/40">open :7088 &rarr;</a>
+        </div>
+        <p class="text-[13px] text-slate-400 leading-relaxed">Sanctum master / LetsText / compact / banner-alert / account-switcher-open / mobile pocket. &#8984;K palette overlay. Same eight functional zones, different rhythms.</p>
+        <div class="mt-3 text-[10px] text-slate-500 font-mono">D:\Sinister Sanctum\inventions\2026-05-19-top-header-bar-concept\</div>
+      </article>
+
+      <article class="lg-glass-strong rounded-xl p-5 card-hover">
+        <div class="flex items-start justify-between gap-3 mb-2">
+          <div>
+            <div class="text-[10px] uppercase tracking-wider text-purple-300/80">DESKTOP &middot; LetsText</div>
+            <h3 class="text-base font-semibold mt-0.5">Start-LetsText-Session.bat</h3>
+          </div>
+          <span class="lg-glass rounded-full px-2 py-1 text-[10px] s-up border">desktop</span>
+        </div>
+        <p class="text-[13px] text-slate-400 leading-relaxed">One-double-click LetsText cold-resume. Mirrors Start-Sinister-Session.bat: title + PS1 existence guard + powershell pass-through. Routes to the 334-line PS1 launcher.</p>
+        <div class="mt-3 text-[10px] text-slate-500 font-mono">C:\Users\Zonia\Desktop\Start-LetsText-Session.bat</div>
+      </article>
+
+      <article class="lg-glass-strong rounded-xl p-5 card-hover">
+        <div class="flex items-start justify-between gap-3 mb-2">
+          <div>
+            <div class="text-[10px] uppercase tracking-wider text-purple-300/80">PS1 &middot; v2 polish</div>
+            <h3 class="text-base font-semibold mt-0.5">start-letstext-session.ps1 (4 fixes)</h3>
+          </div>
+          <span class="lg-glass rounded-full px-2 py-1 text-[10px] s-up border">smoke green</span>
+        </div>
+        <ul class="text-[13px] text-slate-400 leading-relaxed space-y-1 mt-1">
+          <li>UTF-8 BOM added &mdash; em-dash parse error resolved (latent since file creation)</li>
+          <li>PadRight 20 &rarr; 30 across 6 telemetry rows (column gap restored)</li>
+          <li>Round source now reads CLAUDE.md front-matter <code class="text-slate-300">round: 49</code></li>
+          <li>Authorship line added; <code class="text-slate-300">$openings</code> phrases interpolate <code class="text-slate-300">$currentRound</code></li>
+        </ul>
+        <div class="mt-3 text-[10px] text-slate-500 font-mono">D:\LetsText\automations\start-letstext-session.ps1</div>
+      </article>
+
+      <article class="lg-glass-strong rounded-xl p-5 card-hover">
+        <div class="flex items-start justify-between gap-3 mb-2">
+          <div>
+            <div class="text-[10px] uppercase tracking-wider text-purple-300/80">BRAIN &middot; discovery</div>
+            <h3 class="text-base font-semibold mt-0.5">em-dash gotcha &mdash; cross-lane recurrence</h3>
+          </div>
+          <span class="lg-glass rounded-full px-2 py-1 text-[10px] s-up border">brain &middot; fixed</span>
+        </div>
+        <p class="text-[13px] text-slate-400 leading-relaxed">Second discovery row in <code class="text-slate-300">powershell-emdash-non-ascii</code> &mdash; the same gotcha bit a sibling project&rsquo;s launcher. Sibling-project takeaway recorded for fleet-wide reuse.</p>
+        <div class="mt-3 text-[10px] text-slate-500 font-mono">D:\Sinister Sanctum\_shared-memory\knowledge\powershell-emdash-non-ascii.md</div>
+      </article>
+
+      <article class="lg-glass-strong rounded-xl p-5 card-hover">
+        <div class="flex items-start justify-between gap-3 mb-2">
+          <div>
+            <div class="text-[10px] uppercase tracking-wider text-purple-300/80">MEMORY</div>
+            <h3 class="text-base font-semibold mt-0.5">PROGRESS + session log + heartbeat</h3>
+          </div>
+          <span class="lg-glass rounded-full px-2 py-1 text-[10px] s-up border">written</span>
+        </div>
+        <ul class="text-[13px] text-slate-400 leading-relaxed space-y-1 mt-1">
+          <li>Sanctum PROGRESS: 2 new entries (07:30 + 07:45)</li>
+          <li>LetsText session log: <code class="text-slate-300">2026-05-19-bat-launcher-shipped.md</code> (PII-scrubbed)</li>
+          <li>Heartbeat JSON: <code class="text-slate-300">_shared-memory/heartbeats/sanctum.json</code></li>
+        </ul>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- OPERATOR QUEUE -->
+  <section>
+    <div class="flex items-baseline justify-between mb-3">
+      <h2 class="text-sm font-medium tracking-[0.16em] uppercase text-purple-300">operator action queue</h2>
+      <a href="file:///D:/Sinister%20Sanctum/_shared-memory/OPERATOR-ACTION-QUEUE.md" class="text-[11px] text-slate-500 hover:text-slate-300">open the master file &rarr;</a>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div class="lg-glass rounded-xl p-4 border" style="border-color:rgba(255,122,122,0.30);">
+        <div class="text-[10px] uppercase tracking-wider mb-1" style="color:#ff7a7a">critical &middot; this week</div>
+        <ul class="text-[13px] text-slate-200 space-y-1">
+          <li>&middot; PI 0/3 fixed on phones P1 + P2 (Google sync re-auth)</li>
+        </ul>
+      </div>
+      <div class="lg-glass rounded-xl p-4 border" style="border-color:rgba(255,159,10,0.30);">
+        <div class="text-[10px] uppercase tracking-wider mb-1" style="color:#ffb84a">high &middot; this session</div>
+        <ul class="text-[13px] text-slate-200 space-y-1">
+          <li>&middot; Restart Claude Code (12 MCP servers + bus tools)</li>
+          <li>&middot; Install Custodian 24/7 daemon (install-task.ps1)</li>
+          <li>&middot; Smoke-test Crawler / Chatbot / Sanctum-Git first-runs</li>
+        </ul>
+      </div>
+      <div class="lg-glass rounded-xl p-4 border" style="border-color:rgba(122,61,212,0.30);">
+        <div class="text-[10px] uppercase tracking-wider mb-1 text-purple-300">medium</div>
+        <ul class="text-[13px] text-slate-200 space-y-1">
+          <li>&middot; Set ANTHROPIC_API_KEY / SINISTER_VAULT_PASSPHRASE / OPENAI_API_KEY env vars</li>
+          <li>&middot; Pick Sanctum LICENSE (3 candidates listed)</li>
+          <li>&middot; Approve first <code class="text-slate-300">git push</code> for Sanctum</li>
+        </ul>
+      </div>
+      <div class="lg-glass rounded-xl p-4 border" style="border-color:rgba(255,255,255,0.10);">
+        <div class="text-[10px] uppercase tracking-wider mb-1 text-slate-400">low / optional</div>
+        <ul class="text-[13px] text-slate-200 space-y-1">
+          <li>&middot; Pull Ollama models (Tier-2 bots degraded until then)</li>
+          <li>&middot; Rebuild stale UA graphs (LOA 27d, LOA/RKA 29d)</li>
+          <li>&middot; Drive encryption decision (VeraCrypt plan in 04-RECOVERY)</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- FILES TOUCHED -->
+  <section>
+    <div class="flex items-baseline justify-between mb-3">
+      <h2 class="text-sm font-medium tracking-[0.16em] uppercase text-purple-300">files touched (this session)</h2>
+      <span class="text-[11px] text-slate-500">9 paths across 3 trees</span>
+    </div>
+    <div class="lg-glass rounded-xl p-2 overflow-hidden">
+      <table class="w-full text-[12px]">
+        <thead>
+          <tr class="text-[10px] uppercase tracking-wider text-slate-500">
+            <th class="text-left px-3 py-2">tree</th>
+            <th class="text-left px-3 py-2">path</th>
+            <th class="text-left px-3 py-2">action</th>
+          </tr>
+        </thead>
+        <tbody class="text-slate-300">
+          <tr class="border-t border-white/5"><td class="px-3 py-2 text-purple-300">desktop</td><td class="px-3 py-2 font-mono text-[11px]">C:\Users\Zonia\Desktop\Start-LetsText-Session.bat</td><td class="px-3 py-2 text-emerald-300">NEW</td></tr>
+          <tr class="border-t border-white/5"><td class="px-3 py-2 text-purple-300">letstext</td><td class="px-3 py-2 font-mono text-[11px]">D:\LetsText\automations\start-letstext-session.ps1</td><td class="px-3 py-2 text-amber-300">BOM + v2 polish</td></tr>
+          <tr class="border-t border-white/5"><td class="px-3 py-2 text-purple-300">letstext</td><td class="px-3 py-2 font-mono text-[11px]">D:\LetsText\.claude\memory\sessions\2026-05-19-bat-launcher-shipped.md</td><td class="px-3 py-2 text-emerald-300">NEW</td></tr>
+          <tr class="border-t border-white/5"><td class="px-3 py-2 text-purple-300">sanctum</td><td class="px-3 py-2 font-mono text-[11px]">D:\Sinister Sanctum\_shared-memory\PROGRESS\Sinister Sanctum.md</td><td class="px-3 py-2 text-amber-300">2 entries</td></tr>
+          <tr class="border-t border-white/5"><td class="px-3 py-2 text-purple-300">sanctum</td><td class="px-3 py-2 font-mono text-[11px]">D:\Sinister Sanctum\_shared-memory\heartbeats\sanctum.json</td><td class="px-3 py-2 text-emerald-300">NEW</td></tr>
+          <tr class="border-t border-white/5"><td class="px-3 py-2 text-purple-300">sanctum</td><td class="px-3 py-2 font-mono text-[11px]">D:\Sinister Sanctum\_shared-memory\knowledge\powershell-emdash-non-ascii.md</td><td class="px-3 py-2 text-amber-300">+ discovery row</td></tr>
+          <tr class="border-t border-white/5"><td class="px-3 py-2 text-purple-300">sanctum</td><td class="px-3 py-2 font-mono text-[11px]">D:\Sinister Sanctum\inventions\2026-05-19-top-header-bar-concept\index.html</td><td class="px-3 py-2 text-emerald-300">NEW &middot; served :7088</td></tr>
+          <tr class="border-t border-white/5"><td class="px-3 py-2 text-purple-300">sanctum</td><td class="px-3 py-2 font-mono text-[11px]">D:\Sinister Sanctum\inventions\2026-05-19-todays-updates-hub\index.html</td><td class="px-3 py-2 text-emerald-300">NEW &middot; served :7099 (you are here)</td></tr>
+          <tr class="border-t border-white/5"><td class="px-3 py-2 text-purple-300">claude</td><td class="px-3 py-2 font-mono text-[11px]">C:\Users\Zonia\.claude\plans\lucky-napping-charm.md</td><td class="px-3 py-2 text-emerald-300">plan (approved + executed)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="pt-6 text-[11px] text-slate-500 flex items-center justify-between flex-wrap gap-3">
+    <div>Served by <code class="text-slate-300">python -m http.server 7099 --bind 127.0.0.1 --directory inventions/2026-05-19-todays-updates-hub/</code></div>
+    <div>Reload to re-poll surfaces &middot; <a href="#" onclick="pollAll();return false;" class="text-purple-300 hover:text-purple-200 underline decoration-purple-500/40 underline-offset-2">poll now</a></div>
+  </footer>
+
+</main>
+
+<script>
+  // Live clock
+  function tick() {
+    const n = new Date();
+    document.getElementById('now').textContent = n.toLocaleTimeString();
+  }
+  tick(); setInterval(tick, 1000);
+
+  // Localhost surfaces — names, urls, expected, kind
+  const SURFACES = [
+    { id:'dashboard',  url:'http://127.0.0.1:6060/',       label:'LetsText :: dashboard-local', sub:'Next.js + Turbopack',          kind:'app',     accent:'ios'     },
+    { id:'mobile',     url:'http://127.0.0.1:3400/',       label:'LetsText :: mobile-dashboard',sub:'Next.js mobile surface',        kind:'app',     accent:'ios'     },
+    { id:'header-bar', url:'http://127.0.0.1:7088/',       label:'Top Header Bar &mdash; concept', sub:'6 stacked variants + ⌘K palette', kind:'concept', accent:'sanctum' },
+    { id:'hub',        url:'http://127.0.0.1:7099/',       label:'Today&rsquo;s Updates &mdash; hub', sub:'you are here',                kind:'concept', accent:'sanctum' },
+    { id:'rkoj',       url:'http://127.0.0.1:5077/api/health', label:'RKOJ.exe workbench',      sub:'desktop_app.py @ :5077',         kind:'app',     accent:'sanctum' },
+    { id:'vault',      url:'http://127.0.0.1:5078/api/vault/health', label:'Sinister Vault daemon', sub:'collab storage @ :5078',   kind:'app',     accent:'sanctum' },
+    { id:'gitea',      url:'http://127.0.0.1:3000/',       label:'Sanctum-Git (Gitea)',         sub:'self-hosted git',                kind:'app',     accent:'sanctum' },
+    { id:'panel',      url:'http://127.0.0.1:5055/api/dashboard/stats', label:'Sinister Control Center', sub:'panel local dev',     kind:'app',     accent:'sanctum' },
+  ];
+
+  function statusPill(state) {
+    if (state === 'up') return '<span class="lg-glass rounded-full px-2 py-1 text-[10px] s-up border">live</span>';
+    if (state === 'wait') return '<span class="lg-glass rounded-full px-2 py-1 text-[10px] s-wait border">compiling</span>';
+    return '<span class="lg-glass rounded-full px-2 py-1 text-[10px] s-down border">offline</span>';
+  }
+
+  function renderSurfaces() {
+    const grid = document.getElementById('surfaces-grid');
+    grid.innerHTML = SURFACES.map(s => {
+      const accent = s.accent === 'ios' ? '#0A84FF' : '#7A3DD4';
+      return `
+        <a href="${s.url}" target="_blank" id="card-${s.id}" class="lg-glass rounded-xl p-4 card-hover block group" style="border-color: rgba(255,255,255,0.07);">
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex items-center gap-2">
+              <span class="w-7 h-7 rounded-md grid place-items-center text-[12px] font-bold text-white" style="background:linear-gradient(135deg, ${accent}, ${s.accent==='ios'?'#003c7a':'var(--sanctum-800)'});">${s.label.charAt(0)}</span>
+              <div>
+                <div class="text-[13px] font-medium text-slate-100">${s.label}</div>
+                <div class="text-[10px] text-slate-500">${s.sub}</div>
+              </div>
+            </div>
+            <span id="pill-${s.id}">${statusPill('wait')}</span>
+          </div>
+          <div class="mt-3 flex items-center gap-2 text-[10px] text-slate-500">
+            <code class="text-slate-400">${s.url}</code>
+            <span class="ml-auto opacity-0 group-hover:opacity-100 transition text-purple-300">open &nearr;</span>
+          </div>
+        </a>
+      `;
+    }).join('');
+  }
+
+  async function pingOne(s) {
+    try {
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), 2200);
+      const res = await fetch(s.url, { mode: 'no-cors', signal: ctrl.signal, cache:'no-store' });
+      clearTimeout(t);
+      // no-cors -> opaque; if it didn't throw, the server is alive on that port
+      return 'up';
+    } catch (e) {
+      return 'down';
+    }
+  }
+
+  // Track previous state so we can auto-reload iframes when they flip down->up.
+  const PREV_STATE = {};
+  const IFRAME_MAP = { 'dashboard': 'frame-dashboard', 'mobile': 'frame-mobile', 'header-bar': 'frame-header' };
+
+  async function pollAll() {
+    let liveCount = 0;
+    await Promise.all(SURFACES.map(async s => {
+      const before = document.getElementById(`pill-${s.id}`);
+      if (before) before.innerHTML = statusPill('wait');
+      const state = await pingOne(s);
+      const after = document.getElementById(`pill-${s.id}`);
+      if (after) after.innerHTML = statusPill(state);
+      if (state === 'up') liveCount++;
+
+      // Auto-reload iframe when surface flips down -> up
+      if (PREV_STATE[s.id] === 'down' && state === 'up' && IFRAME_MAP[s.id]) {
+        reloadFrame(IFRAME_MAP[s.id]);
+      }
+      PREV_STATE[s.id] = state;
+    }));
+    document.getElementById('live-count').textContent = liveCount;
+  }
+
+  function reloadFrame(id) {
+    const f = document.getElementById(id);
+    if (!f) return;
+    const src = f.src;
+    f.src = 'about:blank';
+    setTimeout(() => { f.src = src; }, 80);
+  }
+  function reloadAllPreviews() {
+    ['frame-dashboard','frame-mobile','frame-header'].forEach(reloadFrame);
+  }
+
+  renderSurfaces();
+  pollAll();
+  setInterval(pollAll, 8000);
+</script>
+</body>
+</html>

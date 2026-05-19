@@ -1,0 +1,847 @@
+<!-- Author: Sinister Sanctum master agent (Claude) :: 2026-05-19 -->
+<!-- /* Panel-style redesign — Sinister Sanctum master agent (Claude) :: 2026-05-19 */ -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>RKOJ :: Workbench</title>
+    <link rel="icon" href="/static/sinister-logo.png">
+    <link rel="stylesheet" href="/static/tokens.css">
+    <link rel="stylesheet" href="/static/theme.css">
+</head>
+<body data-density="cozy">
+    <!-- ===== Sinister Panel-style shell ===== -->
+    <div class="skel-shell">
+
+        <!-- ============ LEFT SIDEBAR ============ -->
+        <aside class="skel-sidebar lg-rail">
+            <header class="skel-side-brand">
+                <img src="/static/sinister-logo.png" class="skel-side-avatar" alt="RKOJ">
+                <div class="skel-side-brand-title">RKOJ <span class="muted">::</span> Sanctum</div>
+            </header>
+
+            <!-- DAILY group -->
+            <div class="skel-side-section">
+                <div class="skel-side-label">DAILY</div>
+                <a class="skel-side-item active" data-nav="overview"><span class="ico">&#9678;</span><span>Overview</span></a>
+                <a class="skel-side-item" data-nav="progress"><span class="ico">&#9650;</span><span>Progress</span></a>
+                <a class="skel-side-item" data-nav="accounts"><span class="ico">&#9711;</span><span>Accounts</span></a>
+                <a class="skel-side-item" data-nav="control-center"><span class="ico">&#9881;</span><span>Control Center</span></a>
+            </div>
+
+            <!-- INSIGHTS group -->
+            <div class="skel-side-section">
+                <div class="skel-side-label">INSIGHTS</div>
+                <a class="skel-side-item" data-nav="analytics"><span class="ico">&#9676;</span><span>Analytics</span></a>
+                <a class="skel-side-item" data-nav="library"><span class="ico">&#9635;</span><span>Library</span></a>
+                <a class="skel-side-item" data-nav="codex"><span class="ico">&#9670;</span><span>Codex</span></a>
+                <a class="skel-side-item" data-nav="memory"><span class="ico">&#9728;</span><span>Memory</span></a>
+            </div>
+
+            <!-- MANAGE group -->
+            <div class="skel-side-section">
+                <div class="skel-side-label">MANAGE</div>
+                <a class="skel-side-item" data-nav="devices"><span class="ico">&#9744;</span><span>Phones</span><span class="skel-side-badge" id="side-phones-badge"></span></a>
+                <a class="skel-side-item" data-nav="agents"><span class="ico">&#9881;</span><span>Agents</span></a>
+                <a class="skel-side-item" data-nav="vault"><span class="ico">&#9776;</span><span>Vault</span></a>
+                <a class="skel-side-item" data-nav="scheduler"><span class="ico">&#9201;</span><span>Scheduler</span></a>
+                <a class="skel-side-item" data-nav="cycle-points"><span class="ico">&#9679;</span><span>Cycle points</span></a>
+                <a class="skel-side-item" data-nav="settings"><span class="ico">&#9881;</span><span>Settings</span></a>
+            </div>
+
+            <!-- Profile pill at bottom -->
+            <footer class="skel-side-profile">
+                <div class="skel-side-role-pill">Super Admin</div>
+                <div class="skel-side-acct">
+                    <span class="who">operator</span>
+                    <span class="muted" id="skel-side-acct-id">cmp512y5b0000ur6...</span>
+                </div>
+                <button class="skel-side-signout" id="skel-side-signout">Sign Out</button>
+            </footer>
+        </aside>
+
+        <!-- ============ MAIN CONTENT ============ -->
+        <main class="skel-main">
+            <!-- Top bar inside main -->
+            <header class="skel-top">
+                <h1 class="skel-top-title">RKOJ</h1>
+                <nav class="skel-top-tabs" role="tablist">
+                    <button class="lg-pill skel-top-tab active" role="tab" data-tab="fleet" aria-selected="true">
+                        <span class="skel-tab-ico">&#9678;</span> Fleet
+                    </button>
+                    <button class="lg-pill skel-top-tab" role="tab" data-tab="agents" aria-selected="false">
+                        <span class="skel-tab-ico">&#9881;</span> Agents
+                    </button>
+                    <button class="lg-pill skel-top-tab" role="tab" data-tab="vault" aria-selected="false">
+                        <span class="skel-tab-ico">&#9776;</span> Vault
+                    </button>
+                </nav>
+                <div class="skel-top-actions">
+                    <!-- Codex peer-review status pill — Sinister Sanctum master agent (Claude) :: 2026-05-19 -->
+                    <button class="codex-status-pill" id="codex-status-pill" title="latest Codex verdict (click to open pane)">
+                        <span class="codex-status-dot"></span>
+                        <span class="codex-status-text" id="codex-status-text">Codex</span>
+                        <span class="codex-status-age" id="codex-status-age">--</span>
+                    </button>
+                    <button class="skel-icon-circle" id="tb-alerts" title="Operator requests">
+                        <span class="ico">!</span><span class="badge" id="alerts-count"></span>
+                    </button>
+                    <button class="skel-icon-circle" id="tb-bell" title="Notifications"><span class="ico">&#9788;</span></button>
+                    <button class="skel-icon-circle" id="tb-home" title="Home"><span class="ico">&#8962;</span></button>
+                    <button class="skel-icon-circle" id="tb-palette" title="Command palette (Ctrl+K)"><span class="ico">&#9733;</span></button>
+                    <span class="skel-health lg-pill" id="health-pill" title="server health">&#9679; online</span>
+                    <span class="skel-clock" id="clock">--:--</span>
+                </div>
+            </header>
+
+            <!-- Hero KPI row (4 cards) -->
+            <section class="skel-hero" id="hero-row">
+                <div class="lg-card skel-kpi">
+                    <div class="skel-kpi-head"><span>PHONES ONLINE</span><span class="skel-kpi-ico">&#9742;</span></div>
+                    <div class="skel-kpi-num" data-bind="kpi-phones-online">&mdash;</div>
+                    <div class="skel-kpi-underline"></div>
+                </div>
+                <div class="lg-card skel-kpi">
+                    <div class="skel-kpi-head"><span>AGENTS ONLINE</span><span class="skel-kpi-ico">&#9881;</span></div>
+                    <div class="skel-kpi-num" data-bind="kpi-agents-online">&mdash;</div>
+                    <div class="skel-kpi-underline"></div>
+                </div>
+                <div class="lg-card skel-kpi">
+                    <div class="skel-kpi-head"><span>VAULT USED</span><span class="skel-kpi-ico">&#9776;</span></div>
+                    <div class="skel-kpi-num" data-bind="kpi-vault-used">&mdash;</div>
+                    <div class="skel-kpi-underline"></div>
+                </div>
+                <div class="lg-card skel-kpi">
+                    <div class="skel-kpi-head"><span>PENDING REQUESTS</span><span class="skel-kpi-ico">!</span></div>
+                    <div class="skel-kpi-num" data-bind="kpi-pending">&mdash;</div>
+                    <div class="skel-kpi-underline"></div>
+                </div>
+            </section>
+
+            <!-- Content area (per-tab) -->
+            <section class="skel-content">
+                <div class="skel-tab-pane" id="skel-fleet">
+                    <!-- 2-col: device list (left) + device detail (right) — populated by app.js -->
+                </div>
+                <div class="skel-tab-pane" id="skel-agents" hidden>
+                    <!-- agents workbench (sessions strip + launcher wizard + cycle points) -->
+                </div>
+                <div class="skel-tab-pane" id="skel-vault" hidden>
+                    <!-- vault drawer fullscreen -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- ===== SPAWNED-WINDOWS control bar (per-agent chips) ===== -->
+    <div class="windows-bar" id="windows-bar"><span class="hint" style="margin:0;">no Claude windows tracked yet</span></div>
+
+    <!-- ===== Dev-tools rail (preserved — palette / templates mount target) ===== -->
+    <aside class="rkoj-devtools" id="devtools-rail" aria-hidden="true">
+        <header class="rkoj-devtools-header">
+            <h3>Dev tools</h3>
+            <button class="rkoj-icon-btn" id="devtools-close">&#10005;</button>
+        </header>
+        <div class="rkoj-devtools-body" id="devtools-body"></div>
+    </aside>
+
+    <!-- ===== Popouts list (small floating chip strip) ===== -->
+    <div class="rkoj-popouts-bar" id="popouts-bar" hidden></div>
+
+    <!-- ===== Toast container ===== -->
+    <div class="rkoj-toasts" id="toasts"></div>
+    <!-- Legacy single-toast slot (kept for app.js toast() helper which targets #toast) -->
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <!-- ============ TEMPLATES (preserved verbatim from prior shell) ============ -->
+    <template id="tpl-devices-section">
+        <div class="rkoj-devices-section">
+            <div class="lane-filter-bar">
+                <label>filter by lane:</label>
+                <select data-bind="devices-lane-filter">
+                    <option value="">all</option>
+                </select>
+                <span class="lane-legend" data-bind="devices-lane-legend"></span>
+                <span class="count" data-bind="devices-count">0 attached</span>
+                <button class="lg-button ghost" data-act="refresh-devices" data-bind="devices-refresh">refresh</button>
+            </div>
+            <div class="rkoj-devices-grid" data-bind="devices-grid">
+                <div class="empty-note">loading devices...</div>
+            </div>
+        </div>
+    </template>
+
+    <template id="tpl-agents-section">
+        <div class="rkoj-agents-section">
+            <section class="rkoj-sessions-strip" data-bind="agents-sessions-strip">
+                <h4>Active sessions <span class="count" data-bind="agents-sessions-count">0</span></h4>
+                <div class="rkoj-sessions-grid" data-bind="agents-sessions-grid">
+                    <div class="empty-note">loading sessions...</div>
+                </div>
+            </section>
+            <section class="rkoj-launcher-wizard lg-card">
+                <h4>Spawn a new agent session</h4>
+                <div class="lh-row"><label>Project</label><select data-bind="lh-project"></select></div>
+                <div class="lh-row"><label>Mode</label><select data-bind="lh-mode"></select></div>
+                <div class="lh-row"><label><input type="checkbox" data-bind="lh-fast"> Fast mode (Opus 4.6 only)</label></div>
+                <div class="lh-row"><label>Custom prompt (optional)</label><textarea data-bind="lh-prompt" class="lg-textarea" placeholder="injected after spawn"></textarea></div>
+                <div class="lh-actions">
+                    <button class="lg-button primary" data-act="launch">[LAUNCH]</button>
+                    <button class="lg-button ghost" data-act="fix-claude-memory">FIX CLAUDE MEMORY</button>
+                    <button class="lg-button ghost" data-act="open-trophy">OPEN TROPHY CASE</button>
+                    <button class="lg-button ghost" data-act="open-phones">OPEN PHONE VIEWER</button>
+                </div>
+            </section>
+            <section class="rkoj-recent-launches lg-card" data-bind="recent-launches-card">
+                <h4>Recent launches <span class="count" data-bind="lh-recent-count">0</span></h4>
+                <div data-bind="recent-launches-list" class="recent-launches">
+                    <div class="empty-note">no launches yet</div>
+                </div>
+            </section>
+            <section class="rkoj-cycle-points lg-card" data-bind="cycle-points-card">
+                <h4>Cycle points <button class="lg-button" data-act="new-cycle-point">+ NEW</button></h4>
+                <div data-bind="cycle-points-list">
+                    <div class="empty-note">no cycle points yet</div>
+                </div>
+            </section>
+            <section class="rkoj-activity-feed lg-card" data-bind="activity-feed-card">
+                <h4>Activity feed (progress + inbox + requests)</h4>
+                <div data-bind="activity-feed-list">
+                    <div class="empty-note">loading activity...</div>
+                </div>
+            </section>
+        </div>
+    </template>
+
+    <!-- ============ PRESERVED TEMPLATES (verbatim from prior shell) ============ -->
+    <!-- consumed by dev-tools rail drawers, command palette mount, popouts -->
+
+    <template id="tpl-dashboard">
+        <div class="tab-view active" data-view="dashboard">
+            <div class="app-grid">
+                <section class="pane">
+                    <div class="pane-header">
+                        <h2>Projects</h2>
+                        <span class="count" data-bind="projects-count">0</span>
+                    </div>
+                    <div class="pane-body" data-bind="projects-pane"><div class="empty-note">loading...</div></div>
+                </section>
+                <section class="pane">
+                    <div class="pane-header">
+                        <h2>Active sessions</h2>
+                        <span class="count" data-bind="sessions-count">0 online</span>
+                    </div>
+                    <div class="pane-body" data-bind="sessions-pane"><div class="empty-note">loading...</div></div>
+                </section>
+                <section class="pane">
+                    <div class="pane-header">
+                        <h2>Trophy case</h2>
+                        <span class="count" data-bind="trophy-status">--</span>
+                    </div>
+                    <div class="pane-body">
+                        <div class="lg-card">
+                            <div class="trophy-grid">
+                                <div class="trophy-tile"><div class="num" data-bind="t-accts">-</div><div class="lbl">accounts</div></div>
+                                <div class="trophy-tile"><div class="num" data-bind="t-videos">-</div><div class="lbl">videos</div></div>
+                                <div class="trophy-tile"><div class="num" data-bind="t-active">-</div><div class="lbl">active</div></div>
+                                <div class="trophy-tile"><div class="num" data-bind="t-pushes">-</div><div class="lbl">pushes</div></div>
+                                <div class="trophy-tile"><div class="num" data-bind="t-banned">-</div><div class="lbl">banned</div></div>
+                                <div class="trophy-tile"><div class="num" data-bind="t-devices">-</div><div class="lbl">devices</div></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pane-header" style="margin-top:8px;">
+                        <h2>Recent runlogs</h2>
+                        <span class="count" data-bind="runlogs-count">0</span>
+                    </div>
+                    <div class="pane-body" data-bind="runlogs-pane"><div class="empty-note">loading...</div></div>
+                </section>
+            </div>
+        </div>
+    </template>
+
+    <template id="tpl-progress">
+        <div class="tab-view active" data-view="progress">
+            <div class="single-pane">
+                <div class="pane-header">
+                    <h2>Cross-agent progress feed</h2>
+                    <span class="count" data-bind="progress-count">0</span>
+                </div>
+                <div class="lg-card form-row" style="margin-bottom:14px;">
+                    <strong style="color:var(--primary-soft); margin-right:8px;">+ log progress</strong>
+                    <input type="text" data-bind="prog-agent" placeholder="agent name" style="width:170px;">
+                    <select data-bind="prog-status">
+                        <option value="started">started</option>
+                        <option value="shipped" selected>shipped</option>
+                        <option value="blocked">blocked</option>
+                        <option value="paused">paused</option>
+                        <option value="failed">failed</option>
+                        <option value="note">note</option>
+                    </select>
+                    <input type="text" data-bind="prog-title" placeholder="one-line title" style="flex:1; min-width:200px;">
+                    <button data-bind="prog-submit">APPEND</button>
+                </div>
+                <div class="progress-grid" data-bind="progress-grid"><div class="empty-note">loading...</div></div>
+            </div>
+        </div>
+    </template>
+
+    <template id="tpl-memory">
+        <div class="tab-view active" data-view="memory">
+            <div class="memory-grid">
+                <div class="lg-card memory-card">
+                    <div class="pane-header"><h2>Directives (DIRECTIVES.md)</h2><span class="count">cross-agent</span></div>
+                    <div class="md-pre" data-bind="mem-directives">loading...</div>
+                </div>
+                <div class="lg-card memory-card">
+                    <div class="pane-header"><h2>Work-Toward (WORK-TOWARD.md)</h2><span class="count">shared goals</span></div>
+                    <div class="md-pre" data-bind="mem-work">loading...</div>
+                </div>
+                <div class="lg-card memory-card memory-add">
+                    <div class="pane-header"><h2>Append a new entry</h2></div>
+                    <select data-bind="mem-target">
+                        <option value="directives">DIRECTIVES.md (standing rule)</option>
+                        <option value="work_toward">WORK-TOWARD.md (shared goal)</option>
+                        <option value="note">notes/ (new note file)</option>
+                    </select>
+                    <input type="text" data-bind="mem-title" placeholder="title (one line)">
+                    <textarea data-bind="mem-body" placeholder="body (any length, multiline)" rows="6"></textarea>
+                    <button data-bind="mem-submit">APPEND TO SHARED MEMORY</button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="tpl-inbox">
+        <div class="tab-view active" data-view="inbox">
+            <div class="inbox-grid">
+                <div class="lg-card inbox-agents">
+                    <div class="pane-header"><h2>Agents</h2><span class="count" data-bind="inbox-agent-count">0</span></div>
+                    <div data-bind="inbox-agents-list"></div>
+                </div>
+                <div class="lg-card inbox-stream">
+                    <div class="pane-header">
+                        <h2 data-bind="inbox-stream-title">select an agent</h2>
+                        <button class="btn-mini" data-bind="inbox-refresh">REFRESH</button>
+                    </div>
+                    <div data-bind="inbox-messages"><div class="empty-note">pick an agent on the left</div></div>
+                    <div class="form-row" style="margin-top:12px;">
+                        <input type="text" data-bind="inbox-send-body" placeholder="message to selected agent" style="flex:1;">
+                        <button data-bind="inbox-send-btn" disabled>SEND</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="tpl-settings">
+        <div class="tab-view active" data-view="settings">
+            <div class="settings-grid">
+                <div class="lg-card">
+                    <div class="pane-header"><h2>Anthropic accounts</h2><span class="count" data-bind="acct-count">0</span></div>
+                    <div data-bind="acct-list"></div>
+                    <p class="hint">edit <code>D:\Sinister Sanctum\automations\session-templates\accounts.json</code> to add/activate accounts</p>
+                </div>
+                <div class="lg-card">
+                    <div class="pane-header"><h2>Agent identities</h2><span class="count" data-bind="prefs-count">0</span></div>
+                    <div data-bind="prefs-list"></div>
+                    <p class="hint">edit <code>session-templates\agent-prefs.json</code> to change defaults</p>
+                </div>
+                <div class="lg-card">
+                    <div class="pane-header"><h2>Connect from phone</h2><span class="count" data-bind="conn-mode">--</span></div>
+                    <div data-bind="conn-info">
+                        <p class="hint">LAN mode only - boot with <code>Sanctum-LAN.bat</code> to enable.</p>
+                    </div>
+                </div>
+                <div class="lg-card">
+                    <div class="pane-header"><h2>System health</h2></div>
+                    <div data-bind="sys-health">loading...</div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="tpl-phones">
+        <div class="tab-view active" data-view="phones">
+            <div class="devices-wrap">
+                <div class="devices-banner" role="alert">
+                    <strong>Each phone is a container.</strong>
+                    Per-phone operations only - every adb call carries <code>-s &lt;serial&gt;</code>.
+                    PC-side state (frida-server, proxies, env vars) does NOT leak unless explicitly
+                    pushed to a specific phone.
+                    See <code>_shared-memory/notes/2026-05-19-adb-phone-containerization.md</code>.
+                </div>
+                <div class="pane-header devices-header">
+                    <h2>Devices</h2>
+                    <span class="count" data-bind="devices-count">0 attached</span>
+                    <button class="btn-mini" data-bind="devices-refresh">REFRESH</button>
+                </div>
+                <div class="lane-filter-bar">
+                    <label class="lane-filter-label">lane:</label>
+                    <select class="lane-filter-select" data-bind="devices-lane-filter">
+                        <option value="all">all</option>
+                    </select>
+                    <div class="lane-legend" data-bind="devices-lane-legend"></div>
+                </div>
+                <div class="devices-grid" data-bind="devices-grid">
+                    <div class="empty-note">loading devices...</div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="tpl-skills">
+        <div class="tab-view active" data-view="skills">
+            <div class="md-browse">
+                <div class="md-list-pane">
+                    <div class="pane-header">
+                        <h2>Skills</h2>
+                        <span class="count" data-bind="skills-count">0</span>
+                    </div>
+                    <div class="md-list" data-bind="skills-list">
+                        <div class="empty-note">loading...</div>
+                    </div>
+                </div>
+                <div class="md-reader-wrap">
+                    <div class="pane-header">
+                        <h2 data-bind="skills-title">select a skill</h2>
+                        <span class="count" data-bind="skills-meta"></span>
+                    </div>
+                    <div class="md-reader" data-bind="skills-reader">pick a skill on the left</div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="tpl-tools">
+        <div class="tab-view active" data-view="tools">
+            <div class="md-browse">
+                <div class="md-list-pane">
+                    <div class="pane-header">
+                        <h2>Tools</h2>
+                        <span class="count" data-bind="tools-count">0</span>
+                    </div>
+                    <div class="md-list" data-bind="tools-list">
+                        <div class="empty-note">loading...</div>
+                    </div>
+                </div>
+                <div class="md-reader-wrap">
+                    <div class="pane-header">
+                        <h2 data-bind="tools-title">select a tool</h2>
+                        <span class="count" data-bind="tools-meta"></span>
+                    </div>
+                    <div class="md-reader" data-bind="tools-reader">pick a tool on the left</div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="tpl-inventions">
+        <div class="tab-view active" data-view="inventions">
+            <div class="md-browse">
+                <div class="md-list-pane">
+                    <div class="pane-header">
+                        <h2>Inventions</h2>
+                        <span class="count" data-bind="inventions-count">0</span>
+                    </div>
+                    <div class="md-list" data-bind="inventions-list">
+                        <div class="empty-note">loading...</div>
+                    </div>
+                </div>
+                <div class="md-reader-wrap">
+                    <div class="pane-header">
+                        <h2 data-bind="inventions-title">select an invention</h2>
+                        <span class="count" data-bind="inventions-meta"></span>
+                    </div>
+                    <div class="md-reader" data-bind="inventions-reader">pick an invention on the left</div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="tpl-agent-actions">
+        <div class="lg-popover agent-actions" role="dialog" aria-modal="true" aria-label="agent actions">
+            <h4>Set intelligence &mdash; <span data-bind="agent-name"></span></h4>
+            <fieldset class="intelligence-list">
+                <label><input type="radio" name="model" value="claude-opus-4-7"> <span>Opus 4.7</span> <span class="muted">(1M ctx &middot; slowest &middot; smartest)</span></label>
+                <label><input type="radio" name="model" value="claude-opus-4-6"> <span>Opus 4.6</span> <span class="muted">(fast-mode capable)</span></label>
+                <label><input type="radio" name="model" value="claude-sonnet-4-6"> <span>Sonnet 4.6</span> <span class="muted">(balanced)</span></label>
+                <label><input type="radio" name="model" value="claude-haiku-4-5-20251001"> <span>Haiku 4.5</span> <span class="muted">(fastest &middot; cheapest)</span></label>
+                <label class="fast-toggle"><input type="checkbox" name="fast"> Fast mode <span class="muted">(Opus 4.6 only)</span></label>
+            </fieldset>
+            <div class="popover-actions">
+                <button class="lg-button cancel" data-bind="aa-cancel">Cancel</button>
+                <button class="lg-button primary apply" data-bind="aa-apply" disabled>Apply</button>
+            </div>
+        </div>
+    </template>
+
+    <template id="tpl-command-menu">
+        <div class="tab-view active" data-view="command-menu">
+            <div class="single-pane">
+                <div class="pane-header">
+                    <h2>Command menu <span class="hint" style="margin-left:8px;">per-agent quick actions</span></h2>
+                    <span class="count" data-bind="cm-count">0 agents</span>
+                </div>
+                <div class="lg-card form-row" style="margin-bottom:14px;">
+                    <strong style="color:var(--primary-soft); margin-right:8px;">agent:</strong>
+                    <select data-bind="cm-agent" style="flex:1; min-width:220px;"></select>
+                    <button data-bind="cm-refresh">REFRESH</button>
+                </div>
+                <div class="lg-card">
+                    <div class="pane-header"><h2>Actions</h2></div>
+                    <div class="cm-actions">
+                        <button class="lg-button cm-action" data-bind="cm-intelligence">&#9889; Intelligence level</button>
+                        <button class="lg-button cm-action" disabled title="future action">&#9208; Pause (future)</button>
+                        <button class="lg-button cm-action" disabled title="future action">&#128226; Send directive (future)</button>
+                        <button class="lg-button cm-action" disabled title="future action">&#127807; Switch branch (future)</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="tpl-launcher">
+        <div class="tab-view active" data-view="launcher">
+            <div class="single-pane">
+                <div class="pane-header">
+                    <h2>Launcher <span class="hint" style="margin-left:8px;">spawn agents :: mirrors start-sinister-session.ps1</span></h2>
+                    <span class="count" data-bind="lh-status">ready</span>
+                </div>
+                <div class="lg-card launcher-wizard">
+                    <label class="lh-row">
+                        <span class="lh-label">1. Project</span>
+                        <select class="lh-input" data-bind="lh-project"></select>
+                    </label>
+                    <label class="lh-row">
+                        <span class="lh-label">2. Mode</span>
+                        <select class="lh-input" data-bind="lh-mode"></select>
+                    </label>
+                    <label class="lh-row checkbox-row">
+                        <input type="checkbox" data-bind="lh-fast"> <span>3. Fast mode</span>
+                    </label>
+                    <label class="lh-row">
+                        <span class="lh-label">4. Custom prompt (optional)</span>
+                        <textarea class="lh-input lh-textarea" data-bind="lh-prompt" rows="4" placeholder="optional one-shot prompt to inject after spawn"></textarea>
+                    </label>
+                    <div class="lh-actions">
+                        <button class="lg-button primary" data-bind="lh-launch">[LAUNCH]</button>
+                    </div>
+                </div>
+                <div class="lg-card" style="margin-top:14px;">
+                    <div class="pane-header">
+                        <h2>Convenience</h2>
+                        <span class="count">one-click</span>
+                    </div>
+                    <div class="cm-actions">
+                        <button class="lg-button cm-action" data-bind="lh-fix-memory">[FIX CLAUDE MEMORY]</button>
+                        <button class="lg-button cm-action" data-bind="lh-open-trophy">[OPEN TROPHY CASE]</button>
+                        <button class="lg-button cm-action" data-bind="lh-open-phones">[OPEN PHONE VIEWER]</button>
+                    </div>
+                </div>
+                <div class="lg-card" style="margin-top:14px;">
+                    <div class="pane-header">
+                        <h2>Recent launches</h2>
+                        <span class="count" data-bind="lh-recent-count">0</span>
+                    </div>
+                    <div class="recent-launches" data-bind="lh-recent-list">
+                        <div class="empty-note">no launches yet</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="tpl-requests">
+        <div class="tab-view active" data-view="requests">
+            <div class="single-pane">
+                <div class="pane-header">
+                    <h2>Operator requests <span class="hint" style="margin-left:8px;">things agents need from you</span></h2>
+                    <span class="count" data-bind="req-count">0 pending</span>
+                </div>
+                <div class="req-tabs" style="margin-bottom:10px;">
+                    <button class="req-tab active" data-req-filter="pending">PENDING</button>
+                    <button class="req-tab" data-req-filter="approved">APPROVED</button>
+                    <button class="req-tab" data-req-filter="denied">DENIED</button>
+                    <button class="req-tab" data-req-filter="replied">REPLIED</button>
+                    <button class="req-tab" data-req-filter="all">ALL</button>
+                </div>
+                <div class="req-list" data-bind="req-list"><div class="empty-note">loading...</div></div>
+            </div>
+        </div>
+    </template>
+
+    <template id="tpl-codex">
+        <div class="tab-view active" data-view="codex">
+            <div class="codex-wrap">
+                <div class="lg-card">
+                    <div class="pane-header">
+                        <h2>Codex peer review</h2>
+                        <span class="count">paste code, get a verdict</span>
+                    </div>
+                    <label class="codex-label" for="codex-code">paste code to review</label>
+                    <textarea class="codex-code" data-bind="codex-code" id="codex-code" rows="12" placeholder="// paste code here..."></textarea>
+                    <div class="form-row codex-controls">
+                        <label class="codex-mini-label">depth
+                            <select data-bind="codex-depth">
+                                <option value="quick">quick</option>
+                                <option value="standard" selected>standard</option>
+                                <option value="deep">deep</option>
+                            </select>
+                        </label>
+                        <label class="codex-mini-label">language
+                            <input type="text" data-bind="codex-language" value="auto" placeholder="auto / python / js / ...">
+                        </label>
+                        <label class="codex-mini-label" style="flex:1; min-width:200px;">context
+                            <input type="text" data-bind="codex-context" placeholder="one-line context blurb">
+                        </label>
+                        <button data-bind="codex-submit">[REVIEW]</button>
+                    </div>
+                </div>
+                <div class="lg-card codex-result-card" data-bind="codex-result-card" style="display:none;">
+                    <div class="pane-header">
+                        <h2>Result</h2>
+                        <span class="codex-verdict" data-bind="codex-verdict"></span>
+                    </div>
+                    <div class="codex-summary" data-bind="codex-summary"></div>
+                    <div class="codex-findings" data-bind="codex-findings"></div>
+                </div>
+                <div class="lg-card">
+                    <div class="pane-header">
+                        <h2>Recent reviews</h2>
+                        <span class="count" data-bind="codex-history-count">0</span>
+                    </div>
+                    <div class="codex-history" data-bind="codex-history">
+                        <div class="empty-note">no history yet</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- ===== TEMPLATE: cycle point save modal ===== -->
+    <template id="tpl-cycle-save-modal">
+        <div class="lg-popover rkoj-modal">
+            <h3>Save cycle point</h3>
+            <label>Name<input class="lg-input" data-bind="cp-name" placeholder="Snap API :: SS03 hypothesis #3"></label>
+            <label>Project<select data-bind="cp-project"></select></label>
+            <label>Note<textarea class="lg-textarea" data-bind="cp-note" placeholder="about to dump libclient.so JNI table"></textarea></label>
+            <div class="popover-actions">
+                <button class="lg-button ghost" data-act="cancel">Cancel</button>
+                <button class="lg-button primary" data-act="save">Save</button>
+            </div>
+        </div>
+    </template>
+
+    <!-- ===== TEMPLATE: schedule add modal ===== -->
+    <template id="tpl-schedule-add-modal">
+        <div class="lg-popover rkoj-modal">
+            <h3>Add schedule entry</h3>
+            <label>Name<input class="lg-input" data-bind="sch-name"></label>
+            <label>Cron (or preset)
+                <select data-bind="sch-cron-preset">
+                    <option value="0 * * * *">Every hour</option>
+                    <option value="0 0 * * *">Every day at midnight</option>
+                    <option value="0 2 * * *">Every day at 2am</option>
+                    <option value="0 9 * * 1">Mondays at 9am</option>
+                    <option value="0 0 1 * *">First of each month</option>
+                    <option value="*/5 * * * *">Every 5 minutes</option>
+                    <option value="custom">Custom...</option>
+                </select>
+                <input class="lg-input" data-bind="sch-cron" placeholder="cron expression">
+            </label>
+            <label>Kind
+                <select data-bind="sch-kind">
+                    <option value="script">script (whitelist)</option>
+                    <option value="spawn-agent">spawn-agent</option>
+                    <option value="inbox">inbox</option>
+                    <option value="resume-cycle">resume-cycle</option>
+                    <option value="http">http call</option>
+                </select>
+            </label>
+            <div class="sch-action-form" data-bind="sch-action-form"></div>
+            <div class="popover-actions">
+                <button class="lg-button ghost" data-act="cancel">Cancel</button>
+                <button class="lg-button primary" data-act="save">Save</button>
+            </div>
+        </div>
+    </template>
+
+    <!-- /* RKOJ Vault UI — Sinister Sanctum master agent (Claude) :: 2026-05-19 */ -->
+    <template id="tpl-vault-drawer">
+      <div class="rkoj-vault-drawer">
+        <div class="rkoj-vault-header">
+          <h4>Sinister Vault</h4>
+          <span class="rkoj-vault-status" data-bind="vault-status">checking…</span>
+        </div>
+
+        <div class="rkoj-vault-quota lg-card" data-bind="vault-quota-card">
+          <div class="rkoj-vault-quota-row">
+            <span class="lbl">used</span>
+            <span class="val" data-bind="vault-used">—</span>
+          </div>
+          <div class="rkoj-vault-quota-row">
+            <span class="lbl">free</span>
+            <span class="val" data-bind="vault-free">—</span>
+          </div>
+          <div class="rkoj-vault-quota-bar" data-bind="vault-quota-bar">
+            <div class="rkoj-vault-quota-fill" style="width:0%"></div>
+          </div>
+          <small class="muted">1 TB soft quota · warn at 950 GB</small>
+        </div>
+
+        <div class="rkoj-vault-section">
+          <div class="rkoj-vault-section-header">
+            <h5>Sync (Syncthing)</h5>
+            <button class="lg-button ghost" data-act="vault-refresh-sync">refresh</button>
+          </div>
+          <div data-bind="vault-sync-status" class="rkoj-vault-list">offline</div>
+        </div>
+
+        <div class="rkoj-vault-section">
+          <div class="rkoj-vault-section-header">
+            <h5>Recent audit (commits / pushes / pulls)</h5>
+            <button class="lg-button ghost" data-act="vault-refresh-audit">refresh</button>
+          </div>
+          <div data-bind="vault-audit-list" class="rkoj-vault-list"></div>
+        </div>
+
+        <div class="rkoj-vault-section">
+          <div class="rkoj-vault-section-header">
+            <h5>Actions</h5>
+          </div>
+          <div class="rkoj-vault-actions">
+            <button class="lg-button primary" data-act="vault-commit">Commit file…</button>
+            <button class="lg-button ghost" data-act="vault-snapshot">Snapshot now</button>
+            <button class="lg-button ghost" data-act="vault-open-gitea">Open Gitea</button>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <template id="tpl-vault-commit-modal">
+      <div class="lg-popover rkoj-modal">
+        <h3>Commit a file to the vault</h3>
+        <label>Repository<select class="lg-select" data-bind="vc-repo"></select></label>
+        <label>File path (absolute)<input class="lg-input" data-bind="vc-file" placeholder="D:\Sinister Sanctum\...\some-file.md"></label>
+        <label>Commit message<input class="lg-input" data-bind="vc-message" placeholder="add: design note"></label>
+        <label>Account<select class="lg-select" data-bind="vc-account"><option value="operator">operator</option><option value="leo">leo</option></select></label>
+        <div class="popover-actions">
+          <button class="lg-button ghost" data-act="cancel">Cancel</button>
+          <button class="lg-button primary" data-act="save">Commit</button>
+        </div>
+      </div>
+    </template>
+
+    <!-- Codex fullpane template — Sinister Sanctum master agent (Claude) :: 2026-05-19 -->
+    <!-- Reachable via sidebar nav 'codex' (skel-side-item), Cmd+K palette ('codex: open pane'),
+         ribbon tile 'Codex review' (SPAWN group), or hash route #pane=codex. -->
+    <template id="tpl-codex-fullpane">
+        <div class="codex-fullpane">
+            <!-- Hero card -->
+            <div class="codex-hero">
+                <div class="codex-hero-row">
+                    <div class="codex-hero-title">
+                        <span class="codex-shield" aria-hidden="true">
+                            <!-- shield-check inline SVG (no lucide-react) -->
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 2 4 5v6c0 5.25 3.4 9.9 8 11 4.6-1.1 8-5.75 8-11V5l-8-3z"/>
+                                <path d="m9 12 2 2 4-4"/>
+                            </svg>
+                        </span>
+                        Codex Companion
+                    </div>
+                    <span class="codex-verdict-pill unknown" data-bind="codex-hero-verdict">No reviews yet</span>
+                </div>
+                <div class="codex-hero-tagline">
+                    Peer-review counterweight from a different model family. POST code -&gt; get a verdict (pass / warn / fail) with findings.
+                    Backend: <code>tools/codex-companion/codex.py</code>. JSON audit log lives in <code>_shared-memory/codex-reviews/</code>.
+                </div>
+                <div class="codex-hero-meta">
+                    <code>POST /api/codex/review</code>
+                    <code>GET /api/codex/reviews</code>
+                    <span>Sanctum purple master surface.</span>
+                </div>
+            </div>
+
+            <!-- Two-column grid: history (left) + run-review form (right) -->
+            <div class="codex-grid">
+                <!-- ===== Recent reviews ===== -->
+                <section class="lg-card codex-card">
+                    <div class="codex-card-head">
+                        <h3>Recent reviews</h3>
+                        <span class="count" data-bind="codex-pane-history-count">0</span>
+                    </div>
+                    <div class="codex-reviews-list" data-bind="codex-pane-history">
+                        <div class="empty-note">loading recent reviews...</div>
+                    </div>
+                </section>
+
+                <!-- ===== Run a review ===== -->
+                <section class="lg-card codex-card">
+                    <div class="codex-card-head">
+                        <h3>Run Codex review</h3>
+                        <span class="count" data-bind="codex-pane-status">ready</span>
+                    </div>
+                    <div data-bind="codex-pane-form">
+                        <div class="codex-form-row">
+                            <label for="codex-pane-content">Content (paste code or diff)</label>
+                            <textarea id="codex-pane-content" class="codex-content" data-bind="codex-pane-content" rows="9" placeholder="paste code or git-diff to review..."></textarea>
+                        </div>
+                        <div class="codex-form-row">
+                            <label for="codex-pane-context">Context (one-line blurb)</label>
+                            <input id="codex-pane-context" class="lg-input" data-bind="codex-pane-context" type="text" placeholder="why we're reviewing this (optional)">
+                        </div>
+                        <div class="codex-controls-row">
+                            <div class="codex-form-row" style="min-width: 160px;">
+                                <label for="codex-pane-language">Language</label>
+                                <select id="codex-pane-language" class="lg-input" data-bind="codex-pane-language">
+                                    <option value="python" selected>python</option>
+                                    <option value="typescript">typescript</option>
+                                    <option value="javascript">javascript</option>
+                                    <option value="rust">rust</option>
+                                    <option value="go">go</option>
+                                    <option value="bash">bash</option>
+                                    <option value="powershell">powershell</option>
+                                    <option value="markdown">markdown</option>
+                                    <option value="auto">auto / other</option>
+                                </select>
+                            </div>
+                            <div class="codex-form-row">
+                                <label>Depth</label>
+                                <div style="display:flex; gap:6px;">
+                                    <label class="codex-depth-radio"><input type="radio" name="codex-depth" value="quick"> quick</label>
+                                    <label class="codex-depth-radio"><input type="radio" name="codex-depth" value="standard" checked> standard</label>
+                                    <label class="codex-depth-radio"><input type="radio" name="codex-depth" value="deep"> deep</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 10px; display:flex; gap:8px; align-items:center;">
+                            <button class="codex-run-btn" data-bind="codex-pane-submit" type="button">Run Codex review</button>
+                            <span class="codex-hero-tagline" data-bind="codex-pane-feedback" style="margin:0;"></span>
+                        </div>
+                    </div>
+                    <div data-bind="codex-pane-nokey" style="display:none;">
+                        <div class="codex-no-key">
+                            <h4>OPENAI_API_KEY not set</h4>
+                            Set the env var on the workstation, then restart the RKOJ console:<br>
+                            <code>setx OPENAI_API_KEY "sk-..."</code> &middot; reopen RKOJ.exe.
+                            See <code>tools/codex-companion/README.md</code> for full setup.
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </template>
+
+    <script src="/static/popout.js"></script>
+    <script src="/static/palette.js"></script>
+    <script src="/static/cycle-points.js"></script>
+    <script src="/static/scheduler.js"></script>
+    <!-- fleet-state.js MUST load before app.js — app.js subscribes to FleetState on init. -->
+    <!-- Author: Sinister Sanctum master agent (Claude) :: 2026-05-19 -->
+    <script src="/static/fleet-state.js"></script>
+    <script src="/static/app.js"></script>
+</body>
+</html>

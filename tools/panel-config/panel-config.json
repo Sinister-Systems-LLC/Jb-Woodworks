@@ -1,0 +1,14 @@
+{
+  "_comment": "Sanctum panel routing knob. Edit primary/fallback to flip the order; the launcher + window-manager both read this on every panel probe. Author: Sinister Sanctum master agent (Claude) :: 2026-05-19",
+  "primary": "http://127.0.0.1:5055",
+  "fallback": "https://snap.sinijkr.com",
+  "timeout_ms_primary": 1500,
+  "timeout_ms_fallback": 4000,
+  "endpoints": {
+    "stats": "/api/dashboard/stats",
+    "signer": "/api/harvest/signer-status",
+    "devices": "/api/harvest/devices",
+    "actions": "/api/actions/status",
+    "health": "/api/health"
+  }
+}
