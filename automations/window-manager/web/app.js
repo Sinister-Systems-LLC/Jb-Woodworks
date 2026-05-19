@@ -151,7 +151,12 @@ function setSkelTab(tabId) {
         b.setAttribute('aria-selected', on ? 'true' : 'false');
     });
     qsa('.rkoj-tab-pane').forEach(p => {
-        p.hidden = (p.id !== `skel-${tabId}`);
+        const on = (p.id === `skel-${tabId}`);
+        p.hidden = !on;
+        // Sinister Sanctum master agent (UI-fix sub) :: 2026-05-19 — toggle .active
+        // so the pane becomes visible. Without this the pane stays opacity:0 /
+        // pointer-events:none per the .rkoj-tab-pane base rule (theme.css:551).
+        p.classList.toggle('active', on);
     });
     // Re-render the per-tab ribbon (groups differ slightly across tabs).
     renderHeaderRibbon(tabId);
@@ -2608,23 +2613,29 @@ function mountAgentsTab(pane) {
         pane.appendChild(el('div', { class: 'empty-note' }, 'tpl-agents-workstation missing'));
         return;
     }
+    // CRITICAL: render the static workstation scaffold FIRST.  Each subsequent
+    // refresh* call is wrapped in try/catch so a single failed call (e.g. one
+    // /api/* endpoint 404s, FleetState not loaded, etc.) cannot blank the
+    // whole pane.  Sinister Sanctum master agent (UI-fix sub) :: 2026-05-19.
     pane.appendChild(tpl.content.cloneNode(true));
 
     // 1. Launcher hero — project + mode chips + custom prompt + LAUNCH.
-    wireLauncherHero(pane);
-    _renderRecentLaunchesStrip(pane);
+    try { wireLauncherHero(pane); } catch (e) { console.warn('[mountAgentsTab] wireLauncherHero failed', e); }
+    try { _renderRecentLaunchesStrip(pane); } catch (e) { console.warn('[mountAgentsTab] recent-launches failed', e); }
 
     // 2. Sessions strip (FleetState subscriber re-renders on every SSE tick).
-    refreshAgentsSessionsStrip(pane);
+    try { refreshAgentsSessionsStrip(pane); } catch (e) { console.warn('[mountAgentsTab] sessions strip failed', e); }
 
     // 3. Activity feed.
-    refreshActivityFeed(pane);
+    try { refreshActivityFeed(pane); } catch (e) { console.warn('[mountAgentsTab] activity feed failed', e); }
 
     // 4. Cycle points (delegate to cycle-points.js if loaded).
-    const cpList = bind(pane, 'cycle-points-list');
-    if (window.RkojCyclePoints && window.RkojCyclePoints.renderInto && cpList) {
-        try { window.RkojCyclePoints.renderInto(cpList); } catch (e) {}
-    }
+    try {
+        const cpList = bind(pane, 'cycle-points-list');
+        if (window.RkojCyclePoints && window.RkojCyclePoints.renderInto && cpList) {
+            window.RkojCyclePoints.renderInto(cpList);
+        }
+    } catch (e) { console.warn('[mountAgentsTab] cycle-points failed', e); }
     const cpNewBtn = qs('[data-act="new-cycle-point"]', pane);
     if (cpNewBtn) cpNewBtn.addEventListener('click', () => {
         if (window.RkojCyclePoints && window.RkojCyclePoints.openSaveModal) {
@@ -2639,7 +2650,7 @@ function mountAgentsTab(pane) {
             window.RkojScheduler.openAddModal();
         } else { setDevtoolsRail(true, 'agents'); toast('Scheduler drawer opened'); }
     });
-    refreshScheduleCard(pane);
+    try { refreshScheduleCard(pane); } catch (e) { console.warn('[mountAgentsTab] schedule failed', e); }
 
     // 6. Codex summary.
     const codexOpenBtn = qs('[data-act="open-codex"]', pane);
@@ -2647,11 +2658,11 @@ function mountAgentsTab(pane) {
         if (window.RkojCodexPane && window.RkojCodexPane.open) window.RkojCodexPane.open();
         else openDrawerTemplate('codex', 'Codex peer review');
     });
-    refreshCodexSummaryCard(pane);
+    try { refreshCodexSummaryCard(pane); } catch (e) { console.warn('[mountAgentsTab] codex summary failed', e); }
 
     // 7. Tile shelf (knowledge / vault / progress / catalog / daemons).
-    wireTileShelf(pane);
-    refreshTileShelf(pane);
+    try { wireTileShelf(pane); } catch (e) { console.warn('[mountAgentsTab] tile shelf wire failed', e); }
+    try { refreshTileShelf(pane); } catch (e) { console.warn('[mountAgentsTab] tile shelf refresh failed', e); }
 }
 
 // ----- launcher hero wiring (project select + mode chips + LAUNCH) -----
