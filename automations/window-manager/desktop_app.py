@@ -295,6 +295,108 @@ def main() -> int:
         confirm_close=False,
     )
 
+    # ---- Win11 native chrome theming: dark title bar + rounded corners + Sanctum purple ----
+    # Author: Sinister Sanctum master agent (Claude) :: 2026-05-19
+    # Operator ask: "make all this in theme and a custom window to it that is
+    # rounded perfectly with the dashboard." Lane split: in-page redesign (header,
+    # tabs, ribbon, KPIs) is the RKOJ agent's lane (web/{index.html,app.js,
+    # theme.css}); this hook does the *native* chrome (the strip Windows draws
+    # outside the WebView surface — title bar, border, corner radius). Pure
+    # ctypes call to dwmapi.dll; silently no-ops on Win10 pre-1809 / non-Win32.
+    #
+    # DWM attribute IDs (windows.data.dwmapi.h):
+    #   20 = DWMWA_USE_IMMERSIVE_DARK_MODE      (bool: title bar follows dark scheme)
+    #   33 = DWMWA_WINDOW_CORNER_PREFERENCE     (int: 2 = DWMWCP_ROUND for Win11)
+    #   34 = DWMWA_BORDER_COLOR                 (COLORREF 0x00BBGGRR)
+    #   35 = DWMWA_CAPTION_COLOR                (COLORREF 0x00BBGGRR)
+    #   36 = DWMWA_TEXT_COLOR                   (COLORREF 0x00BBGGRR)
+    # Sanctum purple #7A3DD4 in COLORREF (BGR) = 0x00D43D7A
+    # See knowledge: rkoj-workbench-architecture.md (chrome match doctrine)
+
+    SANCTUM_PURPLE_COLORREF = 0x00D43D7A  # BGR of #7A3DD4
+    WHITE_COLORREF = 0x00FFFFFF
+
+    def _apply_native_chrome_theme() -> None:
+        """Apply Win11 DWM attributes for dark + rounded + purple chrome."""
+        if sys.platform != "win32":
+            return
+        try:
+            import ctypes
+            from ctypes import wintypes
+        except Exception:
+            return
+        try:
+            dwmapi = ctypes.windll.dwmapi
+        except Exception:
+            return  # not Windows or DWMAPI not loadable
+        # Find the HWND. pywebview's `webview.windows[0]` carries platform
+        # references but they're backend-specific. The reliable path: enumerate
+        # top-level windows for our title. We match exactly to avoid hitting
+        # another EXE that happens to be open.
+        user32 = ctypes.windll.user32
+        EnumWindowsProc = ctypes.WINFUNCTYPE(ctypes.c_bool, wintypes.HWND, wintypes.LPARAM)
+        target_title = "RKOJ :: Workbench"
+        found_hwnd = ctypes.c_void_p(0)
+
+        def _enum_cb(hwnd, lparam):
+            length = user32.GetWindowTextLengthW(hwnd)
+            if length <= 0:
+                return True
+            buf = ctypes.create_unicode_buffer(length + 1)
+            user32.GetWindowTextW(hwnd, buf, length + 1)
+            if buf.value == target_title:
+                found_hwnd.value = hwnd
+                return False  # stop enum
+            return True
+
+        try:
+            user32.EnumWindows(EnumWindowsProc(_enum_cb), 0)
+        except Exception:
+            return
+        if not found_hwnd.value:
+            return  # window not visible yet; the on_loaded retry below catches it
+
+        def _set_attr(attr_id: int, value: int) -> None:
+            try:
+                val = ctypes.c_int(value)
+                dwmapi.DwmSetWindowAttribute(
+                    wintypes.HWND(found_hwnd.value),
+                    wintypes.DWORD(attr_id),
+                    ctypes.byref(val),
+                    ctypes.sizeof(val),
+                )
+            except Exception:
+                pass  # silently skip unsupported attributes (Win10 < 1809, etc.)
+
+        _set_attr(20, 1)                          # IMMERSIVE_DARK_MODE on
+        _set_attr(33, 2)                          # CORNER_PREFERENCE = ROUND
+        _set_attr(35, SANCTUM_PURPLE_COLORREF)    # CAPTION_COLOR (Win11 22H2+)
+        _set_attr(34, SANCTUM_PURPLE_COLORREF)    # BORDER_COLOR  (Win11 22H2+)
+        _set_attr(36, WHITE_COLORREF)             # TEXT_COLOR    (Win11 22H2+)
+        print("[chrome] applied Win11 native theme: dark + rounded + Sanctum purple", flush=True)
+
+    # Two-shot: once on `loaded` (the WebView is up) + once via a 1s timer
+    # in case the HWND wasn't yet visible to EnumWindows on first try.
+    def _on_window_loaded():
+        _apply_native_chrome_theme()
+        # Retry in ~1.5s — Win11 sometimes re-paints chrome on first repaint
+        # and clobbers the DWMWA_CAPTION_COLOR if applied too early.
+        try:
+            import threading as _th
+            _th.Timer(1.5, _apply_native_chrome_theme).start()
+        except Exception:
+            pass
+
+    try:
+        win.events.loaded += _on_window_loaded
+    except Exception:
+        # Older pywebview versions name it differently; fall back to a thread.
+        try:
+            import threading as _th
+            _th.Timer(2.0, _apply_native_chrome_theme).start()
+        except Exception:
+            pass
+
     # Optional: try to set a window icon (pywebview's icon support varies; Edge
     # WebView2 picks up the page's <link rel="icon"> which already points to
     # /static/sinister-logo.png).

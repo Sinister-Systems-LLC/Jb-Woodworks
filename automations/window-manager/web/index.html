@@ -1,135 +1,131 @@
 <!-- Author: Sinister Sanctum master agent (Claude) :: 2026-05-19 -->
-<!-- /* Panel-style redesign — Sinister Sanctum master agent (Claude) :: 2026-05-19 */ -->
+<!-- Author: Sinister Sanctum master agent (Claude UI-redesign sub) :: 2026-05-19 — workstation sweep -->
+<!-- Two-tab workstation shell — ADB DEVICES + AGENTS — complex 3-row header.   -->
+<!-- Per operator feedback (2026-05-19 21:00Z): "I want one tab for agents and  -->
+<!-- creating and managing agents and all my features and ideas for that and    -->
+<!-- the adb side of things to view the phones". UI doctrine: Sanctum purple    -->
+<!-- (#7A3DD4), Liquid Glass primitives (.lg-* / lg-card-hero), motion vars     -->
+<!-- 150/300/600ms with cubic-bezier(0.22, 1, 0.36, 1).                         -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>RKOJ :: Workbench</title>
+    <title>RKOJ :: Workstation</title>
     <link rel="icon" href="/static/sinister-logo.png">
     <link rel="stylesheet" href="/static/tokens.css">
     <link rel="stylesheet" href="/static/theme.css">
 </head>
 <body data-density="cozy">
-    <!-- ===== Sinister Panel-style shell ===== -->
-    <div class="skel-shell">
+    <!-- ===== RKOJ Workstation shell — 2 tabs, 3-row header ===== -->
+    <div class="rkoj-workstation">
 
-        <!-- ============ LEFT SIDEBAR ============ -->
-        <aside class="skel-sidebar lg-rail">
-            <header class="skel-side-brand">
-                <img src="/static/sinister-logo.png" class="skel-side-avatar" alt="RKOJ">
-                <div class="skel-side-brand-title">RKOJ <span class="muted">::</span> Sanctum</div>
-            </header>
+        <!-- ============ HEADER (3 rows) ============ -->
+        <header class="rkoj-header">
 
-            <!-- DAILY group -->
-            <div class="skel-side-section">
-                <div class="skel-side-label">DAILY</div>
-                <a class="skel-side-item active" data-nav="overview"><span class="ico">&#9678;</span><span>Overview</span></a>
-                <a class="skel-side-item" data-nav="progress"><span class="ico">&#9650;</span><span>Progress</span></a>
-                <a class="skel-side-item" data-nav="accounts"><span class="ico">&#9711;</span><span>Accounts</span></a>
-                <a class="skel-side-item" data-nav="control-center"><span class="ico">&#9881;</span><span>Control Center</span></a>
-            </div>
-
-            <!-- INSIGHTS group -->
-            <div class="skel-side-section">
-                <div class="skel-side-label">INSIGHTS</div>
-                <a class="skel-side-item" data-nav="analytics"><span class="ico">&#9676;</span><span>Analytics</span></a>
-                <a class="skel-side-item" data-nav="library"><span class="ico">&#9635;</span><span>Library</span></a>
-                <a class="skel-side-item" data-nav="codex"><span class="ico">&#9670;</span><span>Codex</span></a>
-                <a class="skel-side-item" data-nav="memory"><span class="ico">&#9728;</span><span>Memory</span></a>
-            </div>
-
-            <!-- MANAGE group -->
-            <div class="skel-side-section">
-                <div class="skel-side-label">MANAGE</div>
-                <a class="skel-side-item" data-nav="devices"><span class="ico">&#9744;</span><span>Phones</span><span class="skel-side-badge" id="side-phones-badge"></span></a>
-                <a class="skel-side-item" data-nav="agents"><span class="ico">&#9881;</span><span>Agents</span></a>
-                <a class="skel-side-item" data-nav="vault"><span class="ico">&#9776;</span><span>Vault</span></a>
-                <a class="skel-side-item" data-nav="scheduler"><span class="ico">&#9201;</span><span>Scheduler</span></a>
-                <a class="skel-side-item" data-nav="cycle-points"><span class="ico">&#9679;</span><span>Cycle points</span></a>
-                <a class="skel-side-item" data-nav="settings"><span class="ico">&#9881;</span><span>Settings</span></a>
-            </div>
-
-            <!-- Profile pill at bottom -->
-            <footer class="skel-side-profile">
-                <div class="skel-side-role-pill">Super Admin</div>
-                <div class="skel-side-acct">
-                    <span class="who">operator</span>
-                    <span class="muted" id="skel-side-acct-id">cmp512y5b0000ur6...</span>
+            <!-- ===== Row 1: identity + tabs + icon strip ===== -->
+            <div class="rkoj-header-row rkoj-header-row-1">
+                <div class="rkoj-brand">
+                    <img src="/static/skull.svg" class="rkoj-brand-skull" alt="Sanctum skull">
+                    <div class="rkoj-brand-text">
+                        <span class="rkoj-brand-wordmark">RKOJ</span>
+                        <span class="rkoj-brand-sub">WORKSTATION</span>
+                    </div>
                 </div>
-                <button class="skel-side-signout" id="skel-side-signout">Sign Out</button>
-            </footer>
-        </aside>
 
-        <!-- ============ MAIN CONTENT ============ -->
-        <main class="skel-main">
-            <!-- Top bar inside main -->
-            <header class="skel-top">
-                <h1 class="skel-top-title">RKOJ</h1>
-                <nav class="skel-top-tabs" role="tablist">
-                    <button class="lg-pill skel-top-tab active" role="tab" data-tab="fleet" aria-selected="true">
-                        <span class="skel-tab-ico">&#9678;</span> Fleet
+                <nav class="rkoj-tabs" role="tablist">
+                    <button class="lg-pill rkoj-tab active" role="tab" data-tab="adb" aria-selected="true">
+                        <span class="rkoj-tab-ico" aria-hidden="true">&#9744;</span>
+                        <span class="rkoj-tab-label">ADB DEVICES</span>
+                        <span class="rkoj-tab-count" data-bind="tab-adb-count">0</span>
                     </button>
-                    <button class="lg-pill skel-top-tab" role="tab" data-tab="agents" aria-selected="false">
-                        <span class="skel-tab-ico">&#9881;</span> Agents
-                    </button>
-                    <button class="lg-pill skel-top-tab" role="tab" data-tab="vault" aria-selected="false">
-                        <span class="skel-tab-ico">&#9776;</span> Vault
+                    <button class="lg-pill rkoj-tab" role="tab" data-tab="agents" aria-selected="false">
+                        <span class="rkoj-tab-ico" aria-hidden="true">&#9881;</span>
+                        <span class="rkoj-tab-label">AGENTS</span>
+                        <span class="rkoj-tab-count" data-bind="tab-agents-count">0</span>
                     </button>
                 </nav>
-                <div class="skel-top-actions">
-                    <!-- Codex peer-review status pill — Sinister Sanctum master agent (Claude) :: 2026-05-19 -->
+
+                <div class="rkoj-header-icons">
+                    <button class="rkoj-icon-pill" id="hdr-alerts" title="Pending operator requests" aria-label="Pending operator requests">
+                        <span class="rkoj-icon-pill-glyph">!</span>
+                        <span class="rkoj-icon-pill-badge danger" id="alerts-count"></span>
+                    </button>
+                    <button class="rkoj-icon-pill" id="hdr-bell" title="Cross-agent inbox notifications" aria-label="Notifications">
+                        <span class="rkoj-icon-pill-glyph">&#9788;</span>
+                        <span class="rkoj-icon-pill-badge accent" id="inbox-count"></span>
+                    </button>
+                    <button class="rkoj-icon-pill rkoj-icon-pill-wide" id="hdr-palette" title="Command palette (Ctrl+K)">
+                        <span class="rkoj-icon-pill-glyph">&#8984;</span>
+                        <span class="rkoj-icon-pill-text">Search</span>
+                        <span class="rkoj-icon-pill-kbd">K</span>
+                    </button>
                     <button class="codex-status-pill" id="codex-status-pill" title="latest Codex verdict (click to open pane)">
                         <span class="codex-status-dot"></span>
                         <span class="codex-status-text" id="codex-status-text">Codex</span>
                         <span class="codex-status-age" id="codex-status-age">--</span>
                     </button>
-                    <button class="skel-icon-circle" id="tb-alerts" title="Operator requests">
-                        <span class="ico">!</span><span class="badge" id="alerts-count"></span>
+                    <span class="rkoj-health-pill lg-pill" id="health-pill" title="server health">&#9679; online</span>
+                    <button class="rkoj-icon-pill rkoj-icon-pill-wide" id="hdr-newwin" title="Open a new popout window">
+                        <span class="rkoj-icon-pill-glyph">&#43;</span>
+                        <span class="rkoj-icon-pill-text">Window</span>
                     </button>
-                    <button class="skel-icon-circle" id="tb-bell" title="Notifications"><span class="ico">&#9788;</span></button>
-                    <button class="skel-icon-circle" id="tb-home" title="Home"><span class="ico">&#8962;</span></button>
-                    <button class="skel-icon-circle" id="tb-palette" title="Command palette (Ctrl+K)"><span class="ico">&#9733;</span></button>
-                    <span class="skel-health lg-pill" id="health-pill" title="server health">&#9679; online</span>
-                    <span class="skel-clock" id="clock">--:--</span>
+                    <button class="rkoj-icon-pill" id="hdr-settings" title="Settings drawer" aria-label="Settings">
+                        <span class="rkoj-icon-pill-glyph">&#9881;</span>
+                    </button>
+                    <span class="rkoj-clock" id="clock">--:--</span>
                 </div>
-            </header>
+            </div>
 
-            <!-- Hero KPI row (4 cards) -->
-            <section class="skel-hero" id="hero-row">
-                <div class="lg-card skel-kpi">
-                    <div class="skel-kpi-head"><span>PHONES ONLINE</span><span class="skel-kpi-ico">&#9742;</span></div>
-                    <div class="skel-kpi-num" data-bind="kpi-phones-online">&mdash;</div>
-                    <div class="skel-kpi-underline"></div>
-                </div>
-                <div class="lg-card skel-kpi">
-                    <div class="skel-kpi-head"><span>AGENTS ONLINE</span><span class="skel-kpi-ico">&#9881;</span></div>
-                    <div class="skel-kpi-num" data-bind="kpi-agents-online">&mdash;</div>
-                    <div class="skel-kpi-underline"></div>
-                </div>
-                <div class="lg-card skel-kpi">
-                    <div class="skel-kpi-head"><span>VAULT USED</span><span class="skel-kpi-ico">&#9776;</span></div>
-                    <div class="skel-kpi-num" data-bind="kpi-vault-used">&mdash;</div>
-                    <div class="skel-kpi-underline"></div>
-                </div>
-                <div class="lg-card skel-kpi">
-                    <div class="skel-kpi-head"><span>PENDING REQUESTS</span><span class="skel-kpi-ico">!</span></div>
-                    <div class="skel-kpi-num" data-bind="kpi-pending">&mdash;</div>
-                    <div class="skel-kpi-underline"></div>
-                </div>
+            <!-- ===== Row 2: Excel-style action ribbon ===== -->
+            <div class="rkoj-header-row rkoj-header-row-2" id="rkoj-ribbon">
+                <!-- Built by app.js renderHeaderRibbon() — 5 groups: VIEW / SPAWN / AGENT / AUTOMATE / MAINTAIN -->
+            </div>
+
+            <!-- ===== Row 3: Hero KPI strip ===== -->
+            <div class="rkoj-header-row rkoj-header-row-3">
+                <button class="rkoj-kpi lg-card" id="kpi-card-phones" title="Open ADB devices tab">
+                    <div class="rkoj-kpi-head">
+                        <span class="rkoj-kpi-label">PHONES ONLINE</span>
+                        <span class="rkoj-kpi-ico" aria-hidden="true">&#9742;</span>
+                    </div>
+                    <div class="rkoj-kpi-num" data-bind="kpi-phones-online">&mdash;</div>
+                    <div class="rkoj-kpi-sub" data-bind="kpi-phones-sub">--</div>
+                </button>
+                <button class="rkoj-kpi lg-card" id="kpi-card-agents" title="Open agents tab">
+                    <div class="rkoj-kpi-head">
+                        <span class="rkoj-kpi-label">AGENTS ONLINE</span>
+                        <span class="rkoj-kpi-ico" aria-hidden="true">&#9881;</span>
+                    </div>
+                    <div class="rkoj-kpi-num" data-bind="kpi-agents-online">&mdash;</div>
+                    <div class="rkoj-kpi-sub" data-bind="kpi-agents-sub">--</div>
+                </button>
+                <button class="rkoj-kpi lg-card" id="kpi-card-vault" title="Open vault drawer">
+                    <div class="rkoj-kpi-head">
+                        <span class="rkoj-kpi-label">VAULT USED</span>
+                        <span class="rkoj-kpi-ico" aria-hidden="true">&#9776;</span>
+                    </div>
+                    <div class="rkoj-kpi-num" data-bind="kpi-vault-used">&mdash;</div>
+                    <div class="rkoj-kpi-sub" data-bind="kpi-vault-sub">--</div>
+                </button>
+                <button class="rkoj-kpi lg-card" id="kpi-card-pending" title="Open operator requests">
+                    <div class="rkoj-kpi-head">
+                        <span class="rkoj-kpi-label">PENDING REQUESTS</span>
+                        <span class="rkoj-kpi-ico" aria-hidden="true">!</span>
+                    </div>
+                    <div class="rkoj-kpi-num" data-bind="kpi-pending">&mdash;</div>
+                    <div class="rkoj-kpi-sub" data-bind="kpi-pending-sub">--</div>
+                </button>
+            </div>
+        </header>
+
+        <!-- ============ TAB CONTENT (2 panes) ============ -->
+        <main class="rkoj-tab-content">
+            <section class="rkoj-tab-pane" id="skel-adb">
+                <!-- ADB phone-viewer surface (built by mountAdbTab) -->
             </section>
-
-            <!-- Content area (per-tab) -->
-            <section class="skel-content">
-                <div class="skel-tab-pane" id="skel-fleet">
-                    <!-- 2-col: device list (left) + device detail (right) — populated by app.js -->
-                </div>
-                <div class="skel-tab-pane" id="skel-agents" hidden>
-                    <!-- agents workbench (sessions strip + launcher wizard + cycle points) -->
-                </div>
-                <div class="skel-tab-pane" id="skel-vault" hidden>
-                    <!-- vault drawer fullscreen -->
-                </div>
+            <section class="rkoj-tab-pane" id="skel-agents" hidden>
+                <!-- Agents workstation (built by mountAgentsTab) -->
             </section>
         </main>
     </div>
@@ -154,7 +150,286 @@
     <!-- Legacy single-toast slot (kept for app.js toast() helper which targets #toast) -->
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-    <!-- ============ TEMPLATES (preserved verbatim from prior shell) ============ -->
+    <!-- ============================================================ -->
+    <!-- TEMPLATES (preserved verbatim from prior shell + new ones)    -->
+    <!-- ============================================================ -->
+
+    <!-- ===== NEW: agents workstation template (operator workstation layout) ===== -->
+    <template id="tpl-agents-workstation">
+        <div class="rkoj-agents-workstation">
+
+            <!-- HERO: launcher wizard (always visible) -->
+            <section class="lg-card-hero rkoj-launcher-hero" data-bind="launcher-hero">
+                <div class="rkoj-launcher-hero-head">
+                    <h2>Spawn a new agent</h2>
+                    <span class="muted">launch any project in any mode :: powered by /api/launcher/spawn</span>
+                </div>
+                <div class="rkoj-launcher-hero-body">
+                    <div class="rkoj-launcher-col">
+                        <label class="rkoj-launcher-row">
+                            <span class="rkoj-launcher-label">Project</span>
+                            <select class="lg-input" data-bind="lh-project"></select>
+                        </label>
+                        <label class="rkoj-launcher-row">
+                            <span class="rkoj-launcher-label">Mode</span>
+                            <div class="rkoj-launcher-modes" data-bind="lh-mode-chips">
+                                <!-- mode chips injected by app.js -->
+                            </div>
+                            <select class="lg-input" data-bind="lh-mode" hidden></select>
+                        </label>
+                        <label class="rkoj-launcher-row rkoj-launcher-fast">
+                            <span class="rkoj-launcher-label">Fast mode</span>
+                            <span class="rkoj-launcher-toggle">
+                                <input type="checkbox" data-bind="lh-fast">
+                                <span class="rkoj-launcher-toggle-text">Use Opus 4.6 (fast) instead of Opus 4.7 (smartest)</span>
+                            </span>
+                        </label>
+                    </div>
+                    <div class="rkoj-launcher-col">
+                        <label class="rkoj-launcher-row rkoj-launcher-prompt">
+                            <span class="rkoj-launcher-label">Custom prompt (optional)</span>
+                            <textarea class="lg-input" data-bind="lh-prompt" rows="3" placeholder="optional: tell the agent what to focus on after spawn..."></textarea>
+                        </label>
+                        <div class="rkoj-launcher-actions">
+                            <button class="lg-button primary rkoj-launch-btn" data-act="launch">
+                                <span class="rkoj-launch-ico">&#9889;</span>
+                                <span>LAUNCH</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="rkoj-recent-launches" data-bind="recent-launches-strip">
+                    <!-- last 5 mini-cards injected by app.js -->
+                </div>
+            </section>
+
+            <!-- TWO-COLUMN GRID: sessions + activity (left 60%) / cycle-points + schedule + codex (right 40%) -->
+            <section class="rkoj-workbench-grid">
+                <div class="rkoj-workbench-col rkoj-workbench-col-left">
+                    <div class="lg-card rkoj-sessions-card">
+                        <header class="rkoj-card-head">
+                            <h3>Active sessions</h3>
+                            <span class="count" data-bind="agents-sessions-count">0 online</span>
+                        </header>
+                        <div class="rkoj-sessions-grid" data-bind="agents-sessions-grid">
+                            <div class="empty-note">loading sessions...</div>
+                        </div>
+                    </div>
+                    <div class="lg-card rkoj-activity-card">
+                        <header class="rkoj-card-head">
+                            <h3>Activity feed</h3>
+                            <span class="count" data-bind="activity-count">live</span>
+                        </header>
+                        <div class="rkoj-activity-list" data-bind="activity-feed-list">
+                            <div class="empty-note">loading activity...</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="rkoj-workbench-col rkoj-workbench-col-right">
+                    <div class="lg-card rkoj-cyclepoints-card">
+                        <header class="rkoj-card-head">
+                            <h3>Cycle points</h3>
+                            <button class="lg-button ghost btn-mini" data-act="new-cycle-point">+ NEW</button>
+                        </header>
+                        <div class="rkoj-cyclepoints-list" data-bind="cycle-points-list">
+                            <div class="empty-note">no cycle points yet</div>
+                        </div>
+                    </div>
+                    <div class="lg-card rkoj-schedule-card">
+                        <header class="rkoj-card-head">
+                            <h3>Schedule</h3>
+                            <button class="lg-button ghost btn-mini" data-act="new-schedule">+ NEW</button>
+                        </header>
+                        <div class="rkoj-schedule-list" data-bind="schedule-list">
+                            <div class="empty-note">loading schedule...</div>
+                        </div>
+                    </div>
+                    <div class="lg-card rkoj-codex-card">
+                        <header class="rkoj-card-head">
+                            <h3>Codex reviews</h3>
+                            <button class="lg-button ghost btn-mini" data-act="open-codex">OPEN</button>
+                        </header>
+                        <div class="rkoj-codex-summary" data-bind="codex-summary-list">
+                            <div class="empty-note">no recent reviews</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TILE SHELF: 5 secondary feature tiles -->
+            <section class="rkoj-tile-shelf">
+                <button class="lg-card rkoj-tile" data-tile="knowledge">
+                    <div class="rkoj-tile-head">
+                        <span class="rkoj-tile-ico">&#9776;</span>
+                        <span class="rkoj-tile-title">KNOWLEDGE</span>
+                    </div>
+                    <div class="rkoj-tile-body">
+                        <div class="rkoj-tile-num" data-bind="tile-knowledge-count">--</div>
+                        <div class="rkoj-tile-sub">brain topics</div>
+                    </div>
+                </button>
+                <button class="lg-card rkoj-tile" data-tile="vault">
+                    <div class="rkoj-tile-head">
+                        <span class="rkoj-tile-ico">V</span>
+                        <span class="rkoj-tile-title">VAULT</span>
+                    </div>
+                    <div class="rkoj-tile-body">
+                        <div class="rkoj-tile-num" data-bind="tile-vault-used">--</div>
+                        <div class="rkoj-tile-sub" data-bind="tile-vault-last">--</div>
+                    </div>
+                </button>
+                <button class="lg-card rkoj-tile" data-tile="progress">
+                    <div class="rkoj-tile-head">
+                        <span class="rkoj-tile-ico">&#9650;</span>
+                        <span class="rkoj-tile-title">PROGRESS</span>
+                    </div>
+                    <div class="rkoj-tile-body">
+                        <div class="rkoj-tile-num" data-bind="tile-progress-count">--</div>
+                        <div class="rkoj-tile-sub" data-bind="tile-progress-last">--</div>
+                    </div>
+                </button>
+                <button class="lg-card rkoj-tile" data-tile="catalog">
+                    <div class="rkoj-tile-head">
+                        <span class="rkoj-tile-ico">&#9635;</span>
+                        <span class="rkoj-tile-title">SKILLS / TOOLS / INVENTIONS</span>
+                    </div>
+                    <div class="rkoj-tile-body">
+                        <div class="rkoj-tile-num" data-bind="tile-catalog-count">--</div>
+                        <div class="rkoj-tile-sub">combined</div>
+                    </div>
+                </button>
+                <button class="lg-card rkoj-tile" data-tile="daemons">
+                    <div class="rkoj-tile-head">
+                        <span class="rkoj-tile-ico">&#9788;</span>
+                        <span class="rkoj-tile-title">DAEMONS</span>
+                    </div>
+                    <div class="rkoj-tile-body">
+                        <div class="rkoj-tile-dots" data-bind="tile-daemons-dots">
+                            <span class="rkoj-daemon-dot" data-daemon="sanctum-console" title="sanctum-console"></span>
+                            <span class="rkoj-daemon-dot" data-daemon="sinister-vault" title="sinister-vault"></span>
+                            <span class="rkoj-daemon-dot" data-daemon="rkoj" title="rkoj"></span>
+                        </div>
+                        <div class="rkoj-tile-sub">heartbeats</div>
+                    </div>
+                </button>
+            </section>
+        </div>
+    </template>
+
+    <!-- ===== NEW: ADB phone-viewer template (operator phone surface) ===== -->
+    <template id="tpl-adb-workstation">
+        <div class="rkoj-adb-workstation">
+            <!-- Sticky lane filter + bulk actions row -->
+            <section class="lg-card rkoj-adb-toolbar">
+                <div class="rkoj-adb-lanes" data-bind="adb-lane-chips">
+                    <!-- lane chips injected -->
+                </div>
+                <div class="rkoj-adb-toolbar-spacer"></div>
+                <div class="rkoj-adb-toolbar-actions">
+                    <button class="lg-button" data-act="scan-all">Scan all</button>
+                    <button class="lg-button ghost" data-act="push-to-lane">Push file to lane</button>
+                    <button class="lg-button ghost" data-act="push-frida">Push frida to lane</button>
+                    <button class="lg-button ghost" data-act="reboot-selected">Reboot selected</button>
+                </div>
+                <div class="rkoj-adb-toolbar-count">
+                    <span class="count" data-bind="adb-count">0 attached</span>
+                    <button class="lg-button ghost btn-mini" data-act="refresh">refresh</button>
+                </div>
+            </section>
+
+            <!-- Device grid -->
+            <section class="rkoj-adb-grid" data-bind="adb-grid">
+                <div class="empty-note">loading devices...</div>
+            </section>
+
+            <!-- Recent ADB events feed -->
+            <section class="lg-card rkoj-adb-events">
+                <header class="rkoj-card-head">
+                    <h3>Recent ADB events</h3>
+                    <span class="count">most recent first &middot; local only</span>
+                </header>
+                <div class="rkoj-adb-events-list" data-bind="adb-events-list">
+                    <div class="empty-note">no events yet &mdash; run a command on a device card to populate this feed</div>
+                </div>
+            </section>
+        </div>
+    </template>
+
+    <!-- ===== Window-picker popover (header "+ Window" button) ===== -->
+    <template id="tpl-newwin-picker">
+        <div class="lg-popover rkoj-newwin-picker" role="dialog" aria-modal="true" aria-label="new window picker">
+            <h4>Open a new popout window</h4>
+            <div class="rkoj-newwin-grid">
+                <button class="lg-button rkoj-newwin-tile" data-view="dashboard">Dashboard</button>
+                <button class="lg-button rkoj-newwin-tile" data-view="phones">Phones</button>
+                <button class="lg-button rkoj-newwin-tile" data-view="agents">Agents</button>
+                <button class="lg-button rkoj-newwin-tile" data-view="cycle-points">Cycle points</button>
+                <button class="lg-button rkoj-newwin-tile" data-view="codex">Codex</button>
+                <button class="lg-button rkoj-newwin-tile" data-view="inbox">Inbox</button>
+                <button class="lg-button rkoj-newwin-tile" data-view="schedule">Schedule</button>
+                <button class="lg-button rkoj-newwin-tile" data-view="vault">Vault</button>
+            </div>
+            <div class="popover-actions">
+                <button class="lg-button ghost" data-act="cancel">Cancel</button>
+            </div>
+        </div>
+    </template>
+
+    <!-- ===== Settings drawer (header cog) ===== -->
+    <template id="tpl-settings-drawer">
+        <div class="lg-popover rkoj-settings-drawer" role="dialog" aria-modal="true" aria-label="settings">
+            <h4>Workstation settings</h4>
+            <label>Density
+                <select class="lg-input" data-bind="set-density">
+                    <option value="compact">compact</option>
+                    <option value="cozy" selected>cozy</option>
+                    <option value="comfortable">comfortable</option>
+                </select>
+            </label>
+            <label>Hot reload
+                <span class="rkoj-launcher-toggle">
+                    <input type="checkbox" data-bind="set-hotreload" checked>
+                    <span>SSE channel /api/sse/changes</span>
+                </span>
+            </label>
+            <label>Default intelligence
+                <select class="lg-input" data-bind="set-intel">
+                    <option value="claude-opus-4-7">Opus 4.7 (smartest)</option>
+                    <option value="claude-opus-4-6">Opus 4.6 (fast)</option>
+                    <option value="claude-sonnet-4-6">Sonnet 4.6 (balanced)</option>
+                    <option value="claude-haiku-4-5-20251001">Haiku 4.5 (fastest)</option>
+                </select>
+            </label>
+            <button class="lg-button" data-act="open-devtools">Open dev tools rail</button>
+            <button class="lg-button" data-act="open-accounts">Anthropic accounts</button>
+            <button class="lg-button danger" data-act="signout">Sign out</button>
+            <div class="popover-actions">
+                <button class="lg-button ghost" data-act="cancel">Close</button>
+            </div>
+        </div>
+    </template>
+
+    <!-- ===== Per-device command + actions popover ===== -->
+    <template id="tpl-device-actions-popover">
+        <div class="lg-popover rkoj-device-actions" role="dialog" aria-modal="true" aria-label="device actions">
+            <h4 data-bind="da-title">Device actions</h4>
+            <div class="rkoj-device-actions-grid">
+                <button class="lg-button" data-act="push-file">Push file</button>
+                <button class="lg-button" data-act="push-frida">Push frida</button>
+                <button class="lg-button" data-act="set-proxy">Settings proxy</button>
+                <button class="lg-button" data-act="shell-dump">Shell dump</button>
+                <button class="lg-button" data-act="view-logs">View logs</button>
+                <button class="lg-button" data-act="reboot">Reboot</button>
+            </div>
+            <div class="popover-actions">
+                <button class="lg-button ghost" data-act="cancel">Close</button>
+            </div>
+        </div>
+    </template>
+
+    <!-- ============ LEGACY TEMPLATES (preserved verbatim) ============ -->
+    <!-- Consumed by dev-tools rail drawers, command palette mount, popouts. -->
+
     <template id="tpl-devices-section">
         <div class="rkoj-devices-section">
             <div class="lane-filter-bar">
@@ -213,9 +488,6 @@
             </section>
         </div>
     </template>
-
-    <!-- ============ PRESERVED TEMPLATES (verbatim from prior shell) ============ -->
-    <!-- consumed by dev-tools rail drawers, command palette mount, popouts -->
 
     <template id="tpl-dashboard">
         <div class="tab-view active" data-view="dashboard">
@@ -735,8 +1007,8 @@
     </template>
 
     <!-- Codex fullpane template — Sinister Sanctum master agent (Claude) :: 2026-05-19 -->
-    <!-- Reachable via sidebar nav 'codex' (skel-side-item), Cmd+K palette ('codex: open pane'),
-         ribbon tile 'Codex review' (SPAWN group), or hash route #pane=codex. -->
+    <!-- Reachable via header ribbon ('Codex review' AGENT group), Cmd+K palette
+         ('codex: open pane'), agents tab Codex card 'OPEN' button, or hash route #pane=codex. -->
     <template id="tpl-codex-fullpane">
         <div class="codex-fullpane">
             <!-- Hero card -->

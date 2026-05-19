@@ -4,106 +4,230 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <title>Sinister Sanctum :: Login</title>
-    <link rel="icon" href="/static/sinister-logo.png" type="image/png">
+    <title>RKOJ :: Workbench</title>
+    <link rel="icon" href="/static/skull.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/static/tokens.css">
     <link rel="stylesheet" href="/static/theme.css">
     <style>
-        body { display:flex; align-items:center; justify-content:center; height:100vh; }
-        .login-card {
-            max-width: 380px;
-            width: 100%;
-            background: var(--card);
-            border: 1px solid var(--card-border);
-            border-radius: 12px;
-            padding: 28px 26px;
-            box-shadow: var(--inset-bloom), var(--glow);
-            text-align: center;
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background:
+                radial-gradient(900px 600px at 70% -10%, rgba(122, 61, 212, 0.16), transparent 60%),
+                radial-gradient(700px 500px at -10% 110%, rgba(160, 110, 255, 0.10), transparent 60%),
+                var(--bg, #0a0a0c);
+            overflow: hidden;
         }
-        .login-card img.logo {
+        body::before {
+            /* subtle animated grid backdrop */
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(122, 61, 212, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(122, 61, 212, 0.04) 1px, transparent 1px);
+            background-size: 56px 56px;
+            mask-image: radial-gradient(ellipse at center, black 0%, transparent 80%);
+            -webkit-mask-image: radial-gradient(ellipse at center, black 0%, transparent 80%);
+            pointer-events: none;
+            opacity: 0.6;
+        }
+        .login-card {
+            max-width: 420px;
+            width: 92%;
+            position: relative;
+            background:
+                linear-gradient(180deg, rgba(122, 61, 212, 0.08), rgba(10, 10, 12, 0.0) 60%),
+                rgba(20, 18, 26, 0.78);
+            border: 1px solid rgba(122, 61, 212, 0.32);
+            border-radius: 16px;
+            padding: 36px 32px 28px;
+            box-shadow:
+                0 1px 0 rgba(255, 255, 255, 0.04) inset,
+                0 0 0 1px rgba(122, 61, 212, 0.12),
+                0 20px 60px rgba(0, 0, 0, 0.55),
+                0 0 80px rgba(122, 61, 212, 0.18);
+            text-align: center;
+            backdrop-filter: blur(14px) saturate(140%);
+            -webkit-backdrop-filter: blur(14px) saturate(140%);
+            transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1),
+                        box-shadow 300ms cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .login-card .logo-wrap {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             width: 96px;
             height: 96px;
-            margin-bottom: 14px;
-            filter: drop-shadow(0 0 14px rgba(122, 61, 212, 0.55));
+            margin: 0 auto 16px;
+            border-radius: 24px;
+            background: radial-gradient(circle at 50% 35%, rgba(160, 110, 255, 0.22), rgba(122, 61, 212, 0.06) 70%);
+            box-shadow:
+                0 0 0 1px rgba(122, 61, 212, 0.28) inset,
+                0 0 36px rgba(122, 61, 212, 0.45);
+        }
+        .login-card .logo-wrap svg {
+            width: 64px;
+            height: 64px;
+            filter: drop-shadow(0 0 14px rgba(160, 110, 255, 0.55));
+        }
+        .login-card .brand-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 6px 0 4px;
+        }
+        .login-card .brand-row .dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #16a34a;
+            box-shadow: 0 0 8px rgba(22, 163, 74, 0.7);
+            animation: pulse 1.6s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(0.85); }
         }
         .login-card h1 {
-            font-size: 14px;
-            letter-spacing: 3px;
-            margin: 0 0 6px 0;
-            color: var(--text);
+            font-size: 16px;
+            letter-spacing: 4px;
+            margin: 0;
+            color: #f3f0fa;
+            font-weight: 700;
+            font-family: var(--mono);
         }
-        .login-card h1 .accent { color: var(--primary-soft); }
+        .login-card h1 .accent { color: var(--primary-soft, #a06eff); }
         .login-card p.sub {
-            color: var(--muted);
-            font-size: 12px;
-            margin: 0 0 18px 0;
+            color: var(--muted, #8b8794);
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin: 6px 0 24px 0;
             font-family: var(--mono);
         }
         .login-card input[type="password"] {
             width: 100%;
-            background: var(--bg-alt);
-            border: 1px solid var(--card-border);
-            color: var(--text);
-            padding: 12px 14px;
-            border-radius: 8px;
+            box-sizing: border-box;
+            background: rgba(8, 6, 14, 0.7);
+            border: 1px solid rgba(122, 61, 212, 0.35);
+            color: #f3f0fa;
+            padding: 14px 16px;
+            border-radius: 10px;
             font-family: var(--mono);
             font-size: 13px;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
             text-align: center;
+            transition: border-color 200ms cubic-bezier(0.22, 1, 0.36, 1),
+                        box-shadow 200ms cubic-bezier(0.22, 1, 0.36, 1);
         }
         .login-card input[type="password"]:focus {
             outline: none;
-            border-color: var(--primary-soft);
-            box-shadow: 0 0 0 3px rgba(160, 110, 255, 0.18);
+            border-color: rgba(160, 110, 255, 0.7);
+            box-shadow: 0 0 0 4px rgba(160, 110, 255, 0.18),
+                        0 0 24px rgba(160, 110, 255, 0.18);
         }
         .login-card button {
             width: 100%;
-            margin-top: 14px;
-            background: var(--primary);
-            color: white;
-            border: 0;
-            padding: 12px;
-            border-radius: 8px;
+            margin-top: 16px;
+            background: linear-gradient(180deg, #8a4fe0 0%, #7a3dd4 100%);
+            color: #ffffff;
+            border: 1px solid rgba(160, 110, 255, 0.45);
+            padding: 14px;
+            border-radius: 10px;
             font-family: var(--mono);
             font-size: 12px;
-            letter-spacing: 3px;
+            font-weight: 600;
+            letter-spacing: 4px;
             cursor: pointer;
-            transition: background 120ms ease;
+            transition: transform 150ms cubic-bezier(0.22, 1, 0.36, 1),
+                        box-shadow 150ms cubic-bezier(0.22, 1, 0.36, 1),
+                        background 150ms ease;
+            box-shadow: 0 6px 20px rgba(122, 61, 212, 0.35);
         }
-        .login-card button:hover { background: var(--primary-soft); }
-        .login-card button:disabled { opacity: 0.5; cursor: wait; }
+        .login-card button:hover:not(:disabled) {
+            transform: translateY(-1px);
+            background: linear-gradient(180deg, #9a5fee 0%, #8a4be4 100%);
+            box-shadow: 0 10px 28px rgba(122, 61, 212, 0.5);
+        }
+        .login-card button:active:not(:disabled) { transform: translateY(0); }
+        .login-card button:disabled {
+            opacity: 0.6;
+            cursor: wait;
+            background: linear-gradient(180deg, #4a3a6e 0%, #3a2c56 100%);
+        }
         .login-card .hint {
-            color: var(--dim);
+            color: rgba(220, 215, 235, 0.45);
             font-size: 10px;
             font-family: var(--mono);
-            margin-top: 18px;
-            line-height: 1.6;
+            margin-top: 22px;
+            line-height: 1.7;
+            letter-spacing: 0.3px;
         }
         .login-card .err {
-            color: var(--danger);
+            color: #ff6b6b;
             font-size: 11px;
-            margin-top: 10px;
-            min-height: 1.2em;
+            margin-top: 12px;
+            min-height: 1.4em;
+            font-family: var(--mono);
+            letter-spacing: 1px;
         }
         .hwid-line {
-            color: var(--muted);
+            color: rgba(220, 215, 235, 0.32);
             font-size: 9px;
             font-family: var(--mono);
-            margin-top: 14px;
-            opacity: 0.6;
+            margin-top: 16px;
+            opacity: 0.7;
+            letter-spacing: 1px;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .login-card, .login-card button, .login-card input { transition: none; }
+            .login-card .brand-row .dot { animation: none; }
         }
     </style>
 </head>
 <body>
     <form class="login-card" id="login-form" autocomplete="off">
-        <img class="logo" src="/static/sinister-logo.png" alt="Sinister Sanctum">
-        <h1>SINISTER SANCTUM <span class="accent">::</span> CONSOLE</h1>
+        <div class="logo-wrap" aria-hidden="true">
+            <!-- Sanctum purple horned demon skull (inline SVG -- bundled at web/skull.svg) -->
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="64" height="64" aria-label="RKOJ">
+                <defs>
+                    <linearGradient id="lgSkull" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#A06EFF"/>
+                        <stop offset="100%" stop-color="#7A3DD4"/>
+                    </linearGradient>
+                </defs>
+                <!-- horns -->
+                <path d="M22 30 Q14 8 28 18 L34 36 Z" fill="url(#lgSkull)"/>
+                <path d="M78 30 Q86 8 72 18 L66 36 Z" fill="url(#lgSkull)"/>
+                <!-- crown points -->
+                <path d="M38 14 L42 4 L46 14 L50 6 L54 14 L58 4 L62 14 Z" fill="url(#lgSkull)" opacity="0.95"/>
+                <!-- skull -->
+                <ellipse cx="50" cy="55" rx="28" ry="32" fill="url(#lgSkull)"/>
+                <!-- eyes (cutouts) -->
+                <ellipse cx="40" cy="56" rx="6" ry="9" fill="#0a0a0c"/>
+                <ellipse cx="60" cy="56" rx="6" ry="9" fill="#0a0a0c"/>
+                <!-- nose -->
+                <path d="M48 68 L50 76 L52 68 Z" fill="#0a0a0c"/>
+                <!-- teeth -->
+                <path d="M38 80 L42 88 L46 80 L50 88 L54 80 L58 88 L62 80 L62 86 L38 86 Z" fill="#0a0a0c"/>
+            </svg>
+        </div>
+        <div class="brand-row">
+            <span class="dot" title="online"></span>
+            <h1>RKOJ <span class="accent">::</span> WORKBENCH</h1>
+        </div>
         <p class="sub">enter auth key to continue</p>
-        <input type="password" id="auth-key" placeholder="paste your auth key" autofocus autocomplete="off">
+        <input type="password" id="auth-key" placeholder="paste your auth key" autofocus autocomplete="off" spellcheck="false">
         <button type="submit" id="login-btn">UNLOCK</button>
-        <div class="err" id="err-msg"></div>
+        <div class="err" id="err-msg" role="alert" aria-live="polite"></div>
         <div class="hint">
-            keys are HWID-locked to the machine on first use.<br>
-            no usernames. operator + leo each get one key.
+            keys are HWID-locked to this machine on first use.<br>
+            no usernames -- operator + leo each get one key.
         </div>
         <div class="hwid-line" id="hwid-line">hwid: ...</div>
     </form>

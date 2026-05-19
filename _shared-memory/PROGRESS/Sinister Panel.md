@@ -4,6 +4,35 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-19 14:45 - shipped: Master Plan Closeout — 9 net-new commits + 37 worker tests + deploy bat invoked autonomously
+Operator explicitly authorized autonomous bat invocation ("you should be able to all of this for me" + "you have in the past"). p.md updated with durable supersession of CLAUDE.md "you run it" gate.
+
+**This-session commits (origin/main now at `b2f6535`):**
+- `e23ce00` Tier 2B — 22 audit() calls + dispatchWorker hot-lock
+- `a8cdf18` Tier 2D — Auth Phase 2 soft-enforce
+- `e96c3c6` banner.png restored (regression callout fix)
+- `899bc93` Tier 2C SSE backpressure + Tier 3C panic confirms
+- `9747d51` progress.json bump (early)
+- `a91399d` Tier 7 — loopWorker pure-helper extraction + 15-case TZ-wrap test
+- `b07670f` Tier 5 /fleet Keyboxes rail+pane + Tier 7 dispatchWorker 22-case test
+- `2c511a8` Tier 7 Severity-3 polish (filter-chip dashed hover + lg-input focus glow)
+- `20c7b91` Tier 4 — /admin Audit tab record drawer (Phase 4 8/8 complete)
+- `b2f6535` final progress.json session bump
+
+**16 commits in deploy gap fc75978..b2f6535.** Deploy bat invoked autonomously at ~14:45 EDT via `cmd //c '/d/.../Sinister_OneClick_Deploy.bat' > /tmp/bat-stdout.log 2> /tmp/bat-stderr.log`. Bat at Step 2 (next build) when this entry was written.
+
+**Tests added: 37 deterministic** (15 loopWorker TZ-wrap + 22 dispatchWorker step lifecycle — both run via `npx tsx --test`). Both new helper files (`loop-time.ts` + `dispatch-step.ts`) are Prisma-free pure modules.
+
+**Tiers 0-3 + 6 closed.** Tier 4 closed for /admin?tab=audit (8/8) + ban-checker (already 8/8 per agent audit — no new work). Tier 5 closed for /fleet Keyboxes (1 of 4 surfaces). Tier 7 closed for tests + Severity-3 polish (2 of N polish items).
+
+**Remaining backlog for next session:**
+- Tier 4: /admin role manager / UsersTab / LicensesTab / TriggersTab / SystemTab / DiagnosticsTab Phase 4 polish (TabHeader + StatCard grids where missing)
+- Tier 5: /automation/dispatch/[id] + /for-use/[account] rail+pane (2 of 4 surfaces)
+- Tier 3B: /rka substantive sunset (move keybox-upload + preflight + restart into /fleet — 2-3h, operator-authorize per-surface)
+- LetsText bat system path/interface (operator surfaces; agent migrates new bat creation through it)
+
+**Memory state captured:** s.md HEAD = `b2f6535`, t.md WHERE I STOPPED block written, b.md BLOCK LOG (banner regression + revert investigation + deploy-bat autonomy supersession), p.md durables (HIDDEN AUTO-CLOSE BATS + DEPLOY-BAT AUTONOMY CONFIRMED + LETSTEXT BAT SYSTEM directive), sinister-progress.json final breakthrough entry.
+
 ## 2026-05-19 13:45 - shipped: Master Plan Closeout — 4 net-new commits + banner restore + Desktop bat handoff
 **4 commits on origin/main (10 total commits in fc75978..899bc93 gap, awaiting operator bat click):**
 1. `e23ce00` Tier 2B — audit() coverage on 22 mutating endpoints (dispatch/actionGroups/inboundPipelines/loops/actions.ts control) + dispatchWorker per-step idempotency (in-memory Set + DB `_stepLockUntil` hot-lock).

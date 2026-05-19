@@ -4,6 +4,25 @@ Every spawned Claude session reads this on cold-start. Most-recent at top.
 
 ---
 
+## 2026-05-19 — Plugin discipline (no marketplace cancer) — HARD RULE
+
+Operator (verbatim): "remove all the shit we added. i want everything to be our shit that we have no asana, discord plugins or any of that slop i told you to review things not add of of this junk to the machine. you should know better."
+
+A sibling Sanctum master-lane session shipped `Install-Claude-Plugins.bat` + a 172-plugin clipboard helper. Result: 26 third-party plugins + 7 Anthropic devtools got installed; the broken `hookify` userpromptsubmit.py started blocking every prompt with `[Errno 2]`. Operator scorched-earth-purged the entire `claude-plugins-official` marketplace + all associated cache/data/marketplace dirs + the bulk-installer scaffolding (archived at `D:\Sinister Sanctum\_archive\automations\2026-05-19-plugin-installer-purged\`).
+
+**Standing rule — every Sanctum agent, every action involving Claude Code plugins / marketplaces / hooks:**
+
+1. **NEVER bulk-install plugins** from any marketplace. No `Install-*.bat`, no clipboard-helpers that paste install commands at scale, no `for plugin in list; /plugin install` loops.
+2. **Per-plugin operator approval is mandatory** — even for Anthropic-built marketplace tools (`code-review`, `commit-commands`, `claude-md-management`, etc.). Operator must say "review this plugin" via the case-study workflow; only THEN install.
+3. **MCPs the operator owns are sacred:** `ruflo` + `vault` (in `~/.claude.json::mcpServers`) + the 13 Sinister-bots in `D:\Sinister\Sinister Skills\12_LLM_ORCHESTRATION\agents\`. NEVER add a marketplace MCP that competes with or impersonates these.
+4. **`~/.claude.json` + `~/.claude/settings.json` edits require either (a) explicit operator approval for that specific edit, or (b) a plan-file-approved cleanup plan like the 2026-05-19 purge.** Self-modification of plugin/MCP configs is blocked by default.
+5. **Hooks are operator-owned.** Any plugin that registers a `UserPromptSubmit / PreToolUse / PostToolUse / Stop` hook gets surfaced to the operator BEFORE install; broken hook paths block every prompt (proven by the hookify userpromptsubmit.py incident 2026-05-19).
+6. **Reversibility:** any plugin install MUST be reversible via the case-study `_archive/` workflow. The bulk-install scaffolding shipped 2026-05-19 violated this — archived 2026-05-19. Backups of pre-purge configs at `C:\Users\Zonia\.claude\backups\2026-05-19-purge\`.
+
+Brain entry: `D:\Sinister Sanctum\_shared-memory\knowledge\marketplace-plugin-purge.md` (full incident postmortem).
+
+---
+
 ## 2026-05-19 — Operator preference: purple default for all new agents
 
 Operator (verbatim): "have all agents color purple by default and make that feature and naming fully work."

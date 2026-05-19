@@ -8,9 +8,16 @@
 // reachable via the dev-tools rail OR the Cmd+K command palette.
 
 // ============================================================== CORE REGISTRIES ==
-const TABS = ['fleet', 'agents', 'vault'];
-// Legacy aliases — older code paths still call activateTab('devices').
-const LEGACY_TAB_ALIAS = { devices: 'fleet' };
+// Author: Sinister Sanctum master agent (Claude UI-redesign sub) :: 2026-05-19 — workstation sweep
+// Two-tab workstation: ADB DEVICES (phone-viewer) + AGENTS (workstation).
+// Vault drops out of the top tab bar — it stays accessible via the agents-tab
+// VAULT tile (opens the dev-tools drawer with the vault template) and via the
+// header ribbon AUTOMATE > Vault commit action.
+const TABS = ['adb', 'agents'];
+// Legacy aliases — older code paths call activateTab('devices')/'fleet'/'vault'.
+// 'fleet' + 'devices' resolve to the new 'adb' tab. 'vault' resolves to 'agents'
+// (caller intent is "go to the workstation surface where vault is reachable").
+const LEGACY_TAB_ALIAS = { devices: 'adb', fleet: 'adb', vault: 'agents' };
 
 // MODES list - preserved for launcher wizard fallback when /api/launcher/options is empty.
 const MODES = ['overview', 'dev', 'audit', 'deploy', 'push', 'debug', 'explore'];
@@ -116,66 +123,67 @@ async function pollHealth() {
 
 // ============================================================== TAB STATE ==
 const state = {
-    activeTab: 'fleet',
-    paneState: { fleet: { selectedSerial: null, filter: 'all' }, agents: {}, vault: {} },
+    activeTab: 'adb',
+    paneState: { adb: { selectedSerial: null, filter: 'all', lanes: new Set(), embedded: new Set() }, agents: {} },
     devicesCache: [],
     sessionsCache: [],
+    /* Workstation sweep — Sinister Sanctum master agent (Claude UI-redesign sub) :: 2026-05-19
+     * adbEvents: rolling buffer of recent ADB commands across all devices.
+     * Each entry: { ts, serial, cmd, ok, rc, line }. Cap at 60. */
+    adbEvents: [],
 };
 
 // PaneRegistry kept for compatibility with palette / dev-tools-rail / popouts that
 // mount existing templates (dashboard, memory, inbox, requests, codex, ...).
 const PaneRegistry = {};
 
-// ============================================================== SKEL TAB MACHINERY ==
-/* Panel-style redesign — Sinister Sanctum master agent (Claude) :: 2026-05-19 */
+// ============================================================== WORKSTATION TAB MACHINERY ==
+/* Author: Sinister Sanctum master agent (Claude UI-redesign sub) :: 2026-05-19 — workstation sweep
+ * Two-tab routing (ADB / AGENTS) with side-nav alias preserved for palette routes. */
 function setSkelTab(tabId) {
     if (LEGACY_TAB_ALIAS[tabId]) tabId = LEGACY_TAB_ALIAS[tabId];
     if (!TABS.includes(tabId)) return;
     state.activeTab = tabId;
     lsSet(LS_ACTIVE_TAB, tabId);
-    qsa('.skel-top-tab').forEach(b => {
+    qsa('.rkoj-tab').forEach(b => {
         const on = b.dataset.tab === tabId;
         b.classList.toggle('active', on);
         b.setAttribute('aria-selected', on ? 'true' : 'false');
     });
-    qsa('.skel-tab-pane').forEach(p => {
+    qsa('.rkoj-tab-pane').forEach(p => {
         p.hidden = (p.id !== `skel-${tabId}`);
     });
-    // Reflect into sidebar (e.g. agents tab -> highlight "Agents" nav item).
-    syncSkelNavWithTab(tabId);
+    // Re-render the per-tab ribbon (groups differ slightly across tabs).
+    renderHeaderRibbon(tabId);
     mountSkelTabContent(tabId);
 }
 
-// Sidebar nav -> top tab routing.
+// Sidebar nav slugs that legacy callers (popouts, palette) still use. Map them
+// to a top tab. NOTE: there is no sidebar in the new shell — these are pure
+// aliases for #pane=<slug> hash routes and palette command IDs.
 const SIDE_NAV_TO_TAB = {
-    overview: 'fleet', progress: 'agents', accounts: 'agents', 'control-center': 'agents',
+    overview: 'agents', progress: 'agents', accounts: 'agents', 'control-center': 'agents',
     analytics: 'agents', library: 'agents', codex: 'agents', memory: 'agents',
-    devices: 'fleet', agents: 'agents', vault: 'vault',
-    scheduler: 'agents', 'cycle-points': 'agents', settings: 'agents',
+    devices: 'adb', fleet: 'adb', phones: 'adb', agents: 'agents', vault: 'agents',
+    scheduler: 'agents', 'cycle-points': 'agents', settings: 'agents', inbox: 'agents',
+    requests: 'agents', skills: 'agents', tools: 'agents', inventions: 'agents',
 };
 
 function setSkelNav(navId) {
-    qsa('.skel-side-item').forEach(b => b.classList.toggle('active', b.dataset.nav === navId));
-    const tabId = SIDE_NAV_TO_TAB[navId] || 'fleet';
+    const tabId = SIDE_NAV_TO_TAB[navId] || 'agents';
     setSkelTab(tabId);
 }
 
-function syncSkelNavWithTab(tabId) {
-    // Highlight a sane default sidebar item for the active tab.
-    const def = { fleet: 'devices', agents: 'agents', vault: 'vault' }[tabId];
-    const anyActive = qsa('.skel-side-item').some(b => b.classList.contains('active') && SIDE_NAV_TO_TAB[b.dataset.nav] === tabId);
-    if (!anyActive && def) {
-        qsa('.skel-side-item').forEach(b => b.classList.toggle('active', b.dataset.nav === def));
-    }
-}
+// Legacy stub — old shell had a sidebar; the workstation shell drops it. No-op
+// kept so prior callers (mid-flight palette commands) don't throw.
+function syncSkelNavWithTab(_tabId) { /* removed in workstation sweep 2026-05-19 */ }
 
 function mountSkelTabContent(tabId) {
     const pane = $(`skel-${tabId}`);
     if (!pane) return;
     pane.innerHTML = '';
-    if (tabId === 'fleet') mountSkelFleet(pane);
-    else if (tabId === 'agents') mountSkelAgents(pane);
-    else if (tabId === 'vault') mountSkelVault(pane);
+    if (tabId === 'adb') mountAdbTab(pane);
+    else if (tabId === 'agents') mountAgentsTab(pane);
 }
 
 // Back-compat alias — older code calls activateTab() to switch panes.
@@ -277,11 +285,42 @@ async function handleRibbonAction(action) {
         case 'popout-current':
         case 'popout-sessions':
             if (window.RkojPopout && window.RkojPopout.open) {
-                window.RkojPopout.open(state.activeTab === 'devices' ? 'phones' : 'dashboard');
+                window.RkojPopout.open(state.activeTab === 'adb' ? 'phones' : 'dashboard');
             } else { toast('popout module not loaded', true); }
             return;
+        /* Author: Sinister Sanctum master agent (Claude UI-redesign sub) :: 2026-05-19 — workstation sweep */
+        case 'split-view':
+            return toast('split-view: toggle planned for next sweep — use popout for now');
+        case 'new-window': {
+            const btn = $('hdr-newwin');
+            if (btn) openNewWindowPicker(btn);
+            return;
+        }
+        case 'spawn-agent':
+            setSkelTab('agents');
+            setTimeout(() => {
+                const hero = qs('.rkoj-launcher-hero');
+                if (hero) hero.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 50);
+            return;
+        case 'cycle-resume':
+            setSkelTab('agents');
+            setTimeout(() => {
+                const c = qs('.rkoj-cyclepoints-card');
+                if (c) c.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 50);
+            return;
+        case 'intelligence':
+            return toast('intelligence: click a session card → INTELLIGENCE button');
+        case 'open-inbox':
+            return openDrawerTemplate('inbox', 'Cross-agent inbox');
+        case 'vault-commit':
+            if (window.RkojVault && window.RkojVault.openCommitModal) return window.RkojVault.openCommitModal();
+            return openVaultDrawer();
+        case 'view-logs':
+            return toast('view-logs: open dev-tools rail → Refresh interval → (logs viewer coming)');
         case 'refresh-devices':
-            return refreshDevices(qs('#tab-devices'), state.paneState.devices);
+            return refreshAdbTab($('skel-adb'));
         case 'scan-all-phones': {
             const r = await fetchJson('/api/devices/scan-all', { method: 'POST' });
             return toast(r.ok ? '[OK] scan dispatched' : `[FAIL] ${r.error || r.detail || 'unsupported'}`, !r.ok);
@@ -314,7 +353,12 @@ async function handleRibbonAction(action) {
         }
         case 'new-agent':
         case 'launcher-wizard':
-            return activateTab('agents'); // wizard already in agents workbench
+            setSkelTab('agents');
+            setTimeout(() => {
+                const hero = qs('.rkoj-launcher-hero');
+                if (hero) hero.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 50);
+            return;
         case 'inbox-all':
             // 2026-05-19 master sweep: 'inbox-all' now opens the broadcast modal
             // (multi-send is shipped via openBroadcastModal -> POST /api/inbox/broadcast).
@@ -938,7 +982,15 @@ async function refreshDevices(host, paneState) {
     const countEl = bind(host, 'devices-count');
     const filterSel = bind(host, 'devices-lane-filter');
     const legend = bind(host, 'devices-lane-legend');
-    if (!grid) return;
+    if (!grid) {
+        // Author: Sinister Sanctum master agent (Claude UI-redesign sub) :: 2026-05-19
+        // The workstation shell's ADB pane uses `[data-bind="adb-grid"]` (not
+        // `devices-grid`). When legacy callers fire refreshDevices(card, ...),
+        // bounce to refreshAdbTab if the ADB pane is mounted.
+        const adbPane = $('skel-adb');
+        if (adbPane && bind(adbPane, 'adb-grid')) return refreshAdbTab(adbPane);
+        return;
+    }
 
     const r = await fetchJson('/api/devices');
     if (!r.ok) {
@@ -1630,6 +1682,19 @@ async function _execCmd(serial, cmd, container) {
     _renderHistory(container, serial);
     if (r.lane_warning) { toast(`[WARN] ${r.lane_warning}`, true); }
     else if (r.ok === false) { toast(`[FAIL] ${r.error || r.detail || 'exec failed'}`, true); }
+
+    // Author: Sinister Sanctum master agent (Claude UI-redesign sub) :: 2026-05-19 — workstation sweep
+    // Mirror into the rolling adbEvents buffer so the ADB tab's recent-events
+    // card can list cross-device activity. Cap at 60 entries.
+    try {
+        const firstLine = (entry.stdout || entry.stderr || '').split('\n')[0] || '';
+        state.adbEvents.unshift({ ts, serial, cmd: trimmed, ok: entry.ok, rc: entry.rc, line: firstLine });
+        state.adbEvents = state.adbEvents.slice(0, 60);
+        if (state.activeTab === 'adb') {
+            const pane = $('skel-adb');
+            if (pane) renderAdbEventsFeed(pane);
+        }
+    } catch (e) { /* non-fatal */ }
 }
 
 // RKOJ embedded screen viewer — Sinister Sanctum master agent (Claude) :: 2026-05-19
@@ -2098,39 +2163,57 @@ async function refreshActivityFeed(pane) {
     });
 }
 
-// ============================================================== SKEL SHELL WIRING ==
-/* Panel-style redesign — Sinister Sanctum master agent (Claude) :: 2026-05-19 */
+// ============================================================== WORKSTATION SHELL WIRING ==
+/* Author: Sinister Sanctum master agent (Claude UI-redesign sub) :: 2026-05-19 — workstation sweep
+ * Wires the 3-row header: tabs (row 1), Excel-ribbon (row 2), KPI cards (row 3).
+ * + Cmd+K palette + ESC handlers + popovers (window picker, settings drawer). */
 function wireSkelShell() {
-    // Top tabs.
-    qsa('.skel-top-tab').forEach(b => {
+    // Top tabs (2 — ADB / AGENTS).
+    qsa('.rkoj-tab').forEach(b => {
         b.addEventListener('click', () => setSkelTab(b.dataset.tab));
     });
-    // Sidebar nav.
-    qsa('.skel-side-item').forEach(b => {
-        b.addEventListener('click', (ev) => { ev.preventDefault(); setSkelNav(b.dataset.nav); });
-    });
-    // Top-right action circle row.
-    const alertsBtn = $('tb-alerts');
+
+    // ===== Row 1 icon strip =====
+    const alertsBtn = $('hdr-alerts');
     if (alertsBtn) alertsBtn.addEventListener('click', () => {
         setDevtoolsRail(true, state.activeTab);
-        toast('Operator requests drawer opened (right side)');
+        toast('Operator requests drawer opened');
     });
-    const bellBtn = $('tb-bell');
-    if (bellBtn) bellBtn.addEventListener('click', () => toast('No new notifications'));
-    const homeBtn = $('tb-home');
-    if (homeBtn) homeBtn.addEventListener('click', () => setSkelTab('fleet'));
-    const paletteBtn = $('tb-palette');
+    const bellBtn = $('hdr-bell');
+    if (bellBtn) bellBtn.addEventListener('click', () => {
+        setSkelTab('agents');
+        // scroll to activity feed
+        setTimeout(() => {
+            const card = qs('.rkoj-activity-card');
+            if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 50);
+    });
+    const paletteBtn = $('hdr-palette');
     if (paletteBtn) paletteBtn.addEventListener('click', () => {
         if (window.RkojPalette && window.RkojPalette.open) window.RkojPalette.open();
         else toast('palette.js not loaded', true);
     });
+    const newWinBtn = $('hdr-newwin');
+    if (newWinBtn) newWinBtn.addEventListener('click', () => openNewWindowPicker(newWinBtn));
+    const settingsBtn = $('hdr-settings');
+    if (settingsBtn) settingsBtn.addEventListener('click', () => openSettingsDrawer(settingsBtn));
+
+    // KPI cards — click navigation.
+    const kpiPhones = $('kpi-card-phones');
+    if (kpiPhones) kpiPhones.addEventListener('click', () => setSkelTab('adb'));
+    const kpiAgents = $('kpi-card-agents');
+    if (kpiAgents) kpiAgents.addEventListener('click', () => setSkelTab('agents'));
+    const kpiVault = $('kpi-card-vault');
+    if (kpiVault) kpiVault.addEventListener('click', () => { setSkelTab('agents'); openVaultDrawer(); });
+    const kpiPending = $('kpi-card-pending');
+    if (kpiPending) kpiPending.addEventListener('click', () => {
+        setDevtoolsRail(true, 'agents');
+        toast('Operator requests drawer opened');
+    });
+
+    // Dev-tools rail close.
     const closeBtn = $('devtools-close');
     if (closeBtn) closeBtn.addEventListener('click', () => setDevtoolsRail(false, state.activeTab));
-    const signOut = $('skel-side-signout');
-    if (signOut) signOut.addEventListener('click', () => {
-        try { localStorage.removeItem('sinister_token'); } catch (e) {}
-        location.reload();
-    });
 
     // Cmd+K / Ctrl+K -> palette.
     document.addEventListener('keydown', (ev) => {
@@ -2139,6 +2222,108 @@ function wireSkelShell() {
             if (window.RkojPalette && window.RkojPalette.open) window.RkojPalette.open();
             else toast('palette.js not loaded', true);
         }
+        // Alt+1 / Alt+2 — switch tabs.
+        if (ev.altKey && (ev.key === '1' || ev.key === '2')) {
+            ev.preventDefault();
+            setSkelTab(ev.key === '1' ? 'adb' : 'agents');
+        }
+    });
+
+    // Listen for palette-fired tab/drawer events (palette.js dispatches these).
+    window.addEventListener('rkoj:switch-tab', (ev) => {
+        const tab = ev && ev.detail && ev.detail.tab;
+        if (tab) setSkelTab(tab);
+    });
+    window.addEventListener('rkoj:open-drawer', (ev) => {
+        const d = ev && ev.detail || {};
+        if (d.drawer) openDrawerTemplate(d.drawer, d.drawer);
+    });
+    window.addEventListener('rkoj:ribbon-action', (ev) => {
+        const id = ev && ev.detail && ev.detail.id;
+        if (id) handleRibbonAction(id);
+    });
+
+    // Expose `switchTab` on RkojHelpers so palette can call directly when loaded.
+    if (window.RkojHelpers) window.RkojHelpers.switchTab = setSkelTab;
+
+    // Render the ribbon row on the active tab.
+    renderHeaderRibbon(state.activeTab);
+}
+
+// ============================================================== POPOVER HELPERS ==
+function _showAnchoredPopover(anchorEl, tplId, onMount) {
+    const tpl = $(tplId);
+    if (!tpl) { toast(`template ${tplId} missing`, true); return; }
+    // Strip any existing popover with same tplId.
+    qsa(`[data-popover="${tplId}"]`).forEach(n => n.remove());
+    const overlay = el('div', { class: 'rkoj-popover-overlay', 'data-popover': tplId });
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:9700;';
+    const frag = tpl.content.cloneNode(true);
+    const wrap = el('div', { class: 'rkoj-popover-wrap' });
+    wrap.appendChild(frag);
+    overlay.appendChild(wrap);
+    document.body.appendChild(overlay);
+    // Anchor: position popover just below anchorEl, right-edge aligned.
+    const r = anchorEl.getBoundingClientRect();
+    const popEl = wrap.firstElementChild;
+    if (popEl) {
+        popEl.style.position = 'fixed';
+        popEl.style.top = (r.bottom + 8) + 'px';
+        popEl.style.right = Math.max(8, window.innerWidth - r.right) + 'px';
+        popEl.style.maxWidth = '360px';
+    }
+    const close = () => { try { overlay.remove(); } catch (e) {} };
+    overlay.addEventListener('click', (ev) => { if (ev.target === overlay) close(); });
+    overlay.querySelectorAll('[data-act="cancel"]').forEach(b => b.addEventListener('click', close));
+    if (typeof onMount === 'function') onMount(overlay, close);
+    document.addEventListener('keydown', function escClose(ev) {
+        if (ev.key === 'Escape') { close(); document.removeEventListener('keydown', escClose); }
+    });
+}
+
+function openNewWindowPicker(anchor) {
+    _showAnchoredPopover(anchor, 'tpl-newwin-picker', (overlay, close) => {
+        overlay.querySelectorAll('.rkoj-newwin-tile').forEach(t => {
+            t.addEventListener('click', () => {
+                const view = t.dataset.view;
+                if (window.RkojPopout && window.RkojPopout.open) window.RkojPopout.open(view);
+                else toast('popout module not loaded', true);
+                close();
+            });
+        });
+    });
+}
+
+function openSettingsDrawer(anchor) {
+    _showAnchoredPopover(anchor, 'tpl-settings-drawer', (overlay, close) => {
+        const densitySel = overlay.querySelector('[data-bind="set-density"]');
+        if (densitySel) {
+            densitySel.value = document.body.getAttribute('data-density') || 'cozy';
+            densitySel.addEventListener('change', () => {
+                document.body.setAttribute('data-density', densitySel.value);
+                lsSet('rkoj.density', densitySel.value);
+            });
+        }
+        const intelSel = overlay.querySelector('[data-bind="set-intel"]');
+        if (intelSel) {
+            const saved = lsGet('rkoj.default_intelligence', 'claude-opus-4-7');
+            intelSel.value = saved;
+            intelSel.addEventListener('change', () => lsSet('rkoj.default_intelligence', intelSel.value));
+        }
+        const hrCb = overlay.querySelector('[data-bind="set-hotreload"]');
+        if (hrCb) {
+            hrCb.checked = lsGet('rkoj.hot_reload', '1') === '1';
+            hrCb.addEventListener('change', () => lsSet('rkoj.hot_reload', hrCb.checked ? '1' : '0'));
+        }
+        const dtBtn = overlay.querySelector('[data-act="open-devtools"]');
+        if (dtBtn) dtBtn.addEventListener('click', () => { setDevtoolsRail(true, state.activeTab); close(); });
+        const acctBtn = overlay.querySelector('[data-act="open-accounts"]');
+        if (acctBtn) acctBtn.addEventListener('click', () => { openDrawerTemplate('settings', 'Settings'); close(); });
+        const signOut = overlay.querySelector('[data-act="signout"]');
+        if (signOut) signOut.addEventListener('click', () => {
+            try { localStorage.removeItem('sinister_token'); } catch (e) {}
+            location.reload();
+        });
     });
 }
 
@@ -2151,6 +2336,9 @@ async function refreshSkelKpi() {
         const n = qs(`[data-bind="${key}"]`);
         if (n) n.textContent = (v === null || v === undefined || v === '') ? '—' : String(v);
     };
+    const setKpiClass = (cardId, cls, on) => {
+        const c = $(cardId); if (c) c.classList.toggle(cls, on);
+    };
     // Phones online (filter for state='device').
     try {
         const r = await fetchJson('/api/devices');
@@ -2159,11 +2347,13 @@ async function refreshSkelKpi() {
             state.devicesCache = devs;
             const online = devs.filter(d => (d.state || '').toLowerCase() === 'device').length;
             setNum('kpi-phones-online', online);
-            // Sidebar badge.
-            const badge = $('side-phones-badge');
-            if (badge) badge.textContent = online > 0 ? '●' : '';
+            setNum('kpi-phones-sub', `${devs.length} attached`);
+            setNum('tab-adb-count', devs.length);
+            setKpiClass('kpi-card-phones', 'is-good', online > 0);
         } else {
             setNum('kpi-phones-online', 0);
+            setNum('kpi-phones-sub', '0 attached');
+            setNum('tab-adb-count', 0);
         }
     } catch (e) { setNum('kpi-phones-online', 0); }
     // Agents online.
@@ -2173,22 +2363,32 @@ async function refreshSkelKpi() {
         state.sessionsCache = sessions;
         const online = sessions.filter(s => s.online).length;
         setNum('kpi-agents-online', online);
+        setNum('kpi-agents-sub', `${sessions.length} registered`);
+        setNum('tab-agents-count', online);
+        setKpiClass('kpi-card-agents', 'is-good', online > 0);
     } catch (e) { setNum('kpi-agents-online', 0); }
     // Vault used.
     try {
         const r = await fetchJson('/api/vault/quota');
         if (r && !r.vault_offline && r.ok !== false) {
             const used = r.used_bytes || 0;
-            setNum('kpi-vault-used', _fmtBytes(used));
+            const usedHuman = r.used_human || _fmtBytes(used);
+            setNum('kpi-vault-used', usedHuman);
+            const tooHigh = used > 950 * 1024 * 1024 * 1024;
+            setKpiClass('kpi-card-vault', 'is-danger', tooHigh);
+            setNum('kpi-vault-sub', tooHigh ? 'over soft quota!' : (r.free_human ? `${r.free_human} free` : '--'));
         } else {
             setNum('kpi-vault-used', 'offline');
+            setNum('kpi-vault-sub', 'vault offline');
         }
     } catch (e) { setNum('kpi-vault-used', '—'); }
-    // Pending requests.
+    // Pending requests (operator-actions + operator-requests).
     try {
         const r = await fetchJson('/api/operator-requests?status=pending');
         const n = (r && r.requests) ? r.requests.length : 0;
         setNum('kpi-pending', n);
+        setNum('kpi-pending-sub', n > 0 ? 'agents need decisions' : 'none waiting');
+        setKpiClass('kpi-card-pending', 'is-danger', n > 0);
     } catch (e) { setNum('kpi-pending', 0); }
 }
 
@@ -2200,224 +2400,512 @@ function _fmtBytes(b) {
     return b.toFixed(b >= 100 ? 0 : 1) + ' ' + u[i];
 }
 
-// ============================================================== SKEL FLEET PANE ==
-function mountSkelFleet(pane) {
-    const grid = el('div', { class: 'skel-fleet-grid' });
+// ==============================================================
+// WORKSTATION TAB MOUNTERS — Sinister Sanctum master agent (Claude UI-redesign sub) :: 2026-05-19
+// ==============================================================
 
-    // ---- left column: search + tabs + list ----
-    const left = el('div', { class: 'skel-fleet-list' });
-    const search = el('input', { class: 'skel-fleet-search', type: 'text', placeholder: 'Search phones (serial / model)…' });
-    left.appendChild(search);
-
-    const tabsRow = el('div', { class: 'skel-fleet-tabs' });
-    const TABS_FLEET = [
-        { id: 'all', label: 'All' },
-        { id: 'online', label: 'Online' },
-        { id: 'stale', label: 'Stale' },
-        { id: 'locked', label: 'Locked' },
+// ====================================================================== HEADER RIBBON ==
+// Excel-style action ribbon — 5 groups (VIEW / SPAWN / AGENT / AUTOMATE / MAINTAIN).
+// Each tile is 18px icon + 14px label + tooltip + (optional) keyboard chip.
+// Click dispatches to handleRibbonAction(); the per-tab tile groups stay stable
+// but the active highlight flips to whichever tile maps to the current view.
+function ribbonGroupsForHeader(tabId) {
+    // Groups are stable; some tiles act on the active tab implicitly.
+    return [
+        { label: 'VIEW', tiles: [
+            { icon: '⧉', label: 'Split',       action: 'split-view',       kbd: 'V' },
+            { icon: '↗', label: 'Popout',      action: 'popout-current',   kbd: 'P' },
+            { icon: '☰', label: 'Toggle rail', action: 'toggle-devtools',  kbd: 'D' },
+            { icon: '≡', label: 'Layout',      action: 'layout-presets',   kbd: 'L' },
+        ]},
+        { label: 'SPAWN', tiles: [
+            { icon: '+',       label: 'Agent',     action: 'spawn-agent',  kbd: 'A' },
+            { icon: '↻',  label: 'Cycle',     action: 'cycle-resume', kbd: 'C' },
+            { icon: '▦',  label: 'Window',    action: 'new-window',   kbd: 'W' },
+            { icon: '✉',  label: 'Broadcast', action: 'broadcast',    kbd: 'B' },
+        ]},
+        { label: 'AGENT', tiles: [
+            { icon: '⚡',  label: 'Intelligence', action: 'intelligence', kbd: 'I' },
+            { icon: '♥',  label: 'Ping all',     action: 'ping-all',     kbd: 'H' },
+            { icon: '⚑',  label: 'Codex review', action: 'codex-review', kbd: 'X' },
+            { icon: '✉',  label: 'Inbox',        action: 'open-inbox',   kbd: 'M' },
+        ]},
+        { label: 'AUTOMATE', tiles: [
+            { icon: '⏰',  label: 'Schedule',    action: 'scheduler',     kbd: 'S' },
+            { icon: '▶',  label: 'Run script',  action: 'run-script',    kbd: 'R' },
+            { icon: '✨',  label: 'Fix memory',  action: 'fix-claude-memory' },
+            { icon: 'V',       label: 'Vault commit',action: 'vault-commit',  kbd: 'U' },
+        ]},
+        { label: 'MAINTAIN', tiles: [
+            { icon: '⛒',  label: 'Build EXE',     action: 'build-rkoj' },
+            { icon: '✱',  label: 'Health',        action: 'health-probe',    kbd: 'F' },
+            { icon: '↻',  label: 'Restart',       action: 'restart-console' },
+            { icon: '☰',  label: 'Logs',          action: 'view-logs' },
+        ]},
     ];
-    const fps = state.paneState.fleet;
-    fps.filter = lsGet(LS_FLEET_FILTER, 'all');
-    TABS_FLEET.forEach(t => {
-        const btn = el('button', {
-            class: 'skel-fleet-tab' + (fps.filter === t.id ? ' active' : ''),
-            'data-filter': t.id,
-            onclick: () => {
-                fps.filter = t.id;
-                lsSet(LS_FLEET_FILTER, t.id);
-                qsa('.skel-fleet-tab', tabsRow).forEach(x => x.classList.toggle('active', x.dataset.filter === t.id));
-                renderFleetList();
+}
+
+function renderHeaderRibbon(tabId) {
+    const row = $('rkoj-ribbon');
+    if (!row) return;
+    row.innerHTML = '';
+    const groups = ribbonGroupsForHeader(tabId);
+    groups.forEach((g, idx) => {
+        if (idx > 0) row.appendChild(el('span', { class: 'rkoj-ribbon-sep' }));
+        const groupEl = el('div', { class: 'rkoj-ribbon-grp', 'data-group': g.label });
+        const tiles = el('div', { class: 'rkoj-ribbon-grp-tiles' });
+        g.tiles.forEach(t => {
+            const tile = el('button', {
+                class: 'rkoj-ribbon-btn',
+                title: t.label + (t.kbd ? ` (Alt+${t.kbd})` : ''),
+                'data-action': t.action,
+                onclick: () => handleRibbonAction(t.action),
             },
-        },
-            el('span', null, t.label),
-            el('span', { class: 'skel-fleet-tab-count', 'data-count': t.id }, '0'),
-        );
-        tabsRow.appendChild(btn);
-    });
-    left.appendChild(tabsRow);
-
-    const listItems = el('div', { class: 'skel-fleet-list-items' });
-    left.appendChild(listItems);
-    grid.appendChild(left);
-
-    // ---- right column: detail ----
-    const right = el('div', { class: 'skel-fleet-detail' });
-    grid.appendChild(right);
-    pane.appendChild(grid);
-
-    // Renderer.
-    function renderFleetList() {
-        const q = (search.value || '').trim().toLowerCase();
-        const devs = state.devicesCache || [];
-        const counts = { all: devs.length, online: 0, stale: 0, locked: 0 };
-        devs.forEach(d => {
-            const s = (d.state || '').toLowerCase();
-            if (s === 'device') counts.online++;
-            else if (s === 'offline' || s === '') counts.stale++;
-            else counts.locked++;
-        });
-        Object.entries(counts).forEach(([k, v]) => {
-            const el2 = qs(`[data-count="${k}"]`, tabsRow);
-            if (el2) el2.textContent = String(v);
-        });
-        const filt = fps.filter;
-        const matches = devs.filter(d => {
-            const s = (d.state || '').toLowerCase();
-            if (filt === 'online' && s !== 'device') return false;
-            if (filt === 'stale' && !(s === 'offline' || s === '')) return false;
-            if (filt === 'locked' && (s === 'device' || s === 'offline' || s === '')) return false;
-            if (q && !((d.serial || '').toLowerCase().includes(q) || (d.model || '').toLowerCase().includes(q))) return false;
-            return true;
-        });
-        listItems.innerHTML = '';
-        if (!matches.length) {
-            listItems.appendChild(el('div', { class: 'empty-note' }, devs.length ? 'no phones match filter' : 'no phones attached'));
-            renderDetail(null);
-            return;
-        }
-        matches.forEach(d => {
-            const s = (d.state || '').toLowerCase();
-            const dotCls = s === 'device' ? 'online' : (s === 'offline' || s === '') ? 'stale' : 'offline';
-            const item = el('div', {
-                class: 'skel-fleet-list-item' + (fps.selectedSerial === d.serial ? ' active' : ''),
-                onclick: () => {
-                    fps.selectedSerial = d.serial;
-                    lsSet(LS_FLEET_SELECTED, d.serial);
-                    qsa('.skel-fleet-list-item', listItems).forEach(x => x.classList.remove('active'));
-                    item.classList.add('active');
-                    renderDetail(d);
-                },
-            },
-                el('div', { class: 'id' }, d.serial),
-                el('div', { class: 'sub' },
-                    el('span', null, el('span', { class: `dot ${dotCls}` }), d.model || '(unknown)'),
-                    el('span', null, (d.state || '').toUpperCase()),
-                ),
+                el('span', { class: 'rkoj-ribbon-btn-ico' }, t.icon),
+                el('span', { class: 'rkoj-ribbon-btn-lbl' }, t.label),
             );
-            listItems.appendChild(item);
+            if (t.kbd) tile.appendChild(el('span', { class: 'rkoj-ribbon-btn-kbd' }, t.kbd));
+            tiles.appendChild(tile);
         });
-        // Auto-select first if none.
-        if (!fps.selectedSerial || !matches.some(d => d.serial === fps.selectedSerial)) {
-            fps.selectedSerial = matches[0].serial;
-            qsa('.skel-fleet-list-item', listItems)[0].classList.add('active');
-        }
-        const sel = matches.find(d => d.serial === fps.selectedSerial) || matches[0];
-        renderDetail(sel);
+        groupEl.appendChild(tiles);
+        groupEl.appendChild(el('div', { class: 'rkoj-ribbon-grp-lbl' }, g.label));
+        row.appendChild(groupEl);
+    });
+}
+
+// ====================================================================== ADB TAB ==
+function mountAdbTab(pane) {
+    const tpl = $('tpl-adb-workstation');
+    if (!tpl) {
+        pane.appendChild(el('div', { class: 'empty-note' }, 'tpl-adb-workstation missing'));
+        return;
     }
+    pane.appendChild(tpl.content.cloneNode(true));
+    const aps = state.paneState.adb;
 
-    function renderDetail(d) {
-        right.innerHTML = '';
-        if (!d) {
-            right.appendChild(el('div', { class: 'lg-card empty-note' }, 'select a phone on the left'));
-            return;
-        }
-        const mkRow = (lbl, val) => el('div', { class: 'skel-fleet-row' },
-            el('span', { class: 'lbl' }, lbl),
-            el('span', { class: 'val' }, val == null || val === '' ? '—' : String(val)),
-        );
-        const sectionIdentity = el('div', { class: 'lg-card skel-fleet-section' },
-            el('div', { class: 'skel-fleet-section-head' }, 'Identity', el('span', { class: 'sub' }, d.serial)),
-            mkRow('Serial', d.serial),
-            mkRow('Model', d.model || d.device),
-            mkRow('Product', d.product),
-            mkRow('Transport', d.transport_id),
-            mkRow('Lane', d.lane || 'unowned'),
-        );
-        const sectionHeartbeat = el('div', { class: 'lg-card skel-fleet-section' },
-            el('div', { class: 'skel-fleet-section-head' }, 'Heartbeat'),
-            mkRow('State', (d.state || 'unknown').toUpperCase()),
-            mkRow('Battery', d.battery != null ? d.battery + '%' : '—'),
-            mkRow('Viewer PID', d.viewer_pid || '—'),
-            mkRow('Proxy', d.proxy || '—'),
-        );
-        const sectionRka = el('div', { class: 'lg-card skel-fleet-section' },
-            el('div', { class: 'skel-fleet-section-head' }, 'RKA posture'),
-            mkRow('Attestation', d.attestation || '—'),
-            mkRow('Rooted', d.rooted == null ? '—' : (d.rooted ? 'YES' : 'no')),
-            mkRow('Frida', d.frida || '—'),
-        );
-        const actionsRow = el('div', { class: 'lg-card skel-fleet-section' },
-            el('div', { class: 'skel-fleet-section-head' }, 'Actions'),
-            el('div', { style: 'display:flex;gap:8px;flex-wrap:wrap;' },
-                el('button', {
-                    class: 'lg-button primary',
-                    onclick: async () => {
-                        if (d.state !== 'device') { toast('phone not ready', true); return; }
-                        const r = await fetchJson(`/api/devices/${encodeURIComponent(d.serial)}/view`, {
-                            method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}),
-                        });
-                        if (r.ok) { toast(`[OK] scrcpy launched (pid ${r.pid})`); refreshSkelKpi(); }
-                        else toast(`[FAIL] ${r.error || r.detail || 'view failed'}`, true);
-                    },
-                }, 'VIEW'),
-                el('button', {
-                    class: 'lg-button ghost',
-                    onclick: () => {
-                        if (window.RkojPopout && window.RkojPopout.open) window.RkojPopout.open('phone-card', { serial: d.serial });
-                        else toast('popout not loaded', true);
-                    },
-                }, 'Popout'),
-                el('button', {
-                    class: 'lg-button ghost',
-                    onclick: async () => {
-                        const r = await fetchJson(`/api/devices/${encodeURIComponent(d.serial)}/state`);
-                        if (r.ok && r.exists) toast(`state notes loaded (${(r.raw || '').length} chars)`);
-                        else toast(`no state notes for ${d.serial}`);
-                    },
-                }, 'State notes'),
-            ),
-        );
+    // Wire toolbar actions — scope to the toolbar so device-card data-act
+    // attributes don't double-bind.
+    const toolbar = qs('.rkoj-adb-toolbar', pane);
+    if (toolbar) qsa('[data-act]', toolbar).forEach(btn => {
+        const act = btn.dataset.act;
+        btn.addEventListener('click', async () => {
+            switch (act) {
+                case 'refresh': return refreshAdbTab(pane);
+                case 'scan-all': {
+                    const r = await fetchJson('/api/devices/scan-all', { method: 'POST' });
+                    return toast(r.ok ? '[OK] scan dispatched' : `[FAIL] ${r.error || r.detail || 'unsupported'}`, !r.ok);
+                }
+                case 'push-to-lane':
+                    return toast('push-to-lane: open a phone card -> PUSH (bulk push wires up next sweep)');
+                case 'push-frida':
+                    return toast('push-frida: open a phone card -> ACTIONS -> Push frida');
+                case 'reboot-selected':
+                    if (!confirm('Reboot every device in the active-lane filter?')) return;
+                    return toast('reboot-selected: not implemented (would iterate device cards)');
+            }
+        });
+    });
 
-        right.appendChild(sectionIdentity);
-        right.appendChild(sectionHeartbeat);
-        right.appendChild(sectionRka);
-        right.appendChild(actionsRow);
-    }
+    refreshAdbTab(pane);
 
-    search.addEventListener('input', renderFleetList);
-
-    // Initial draw (uses cached data immediately, then re-renders on refresh).
-    fps.selectedSerial = fps.selectedSerial || lsGet(LS_FLEET_SELECTED, null);
-    renderFleetList();
-    // Ensure cache is fresh.
-    refreshSkelKpi().then(renderFleetList).catch(() => {});
-
-    // Periodic refresh while pane is active.
+    // Periodic refresh while ADB tab is active. FleetState handles sessions/heartbeats,
+    // but the /api/devices list is its own SSE-less endpoint, so we still poll here.
     if (_deviceTimers.devices) clearInterval(_deviceTimers.devices);
     _deviceTimers.devices = setInterval(() => {
-        if (state.activeTab !== 'fleet') {
+        if (state.activeTab !== 'adb') {
             clearInterval(_deviceTimers.devices);
             _deviceTimers.devices = null;
             return;
         }
-        refreshSkelKpi().then(renderFleetList).catch(() => {});
-    }, DEVICE_REFRESH_MS);
+        refreshAdbTab(pane);
+    }, parseInt(lsGet('rkoj.devices.refresh_ms', String(DEVICE_REFRESH_MS)), 10));
 }
 
-// ============================================================== SKEL AGENTS PANE ==
-function mountSkelAgents(pane) {
-    const tpl = $('tpl-agents-section');
+async function refreshAdbTab(pane) {
+    const r = await fetchJson('/api/devices');
+    const grid = bind(pane, 'adb-grid');
+    const countEl = bind(pane, 'adb-count');
+    const laneChips = bind(pane, 'adb-lane-chips');
+    if (!grid) return;
+    if (!r || !r.ok) {
+        grid.innerHTML = '';
+        grid.appendChild(el('div', { class: 'empty-note' }, `failed to list devices: ${(r && (r.error || r.detail)) || 'unknown'}`));
+        if (countEl) countEl.textContent = 'error';
+        return;
+    }
+    const devs = r.devices || [];
+    state.devicesCache = devs;
+    const lanes = r.lanes || Array.from(new Set(devs.map(d => d.lane || 'unowned')));
+    const aps = state.paneState.adb;
+
+    // Render lane filter chips (multi-select).
+    if (laneChips) {
+        laneChips.innerHTML = '';
+        const allBtn = el('button', {
+            class: 'lg-pill rkoj-lane-chip' + (aps.lanes.size === 0 ? ' lg-pill-active active' : ''),
+            onclick: () => {
+                aps.lanes.clear();
+                refreshAdbTab(pane);
+            },
+        }, 'All');
+        laneChips.appendChild(allBtn);
+        lanes.forEach(ln => {
+            const active = aps.lanes.has(ln);
+            const chip = el('button', {
+                class: 'lg-pill rkoj-lane-chip ' + _laneClassFor(ln) + (active ? ' lg-pill-active active' : ''),
+                onclick: () => {
+                    if (aps.lanes.has(ln)) aps.lanes.delete(ln);
+                    else aps.lanes.add(ln);
+                    refreshAdbTab(pane);
+                },
+            }, ln);
+            laneChips.appendChild(chip);
+        });
+    }
+
+    // Filter by selected lanes.
+    const filtered = aps.lanes.size === 0
+        ? devs
+        : devs.filter(d => aps.lanes.has(d.lane || 'unowned'));
+
+    if (countEl) countEl.textContent = `${filtered.length}/${devs.length} attached`;
+    grid.innerHTML = '';
+    if (!filtered.length) {
+        grid.appendChild(el('div', { class: 'empty-note' },
+            devs.length ? 'no phones match the selected lane(s)'
+                        : 'no phones attached - plug a phone in via USB and ensure ADB is authorized'));
+        return;
+    }
+    filtered.forEach(d => { grid.appendChild(_renderDeviceCard(pane, d, state.paneState.adb)); });
+
+    // Recent ADB events feed (state.adbEvents — populated by _execCmd wrap).
+    renderAdbEventsFeed(pane);
+}
+
+function renderAdbEventsFeed(pane) {
+    const list = bind(pane, 'adb-events-list');
+    if (!list) return;
+    list.innerHTML = '';
+    if (!state.adbEvents.length) {
+        list.appendChild(el('div', { class: 'empty-note' },
+            'no events yet — run a command on a device card to populate this feed'));
+        return;
+    }
+    state.adbEvents.slice(0, 40).forEach(ev => {
+        list.appendChild(el('div', { class: 'rkoj-adb-event' + (ev.ok ? '' : ' err') },
+            el('span', { class: 'ev-ts' }, (ev.ts || '').slice(11, 19)),
+            el('span', { class: 'ev-serial' }, ev.serial || '?'),
+            el('span', { class: 'ev-cmd' }, ev.cmd || ''),
+            el('span', { class: 'ev-line' }, (ev.line || '').slice(0, 120)),
+        ));
+    });
+}
+
+// ====================================================================== AGENTS TAB ==
+function mountAgentsTab(pane) {
+    const tpl = $('tpl-agents-workstation');
     if (!tpl) {
-        pane.appendChild(el('div', { class: 'empty-note' }, 'tpl-agents-section missing'));
+        pane.appendChild(el('div', { class: 'empty-note' }, 'tpl-agents-workstation missing'));
         return;
     }
     pane.appendChild(tpl.content.cloneNode(true));
-    initAgentsTab(pane, state.paneState.agents);
+
+    // 1. Launcher hero — project + mode chips + custom prompt + LAUNCH.
+    wireLauncherHero(pane);
+    _renderRecentLaunchesStrip(pane);
+
+    // 2. Sessions strip (FleetState subscriber re-renders on every SSE tick).
+    refreshAgentsSessionsStrip(pane);
+
+    // 3. Activity feed.
+    refreshActivityFeed(pane);
+
+    // 4. Cycle points (delegate to cycle-points.js if loaded).
+    const cpList = bind(pane, 'cycle-points-list');
+    if (window.RkojCyclePoints && window.RkojCyclePoints.renderInto && cpList) {
+        try { window.RkojCyclePoints.renderInto(cpList); } catch (e) {}
+    }
+    const cpNewBtn = qs('[data-act="new-cycle-point"]', pane);
+    if (cpNewBtn) cpNewBtn.addEventListener('click', () => {
+        if (window.RkojCyclePoints && window.RkojCyclePoints.openSaveModal) {
+            window.RkojCyclePoints.openSaveModal();
+        } else { toast('cycle-points.js not loaded', true); }
+    });
+
+    // 5. Schedule (next-N runs).
+    const schNewBtn = qs('[data-act="new-schedule"]', pane);
+    if (schNewBtn) schNewBtn.addEventListener('click', () => {
+        if (window.RkojScheduler && window.RkojScheduler.openAddModal) {
+            window.RkojScheduler.openAddModal();
+        } else { setDevtoolsRail(true, 'agents'); toast('Scheduler drawer opened'); }
+    });
+    refreshScheduleCard(pane);
+
+    // 6. Codex summary.
+    const codexOpenBtn = qs('[data-act="open-codex"]', pane);
+    if (codexOpenBtn) codexOpenBtn.addEventListener('click', () => {
+        if (window.RkojCodexPane && window.RkojCodexPane.open) window.RkojCodexPane.open();
+        else openDrawerTemplate('codex', 'Codex peer review');
+    });
+    refreshCodexSummaryCard(pane);
+
+    // 7. Tile shelf (knowledge / vault / progress / catalog / daemons).
+    wireTileShelf(pane);
+    refreshTileShelf(pane);
 }
 
-// ============================================================== SKEL VAULT PANE ==
-function mountSkelVault(pane) {
-    const tpl = $('tpl-vault-drawer');
-    if (!tpl) {
-        pane.appendChild(el('div', { class: 'empty-note' }, 'tpl-vault-drawer missing'));
+// ----- launcher hero wiring (project select + mode chips + LAUNCH) -----
+async function wireLauncherHero(pane) {
+    const projSel = bind(pane, 'lh-project');
+    const modeSel = bind(pane, 'lh-mode');
+    const modeChips = bind(pane, 'lh-mode-chips');
+    const fastCb = bind(pane, 'lh-fast');
+    const prompt = bind(pane, 'lh-prompt');
+    const launchBtn = qs('[data-act="launch"]', pane);
+
+    const r = await fetchJson('/api/launcher/options');
+    let projects = [];
+    let modes = MODES;
+    if (r && r.ok) {
+        projects = r.projects || [];
+        modes = r.modes || MODES;
+    }
+
+    if (projSel) {
+        projSel.innerHTML = '';
+        if (!projects.length) projSel.appendChild(el('option', { value: '' }, '(no projects in registry)'));
+        else projects.forEach(p => {
+            const key = typeof p === 'string' ? p : (p.key || p.id || p.name);
+            const label = typeof p === 'string' ? p : (p.display || p.label || key);
+            projSel.appendChild(el('option', { value: key }, label));
+        });
+    }
+
+    // Mode chips (radio-style — click toggles active; mirror value into hidden select).
+    if (modeChips) {
+        modeChips.innerHTML = '';
+        let activeMode = modes[0];
+        if (typeof activeMode === 'object') activeMode = activeMode.key || activeMode.id || activeMode.name;
+        modes.forEach(m => {
+            const key = typeof m === 'string' ? m : (m.key || m.id || m.name);
+            const label = typeof m === 'string' ? m : (m.display || m.label || key);
+            const chip = el('button', {
+                class: 'lg-pill rkoj-mode-chip' + (key === activeMode ? ' lg-pill-active active' : ''),
+                'data-mode': key,
+                onclick: () => {
+                    qsa('.rkoj-mode-chip', modeChips).forEach(x => x.classList.remove('active', 'lg-pill-active'));
+                    chip.classList.add('active', 'lg-pill-active');
+                    if (modeSel) modeSel.value = key;
+                },
+            }, label);
+            modeChips.appendChild(chip);
+        });
+        if (modeSel) {
+            modeSel.innerHTML = '';
+            modes.forEach(m => {
+                const key = typeof m === 'string' ? m : (m.key || m.id || m.name);
+                modeSel.appendChild(el('option', { value: key }, key));
+            });
+            modeSel.value = activeMode;
+        }
+    }
+
+    if (launchBtn) launchBtn.addEventListener('click', async () => {
+        const project = projSel && projSel.value;
+        const mode = modeSel && modeSel.value;
+        if (!project || !mode) { toast('pick a project + mode first', true); return; }
+        const body = { project, mode };
+        if (fastCb && fastCb.checked) body.fast = true;
+        const custom = prompt && prompt.value && prompt.value.trim();
+        if (custom) body.custom_prompt = custom;
+        launchBtn.disabled = true;
+        const orig = launchBtn.innerHTML;
+        launchBtn.innerHTML = 'launching…';
+        const rr = await fetchJson('/api/launcher/spawn', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+        });
+        launchBtn.disabled = false;
+        launchBtn.innerHTML = orig;
+        if (rr.ok) {
+            const pid = rr.pid || rr.PID || '';
+            toast(`[OK] ${project} :: ${mode} spawned${pid ? ` (PID ${pid})` : ''}`);
+            _saveRecentLaunch({ ts: new Date().toISOString(), project, mode, fast: !!body.fast, pid });
+            _renderRecentLaunchesStrip(pane);
+        } else { toast(`[FAIL] ${rr.error || rr.detail || 'spawn failed'}`, true); }
+    });
+}
+
+// Recent launches strip (max 5 mini-cards — click to re-launch with same params).
+function _renderRecentLaunchesStrip(pane) {
+    const strip = bind(pane, 'recent-launches-strip');
+    if (!strip) return;
+    const entries = _loadRecentLaunches().slice(0, 5);
+    strip.innerHTML = '';
+    if (!entries.length) {
+        strip.appendChild(el('span', { class: 'rkoj-recent-empty muted' }, 'no recent launches'));
         return;
     }
-    const card = el('div', { class: 'lg-card', style: 'padding: 18px;' });
-    card.appendChild(tpl.content.cloneNode(true));
-    pane.appendChild(card);
-    if (window.RkojVault && window.RkojVault.mount) {
-        try { window.RkojVault.mount(card); } catch (e) {}
-    }
+    strip.appendChild(el('span', { class: 'rkoj-recent-label muted' }, 'recent:'));
+    entries.forEach(e => {
+        const chip = el('button', {
+            class: 'lg-pill rkoj-recent-chip',
+            title: `re-launch ${e.project} :: ${e.mode}${e.fast ? ' (fast)' : ''}`,
+            onclick: async () => {
+                const body = { project: e.project, mode: e.mode };
+                if (e.fast) body.fast = true;
+                const rr = await fetchJson('/api/launcher/spawn', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body),
+                });
+                if (rr.ok) {
+                    toast(`[OK] re-launched ${e.project} :: ${e.mode}`);
+                    _saveRecentLaunch({ ts: new Date().toISOString(), project: e.project, mode: e.mode, fast: !!e.fast, pid: rr.pid });
+                    _renderRecentLaunchesStrip(pane);
+                } else { toast(`[FAIL] ${rr.error || rr.detail || 'spawn failed'}`, true); }
+            },
+        },
+            el('span', { class: 'rkoj-recent-project' }, e.project || '?'),
+            el('span', { class: 'muted' }, '::'),
+            el('span', null, e.mode || '?'),
+            e.fast ? el('span', { class: 'rkoj-recent-fast' }, 'fast') : null,
+        );
+        strip.appendChild(chip);
+    });
+}
+
+// ----- schedule card (next runs) -----
+async function refreshScheduleCard(pane) {
+    const list = bind(pane, 'schedule-list');
+    if (!list) return;
+    list.innerHTML = '';
+    const r = await fetchJson('/api/schedule');
+    const items = (r && r.entries) || (r && r.schedule) || [];
+    if (!items.length) { list.appendChild(el('div', { class: 'empty-note' }, 'no scheduled jobs')); return; }
+    items.slice(0, 6).forEach(s => {
+        const next = s.next_run_human || s.next_run || s.next || '--';
+        const row = el('div', { class: 'rkoj-schedule-row' },
+            el('div', { class: 'rkoj-schedule-name' }, s.name || s.id || '(unnamed)'),
+            el('div', { class: 'muted' }, `${s.kind || ''} @ ${s.cron || ''}`),
+            el('div', { class: 'rkoj-schedule-next' }, `next: ${next}`),
+            el('button', {
+                class: 'lg-button ghost btn-mini',
+                onclick: async () => {
+                    const rr = await fetchJson(`/api/schedule/${encodeURIComponent(s.id || s.slug)}/run-now`, { method: 'POST' });
+                    toast(rr && rr.ok ? `[OK] running ${s.name}` : `[FAIL] ${(rr && (rr.error || rr.detail)) || 'run failed'}`, !(rr && rr.ok));
+                },
+            }, 'run now'),
+        );
+        list.appendChild(row);
+    });
+}
+
+// ----- codex summary card -----
+async function refreshCodexSummaryCard(pane) {
+    const list = bind(pane, 'codex-summary-list');
+    if (!list) return;
+    list.innerHTML = '';
+    const r = await fetchJson('/api/codex/reviews?limit=5');
+    const items = (r && r.reviews) || (r && r.entries) || [];
+    if (!items.length) { list.appendChild(el('div', { class: 'empty-note' }, 'no recent reviews')); return; }
+    items.slice(0, 5).forEach(c => {
+        const v = (c.verdict || 'unknown').toLowerCase();
+        list.appendChild(el('div', { class: 'rkoj-codex-row' },
+            el('span', { class: `rkoj-codex-verdict v-${v}` }, v.toUpperCase()),
+            el('div', { class: 'rkoj-codex-text' },
+                el('div', { class: 'rkoj-codex-summary-line' }, (c.summary || c.title || c.id || '').slice(0, 110)),
+                el('div', { class: 'muted' }, (c.ts || '').slice(0, 16) + ' · ' + (c.depth || '')),
+            ),
+        ));
+    });
+}
+
+// ----- tile shelf wiring -----
+function wireTileShelf(pane) {
+    qsa('.rkoj-tile', pane).forEach(t => {
+        t.addEventListener('click', () => {
+            const which = t.dataset.tile;
+            switch (which) {
+                case 'knowledge':
+                    return openDrawerTemplate('skills', 'Knowledge / Skills');
+                case 'vault':
+                    return openVaultDrawer();
+                case 'progress':
+                    return openDrawerTemplate('progress', 'Progress');
+                case 'catalog':
+                    return openDrawerTemplate('tools', 'Tools / Skills / Inventions');
+                case 'daemons':
+                    return toast('daemon liveness in windows bar (bottom).');
+            }
+        });
+    });
+}
+
+function openVaultDrawer() {
+    setDevtoolsRail(true, 'agents');
+    // Vault section is the last in devtoolsSectionsForAgents; expand it.
+    setTimeout(() => {
+        const body = $('devtools-body');
+        if (!body) return;
+        const vaultSection = qsa('details.rkoj-devtools-section', body).pop();
+        if (vaultSection) vaultSection.open = true;
+    }, 50);
+}
+
+async function refreshTileShelf(pane) {
+    // Knowledge: count of brain topics.
+    try {
+        const r = await fetchJson('/api/knowledge');
+        const items = (r && (r.topics || r.entries || r.knowledge)) || [];
+        const cnt = bind(pane, 'tile-knowledge-count');
+        if (cnt) cnt.textContent = String(items.length || 0);
+    } catch (e) { /* leave -- */ }
+    // Vault: quota meter + last commit.
+    try {
+        const r = await fetchJson('/api/vault/quota');
+        const used = bind(pane, 'tile-vault-used');
+        if (used) used.textContent = (r && r.used_human) || (r && r.used_bytes ? _fmtBytes(r.used_bytes) : '--');
+        const audit = await fetchJson('/api/vault/audit');
+        const last = bind(pane, 'tile-vault-last');
+        const entries = (audit && (audit.entries || audit.audit || audit.commits)) || [];
+        if (last) last.textContent = entries.length ? (entries[0].message || entries[0].title || 'last commit').slice(0, 36) : '--';
+    } catch (e) { /* leave -- */ }
+    // Progress: count + last title.
+    try {
+        const r = await fetchJson('/api/progress?limit=3');
+        const entries = (r && r.entries) || [];
+        const cnt = bind(pane, 'tile-progress-count');
+        if (cnt) cnt.textContent = entries.length ? String(entries.length) : '--';
+        const last = bind(pane, 'tile-progress-last');
+        if (last) last.textContent = entries.length ? (entries[0].title || '').slice(0, 36) : '--';
+    } catch (e) { /* leave -- */ }
+    // Catalog: skills + tools + inventions combined.
+    try {
+        const [s, t, i] = await Promise.all([
+            fetchJson('/api/skills'),
+            fetchJson('/api/tools'),
+            fetchJson('/api/inventions'),
+        ]);
+        const sn = ((s && (s.items || s.skills)) || []).length;
+        const tn = ((t && (t.items || t.tools)) || []).length;
+        const iN = ((i && (i.items || i.inventions)) || []).length;
+        const cnt = bind(pane, 'tile-catalog-count');
+        if (cnt) cnt.textContent = String(sn + tn + iN);
+    } catch (e) { /* leave -- */ }
+    // Daemons: dots reflect FleetState heartbeats (mirrors windows-bar indicator).
+    try {
+        const snap = window.FleetState && window.FleetState.getSnapshot ? window.FleetState.getSnapshot() : null;
+        if (snap && snap.heartbeats) {
+            ['sanctum-console', 'sinister-vault', 'rkoj'].forEach(slug => {
+                const hb = snap.heartbeats[slug];
+                const dot = qs(`.rkoj-daemon-dot[data-daemon="${slug}"]`, pane);
+                if (dot) {
+                    dot.style.background = (hb && hb.alive) ? 'var(--success)' : 'var(--danger)';
+                    dot.title = `${slug}: ` + ((hb && hb.alive) ? `alive (age ${hb.age_s}s)` : 'stale or missing');
+                }
+            });
+        }
+    } catch (e) { /* leave -- */ }
 }
 
 // ============================================================== EXPOSE GLOBALS ==
@@ -2527,7 +3015,9 @@ window.RkojHelpers = {
     broadcastToAllAgents, openBroadcastModal,
     /* Panel-style redesign — Sinister Sanctum master agent (Claude) :: 2026-05-19 */
     setSkelTab, setSkelNav, refreshSkelKpi,
-    mountSkelFleet, mountSkelAgents, mountSkelVault,
+    mountAdbTab, mountAgentsTab, renderHeaderRibbon, refreshAdbTab,
+    // Back-compat shims — older popouts/palette commands still call these names.
+    mountSkelFleet: mountAdbTab, mountSkelAgents: mountAgentsTab,
 };
 
 // ============================================================== BOOTSTRAP ==
@@ -2542,10 +3032,10 @@ async function bootstrap() {
     refreshAlertsCount();
     refreshSkelKpi();
 
-    // Restore active top tab (default 'fleet').
-    let tab = lsGet(LS_ACTIVE_TAB, 'fleet');
+    // Restore active top tab (default 'adb' — workstation sweep 2026-05-19).
+    let tab = lsGet(LS_ACTIVE_TAB, 'adb');
     if (LEGACY_TAB_ALIAS[tab]) tab = LEGACY_TAB_ALIAS[tab];
-    setSkelTab(TABS.includes(tab) ? tab : 'fleet');
+    setSkelTab(TABS.includes(tab) ? tab : 'adb');
 
     // Author: Sinister Sanctum master agent (Claude) :: 2026-05-19 -- FleetState consolidation
     // The 30s tick now ONLY hits the health pill + alerts count + activity feed.
@@ -2565,10 +3055,43 @@ async function bootstrap() {
     // FleetState-driven session strip (replaces the 30s /api/sessions poll above).
     if (window.FleetState && typeof window.FleetState.subscribe === 'function') {
         window.FleetState.subscribe((snap) => {
-            if (!snap || !Array.isArray(snap.sessions)) return;
-            if (state.activeTab !== 'agents') return;
-            const pane = $('skel-agents');
-            if (pane) refreshAgentsSessionsStrip(pane, snap.sessions);
+            if (!snap) return;
+            // Sessions strip + tile shelf daemon dots — only render if visible.
+            if (state.activeTab === 'agents' && Array.isArray(snap.sessions)) {
+                const pane = $('skel-agents');
+                if (pane) {
+                    refreshAgentsSessionsStrip(pane, snap.sessions);
+                    refreshTileShelf(pane);
+                }
+            }
+            // Header tab counters + inbox bell badge.
+            try {
+                if (Array.isArray(snap.sessions)) {
+                    const online = snap.sessions.filter(s => s.online).length;
+                    const cnt = qs('[data-bind="tab-agents-count"]');
+                    if (cnt) cnt.textContent = String(online);
+                }
+                // Inbox cursor freshness: light up the bell if any agent has
+                // unread cross-agent messages newer than 2 minutes.
+                if (snap.inbox_tails) {
+                    const cutoff = Date.now() - 2 * 60 * 1000;
+                    let fresh = 0;
+                    for (const slug of Object.keys(snap.inbox_tails)) {
+                        const tail = snap.inbox_tails[slug];
+                        if (Array.isArray(tail)) {
+                            tail.forEach(m => {
+                                const ts = m && m.ts ? Date.parse(m.ts) : NaN;
+                                if (!isNaN(ts) && ts >= cutoff) fresh++;
+                            });
+                        }
+                    }
+                    const bell = $('inbox-count');
+                    if (bell) {
+                        bell.textContent = fresh > 0 ? String(fresh) : '';
+                        bell.classList.toggle('show', fresh > 0);
+                    }
+                }
+            } catch (e) { /* non-fatal */ }
         });
     }
 

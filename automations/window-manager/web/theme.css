@@ -2526,3 +2526,881 @@ html, body { overflow: auto; }
     color: var(--text-primary);
 }
 
+/* ============================================================
+   WORKSTATION SWEEP — Sinister Sanctum master agent (Claude UI-redesign sub) :: 2026-05-19
+   Two-tab workstation (ADB DEVICES + AGENTS) with complex 3-row header.
+   All chrome surfaces consume the Liquid Glass primitives + Sanctum purple.
+   Motion: 150 / 300 / 600 ms with cubic-bezier(0.22, 1, 0.36, 1).
+   ============================================================ */
+
+/* Hide the legacy panel-style skeleton (the new shell replaces it). */
+.skel-shell { display: none !important; }
+
+.rkoj-workstation {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background: var(--surface-0);
+}
+
+/* ============================================================
+   HEADER (3 rows)
+   ============================================================ */
+.rkoj-header {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px 22px 16px;
+    background: linear-gradient(180deg,
+        color-mix(in oklab, var(--surface-1) 80%, transparent) 0%,
+        color-mix(in oklab, var(--surface-0) 90%, transparent) 100%);
+    border-bottom: 1px solid var(--hairline);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    backdrop-filter: blur(18px);
+}
+
+.rkoj-header-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: nowrap;
+}
+
+/* ---------- Row 1: identity + tabs + icon strip ---------- */
+.rkoj-header-row-1 { min-height: 44px; }
+.rkoj-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+.rkoj-brand-skull {
+    width: 38px;
+    height: 38px;
+    filter: drop-shadow(0 0 8px color-mix(in oklab, var(--accent) 45%, transparent));
+}
+.rkoj-brand-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+}
+.rkoj-brand-wordmark {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: 0.4px;
+    color: var(--text-primary);
+}
+.rkoj-brand-sub {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.6px;
+    color: var(--accent);
+    text-transform: uppercase;
+}
+
+.rkoj-tabs {
+    display: inline-flex;
+    gap: 8px;
+    margin-left: 22px;
+}
+.rkoj-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    cursor: pointer;
+    line-height: 1;
+}
+.rkoj-tab.active {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--text-primary);
+    box-shadow:
+        inset 0 1px 0 0 color-mix(in oklab, white 10%, transparent),
+        inset 0 0 16px 0 color-mix(in oklab, var(--accent) 20%, transparent),
+        0 2px 8px -2px color-mix(in oklab, var(--accent) 35%, transparent);
+}
+.rkoj-tab-ico {
+    font-size: 13px;
+    color: var(--accent);
+}
+.rkoj-tab.active .rkoj-tab-ico { color: var(--accent-hover); }
+.rkoj-tab-label { font-size: 12px; }
+.rkoj-tab-count {
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: var(--radius-pill);
+    background: color-mix(in oklab, white 8%, transparent);
+    color: var(--text-secondary);
+    min-width: 18px;
+    text-align: center;
+}
+.rkoj-tab.active .rkoj-tab-count {
+    background: color-mix(in oklab, var(--accent) 24%, transparent);
+    color: var(--text-primary);
+}
+
+.rkoj-header-icons {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: nowrap;
+}
+.rkoj-icon-pill {
+    height: 34px;
+    min-width: 34px;
+    padding: 0 8px;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--hairline);
+    background: var(--surface-1);
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 13px;
+    position: relative;
+    transition: background-color var(--motion-fast) var(--motion-ease),
+                color var(--motion-fast) var(--motion-ease),
+                border-color var(--motion-fast) var(--motion-ease),
+                transform var(--motion-fast) var(--motion-ease);
+}
+.rkoj-icon-pill:hover {
+    background: var(--surface-2);
+    color: var(--text-primary);
+    border-color: color-mix(in oklab, var(--accent) 50%, var(--hairline));
+    transform: translateY(-1px);
+    box-shadow: 0 0 12px 0 color-mix(in oklab, var(--accent) 22%, transparent);
+}
+.rkoj-icon-pill-wide { padding: 0 12px; }
+.rkoj-icon-pill-glyph { font-size: 14px; line-height: 1; }
+.rkoj-icon-pill-text { font-size: 11px; font-weight: 600; letter-spacing: 0.3px; }
+.rkoj-icon-pill-kbd {
+    margin-left: 4px;
+    font-size: 9px;
+    padding: 2px 5px;
+    border-radius: 4px;
+    background: var(--surface-3);
+    color: var(--text-tertiary);
+    font-family: var(--font-mono);
+    border: 1px solid color-mix(in oklab, white 6%, transparent);
+}
+.rkoj-icon-pill-badge {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    border-radius: var(--radius-pill);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 700;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    box-shadow: 0 0 6px 0 color-mix(in oklab, black 50%, transparent);
+}
+.rkoj-icon-pill-badge.danger { background: var(--danger); }
+.rkoj-icon-pill-badge.accent { background: var(--accent); }
+.rkoj-icon-pill-badge.show { display: inline-flex; }
+
+.rkoj-health-pill {
+    height: 28px;
+    padding: 0 12px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--success);
+    border-color: color-mix(in oklab, var(--success) 32%, transparent);
+}
+.rkoj-health-pill.bad {
+    color: var(--danger);
+    border-color: color-mix(in oklab, var(--danger) 32%, transparent);
+}
+.rkoj-clock {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-tertiary);
+    padding: 0 10px;
+    margin-left: 4px;
+    letter-spacing: 0.4px;
+}
+
+/* ---------- Row 2: Excel-style action ribbon ---------- */
+.rkoj-header-row-2 {
+    min-height: 62px;
+    padding: 6px 0 0;
+    align-items: stretch;
+    gap: 0;
+    overflow-x: auto;
+}
+.rkoj-ribbon-grp {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0 12px;
+    position: relative;
+}
+.rkoj-ribbon-grp-tiles {
+    display: flex;
+    gap: 6px;
+    flex: 1;
+    align-items: center;
+}
+.rkoj-ribbon-grp-lbl {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.4px;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    text-align: center;
+    margin-top: 6px;
+}
+.rkoj-ribbon-sep {
+    width: 1px;
+    background: var(--hairline);
+    margin: 4px 0 18px;
+    flex-shrink: 0;
+}
+.rkoj-ribbon-btn {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    width: 60px;
+    height: 56px;
+    padding: 6px 6px;
+    border: 1px solid transparent;
+    border-radius: var(--radius);
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: background-color var(--motion-fast) var(--motion-ease),
+                color var(--motion-fast) var(--motion-ease),
+                border-color var(--motion-fast) var(--motion-ease),
+                transform var(--motion-fast) var(--motion-ease),
+                box-shadow var(--motion-fast) var(--motion-ease);
+}
+.rkoj-ribbon-btn:hover {
+    background: var(--surface-1);
+    color: var(--text-primary);
+    border-color: color-mix(in oklab, var(--accent) 40%, var(--hairline));
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px -4px color-mix(in oklab, var(--accent) 30%, transparent),
+                inset 0 1px 0 0 color-mix(in oklab, white 6%, transparent);
+}
+.rkoj-ribbon-btn:active { transform: translateY(0) scale(0.97); }
+.rkoj-ribbon-btn.active {
+    background: var(--accent-soft);
+    border-color: color-mix(in oklab, var(--accent) 55%, transparent);
+    color: var(--text-primary);
+}
+.rkoj-ribbon-btn-ico {
+    font-size: 18px;
+    line-height: 1;
+    color: var(--accent);
+}
+.rkoj-ribbon-btn-lbl {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    color: var(--text-secondary);
+    line-height: 1;
+    white-space: nowrap;
+}
+.rkoj-ribbon-btn-kbd {
+    position: absolute;
+    bottom: 2px;
+    right: 4px;
+    font-size: 8px;
+    color: var(--text-tertiary);
+    font-family: var(--font-mono);
+    opacity: 0.7;
+}
+.rkoj-ribbon-btn:hover .rkoj-ribbon-btn-lbl { color: var(--text-primary); }
+.rkoj-ribbon-btn:hover .rkoj-ribbon-btn-ico { color: var(--accent-hover); }
+
+/* ---------- Row 3: Hero KPI strip ---------- */
+.rkoj-header-row-3 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+.rkoj-kpi {
+    padding: 10px 16px;
+    text-align: left;
+    border: 1px solid var(--hairline);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    color: var(--text-primary);
+    transition: transform var(--motion-fast) var(--motion-ease),
+                border-color var(--motion-fast) var(--motion-ease),
+                box-shadow var(--motion-fast) var(--motion-ease);
+}
+.rkoj-kpi:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in oklab, var(--accent) 50%, var(--hairline));
+    box-shadow: 0 8px 24px -8px color-mix(in oklab, var(--accent) 32%, transparent);
+}
+.rkoj-kpi-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.rkoj-kpi-label {
+    font-size: 10px;
+    letter-spacing: 1.2px;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    font-weight: 700;
+}
+.rkoj-kpi-ico {
+    font-size: 14px;
+    color: var(--accent);
+    opacity: 0.7;
+}
+.rkoj-kpi-num {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.05;
+}
+.rkoj-kpi-sub {
+    font-size: 10px;
+    color: var(--text-tertiary);
+}
+.rkoj-kpi.is-good .rkoj-kpi-num { color: var(--success); }
+.rkoj-kpi.is-danger { border-color: color-mix(in oklab, var(--danger) 35%, var(--hairline)); }
+.rkoj-kpi.is-danger .rkoj-kpi-num { color: var(--danger); }
+
+/* ============================================================
+   TAB CONTENT
+   ============================================================ */
+.rkoj-tab-content {
+    flex: 1;
+    padding: 20px 24px 80px;
+    min-width: 0;
+    overflow-y: auto;
+}
+.rkoj-tab-pane { display: flex; flex-direction: column; gap: 18px; }
+.rkoj-tab-pane[hidden] { display: none !important; }
+
+/* ============================================================
+   AGENTS WORKSTATION
+   ============================================================ */
+.rkoj-agents-workstation {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* ---------- Launcher hero ---------- */
+.rkoj-launcher-hero {
+    padding: 20px 22px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+.rkoj-launcher-hero-head {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.rkoj-launcher-hero-head h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+.rkoj-launcher-hero-head .muted {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    letter-spacing: 0.3px;
+}
+.rkoj-launcher-hero-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+@media (max-width: 1100px) {
+    .rkoj-launcher-hero-body { grid-template-columns: 1fr; }
+}
+.rkoj-launcher-col {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.rkoj-launcher-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.rkoj-launcher-row.rkoj-launcher-prompt { flex: 1; }
+.rkoj-launcher-row.rkoj-launcher-prompt textarea {
+    min-height: 64px;
+    resize: vertical;
+}
+.rkoj-launcher-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.1px;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+}
+.rkoj-launcher-modes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+.rkoj-mode-chip {
+    padding: 6px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    cursor: pointer;
+    letter-spacing: 0.4px;
+}
+.rkoj-launcher-fast { flex-direction: row; align-items: center; gap: 10px; }
+.rkoj-launcher-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+.rkoj-launcher-toggle-text { font-size: 12px; color: var(--text-secondary); }
+.rkoj-launcher-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+    margin-top: auto;
+}
+.rkoj-launch-btn {
+    padding: 12px 28px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+}
+.rkoj-launch-ico { font-size: 16px; }
+.rkoj-recent-launches {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding-top: 8px;
+    border-top: 1px solid var(--hairline);
+}
+.rkoj-recent-label, .rkoj-recent-empty {
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+}
+.rkoj-recent-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    font-size: 11px;
+    cursor: pointer;
+}
+.rkoj-recent-chip .muted { color: var(--text-tertiary); }
+.rkoj-recent-fast {
+    font-size: 9px;
+    padding: 1px 5px;
+    border-radius: 4px;
+    background: var(--accent-soft);
+    color: var(--accent-hover);
+    font-weight: 700;
+}
+
+/* ---------- Two-column workbench grid ---------- */
+.rkoj-workbench-grid {
+    display: grid;
+    grid-template-columns: 60% 40%;
+    gap: 16px;
+    align-items: start;
+}
+@media (max-width: 1100px) {
+    .rkoj-workbench-grid { grid-template-columns: 1fr; }
+}
+.rkoj-workbench-col {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 0;
+}
+.rkoj-card-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--hairline);
+}
+.rkoj-card-head h3 {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    color: var(--text-primary);
+}
+.rkoj-card-head .count {
+    margin-left: auto;
+    font-size: 10px;
+    color: var(--text-tertiary);
+    letter-spacing: 0.4px;
+}
+.rkoj-sessions-card .rkoj-sessions-grid,
+.rkoj-activity-card .rkoj-activity-list,
+.rkoj-cyclepoints-card .rkoj-cyclepoints-list,
+.rkoj-schedule-card .rkoj-schedule-list,
+.rkoj-codex-card .rkoj-codex-summary {
+    padding: 12px 14px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.rkoj-sessions-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 10px !important;
+}
+.rkoj-activity-list { max-height: 360px; overflow-y: auto; }
+.rkoj-cyclepoints-list { max-height: 240px; overflow-y: auto; }
+.rkoj-schedule-list { max-height: 220px; overflow-y: auto; }
+.rkoj-codex-summary { max-height: 220px; overflow-y: auto; }
+
+.rkoj-schedule-row {
+    display: grid;
+    grid-template-columns: 1.4fr 1.2fr auto auto;
+    gap: 8px;
+    align-items: center;
+    padding: 8px 10px;
+    border-radius: var(--radius);
+    background: color-mix(in oklab, white 2%, transparent);
+    border: 1px solid var(--hairline);
+}
+.rkoj-schedule-row .muted { color: var(--text-tertiary); font-size: 11px; }
+.rkoj-schedule-name { font-size: 12px; font-weight: 600; color: var(--text-primary); }
+.rkoj-schedule-next {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--accent);
+}
+
+.rkoj-codex-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 6px 8px;
+    border-radius: var(--radius-sm);
+    transition: background-color var(--motion-fast) var(--motion-ease);
+}
+.rkoj-codex-row:hover { background: color-mix(in oklab, white 4%, transparent); }
+.rkoj-codex-verdict {
+    font-size: 9px;
+    font-weight: 700;
+    padding: 3px 6px;
+    border-radius: 4px;
+    letter-spacing: 0.4px;
+    flex-shrink: 0;
+    min-width: 44px;
+    text-align: center;
+}
+.rkoj-codex-verdict.v-pass { background: color-mix(in oklab, var(--success) 22%, transparent); color: var(--success); }
+.rkoj-codex-verdict.v-warn { background: color-mix(in oklab, var(--warning) 22%, transparent); color: var(--warning); }
+.rkoj-codex-verdict.v-fail { background: color-mix(in oklab, var(--danger) 22%, transparent); color: var(--danger); }
+.rkoj-codex-verdict.v-unknown { background: var(--surface-2); color: var(--text-tertiary); }
+.rkoj-codex-text { min-width: 0; flex: 1; }
+.rkoj-codex-summary-line {
+    font-size: 12px;
+    color: var(--text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.rkoj-codex-text .muted { font-size: 10px; color: var(--text-tertiary); }
+
+/* ---------- Tile shelf ---------- */
+.rkoj-tile-shelf {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+}
+@media (max-width: 1200px) {
+    .rkoj-tile-shelf { grid-template-columns: repeat(2, 1fr); }
+}
+.rkoj-tile {
+    text-align: left;
+    padding: 14px 16px;
+    border: 1px solid var(--hairline);
+    cursor: pointer;
+    color: var(--text-primary);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: transform var(--motion-fast) var(--motion-ease),
+                border-color var(--motion-fast) var(--motion-ease),
+                box-shadow var(--motion-fast) var(--motion-ease);
+    min-height: 100px;
+}
+.rkoj-tile:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in oklab, var(--accent) 50%, var(--hairline));
+    box-shadow: 0 8px 22px -10px color-mix(in oklab, var(--accent) 35%, transparent);
+}
+.rkoj-tile-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.rkoj-tile-ico {
+    font-size: 16px;
+    color: var(--accent);
+    width: 22px;
+    height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.rkoj-tile-title {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+}
+.rkoj-tile-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.rkoj-tile-num {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+}
+.rkoj-tile-sub {
+    font-size: 10px;
+    color: var(--text-tertiary);
+    letter-spacing: 0.3px;
+}
+.rkoj-tile-dots {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    padding: 4px 0;
+}
+.rkoj-daemon-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--text-tertiary);
+    box-shadow: 0 0 6px 0 currentColor;
+}
+
+/* ============================================================
+   ADB WORKSTATION
+   ============================================================ */
+.rkoj-adb-workstation {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.rkoj-adb-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 14px;
+    flex-wrap: wrap;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+}
+.rkoj-adb-lanes {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+.rkoj-lane-chip {
+    padding: 5px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    cursor: pointer;
+    letter-spacing: 0.4px;
+}
+.rkoj-adb-toolbar-spacer { flex: 1; }
+.rkoj-adb-toolbar-actions { display: flex; gap: 6px; }
+.rkoj-adb-toolbar-count {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-tertiary);
+    font-size: 11px;
+}
+.rkoj-adb-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+}
+.rkoj-adb-events {
+    display: flex;
+    flex-direction: column;
+}
+.rkoj-adb-events-list {
+    padding: 8px 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-height: 260px;
+    overflow-y: auto;
+}
+.rkoj-adb-event {
+    display: grid;
+    grid-template-columns: 70px 130px 1fr 1fr;
+    gap: 8px;
+    align-items: center;
+    padding: 4px 6px;
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    transition: background-color var(--motion-fast) var(--motion-ease);
+}
+.rkoj-adb-event:hover { background: color-mix(in oklab, white 3%, transparent); }
+.rkoj-adb-event.err { color: var(--danger); }
+.rkoj-adb-event .ev-ts {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-tertiary);
+}
+.rkoj-adb-event .ev-serial {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--accent);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.rkoj-adb-event .ev-cmd {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.rkoj-adb-event .ev-line {
+    color: var(--text-secondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ============================================================
+   POPOVERS (window picker, settings drawer, device actions)
+   ============================================================ */
+.rkoj-popover-overlay {
+    /* anchored popovers — overlay is just for click-outside dismiss */
+}
+.rkoj-newwin-picker, .rkoj-settings-drawer, .rkoj-device-actions {
+    padding: 14px;
+    width: 320px;
+    box-shadow: var(--shadow-popover);
+}
+.rkoj-newwin-picker h4, .rkoj-settings-drawer h4, .rkoj-device-actions h4 {
+    margin: 0 0 12px;
+    font-size: 13px;
+    color: var(--text-primary);
+}
+.rkoj-newwin-grid, .rkoj-device-actions-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+.rkoj-newwin-tile, .rkoj-device-actions-grid .lg-button {
+    padding: 10px 12px;
+    font-size: 12px;
+    justify-content: center;
+    text-align: center;
+}
+.rkoj-settings-drawer label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 10px;
+    font-size: 11px;
+    color: var(--text-tertiary);
+}
+.rkoj-settings-drawer .lg-button { width: 100%; margin-bottom: 6px; }
+.popover-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; }
+
+/* Session card tightening so the new sessions grid stays compact. */
+.rkoj-sessions-grid .session-card { padding: 10px; }
+.rkoj-session-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.rkoj-session-actions .lg-button { font-size: 10px; padding: 4px 8px; }
+
+/* Activity feed row tightening (re-uses existing .activity-row when present). */
+.activity-row {
+    display: grid;
+    grid-template-columns: 46px 70px 110px 1fr;
+    gap: 8px;
+    padding: 5px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    transition: background-color var(--motion-fast) var(--motion-ease);
+}
+.activity-row:hover { background: color-mix(in oklab, white 3%, transparent); }
+.activity-row .ts { font-family: var(--font-mono); color: var(--text-tertiary); font-size: 10px; }
+.activity-row .kind {
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: var(--surface-2);
+    color: var(--text-secondary);
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    text-align: center;
+}
+.activity-row .kind-progress { background: var(--accent-soft); color: var(--accent-hover); }
+.activity-row .kind-request { background: color-mix(in oklab, var(--warning) 22%, transparent); color: var(--warning); }
+.activity-row .agent { color: var(--accent); font-weight: 600; }
+.activity-row .title { color: var(--text-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ============================================================
+   REDUCED MOTION — honor prefers-reduced-motion globally
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+    .rkoj-icon-pill,
+    .rkoj-ribbon-btn,
+    .rkoj-tab,
+    .rkoj-kpi,
+    .rkoj-tile,
+    .rkoj-recent-chip {
+        transition: none;
+    }
+    .rkoj-icon-pill:hover,
+    .rkoj-ribbon-btn:hover,
+    .rkoj-tile:hover,
+    .rkoj-kpi:hover { transform: none; }
+}
+
+

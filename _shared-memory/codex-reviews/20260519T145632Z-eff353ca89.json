@@ -1,0 +1,36 @@
+{
+  "ok": true,
+  "verdict": "warn",
+  "findings": [
+    {
+      "severity": "medium",
+      "area": "Error Handling",
+      "body": "The code lacks comprehensive error handling in several places, such as in `_signed_request` (lines 515-570) where exceptions are caught but not always logged or handled in a way that provides useful feedback. Consider adding more detailed logging and handling for exceptions to aid in debugging and operational stability."
+    },
+    {
+      "severity": "medium",
+      "area": "Security",
+      "body": "Sensitive data such as email and password are encrypted using `TikTokSigner.encrypt` (lines 1789-1790), but the encryption method is not verified for security robustness. Ensure that the encryption method used is secure and up-to-date with current cryptographic standards."
+    },
+    {
+      "severity": "low",
+      "area": "Code Complexity",
+      "body": "The `_prewarm_precursors` method (lines 1321-1638) is overly long and complex, making it difficult to maintain and understand. Consider refactoring this method into smaller, more manageable functions."
+    },
+    {
+      "severity": "low",
+      "area": "Environment Configuration",
+      "body": "The code relies heavily on environment variables for configuration (e.g., `SINISTER_CAPTCHA_STRATEGY`, `SINISTER_REGISTER_HOST`, etc.). Ensure that these environment variables are well-documented and validated to prevent misconfiguration."
+    }
+  ],
+  "summary": "The code is generally well-structured and implements a complex TikTok signup orchestrator. However, it has some medium-severity issues related to error handling and security, particularly around encryption and exception management. Additionally, the code complexity in certain methods could be reduced for better maintainability. Addressing these issues will improve the robustness and security of the application.",
+  "model": "gpt-4o",
+  "depth": "standard",
+  "language": "python",
+  "context": "Track A orchestrator knob sweep for register/v3 error 16: added x-ss-dp header synth, api19-va host override, 4 missing Tier-1.5 precursors, 4-variant body field-order+charset sweep, set_body_overrides method. All env-gated. Touches signing path (TG+DG+Argus+Gorgon header sets) but does NOT modify signing crypto itself — only header sets + precursor chain + body construction order. ~232 lines changed.",
+  "content_sha1": "eff353ca89e96b192ef1508e8f318b2903ce9519",
+  "content_len": 100585,
+  "elapsed_s": 8.434,
+  "reviewed_at": "2026-05-19T14:56:32.239930+00:00",
+  "log_path": "D:\\Sinister Sanctum\\_shared-memory\\codex-reviews\\20260519T145632Z-eff353ca89.json"
+}
