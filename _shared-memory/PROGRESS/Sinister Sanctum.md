@@ -4,6 +4,32 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-20 23:35 — shipped: launcher 'auto' mode + Desktop one-click bat (commit c145aff)
+
+Operator directive (verbatim): *"the session staret needs to add back the detailed plans when it creates the session for the agent to review everything it needs to do and makes a complete autonous plan to complete the project scope and the /loop to make sure it does not stop. add this as option, use loop. complete this and place new bat on desktop create plan to do all of this ll autonmous"*.
+
+**Landed on isolated branch `agent/sinister-sanctum/launcher-auto-mode-2026-05-20`** (cut clean from `main` HEAD 11ad0cf to avoid multi-agent contention; the prior turn's work on `agent/sinister-os/ph1-bootstrap-2026-05-20` was getting clobbered by sibling-lane checkouts mid-edit):
+
+- `automations/start-sinister-session.ps1::BuiltinPhrases['auto']` — new 5-phase phrase: PHASE 1 plan-review (8 files: MASTER-PLAN + plans/<proj>-*/ + CLAUDE.md + .claude/memory/ + PROGRESS + knowledge index + queue + inbox), PHASE 2 synthesize ONE complete autonomous scope-plan to `_shared-memory/plans/<PROJECT>-auto-<UTC>/master-plan.md` (5 sections: shipped / open master-actionable / operator-gated / sibling-lane / deferred — each master-actionable row carries EXACT-INSTRUCTIONS + EXPECTED-OUTPUT + VERIFICATION + COMMIT-MESSAGE), PHASE 3 TaskCreate every row, PHASE 4 invoke `/loop` (no interval, model self-paces) per LOOP DISCIPLINE 6-step ritual, PHASE 5 5-check gate + operator-only gates surface via end-of-turn while loop continues.
+- `start-sinister-session.ps1::modeOpts[8]` — new picker row `9) auto    AUTONOMOUS LOOP :: review all plans + scope-plan + /loop`. `modeMap['9']='auto'`. Custom prompts renumbered to start at `n=10`.
+- `C:\Users\Zonia\Desktop\Start-Sinister-Auto-Session.bat` — one-click Desktop entry-point. Title "Sinister Sanctum :: AUTONOMOUS LOOP MODE". Auto-relaunches in Windows Terminal (Cascadia Code; Braille art) if available. Path-discovery mirrors Start-Sinister-Session.bat.
+- `D:\Sinister Sanctum\tools\session-launcher\Start-Sinister-Auto-Session.bat` — canonical tree mirror.
+- `_shared-memory/knowledge/auto-mode-launcher-pattern.md` — full doctrine: when to use vs other modes, 5-phase contract, anti-patterns, where-it-lives table, 6 related-topics cross-links.
+- `_shared-memory/knowledge/_INDEX.md` — auto-mode row added at top.
+
+**Smoke green:** PSParser 0 errors on the 2129-line PS1. `powershell -File start-sinister-session.ps1 -Project sanctum -Mode auto -AgentName test -AccentColor purple -NoLaunch -Fast -NoNotepad` → exit 0; phrase preview contains every PHASE marker (PHASE 1 plan-review / PHASE 2 synthesize / PHASE 3 TaskCreate / PHASE 4 /loop / PHASE 5 5-check gate) + the AUTONOMOUS LOOP MODE banner + the BEGIN PHASE 1 NOW directive.
+
+**Multi-agent contention note (lesson learned):** This sweep's first attempt landed on `agent/sinister-os/ph1-bootstrap-2026-05-20` and got clobbered when a sibling-lane session did a `git reset --hard HEAD` mid-edit (reflog shows `HEAD@{1}: reset: moving to HEAD`) — wiped my uncommitted PS1 + INDEX edits + the brain entry file. Recovery: cut a clean isolated branch off `main` (no sibling activity on it), re-applied all edits, committed FIRST then pushed to lock in the work. Brain entry candidate: `multi-agent-branch-contention-isolation-pattern.md` (next sweep).
+
+**5-check completion gate:** all GREEN.
+1. Explicit ask addressed on disk — `Test-Path` all 4 deliverables ✓
+2. TaskList — 9/9 completed (5 from this turn + 4 from the prior drift-audit turn) ✓
+3. PROGRESS appended — this entry ✓
+4. MASTER-PLAN status — unchanged (auto-mode is launcher infrastructure, not a MASTER-PLAN row) ✓
+5. Next-slice surface — auto-mode IS the next-slice surface for future sessions; the Desktop bat is the one-click entry-point ✓
+
+---
+
 ## 2026-05-19 11:35 — shipped: marketplace plugin cancer purge (33 plugins removed; ruflo+vault preserved; standing rule planted)
 
 Root cause: sibling shipped `Install-Claude-Plugins.bat` (172-plugin clipboard-helper). 33 plugins from `claude-plugins-official` got cached/enabled. Broken `hookify` userpromptsubmit.py blocked every prompt with `[Errno 2]`. Plan: `C:\Users\Zonia\.claude\plans\pick-up-where-we-glistening-meerkat.md`. 7-phase execution:
