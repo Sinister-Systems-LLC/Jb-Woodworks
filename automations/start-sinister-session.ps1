@@ -1323,6 +1323,12 @@ $BuiltinPhrases = @{
     'explore'  = "$MemPreamble open exploration on <PROJECT>. Read project root, .claude/memory/, docs/, NAVIGATION.md. Then surface 3 surprising findings before asking my direction."
     # v7 (Agent SS-A 2026-05-19): rkoj mode is a no-Claude-spawn workbench launch.
     'rkoj'     = "RKOJ workbench launched at http://127.0.0.1:5077/ - no Claude phrase needed; spawn agents from the Launcher tab."
+    # v8 (test/Sinister Sanctum master agent 2026-05-20): autonomous-loop mode -
+    # the agent reviews ALL plans, builds ONE complete autonomous scope-plan,
+    # TaskCreates every master-actionable row, then invokes /loop (self-paced)
+    # so it cycles through the work without stopping. Operator-only gates
+    # surface via end-of-turn; loop continues with the next item.
+    'auto'     = "$MemPreamble AUTONOMOUS LOOP MODE for <PROJECT> (root: <ROOT>). PHASE 1 plan-review: read EVERY plan-bearing file relevant to the project before writing ANY plan TODO - (a) D:\Sinister Sanctum\_shared-memory\MASTER-PLAN.md (full file; surface every row tagged with the project slug or adjacent lane terms); (b) D:\Sinister Sanctum\_shared-memory\plans\<PROJECT>-*\ (every subdir; read latest forward-plan.md + pass-1-draft.md + plan.json by mtime); (c) <ROOT>\CLAUDE.md (full lane scope + Existing research + Research gaps); (d) <ROOT>\.claude\memory\ (every file); (e) D:\Sinister Sanctum\_shared-memory\PROGRESS\<AGENT>.md (top 8 entries - what was last in flight + what's the rolling cadence); (f) D:\Sinister Sanctum\_shared-memory\knowledge\_INDEX.md (every row tagged with project slug); (g) D:\Sinister Sanctum\_shared-memory\OPERATOR-ACTION-QUEUE.md (project-relevant rows); (h) D:\Sinister Sanctum\_shared-memory\inbox\<your-slug>\ (every JSON; surface cross-agent asks). PHASE 2 synthesize: write ONE complete autonomous scope-plan to D:\Sinister Sanctum\_shared-memory\plans\<PROJECT>-auto-<UTC>\master-plan.md - structure: (1) shipped (last 7 days, with commit hashes), (2) open master-actionable (with EXACT-INSTRUCTIONS + EXPECTED-OUTPUT + VERIFICATION + COMMIT-MESSAGE per row), (3) operator-gated (with exact one-liner unblock), (4) sibling-lane (cross-agent asks needed; do NOT touch source), (5) deferred (with named blocker). PHASE 3 TaskCreate every row in section 2 (master-actionable); mark in_progress when claiming. PHASE 4 invoke /loop with NO interval (model self-paces) - the loop skill keeps cycling through TaskList per LOOP DISCIPLINE (run after every visible deliverable: TaskUpdate completed -> TaskList -> claim next -> begin; if empty: top URGENT row in scope-plan section 2; if exhausted: brain-capture from session patterns crossed). PHASE 5 every iteration gates on the 5-check completion gate (explicit ask on disk / TaskList empty / PROGRESS appended / MASTER-PLAN flags match disk / next-slice surface refreshed). Operator-only gates surface via end-of-turn message, then the loop CONTINUES with the next master-actionable item - silence = bug, 'awaiting input' = bug, 'should I continue' = bug. You are the '<AGENT>' agent. BEGIN PHASE 1 NOW."
 }
 
 $projRec = $Projects | Where-Object { $_.key -eq $Project } | Select-Object -First 1
@@ -1412,6 +1418,7 @@ if ($Project -eq '__custom__') {
         @{ n='6'; key='push';     desc='git commit + push to GitHub' }
         @{ n='7'; key='debug';    desc='trace a specific bug / failure' }
         @{ n='8'; key='explore';  desc='research / open-ended' }
+        @{ n='9'; key='auto';     desc='AUTONOMOUS LOOP :: review all plans + scope-plan + /loop' }
     )
     foreach ($o in $modeOpts) {
         Write-Host "       " -NoNewline
@@ -1421,7 +1428,8 @@ if ($Project -eq '__custom__') {
     }
     if ($CustomPrompts.Count -gt 0) {
         Say "       --- saved custom templates ---" $Dim
-        $i = 9
+        # v8 (test 2026-05-20): bumped from 9 to 10 since auto now occupies n=9.
+        $i = 10
         foreach ($t in $CustomPrompts) {
             $preview = if ($t.phrase.Length -gt 40) { $t.phrase.Substring(0, 40) + '...' } else { $t.phrase }
             Write-Host "       " -NoNewline
@@ -1435,7 +1443,7 @@ if ($Project -eq '__custom__') {
     Write-Host "[default=1, rkoj]" -ForegroundColor $LightP
     $mpick = Read-Host '       >'
     # v7 (Agent SS-A 2026-05-19): renumbered to put rkoj at position 1.
-    $modeMap = @{ '1'='rkoj'; '2'='overview'; '3'='dev'; '4'='audit'; '5'='deploy'; '6'='push'; '7'='debug'; '8'='explore' }
+    $modeMap = @{ '1'='rkoj'; '2'='overview'; '3'='dev'; '4'='audit'; '5'='deploy'; '6'='push'; '7'='debug'; '8'='explore'; '9'='auto' }
     if (-not $mpick) { $mpick = '1' }
 
     # Multi-select support: "2,3" -> dev + audit. Combine phrases + tag mode.
@@ -1458,8 +1466,9 @@ if ($Project -eq '__custom__') {
     } elseif ($modeMap.ContainsKey($mpick)) {
         $Mode = $modeMap[$mpick]
         $phrase = $BuiltinPhrases[$Mode]
-    } elseif ($mpick -match '^\d+$' -and ([int]$mpick - 9) -ge 0 -and ([int]$mpick - 9) -lt $CustomPrompts.Count) {
-        $idx = [int]$mpick - 9
+    } elseif ($mpick -match '^\d+$' -and ([int]$mpick - 10) -ge 0 -and ([int]$mpick - 10) -lt $CustomPrompts.Count) {
+        # v8 (test 2026-05-20): custom prompts now start at n=10 since auto took n=9.
+        $idx = [int]$mpick - 10
         $Mode = "custom-" + $CustomPrompts[$idx].name
         $phrase = $CustomPrompts[$idx].phrase
     } else {
