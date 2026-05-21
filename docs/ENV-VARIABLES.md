@@ -29,14 +29,16 @@ To unset (clear):
 
 ### `ANTHROPIC_API_KEY`
 
-- **What it unlocks:** Tier-3 bots that call the Anthropic API directly: `scribe` (daily-digest writer, Haiku), `curator` (code-library scout, Haiku). Also the `sinister-chatbot` LLM path when run server-side.
+- **What it unlocks:**
+  1. **RKOJ.exe Anthropic SDK direct path** (v0.6.0+, `forge/spawn/anthropic_direct.py`) — in-process `anthropic.Anthropic.messages.stream` loop with visible `thinking_delta` + batched `tool_use` rendering. When the key is absent, RKOJ falls back to the `claude -p` subprocess path (slower, less observable).
+  2. **Tier-3 bots that call the Anthropic API directly:** `scribe` (daily-digest writer, Haiku), `curator` (code-library scout, Haiku). Also the `sinister-chatbot` LLM path when run server-side.
 - **Format:** `sk-ant-api03-...` (the standard Anthropic SDK key).
-- **Without it:** Those bots fall back to "no-API-key" graceful degradation — they exist but emit `{ok:false, error:"no API key"}` for any call that needs Claude.
+- **Without it:** RKOJ.exe still works (claude -p fallback). Tier-3 bots emit `{ok:false, error:"no API key"}` for any call that needs Claude.
 - **Set:**
   ```powershell
   [Environment]::SetEnvironmentVariable('ANTHROPIC_API_KEY','sk-ant-...','User')
   ```
-- **Current state (2026-05-19):** UNSET. Blocks Scribe + Curator + Chatbot LLM paths.
+- **Current state (2026-05-19):** UNSET. Blocks Scribe + Curator + Chatbot LLM paths AND forces RKOJ.exe into the `claude -p` fallback path (functional but slower).
 
 ### `OPENAI_API_KEY`
 
