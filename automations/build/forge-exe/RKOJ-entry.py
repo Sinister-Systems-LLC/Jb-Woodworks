@@ -34,7 +34,7 @@ import time
 import traceback
 from pathlib import Path
 
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 
 
 # ----- Sub-command dispatch (RKOJ.exe login providers etc) -----------------
