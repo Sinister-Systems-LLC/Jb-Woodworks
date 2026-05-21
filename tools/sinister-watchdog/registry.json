@@ -1,0 +1,53 @@
+{
+  "_author": "RKOJ-ELENO :: 2026-05-21",
+  "_note": "Per-slug launch registry. The watchdog reads this to know how to revive a stale agent. Edit by hand — operator-curated. Each entry under 'agents' maps slug → {kind, command, args, cwd, env}. 'kind' = 'process' (default) | 'docker'. For docker, set kind='docker' + container + image + optional docker_args.",
+  "agents": {
+    "sanctum": {
+      "_note": "Master orchestration agent. The .bat launcher is the canonical entry. Defaults to auto_revive=false because the .bat opens an interactive bash+Claude window the operator should be present for. Flip to true if you want unattended auto-relaunch.",
+      "auto_revive": false,
+      "kind": "process",
+      "command": "cmd.exe",
+      "args": ["/c", "start", "", "C:\\Users\\Zonia\\Desktop\\Start-Sinister-Session.bat"],
+      "cwd": "D:\\Sinister Sanctum"
+    },
+    "sinister-forge": {
+      "_note": "Forge UI — Textual-based orchestration pane. Disabled by default to avoid popping a window. Operator can flip 'auto_revive' to true when desired.",
+      "auto_revive": false,
+      "kind": "process",
+      "command": "python",
+      "args": ["-m", "forge"],
+      "cwd": "D:\\Sinister Sanctum\\projects\\sinister-forge\\source"
+    },
+    "sinister-vault": {
+      "_note": "Vault daemon on :5078. The install script lives at tools/sinister-vault/.",
+      "auto_revive": false,
+      "kind": "process",
+      "command": "python",
+      "args": ["-m", "sinister_vault"],
+      "cwd": "D:\\Sinister Sanctum\\tools\\sinister-vault"
+    },
+    "rkoj": {
+      "_note": "RKOJ.exe workbench. The built EXE lives at automations/window-manager/dist/RKOJ.exe.",
+      "auto_revive": false,
+      "kind": "process",
+      "command": "D:\\Sinister Sanctum\\automations\\window-manager\\dist\\RKOJ.exe",
+      "args": [],
+      "cwd": "D:\\Sinister Sanctum\\automations\\window-manager"
+    }
+  },
+  "services": {
+    "_note_services": "Optional docker-backed services. Each entry: kind='docker', container=<name>, image=<image>, docker_args=[...]. Example below disabled until operator opts in.",
+    "ollama": {
+      "kind": "docker",
+      "enabled": false,
+      "container": "ollama",
+      "image": "ollama/ollama:latest",
+      "docker_args": ["-p", "11434:11434", "-v", "ollama:/root/.ollama"]
+    }
+  },
+  "stale_minutes_override": {
+    "_note": "Per-slug overrides for the global stale threshold. Some agents naturally heartbeat less often.",
+    "rkoj": 120,
+    "sinister-vault": 30
+  }
+}

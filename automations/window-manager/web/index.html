@@ -1,1110 +1,343 @@
-<!-- Author: Sinister Sanctum master agent (Claude) :: 2026-05-19 -->
-<!-- Author: Sinister Sanctum master agent (Claude UI-redesign sub) :: 2026-05-19 — workstation sweep -->
-<!-- Two-tab workstation shell — ADB DEVICES + AGENTS — complex 3-row header.   -->
-<!-- Per operator feedback (2026-05-19 21:00Z): "I want one tab for agents and  -->
-<!-- creating and managing agents and all my features and ideas for that and    -->
-<!-- the adb side of things to view the phones". UI doctrine: Sanctum purple    -->
-<!-- (#7A3DD4), Liquid Glass primitives (.lg-* / lg-card-hero), motion vars     -->
-<!-- 150/300/600ms with cubic-bezier(0.22, 1, 0.36, 1).                         -->
+<!-- Author: RKOJ-ELENO :: 2026-05-21 -->
+<!-- Sinister Sanctum :: Workstation Web UI (Panel-style rewrite).
+     Panel-look: rounded frameless shell, mascot sidebar (4 sections),
+     chip-tab header (Agents / Phones / Workstation), KPI strip,
+     project sub-tab strip, niri-style stacked agent consoles in main body.
+     Static HTML/CSS/JS — served by FastAPI (server.py) from /static/.
+     pywebview owns the OS chrome; this body has no titlebar of its own. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>RKOJ :: Workstation</title>
+    <title>Sinister Sanctum :: Workstation</title>
     <link rel="icon" href="/static/sinister-logo.png">
     <link rel="stylesheet" href="/static/tokens.css">
     <link rel="stylesheet" href="/static/theme.css">
 </head>
-<body data-density="cozy">
-    <!-- ===== RKOJ Workstation shell — 2 tabs, 3-row header ===== -->
-    <div class="rkoj-workstation">
+<body data-density="cozy" data-active-tab="agents">
 
-        <!-- ============ HEADER (3 rows) ============ -->
-        <header class="rkoj-header">
+    <!-- ============================================================
+         Sinister Panel-style shell.
+           shell-root   :: rounded outer (no Windows chrome — pywebview frameless)
+           sidebar      :: mascot + 4 sections of nav items
+           main-col     :: header + KPI strip + project sub-tabs + content
+         ============================================================ -->
+    <div class="shell-root">
 
-            <!-- ===== Row 1: identity + tabs + icon strip ===== -->
-            <div class="rkoj-header-row rkoj-header-row-1">
-                <div class="rkoj-brand">
-                    <img src="/static/skull.svg" class="rkoj-brand-skull" alt="Sanctum skull">
-                    <div class="rkoj-brand-text">
-                        <span class="rkoj-brand-wordmark">RKOJ</span>
-                        <span class="rkoj-brand-sub">WORKSTATION</span>
-                    </div>
+        <!-- ============ SIDEBAR ============ -->
+        <aside class="sp-sidebar" id="sp-sidebar">
+            <!-- Brand mascot (uses /static/skull.svg if it exists, else ASCII fallback) -->
+            <div class="sp-brand">
+                <div class="sp-brand-mascot">
+                    <img src="/static/skull.svg" alt="Sinister Sanctum" onerror="this.replaceWith(Object.assign(document.createElement('pre'),{className:'sp-mascot-ascii',textContent:'  /\\___/\\\n ( o.o )\n  > ^ <'}))">
                 </div>
-
-                <nav class="rkoj-tabs" role="tablist">
-                    <button class="lg-pill rkoj-tab active" role="tab" data-tab="adb" aria-selected="true">
-                        <span class="rkoj-tab-ico" aria-hidden="true">&#9744;</span>
-                        <span class="rkoj-tab-label">ADB DEVICES</span>
-                        <span class="rkoj-tab-count" data-bind="tab-adb-count">0</span>
-                    </button>
-                    <button class="lg-pill rkoj-tab" role="tab" data-tab="agents" aria-selected="false">
-                        <span class="rkoj-tab-ico" aria-hidden="true">&#9881;</span>
-                        <span class="rkoj-tab-label">AGENTS</span>
-                        <span class="rkoj-tab-count" data-bind="tab-agents-count">0</span>
-                    </button>
-                </nav>
-
-                <div class="rkoj-header-icons">
-                    <button class="rkoj-icon-pill" id="hdr-alerts" title="Pending operator requests" aria-label="Pending operator requests">
-                        <span class="rkoj-icon-pill-glyph">!</span>
-                        <span class="rkoj-icon-pill-badge danger" id="alerts-count"></span>
-                    </button>
-                    <button class="rkoj-icon-pill" id="hdr-bell" title="Cross-agent inbox notifications" aria-label="Notifications">
-                        <span class="rkoj-icon-pill-glyph">&#9788;</span>
-                        <span class="rkoj-icon-pill-badge accent" id="inbox-count"></span>
-                    </button>
-                    <button class="rkoj-icon-pill rkoj-icon-pill-wide" id="hdr-palette" title="Command palette (Ctrl+K)">
-                        <span class="rkoj-icon-pill-glyph">&#8984;</span>
-                        <span class="rkoj-icon-pill-text">Search</span>
-                        <span class="rkoj-icon-pill-kbd">K</span>
-                    </button>
-                    <button class="codex-status-pill" id="codex-status-pill" title="latest Codex verdict (click to open pane)">
-                        <span class="codex-status-dot"></span>
-                        <span class="codex-status-text" id="codex-status-text">Codex</span>
-                        <span class="codex-status-age" id="codex-status-age">--</span>
-                    </button>
-                    <span class="rkoj-health-pill lg-pill" id="health-pill" title="server health">&#9679; online</span>
-                    <button class="rkoj-icon-pill rkoj-icon-pill-wide" id="hdr-newwin" title="Open a new popout window">
-                        <span class="rkoj-icon-pill-glyph">&#43;</span>
-                        <span class="rkoj-icon-pill-text">Window</span>
-                    </button>
-                    <button class="rkoj-icon-pill" id="hdr-settings" title="Settings drawer" aria-label="Settings">
-                        <span class="rkoj-icon-pill-glyph">&#9881;</span>
-                    </button>
-                    <span class="rkoj-clock" id="clock">--:--</span>
+                <div class="sp-brand-text">
+                    <div class="sp-brand-wordmark">SINISTER</div>
+                    <div class="sp-brand-sub">SANCTUM</div>
                 </div>
             </div>
 
-            <!-- ===== Row 2: Excel-style action ribbon ===== -->
-            <div class="rkoj-header-row rkoj-header-row-2" id="rkoj-ribbon">
-                <!-- Built by app.js renderHeaderRibbon() — 5 groups: VIEW / SPAWN / AGENT / AUTOMATE / MAINTAIN -->
-            </div>
+            <!-- Sidebar nav sections — built by app.js (renderSidebarNav).
+                 Panel parity: section labels uppercased + bottom hairline. -->
+            <nav class="sp-nav" id="sp-nav" aria-label="Primary navigation">
+                <!-- injected -->
+            </nav>
 
-            <!-- ===== Row 3: Hero KPI strip ===== -->
-            <div class="rkoj-header-row rkoj-header-row-3">
-                <button class="rkoj-kpi lg-card" id="kpi-card-phones" title="Open ADB devices tab">
-                    <div class="rkoj-kpi-head">
-                        <span class="rkoj-kpi-label">PHONES ONLINE</span>
-                        <span class="rkoj-kpi-ico" aria-hidden="true">&#9742;</span>
+            <!-- Footer: operator chip + sign-out (matches Panel ProfileBlock). -->
+            <div class="sp-sidebar-footer">
+                <div class="sp-avatar-row">
+                    <div class="sp-avatar" aria-hidden="true">R</div>
+                    <div class="sp-avatar-text">
+                        <div class="sp-avatar-name">RKOJ-ELENO</div>
+                        <div class="sp-avatar-mail">operator</div>
                     </div>
-                    <div class="rkoj-kpi-num" data-bind="kpi-phones-online">&mdash;</div>
-                    <div class="rkoj-kpi-sub" data-bind="kpi-phones-sub">--</div>
-                </button>
-                <button class="rkoj-kpi lg-card" id="kpi-card-agents" title="Open agents tab">
-                    <div class="rkoj-kpi-head">
-                        <span class="rkoj-kpi-label">AGENTS ONLINE</span>
-                        <span class="rkoj-kpi-ico" aria-hidden="true">&#9881;</span>
-                    </div>
-                    <div class="rkoj-kpi-num" data-bind="kpi-agents-online">&mdash;</div>
-                    <div class="rkoj-kpi-sub" data-bind="kpi-agents-sub">--</div>
-                </button>
-                <button class="rkoj-kpi lg-card" id="kpi-card-vault" title="Open vault drawer">
-                    <div class="rkoj-kpi-head">
-                        <span class="rkoj-kpi-label">VAULT USED</span>
-                        <span class="rkoj-kpi-ico" aria-hidden="true">&#9776;</span>
-                    </div>
-                    <div class="rkoj-kpi-num" data-bind="kpi-vault-used">&mdash;</div>
-                    <div class="rkoj-kpi-sub" data-bind="kpi-vault-sub">--</div>
-                </button>
-                <button class="rkoj-kpi lg-card" id="kpi-card-pending" title="Open operator requests">
-                    <div class="rkoj-kpi-head">
-                        <span class="rkoj-kpi-label">PENDING REQUESTS</span>
-                        <span class="rkoj-kpi-ico" aria-hidden="true">!</span>
-                    </div>
-                    <div class="rkoj-kpi-num" data-bind="kpi-pending">&mdash;</div>
-                    <div class="rkoj-kpi-sub" data-bind="kpi-pending-sub">--</div>
+                    <span class="sp-role-chip">EVE</span>
+                </div>
+                <button class="sp-signout" id="sp-signout" title="Sign out (Workstation EXE)">
+                    <span class="sp-signout-glyph" aria-hidden="true">&#x21B5;</span>
+                    Sign Out
                 </button>
             </div>
-        </header>
+        </aside>
 
-        <!-- ============ TAB CONTENT (2 panes) ============ -->
-        <main class="rkoj-tab-content">
-            <section class="rkoj-tab-pane" id="skel-adb">
-                <!-- ADB phone-viewer surface (built by mountAdbTab) -->
+        <!-- ============ MAIN COLUMN ============ -->
+        <div class="sp-main">
+
+            <!-- ====== HEADER (title + chip tabs + action icons) ====== -->
+            <header class="sp-header">
+                <div class="sp-header-left">
+                    <h1 class="sp-title" id="sp-title">WORKSTATION</h1>
+                    <nav class="sp-chips" role="tablist" aria-label="Primary tabs">
+                        <button class="sp-chip active" role="tab" data-tab="agents" aria-selected="true">
+                            <span class="sp-chip-glyph" aria-hidden="true">&#9881;</span>
+                            <span class="sp-chip-label">Agents</span>
+                            <span class="sp-chip-count" data-bind="chip-agents-count">0</span>
+                        </button>
+                        <button class="sp-chip" role="tab" data-tab="phones" aria-selected="false">
+                            <span class="sp-chip-glyph" aria-hidden="true">&#9742;</span>
+                            <span class="sp-chip-label">Phones</span>
+                            <span class="sp-chip-count" data-bind="chip-phones-count">0</span>
+                        </button>
+                        <button class="sp-chip" role="tab" data-tab="workstation" aria-selected="false">
+                            <span class="sp-chip-glyph" aria-hidden="true">&#9636;</span>
+                            <span class="sp-chip-label">Workstation</span>
+                        </button>
+                    </nav>
+                </div>
+                <div class="sp-header-right">
+                    <button class="sp-icon-btn" id="hdr-alerts" title="Pending operator requests" aria-label="Pending operator requests">
+                        <span class="sp-icon-glyph">!</span>
+                        <span class="sp-icon-badge danger" id="alerts-count" hidden></span>
+                    </button>
+                    <button class="sp-icon-btn" id="hdr-bell" title="Cross-agent inbox" aria-label="Inbox">
+                        <span class="sp-icon-glyph">&#9788;</span>
+                        <span class="sp-icon-badge accent" id="inbox-count" hidden></span>
+                    </button>
+                    <button class="sp-icon-btn sp-icon-wide" id="hdr-palette" title="Command palette (Ctrl+K)">
+                        <span class="sp-icon-glyph">&#8984;</span>
+                        <span class="sp-icon-text">Search</span>
+                        <span class="sp-kbd">K</span>
+                    </button>
+                    <button class="sp-icon-btn" id="hdr-settings" title="Settings" aria-label="Settings">
+                        <span class="sp-icon-glyph">&#9881;</span>
+                    </button>
+                    <span class="sp-health-pill" id="health-pill" title="server health">&#9679; online</span>
+                    <span class="sp-clock" id="clock">--:--</span>
+                </div>
+            </header>
+
+            <!-- ====== KPI STRIP (4 stat tiles) ====== -->
+            <section class="sp-kpi-strip" aria-label="At-a-glance stats">
+                <button class="sp-kpi" id="kpi-phones" data-target-tab="phones" title="Open Phones">
+                    <div class="sp-kpi-head">
+                        <span class="sp-kpi-label">PHONES ONLINE</span>
+                        <span class="sp-kpi-ico" aria-hidden="true">&#9742;</span>
+                    </div>
+                    <div class="sp-kpi-num" data-bind="kpi-phones-online">&mdash;</div>
+                    <div class="sp-kpi-sub" data-bind="kpi-phones-sub">--</div>
+                </button>
+                <button class="sp-kpi" id="kpi-agents" data-target-tab="agents" title="Open Agents">
+                    <div class="sp-kpi-head">
+                        <span class="sp-kpi-label">AGENTS ONLINE</span>
+                        <span class="sp-kpi-ico" aria-hidden="true">&#9881;</span>
+                    </div>
+                    <div class="sp-kpi-num" data-bind="kpi-agents-online">&mdash;</div>
+                    <div class="sp-kpi-sub" data-bind="kpi-agents-sub">--</div>
+                </button>
+                <button class="sp-kpi" id="kpi-vault" data-target-tab="workstation" title="Open Workstation (vault)">
+                    <div class="sp-kpi-head">
+                        <span class="sp-kpi-label">VAULT USED</span>
+                        <span class="sp-kpi-ico" aria-hidden="true">&#9776;</span>
+                    </div>
+                    <div class="sp-kpi-num" data-bind="kpi-vault-used">&mdash;</div>
+                    <div class="sp-kpi-sub" data-bind="kpi-vault-sub">--</div>
+                </button>
+                <button class="sp-kpi" id="kpi-pending" data-target-tab="workstation" title="Operator requests">
+                    <div class="sp-kpi-head">
+                        <span class="sp-kpi-label">PENDING REQUESTS</span>
+                        <span class="sp-kpi-ico" aria-hidden="true">!</span>
+                    </div>
+                    <div class="sp-kpi-num" data-bind="kpi-pending">&mdash;</div>
+                    <div class="sp-kpi-sub" data-bind="kpi-pending-sub">--</div>
+                </button>
             </section>
-            <section class="rkoj-tab-pane" id="skel-agents" hidden>
-                <!-- Agents workstation (built by mountAgentsTab) -->
-            </section>
-        </main>
+
+            <!-- ====== PROJECT SUB-TAB STRIP (filters agents) ====== -->
+            <nav class="sp-projstrip" id="sp-projstrip" aria-label="Project filter">
+                <!-- injected by app.js (renderProjectStrip) — one chip per project.json key.
+                     [All N] is first. Click filters the visible agent consoles. -->
+            </nav>
+
+            <!-- ====== TAB CONTENT ====== -->
+            <main class="sp-content" id="sp-content">
+
+                <!-- ===== AGENTS pane (niri-style stacked consoles) ===== -->
+                <section class="sp-pane sp-pane-agents active" id="pane-agents">
+                    <div class="sp-pane-toolbar">
+                        <button class="sp-btn primary" id="agents-new" data-act="new-agent">
+                            <span class="sp-btn-glyph">&#43;</span> Spawn agent
+                        </button>
+                        <button class="sp-btn ghost" id="agents-broadcast" data-act="broadcast">Broadcast</button>
+                        <button class="sp-btn ghost" id="agents-refresh" data-act="refresh-agents">Refresh</button>
+                        <div class="sp-spacer"></div>
+                        <span class="sp-count" data-bind="agents-grid-count">0 visible</span>
+                    </div>
+                    <div class="sp-agent-stack" id="agent-stack" data-bind="agent-stack">
+                        <div class="sp-empty">loading agents...</div>
+                    </div>
+                </section>
+
+                <!-- ===== PHONES pane (device card grid) ===== -->
+                <section class="sp-pane sp-pane-phones" id="pane-phones" hidden>
+                    <div class="sp-pane-toolbar">
+                        <button class="sp-btn primary" id="phones-scan" data-act="scan-all">Scan all</button>
+                        <button class="sp-btn ghost" id="phones-refresh" data-act="refresh-devices">Refresh</button>
+                        <div class="sp-spacer"></div>
+                        <span class="sp-count" data-bind="phones-grid-count">0 attached</span>
+                    </div>
+                    <div class="sp-device-grid" id="device-grid" data-bind="device-grid">
+                        <div class="sp-empty">loading devices...</div>
+                    </div>
+                </section>
+
+                <!-- ===== WORKSTATION pane (vault + requests + activity) ===== -->
+                <section class="sp-pane sp-pane-workstation" id="pane-workstation" hidden>
+                    <div class="sp-pane-toolbar">
+                        <button class="sp-btn primary" data-act="open-vault">Open vault</button>
+                        <button class="sp-btn ghost" data-act="open-requests">Operator requests</button>
+                        <button class="sp-btn ghost" data-act="open-cycle-points">Cycle points</button>
+                        <button class="sp-btn ghost" data-act="open-scheduler">Scheduler</button>
+                        <div class="sp-spacer"></div>
+                        <span class="sp-count" id="ws-summary-count">--</span>
+                    </div>
+                    <div class="sp-ws-grid">
+                        <div class="sp-ws-card" id="ws-vault">
+                            <header class="sp-ws-card-head"><h3>Vault</h3><span class="sp-ws-sub" data-bind="ws-vault-status">--</span></header>
+                            <div class="sp-ws-card-body">
+                                <div class="sp-meter"><div class="sp-meter-fill" data-bind="ws-vault-fill" style="width:0%"></div></div>
+                                <div class="sp-ws-row"><span>Used</span><span data-bind="ws-vault-used">--</span></div>
+                                <div class="sp-ws-row"><span>Free</span><span data-bind="ws-vault-free">--</span></div>
+                                <button class="sp-btn ghost btn-mini" data-act="vault-commit">Commit file</button>
+                            </div>
+                        </div>
+                        <div class="sp-ws-card" id="ws-requests">
+                            <header class="sp-ws-card-head"><h3>Operator requests</h3><span class="sp-ws-sub" data-bind="ws-requests-count">0</span></header>
+                            <div class="sp-ws-card-body" data-bind="ws-requests-list">
+                                <div class="sp-empty">no pending requests</div>
+                            </div>
+                        </div>
+                        <div class="sp-ws-card" id="ws-activity">
+                            <header class="sp-ws-card-head"><h3>Activity feed</h3><span class="sp-ws-sub">live</span></header>
+                            <div class="sp-ws-card-body" data-bind="ws-activity-list">
+                                <div class="sp-empty">loading...</div>
+                            </div>
+                        </div>
+                        <div class="sp-ws-card" id="ws-cycle">
+                            <header class="sp-ws-card-head"><h3>Cycle points</h3><span class="sp-ws-sub" data-bind="ws-cycle-count">0</span></header>
+                            <div class="sp-ws-card-body" data-bind="ws-cycle-list">
+                                <div class="sp-empty">no cycle points yet</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </main>
+        </div>
     </div>
 
-    <!-- ===== SPAWNED-WINDOWS control bar (per-agent chips) ===== -->
-    <div class="windows-bar" id="windows-bar"><span class="hint" style="margin:0;">no Claude windows tracked yet</span></div>
+    <!-- ===== Toast container (single slot, app.js reuses #toast) ===== -->
+    <div id="toast" class="sp-toast" role="status" aria-live="polite"></div>
 
-    <!-- ===== Dev-tools rail (preserved — palette / templates mount target) ===== -->
-    <aside class="rkoj-devtools" id="devtools-rail" aria-hidden="true">
-        <header class="rkoj-devtools-header">
-            <h3>Dev tools</h3>
-            <button class="rkoj-icon-btn" id="devtools-close">&#10005;</button>
-        </header>
-        <div class="rkoj-devtools-body" id="devtools-body"></div>
-    </aside>
+    <!-- ===== Modal mount point (broadcast, spawn agent, vault commit) ===== -->
+    <div id="modal-root"></div>
 
-    <!-- ===== Popouts list (small floating chip strip) ===== -->
-    <div class="rkoj-popouts-bar" id="popouts-bar" hidden></div>
+    <!-- ============================================================
+         TEMPLATES — minimal, reused by app.js cloneNode().
+         ============================================================ -->
 
-    <!-- ===== Toast container ===== -->
-    <div class="rkoj-toasts" id="toasts"></div>
-    <!-- Legacy single-toast slot (kept for app.js toast() helper which targets #toast) -->
-    <div id="toast" class="toast" role="status" aria-live="polite"></div>
-
-    <!-- ============================================================ -->
-    <!-- TEMPLATES (preserved verbatim from prior shell + new ones)    -->
-    <!-- ============================================================ -->
-
-    <!-- ===== NEW: agents workstation template (operator workstation layout) ===== -->
-    <template id="tpl-agents-workstation">
-        <div class="rkoj-agents-workstation">
-
-            <!-- HERO: launcher wizard (always visible) -->
-            <section class="lg-card-hero rkoj-launcher-hero" data-bind="launcher-hero">
-                <div class="rkoj-launcher-hero-head">
-                    <h2>Spawn a new agent</h2>
-                    <span class="muted">launch any project in any mode :: powered by /api/launcher/spawn</span>
-                </div>
-                <div class="rkoj-launcher-hero-body">
-                    <div class="rkoj-launcher-col">
-                        <label class="rkoj-launcher-row">
-                            <span class="rkoj-launcher-label">Project</span>
-                            <select class="lg-input" data-bind="lh-project"></select>
-                        </label>
-                        <label class="rkoj-launcher-row">
-                            <span class="rkoj-launcher-label">Mode</span>
-                            <div class="rkoj-launcher-modes" data-bind="lh-mode-chips">
-                                <!-- mode chips injected by app.js -->
-                            </div>
-                            <select class="lg-input" data-bind="lh-mode" hidden></select>
-                        </label>
-                        <label class="rkoj-launcher-row rkoj-launcher-fast">
-                            <span class="rkoj-launcher-label">Fast mode</span>
-                            <span class="rkoj-launcher-toggle">
-                                <input type="checkbox" data-bind="lh-fast">
-                                <span class="rkoj-launcher-toggle-text">Use Opus 4.6 (fast) instead of Opus 4.7 (smartest)</span>
-                            </span>
-                        </label>
-                    </div>
-                    <div class="rkoj-launcher-col">
-                        <label class="rkoj-launcher-row rkoj-launcher-prompt">
-                            <span class="rkoj-launcher-label">Custom prompt (optional)</span>
-                            <textarea class="lg-input" data-bind="lh-prompt" rows="3" placeholder="optional: tell the agent what to focus on after spawn..."></textarea>
-                        </label>
-                        <div class="rkoj-launcher-actions">
-                            <button class="lg-button primary rkoj-launch-btn" data-act="launch">
-                                <span class="rkoj-launch-ico">&#9889;</span>
-                                <span>LAUNCH</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="rkoj-recent-launches" data-bind="recent-launches-strip">
-                    <!-- last 5 mini-cards injected by app.js -->
-                </div>
-            </section>
-
-            <!-- TWO-COLUMN GRID: sessions + activity (left 60%) / cycle-points + schedule + codex (right 40%) -->
-            <section class="rkoj-workbench-grid">
-                <div class="rkoj-workbench-col rkoj-workbench-col-left">
-                    <div class="lg-card rkoj-sessions-card">
-                        <header class="rkoj-card-head">
-                            <h3>Active sessions</h3>
-                            <span class="count" data-bind="agents-sessions-count">0 online</span>
-                        </header>
-                        <div class="rkoj-sessions-grid" data-bind="agents-sessions-grid">
-                            <div class="empty-note">loading sessions...</div>
-                        </div>
-                    </div>
-                    <div class="lg-card rkoj-activity-card">
-                        <header class="rkoj-card-head">
-                            <h3>Activity feed</h3>
-                            <span class="count" data-bind="activity-count">live</span>
-                        </header>
-                        <div class="rkoj-activity-list" data-bind="activity-feed-list">
-                            <div class="empty-note">loading activity...</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="rkoj-workbench-col rkoj-workbench-col-right">
-                    <div class="lg-card rkoj-cyclepoints-card">
-                        <header class="rkoj-card-head">
-                            <h3>Cycle points</h3>
-                            <button class="lg-button ghost btn-mini" data-act="new-cycle-point">+ NEW</button>
-                        </header>
-                        <div class="rkoj-cyclepoints-list" data-bind="cycle-points-list">
-                            <div class="empty-note">no cycle points yet</div>
-                        </div>
-                    </div>
-                    <div class="lg-card rkoj-schedule-card">
-                        <header class="rkoj-card-head">
-                            <h3>Schedule</h3>
-                            <button class="lg-button ghost btn-mini" data-act="new-schedule">+ NEW</button>
-                        </header>
-                        <div class="rkoj-schedule-list" data-bind="schedule-list">
-                            <div class="empty-note">loading schedule...</div>
-                        </div>
-                    </div>
-                    <div class="lg-card rkoj-codex-card">
-                        <header class="rkoj-card-head">
-                            <h3>Codex reviews</h3>
-                            <button class="lg-button ghost btn-mini" data-act="open-codex">OPEN</button>
-                        </header>
-                        <div class="rkoj-codex-summary" data-bind="codex-summary-list">
-                            <div class="empty-note">no recent reviews</div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- TILE SHELF: 5 secondary feature tiles -->
-            <section class="rkoj-tile-shelf">
-                <button class="lg-card rkoj-tile" data-tile="knowledge">
-                    <div class="rkoj-tile-head">
-                        <span class="rkoj-tile-ico">&#9776;</span>
-                        <span class="rkoj-tile-title">KNOWLEDGE</span>
-                    </div>
-                    <div class="rkoj-tile-body">
-                        <div class="rkoj-tile-num" data-bind="tile-knowledge-count">--</div>
-                        <div class="rkoj-tile-sub">brain topics</div>
-                    </div>
-                </button>
-                <button class="lg-card rkoj-tile" data-tile="vault">
-                    <div class="rkoj-tile-head">
-                        <span class="rkoj-tile-ico">V</span>
-                        <span class="rkoj-tile-title">VAULT</span>
-                    </div>
-                    <div class="rkoj-tile-body">
-                        <div class="rkoj-tile-num" data-bind="tile-vault-used">--</div>
-                        <div class="rkoj-tile-sub" data-bind="tile-vault-last">--</div>
-                    </div>
-                </button>
-                <button class="lg-card rkoj-tile" data-tile="progress">
-                    <div class="rkoj-tile-head">
-                        <span class="rkoj-tile-ico">&#9650;</span>
-                        <span class="rkoj-tile-title">PROGRESS</span>
-                    </div>
-                    <div class="rkoj-tile-body">
-                        <div class="rkoj-tile-num" data-bind="tile-progress-count">--</div>
-                        <div class="rkoj-tile-sub" data-bind="tile-progress-last">--</div>
-                    </div>
-                </button>
-                <button class="lg-card rkoj-tile" data-tile="catalog">
-                    <div class="rkoj-tile-head">
-                        <span class="rkoj-tile-ico">&#9635;</span>
-                        <span class="rkoj-tile-title">SKILLS / TOOLS / INVENTIONS</span>
-                    </div>
-                    <div class="rkoj-tile-body">
-                        <div class="rkoj-tile-num" data-bind="tile-catalog-count">--</div>
-                        <div class="rkoj-tile-sub">combined</div>
-                    </div>
-                </button>
-                <button class="lg-card rkoj-tile" data-tile="daemons">
-                    <div class="rkoj-tile-head">
-                        <span class="rkoj-tile-ico">&#9788;</span>
-                        <span class="rkoj-tile-title">DAEMONS</span>
-                    </div>
-                    <div class="rkoj-tile-body">
-                        <div class="rkoj-tile-dots" data-bind="tile-daemons-dots">
-                            <span class="rkoj-daemon-dot" data-daemon="sanctum-console" title="sanctum-console"></span>
-                            <span class="rkoj-daemon-dot" data-daemon="sinister-vault" title="sinister-vault"></span>
-                            <span class="rkoj-daemon-dot" data-daemon="rkoj" title="rkoj"></span>
-                        </div>
-                        <div class="rkoj-tile-sub">heartbeats</div>
-                    </div>
-                </button>
-            </section>
-        </div>
-    </template>
-
-    <!-- ===== NEW: ADB phone-viewer template (operator phone surface) ===== -->
-    <template id="tpl-adb-workstation">
-        <div class="rkoj-adb-workstation">
-            <!-- Sticky lane filter + bulk actions row -->
-            <section class="lg-card rkoj-adb-toolbar">
-                <div class="rkoj-adb-lanes" data-bind="adb-lane-chips">
-                    <!-- lane chips injected -->
-                </div>
-                <div class="rkoj-adb-toolbar-spacer"></div>
-                <div class="rkoj-adb-toolbar-actions">
-                    <button class="lg-button" data-act="scan-all">Scan all</button>
-                    <button class="lg-button ghost" data-act="push-to-lane">Push file to lane</button>
-                    <button class="lg-button ghost" data-act="push-frida">Push frida to lane</button>
-                    <button class="lg-button ghost" data-act="reboot-selected">Reboot selected</button>
-                </div>
-                <div class="rkoj-adb-toolbar-count">
-                    <span class="count" data-bind="adb-count">0 attached</span>
-                    <button class="lg-button ghost btn-mini" data-act="refresh">refresh</button>
-                </div>
-            </section>
-
-            <!-- Device grid -->
-            <section class="rkoj-adb-grid" data-bind="adb-grid">
-                <div class="empty-note">loading devices...</div>
-            </section>
-
-            <!-- Recent ADB events feed -->
-            <section class="lg-card rkoj-adb-events">
-                <header class="rkoj-card-head">
-                    <h3>Recent ADB events</h3>
-                    <span class="count">most recent first &middot; local only</span>
-                </header>
-                <div class="rkoj-adb-events-list" data-bind="adb-events-list">
-                    <div class="empty-note">no events yet &mdash; run a command on a device card to populate this feed</div>
-                </div>
-            </section>
-        </div>
-    </template>
-
-    <!-- ===== Window-picker popover (header "+ Window" button) ===== -->
-    <template id="tpl-newwin-picker">
-        <div class="lg-popover rkoj-newwin-picker" role="dialog" aria-modal="true" aria-label="new window picker">
-            <h4>Open a new popout window</h4>
-            <div class="rkoj-newwin-grid">
-                <button class="lg-button rkoj-newwin-tile" data-view="dashboard">Dashboard</button>
-                <button class="lg-button rkoj-newwin-tile" data-view="phones">Phones</button>
-                <button class="lg-button rkoj-newwin-tile" data-view="agents">Agents</button>
-                <button class="lg-button rkoj-newwin-tile" data-view="cycle-points">Cycle points</button>
-                <button class="lg-button rkoj-newwin-tile" data-view="codex">Codex</button>
-                <button class="lg-button rkoj-newwin-tile" data-view="inbox">Inbox</button>
-                <button class="lg-button rkoj-newwin-tile" data-view="schedule">Schedule</button>
-                <button class="lg-button rkoj-newwin-tile" data-view="vault">Vault</button>
+    <!-- Agent console card (one per active session, stacks vertically). -->
+    <template id="tpl-agent-console">
+        <article class="sp-agent" data-bind="agent-card">
+            <header class="sp-agent-head">
+                <span class="sp-agent-dot" data-bind="agent-dot"></span>
+                <span class="sp-agent-name" data-bind="agent-name">agent</span>
+                <span class="sp-agent-project" data-bind="agent-project">project</span>
+                <span class="sp-agent-mode" data-bind="agent-mode">mode</span>
+                <div class="sp-spacer"></div>
+                <span class="sp-agent-last" data-bind="agent-last">--</span>
+                <button class="sp-icon-btn" data-act="resume" title="Resume session">&#9654;</button>
+                <button class="sp-icon-btn" data-act="popout" title="Pop out">&#8599;</button>
+                <button class="sp-icon-btn" data-act="close" title="Close session">&#10005;</button>
+            </header>
+            <div class="sp-agent-tail" data-bind="agent-tail">
+                <div class="sp-empty">(no recent activity)</div>
             </div>
-            <div class="popover-actions">
-                <button class="lg-button ghost" data-act="cancel">Cancel</button>
+            <footer class="sp-agent-input">
+                <input class="sp-input" type="text" data-bind="agent-input" placeholder="/help · /clear · /compact · /resume · /create · /save · /git · /mcp · /effort · /fast · or send a message">
+                <button class="sp-btn primary" data-act="send">SEND</button>
+            </footer>
+        </article>
+    </template>
+
+    <!-- Device card (one per adb device). -->
+    <template id="tpl-device-card">
+        <article class="sp-device" data-bind="device-card">
+            <header class="sp-device-head">
+                <span class="sp-device-dot" data-bind="device-dot"></span>
+                <span class="sp-device-model" data-bind="device-model">model</span>
+                <span class="sp-device-state" data-bind="device-state">state</span>
+                <span class="sp-device-transport" data-bind="device-transport">transport</span>
+            </header>
+            <div class="sp-device-body">
+                <div class="sp-device-row"><span>Serial</span><code data-bind="device-serial">--</code></div>
+                <div class="sp-device-row"><span>Lane</span><span data-bind="device-lane">--</span></div>
+            </div>
+            <footer class="sp-device-actions">
+                <button class="sp-btn ghost btn-mini" data-act="view">View (scrcpy)</button>
+                <button class="sp-btn ghost btn-mini" data-act="push">Push file</button>
+                <button class="sp-btn ghost btn-mini" data-act="logs">Logs</button>
+            </footer>
+        </article>
+    </template>
+
+    <!-- Modal shell. -->
+    <template id="tpl-modal">
+        <div class="sp-modal-overlay" data-act="dismiss">
+            <div class="sp-modal" role="dialog" aria-modal="true">
+                <header class="sp-modal-head"><h3 data-bind="modal-title">Modal</h3><button class="sp-icon-btn" data-act="close">&#10005;</button></header>
+                <div class="sp-modal-body" data-bind="modal-body"></div>
+                <footer class="sp-modal-foot" data-bind="modal-foot"></footer>
             </div>
         </div>
     </template>
 
-    <!-- ===== Settings drawer (header cog) ===== -->
-    <template id="tpl-settings-drawer">
-        <div class="lg-popover rkoj-settings-drawer" role="dialog" aria-modal="true" aria-label="settings">
-            <h4>Workstation settings</h4>
-            <label>Density
-                <select class="lg-input" data-bind="set-density">
-                    <option value="compact">compact</option>
-                    <option value="cozy" selected>cozy</option>
-                    <option value="comfortable">comfortable</option>
+    <!-- Spawn-agent modal body. -->
+    <template id="tpl-spawn-form">
+        <form class="sp-form" data-bind="spawn-form">
+            <label class="sp-form-row">
+                <span class="sp-form-label">Project</span>
+                <select class="sp-input" data-bind="sf-project"></select>
+            </label>
+            <label class="sp-form-row">
+                <span class="sp-form-label">Mode</span>
+                <select class="sp-input" data-bind="sf-mode">
+                    <option value="overview">overview</option>
+                    <option value="dev">dev</option>
+                    <option value="audit">audit</option>
+                    <option value="deploy">deploy</option>
+                    <option value="push">push</option>
+                    <option value="debug">debug</option>
+                    <option value="explore">explore</option>
                 </select>
             </label>
-            <label>Hot reload
-                <span class="rkoj-launcher-toggle">
-                    <input type="checkbox" data-bind="set-hotreload" checked>
-                    <span>SSE channel /api/sse/changes</span>
-                </span>
+            <label class="sp-form-row sp-form-check">
+                <input type="checkbox" data-bind="sf-fast">
+                <span>Fast mode (Opus 4.6 instead of 4.7)</span>
             </label>
-            <label>Default intelligence
-                <select class="lg-input" data-bind="set-intel">
-                    <option value="claude-opus-4-7">Opus 4.7 (smartest)</option>
-                    <option value="claude-opus-4-6">Opus 4.6 (fast)</option>
-                    <option value="claude-sonnet-4-6">Sonnet 4.6 (balanced)</option>
-                    <option value="claude-haiku-4-5-20251001">Haiku 4.5 (fastest)</option>
+            <label class="sp-form-row">
+                <span class="sp-form-label">Custom prompt (optional)</span>
+                <textarea class="sp-input" rows="3" data-bind="sf-prompt" placeholder="e.g. focus on X after spawn"></textarea>
+            </label>
+        </form>
+    </template>
+
+    <!-- Broadcast modal body. -->
+    <template id="tpl-broadcast-form">
+        <form class="sp-form" data-bind="broadcast-form">
+            <label class="sp-form-row">
+                <span class="sp-form-label">Subkind</span>
+                <select class="sp-input" data-bind="bc-subkind">
+                    <option value="UPDATE">UPDATE</option>
+                    <option value="ASK">ASK</option>
+                    <option value="DELEGATE">DELEGATE</option>
                 </select>
             </label>
-            <button class="lg-button" data-act="open-devtools">Open dev tools rail</button>
-            <button class="lg-button" data-act="open-accounts">Anthropic accounts</button>
-            <button class="lg-button danger" data-act="signout">Sign out</button>
-            <div class="popover-actions">
-                <button class="lg-button ghost" data-act="cancel">Close</button>
-            </div>
-        </div>
-    </template>
-
-    <!-- ===== Per-device command + actions popover ===== -->
-    <template id="tpl-device-actions-popover">
-        <div class="lg-popover rkoj-device-actions" role="dialog" aria-modal="true" aria-label="device actions">
-            <h4 data-bind="da-title">Device actions</h4>
-            <div class="rkoj-device-actions-grid">
-                <button class="lg-button" data-act="push-file">Push file</button>
-                <button class="lg-button" data-act="push-frida">Push frida</button>
-                <button class="lg-button" data-act="set-proxy">Settings proxy</button>
-                <button class="lg-button" data-act="shell-dump">Shell dump</button>
-                <button class="lg-button" data-act="view-logs">View logs</button>
-                <button class="lg-button" data-act="reboot">Reboot</button>
-            </div>
-            <div class="popover-actions">
-                <button class="lg-button ghost" data-act="cancel">Close</button>
-            </div>
-        </div>
-    </template>
-
-    <!-- ============ LEGACY TEMPLATES (preserved verbatim) ============ -->
-    <!-- Consumed by dev-tools rail drawers, command palette mount, popouts. -->
-
-    <template id="tpl-devices-section">
-        <div class="rkoj-devices-section">
-            <div class="lane-filter-bar">
-                <label>filter by lane:</label>
-                <select data-bind="devices-lane-filter">
-                    <option value="">all</option>
-                </select>
-                <span class="lane-legend" data-bind="devices-lane-legend"></span>
-                <span class="count" data-bind="devices-count">0 attached</span>
-                <button class="lg-button ghost" data-act="refresh-devices" data-bind="devices-refresh">refresh</button>
-            </div>
-            <div class="rkoj-devices-grid" data-bind="devices-grid">
-                <div class="empty-note">loading devices...</div>
-            </div>
-        </div>
-    </template>
-
-    <template id="tpl-agents-section">
-        <div class="rkoj-agents-section">
-            <section class="rkoj-sessions-strip" data-bind="agents-sessions-strip">
-                <h4>Active sessions <span class="count" data-bind="agents-sessions-count">0</span></h4>
-                <div class="rkoj-sessions-grid" data-bind="agents-sessions-grid">
-                    <div class="empty-note">loading sessions...</div>
-                </div>
-            </section>
-            <section class="rkoj-launcher-wizard lg-card">
-                <h4>Spawn a new agent session</h4>
-                <div class="lh-row"><label>Project</label><select data-bind="lh-project"></select></div>
-                <div class="lh-row"><label>Mode</label><select data-bind="lh-mode"></select></div>
-                <div class="lh-row"><label><input type="checkbox" data-bind="lh-fast"> Fast mode (Opus 4.6 only)</label></div>
-                <div class="lh-row"><label>Custom prompt (optional)</label><textarea data-bind="lh-prompt" class="lg-textarea" placeholder="injected after spawn"></textarea></div>
-                <div class="lh-actions">
-                    <button class="lg-button primary" data-act="launch">[LAUNCH]</button>
-                    <button class="lg-button ghost" data-act="fix-claude-memory">FIX CLAUDE MEMORY</button>
-                    <button class="lg-button ghost" data-act="open-trophy">OPEN TROPHY CASE</button>
-                    <button class="lg-button ghost" data-act="open-phones">OPEN PHONE VIEWER</button>
-                </div>
-            </section>
-            <section class="rkoj-recent-launches lg-card" data-bind="recent-launches-card">
-                <h4>Recent launches <span class="count" data-bind="lh-recent-count">0</span></h4>
-                <div data-bind="recent-launches-list" class="recent-launches">
-                    <div class="empty-note">no launches yet</div>
-                </div>
-            </section>
-            <section class="rkoj-cycle-points lg-card" data-bind="cycle-points-card">
-                <h4>Cycle points <button class="lg-button" data-act="new-cycle-point">+ NEW</button></h4>
-                <div data-bind="cycle-points-list">
-                    <div class="empty-note">no cycle points yet</div>
-                </div>
-            </section>
-            <section class="rkoj-activity-feed lg-card" data-bind="activity-feed-card">
-                <h4>Activity feed (progress + inbox + requests)</h4>
-                <div data-bind="activity-feed-list">
-                    <div class="empty-note">loading activity...</div>
-                </div>
-            </section>
-        </div>
-    </template>
-
-    <template id="tpl-dashboard">
-        <div class="tab-view active" data-view="dashboard">
-            <div class="app-grid">
-                <section class="pane">
-                    <div class="pane-header">
-                        <h2>Projects</h2>
-                        <span class="count" data-bind="projects-count">0</span>
-                    </div>
-                    <div class="pane-body" data-bind="projects-pane"><div class="empty-note">loading...</div></div>
-                </section>
-                <section class="pane">
-                    <div class="pane-header">
-                        <h2>Active sessions</h2>
-                        <span class="count" data-bind="sessions-count">0 online</span>
-                    </div>
-                    <div class="pane-body" data-bind="sessions-pane"><div class="empty-note">loading...</div></div>
-                </section>
-                <section class="pane">
-                    <div class="pane-header">
-                        <h2>Trophy case</h2>
-                        <span class="count" data-bind="trophy-status">--</span>
-                    </div>
-                    <div class="pane-body">
-                        <div class="lg-card">
-                            <div class="trophy-grid">
-                                <div class="trophy-tile"><div class="num" data-bind="t-accts">-</div><div class="lbl">accounts</div></div>
-                                <div class="trophy-tile"><div class="num" data-bind="t-videos">-</div><div class="lbl">videos</div></div>
-                                <div class="trophy-tile"><div class="num" data-bind="t-active">-</div><div class="lbl">active</div></div>
-                                <div class="trophy-tile"><div class="num" data-bind="t-pushes">-</div><div class="lbl">pushes</div></div>
-                                <div class="trophy-tile"><div class="num" data-bind="t-banned">-</div><div class="lbl">banned</div></div>
-                                <div class="trophy-tile"><div class="num" data-bind="t-devices">-</div><div class="lbl">devices</div></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="pane-header" style="margin-top:8px;">
-                        <h2>Recent runlogs</h2>
-                        <span class="count" data-bind="runlogs-count">0</span>
-                    </div>
-                    <div class="pane-body" data-bind="runlogs-pane"><div class="empty-note">loading...</div></div>
-                </section>
-            </div>
-        </div>
-    </template>
-
-    <template id="tpl-progress">
-        <div class="tab-view active" data-view="progress">
-            <div class="single-pane">
-                <div class="pane-header">
-                    <h2>Cross-agent progress feed</h2>
-                    <span class="count" data-bind="progress-count">0</span>
-                </div>
-                <div class="lg-card form-row" style="margin-bottom:14px;">
-                    <strong style="color:var(--primary-soft); margin-right:8px;">+ log progress</strong>
-                    <input type="text" data-bind="prog-agent" placeholder="agent name" style="width:170px;">
-                    <select data-bind="prog-status">
-                        <option value="started">started</option>
-                        <option value="shipped" selected>shipped</option>
-                        <option value="blocked">blocked</option>
-                        <option value="paused">paused</option>
-                        <option value="failed">failed</option>
-                        <option value="note">note</option>
-                    </select>
-                    <input type="text" data-bind="prog-title" placeholder="one-line title" style="flex:1; min-width:200px;">
-                    <button data-bind="prog-submit">APPEND</button>
-                </div>
-                <div class="progress-grid" data-bind="progress-grid"><div class="empty-note">loading...</div></div>
-            </div>
-        </div>
-    </template>
-
-    <template id="tpl-memory">
-        <div class="tab-view active" data-view="memory">
-            <div class="memory-grid">
-                <div class="lg-card memory-card">
-                    <div class="pane-header"><h2>Directives (DIRECTIVES.md)</h2><span class="count">cross-agent</span></div>
-                    <div class="md-pre" data-bind="mem-directives">loading...</div>
-                </div>
-                <div class="lg-card memory-card">
-                    <div class="pane-header"><h2>Work-Toward (WORK-TOWARD.md)</h2><span class="count">shared goals</span></div>
-                    <div class="md-pre" data-bind="mem-work">loading...</div>
-                </div>
-                <div class="lg-card memory-card memory-add">
-                    <div class="pane-header"><h2>Append a new entry</h2></div>
-                    <select data-bind="mem-target">
-                        <option value="directives">DIRECTIVES.md (standing rule)</option>
-                        <option value="work_toward">WORK-TOWARD.md (shared goal)</option>
-                        <option value="note">notes/ (new note file)</option>
-                    </select>
-                    <input type="text" data-bind="mem-title" placeholder="title (one line)">
-                    <textarea data-bind="mem-body" placeholder="body (any length, multiline)" rows="6"></textarea>
-                    <button data-bind="mem-submit">APPEND TO SHARED MEMORY</button>
-                </div>
-            </div>
-        </div>
-    </template>
-
-    <template id="tpl-inbox">
-        <div class="tab-view active" data-view="inbox">
-            <div class="inbox-grid">
-                <div class="lg-card inbox-agents">
-                    <div class="pane-header"><h2>Agents</h2><span class="count" data-bind="inbox-agent-count">0</span></div>
-                    <div data-bind="inbox-agents-list"></div>
-                </div>
-                <div class="lg-card inbox-stream">
-                    <div class="pane-header">
-                        <h2 data-bind="inbox-stream-title">select an agent</h2>
-                        <button class="btn-mini" data-bind="inbox-refresh">REFRESH</button>
-                    </div>
-                    <div data-bind="inbox-messages"><div class="empty-note">pick an agent on the left</div></div>
-                    <div class="form-row" style="margin-top:12px;">
-                        <input type="text" data-bind="inbox-send-body" placeholder="message to selected agent" style="flex:1;">
-                        <button data-bind="inbox-send-btn" disabled>SEND</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </template>
-
-    <template id="tpl-settings">
-        <div class="tab-view active" data-view="settings">
-            <div class="settings-grid">
-                <div class="lg-card">
-                    <div class="pane-header"><h2>Anthropic accounts</h2><span class="count" data-bind="acct-count">0</span></div>
-                    <div data-bind="acct-list"></div>
-                    <p class="hint">edit <code>D:\Sinister Sanctum\automations\session-templates\accounts.json</code> to add/activate accounts</p>
-                </div>
-                <div class="lg-card">
-                    <div class="pane-header"><h2>Agent identities</h2><span class="count" data-bind="prefs-count">0</span></div>
-                    <div data-bind="prefs-list"></div>
-                    <p class="hint">edit <code>session-templates\agent-prefs.json</code> to change defaults</p>
-                </div>
-                <div class="lg-card">
-                    <div class="pane-header"><h2>Connect from phone</h2><span class="count" data-bind="conn-mode">--</span></div>
-                    <div data-bind="conn-info">
-                        <p class="hint">LAN mode only - boot with <code>Sanctum-LAN.bat</code> to enable.</p>
-                    </div>
-                </div>
-                <div class="lg-card">
-                    <div class="pane-header"><h2>System health</h2></div>
-                    <div data-bind="sys-health">loading...</div>
-                </div>
-            </div>
-        </div>
-    </template>
-
-    <template id="tpl-phones">
-        <div class="tab-view active" data-view="phones">
-            <div class="devices-wrap">
-                <div class="devices-banner" role="alert">
-                    <strong>Each phone is a container.</strong>
-                    Per-phone operations only - every adb call carries <code>-s &lt;serial&gt;</code>.
-                    PC-side state (frida-server, proxies, env vars) does NOT leak unless explicitly
-                    pushed to a specific phone.
-                    See <code>_shared-memory/notes/2026-05-19-adb-phone-containerization.md</code>.
-                </div>
-                <div class="pane-header devices-header">
-                    <h2>Devices</h2>
-                    <span class="count" data-bind="devices-count">0 attached</span>
-                    <button class="btn-mini" data-bind="devices-refresh">REFRESH</button>
-                </div>
-                <div class="lane-filter-bar">
-                    <label class="lane-filter-label">lane:</label>
-                    <select class="lane-filter-select" data-bind="devices-lane-filter">
-                        <option value="all">all</option>
-                    </select>
-                    <div class="lane-legend" data-bind="devices-lane-legend"></div>
-                </div>
-                <div class="devices-grid" data-bind="devices-grid">
-                    <div class="empty-note">loading devices...</div>
-                </div>
-            </div>
-        </div>
-    </template>
-
-    <template id="tpl-skills">
-        <div class="tab-view active" data-view="skills">
-            <div class="md-browse">
-                <div class="md-list-pane">
-                    <div class="pane-header">
-                        <h2>Skills</h2>
-                        <span class="count" data-bind="skills-count">0</span>
-                    </div>
-                    <div class="md-list" data-bind="skills-list">
-                        <div class="empty-note">loading...</div>
-                    </div>
-                </div>
-                <div class="md-reader-wrap">
-                    <div class="pane-header">
-                        <h2 data-bind="skills-title">select a skill</h2>
-                        <span class="count" data-bind="skills-meta"></span>
-                    </div>
-                    <div class="md-reader" data-bind="skills-reader">pick a skill on the left</div>
-                </div>
-            </div>
-        </div>
-    </template>
-
-    <template id="tpl-tools">
-        <div class="tab-view active" data-view="tools">
-            <div class="md-browse">
-                <div class="md-list-pane">
-                    <div class="pane-header">
-                        <h2>Tools</h2>
-                        <span class="count" data-bind="tools-count">0</span>
-                    </div>
-                    <div class="md-list" data-bind="tools-list">
-                        <div class="empty-note">loading...</div>
-                    </div>
-                </div>
-                <div class="md-reader-wrap">
-                    <div class="pane-header">
-                        <h2 data-bind="tools-title">select a tool</h2>
-                        <span class="count" data-bind="tools-meta"></span>
-                    </div>
-                    <div class="md-reader" data-bind="tools-reader">pick a tool on the left</div>
-                </div>
-            </div>
-        </div>
-    </template>
-
-    <template id="tpl-inventions">
-        <div class="tab-view active" data-view="inventions">
-            <div class="md-browse">
-                <div class="md-list-pane">
-                    <div class="pane-header">
-                        <h2>Inventions</h2>
-                        <span class="count" data-bind="inventions-count">0</span>
-                    </div>
-                    <div class="md-list" data-bind="inventions-list">
-                        <div class="empty-note">loading...</div>
-                    </div>
-                </div>
-                <div class="md-reader-wrap">
-                    <div class="pane-header">
-                        <h2 data-bind="inventions-title">select an invention</h2>
-                        <span class="count" data-bind="inventions-meta"></span>
-                    </div>
-                    <div class="md-reader" data-bind="inventions-reader">pick an invention on the left</div>
-                </div>
-            </div>
-        </div>
-    </template>
-
-    <template id="tpl-agent-actions">
-        <div class="lg-popover agent-actions" role="dialog" aria-modal="true" aria-label="agent actions">
-            <h4>Set intelligence &mdash; <span data-bind="agent-name"></span></h4>
-            <fieldset class="intelligence-list">
-                <label><input type="radio" name="model" value="claude-opus-4-7"> <span>Opus 4.7</span> <span class="muted">(1M ctx &middot; slowest &middot; smartest)</span></label>
-                <label><input type="radio" name="model" value="claude-opus-4-6"> <span>Opus 4.6</span> <span class="muted">(fast-mode capable)</span></label>
-                <label><input type="radio" name="model" value="claude-sonnet-4-6"> <span>Sonnet 4.6</span> <span class="muted">(balanced)</span></label>
-                <label><input type="radio" name="model" value="claude-haiku-4-5-20251001"> <span>Haiku 4.5</span> <span class="muted">(fastest &middot; cheapest)</span></label>
-                <label class="fast-toggle"><input type="checkbox" name="fast"> Fast mode <span class="muted">(Opus 4.6 only)</span></label>
-            </fieldset>
-            <div class="popover-actions">
-                <button class="lg-button cancel" data-bind="aa-cancel">Cancel</button>
-                <button class="lg-button primary apply" data-bind="aa-apply" disabled>Apply</button>
-            </div>
-        </div>
-    </template>
-
-    <template id="tpl-command-menu">
-        <div class="tab-view active" data-view="command-menu">
-            <div class="single-pane">
-                <div class="pane-header">
-                    <h2>Command menu <span class="hint" style="margin-left:8px;">per-agent quick actions</span></h2>
-                    <span class="count" data-bind="cm-count">0 agents</span>
-                </div>
-                <div class="lg-card form-row" style="margin-bottom:14px;">
-                    <strong style="color:var(--primary-soft); margin-right:8px;">agent:</strong>
-                    <select data-bind="cm-agent" style="flex:1; min-width:220px;"></select>
-                    <button data-bind="cm-refresh">REFRESH</button>
-                </div>
-                <div class="lg-card">
-                    <div class="pane-header"><h2>Actions</h2></div>
-                    <div class="cm-actions">
-                        <button class="lg-button cm-action" data-bind="cm-intelligence">&#9889; Intelligence level</button>
-                        <button class="lg-button cm-action" disabled title="future action">&#9208; Pause (future)</button>
-                        <button class="lg-button cm-action" disabled title="future action">&#128226; Send directive (future)</button>
-                        <button class="lg-button cm-action" disabled title="future action">&#127807; Switch branch (future)</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </template>
-
-    <template id="tpl-launcher">
-        <div class="tab-view active" data-view="launcher">
-            <div class="single-pane">
-                <div class="pane-header">
-                    <h2>Launcher <span class="hint" style="margin-left:8px;">spawn agents :: mirrors start-sinister-session.ps1</span></h2>
-                    <span class="count" data-bind="lh-status">ready</span>
-                </div>
-                <div class="lg-card launcher-wizard">
-                    <label class="lh-row">
-                        <span class="lh-label">1. Project</span>
-                        <select class="lh-input" data-bind="lh-project"></select>
-                    </label>
-                    <label class="lh-row">
-                        <span class="lh-label">2. Mode</span>
-                        <select class="lh-input" data-bind="lh-mode"></select>
-                    </label>
-                    <label class="lh-row checkbox-row">
-                        <input type="checkbox" data-bind="lh-fast"> <span>3. Fast mode</span>
-                    </label>
-                    <label class="lh-row">
-                        <span class="lh-label">4. Custom prompt (optional)</span>
-                        <textarea class="lh-input lh-textarea" data-bind="lh-prompt" rows="4" placeholder="optional one-shot prompt to inject after spawn"></textarea>
-                    </label>
-                    <div class="lh-actions">
-                        <button class="lg-button primary" data-bind="lh-launch">[LAUNCH]</button>
-                    </div>
-                </div>
-                <div class="lg-card" style="margin-top:14px;">
-                    <div class="pane-header">
-                        <h2>Convenience</h2>
-                        <span class="count">one-click</span>
-                    </div>
-                    <div class="cm-actions">
-                        <button class="lg-button cm-action" data-bind="lh-fix-memory">[FIX CLAUDE MEMORY]</button>
-                        <button class="lg-button cm-action" data-bind="lh-open-trophy">[OPEN TROPHY CASE]</button>
-                        <button class="lg-button cm-action" data-bind="lh-open-phones">[OPEN PHONE VIEWER]</button>
-                    </div>
-                </div>
-                <div class="lg-card" style="margin-top:14px;">
-                    <div class="pane-header">
-                        <h2>Recent launches</h2>
-                        <span class="count" data-bind="lh-recent-count">0</span>
-                    </div>
-                    <div class="recent-launches" data-bind="lh-recent-list">
-                        <div class="empty-note">no launches yet</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </template>
-
-    <template id="tpl-requests">
-        <div class="tab-view active" data-view="requests">
-            <div class="single-pane">
-                <div class="pane-header">
-                    <h2>Operator requests <span class="hint" style="margin-left:8px;">things agents need from you</span></h2>
-                    <span class="count" data-bind="req-count">0 pending</span>
-                </div>
-                <div class="req-tabs" style="margin-bottom:10px;">
-                    <button class="req-tab active" data-req-filter="pending">PENDING</button>
-                    <button class="req-tab" data-req-filter="approved">APPROVED</button>
-                    <button class="req-tab" data-req-filter="denied">DENIED</button>
-                    <button class="req-tab" data-req-filter="replied">REPLIED</button>
-                    <button class="req-tab" data-req-filter="all">ALL</button>
-                </div>
-                <div class="req-list" data-bind="req-list"><div class="empty-note">loading...</div></div>
-            </div>
-        </div>
-    </template>
-
-    <template id="tpl-codex">
-        <div class="tab-view active" data-view="codex">
-            <div class="codex-wrap">
-                <div class="lg-card">
-                    <div class="pane-header">
-                        <h2>Codex peer review</h2>
-                        <span class="count">paste code, get a verdict</span>
-                    </div>
-                    <label class="codex-label" for="codex-code">paste code to review</label>
-                    <textarea class="codex-code" data-bind="codex-code" id="codex-code" rows="12" placeholder="// paste code here..."></textarea>
-                    <div class="form-row codex-controls">
-                        <label class="codex-mini-label">depth
-                            <select data-bind="codex-depth">
-                                <option value="quick">quick</option>
-                                <option value="standard" selected>standard</option>
-                                <option value="deep">deep</option>
-                            </select>
-                        </label>
-                        <label class="codex-mini-label">language
-                            <input type="text" data-bind="codex-language" value="auto" placeholder="auto / python / js / ...">
-                        </label>
-                        <label class="codex-mini-label" style="flex:1; min-width:200px;">context
-                            <input type="text" data-bind="codex-context" placeholder="one-line context blurb">
-                        </label>
-                        <button data-bind="codex-submit">[REVIEW]</button>
-                    </div>
-                </div>
-                <div class="lg-card codex-result-card" data-bind="codex-result-card" style="display:none;">
-                    <div class="pane-header">
-                        <h2>Result</h2>
-                        <span class="codex-verdict" data-bind="codex-verdict"></span>
-                    </div>
-                    <div class="codex-summary" data-bind="codex-summary"></div>
-                    <div class="codex-findings" data-bind="codex-findings"></div>
-                </div>
-                <div class="lg-card">
-                    <div class="pane-header">
-                        <h2>Recent reviews</h2>
-                        <span class="count" data-bind="codex-history-count">0</span>
-                    </div>
-                    <div class="codex-history" data-bind="codex-history">
-                        <div class="empty-note">no history yet</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </template>
-
-    <!-- ===== TEMPLATE: cycle point save modal ===== -->
-    <template id="tpl-cycle-save-modal">
-        <div class="lg-popover rkoj-modal">
-            <h3>Save cycle point</h3>
-            <label>Name<input class="lg-input" data-bind="cp-name" placeholder="Snap API :: SS03 hypothesis #3"></label>
-            <label>Project<select data-bind="cp-project"></select></label>
-            <label>Note<textarea class="lg-textarea" data-bind="cp-note" placeholder="about to dump libclient.so JNI table"></textarea></label>
-            <div class="popover-actions">
-                <button class="lg-button ghost" data-act="cancel">Cancel</button>
-                <button class="lg-button primary" data-act="save">Save</button>
-            </div>
-        </div>
-    </template>
-
-    <!-- ===== TEMPLATE: schedule add modal ===== -->
-    <template id="tpl-schedule-add-modal">
-        <div class="lg-popover rkoj-modal">
-            <h3>Add schedule entry</h3>
-            <label>Name<input class="lg-input" data-bind="sch-name"></label>
-            <label>Cron (or preset)
-                <select data-bind="sch-cron-preset">
-                    <option value="0 * * * *">Every hour</option>
-                    <option value="0 0 * * *">Every day at midnight</option>
-                    <option value="0 2 * * *">Every day at 2am</option>
-                    <option value="0 9 * * 1">Mondays at 9am</option>
-                    <option value="0 0 1 * *">First of each month</option>
-                    <option value="*/5 * * * *">Every 5 minutes</option>
-                    <option value="custom">Custom...</option>
-                </select>
-                <input class="lg-input" data-bind="sch-cron" placeholder="cron expression">
+            <label class="sp-form-row">
+                <span class="sp-form-label">Message</span>
+                <textarea class="sp-input" rows="4" data-bind="bc-body" placeholder="message to broadcast..."></textarea>
             </label>
-            <label>Kind
-                <select data-bind="sch-kind">
-                    <option value="script">script (whitelist)</option>
-                    <option value="spawn-agent">spawn-agent</option>
-                    <option value="inbox">inbox</option>
-                    <option value="resume-cycle">resume-cycle</option>
-                    <option value="http">http call</option>
-                </select>
-            </label>
-            <div class="sch-action-form" data-bind="sch-action-form"></div>
-            <div class="popover-actions">
-                <button class="lg-button ghost" data-act="cancel">Cancel</button>
-                <button class="lg-button primary" data-act="save">Save</button>
-            </div>
-        </div>
-    </template>
-
-    <!-- /* RKOJ Vault UI — Sinister Sanctum master agent (Claude) :: 2026-05-19 */ -->
-    <template id="tpl-vault-drawer">
-      <div class="rkoj-vault-drawer">
-        <div class="rkoj-vault-header">
-          <h4>Sinister Vault</h4>
-          <span class="rkoj-vault-status" data-bind="vault-status">checking…</span>
-        </div>
-
-        <div class="rkoj-vault-quota lg-card" data-bind="vault-quota-card">
-          <div class="rkoj-vault-quota-row">
-            <span class="lbl">used</span>
-            <span class="val" data-bind="vault-used">—</span>
-          </div>
-          <div class="rkoj-vault-quota-row">
-            <span class="lbl">free</span>
-            <span class="val" data-bind="vault-free">—</span>
-          </div>
-          <div class="rkoj-vault-quota-bar" data-bind="vault-quota-bar">
-            <div class="rkoj-vault-quota-fill" style="width:0%"></div>
-          </div>
-          <small class="muted">1 TB soft quota · warn at 950 GB</small>
-        </div>
-
-        <div class="rkoj-vault-section">
-          <div class="rkoj-vault-section-header">
-            <h5>Sync (Syncthing)</h5>
-            <button class="lg-button ghost" data-act="vault-refresh-sync">refresh</button>
-          </div>
-          <div data-bind="vault-sync-status" class="rkoj-vault-list">offline</div>
-        </div>
-
-        <div class="rkoj-vault-section">
-          <div class="rkoj-vault-section-header">
-            <h5>Recent audit (commits / pushes / pulls)</h5>
-            <button class="lg-button ghost" data-act="vault-refresh-audit">refresh</button>
-          </div>
-          <div data-bind="vault-audit-list" class="rkoj-vault-list"></div>
-        </div>
-
-        <div class="rkoj-vault-section">
-          <div class="rkoj-vault-section-header">
-            <h5>Actions</h5>
-          </div>
-          <div class="rkoj-vault-actions">
-            <button class="lg-button primary" data-act="vault-commit">Commit file…</button>
-            <button class="lg-button ghost" data-act="vault-snapshot">Snapshot now</button>
-            <button class="lg-button ghost" data-act="vault-open-gitea">Open Gitea</button>
-          </div>
-        </div>
-      </div>
-    </template>
-
-    <template id="tpl-vault-commit-modal">
-      <div class="lg-popover rkoj-modal">
-        <h3>Commit a file to the vault</h3>
-        <label>Repository<select class="lg-select" data-bind="vc-repo"></select></label>
-        <label>File path (absolute)<input class="lg-input" data-bind="vc-file" placeholder="D:\Sinister Sanctum\...\some-file.md"></label>
-        <label>Commit message<input class="lg-input" data-bind="vc-message" placeholder="add: design note"></label>
-        <label>Account<select class="lg-select" data-bind="vc-account"><option value="operator">operator</option><option value="leo">leo</option></select></label>
-        <div class="popover-actions">
-          <button class="lg-button ghost" data-act="cancel">Cancel</button>
-          <button class="lg-button primary" data-act="save">Commit</button>
-        </div>
-      </div>
-    </template>
-
-    <!-- Codex fullpane template — Sinister Sanctum master agent (Claude) :: 2026-05-19 -->
-    <!-- Reachable via header ribbon ('Codex review' AGENT group), Cmd+K palette
-         ('codex: open pane'), agents tab Codex card 'OPEN' button, or hash route #pane=codex. -->
-    <template id="tpl-codex-fullpane">
-        <div class="codex-fullpane">
-            <!-- Hero card -->
-            <div class="codex-hero">
-                <div class="codex-hero-row">
-                    <div class="codex-hero-title">
-                        <span class="codex-shield" aria-hidden="true">
-                            <!-- shield-check inline SVG (no lucide-react) -->
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M12 2 4 5v6c0 5.25 3.4 9.9 8 11 4.6-1.1 8-5.75 8-11V5l-8-3z"/>
-                                <path d="m9 12 2 2 4-4"/>
-                            </svg>
-                        </span>
-                        Codex Companion
-                    </div>
-                    <span class="codex-verdict-pill unknown" data-bind="codex-hero-verdict">No reviews yet</span>
-                </div>
-                <div class="codex-hero-tagline">
-                    Peer-review counterweight from a different model family. POST code -&gt; get a verdict (pass / warn / fail) with findings.
-                    Backend: <code>tools/codex-companion/codex.py</code>. JSON audit log lives in <code>_shared-memory/codex-reviews/</code>.
-                </div>
-                <div class="codex-hero-meta">
-                    <code>POST /api/codex/review</code>
-                    <code>GET /api/codex/reviews</code>
-                    <span>Sanctum purple master surface.</span>
-                </div>
-            </div>
-
-            <!-- Two-column grid: history (left) + run-review form (right) -->
-            <div class="codex-grid">
-                <!-- ===== Recent reviews ===== -->
-                <section class="lg-card codex-card">
-                    <div class="codex-card-head">
-                        <h3>Recent reviews</h3>
-                        <span class="count" data-bind="codex-pane-history-count">0</span>
-                    </div>
-                    <div class="codex-reviews-list" data-bind="codex-pane-history">
-                        <div class="empty-note">loading recent reviews...</div>
-                    </div>
-                </section>
-
-                <!-- ===== Run a review ===== -->
-                <section class="lg-card codex-card">
-                    <div class="codex-card-head">
-                        <h3>Run Codex review</h3>
-                        <span class="count" data-bind="codex-pane-status">ready</span>
-                    </div>
-                    <div data-bind="codex-pane-form">
-                        <div class="codex-form-row">
-                            <label for="codex-pane-content">Content (paste code or diff)</label>
-                            <textarea id="codex-pane-content" class="codex-content" data-bind="codex-pane-content" rows="9" placeholder="paste code or git-diff to review..."></textarea>
-                        </div>
-                        <div class="codex-form-row">
-                            <label for="codex-pane-context">Context (one-line blurb)</label>
-                            <input id="codex-pane-context" class="lg-input" data-bind="codex-pane-context" type="text" placeholder="why we're reviewing this (optional)">
-                        </div>
-                        <div class="codex-controls-row">
-                            <div class="codex-form-row" style="min-width: 160px;">
-                                <label for="codex-pane-language">Language</label>
-                                <select id="codex-pane-language" class="lg-input" data-bind="codex-pane-language">
-                                    <option value="python" selected>python</option>
-                                    <option value="typescript">typescript</option>
-                                    <option value="javascript">javascript</option>
-                                    <option value="rust">rust</option>
-                                    <option value="go">go</option>
-                                    <option value="bash">bash</option>
-                                    <option value="powershell">powershell</option>
-                                    <option value="markdown">markdown</option>
-                                    <option value="auto">auto / other</option>
-                                </select>
-                            </div>
-                            <div class="codex-form-row">
-                                <label>Depth</label>
-                                <div style="display:flex; gap:6px;">
-                                    <label class="codex-depth-radio"><input type="radio" name="codex-depth" value="quick"> quick</label>
-                                    <label class="codex-depth-radio"><input type="radio" name="codex-depth" value="standard" checked> standard</label>
-                                    <label class="codex-depth-radio"><input type="radio" name="codex-depth" value="deep"> deep</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div style="margin-top: 10px; display:flex; gap:8px; align-items:center;">
-                            <button class="codex-run-btn" data-bind="codex-pane-submit" type="button">Run Codex review</button>
-                            <span class="codex-hero-tagline" data-bind="codex-pane-feedback" style="margin:0;"></span>
-                        </div>
-                    </div>
-                    <div data-bind="codex-pane-nokey" style="display:none;">
-                        <div class="codex-no-key">
-                            <h4>OPENAI_API_KEY not set</h4>
-                            Set the env var on the workstation, then restart the RKOJ console:<br>
-                            <code>setx OPENAI_API_KEY "sk-..."</code> &middot; reopen RKOJ.exe.
-                            See <code>tools/codex-companion/README.md</code> for full setup.
-                        </div>
-                    </div>
-                </section>
-            </div>
-        </div>
+        </form>
     </template>
 
     <script src="/static/popout.js"></script>
@@ -1112,7 +345,6 @@
     <script src="/static/cycle-points.js"></script>
     <script src="/static/scheduler.js"></script>
     <!-- fleet-state.js MUST load before app.js — app.js subscribes to FleetState on init. -->
-    <!-- Author: Sinister Sanctum master agent (Claude) :: 2026-05-19 -->
     <script src="/static/fleet-state.js"></script>
     <script src="/static/app.js"></script>
 </body>
