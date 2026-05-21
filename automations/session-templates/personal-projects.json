@@ -1,0 +1,70 @@
+{
+    "_comment": "Personal-fleet project registry. Projects living OUTSIDE Sinister Sanctum that the operator drives via 'Personal Project start.bat'. Each entry must have a root that exists on this PC. Author: RKOJ-ELENO 2026-05-21.",
+    "version": 1,
+    "default": "letstext",
+    "projects": [
+        {
+            "key": "letstext",
+            "display": "LetsText",
+            "tag": "Fan messaging + monetization platform for creator agencies",
+            "root": "D:\\LetsText",
+            "session_start": "D:\\LetsText\\ONBOARDING.md",
+            "claude_md": "D:\\LetsText\\CLAUDE.md",
+            "github": "Sinister-Systems-LLC/LetsText"
+        },
+        {
+            "key": "jokr",
+            "display": "JOKR Global",
+            "tag": "JOKR-Global - cross-platform monetization rails",
+            "root": "D:\\Sinister\\01_Projects\\JOKR",
+            "session_start": "",
+            "claude_md": "D:\\Sinister\\01_Projects\\JOKR\\CLAUDE.md",
+            "github": "Sinister-Systems-LLC/JOKR-Global"
+        },
+        {
+            "key": "eve",
+            "display": "EVE",
+            "tag": "EVE - Sinister AI agent runtime + eve-mcp server",
+            "root": "D:\\Sinister\\01_Projects\\EVE",
+            "session_start": "",
+            "claude_md": "D:\\Sinister\\01_Projects\\EVE\\CLAUDE.md",
+            "github": "Sinister-Systems-LLC/EVE"
+        },
+        {
+            "key": "rkoj-personal",
+            "display": "RKOJ Personal",
+            "tag": "RKOJ personal-fleet (operator-private workbench config)",
+            "root": "D:\\Sinister\\01_Projects\\RKOJ",
+            "session_start": "",
+            "claude_md": "D:\\Sinister\\01_Projects\\RKOJ\\CLAUDE.md",
+            "github": ""
+        },
+        {
+            "key": "cell-network",
+            "display": "Cell Network",
+            "tag": "Cell-Network - operator's parallel-phone orchestration",
+            "root": "D:\\Sinister\\01_Projects\\Cell-Network",
+            "session_start": "",
+            "claude_md": "D:\\Sinister\\01_Projects\\Cell-Network\\CLAUDE.md",
+            "github": ""
+        },
+        {
+            "key": "inventions",
+            "display": "Inventions",
+            "tag": "Inventions backlog - hardware + software invention drafts",
+            "root": "D:\\Sinister\\01_Projects\\Inventions",
+            "session_start": "",
+            "claude_md": "",
+            "github": ""
+        },
+        {
+            "key": "dashboard-skeleton",
+            "display": "Dashboard Skeleton",
+            "tag": "Dashboard-Skeleton - reusable dashboard scaffolding for personal apps",
+            "root": "D:\\Sinister\\01_Projects\\Dashboard-Skeleton",
+            "session_start": "",
+            "claude_md": "",
+            "github": ""
+        }
+    ]
+}
