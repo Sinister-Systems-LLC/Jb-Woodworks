@@ -37,6 +37,11 @@ SUBCOMMAND_MAP: dict[str, tuple[str, str, str, str]] = {
         "sinister_login.__main__", "main",
         "pip install -e \"D:/Sinister Sanctum/tools/sinister-login\"",
     ),
+    "usage": (
+        "Token-usage + quota inspector — local-state scan + 11-provider endpoint registry + chars/4 estimator (jcode-usage parity)",
+        "sinister_usage.__main__", "main",
+        "pip install -e \"D:/Sinister Sanctum/tools/sinister-usage\"",
+    ),
     "freeze": (
         "Joe @ Ferrari of Winter Park lane (future project)",
         "sinister_freeze.__main__", "main",

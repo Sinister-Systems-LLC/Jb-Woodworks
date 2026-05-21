@@ -1,0 +1,28 @@
+# Sinister Sanctum :: sinister-usage
+# Author: RKOJ-ELENO :: 2026-05-21
+# License: AGPL-3.0-or-later
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sinister-usage"
+version = "0.1.0"
+description = "Sinister Sanctum :: jcode-usage parity. Token-quota / billing endpoint registry per provider. v0.1.0 is env-check + endpoint-known only; v0.2.0 will add authenticated HTTP calls behind --allow-network."
+authors = [{ name = "RKOJ-ELENO" }]
+license = { text = "AGPL-3.0-or-later" }
+requires-python = ">=3.9"
+readme = "README.md"
+
+dependencies = [
+  # no required deps - stdlib + filesystem only. sinister-login is a soft dep
+  # (resolved at runtime via importlib; falls back to empty list if missing).
+]
+
+[project.scripts]
+sinister-usage = "sinister_usage.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["sinister_usage*"]

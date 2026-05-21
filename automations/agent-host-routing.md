@@ -63,11 +63,11 @@ In v2+, the routing logic moves into Ruflo `agentdb_semantic-route` — at which
 - **Codex depth selection:** codex-companion has 3 depths (gpt-4o-mini / gpt-4o / o1-mini). The table picks per task; a routing-aware depth-selector could be added.
 - **Cost budgets per task class:** v1 has no $/task budget; v2+ should add a `max_cost_usd` field to gate runaway sweeps.
 
-## Multi-provider login (jcode-login parity — Forge PH17 dependency)
+## Multi-provider login (jcode-login parity — ✅ shipped 2026-05-21)
 
 > **Operator directive 2026-05-21 (verbatim):** *"our commands will be sinister then the command"* + jcode `jcode login --provider <X>` screenshot.
 
-`sinister login --provider <X>` (TODO `tools/sinister-login/` v0.2.0) manages per-provider tokens. Tokens land in **Sinister Vault** at `vault://providers/<provider>` — never plaintext env vars. Each row pins the provider's lane integration + AUP-RESPECT posture.
+`sinister login --provider <X>` is **shipped** as `tools/sinister-login/` v0.1.0 (commit `be1a821`). v0.1.0 reads keys from process env first; `~/.sinister/login.env` opt-in via `--allow-plaintext`. v0.2.0 will route to Sinister Vault at `vault://providers/<provider>` once vault-MCP is wired into `~/.claude/.mcp.json`. Each row pins the provider's lane integration + AUP-RESPECT posture.
 
 | Provider | `sinister login --provider` | Auth flow | Vault path | AUP-RESPECT notes |
 |---|---|---|---|---|
@@ -93,18 +93,32 @@ When routing falls through the table above, the order within each class is:
 4. **Hosted-open-weight** (Fireworks / openai-compatible) when local is down
 5. **Regional** (Gemini / Azure / Alibaba / MiniMax) only when explicitly picked
 
-### Login UX
+### Login UX (v0.1.0 shipped commands)
 
+```bash
+sinister login providers              # list all 11 providers + configured/missing status
+sinister login current                # which provider would the fleet use right now (preference-resolved)
+sinister login doctor claude          # env-only diagnosis (no network)
+sinister login doctor openai --probe  # opt-in TCP-handshake reachability (no HTTP body, no auth)
+sinister login env claude             # print PowerShell `$env:ANTHROPIC_API_KEY=...` lines
+sinister login add claude --key sk-... --allow-plaintext  # REFUSED unless --allow-plaintext (canonical-11)
+sinister login matrix                 # print the jcode-feature-matrix row for this tool
 ```
-sinister login --provider claude            # opens OAuth or prompts for key
-sinister login --provider ollama            # confirms local endpoint reachable
-sinister login --provider openai-compatible # prompts for base URL + optional key
-sinister login --list                       # show all configured providers + token age
-sinister login --logout --provider <X>      # revoke from vault
+
+### v0.2.0 planned additions (post vault-MCP)
+
+```bash
+sinister login --provider claude --oauth      # OAuth flow (delegates to Claude Code CLI)
+sinister login --provider <X> --vault         # store in vault://providers/<X> instead of env-file
+sinister login --logout --provider <X>        # revoke from vault
 ```
 
 ### Operator-action queue dependencies
 
-- `ANTHROPIC_API_KEY` env var still listed in OPERATOR-ACTION-QUEUE.md — `sinister login --provider claude --use-env` reads from env when present, else prompts
-- `OPENAI_API_KEY` env var — same pattern for `--provider openai`
-- Vault MCP must be loaded for Vault-backed storage; falls back to `~/.sinister-login/` plaintext (with permission 0600) when Vault MCP unavailable
+- `ANTHROPIC_API_KEY` env var still listed in OPERATOR-ACTION-QUEUE.md — `sinister login current` resolves it ambiently when present
+- `OPENAI_API_KEY` env var — already set this session; `sinister login current` resolves to openai when ANTHROPIC_API_KEY missing
+- Vault MCP loading — `sinister login add --vault` (v0.2.0) gates on this; v0.1.0 falls back to `~/.sinister/login.env` only when `--allow-plaintext` is explicit
+
+### Preference order override
+
+`SINISTER_LOGIN_PREFERENCE=openai,claude,ollama` (env var) overrides the default order `claude > openai > gemini > fireworks > openai-compatible > lmstudio > ollama > copilot > azure > minimax > alibaba-coding-plan`. `resolve_active()` returns the first configured provider in that order.

@@ -4,6 +4,126 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-21 14:00 — shipped: EVE-identity doctrine landed + v1.2 resume-point smoke + lane carve-out under heavy sibling contention
+
+Resume-mode pickup on `agent/sinister-sanctum/cli-dispatcher-2026-05-21`. CONTRACT 7 surgical context-load via `_shared-memory/resume-points/sanctum/2026-05-21T084103Z.json` worked exactly as designed — pre_warm_reads (3 files) bounded the cold-start; didn't grep the whole brain.
+
+**Shipped (my-lane-only despite hostile staging by sibling):**
+- `_shared-memory/knowledge/agent-identity-eve.md` — full 82-line doctrine for the operator's hard-canonical 2026-05-21 EVE rename. Codifies what changes (self-reference, commit trailers, heartbeat JSON field, spawned-window labels) and what does NOT (CLAUDE.md filename, model IDs, lane slugs, historical commit trailers). Frost-as-EVE-pattern for external-user lanes documented.
+- `_shared-memory/knowledge/_INDEX.md` — agent-identity-eve row inserted at top (above the sibling-added rows for screenshot-batch-triage-pattern, sinister-cli-subcommand-pattern, launcher-mode-evolution that landed during my session).
+- `CLAUDE.md` — added the AGENT IDENTITY = EVE doctrine section (+20 lines / -1) so future cold-starts read the binding before grep-ing for the supporting brain entry.
+- `automations/session-templates/agent-prefs.json` — added `sinister-claw` agent row (+6 lines) so the Claw lane can be spawned from the picker.
+
+**v1.2 resume-point-write.ps1 smoke (the work):** independent of the sibling's `fba6510` commit which ALSO shipped v1.2, I ran the v1.2 smoke against both `ProjectKey='sanctum'` AND `ProjectKey='Sinister Sanctum'`. Both populate `latest_plan.dir` (`sanctum-auto-2026-05-20T2340Z/master-plan.md`) and `progress_top3` (2 entries). The smoke-test artifacts were cleaned (1 in `sanctum/`, 1 in `Sinister Sanctum/` dir). v1.2 ship sibling-credited — they beat me to commit.
+
+**Lane discipline under HEAVY sibling contention (multi-agent-branch-contention-isolation-pattern live demo):**
+- A parallel sanctum agent shipped 8+ commits on this same branch during my session: sinister-login v0.1.0 (be1a821), resume-point post sinister-login (ec9af5e), sinister-review v0.1.0 + resume-point-write v1.2 + Term HELLO (fba6510), and earlier batches (sinister-mcp/goal/bg in d47f199; sinister-subagent/permissions/debug in 1d69516; sinister-ambient/restart/session-search in 0d5414c; sinister-safety/compaction/import in 8772cc5).
+- They explicitly EXCLUDED my files from their commit (verified via their commit body: "CLAUDE.md (sibling EVE-identity addition)" left untouched; "agent-prefs.json" left untouched; "_INDEX.md (sibling-modified this session)" left untouched). That's lane-clean.
+- HOWEVER, their `git add` flooded my index with their staged work twice during my staging attempt. Resolution: `git reset HEAD -- .` twice + selective re-stage of exactly 4 files. Hit `.git/index.lock` contention at the commit step — sibling held the lock at 10:00Z with a 129KB pending index serialization.
+- I did NOT remove the lock manually (per operator's 12:33Z denial last session — `rm .git/index.lock` is operator-only).
+- Wait-discipline: doing disk-only work (this PROGRESS entry + resume-point + heartbeat) while sibling commits; will retry git ops once lock clears.
+
+**Brain entry contention noted:** while writing `launcher-mode-evolution.md`, a sibling pre-wrote it (mtime 09:53Z, just before my Write attempt). My Write either silently failed or got overwritten — content on disk is sibling's, not mine. Sibling's content is comprehensive (15-mode roster + v1-v18 changelog + decision tree + when-to-add-new) so I'm not re-writing. Their `_INDEX.md` row landed first; mine for `agent-identity-eve` slotted above it.
+
+**Inbox auto-archive:** the 2 HELLO-ACKs (Term 1140Z + Forge 1145Z) were already moved to `_archive/` by sibling's `fba6510` commit. CONTRACT 7 archive policy honored without my touch.
+
+**Resume-point on disk:** v1.2 smoke wrote one to `sanctum/2026-05-21T095050Z.json` for the slug path. I'll write a fresh one at turn-close with full context.
+
+**5-check completion gate (closure pending git lock release):**
+1. Explicit ask (operator: "Start the loop") — addressed via CONTRACT 1+2 cycle.
+2. TaskList — 6/7 (commit step blocked on .git/index.lock; will retry).
+3. PROGRESS — this entry.
+4. MASTER-PLAN — no flags to flip (M4 launcher-mode-evolution closed by sibling via brain entry on disk).
+5. Next-slice — resume-point write + heartbeat refresh + commit-retry queued.
+
+**Operator-surface (no action gates blocking the loop):**
+- Heavy churn on the cli-dispatcher branch — operator may want to fast-forward `main` once the dust settles. fba6510 + ec9af5e + be1a821 + 22ce375-on-other-ref are all sanctum-ready commits.
+- 4 untracked sibling-authored brain entries in `_shared-memory/knowledge/` (launcher-mode-evolution + sinister-cli-subcommand-pattern + modular-fleet-cross-lane-integration + snap-account-24h-survival-doctrine) — each waiting for their authoring lane to commit.
+
+---
+
+
+
+## 2026-05-21 ~09:56 (local) — shipped: sinister-review v0.1.0 tool absorb + true resume-point v1.2 multi-pattern fix + Term forge-memory-bridge [HELLO] (commit fba6510)
+
+Resume-mode pickup via the v1.2 resume-point at `_shared-memory/resume-points/sanctum/2026-05-21T084103Z.json`. Surgical pre_warm_reads = 3 (PROGRESS + plans/sanctum-auto-2026-05-20T2340Z/master-plan.md + session-contracts.md) — true to CONTRACT 7. Inbox auto-archived during session-start by context-pruner (both 11:40Z + 11:45Z HELLO-ACKs from Term + Forge now under `inbox/sanctum/_archive/`); both ACKs were already answered in the 12:28Z PROGRESS round.
+
+**Shipped (11 files in fba6510, parent be1a821 from sibling sanctum-spawn):**
+
+1. **`tools/sinister-review/` v0.1.0** — absorbed the three `.sanctum-staging-2026-05-21/review-*.py` drafts (355 lines) into a proper installable tool. Layout matches sinister-swarm/sinister-cli convention: `pyproject.toml` + `sinister_review/{__init__,api,__main__}.py` + `tests/test_review.py` + `README.md`. Four review kinds (`review_diff` / `review_transcript` / `review_commit` / `judge`) write JSON verdicts to `_shared-memory/reviews/<UTC>-<from-slug>-<topic>.json` schema `sinister.review.v1`. `dispatch_llm()` intentionally stubbed in v0.1.0 — raises `NotImplementedError`, caught by `_safe_dispatch`, persists a stub verdict with `rating="stub"` so disk infra exercises without burning tokens. v0.2.0 wires per `agent-host-routing.md` (Anthropic SDK / `claude --json` / `codex -q` / `ollama run`). **7/7 smoke tests pass** (schema constant + 4 stub-persist cases + namespace filter + JSON round-trip).
+2. **`automations/resume-point-write.ps1` v1.1 to v1.2 (genuine)** — sibling sanctum-spawn at `be1a821` claimed v1.2 in their PROGRESS but actually only shipped a partial fix (header still said v1.1, regex was `$_.Name -match $ProjectKey -or $_.Name -match ($ProjectKey -replace '-', '.')`). My commit ships the **real** v1.2: builds a 4-candidate pattern list (raw / kebab / sinister-stripped / dotted), unions them with `(?i)(...)` alternation, AND extends `Resolve-InboxSlug` short-slug carve-out from `{sanctum}` to `{sanctum,forge,term,panel,kernel-apk,apk,freeze,vault,os}`. Smoke confirmed: `-ProjectKey "Sinister Sanctum"` now resolves `latest_plan.dir` + `latest_plan.artifact` to `sanctum-auto-2026-05-20T2340Z` (previously null).
+3. **`_shared-memory/inbox/sinister-term/2026-05-21T1252Z-hello-forge-memory-bridge-shipped.json`** — closes Term's HELLO-ACK ask `asks_for_you[0]`: "If you ship forge-memory-bridge tool this session, drop a [HELLO] in my inbox so I can wire it." Cites the full Python API (`write` / `recall` / `graph` / `consolidate` / `list` / `delete`) + CLI surface + sinister-cli umbrella routing + suggested PH13 shape (`/jcode-memory-recall` / `-write` / `-graph`) + namespace recommendation (Term writes to `namespace='sinister-term'`, recalls with `namespace=None` for fleet-cross). Also points at `sinister-swarm` as the cross-agent comms DRY-replacement.
+4. **Inbox housekeeping** — the 11:40Z + 11:45Z HELLO-ACKs now tracked under `inbox/sanctum/_archive/` (git rename-detected) per Term's earlier .gitkeep ask. Resume-point smoke artifact at `resume-points/Sinister Sanctum/2026-05-21T095108Z.json` committed too (proves v1.2 fix works in production).
+
+**Branch contention managed:** my session opened on `agent/sinister-sanctum/cli-dispatcher-2026-05-21` at HEAD=`4f0ed94`. While I was working, sibling sanctum-spawn pushed two commits (`be1a821` shipping `tools/sinister-login/` v0.1.0 + 11-provider auth wallet, `ec9af5e` shipping their resume-point). My `git push` auto-merged cleanly because lanes didn't overlap — sibling owned `automations/agent-host-routing.md` + `tools/sinister-login/` + their PROGRESS top entry + `_shared-memory/knowledge/launcher-mode-evolution.md`; I owned `tools/sinister-review/` + the comprehensive v1.2 fix + Term [HELLO] + inbox archive renames.
+
+**Lane discipline (skipped this turn):**
+- `projects/sinister-forge/source/*` (Forge lane — `app.py`, `bridge/registry.py`, `panes/*`, `spawn/base.py`, test_boot_picker_smoke)
+- `projects/sinister-term/source/term/__init__.py` (Term lane)
+- `automations/session-templates/agent-prefs.json` + `_shared-memory/PROGRESS/Sinister {Kernel APK,Panel,Claw,Term Co-Audit}.md` (sibling lanes)
+- `CLAUDE.md` (sibling EVE-identity addition)
+- `_shared-memory/knowledge/_INDEX.md` (sibling-modified)
+- `automations/agent-host-routing.md` (sinister-login lane shipped be1a821)
+- 4 kernel-apk + 1 sanctum-spawn cross-agent broadcasts left untracked for their owners
+- `.swarm/memory.db*` + `.claude/worktrees/*` (sibling worktrees, ephemeral)
+
+**Open in-lane / next moves (no operator gates):**
+- v0.2.0 of `sinister-review` wires `dispatch_llm()` per `agent-host-routing.md` (Forge gets Opus 4.7 1M; codex peer-review; ollama for local). Pick provider per task-class table.
+- `sinister-cli` umbrella absorbs `review` as 8th subcommand (alongside memory/swarm/graph/login/freeze/term/forge — `login` is now real per sibling-spawn). One-line entry in `SUBCOMMAND_MAP`.
+- `tools/sinister-review/` could compose with `tools/forge-memory-bridge/`: persist top-rated verdicts to `forge-memory` with tags `["review", kind, rating]` for cross-session recall.
+- The 4 fresh Kernel APK cross-agent broadcasts (12:40Z / 13:40Z / 13:45Z / 14:13Z) include a CRITICAL kernel-apk-to-panel harvest-account-mismatch — outside my lane but operator may want to surface to panel.
+
+**5-check completion gate:**
+1. Explicit ask (operator: "Start the loop") — addressed via CONTRACT 2 cycle (read, plan, execute, commit, push, PROGRESS, heartbeat, resume-point).
+2. TaskList — 5/5 (HELLO to Term / v1.2 fix verified / sinister-review absorbed + smoke / commit+push / heartbeat+resume-point+PROGRESS).
+3. PROGRESS — this entry.
+4. MASTER-PLAN — `_shared-memory/MASTER-PLAN.md` still doesn't exist on disk; nothing to flag-flip (in-flight gap noted across multiple prior PROGRESS).
+5. Next-slice — resume-point + heartbeat fresh on disk this turn; pre_warm_reads bounded to 3.
+
+---
+
+## 2026-05-21 ~09:55 (local) — shipped: resume-point-write v1.2 slug-fix + M4 launcher-mode-evolution brain entry + M5 byte-parity audit + M6 merge-probe + inbox-archive sweep
+
+Resume-mode pickup on `agent/sinister-sanctum/cli-dispatcher-2026-05-21` via the v1.1 resume-point at `_shared-memory/resume-points/sanctum/2026-05-21T084103Z.json`. Surgical context-load worked as designed — 3 pre_warm_reads (PROGRESS + auto-2340Z master-plan + session-contracts) gave full context without grepping the brain.
+
+**Shipped (this turn, in-lane only):**
+
+1. **`automations/resume-point-write.ps1` v1.1 → v1.2** — closed the `latestPlanDir` slug-bug noted as deferred in the 12:38Z PROGRESS entry. Old code: `$_.Name -match $ProjectKey` with ProjectKey=`"Sinister Sanctum"` matched zero kebab-cased plan dirs. New code: builds a list of pattern candidates (raw / kebab / sinister-stripped / dotted) and joins them into one case-insensitive alternation. Also extended `Resolve-InboxSlug` known-short-slug carve-out from just `'sanctum'` to `{sanctum,forge,term,panel,kernel-apk,apk,freeze,vault,os}` so `"Sinister Forge"` etc. resolve correctly too. Smoke: ran with `-ProjectKey "Sinister Sanctum" -AgentName "Sinister Sanctum"` — `latest_plan.dir` + `latest_plan.artifact` now both populate (previously null). Smoke artifact deleted to keep canonical `sanctum/` dir clean.
+2. **`_shared-memory/knowledge/launcher-mode-evolution.md`** — new brain entry closing master-plan M4 (auto-2340Z). 15-mode roster table + v1-v18 version history + mode-picking decision tree + when-to-add-vs-reuse rule + suffix-stack composition rule. Complements (does NOT duplicate) `auto-mode-launcher-pattern.md` (which is `'auto'` deep-dive). `_INDEX.md` row added. Verification anchor: M6 merge-probe (below).
+3. **M6 merge-probe** — verified `agent/sinister-sanctum/launcher-auto-mode-2026-05-20 → main` is a clean fast-forward (10 ahead, 0 behind; `git merge-tree --write-tree main launcher-auto-mode` returned `465f9515...` tree-SHA with NO conflict markers). Probe was stateless (merge-tree doesn't touch working dir) so no rollback needed. Master-plan M6 row can flip ✅.
+4. **M5 byte-parity audit (Desktop ↔ canonical tree)** — per master-plan M5, but pivoted from auto-mutate to surface-only because Desktop is operator-territory. Findings:
+   - `Sinister Forge.bat` + `Sinister Mind.bat`: byte-identical ✅
+   - `Sinister Start.bat`: 137-byte drift (Desktop 3604 / Tree 3741, Desktop newer 06:12 vs Tree 05:40) — both directions drifted, surface for operator
+   - `Personal Project start.bat`: 90-byte drift (similar pattern)
+   - `Start-Sinister-Session.bat`: **MISSING from Desktop** (5228 bytes in tree only). CLAUDE.md says this is the operator's one-click launcher at `C:\Users\Zonia\Desktop\Start-Sinister-Session.bat`. **Surface to operator.**
+   - `Sinister Freeze.bat` + `Sinister.bat`: Desktop-only (not in canonical tree). Modern fleet entry-points the operator added directly to Desktop; tree may want to mirror for backup.
+
+   No file mutations — Desktop is operator-owned territory.
+5. **Inbox sweep** — 2 stale HELLO-ACK messages (Term 11:40Z + Forge 11:45Z) moved from `_shared-memory/inbox/sanctum/` to `_shared-memory/inbox/sanctum/_archive/`. Both had already been answered in the 12:28Z ACK round per the 12:28 PROGRESS entry. The 13:51Z [HELLO-ACK] from Panel that arrived this session went to `_archive/` (likely sibling agent on same branch managed it; no harm).
+
+**Master-plan flag updates (auto-2340Z):**
+- M1 ✅ (multi-agent-branch-contention-isolation brain entry shipped previously)
+- M4 ✅ THIS TURN
+- M5 ⚠️ surfaced only (operator-territory, not auto-mutated)
+- M6 ✅ THIS TURN (stateless probe, no actual merge — operator merge still gated)
+
+**Lane contention noted (`verify-head-before-commit-multi-agent` empirical evidence):** A parallel sibling sanctum agent on the SAME branch (`agent/sinister-sanctum/cli-dispatcher-2026-05-21`) shipped 2 commits during my session: `be1a821 feat(sanctum): tools/sinister-login/ v0.1.0 - 11-provider auth wallet (jcode parity)` + `ec9af5e docs(sanctum): resume-point 2026-05-21T095235Z post sinister-login ship`. They also added a `sinister-cli-subcommand-pattern` row to `_INDEX.md` above mine and wrote the 13:50 PROGRESS entry below mine. Same-branch race observed. Mitigation per the brain entry: re-verified HEAD + branch BEFORE staging; verified my in-flight edits survived (v1.2 marker in PS1 ✅, launcher-mode-evolution.md present ✅, _INDEX row intact ✅, _archive/ entries intact ✅). The sibling also wrote a divergent resume-point dir at `_shared-memory/resume-points/Sinister Sanctum/` (capitalized) — the canonical lowercase slug dir is `sanctum/`. Mixed-case divergence is a brain-entry-worthy follow-up for a future sweep (consolidate to one canonical case).
+
+**Operator-surface:**
+- Desktop launcher drift items above (Start-Sinister-Session.bat MISSING from Desktop is the biggest red flag).
+- 9+ untracked sibling-staged Panel resume-points + 5 Term resume-points + 1 Kernel-APK resume-point sit in `_shared-memory/resume-points/` waiting for their owning agents to commit.
+- 4 fresh Kernel-APK cross-agent broadcasts (su -M / modular-fleet / harvest-mismatch P0 / etc.) still untracked — Kernel APK agent owns.
+
+**5-check completion gate:**
+1. Explicit ask (operator: "Start the loop") — addressed via CONTRACT 2 cycle.
+2. TaskList — 6/6 (v1.2 fix / archive / M5 surface / M6 probe / M4 brain entry / commit+heartbeat+resume-point).
+3. PROGRESS — this entry.
+4. MASTER-PLAN — M1/M4/M5/M6 flags updated above (auto-2340Z plan in-place flips noted; no other plans need touching).
+5. Next-slice surface — resume-point at end of cycle (next).
+
+---
+
+
 ## 2026-05-21 13:50 — shipped: tools/sinister-login/ v0.1.0 — 11-provider auth wallet (jcode parity) + sinister-cli wiring + jcode-feature-matrix row
 
 Resume-mode pickup on `agent/sinister-sanctum/cli-dispatcher-2026-05-21` per operator working directive *"resume and continue work on jcode with the sinister forge agent i have open to make what jcode has like the exe on my desktop"*. Forge agent heartbeat is stale (11:22Z disk) but operator says they're open in another window — coordinated via on-disk lane discipline only, zero edits to Forge source tree.
