@@ -1,0 +1,67 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-21T19:35:00.0000000Z",
+    "project":  "Kernel APK",
+    "agent_name":  "kernel-apk",
+    "mode":  "resume",
+    "focus_intent":  "review-everything cleanup pass — 4 commits resolving brain-disk drift + 2 multi-lane reconstructions + 1 self-empirical doctrine refinement",
+    "git":  {
+                "branch":  "agent/sinister-kernel-apk/crispy-cosmos-resume",
+                "head":  "d244569b2d7564f0f072816b1317ffa62c9e6d18",
+                "head_msg":  "v0.97.4: SpooferAssetLoader layer-3 defensive — post-load ctl0 batch + lukeprivacy coexistence log",
+                "sanctum_branch":  "agent/sinister-sanctum/cli-dispatcher-2026-05-21",
+                "sanctum_head":  "5a89232",
+                "sanctum_head_msg":  "docs(kernel-apk): PROGRESS entry for 19:35Z review-everything cleanup pass",
+                "sanctum_recent_kernel_apk_commits":  [
+                                                          "5a89232 docs(kernel-apk): PROGRESS entry for 19:35Z review-everything cleanup pass",
+                                                          "723748b docs(kernel-apk): self-empirical update to verify-head doctrine (Mitigation A.2 + concurrent-staging race) + 2 lane notifications",
+                                                          "ccd859c docs(kernel-apk): reconstruct 2 multi-lane brain-disk-drift entries (verify-head + speculation-as-empirical)",
+                                                          "77d2362 docs(kernel-apk): track 4 prior-session resume-points + broadcast 10-entry brain-disk drift to owning lanes",
+                                                          "13bdf80 docs(kernel-apk): track 7 kernel-apk-authored Sanctum artifacts (brain-disk drift cleanup pass 2)",
+                                                          "1ec75ac docs(kernel-apk): PROGRESS + resume-point for 4-audit + 2-doctrine-refinement turn",
+                                                          "760ff40 docs(kernel-apk): cross-link lukeprivacy-kpm-at-rest brain entry to SIM-clobber update",
+                                                          "929c3b1 docs(kernel-apk): correct ksu-susfs brain entry — runSu/runSuFresh API split, not per-call -M",
+                                                          "00f9369 docs(kernel-apk): v0.97.4 ship + 3 brain entries + SIM-clobber doctrine flip to fixed-shipped"
+                                                      ]
+            },
+    "progress_top3":  [
+                          "2026-05-21 19:35Z — review-everything cleanup pass (`13bdf80` + `77d2362` + `ccd859c` + `723748b`) — 10 brain-disk drift items resolved or surfaced + 2 multi-lane entries reconstructed + 1 self-empirical doctrine update from a concurrent-staging incident",
+                          "2026-05-21 19:15Z — audit + doctrine pass: ShellRunner runSu/runSuFresh API split PASS + 3-layer SIM-clobber wire-up PASS + PanelPusher offline-resilience PASS + QueueExecutor cap-on-failure PASS",
+                          "2026-05-21 16:35Z — v0.97.4 ship (`d244569`) — SpooferAssetLoader layer-3 defensive + magic-number-audit-taxonomy brain entry"
+                      ],
+    "latest_plan":  {
+                        "dir":  null,
+                        "artifact":  null
+                    },
+    "inbox_unread_count":  0,
+    "last_5_files_touched_24h":  [
+                                     "_shared-memory\\PROGRESS\\Sinister Kernel APK.md",
+                                     "_shared-memory\\inbox\\rkoj\\2026-05-21T1930Z-from-kernel-apk-staged-files-landed-in-my-commit.json",
+                                     "_shared-memory\\inbox\\forge\\2026-05-21T1930Z-from-kernel-apk-staged-files-landed-in-my-commit.json",
+                                     "_shared-memory\\knowledge\\verify-head-before-commit-multi-agent.md",
+                                     "_shared-memory\\knowledge\\speculation-as-empirical-anti-pattern-2026-05-20.md"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Sinister Kernel APK.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\knowledge\\verify-head-before-commit-multi-agent.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\knowledge\\sinister-spoofer-lukeprivacy-sim-clobber-2026-05-21.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\knowledge\\ksu-susfs-app-mount-namespace-isolation-2026-05-20.md"
+                       ],
+    "review_pass_summary":  {
+                                "kernel_apk_authored_artifacts_now_tracked":  "11 files (3 cross-agent broadcasts + 1 sanctum ACK + 1 panel notification + 2 brain entries with INDEX rows + 4 resume-points)",
+                                "brain_disk_drift_resolved_kernel_apk_side": "4 entries (ksu-susfs reconstructed, sim-clobber tracked, verify-head reconstructed, speculation-as-empirical reconstructed)",
+                                "brain_disk_drift_surfaced_to_owning_lanes": "9 entries (8 panel-lane + 1 snap-emu — inbox notifications dispatched)",
+                                "concurrent_staging_incident_handled":       "non-destructive: leave commit + notify both lanes (rkoj + forge) + update doctrine with Mitigation A.2"
+                            },
+    "carry_forward":  [
+                          "Push agent/sinister-kernel-apk/crispy-cosmos-resume to origin — branch still 6 commits ahead (operator-gated)",
+                          "Install v0.97.4 APK on both phones once cell service restored (operator-gated)",
+                          "Watchdog Install-Task.ps1 admin run (operator-gated, UAC)",
+                          "Sanctum-lane v1.3 PS1 fix for resume-point-dir-name-convention drift (cross-lane, deferred per sanctum doctrine)",
+                          "Panel-lane reconstruct 8 brain entries surfaced via inbox notify (their lane)",
+                          "snap-emu-lane reconstruct 1 brain entry surfaced via inbox notify (their lane)",
+                          "RKOJ + Forge lanes ACK staging-race notifications + verify their files in ccd859c match intent (their lane)"
+                      ],
+    "operator_directive_at_session":  "complete all you can without cell service / keep working / Auto mode active / review everything and complete things that are not complete"
+}
