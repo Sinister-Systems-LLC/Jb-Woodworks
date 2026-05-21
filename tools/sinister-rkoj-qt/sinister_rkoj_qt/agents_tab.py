@@ -36,7 +36,24 @@ from PyQt6.QtWidgets import (
 
 from . import state
 from .persona import build_opening_prompt, eve_label
-from .theme import PURPLE_ACCENT, SPACINGS
+from .theme import (
+    AMBER_ACCENT, DIM, GREEN_ACCENT, PURPLE_ACCENT, SPACINGS, nav_icon,
+)
+
+try:
+    from PyQt6.QtSvgWidgets import QSvgWidget  # type: ignore
+    _HAS_SVG = True
+except Exception:  # pragma: no cover
+    _HAS_SVG = False
+
+# Status -> hex color (mirrors Panel STATUS_COLOR map)
+_STATUS_COLOR: dict[str, str] = {
+    "online": GREEN_ACCENT,
+    "busy": AMBER_ACCENT,
+    "awaiting-input": PURPLE_ACCENT,
+    "offline": DIM,
+    "idle": DIM,
+}
 
 
 # ── Session record ──────────────────────────────────────────────────────
@@ -86,10 +103,16 @@ class AgentCard(QFrame):
         hdr = QHBoxLayout()
         hdr.setSpacing(SPACINGS["sm"])
 
-        self.status_dot = QLabel("●")
+        # Status dot — SVG (no glyph). Tinted in code via setStyleSheet
+        # because Qt's SVG renderer won't honour CSS currentColor on
+        # standalone shapes. We re-tint on _set_status().
+        self.status_dot = QLabel()
         self.status_dot.setObjectName("StatusDot")
         self.status_dot.setProperty("state", "idle")
-        self.status_dot.style().polish(self.status_dot)
+        self.status_dot.setFixedSize(12, 12)
+        self.status_dot.setStyleSheet(
+            f"background-color: {DIM}; border-radius: 6px;"
+        )
 
         project_label = QLabel(self.session.project_display.upper())
         project_label.setObjectName("AgentProject")
@@ -100,9 +123,16 @@ class AgentCard(QFrame):
         mode_pill = QLabel(self.session.mode)
         mode_pill.setObjectName("ModePill")
 
-        close_btn = QPushButton("×")
+        # Close button — SVG x-mark, no glyph
+        close_btn = QPushButton()
         close_btn.setObjectName("CardCloseBtn")
         close_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        close_btn.setFixedSize(22, 22)
+        if _HAS_SVG:
+            close_layout = QHBoxLayout(close_btn)
+            close_layout.setContentsMargins(0, 0, 0, 0)
+            close_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            close_layout.addWidget(nav_icon("xmark", size=12))
         close_btn.clicked.connect(self._on_close)
 
         hdr.addWidget(self.status_dot)
@@ -157,8 +187,10 @@ class AgentCard(QFrame):
     def _set_status(self, state_str: str) -> None:
         self.session.status = state_str
         self.status_dot.setProperty("state", state_str)
-        self.status_dot.style().unpolish(self.status_dot)
-        self.status_dot.style().polish(self.status_dot)
+        color = _STATUS_COLOR.get(state_str, DIM)
+        self.status_dot.setStyleSheet(
+            f"background-color: {color}; border-radius: 6px;"
+        )
         needs_glow = (state_str == "awaiting-input")
         self.setProperty("needs_input", needs_glow)
         self.style().unpolish(self)
@@ -395,7 +427,7 @@ class AgentsView(QWidget):
         root.addWidget(self.grid, stretch=1)
 
         # Empty state label (replaces grid when zero cards)
-        self.empty_label = QLabel("No agents yet — click  + Create Agent  to spawn EVE.")
+        self.empty_label = QLabel("No agents yet — click Create Agent to spawn EVE.")
         self.empty_label.setObjectName("AgentMeta")
         self.empty_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         root.addWidget(self.empty_label)
