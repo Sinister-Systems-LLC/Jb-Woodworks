@@ -1344,6 +1344,19 @@ $BuiltinPhrases = @{
     'push'     = "$MemPreamble push <PROJECT> to GitHub (<GITHUB>). Run secret-scrub first (MANDATORY). Then git add + commit (compose the message from the diff) + git push. Stop ONLY if secret-scrub fails or the push itself errors.$NoStopSuffix$AUPRespectSuffix"
     'debug'    = "$MemPreamble debugging session on <PROJECT>. Read .claude/memory/ + living-mds/CURRENT-STATE.md + the latest BREAKTHROUGH-*.md. Identify the most-recent unresolved failure mode + claim it; if multiple are open, take the cheapest-first.$NoStopSuffix$AUPRespectSuffix"
     'explore'  = "$MemPreamble open exploration on <PROJECT>. Read project root, .claude/memory/, docs/, NAVIGATION.md. Surface 3 surprising findings + TaskCreate one follow-up per finding.$NoStopSuffix$AUPRespectSuffix"
+    # v11 (test/Sinister Sanctum master agent 2026-05-21): co-audit mode -
+    # spawns an agent on a project that ALREADY has an active agent running.
+    # The co-audit agent reads what the primary shipped (PROGRESS top entries,
+    # recent commits, MASTER-PLAN flags, plans/<proj>-*/ artifacts), runs an
+    # INDEPENDENT audit (claims vs disk reality, brain coverage, sibling-lane
+    # impacts), EXPANDS on concepts the primary surfaced, identifies GAPS, and
+    # writes a coaudit-report.md handoff. Lane-disciplined: lands on its OWN
+    # branch agent/<your-slug>/co-audit-<target-project>-<UTC>, NEVER pushes
+    # to the primary's branch. Honors canonical-10. Operator directive: "i
+    # want a option in the session start to launch a agent on a project that
+    # is already running to do a full audit, expand on ceocepts, see what we
+    # are missing and what we need to do to complete our goal".
+    'coaudit'  = "$MemPreamble CO-AUDIT MODE for <PROJECT> (root: <ROOT>). A primary agent is ALREADY running on this project; you are the second pair of eyes. PHASE A primary-state survey (read-only, do NOT edit primary lane files): read top 5 entries of D:\Sinister Sanctum\_shared-memory\PROGRESS\<primary-display-name>.md (find primary by mapping <PROJECT> via D:\Sinister Sanctum\_shared-memory\AGENT-ROSTER.md), git-log --oneline -20 origin/agent/<primary-slug>/* for last 20 primary commits, every plans\<PROJECT>-*\ subdir for latest forward-plan + plan.json by mtime, primary's heartbeat at D:\Sinister Sanctum\_shared-memory\heartbeats\<primary-slug>.json (mtime + content). PHASE B independent audit: claims-vs-disk-reality (every shipped-line in primary's recent PROGRESS - Test-Path the named deliverable, verify the commit hash, grep the brain entry slug); brain-coverage (every concept the primary mentions - is it indexed in knowledge/_INDEX.md? if not, that's a gap); sibling-lane-impact-survey (did any of primary's commits touch _shared-memory/inbox/<other-slug>/ or _shared-memory/cross-agent/ - are those ASKs answered?); MASTER-PLAN cross-check (are primary's claims reflected in MASTER-PLAN status flags?). PHASE C concept-expansion: for the top 3 concepts the primary has been working, search the brain for ADJACENT entries (5+ related-topic hops); search WebFetch for any external doctrine/library/RFC that would inform the work (only if it does not violate AUP-RESPECT; operator's own infra is fine). PHASE D gap-surface: write D:\Sinister Sanctum\_shared-memory\plans\<PROJECT>-coaudit-<UTC>\coaudit-report.md with structure: (1) Primary's recent ship-state (verified vs claimed), (2) Drift findings (shipped-not-flipped, brain-uncited, sibling-ASK-stale), (3) Concept-expansion list (3-5 adjacent angles primary has not surfaced yet), (4) Gap-to-goal (what is structurally missing to declare this project DONE), (5) Recommended next-3-rows for the primary agent (with EXACT-INSTRUCTIONS + EXPECTED-OUTPUT + VERIFICATION). PHASE E cross-agent handoff: drop a [COAUDIT] tag JSON at D:\Sinister Sanctum\_shared-memory\inbox\<primary-slug>\<UTC>-coaudit-by-<your-slug>.json pointing at the coaudit-report.md path; primary picks it up on next inbox_poll. LANE DISCIPLINE (binding per canonical-10): NEVER edit files inside <ROOT>\ (the primary's source); ONLY write to _shared-memory/plans\<PROJECT>-coaudit-* + _shared-memory/inbox\<primary-slug>\ + your own PROGRESS file. Work on branch agent/<your-slug>/co-audit-<PROJECT>-<UTC> cut from main. You are the '<AGENT>' agent. BEGIN PHASE A NOW.$NoStopSuffix$AUPRespectSuffix"
     # v7 (Agent SS-A 2026-05-19): rkoj mode is a no-Claude-spawn workbench launch.
     'rkoj'     = "RKOJ workbench launched at http://127.0.0.1:5077/ - no Claude phrase needed; spawn agents from the Launcher tab."
     # v8 (test/Sinister Sanctum master agent 2026-05-20): autonomous-loop mode -
@@ -1442,6 +1455,7 @@ if ($Project -eq '__custom__') {
         @{ n='7'; key='debug';    desc='trace a specific bug / failure' }
         @{ n='8'; key='explore';  desc='research / open-ended' }
         @{ n='9'; key='auto';     desc='AUTONOMOUS LOOP :: review all plans + scope-plan + /loop' }
+        @{ n='10'; key='coaudit'; desc='CO-AUDIT a running project :: claims-vs-disk + concept-expand + gaps + handoff' }
     )
     foreach ($o in $modeOpts) {
         Write-Host "       " -NoNewline
@@ -1451,8 +1465,8 @@ if ($Project -eq '__custom__') {
     }
     if ($CustomPrompts.Count -gt 0) {
         Say "       --- saved custom templates ---" $Dim
-        # v8 (test 2026-05-20): bumped from 9 to 10 since auto now occupies n=9.
-        $i = 10
+        # v11 (test 2026-05-21): bumped from 10 to 11 since coaudit now occupies n=10.
+        $i = 11
         foreach ($t in $CustomPrompts) {
             $preview = if ($t.phrase.Length -gt 40) { $t.phrase.Substring(0, 40) + '...' } else { $t.phrase }
             Write-Host "       " -NoNewline
@@ -1466,7 +1480,7 @@ if ($Project -eq '__custom__') {
     Write-Host "[default=1, rkoj]" -ForegroundColor $LightP
     $mpick = Read-Host '       >'
     # v7 (Agent SS-A 2026-05-19): renumbered to put rkoj at position 1.
-    $modeMap = @{ '1'='rkoj'; '2'='overview'; '3'='dev'; '4'='audit'; '5'='deploy'; '6'='push'; '7'='debug'; '8'='explore'; '9'='auto' }
+    $modeMap = @{ '1'='rkoj'; '2'='overview'; '3'='dev'; '4'='audit'; '5'='deploy'; '6'='push'; '7'='debug'; '8'='explore'; '9'='auto'; '10'='coaudit' }
     if (-not $mpick) { $mpick = '1' }
 
     # Multi-select support: "2,3" -> dev + audit. Combine phrases + tag mode.
@@ -1489,9 +1503,9 @@ if ($Project -eq '__custom__') {
     } elseif ($modeMap.ContainsKey($mpick)) {
         $Mode = $modeMap[$mpick]
         $phrase = $BuiltinPhrases[$Mode]
-    } elseif ($mpick -match '^\d+$' -and ([int]$mpick - 10) -ge 0 -and ([int]$mpick - 10) -lt $CustomPrompts.Count) {
-        # v8 (test 2026-05-20): custom prompts now start at n=10 since auto took n=9.
-        $idx = [int]$mpick - 10
+    } elseif ($mpick -match '^\d+$' -and ([int]$mpick - 11) -ge 0 -and ([int]$mpick - 11) -lt $CustomPrompts.Count) {
+        # v11 (test 2026-05-21): custom prompts now start at n=11 since coaudit took n=10.
+        $idx = [int]$mpick - 11
         $Mode = "custom-" + $CustomPrompts[$idx].name
         $phrase = $CustomPrompts[$idx].phrase
     } else {
