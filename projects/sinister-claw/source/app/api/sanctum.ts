@@ -79,3 +79,63 @@ export interface RecentCommit {
 export async function getRecentCommits(limit = 20): Promise<RecentCommit[]> {
   return request<RecentCommit[]>(`/api/sanctum/commits?limit=${limit}`);
 }
+
+export interface InboxItem {
+  id: string;
+  source: "inbox" | "cross-agent";
+  tag: string;
+  from: string;
+  to: string;
+  subject: string;
+  ts_utc: string;
+  project_hint: string;
+  body_path: string;
+  body: string;
+}
+
+export interface InboxResponse {
+  items: InboxItem[];
+  total: number;
+}
+
+export async function getInbox(limit = 50): Promise<InboxResponse> {
+  return request<InboxResponse>(`/api/sanctum/inbox?limit=${limit}`);
+}
+
+export interface ProgressEntry {
+  heading: string;
+  snippet: string;
+}
+
+export interface ResumePoint {
+  schema_version: string;
+  ts_utc: string;
+  project: string;
+  agent_name: string;
+  mode: string;
+  focus_intent?: string;
+  git?: {
+    branch?: string;
+    head?: string;
+    head_msg?: string;
+    recent_commits?: string[];
+  };
+  progress_top3?: unknown[];
+  latest_plan?: { dir?: string | null; artifact?: string | null };
+}
+
+export interface PlanInfo {
+  dir: string;
+  mtime: string;
+}
+
+export interface ProjectDetail {
+  project: SanctumProject;
+  progress_entries: ProgressEntry[];
+  resume_point: ResumePoint | null;
+  plans: PlanInfo[];
+}
+
+export async function getProjectDetail(key: string): Promise<ProjectDetail> {
+  return request<ProjectDetail>(`/api/sanctum/projects/${encodeURIComponent(key)}/detail`);
+}

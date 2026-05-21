@@ -47,6 +47,11 @@ from forge.bridge.registry import REGISTRY
 SANCTUM_ROOT = Path(os.environ.get("SANCTUM_ROOT") or "D:/Sinister Sanctum")
 HEARTBEATS_DIR = SANCTUM_ROOT / "_shared-memory" / "heartbeats"
 PROJECTS_JSON = SANCTUM_ROOT / "automations" / "session-templates" / "projects.json"
+INBOX_DIR = SANCTUM_ROOT / "_shared-memory" / "inbox"
+CROSS_AGENT_DIR = SANCTUM_ROOT / "_shared-memory" / "cross-agent"
+PROGRESS_DIR = SANCTUM_ROOT / "_shared-memory" / "PROGRESS"
+RESUME_DIR = SANCTUM_ROOT / "_shared-memory" / "resume-points"
+PLANS_DIR = SANCTUM_ROOT / "_shared-memory" / "plans"
 TOKEN_FILE = SANCTUM_ROOT / "_shared-memory" / "forge-bridge-token.txt"
 
 
@@ -139,6 +144,111 @@ def sanctum_projects():
     except Exception:
         return jsonify([])
     return jsonify(data.get("projects", []))
+
+
+@app.route("/api/sanctum/inbox")
+def sanctum_inbox():
+    """Aggregate operator-relevant messages from inbox/ + cross-agent/.
+
+    Each item is { id, source, from, to, subject, ts_utc, project_hint, body }.
+    Sorted newest-first. Bound to limit (default 50, max 200).
+    """
+    try:
+        limit = max(1, min(int(request.args.get("limit", "50")), 200))
+    except ValueError:
+        limit = 50
+    items: list[dict] = []
+
+    if INBOX_DIR.exists():
+        for proj_dir in INBOX_DIR.iterdir():
+            if not proj_dir.is_dir():
+                continue
+            for f in proj_dir.glob("*.json"):
+                try:
+                    data = json.loads(f.read_text(encoding="utf-8"))
+                except Exception:
+                    continue
+                items.append({
+                    "id": f"inbox/{proj_dir.name}/{f.name}",
+                    "source": "inbox",
+                    "tag": data.get("tag", ""),
+                    "from": data.get("from_display") or data.get("from", "?"),
+                    "to": data.get("to_display") or data.get("to", proj_dir.name),
+                    "subject": data.get("subject", f.stem),
+                    "ts_utc": data.get("ts_utc") or _file_iso_mtime(f),
+                    "project_hint": proj_dir.name,
+                    "body_path": str(f.relative_to(SANCTUM_ROOT)).replace("\\", "/"),
+                    "body": json.dumps(data, indent=2),
+                })
+
+    if CROSS_AGENT_DIR.exists():
+        for f in CROSS_AGENT_DIR.glob("*.md"):
+            if f.parent.name == "_archive":
+                continue
+            try:
+                body = f.read_text(encoding="utf-8", errors="replace")
+            except Exception:
+                continue
+            subject = _extract_first_heading(body) or f.stem
+            project_hint = _guess_project_from_name(f.stem)
+            items.append({
+                "id": f"cross-agent/{f.name}",
+                "source": "cross-agent",
+                "tag": _extract_first_tag(body),
+                "from": _guess_from_filename(f.stem, "from"),
+                "to": _guess_from_filename(f.stem, "to"),
+                "subject": subject[:140],
+                "ts_utc": _file_iso_mtime(f),
+                "project_hint": project_hint,
+                "body_path": str(f.relative_to(SANCTUM_ROOT)).replace("\\", "/"),
+                "body": body[:8000],
+            })
+
+    items.sort(key=lambda i: i.get("ts_utc") or "", reverse=True)
+    return jsonify({
+        "items": items[:limit],
+        "total": len(items),
+    })
+
+
+@app.route("/api/sanctum/projects/<key>/detail")
+def sanctum_project_detail(key: str):
+    project = _resolve_project(key)
+    if not project:
+        return jsonify({"error": f"unknown project '{key}'"}), 404
+
+    display = project.get("display", key)
+    progress_file = _find_progress_file(key, display)
+    progress_entries = _parse_progress_top(progress_file, n=5) if progress_file else []
+
+    resume_dir = RESUME_DIR / display
+    resume_pt = None
+    if resume_dir.exists():
+        files = sorted(resume_dir.glob("*.json"), key=lambda p: p.stat().st_mtime, reverse=True)
+        if files:
+            try:
+                resume_pt = json.loads(files[0].read_text(encoding="utf-8-sig"))
+            except Exception:
+                pass
+
+    plans: list[dict] = []
+    if PLANS_DIR.exists():
+        kl = key.lower()
+        dl = display.lower().replace(" ", "-")
+        for plan in PLANS_DIR.iterdir():
+            if not plan.is_dir():
+                continue
+            name = plan.name.lower()
+            if kl in name or dl in name:
+                plans.append({"dir": plan.name, "mtime": _file_iso_mtime(plan)})
+    plans.sort(key=lambda p: p["mtime"], reverse=True)
+
+    return jsonify({
+        "project": project,
+        "progress_entries": progress_entries,
+        "resume_point": resume_pt,
+        "plans": plans[:10],
+    })
 
 
 @app.route("/api/sanctum/commits")
@@ -293,6 +403,103 @@ def forge_stream(agent_id: str):
 
 
 # --- Helpers --------------------------------------------------------------
+
+
+def _file_iso_mtime(p: Path) -> str:
+    try:
+        return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(p.stat().st_mtime))
+    except Exception:
+        return ""
+
+
+def _extract_first_heading(body: str) -> str:
+    for line in body.splitlines():
+        line = line.strip()
+        if line.startswith("# "):
+            return line[2:].strip()
+        if line.startswith("## "):
+            return line[3:].strip()
+    return ""
+
+
+def _extract_first_tag(body: str) -> str:
+    """Find a bracketed tag like [ASK] / [ACK] / [BROADCAST] in the first 500 chars."""
+    head = body[:500]
+    import re
+    m = re.search(r"\[([A-Z_-]{2,20})\]", head)
+    return m.group(1) if m else ""
+
+
+def _guess_project_from_name(stem: str) -> str:
+    """Stems look like '2026-05-21T03Z-sanctum-to-rkoj-...' -> 'rkoj'."""
+    parts = stem.split("-")
+    if "to" in parts:
+        i = parts.index("to")
+        if i + 1 < len(parts):
+            return parts[i + 1]
+    return ""
+
+
+def _guess_from_filename(stem: str, which: str) -> str:
+    """Return 'from' or 'to' segment from '<ts>-<from>-to-<to>-<subj>'."""
+    parts = stem.split("-")
+    if "to" not in parts:
+        return ""
+    i = parts.index("to")
+    if which == "from" and i >= 1:
+        return parts[i - 1]
+    if which == "to" and i + 1 < len(parts):
+        return parts[i + 1]
+    return ""
+
+
+def _find_progress_file(key: str, display: str) -> Path | None:
+    """PROGRESS files don't follow a strict naming rule. Try a few patterns."""
+    if not PROGRESS_DIR.exists():
+        return None
+    candidates = [
+        PROGRESS_DIR / f"{display}.md",
+        PROGRESS_DIR / f"{key}.md",
+        PROGRESS_DIR / f"Sinister {display}.md",
+    ]
+    # short-form aliases used historically
+    aliases = {
+        "snap-emulator-api": ["snap-emu.md", "Sinister Snap API.md"],
+        "tiktok-emulator-api": ["tiktok-emu.md", "Sinister TikTok API.md"],
+        "bumble-emulator-api": ["bumble-emu.md", "Sinister Bumble API.md"],
+        "kernel-apk": ["Sinister Kernel APK.md"],
+        "sanctum": ["Sinister Sanctum.md"],
+        "sinister-panel": ["Sinister Panel.md"],
+    }
+    for alias in aliases.get(key, []):
+        candidates.append(PROGRESS_DIR / alias)
+    for c in candidates:
+        if c.exists():
+            return c
+    return None
+
+
+def _parse_progress_top(path: Path, n: int = 5) -> list[dict]:
+    """Progress files are markdown with `## YYYY-MM-DD HH:MM - <title>` sections.
+    Return top n entries newest-first.
+    """
+    try:
+        body = path.read_text(encoding="utf-8", errors="replace")
+    except Exception:
+        return []
+    import re
+    out: list[dict] = []
+    pattern = re.compile(r"^## (\d{4}-\d{2}-\d{2}[^\n]+)$", flags=re.MULTILINE)
+    matches = list(pattern.finditer(body))
+    for i, m in enumerate(matches[:n]):
+        start = m.end()
+        end = matches[i + 1].start() if i + 1 < len(matches) else len(body)
+        snippet = body[start:end].strip()
+        out.append({
+            "heading": m.group(1).strip(),
+            "snippet": snippet[:1200],
+        })
+    return out
 
 
 def _resolve_project(key: str) -> dict | None:

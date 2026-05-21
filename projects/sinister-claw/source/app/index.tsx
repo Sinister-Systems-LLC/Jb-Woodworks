@@ -15,6 +15,8 @@ import { colors } from "./theme";
 import { SanctumScreen } from "./screens/SanctumScreen";
 import { MindScreen } from "./screens/MindScreen";
 import { ForgeScreen } from "./screens/ForgeScreen";
+import { InboxScreen } from "./screens/InboxScreen";
+import { ProjectsScreen } from "./screens/ProjectsScreen";
 import { SettingsScreen } from "./screens/SettingsScreen";
 import { PlaceholderScreen } from "./screens/PlaceholderScreen";
 
@@ -63,24 +65,8 @@ export default function App() {
               />
             )}
           </Tab.Screen>
-          <Tab.Screen name="Projects">
-            {() => (
-              <PlaceholderScreen
-                title="Projects"
-                description="Drill into one of the 11 Sinister projects. Plans, PROGRESS, resume-points, brain entries scoped to that lane."
-                phase="PH6 (Projects detail)"
-              />
-            )}
-          </Tab.Screen>
-          <Tab.Screen name="Inbox">
-            {() => (
-              <PlaceholderScreen
-                title="Inbox"
-                description="Cross-agent messages addressed to the operator. Acknowledge from your phone."
-                phase="PH7 (Inbox + ack)"
-              />
-            )}
-          </Tab.Screen>
+          <Tab.Screen name="Projects" component={ProjectsScreen} />
+          <Tab.Screen name="Inbox" component={InboxScreen} />
           <Tab.Screen name="Settings" component={SettingsScreen} />
         </Tab.Navigator>
       </NavigationContainer>
