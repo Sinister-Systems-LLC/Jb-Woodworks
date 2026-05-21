@@ -24,6 +24,7 @@ SINISTER_STYLE = Style.from_dict({
     # Prompt
     "prompt.glyph":    f"{PURPLE_BRIGHT} bold",
     "prompt.project":  f"{CYAN}",
+    "prompt.git":      f"{YELLOW}",
     "prompt.path":     f"{DIM}",
     "prompt.dollar":   f"{PURPLE_BRIGHT} bold",
 
@@ -32,6 +33,7 @@ SINISTER_STYLE = Style.from_dict({
     "bottom-toolbar.section": f"bg:{BG_DEEP} {PURPLE_BRIGHT}",
     "bottom-toolbar.ok":      f"bg:{BG_DEEP} {GREEN}",
     "bottom-toolbar.warn":    f"bg:{BG_DEEP} {YELLOW}",
+    "bottom-toolbar.git":     f"bg:{BG_DEEP} {CYAN}",
 
     # Completions
     "completion-menu":            f"bg:{BG_DEEP} {LIGHT_PURPLE}",

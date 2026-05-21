@@ -16,8 +16,8 @@ The Sanctum-side mirror of `SESSION-START/02-OPERATOR-QUEUE.md`, with checkboxes
 
 ## 2026-05-19 — RKOJ + Vault wire-up (after today's full-day sprint)
 
-- [ ] **Install RKOJ auto-start task** — `powershell -ExecutionPolicy Bypass -File "D:\Sinister Sanctum\automations\window-manager\install-rkoj-task.ps1" -BatPath "D:\Sinister Sanctum\automations\window-manager\console-daemon.bat"`  (canonical; legacy `install-console-task.ps1` now archived to `_archive/automations/window-manager/`)
-- [ ] **Install SinisterVault auto-start task** — `powershell -ExecutionPolicy Bypass -File "D:\Sinister Sanctum\tools\sinister-vault\install-vault-task.ps1" -BatPath "D:\Sinister Sanctum\tools\sinister-vault\vault-daemon.bat"`
+- [x] ~~**Install RKOJ auto-start task**~~ — VERIFIED INSTALLED 2026-05-21 11:05Z (rkoj-workstation agent ran `schtasks /Query /TN RKOJ` → present). Caveat: `LastTaskResult=3221225786` (0xC0000142 STATUS_DLL_INIT_FAILED) + empty `NextRunTime` → first run crashed at DLL init + task is not re-arming. RKOJ.exe IS running via the alternate path (`rkoj-runtime.beat` fresh at 10:00Z, pid 35132, port 5077). To re-arm auto-start: operator re-runs `install-rkoj-task.ps1` from an elevated shell.
+- [x] ~~**Install SinisterVault auto-start task**~~ — VERIFIED INSTALLED 2026-05-21 11:05Z (`schtasks /Query /TN SinisterVault` → present). Caveat: `LastTaskResult=255` (generic failure) + empty `NextRunTime`. Operator confirms or re-arms.
 - [ ] **Install Syncthing service** (admin) — `powershell -ExecutionPolicy Bypass -File "D:\Sinister Sanctum\tools\sinister-vault\syncthing\install.ps1"`
 - [ ] **Move Gitea data into vault** — `powershell -ExecutionPolicy Bypass -File "D:\Sinister Sanctum\tools\sanctum-git\setup-vault-data-dir.ps1"` (Gitea down briefly)
 - [ ] **Bootstrap Gitea users** — `python "D:\Sinister Sanctum\tools\sanctum-git\bootstrap-users.py" --leo-key-file <path-to-leo.pub>` (operator + leo)

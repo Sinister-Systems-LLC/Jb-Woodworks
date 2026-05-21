@@ -1,0 +1,19 @@
+{
+  "_author": "RKOJ-ELENO :: 2026-05-21",
+  "_purpose": "Sinister Term keybindings - operator overrides. Edit to rebind without recompile.",
+  "_action_vocabulary": [
+    "clear_screen        - clear the screen",
+    "submit:<text>       - replace prompt buffer with <text> and submit (runs the slash command)",
+    "insert:<text>       - insert <text> at cursor (no submit)"
+  ],
+  "_key_syntax": "prompt_toolkit format: c-l = Ctrl+L, c-x c-c = Ctrl+X then Ctrl+C, escape = Esc, etc.",
+  "_set_to_null_to_unbind": "{\"c-l\": null} removes the default Ctrl+L binding.",
+  "bindings": {
+    "c-l": "clear_screen",
+    "c-f": "submit:/forge",
+    "c-n": "submit:/mind",
+    "c-h": "submit:/heartbeats",
+    "c-i": "submit:/inbox",
+    "c-p": "submit:/projects"
+  }
+}

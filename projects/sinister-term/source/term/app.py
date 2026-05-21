@@ -28,8 +28,16 @@ except ImportError as e:
 
 from rich.console import Console
 
-from term.commands import dispatch, load_projects, SANCTUM_ROOT
+from term.commands import dispatch, SANCTUM_ROOT
 from term.completer import SinisterCompleter
+from term.keybindings import build_keybindings
+from term.status import (
+    detect_project_for_cwd,
+    freshest_sibling_heartbeat,
+    git_branch,
+    pending_inbox_count,
+    short_cwd_relative_to_project,
+)
 from term.theme import SINISTER_STYLE, BANNER
 
 
@@ -37,42 +45,52 @@ HIST_DIR = SANCTUM_ROOT / "_shared-memory" / "sinister-term-history"
 HEARTBEAT = SANCTUM_ROOT / "_shared-memory" / "heartbeats" / "sinister-term.json"
 
 
-def _detect_project_for_cwd() -> str | None:
-    cwd = Path.cwd().resolve()
-    for p in load_projects():
-        root = p.get("root")
-        if not root:
-            continue
-        try:
-            if cwd.is_relative_to(Path(root).resolve()):
-                return p.get("display") or p.get("key")
-        except Exception:
-            continue
-    return None
-
-
 def _prompt_text() -> FormattedText:
-    cwd = Path.cwd()
-    short_cwd = str(cwd)
-    if len(short_cwd) > 40:
-        short_cwd = "..." + short_cwd[-37:]
-    project = _detect_project_for_cwd()
-    parts = [("class:prompt.glyph", "◈ ")]
+    """Multi-segment breadcrumb prompt: ◈ [project] git:branch  cwd-relative\n$ """
+    project = detect_project_for_cwd()
+    branch = git_branch()
+    cwd_disp = short_cwd_relative_to_project()
+
+    parts: list[tuple[str, str]] = [("class:prompt.glyph", "◈ ")]
     if project:
         parts.append(("class:prompt.project", f"[{project}] "))
-    parts.append(("class:prompt.path", short_cwd))
+    if branch:
+        parts.append(("class:prompt.git", f"git:{branch} "))
+    parts.append(("class:prompt.path", cwd_disp))
     parts.append(("class:prompt.dollar", "\n$ "))
     return FormattedText(parts)
 
 
 def _bottom_toolbar() -> FormattedText:
-    project = _detect_project_for_cwd() or "no-project"
-    return FormattedText([
+    project = detect_project_for_cwd() or "no-project"
+    branch = git_branch() or "no-git"
+    hb = freshest_sibling_heartbeat()
+    inbox = pending_inbox_count()
+
+    parts: list[tuple[str, str]] = [
         ("class:bottom-toolbar.section", " SINISTER TERM "),
         ("class:bottom-toolbar", "  "),
         ("class:bottom-toolbar.ok", project),
-        ("class:bottom-toolbar", "    /help for commands  ·  /exit to quit"),
-    ])
+        ("class:bottom-toolbar", "  "),
+        ("class:bottom-toolbar.git", f"git:{branch}"),
+    ]
+
+    if hb:
+        agent, age_min = hb
+        hb_class = "class:bottom-toolbar.ok" if age_min < 30 else "class:bottom-toolbar.warn"
+        parts.extend([
+            ("class:bottom-toolbar", "  ● "),
+            (hb_class, f"{agent} ({age_min}m)"),
+        ])
+
+    if inbox > 0:
+        parts.extend([
+            ("class:bottom-toolbar", "  "),
+            ("class:bottom-toolbar.warn", f"inbox:{inbox}"),
+        ])
+
+    parts.append(("class:bottom-toolbar", "    /help · /exit"))
+    return FormattedText(parts)
 
 
 def _write_heartbeat() -> None:
@@ -108,11 +126,7 @@ def run() -> None:
     hist_path = HIST_DIR / "history.jsonl"
     history = FileHistory(str(hist_path))
 
-    kb = KeyBindings()
-
-    @kb.add("c-l")
-    def _(event):
-        event.app.renderer.clear()
+    kb = build_keybindings()
 
     session: PromptSession[str] = PromptSession(
         history=history,
@@ -123,6 +137,7 @@ def run() -> None:
         style=SINISTER_STYLE,
         key_bindings=kb,
         mouse_support=False,
+        refresh_interval=2.0,  # let toolbar live-refresh heartbeat age
     )
 
     _write_heartbeat()

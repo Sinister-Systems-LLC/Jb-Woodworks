@@ -1,0 +1,44 @@
+﻿{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-21T11:10:12.4835433Z",
+    "project":  "RKOJ Workstation",
+    "agent_name":  "rkoj-workstation",
+    "mode":  "resume",
+    "focus_intent":  "inaugural rkoj-workstation session; lane bootstrap + scheduled-task health surface",
+    "git":  {
+                "branch":  "agent/sinister-forge/r1-r2-r7-r8-r11-2026-05-21",
+                "head":  "a972857f9d86b71d58ea6432ab772fc213693695",
+                "head_msg":  "feat(forge): R7 RKOJ dashboard ASK + R8 mermaid_render.py + R11 harness brain entry",
+                "recent_commits":  [
+                                       "a972857 feat(forge): R7 RKOJ dashboard ASK + R8 mermaid_render.py + R11 harness brain entry",
+                                       "bce833f docs(sanctum): flush co-audit deliverables - agent-host-routing + Modes section + DISCOVERY",
+                                       "243db88 feat(forge): liquid-glass UI overhaul + personal-projects.json + bat consolidation",
+                                       "98e7459 feat(term): PH1-PH6 - Python+prompt_toolkit minimal shell with Sinister theme",
+                                       "52faf8c feat(forge-bridge): write resume-point on spawn so phone-spawned agents boot warm",
+                                       "34fb45e chore(gitignore): re-exclude __pycache__/*.egg-info under whitelisted python source",
+                                       "655df83 docs(brain+broadcast): forge-bridge-rest-sse-pattern + sibling-lane broadcast",
+                                       "a0b2347 feat(claw+bridge): Panel WebView tab + bridge heartbeat + architecture README",
+                                       "2ff0e54 feat(claw+bridge): Inbox + Projects detail tabs + 2 new bridge endpoints",
+                                       "1e5817a feat(forge+claw): REST/SSE bridge :5078 + Claw Forge tab + Settings tab"
+                                   ]
+            },
+    "progress_top3":  [
+                          "2026-05-21 11:05 â€” shipped: inaugural rkoj-workstation session bootstrap (resume mode)"
+                      ],
+    "latest_plan":  {
+                        "dir":  null,
+                        "artifact":  null
+                    },
+    "inbox_unread_count":  0,
+    "last_5_files_touched_24h":  [
+                                     "_shared-memory\\PROGRESS\\Sinister Term.md",
+                                     "_shared-memory\\heartbeats\\rkoj-workstation.json",
+                                     "_shared-memory\\cross-agent\\2026-05-21T1108Z-rkoj-workstation-to-kernel-apk-term-confirm.md",
+                                     "_shared-memory\\heartbeats\\sinister-forge.json",
+                                     "projects\\sinister-forge\\source\\forge\\mermaid_render.py"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\rkoj-workstation.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}

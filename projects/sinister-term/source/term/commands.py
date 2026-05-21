@@ -23,6 +23,11 @@ PROJECTS_JSON = SANCTUM_ROOT / "automations" / "session-templates" / "projects.j
 BOTS_INDEX = SANCTUM_ROOT / "bots" / "_INDEX.md"
 SKILLS_INDEX = SANCTUM_ROOT / "skills" / "_INDEX.md"
 HEARTBEATS_DIR = SANCTUM_ROOT / "_shared-memory" / "heartbeats"
+INBOX_DIR = SANCTUM_ROOT / "_shared-memory" / "inbox"
+SELF_SLUG = "sinister-term"
+SELF_DISPLAY = "Sinister Term"
+CROSS_AGENT_DIR = SANCTUM_ROOT / "_shared-memory" / "cross-agent"
+PROGRESS_FILE = SANCTUM_ROOT / "_shared-memory" / "PROGRESS" / "Sinister Term.md"
 
 
 @dataclass
@@ -57,6 +62,10 @@ Sinister Term commands:
   /bot <name>               Run a Sinister bot from bots/ (lists if no name)
   /skill <name>             Run a Sinister skill (lists if no name)
   /cd <project>             cd into a project's root
+  /inbox [n]                List our inbox or read message n
+  /cross-agent [n]          List recent cross-agent messages or read one (alias /ca)
+  /ask <agent> <message>    Drop an [ASK] in another agent's inbox
+  /progress [add <msg>]     Show top 5 PROGRESS entries (or add a new one)
   /clear                    Clear the screen
   /help                     This message
   /exit                     Exit Sinister Term
@@ -217,6 +226,151 @@ def cmd_skill(args: list[str]) -> CommandResult:
     return CommandResult(True, f"skill:\n{candidates[0].read_text(encoding='utf-8', errors='replace')[:3000]}")
 
 
+def _utc_ts_filename() -> str:
+    import time as _t
+    return _t.strftime("%Y-%m-%dT%H%MZ", _t.gmtime())
+
+
+def _utc_ts_iso() -> str:
+    import time as _t
+    return _t.strftime("%Y-%m-%dT%H:%M:%SZ", _t.gmtime())
+
+
+def cmd_inbox(args: list[str]) -> CommandResult:
+    """List our inbox messages, or show one with /inbox <n>."""
+    my_inbox = INBOX_DIR / SELF_SLUG
+    if not my_inbox.exists():
+        return CommandResult(True, "(no inbox dir)")
+    files = sorted(my_inbox.glob("*.json"))
+    if not files:
+        return CommandResult(True, "Inbox is empty.")
+
+    if args and args[0].isdigit():
+        idx = int(args[0])
+        if 1 <= idx <= len(files):
+            return CommandResult(True, files[idx - 1].read_text(encoding="utf-8", errors="replace"))
+        return CommandResult(True, f"out of range (1..{len(files)})")
+
+    rows = [f"Inbox ({len(files)} message(s)):"]
+    for i, f in enumerate(files, 1):
+        try:
+            data = json.loads(f.read_text(encoding="utf-8", errors="replace"))
+        except Exception:
+            rows.append(f"  {i}. {f.name}  (unparseable)")
+            continue
+        tag = data.get("tag", "")
+        frm = data.get("from_display") or data.get("from", "?")
+        subj = data.get("subject", "(no subject)")
+        ts = data.get("ts_utc", "")
+        rows.append(f"  {i}. {tag:<12} {frm:<20} {ts}  {subj[:60]}")
+    rows.append("\n(use /inbox <n> to read one)")
+    return CommandResult(True, "\n".join(rows))
+
+
+def cmd_cross_agent(args: list[str]) -> CommandResult:
+    """List or read cross-agent messages."""
+    if not CROSS_AGENT_DIR.exists():
+        return CommandResult(True, "(no cross-agent dir)")
+    files = sorted(CROSS_AGENT_DIR.glob("*.md"), key=lambda p: p.stat().st_mtime, reverse=True)
+    if args and args[0].isdigit():
+        idx = int(args[0])
+        if 1 <= idx <= len(files):
+            return CommandResult(True, files[idx - 1].read_text(encoding="utf-8", errors="replace")[:4000])
+        return CommandResult(True, f"out of range (1..{len(files)})")
+    if not files:
+        return CommandResult(True, "(no cross-agent messages)")
+    rows = ["Recent cross-agent messages (newest first):"]
+    for i, f in enumerate(files[:20], 1):
+        rows.append(f"  {i}. {f.name}")
+    rows.append("\n(use /cross-agent <n> to read one)")
+    return CommandResult(True, "\n".join(rows))
+
+
+def cmd_ask(args: list[str]) -> CommandResult:
+    """Write an [ASK] message into another agent's inbox.
+
+    Usage: /ask <agent-slug> <message...>
+    """
+    if len(args) < 2:
+        return CommandResult(True, "usage: /ask <agent-slug> <message...>\nknown slugs: " + ", ".join(_known_agent_slugs()))
+    target = args[0]
+    msg = " ".join(args[1:])
+    target_dir = INBOX_DIR / target
+    if not target_dir.exists():
+        return CommandResult(True, f"unknown agent inbox: {target_dir}")
+    ts_iso = _utc_ts_iso()
+    ts_file = _utc_ts_filename()
+    body = {
+        "_author": "RKOJ-ELENO :: 2026-05-21",
+        "tag": "[ASK]",
+        "from": SELF_SLUG,
+        "from_display": SELF_DISPLAY,
+        "to": target,
+        "ts_utc": ts_iso,
+        "subject": msg[:80],
+        "message": msg,
+    }
+    path = target_dir / f"{ts_file}-ask-from-{SELF_SLUG}.json"
+    path.write_text(json.dumps(body, indent=2), encoding="utf-8")
+    return CommandResult(True, f"[ASK] -> {path.relative_to(SANCTUM_ROOT)}")
+
+
+def _known_agent_slugs() -> list[str]:
+    if not INBOX_DIR.exists():
+        return []
+    return sorted(d.name for d in INBOX_DIR.iterdir() if d.is_dir())
+
+
+def cmd_progress(args: list[str]) -> CommandResult:
+    """Show top 5 PROGRESS entries, or prepend a new one with /progress add <msg>."""
+    if args and args[0] == "add":
+        if len(args) < 2:
+            return CommandResult(True, "usage: /progress add <message>")
+        new_msg = " ".join(args[1:])
+        import time as _t
+        header = "## " + _t.strftime("%Y-%m-%d %H:%M", _t.gmtime()) + " — note: " + new_msg[:80]
+        body = new_msg if len(new_msg) > 80 else ""
+        entry = header + ("\n" + body if body else "") + "\n\n"
+
+        existing = ""
+        if PROGRESS_FILE.exists():
+            existing = PROGRESS_FILE.read_text(encoding="utf-8")
+            # Prepend after the leading header block (insert above the first `## ` line)
+            lines = existing.split("\n")
+            insert_at = 0
+            for i, ln in enumerate(lines):
+                if ln.startswith("## ") and "YYYY-MM-DD" not in ln:
+                    insert_at = i
+                    break
+            else:
+                insert_at = len(lines)
+            new_text = "\n".join(lines[:insert_at]) + "\n" + entry + "\n".join(lines[insert_at:])
+        else:
+            new_text = "# Agent: Sinister Term\n\n---\n\n" + entry
+        PROGRESS_FILE.parent.mkdir(parents=True, exist_ok=True)
+        PROGRESS_FILE.write_text(new_text, encoding="utf-8")
+        return CommandResult(True, f"progress entry added.")
+
+    if not PROGRESS_FILE.exists():
+        return CommandResult(True, "(no PROGRESS file yet — try /progress add <message>)")
+    text = PROGRESS_FILE.read_text(encoding="utf-8")
+    # Take the first 5 `## ` blocks
+    blocks: list[str] = []
+    current: list[str] = []
+    for line in text.split("\n"):
+        if line.startswith("## "):
+            if current:
+                blocks.append("\n".join(current).rstrip())
+                if len(blocks) >= 5:
+                    break
+            current = [line]
+        elif current:
+            current.append(line)
+    if current and len(blocks) < 5:
+        blocks.append("\n".join(current).rstrip())
+    return CommandResult(True, "Recent progress:\n\n" + "\n\n".join(blocks[:5]))
+
+
 COMMANDS: dict[str, Callable[[list[str]], CommandResult]] = {
     "help": cmd_help,
     "?": cmd_help,
@@ -235,6 +389,11 @@ COMMANDS: dict[str, Callable[[list[str]], CommandResult]] = {
     "cd": cmd_cd,
     "bot": cmd_bot,
     "skill": cmd_skill,
+    "inbox": cmd_inbox,
+    "cross-agent": cmd_cross_agent,
+    "ca": cmd_cross_agent,
+    "ask": cmd_ask,
+    "progress": cmd_progress,
 }
 
 
