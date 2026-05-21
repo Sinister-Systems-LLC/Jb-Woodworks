@@ -710,11 +710,37 @@ def _capture_cli(cli_main: Callable, argv: list[str]) -> str:
 # ----- skill dynamic dispatch --------------------------------------------
 
 def maybe_dispatch_skill(name: str, args: list[str]) -> str | None:
-    """If `name` is a discovered skill, invoke it (return printout) else None."""
+    """If `name` is a discovered skill, invoke it (return printout) else None.
+
+    Resolution order:
+      1. SkillRegistry (jcode-parity loader — ~/.sinister/skills/*.md and
+         D:/Sinister Sanctum/skills/*.md as flat .md files).
+      2. Legacy SKILL.md directory layout (~/.claude/skills/<name>/SKILL.md).
+    """
+    # 1. SkillRegistry (flat .md file layout — preferred)
+    try:
+        from forge.skills import SkillRegistry  # type: ignore
+        reg = SkillRegistry.shared()
+        skill = reg.get(name)
+        if skill is not None:
+            head = (
+                f"[bold]Skill[/] /{skill.name}  "
+                f"[dim]{skill.path}[/]\n"
+                f"  {skill.description}\n"
+            )
+            if skill.allowed_tools:
+                head += f"  [dim]allowed-tools: {', '.join(skill.allowed_tools)}[/]\n"
+            body = skill.content.strip()
+            preview = body if len(body) < 1500 else body[:1500] + "\n[dim]… (truncated)[/]"
+            return head + "\n" + preview
+    except Exception as e:
+        # Never block dispatch on a registry error — fall through to legacy.
+        pass
+
+    # 2. Legacy ~/.claude/skills/<name>/SKILL.md directory layout
     for root in (Path.home() / ".claude" / "skills",
                  Path.home() / ".claude" / "plugins",
-                 _sanctum_root() / ".claude" / "skills",
-                 _sanctum_root() / "skills"):
+                 _sanctum_root() / ".claude" / "skills"):
         cand = root / name
         if cand.is_dir():
             md = cand / "SKILL.md"
@@ -724,8 +750,62 @@ def maybe_dispatch_skill(name: str, args: list[str]) -> str | None:
                     return f"[bold]Skill[/] /{name}\n{txt}\n[dim]…[/]"
                 except OSError:
                     pass
-            return f"[bold]Skill[/] /{name}  [dim]{cand}[/]\n  [yellow](no SKILL.md — opening dir){RESET if False else ''}"
+            return f"[bold]Skill[/] /{name}  [dim]{cand}[/]\n  [yellow](no SKILL.md found)[/]"
     return None
+
+
+# ----- /skill registry commands ------------------------------------------
+
+def _cmd_skill(args, pane, app) -> str:
+    """/skill list | show <name> | run <name> | reload  — jcode-parity skill registry."""
+    try:
+        from forge.skills import SkillRegistry
+    except Exception as e:
+        return f"[red]forge.skills unavailable: {e}[/]"
+
+    sub = (args[0].lower() if args else "list")
+    rest = args[1:]
+
+    if sub in {"list", "ls", ""}:
+        reg = SkillRegistry.shared()
+        names = reg.names()
+        if not names:
+            roots = "\n    ".join(str(r) for r in reg.roots())
+            return f"[yellow]no skills found[/]\n  roots scanned:\n    {roots}"
+        lines = [f"[bold]Skills ({len(names)})[/]  [dim]/<name> to activate, /skill show <name>, /skill run <name>[/]"]
+        for n in names:
+            s = reg.get(n)
+            if s is None:
+                continue
+            lines.append(f"  /{n:<24} {s.description}")
+        return "\n".join(lines)
+
+    if sub in {"show", "info", "cat"}:
+        if not rest:
+            return "[yellow]usage: /skill show <name>[/]"
+        reg = SkillRegistry.shared()
+        s = reg.get(rest[0])
+        if s is None:
+            return f"[yellow]/skill: no such skill `{rest[0]}`[/]"
+        head = (f"[bold]Skill[/] /{s.name}  [dim]{s.path}[/]\n"
+                f"  {s.description}\n")
+        if s.allowed_tools:
+            head += f"  allowed-tools: {', '.join(s.allowed_tools)}\n"
+        return head + "\n" + s.content.strip()
+
+    if sub in {"run", "activate"}:
+        if not rest:
+            return "[yellow]usage: /skill run <name>[/]"
+        out = maybe_dispatch_skill(rest[0], rest[1:])
+        if out is None:
+            return f"[yellow]/skill: no such skill `{rest[0]}`[/]"
+        return out
+
+    if sub in {"reload", "refresh"}:
+        reg = SkillRegistry.reload_shared()
+        return f"  reloaded — {len(reg.names())} skill(s) from {len(reg.roots())} root(s)"
+
+    return f"[yellow]/skill: unknown subcommand `{sub}` — use list|show|run|reload[/]"
 
 
 # ===========================================================================
@@ -800,6 +880,7 @@ SLASH_COMMANDS: dict[str, dict[str, Any]] = {
     "mcp":        _entry(_cmd_mcp,       "list MCP servers / auto-load on call",      "system"),
     "tools":      _entry(_cmd_tools,     "list builtin tools + sinister-cli + MCP",   "system"),
     "skills":     _entry(_cmd_skills,    "list discovered skills",                    "skills"),
+    "skill":      _entry(_cmd_skill,     "list | show <name> | run <name> | reload   (jcode skill-loader)", "skills"),
     "dictate":    _entry(_stub("dictate", "external speech-to-text",
                                 "configure STT command in agent-prefs.json"), "system"),
 

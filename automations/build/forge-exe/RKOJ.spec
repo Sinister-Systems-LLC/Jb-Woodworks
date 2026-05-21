@@ -81,6 +81,14 @@ except Exception:
     pydantic_subs = []
     pydantic_core_subs = []
 
+# rank_bm25 powers BM25 re-scoring on `forge_memory_bridge.recall()` return
+# path (jcode parity, brain entry jcode-agentic-loop-patterns-port-to-python
+# pattern 6). v0.1.2 of forge-memory-bridge requires it.
+try:
+    rank_bm25_subs = collect_submodules("rank_bm25")
+except Exception:
+    rank_bm25_subs = ["rank_bm25"]
+
 # --- stdlib chain (per pyinstaller-distutils-exclude-collision doctrine) ---
 
 stdlib_hidden = [
@@ -138,7 +146,14 @@ hiddenimports = (
     + httpcore_subs
     + pydantic_subs
     + pydantic_core_subs
+    + rank_bm25_subs
     + stdlib_hidden
+    # SkillRegistry (forge/skills.py) loads ~/.sinister/skills/*.md with
+    # YAML frontmatter via `yaml.safe_load`. pyyaml_subs already collects
+    # the `yaml` package, but we add the explicit names below as
+    # belt-and-suspenders in case collect_submodules misses the C-extension
+    # shim on a build host (RKOJ-ELENO 2026-05-21).
+    + ["yaml", "pyyaml", "_yaml"]
 )
 
 datas = forge_data + sinister_data + textual_data + rich_data + anthropic_data
@@ -181,7 +196,10 @@ a = Analysis(
         "tkinter",
         "matplotlib",
         "scipy",
-        "numpy",
+        # numpy WAS excluded — re-enabled v0.1.2 because rank_bm25 (BM25
+        # re-scoring on forge_memory_bridge.recall() return path) depends
+        # on it. ~25 MB cost is acceptable for jcode parity.
+        # "numpy",
         "pandas",
         "PIL",
         "PyQt5",
