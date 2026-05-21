@@ -47,6 +47,7 @@ _state: dict[str, Any] = {
     "fast_mode": "default",      # on/off/default
     "default_provider": None,
     "default_model": None,
+    "SINISTER_DEBUG_VISUAL": False,
 }
 
 
@@ -56,6 +57,39 @@ def state(key: str, default: Any = None) -> Any:
 
 def set_state(key: str, value: Any) -> None:
     _state[key] = value
+
+
+# ----- forge-prefs persistence ------------------------------------------
+
+def _forge_prefs_path() -> Path:
+    """Returns ~/.config/sinister/forge-prefs.json or
+    %APPDATA%/sinister/forge-prefs.json on Windows."""
+    if platform.system() == "Windows":
+        appdata = os.environ.get("APPDATA")
+        base = Path(appdata) if appdata else Path.home() / "AppData" / "Roaming"
+        return base / "sinister" / "forge-prefs.json"
+    return Path.home() / ".config" / "sinister" / "forge-prefs.json"
+
+
+def _load_forge_prefs() -> dict:
+    """Read forge-prefs.json. Returns {} on any error (missing/parse/etc)."""
+    p = _forge_prefs_path()
+    if not p.exists():
+        return {}
+    try:
+        return json.loads(p.read_text(encoding="utf-8-sig"))
+    except Exception:
+        return {}
+
+
+def _save_forge_prefs(prefs: dict) -> Path:
+    """Atomic write — tmp + rename. Creates parent dirs as needed."""
+    p = _forge_prefs_path()
+    p.parent.mkdir(parents=True, exist_ok=True)
+    tmp = p.with_suffix(p.suffix + ".tmp")
+    tmp.write_text(json.dumps(prefs, indent=2, sort_keys=True), encoding="utf-8")
+    os.replace(str(tmp), str(p))
+    return p
 
 
 # ----- sanctum-root helper -----------------------------------------------
@@ -404,13 +438,53 @@ def _cmd_context(args, pane, app) -> str:
 
 
 def _cmd_git(args, pane, app) -> str:
-    sr = _sanctum_root()
+    """jcode /git — branch + working tree status for sanctum repo.
+
+    Usage:
+      /git              -> status of sanctum repo
+      /git status       -> same (subarg is optional + accepted for parity)
+      /git --repo <p>   -> status of repo at <p>
+
+    Shows `git status --short` + the last commit summary
+    (`git log -1 --format='%h %s (%cr)'`).
+    """
+    # Resolve target repo
+    repo = _sanctum_root()
+    if args:
+        toks = list(args)
+        if "--repo" in toks:
+            idx = toks.index("--repo")
+            if idx + 1 < len(toks):
+                repo = Path(toks[idx + 1])
+                # strip it for any trailing parsing
+                del toks[idx:idx + 2]
+            else:
+                return "[yellow]/git: --repo requires a path[/]"
+        # remaining toks may be 'status' (subarg) — ignored, only subcommand we accept
+
+    if not repo.exists():
+        return f"[red]/git: repo path does not exist: {repo}[/]"
+
     try:
-        r = subprocess.run(["git", "-C", str(sr), "status", "-sb"],
-                           capture_output=True, text=True, timeout=3)
-        return f"[bold]git[/]\n{r.stdout}"
+        branch = _git_branch(repo)
+        head = _git_head(repo)
+        st = subprocess.run(
+            ["git", "-C", str(repo), "status", "--short"],
+            capture_output=True, text=True, timeout=3,
+        )
+        lg = subprocess.run(
+            ["git", "-C", str(repo), "log", "-1", "--format=%h %s (%cr)"],
+            capture_output=True, text=True, timeout=3,
+        )
     except Exception as e:
         return f"[red]git failed: {e}[/]"
+
+    status_body = st.stdout.rstrip() or "(working tree clean)"
+    last = lg.stdout.strip() or f"{head} (no log)"
+    return (f"[bold]git[/]  [dim]{repo}[/]\n"
+            f"  branch: {branch}\n"
+            f"  last:   {last}\n"
+            f"  status:\n{status_body}")
 
 
 def _cmd_config(args, pane, app) -> str:
@@ -447,23 +521,52 @@ def _cmd_config(args, pane, app) -> str:
 
 
 def _cmd_changelog(args, pane, app) -> str:
+    """jcode /changelog — last N commits via `git log --oneline -N`.
+
+    Usage:
+      /changelog            -> last 10 commits
+      /changelog --count 25 -> last 25 commits
+
+    Rendered through rich.Panel (cyan border) when rich is importable;
+    falls back to plain text otherwise.
+    """
+    count = 10
+    if args:
+        toks = list(args)
+        if "--count" in toks:
+            idx = toks.index("--count")
+            if idx + 1 < len(toks):
+                try:
+                    count = max(1, int(toks[idx + 1]))
+                except ValueError:
+                    return "[yellow]/changelog: --count needs an integer[/]"
+
     sr = _sanctum_root()
-    log = sr / "_shared-memory" / "PROGRESS" / "Sinister Sanctum.md"
-    if not log.exists():
-        return "[yellow]no PROGRESS log found[/]"
     try:
-        lines = log.read_text(encoding="utf-8").splitlines()
-        out = []
-        count = 0
-        for ln in lines:
-            if ln.startswith("## "):
-                count += 1
-                if count > 5:
-                    break
-                out.append(ln)
-        return "[bold]Recent changes[/]\n" + "\n".join(out)
+        r = subprocess.run(
+            ["git", "-C", str(sr), "log", f"--oneline", f"-{count}"],
+            capture_output=True, text=True, timeout=5,
+        )
     except Exception as e:
-        return f"[red]changelog: {e}[/]"
+        return f"[red]/changelog: git failed: {e}[/]"
+
+    body = r.stdout.rstrip() or "(no commits)"
+
+    # Try rich.Panel render
+    try:
+        from rich.console import Console
+        from rich.panel import Panel
+        import io
+        buf = io.StringIO()
+        Console(file=buf, force_terminal=True, width=120,
+                color_system="truecolor").print(
+            Panel(body,
+                  title=f"Changelog · last {count}",
+                  border_style="cyan",
+                  padding=(0, 1)))
+        return buf.getvalue().rstrip("\n")
+    except Exception:
+        return f"[bold]Changelog · last {count}[/]\n{body}"
 
 
 # ----- session commands ---------------------------------------------------
@@ -1185,23 +1288,125 @@ def _cmd_account(args, pane, app) -> str:
 
 
 def _cmd_effort(args, pane, app) -> str:
+    """jcode /effort — set reasoning effort level. Persists to forge-prefs.json.
+
+    Levels: none | low | medium | high | xhigh.
+    """
+    prefs = _load_forge_prefs()
+    current = prefs.get("reasoning_effort") or state("effort")
     if not args:
-        return f"  effort = {state('effort')}"
+        return f"  effort = {current}"
     val = args[0].lower()
     if val not in {"none", "low", "medium", "high", "xhigh"}:
         return "[yellow]/effort: none|low|medium|high|xhigh[/]"
-    set_state("effort", val); return f"  effort → {val}"
+    prev = current
+    prefs["reasoning_effort"] = val
+    try:
+        path = _save_forge_prefs(prefs)
+    except Exception as e:
+        return f"[red]/effort: persist failed: {e}[/]"
+    set_state("effort", val)
+    return f"  effort: {prev} → {val}  [dim]({path})[/]"
 
 
 def _cmd_fast(args, pane, app) -> str:
-    if not args:
-        return f"  fast = {state('fast_mode')}"
+    """jcode /fast — toggle OpenAI/Codex fast mode. Persists fast_mode bool.
+
+    /fast            -> print status
+    /fast on         -> enable
+    /fast off        -> disable
+    /fast status     -> print status
+    /fast default    -> reset to off
+    """
+    prefs = _load_forge_prefs()
+    current = bool(prefs.get("fast_mode", False))
+    if not args or args[0].lower() == "status":
+        return f"  fast = {'on' if current else 'off'}"
     val = args[0].lower()
-    if val not in {"on", "off", "status", "default"}:
+    if val not in {"on", "off", "default"}:
         return "[yellow]/fast: on|off|status|default[/]"
-    if val != "status":
-        set_state("fast_mode", val)
-    return f"  fast → {state('fast_mode')}"
+    new_val = True if val == "on" else False  # off + default both -> False
+    prefs["fast_mode"] = new_val
+    try:
+        path = _save_forge_prefs(prefs)
+    except Exception as e:
+        return f"[red]/fast: persist failed: {e}[/]"
+    set_state("fast_mode", "on" if new_val else "off")
+    return f"  fast: {'on' if current else 'off'} → {'on' if new_val else 'off'}  [dim]({path})[/]"
+
+
+def _cmd_transport(args, pane, app) -> str:
+    """jcode /transport — set provider transport mode. Persists to forge-prefs.
+
+    Modes: auto | https | websocket. Some providers (Anthropic, OpenAI) only
+    support https; the flag is accepted regardless and documented gracefully —
+    transport selection is honored by the future provider router.
+    """
+    prefs = _load_forge_prefs()
+    current = prefs.get("transport", "auto")
+    if not args:
+        return f"  transport = {current}"
+    val = args[0].lower()
+    if val not in {"auto", "https", "websocket"}:
+        return "[yellow]/transport: auto|https|websocket[/]"
+    prev = current
+    prefs["transport"] = val
+    try:
+        path = _save_forge_prefs(prefs)
+    except Exception as e:
+        return f"[red]/transport: persist failed: {e}[/]"
+    note = ""
+    if val == "websocket":
+        note = ("\n  [dim]note: Anthropic + OpenAI providers only support https; "
+                "the websocket flag will be ignored for those providers.[/]")
+    return f"  transport: {prev} → {val}  [dim]({path})[/]" + note
+
+
+def _cmd_alignment(args, pane, app) -> str:
+    """jcode /alignment — text alignment preference. Persists text_alignment.
+
+    Args: status | centered | left.
+    Note: the actual rendering switch is not wired yet; the flag is read by
+    the future renderer (jcode-style centered output vs. default left).
+    """
+    prefs = _load_forge_prefs()
+    current = prefs.get("text_alignment", "left")
+    if not args or args[0].lower() == "status":
+        return (f"  text_alignment = {current}\n"
+                f"  [dim]note: renderer hook not yet wired — flag persisted only[/]")
+    val = args[0].lower()
+    if val not in {"centered", "left"}:
+        return "[yellow]/alignment: status|centered|left[/]"
+    prev = current
+    prefs["text_alignment"] = val
+    try:
+        path = _save_forge_prefs(prefs)
+    except Exception as e:
+        return f"[red]/alignment: persist failed: {e}[/]"
+    return (f"  alignment: {prev} → {val}  [dim]({path})[/]\n"
+            f"  [dim]note: renderer hook not yet wired — future renderer will read this[/]")
+
+
+def _cmd_dictate(args, pane, app) -> str:
+    """jcode /dictate — launch external dictation command.
+
+    Reads SINISTER_DICTATE_CMD env var. If set, runs it (detached, fire-and-
+    forget). If unset, prints a hint with the env-var name.
+    """
+    cmd = os.environ.get("SINISTER_DICTATE_CMD", "").strip()
+    if not cmd:
+        return "[dictate] set SINISTER_DICTATE_CMD env var to a dictation launcher command"
+    try:
+        if platform.system() == "Windows":
+            # use shell=True so things like "start dictation.exe" work
+            subprocess.Popen(cmd, shell=True)
+        else:
+            subprocess.Popen(cmd, shell=True,
+                             stdout=subprocess.DEVNULL,
+                             stderr=subprocess.DEVNULL)
+        return f"  [dictate] launched: {cmd}"
+    except Exception as e:
+        return f"[red]/dictate: launch failed ({cmd}): {e}[/]"
 
 
 # ----- system commands ----------------------------------------------------
@@ -1501,9 +1706,8 @@ SLASH_COMMANDS: dict[str, dict[str, Any]] = {
     "jcode":      _entry(_cmd_jcode,     "sidecar launch of prebuilt jcode.exe with Sinister env injected", "agent"),
     "effort":     _entry(_cmd_effort,    "none|low|medium|high|xhigh",                "agent"),
     "fast":       _entry(_cmd_fast,      "on|off|status|default",                     "agent"),
-    "transport":  _entry(_stub("transport", "set transport mode auto|https|websocket",
-                                "Sinister fleet uses Claude Code CLI; transport is fixed."), "agent"),
-    "alignment":  _entry(_stub("alignment", "text alignment: status|centered|left", ""), "ui"),
+    "transport":  _entry(_cmd_transport, "set transport mode auto|https|websocket",   "agent"),
+    "alignment":  _entry(_cmd_alignment, "text alignment: status|centered|left",      "ui"),
 
     # SYSTEM
     "reload":     _entry(_cmd_reload,    "reload — restart RKOJ.exe",                 "system"),
@@ -1516,8 +1720,7 @@ SLASH_COMMANDS: dict[str, dict[str, Any]] = {
     "tools":      _entry(_cmd_tools,     "list builtin tools + sinister-cli + MCP",   "system"),
     "skills":     _entry(_cmd_skills,    "list discovered skills",                    "skills"),
     "skill":      _entry(_cmd_skill,     "list | show <name> | run <name> | reload   (jcode skill-loader)", "skills"),
-    "dictate":    _entry(_stub("dictate", "external speech-to-text",
-                                "configure STT command in agent-prefs.json"), "system"),
+    "dictate":    _entry(_cmd_dictate,   "external speech-to-text (SINISTER_DICTATE_CMD)", "system"),
 
     # LOOPS (improve / refactor / overnight)
     "improve":    _entry(_stub("improve", "autonomous code-quality loop",
