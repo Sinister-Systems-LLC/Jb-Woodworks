@@ -1,4 +1,4 @@
-# Sinister Sanctum :: resume-point writer (v1.1 :: 2026-05-21)
+# Sinister Sanctum :: resume-point writer (v1.2 :: 2026-05-21)
 # Operator: "i need all projects to resume where they left off and always
 # ahve resume points." Writes a structured resume-point JSON at
 # _shared-memory/resume-points/<project>/<UTC>.json with everything the
@@ -9,6 +9,11 @@
 #       AgentName arrived as a slug, AND inbox lookup slugifies AgentName (lower+dashes)
 #       so "Sinister Sanctum" -> "sanctum" / "sinister-sanctum" works either way.
 #       Was: progress_top3 came back empty when launcher passed slug. Fixed.
+# v1.2: latestPlanDir now kebab-cases ProjectKey before regex + tries the
+#       "sinister-" stripped variant. Was: ProjectKey='Sinister Sanctum'
+#       matched no plan dirs (all kebab-cased like 'sanctum-coaudit-...').
+#       Also: Resolve-InboxSlug known-prefix carve-out extended from
+#       just 'sanctum' to forge/term/panel/kernel-apk/apk/freeze too.
 
 param(
     [Parameter(Mandatory)][string]$SanctumRoot,
@@ -91,8 +96,21 @@ $latestPlanDir = $null
 $latestPlanArtifact = $null
 $plansRoot = Join-Path $SanctumRoot '_shared-memory\plans'
 if (Test-Path $plansRoot) {
+    $projectPatterns = @()
+    $projectPatterns += [regex]::Escape($ProjectKey)
+    $projectKebab = $ProjectKey.Trim().ToLower() -replace '\s+', '-'
+    if ($projectKebab -ne $ProjectKey.ToLower()) {
+        $projectPatterns += [regex]::Escape($projectKebab)
+    }
+    if ($projectKebab -match '^sinister-(.+)$') {
+        $projectPatterns += [regex]::Escape($matches[1])
+    }
+    $dotted = $ProjectKey -replace '-', '.'
+    if ($dotted -ne $ProjectKey) { $projectPatterns += [regex]::Escape($dotted) }
+    $combinedPattern = '(?i)(' + (($projectPatterns | Select-Object -Unique) -join '|') + ')'
+
     $candidate = Get-ChildItem $plansRoot -Directory -ErrorAction SilentlyContinue |
-        Where-Object { $_.Name -match $ProjectKey -or $_.Name -match ($ProjectKey -replace '-', '.') } |
+        Where-Object { $_.Name -match $combinedPattern } |
         Sort-Object LastWriteTime -Descending |
         Select-Object -First 1
     if ($candidate) {
@@ -108,7 +126,8 @@ function Resolve-InboxSlug {
     param([string]$Name)
     if (-not $Name) { return 'test' }
     $s = $Name.Trim().ToLower() -replace '\s+', '-'
-    if ($s -match '^sinister-(.+)$' -and $matches[1] -in @('sanctum')) {
+    $sinisterShortSlugs = @('sanctum','forge','term','panel','kernel-apk','apk','freeze','vault','os')
+    if ($s -match '^sinister-(.+)$' -and $matches[1] -in $sinisterShortSlugs) {
         return $matches[1]
     }
     return $s
