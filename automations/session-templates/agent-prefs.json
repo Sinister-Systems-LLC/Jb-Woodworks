@@ -40,7 +40,11 @@
                         "rkoj-workstation":  {
                                                  "agent_name":  "rkoj-workstation",
                                                  "accent_color":  "purple"
-                                             }
+                                             },
+                        "sinister-claw":  {
+                                              "agent_name":  "sinister-claw",
+                                              "accent_color":  "purple"
+                                          }
                     },
     "available_colors":  [
                              "purple",

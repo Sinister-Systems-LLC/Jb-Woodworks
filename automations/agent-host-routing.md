@@ -122,3 +122,49 @@ sinister login --logout --provider <X>        # revoke from vault
 ### Preference order override
 
 `SINISTER_LOGIN_PREFERENCE=openai,claude,ollama` (env var) overrides the default order `claude > openai > gemini > fireworks > openai-compatible > lmstudio > ollama > copilot > azure > minimax > alibaba-coding-plan`. `resolve_active()` returns the first configured provider in that order.
+
+## Per-provider routing posture (added 2026-05-21T14:10Z post sinister-usage ship)
+
+> Mirror of the task-class table from the provider's perspective. When the dispatcher picks a provider first (e.g. operator said "use Ollama") and then needs to know what task classes it should accept, consult this. When the dispatcher picks a task class first, use the top-of-doc table.
+
+| Provider | Primary for | Fallback for | Quota visibility (via `sinister-usage`) |
+|---|---|---|---|
+| `claude` (Anthropic) | Multi-file refactor (1M), deep reasoning, tool-using agentic, **Forge / Sanctum / Kernel-APK** primary | All Claude family fallback inside itself (Opus↔Sonnet↔Haiku) | ❌ console-only (`console.anthropic.com/settings/usage`) — `sinister-usage check claude` → endpoint_known=no |
+| `openai` (GPT-4o / Codex) | Peer-review (gpt-4o-mini), reasoning second-opinion (o1-mini) | Multi-file refactor, code-gen from spec, mermaid generation | ✅ `/v1/usage` (bearer; date query-string required) — `sinister-usage check openai` returns full row |
+| `gemini` (Google) | (none yet — operator-gated) | Mermaid / structural viz alt-renderer | ❌ GCP-billing aggregated; per-key endpoint not exposed |
+| `copilot` (GitHub) | IDE-side completions only (NOT autonomous sessions) | — | ✅ `/user/copilot/billing` (bearer; personal-account endpoint) |
+| `azure` (Azure OpenAI) | Enterprise-tenant / dealership-IT (post-Freeze PH14) | OpenAI primary fallback if direct API rate-limited | ❌ Azure Cost Management (not the OpenAI-shape API) |
+| `alibaba-coding-plan` (Qwen / DashScope) | Region-specific deferred | — | ❌ DashScope console only |
+| `fireworks` (open-weight hosted) | Hosted Llama / Mixtral when Ollama down | Local-fallback ladder (when both Ollama + LM Studio degraded) | ✅ `/inference/v1/usage` (bearer; tier-dependent; confirm field on current plan) |
+| `minimax` | Region-specific deferred | — | ❌ platform.minimaxi.com console |
+| `lmstudio` (local) | Privacy-sensitive, offline | Bulk classification when Ollama down | local — no quota, no cost; `sinister-usage check lmstudio` → auth=local, skipped from reports |
+| `ollama` (local) | Embedding generation (`nomic-embed-text`), bulk classification (small models), privacy-sensitive (`llama3.3:70b`) | LM Studio when Ollama down | local — no quota; same as above |
+| `openai-compatible` (vLLM / TGI / LiteLLM / Groq / Together / OpenRouter) | Catch-all when none of the named providers fit | Last-resort hosted fallback | varies; set `SINISTER_USAGE_OAI_COMPAT_URL` to override the registry entry |
+
+### Composition with the v0.1.0 tools
+
+The router consults `sinister-usage` at dispatch-time to skip providers with degraded quota visibility — but **quota is advisory, not gating** in v0.1.0 (no actual quota numbers returned). The router consults `sinister-login` to skip providers without a configured key (returning `provider_status()["configured"] = False`). Concretely:
+
+```python
+# Pseudocode the dispatcher should follow
+from sinister_login import status_all, resolve_active
+from sinister_usage import check as usage_check
+
+def pick_provider(task_class):
+    primary_chain = ROUTING_TABLE[task_class]  # from agent-host-routing.md
+    for slug in primary_chain:
+        st = next((s for s in status_all() if s["slug"] == slug), None)
+        if st and st["configured"]:
+            return slug
+    return resolve_active()["slug"] if resolve_active() else None
+```
+
+### v0.2.0 promotion path
+
+When `sinister-usage` ships `--remote` (v0.2.0), the dispatcher gains real quota numbers and can:
+- Skip a primary that's at >95% of monthly quota
+- Pick the fallback that has the largest remaining budget
+- Refuse the task entirely if all providers in the chain are quota-exhausted
+- Surface a `[QUOTA-LOW]` chip in Forge picker Q4 and Term toolbar
+
+Until v0.2.0 lands, dispatchers should call `sinister-usage check <slug>` as a hint only — `endpoint_known=True` means "operator will be able to see real usage in console / dashboard", not "we currently know how much budget remains".

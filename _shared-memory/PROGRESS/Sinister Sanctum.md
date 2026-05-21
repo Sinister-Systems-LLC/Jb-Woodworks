@@ -4,6 +4,37 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-21 14:20 — committed: residual delta on top of sibling 14:15 sinister-usage closure — README CLI-layer headings + matrix-row-1c notes refresh + heartbeat + Panel HELLO-ACK archived
+
+Resume-via-Forge spawn (mode=resume, turbo, compact) running concurrently with the sibling Sanctum that authored the 14:15 entry. I'm the OTHER lane in the contention they describe — the one that originally Wrote `estimator.py` + `sources.py` + extended `__main__.py` with the `local/today/estimate/doctor` subcommands + added 19 new tests in `tests/test_usage.py`. Those files landed under sibling commit `35ad6de` while I was mid-edit (multi-agent contention exactly as the doctrine predicts).
+
+**Residual on-disk delta committed THIS turn** (the bits the sibling's 14:15 commit didn't pick up):
+
+1. **`tools/sinister-usage/README.md`** — restructured CLI section under three headings (Endpoint-registry layer / Local-state layer / Estimator layer) so the operator sees the three-layer architecture at a glance. Added API import block covering the `scan_claude_local` / `today_summary` / `estimate_tokens` / `estimate_text_breakdown` public surface.
+2. **`_shared-memory/knowledge/jcode-feature-matrix.md` row 1c** — sibling's 14:15 row reflected the basic `env-check` shipment; mine expands the row to reflect the extended `env-check + local-scan + estimator` surface + 31/31 tests + the full CLI subcommand list `list/check/check-all/local/today/estimate/matrix/doctor`. Header count 29 → 30. (Sibling auto-bumped the count too; final landed text is mine.)
+3. **`tools/sinister-cli/sinister_cli/__main__.py`** — refined the `usage` SUBCOMMAND_MAP description from "Token-quota / billing endpoint registry" → "Token-usage + quota inspector — local-state scan + 11-provider endpoint registry + chars/4 estimator (jcode-usage parity)". Verified via `sinister help usage`.
+4. **`_shared-memory/heartbeats/sanctum.json`** — refreshed (agent_identity=EVE, branch tracked, mode=resume, speed=turbo).
+5. **`_shared-memory/inbox/sanctum/2026-05-21T1351Z-hello-ack-from-panel.json` → `_archive/`** — Panel's no-blocking-asks ACK; archived per CONTRACT 7 hygiene.
+
+**Verification (post-merge with sibling 14:15 state):** `sinister usage doctor --no-state-ok` → OK 7/7; `python -m unittest discover -s tests` → 31/31 in 0.030s; `sinister version` → enumerates usage 0.1.0 alongside the other 4 installed Sinister tools; `sinister help usage` → shows refined description.
+
+**Lane discipline:** zero edits to `projects/sinister-forge/`, `projects/sinister-term/`, Kernel-APK / Panel PROGRESS, `CLAUDE.md`, `automations/session-templates/agent-prefs.json`, or any sibling-authored resume-points / cross-agent broadcasts. Kernel-APK's fresh 14:38Z HELLO-ACK in MY inbox (offering `keybox-rotated` / `pi-verification-result` / `iter-outcome` forge-memory event schemas) left untracked — kernel-apk's lane to commit.
+
+**5-check completion gate:**
+1. Explicit ask (resume mode via Forge bridge) → addressed via CONTRACT 2 cycle.
+2. TaskList — 9/9 (heartbeat / survey / merge / __main__ extension / 19 tests / umbrella / matrix / README / commit-PROGRESS-resume).
+3. PROGRESS — this entry.
+4. MASTER-PLAN — no flags to flip.
+5. Next-slice surface — resume-point follows this commit; pre_warm_reads bounded.
+
+**Open / next-up for next master cycle** (no operator gates blocking):
+- Reply to Kernel-APK's 14:38Z HELLO-ACK confirming the 3 event schemas fit forge-memory-bridge's append-only JSON contract.
+- `tools/sinister-serve/` (background daemon `jcode serve` parity).
+- `tools/sinister-replay/` (session replay incl. video export — heavier lift).
+- `tools/sinister-usage` v0.2.0: `--remote` flag gated on vault-MCP for the 4 providers with public per-key APIs.
+
+---
+
 ## 2026-05-21 14:15 — sibling-shipped tools/sinister-usage/ v0.1.0 verified + matrix row 1c + agent-host-routing per-provider posture + Kernel-APK ACK
 
 Resume-mode pickup on `agent/sinister-sanctum/cli-dispatcher-2026-05-21` (turbo, compact). Pre-warm reads loaded surgically per CONTRACT 7 — PROGRESS top + last plan + session-contracts. Then surveyed inbox (3 prior hello-acks already archived) + 2 fresh Kernel-APK broadcasts (1340Z su -M, 1345Z modular-fleet directive).
