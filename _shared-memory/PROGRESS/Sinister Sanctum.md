@@ -4,6 +4,30 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-21 15:20 — in-flight: 4 parallel agents executing post-v0.5.0 jcode-parity sweep (autonomous, no operator gating)
+
+Operator final directive (image 23): *"continue working on all of this with all the parrallel agents you need to get it done. create a plan to complete evrything fast and without my input"*.
+
+**Plan**: 4 non-overlapping parallel agents spawned simultaneously to complete the remaining jcode-parity gaps in a single sweep.
+
+| Agent | Mission | Files |
+|---|---|---|
+| A `a273b83d5916d05d5` | Wire `sidebar.py` + `adb_panel.py` into Forge `compose()` so Sinister Panel UI lands | `forge/app.py`, `RKOJ.spec` hidden imports |
+| B `a2948793227911827` | Replace one-shot `claude -p` with Anthropic SDK direct tool-use loop → multi-step reasoning visible | `forge/spawn/anthropic_direct.py` (new), `RKOJ-entry.py` |
+| C `ab325e4a6f94acfe0` | Mine jcode Rust source for batch-tool-call patterns + thinking stream + spinner rendering | read-only research, returns under 600w |
+| D `afc1a4b20c661bb16` | Build `tools/sinister-model/` v0.1.0 (5-file layout, 11-provider model registry) | new tool dir |
+
+**Non-overlap guarantee**:
+- A owns `forge/app.py` + Forge panes
+- B owns `forge/spawn/` + `RKOJ-entry.py`
+- C is read-only (no edits)
+- D owns `tools/sinister-model/` (greenfield)
+- All four touch `RKOJ.spec` hiddenimports — last writer wins; A/B/D should each add their own and not delete each other's entries
+
+Master agent (this session) does: this PROGRESS update + cross-agent broadcast + plan doc + final rebuild + smoke-test after all four return.
+
+---
+
 ## 2026-05-21 14:59 — shipped: RKOJ.exe v0.5.0 — jcode-shell rewrite (one `>` prompt, all memory features, claude -p streaming)
 
 Operator escalations across the session funneled to: *"i just want the complet jcode appraoch like this and i just tell it what to do and it goes or i can use /resume and see resume based on project"* + *"make sure we use the terminal we built with all of this and make sure it funcitons like jcode does. and make sure we incorp all jcodes memory features into our system"* + *"create a plan to complete all of this without the need of me"*. Reset architecture, shipped autonomously.

@@ -12,6 +12,10 @@ The Sanctum-side mirror of `SESSION-START/02-OPERATOR-QUEUE.md`, with checkboxes
 
 ## 2026-05-21 — Sanctum session surfaces (read-only, low-stakes)
 
+- [ ] 🟠 **Set `ANTHROPIC_API_KEY` env var (system)** — RKOJ.exe v0.6.0 will switch to Anthropic SDK direct tool-use loop (multi-step reasoning visible like jcode) **only when this env is set**. Without it, RKOJ falls back to the existing `claude -p` one-shot path. One-line: `setx ANTHROPIC_API_KEY "sk-ant-..."` then restart any shell + RKOJ.exe. See `docs/ENV-VARIABLES.md` for the canonical list.
+
+
+
 - [ ] 🟡 **Desktop bat byte-parity drift** — sibling sanctum audit (14:00 PROGRESS) found three Desktop bats out of sync with the canonical tree at `D:\Sinister Sanctum\tools\session-launcher\`:
   - `Sinister Start.bat` — 137-byte drift (Desktop 3604 / Tree 3741)
   - `Personal Project start.bat` — 90-byte drift
