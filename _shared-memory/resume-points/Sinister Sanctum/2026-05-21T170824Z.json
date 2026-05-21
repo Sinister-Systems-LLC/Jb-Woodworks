@@ -1,0 +1,92 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-21T17:08:24Z",
+    "project": "Sinister Sanctum",
+    "agent_name": "sanctum",
+    "agent_identity": "EVE",
+    "mode": "resume",
+    "focus_intent": "Massive D-drive reorg + RKOJ.exe v1.1.0 ship complete. ~50 commits this session. Operator now has: clean Desktop with single RKOJ.exe (v1.1.0, 52 MB, Forge TUI default), D:\\Backups\\ consolidated, D:\\sinister-vault + D:\\Sinister\\Sinister Skills moved into Sanctum with backward-compat junctions (1300+ refs preserved), 5 sinister-* projects relocated, 4 brain doctrines, 3 new skills, sinister-diagnose tool, setup wizard. Pending operator action: delete D:\\Desktop\\RKOJ\\ folder (76 MB old multi-file build), D:\\Desktop\\RKOJ.bat + RKOJ.crash.log, and decide on D:\\Sinister → D:\\Personal rename.",
+    "git": {
+        "branch": "agent/sinister-sanctum/cli-dispatcher-2026-05-21",
+        "head": "55f7c7f",
+        "head_msg": "chore(sanctum): D-drive Phase 3 executed — sinister-vault + Sinister Skills + 4/5 projects moved into Sanctum with backward-compat junctions (preserves 1300+ refs)",
+        "session_total_commits": "~50",
+        "key_phase_3_commit": "55f7c7f"
+    },
+    "rkoj_exe": {
+        "desktop_path": "C:/Users/Zonia/Desktop/RKOJ.exe",
+        "version": "1.1.0",
+        "size_bytes": 52299535,
+        "built_at": "2026-05-21T12:48 local",
+        "default_mode": "Forge TUI (sidebar + toolbar + statusbar + NiriWorkspaceGrid in Agents tab + Sinister Panel chrome theme)",
+        "shell_mode_arg": "--shell",
+        "slash_commands_count": 75
+    },
+    "d_drive_reorg": {
+        "phase_1_complete": true,
+        "phase_2_complete": true,
+        "phase_3_complete": true,
+        "junctions_created": [
+            "D:/sinister-vault -> D:/Sinister Sanctum/_vault (728 refs preserved)",
+            "D:/Sinister/Sinister Skills -> D:/Sinister Sanctum/_sinister-skills (566 refs preserved)",
+            "D:/Sinister Sanctum/Sinister Skills -> D:/Sinister Sanctum/_sinister-skills (alias)",
+            "D:/Sinister-Term-WT -> D:/Sinister Sanctum/worktrees/sinister-term-wt"
+        ],
+        "moved_into_sanctum": [
+            "_vault (1 TB collab store)",
+            "_sinister-skills (12 numbered category dirs)",
+            "worktrees/sinister-term-wt",
+            "projects/sinister-cell-network",
+            "projects/sinister-dashboard-skeleton",
+            "projects/sinister-eve",
+            "projects/sinister-letstext",
+            "projects/sinister-jokr (robocopy still draining 470 MB)"
+        ],
+        "consolidated_backups": "D:/Backups/ (formerly D:/_backups/ + D:/sinister-sanctum-backup-2026-05-21/) — MANIFEST.md + sanctum-daily/2026-05-21/ (4.4 GB) + custodian/ + _logs/ + _manifest.jsonl",
+        "removed": [
+            "D:/Sinister LLC symlink (was redundant alias)",
+            "D:/tmp/sanctum-worktree-* (3 stale scratch dirs, 17 files archived)"
+        ],
+        "operator_action_needed": [
+            "Delete D:/Desktop/RKOJ/ (76 MB old multi-file PyInstaller build — superseded by onefile RKOJ.exe)",
+            "Delete D:/Desktop/RKOJ.bat (replaced by tools/session-launcher/RKOJ-Start.bat)",
+            "Delete D:/Desktop/RKOJ.crash.log (old)",
+            "Decide on D:/Sinister → D:/Personal rename (Phase 3 step 14 deferred)",
+            "Custodian daemon has D:/_backups/snapshots/sinister-sanctum-llc/ open — remaining merge after daemon stop"
+        ]
+    },
+    "session_highlights": {
+        "agents_spawned": "30+",
+        "form_parity_landed": "NiriWorkspaceGrid in Agents tab (niri-wm port), Sinister Panel chrome theme (7497-char THEME_CSS), /mermaid command, /help overlay form, /start picker, 75 slash commands",
+        "new_tools": "tools/sinister-model, tools/sanctum-backup, tools/sinister-jcode-shim, tools/sinister-diagnose, tools/sinister-recovery-watchdog",
+        "new_skills": "_template, sinister-status, forge-build, d-drive-audit, rkoj-rebuild, sinister-sweep (6 bundled)",
+        "brain_doctrines_added": "jcode-agentic-loop-patterns, parallel-agent-orchestration, junction-based-path-migration, pyinstaller-tmp-race, rkoj-form-parity-journey, niri-scrollable-column",
+        "test_pass_rate": "187/187 pytest (sinister-login 21 + sinister-usage 31 + sinister-swarm 7 + sinister-model 72 + sanctum-backup 47 + forge-memory-bridge 9), 56/56 sinister-diagnose, GREEN integration test"
+    },
+    "pre_warm_reads": [
+        "CLAUDE.md",
+        "_shared-memory/PROGRESS/Sinister Sanctum.md",
+        "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+        "_shared-memory/plans/rkoj-v1.0.2-review-test-2026-05-21/plan.md",
+        "_shared-memory/audits/d-drive-path-refs-2026-05-21.json",
+        "_shared-memory/audits/rkoj-integration-test-2026-05-21.md",
+        "_shared-memory/audits/sinister-projects-migration-2026-05-21.md",
+        "_shared-memory/audits/github-linkage-2026-05-21.md",
+        "_shared-memory/audits/dedupe-2026-05-21.md",
+        "_shared-memory/audits/tmp-worktrees-triage-2026-05-21.md",
+        "_shared-memory/knowledge/jcode-agentic-loop-patterns-port-to-python.md",
+        "_shared-memory/knowledge/parallel-agent-orchestration-pattern-2026-05-21.md",
+        "_shared-memory/knowledge/junction-based-path-migration-pattern.md",
+        "_shared-memory/knowledge/rkoj-v1.0-to-v1.1-form-parity-journey.md",
+        "projects/rkoj/README.md",
+        "projects/rkoj/MANIFEST.json",
+        "projects/rkoj/CHANGELOG.md",
+        "projects/rkoj/INTEGRATION.md",
+        "docs/RKOJ-OPERATOR-GUIDE.md",
+        "D:/Backups/MANIFEST.md",
+        "automations/build/forge-exe/RKOJ-entry.py",
+        "projects/sinister-forge/source/forge/panes/niri_workspace.py",
+        "projects/sinister-forge/source/forge/theme.py",
+        "projects/sinister-forge/source/forge/commands.py"
+    ]
+}
