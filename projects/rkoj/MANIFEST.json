@@ -65,12 +65,28 @@
       "role": "Model Context Protocol Python SDK bundled in EXE (v1.4.0). Phase 2: forge.bridge wires this to ~/.claude/.mcp.json (eve / sinister-panel / sinister-snap / sinister-tiktok / vault / ruflo)"
     },
     {
-      "name": "workstation",
-      "path": "automations/window-manager",
-      "kind": "workstation",
+      "name": "rkoj-qt",
+      "path": "tools/sinister-rkoj-qt",
+      "kind": "rkoj-native",
       "enabled": true,
-      "version": "1.0.0",
-      "role": "Console window manager (pywebview + FastAPI :5077)"
+      "version": "1.5.0",
+      "role": "PyQt6 native desktop GUI — frameless rounded Sinister Panel UI + Excel-style ribbon + niri-scroll jcode terminals. Subsumes the old workstation/window-manager pywebview path."
+    },
+    {
+      "name": "rkoj-qt-extensions",
+      "path": "tools/sinister-rkoj-qt/extensions",
+      "kind": "extension-dir",
+      "enabled": true,
+      "version": "0.1.0",
+      "role": "Manifest-driven plugin extensions for RKOJ (vault, watchdog, brain shipped; vault/swarm/memory/mermaid/skills/mcp/model/backup/login/usage/diagnose planned). Forever-expandable per sinister-rkoj-extensibility-doctrine.md."
+    },
+    {
+      "name": "claw",
+      "path": "projects/sinister-claw",
+      "kind": "mobile-companion",
+      "enabled": true,
+      "version": "0.1.0",
+      "role": "iOS+Android companion app (Expo+RN) — drives RKOJ fleet via Forge bridge over Tailscale. Part of the unified RKOJ surface (mobile counterpart)."
     },
     {
       "name": "skills-sanctum",
