@@ -1,0 +1,6857 @@
+{
+  "scanned_at": "2026-05-21T16:30:07Z",
+  "scan_root": "D:\\Sinister Sanctum",
+  "total_files_scanned": 3508,
+  "total_refs_found": 1100,
+  "truncated": false,
+  "truncated_delta": 0,
+  "time_budget_hit": false,
+  "elapsed_seconds": 7.44,
+  "summary_by_pattern": {
+    "D:\\Sinister\\Sinister Skills": {
+      "count": 149,
+      "files": 74
+    },
+    "D:\\Sinister\\ (not Sanctum)": {
+      "count": 312,
+      "files": 111
+    },
+    "D:\\sinister-vault\\": {
+      "count": 114,
+      "files": 34
+    },
+    "D:\\Sinister-Term-WT\\": {
+      "count": 18,
+      "files": 7
+    },
+    "D:\\_backups\\": {
+      "count": 26,
+      "files": 19
+    },
+    "D:\\Sinister LLC\\": {
+      "count": 13,
+      "files": 9
+    },
+    "substring:Sinister Skills": {
+      "count": 174,
+      "files": 76
+    },
+    "substring:sinister-vault": {
+      "count": 294,
+      "files": 67
+    }
+  },
+  "high_impact_files": [
+    {
+      "path": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "ref_count": 74,
+      "patterns": [
+        "D:\\Sinister LLC\\",
+        "D:\\Sinister-Term-WT\\",
+        "D:\\Sinister\\ (not Sanctum)",
+        "D:\\Sinister\\Sinister Skills",
+        "D:\\_backups\\",
+        "D:\\sinister-vault\\",
+        "substring:Sinister Skills",
+        "substring:sinister-vault"
+      ]
+    },
+    {
+      "path": "skills/_REGISTRY.yaml",
+      "ref_count": 70,
+      "patterns": [
+        "D:\\Sinister\\ (not Sanctum)",
+        "D:\\Sinister\\Sinister Skills",
+        "D:\\_backups\\",
+        "D:\\sinister-vault\\",
+        "substring:Sinister Skills",
+        "substring:sinister-vault"
+      ]
+    },
+    {
+      "path": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "ref_count": 63,
+      "patterns": [
+        "D:\\Sinister-Term-WT\\",
+        "D:\\Sinister\\ (not Sanctum)",
+        "D:\\Sinister\\Sinister Skills",
+        "D:\\sinister-vault\\",
+        "substring:Sinister Skills",
+        "substring:sinister-vault"
+      ]
+    },
+    {
+      "path": "tools/sanctum-git/vault-integration.md",
+      "ref_count": 34,
+      "patterns": [
+        "D:\\sinister-vault\\",
+        "substring:sinister-vault"
+      ]
+    },
+    {
+      "path": "_shared-memory/case-studies/2026-05-19T1200Z-sanctum-git-vs-sanctum-vault.md",
+      "ref_count": 26,
+      "patterns": [
+        "D:\\sinister-vault\\",
+        "substring:sinister-vault"
+      ]
+    },
+    {
+      "path": "automations/refresh-claude-memory.ps1",
+      "ref_count": 24,
+      "patterns": [
+        "D:\\Sinister\\ (not Sanctum)",
+        "D:\\Sinister\\Sinister Skills",
+        "substring:Sinister Skills"
+      ]
+    },
+    {
+      "path": "automations/migrate-projects.ps1",
+      "ref_count": 21,
+      "patterns": [
+        "D:\\Sinister\\ (not Sanctum)",
+        "D:\\Sinister\\Sinister Skills",
+        "substring:Sinister Skills"
+      ]
+    },
+    {
+      "path": "docs/DRIVE-ENCRYPTION.md",
+      "ref_count": 21,
+      "patterns": [
+        "D:\\Sinister\\ (not Sanctum)",
+        "D:\\Sinister\\Sinister Skills",
+        "D:\\_backups\\",
+        "substring:Sinister Skills"
+      ]
+    },
+    {
+      "path": "docs/ENV-VARIABLES.md",
+      "ref_count": 20,
+      "patterns": [
+        "D:\\Sinister\\ (not Sanctum)",
+        "D:\\Sinister\\Sinister Skills",
+        "D:\\sinister-vault\\",
+        "substring:Sinister Skills",
+        "substring:sinister-vault"
+      ]
+    },
+    {
+      "path": "automations/start-sinister-session.ps1",
+      "ref_count": 19,
+      "patterns": [
+        "D:\\Sinister\\ (not Sanctum)",
+        "D:\\Sinister\\Sinister Skills",
+        "D:\\_backups\\",
+        "D:\\sinister-vault\\",
+        "substring:Sinister Skills",
+        "substring:sinister-vault"
+      ]
+    },
+    {
+      "path": "tools/sanctum-git/setup-vault-data-dir.ps1",
+      "ref_count": 17,
+      "patterns": [
+        "D:\\sinister-vault\\",
+        "substring:sinister-vault"
+      ]
+    },
+    {
+      "path": "_shared-memory/DIRECTIVES.md",
+      "ref_count": 17,
+      "patterns": [
+        "D:\\Sinister\\ (not Sanctum)",
+        "D:\\Sinister\\Sinister Skills",
+        "D:\\sinister-vault\\",
+        "substring:Sinister Skills",
+        "substring:sinister-vault"
+      ]
+    },
+    {
+      "path": "_shared-memory/knowledge/sinister-vault-architecture.md",
+      "ref_count": 17,
+      "patterns": [
+        "D:\\sinister-vault\\",
+        "substring:sinister-vault"
+      ]
+    },
+    {
+      "path": "SANCTUM.md",
+      "ref_count": 16,
+      "patterns": [
+        "D:\\Sinister LLC\\",
+        "D:\\Sinister\\ (not Sanctum)",
+        "D:\\Sinister\\Sinister Skills",
+        "substring:Sinister Skills",
+        "substring:sinister-vault"
+      ]
+    },
+    {
+      "path": "skills/_INDEX.md",
+      "ref_count": 16,
+      "patterns": [
+        "D:\\Sinister\\ (not Sanctum)",
+        "D:\\Sinister\\Sinister Skills",
+        "substring:Sinister Skills"
+      ]
+    },
+    {
+      "path": "tools/sinister-vault/ACCOUNTS.md",
+      "ref_count": 16,
+      "patterns": [
+        "D:\\sinister-vault\\",
+        "substring:sinister-vault"
+      ]
+    },
+    {
+      "path": "README.md",
+      "ref_count": 15,
+      "patterns": [
+        "D:\\Sinister\\ (not Sanctum)",
+        "D:\\Sinister\\Sinister Skills",
+        "D:\\sinister-vault\\",
+        "substring:Sinister Skills",
+        "substring:sinister-vault"
+      ]
+    },
+    {
+      "path": "skills/SECURITY.md",
+      "ref_count": 15,
+      "patterns": [
+        "D:\\Sinister LLC\\",
+        "D:\\Sinister\\ (not Sanctum)",
+        "D:\\Sinister\\Sinister Skills",
+        "D:\\sinister-vault\\",
+        "substring:Sinister Skills",
+        "substring:sinister-vault"
+      ]
+    },
+    {
+      "path": "_shared-memory/audits/_scan-d-drive-refs.py",
+      "ref_count": 15,
+      "patterns": [
+        "D:\\Sinister LLC\\",
+        "D:\\Sinister-Term-WT\\",
+        "D:\\Sinister\\ (not Sanctum)",
+        "D:\\Sinister\\Sinister Skills",
+        "D:\\_backups\\",
+        "D:\\sinister-vault\\",
+        "substring:Sinister Skills",
+        "substring:sinister-vault"
+      ]
+    },
+    {
+      "path": "PARALLEL-AGENT-COORDINATION.md",
+      "ref_count": 14,
+      "patterns": [
+        "D:\\Sinister\\ (not Sanctum)",
+        "D:\\Sinister\\Sinister Skills",
+        "D:\\_backups\\",
+        "substring:Sinister Skills"
+      ]
+    }
+  ],
+  "refs": [
+    {
+      "file": "CLAUDE.md",
+      "line": 41,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "CLAUDE.md",
+      "line": 41,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "CLAUDE.md",
+      "line": 41,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "CLAUDE.md",
+      "line": 73,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "CLAUDE.md",
+      "line": 73,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "CLAUDE.md",
+      "line": 73,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "CLAUDE.md",
+      "line": 92,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "CLAUDE.md",
+      "line": 92,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "CLAUDE.md",
+      "line": 100,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "CONTRIBUTING.md",
+      "line": 35,
+      "pattern": "D:\\_backups\\",
+      "match": "D:\\_backups\\"
+    },
+    {
+      "file": "INDEX.md",
+      "line": 31,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "INDEX.md",
+      "line": 31,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "INDEX.md",
+      "line": 31,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "INDEX.md",
+      "line": 54,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "INDEX.md",
+      "line": 54,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "INDEX.md",
+      "line": 54,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "LICENSE-CANDIDATES.md",
+      "line": 9,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "PARALLEL-AGENT-COORDINATION.md",
+      "line": 24,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "PARALLEL-AGENT-COORDINATION.md",
+      "line": 24,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "PARALLEL-AGENT-COORDINATION.md",
+      "line": 24,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "PARALLEL-AGENT-COORDINATION.md",
+      "line": 25,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "PARALLEL-AGENT-COORDINATION.md",
+      "line": 25,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "PARALLEL-AGENT-COORDINATION.md",
+      "line": 25,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "PARALLEL-AGENT-COORDINATION.md",
+      "line": 28,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "PARALLEL-AGENT-COORDINATION.md",
+      "line": 29,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "PARALLEL-AGENT-COORDINATION.md",
+      "line": 30,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "PARALLEL-AGENT-COORDINATION.md",
+      "line": 31,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "PARALLEL-AGENT-COORDINATION.md",
+      "line": 32,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "PARALLEL-AGENT-COORDINATION.md",
+      "line": 33,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "PARALLEL-AGENT-COORDINATION.md",
+      "line": 34,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "PARALLEL-AGENT-COORDINATION.md",
+      "line": 35,
+      "pattern": "D:\\_backups\\",
+      "match": "D:\\_backups\\"
+    },
+    {
+      "file": "README.md",
+      "line": 11,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "README.md",
+      "line": 11,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "README.md",
+      "line": 14,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "README.md",
+      "line": 14,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "README.md",
+      "line": 15,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "README.md",
+      "line": 15,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "README.md",
+      "line": 16,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "README.md",
+      "line": 16,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "README.md",
+      "line": 21,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "README.md",
+      "line": 21,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "README.md",
+      "line": 21,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "README.md",
+      "line": 26,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "README.md",
+      "line": 130,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "README.md",
+      "line": 130,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "README.md",
+      "line": 130,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "SANCTUM.md",
+      "line": 3,
+      "pattern": "D:\\Sinister LLC\\",
+      "match": "D:\\Sinister LLC\\"
+    },
+    {
+      "file": "SANCTUM.md",
+      "line": 19,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "SANCTUM.md",
+      "line": 20,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "SANCTUM.md",
+      "line": 21,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "SANCTUM.md",
+      "line": 22,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "SANCTUM.md",
+      "line": 24,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "SANCTUM.md",
+      "line": 26,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "SANCTUM.md",
+      "line": 48,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "SANCTUM.md",
+      "line": 48,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "SANCTUM.md",
+      "line": 48,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "SANCTUM.md",
+      "line": 56,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "SANCTUM.md",
+      "line": 81,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "SANCTUM.md",
+      "line": 88,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "SANCTUM.md",
+      "line": 105,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "SANCTUM.md",
+      "line": 105,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "SANCTUM.md",
+      "line": 105,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "automations/apply-sinister-purple-theme.ps1",
+      "line": 35,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/apply-sinister-purple-theme.ps1",
+      "line": 36,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/capture-invention.ps1",
+      "line": 75,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "automations/capture-invention.ps1",
+      "line": 75,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/capture-invention.ps1",
+      "line": 75,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "automations/git-mirror.ps1",
+      "line": 20,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "automations/git-mirror.ps1",
+      "line": 20,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/git-mirror.ps1",
+      "line": 20,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "automations/git-mirror.ps1",
+      "line": 59,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "automations/git-mirror.ps1",
+      "line": 59,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/git-mirror.ps1",
+      "line": 59,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "automations/git-toolkit.ps1",
+      "line": 29,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "automations/git-toolkit.ps1",
+      "line": 29,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/git-toolkit.ps1",
+      "line": 29,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "automations/git-toolkit.ps1",
+      "line": 173,
+      "pattern": "D:\\Sinister LLC\\",
+      "match": "D:/Sinister LLC/"
+    },
+    {
+      "file": "automations/git-toolkit.ps1",
+      "line": 275,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "automations/git-toolkit.ps1",
+      "line": 275,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/git-toolkit.ps1",
+      "line": 275,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "automations/git-toolkit.ps1",
+      "line": 280,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "automations/git-toolkit.ps1",
+      "line": 280,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/git-toolkit.ps1",
+      "line": 280,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "automations/git-toolkit.ps1",
+      "line": 281,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "automations/git-toolkit.ps1",
+      "line": 281,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/git-toolkit.ps1",
+      "line": 281,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "automations/grant-claude-autonomy.ps1",
+      "line": 9,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/grant-claude-autonomy.ps1",
+      "line": 109,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/install-mcp-servers.ps1",
+      "line": 25,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "automations/install-mcp-servers.ps1",
+      "line": 25,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/install-mcp-servers.ps1",
+      "line": 25,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "automations/install-mcp-servers.ps1",
+      "line": 77,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "automations/install-mcp-servers.ps1",
+      "line": 77,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/install-mcp-servers.ps1",
+      "line": 77,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "automations/install-mcp-servers.ps1",
+      "line": 100,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "automations/install-mcp-servers.ps1",
+      "line": 100,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/install-mcp-servers.ps1",
+      "line": 100,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "automations/log-knowledge.ps1",
+      "line": 161,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "automations/log-knowledge.ps1",
+      "line": 161,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/log-knowledge.ps1",
+      "line": 161,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "automations/log-progress.ps1",
+      "line": 121,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "automations/log-progress.ps1",
+      "line": 121,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/log-progress.ps1",
+      "line": 121,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "automations/migrate-projects.ps1",
+      "line": 13,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "automations/migrate-projects.ps1",
+      "line": 13,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/migrate-projects.ps1",
+      "line": 13,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "automations/migrate-projects.ps1",
+      "line": 23,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/migrate-projects.ps1",
+      "line": 26,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/migrate-projects.ps1",
+      "line": 27,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/migrate-projects.ps1",
+      "line": 28,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/migrate-projects.ps1",
+      "line": 29,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/migrate-projects.ps1",
+      "line": 30,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/migrate-projects.ps1",
+      "line": 31,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/migrate-projects.ps1",
+      "line": 32,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/migrate-projects.ps1",
+      "line": 33,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/migrate-projects.ps1",
+      "line": 34,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/migrate-projects.ps1",
+      "line": 35,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/migrate-projects.ps1",
+      "line": 36,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/migrate-projects.ps1",
+      "line": 37,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/migrate-projects.ps1",
+      "line": 38,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/migrate-projects.ps1",
+      "line": 39,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/migrate-projects.ps1",
+      "line": 93,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "automations/migrate-projects.ps1",
+      "line": 93,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/migrate-projects.ps1",
+      "line": 93,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "automations/push-all-sinister.ps1",
+      "line": 21,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "automations/push-all-sinister.ps1",
+      "line": 21,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/push-all-sinister.ps1",
+      "line": 21,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "automations/push-all-sinister.ps1",
+      "line": 28,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/push-all-sinister.ps1",
+      "line": 29,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/push-all-sinister.ps1",
+      "line": 30,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/push-all-sinister.ps1",
+      "line": 31,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/README.md",
+      "line": 4,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "automations/README.md",
+      "line": 4,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/README.md",
+      "line": 4,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "automations/refresh-claude-memory.ps1",
+      "line": 28,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "automations/refresh-claude-memory.ps1",
+      "line": 28,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/refresh-claude-memory.ps1",
+      "line": 28,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "automations/refresh-claude-memory.ps1",
+      "line": 63,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "automations/refresh-claude-memory.ps1",
+      "line": 63,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/refresh-claude-memory.ps1",
+      "line": 63,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "automations/refresh-claude-memory.ps1",
+      "line": 72,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "automations/refresh-claude-memory.ps1",
+      "line": 72,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/refresh-claude-memory.ps1",
+      "line": 72,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "automations/refresh-claude-memory.ps1",
+      "line": 80,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "automations/refresh-claude-memory.ps1",
+      "line": 80,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/refresh-claude-memory.ps1",
+      "line": 80,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "automations/refresh-claude-memory.ps1",
+      "line": 96,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "automations/refresh-claude-memory.ps1",
+      "line": 96,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/refresh-claude-memory.ps1",
+      "line": 96,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "automations/refresh-claude-memory.ps1",
+      "line": 104,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "automations/refresh-claude-memory.ps1",
+      "line": 104,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/refresh-claude-memory.ps1",
+      "line": 104,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "automations/refresh-claude-memory.ps1",
+      "line": 118,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "automations/refresh-claude-memory.ps1",
+      "line": 118,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/refresh-claude-memory.ps1",
+      "line": 118,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "automations/refresh-claude-memory.ps1",
+      "line": 139,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "automations/refresh-claude-memory.ps1",
+      "line": 139,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/refresh-claude-memory.ps1",
+      "line": 139,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "automations/sanctum-skills-hub.ps1",
+      "line": 133,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "automations/sanctum-to-github.ps1",
+      "line": 24,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "automations/sanctum-to-github.ps1",
+      "line": 24,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/sanctum-to-github.ps1",
+      "line": 24,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "automations/secret-scrub.ps1",
+      "line": 16,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "automations/secret-scrub.ps1",
+      "line": 16,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/secret-scrub.ps1",
+      "line": 16,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "automations/session-contracts.md",
+      "line": 44,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault"
+    },
+    {
+      "file": "automations/session-contracts.md",
+      "line": 44,
+      "pattern": "substring:sinister-vault",
+      "match": "Sinister-Vault"
+    },
+    {
+      "file": "automations/session-contracts.md",
+      "line": 44,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "automations/start-sinister-session.ps1",
+      "line": 599,
+      "pattern": "D:\\_backups\\",
+      "match": "D:\\_backups\\"
+    },
+    {
+      "file": "automations/start-sinister-session.ps1",
+      "line": 633,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "automations/start-sinister-session.ps1",
+      "line": 633,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/start-sinister-session.ps1",
+      "line": 633,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "automations/start-sinister-session.ps1",
+      "line": 635,
+      "pattern": "D:\\_backups\\",
+      "match": "D:\\_backups"
+    },
+    {
+      "file": "automations/start-sinister-session.ps1",
+      "line": 799,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "automations/start-sinister-session.ps1",
+      "line": 799,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/start-sinister-session.ps1",
+      "line": 799,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "automations/start-sinister-session.ps1",
+      "line": 1003,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/start-sinister-session.ps1",
+      "line": 1014,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/start-sinister-session.ps1",
+      "line": 1344,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "automations/start-sinister-session.ps1",
+      "line": 1344,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/start-sinister-session.ps1",
+      "line": 1344,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "automations/start-sinister-session.ps1",
+      "line": 1388,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault"
+    },
+    {
+      "file": "automations/start-sinister-session.ps1",
+      "line": 1388,
+      "pattern": "substring:sinister-vault",
+      "match": "Sinister-Vault"
+    },
+    {
+      "file": "automations/start-sinister-session.ps1",
+      "line": 1388,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "automations/start-sinister-session.ps1",
+      "line": 2332,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "automations/start-sinister-session.ps1",
+      "line": 2332,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/start-sinister-session.ps1",
+      "line": 2332,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "automations/sweep-md-trash.ps1",
+      "line": 150,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "automations/sweep-md-trash.ps1",
+      "line": 150,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/sweep-md-trash.ps1",
+      "line": 150,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "automations/sweep-md-trash.ps1",
+      "line": 288,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "automations/sweep-md-trash.ps1",
+      "line": 288,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/sweep-md-trash.ps1",
+      "line": 288,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "automations/sync-fleet.ps1",
+      "line": 33,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "automations/sync-fleet.ps1",
+      "line": 33,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/sync-fleet.ps1",
+      "line": 33,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "automations/sync-fleet.ps1",
+      "line": 204,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "automations/update-sanctum-memory.ps1",
+      "line": 110,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "automations/update-sanctum-memory.ps1",
+      "line": 110,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/update-sanctum-memory.ps1",
+      "line": 110,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "automations/verify-fleet-state.ps1",
+      "line": 47,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "automations/verify-fleet-state.ps1",
+      "line": 47,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/verify-fleet-state.ps1",
+      "line": 47,
+      "pattern": "D:\\_backups\\",
+      "match": "D:\\_backups\\"
+    },
+    {
+      "file": "automations/verify-fleet-state.ps1",
+      "line": 47,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "automations/verify-fleet-state.ps1",
+      "line": 51,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "automations/session-templates/personal-projects.json",
+      "line": 19,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\\\Sinister\\\\"
+    },
+    {
+      "file": "automations/session-templates/personal-projects.json",
+      "line": 21,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\\\Sinister\\\\"
+    },
+    {
+      "file": "automations/session-templates/personal-projects.json",
+      "line": 28,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\\\Sinister\\\\"
+    },
+    {
+      "file": "automations/session-templates/personal-projects.json",
+      "line": 30,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\\\Sinister\\\\"
+    },
+    {
+      "file": "automations/session-templates/personal-projects.json",
+      "line": 37,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\\\Sinister\\\\"
+    },
+    {
+      "file": "automations/session-templates/personal-projects.json",
+      "line": 39,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\\\Sinister\\\\"
+    },
+    {
+      "file": "automations/session-templates/personal-projects.json",
+      "line": 46,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\\\Sinister\\\\"
+    },
+    {
+      "file": "automations/session-templates/personal-projects.json",
+      "line": 48,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\\\Sinister\\\\"
+    },
+    {
+      "file": "automations/session-templates/personal-projects.json",
+      "line": 55,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\\\Sinister\\\\"
+    },
+    {
+      "file": "automations/session-templates/personal-projects.json",
+      "line": 64,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\\\Sinister\\\\"
+    },
+    {
+      "file": "automations/window-manager/AUTOSTART.md",
+      "line": 122,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "automations/window-manager/AUTOSTART.md",
+      "line": 122,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/window-manager/AUTOSTART.md",
+      "line": 122,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "automations/window-manager/BUILD.md",
+      "line": 92,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "automations/window-manager/BUILD.md",
+      "line": 92,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/window-manager/BUILD.md",
+      "line": 92,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "automations/window-manager/install-rkoj-task.ps1",
+      "line": 11,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "automations/window-manager/server.py",
+      "line": 50,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "automations/window-manager/server.py",
+      "line": 50,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/window-manager/server.py",
+      "line": 50,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "automations/window-manager/server.py",
+      "line": 727,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "automations/window-manager/server.py",
+      "line": 2747,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "automations/window-manager/server.py",
+      "line": 2857,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "automations/window-manager/server.py",
+      "line": 2857,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "automations/window-manager/sanctum_shared/scheduler.py",
+      "line": 103,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "automations/window-manager/sanctum_shared/scheduler.py",
+      "line": 103,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "automations/window-manager/sanctum_shared/scheduler.py",
+      "line": 103,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "automations/window-manager/sanctum_shared/__init__.py",
+      "line": 15,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:/Sinister/Sinister Skills"
+    },
+    {
+      "file": "automations/window-manager/sanctum_shared/__init__.py",
+      "line": 15,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:/Sinister/"
+    },
+    {
+      "file": "automations/window-manager/sanctum_shared/__init__.py",
+      "line": 15,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "bots/README.md",
+      "line": 17,
+      "pattern": "D:\\_backups\\",
+      "match": "D:\\_backups\\"
+    },
+    {
+      "file": "bots/README.md",
+      "line": 74,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "bots/README.md",
+      "line": 74,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "bots/README.md",
+      "line": 74,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "docs/AGENT-BOOTSTRAP.md",
+      "line": 43,
+      "pattern": "D:\\_backups\\",
+      "match": "D:\\_backups\\"
+    },
+    {
+      "file": "docs/AGENT-BOOTSTRAP.md",
+      "line": 55,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "docs/AGENT-BOOTSTRAP.md",
+      "line": 55,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "docs/AGENT-BOOTSTRAP.md",
+      "line": 55,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "docs/AGENT-BOOTSTRAP.md",
+      "line": 83,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "docs/AGENT-MESSAGING.md",
+      "line": 46,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "docs/AGENT-MESSAGING.md",
+      "line": 46,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "docs/AGENT-MESSAGING.md",
+      "line": 46,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "docs/ALIVE-ARCHITECTURE.md",
+      "line": 94,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "docs/ARCHITECTURE.md",
+      "line": 59,
+      "pattern": "D:\\_backups\\",
+      "match": "D:\\_backups\\"
+    },
+    {
+      "file": "docs/ARCHITECTURE.md",
+      "line": 60,
+      "pattern": "D:\\_backups\\",
+      "match": "D:\\_backups\\"
+    },
+    {
+      "file": "docs/ARCHITECTURE.md",
+      "line": 61,
+      "pattern": "D:\\_backups\\",
+      "match": "D:\\_backups\\"
+    },
+    {
+      "file": "docs/DRIVE-ENCRYPTION.md",
+      "line": 17,
+      "pattern": "D:\\_backups\\",
+      "match": "D:\\_backups\\"
+    },
+    {
+      "file": "docs/DRIVE-ENCRYPTION.md",
+      "line": 39,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "docs/DRIVE-ENCRYPTION.md",
+      "line": 39,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "docs/DRIVE-ENCRYPTION.md",
+      "line": 39,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "docs/DRIVE-ENCRYPTION.md",
+      "line": 40,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "docs/DRIVE-ENCRYPTION.md",
+      "line": 40,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "docs/DRIVE-ENCRYPTION.md",
+      "line": 40,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "docs/DRIVE-ENCRYPTION.md",
+      "line": 41,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "docs/DRIVE-ENCRYPTION.md",
+      "line": 41,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "docs/DRIVE-ENCRYPTION.md",
+      "line": 41,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "docs/DRIVE-ENCRYPTION.md",
+      "line": 42,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "docs/DRIVE-ENCRYPTION.md",
+      "line": 42,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "docs/DRIVE-ENCRYPTION.md",
+      "line": 42,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "docs/DRIVE-ENCRYPTION.md",
+      "line": 43,
+      "pattern": "D:\\_backups\\",
+      "match": "D:\\_backups\\"
+    },
+    {
+      "file": "docs/DRIVE-ENCRYPTION.md",
+      "line": 44,
+      "pattern": "D:\\_backups\\",
+      "match": "D:\\_backups\\"
+    },
+    {
+      "file": "docs/DRIVE-ENCRYPTION.md",
+      "line": 46,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "docs/DRIVE-ENCRYPTION.md",
+      "line": 46,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "docs/DRIVE-ENCRYPTION.md",
+      "line": 46,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "docs/DRIVE-ENCRYPTION.md",
+      "line": 58,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "docs/DRIVE-ENCRYPTION.md",
+      "line": 58,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "docs/DRIVE-ENCRYPTION.md",
+      "line": 58,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "docs/ENV-VARIABLES.md",
+      "line": 60,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "docs/ENV-VARIABLES.md",
+      "line": 60,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "docs/ENV-VARIABLES.md",
+      "line": 71,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "docs/ENV-VARIABLES.md",
+      "line": 71,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "docs/ENV-VARIABLES.md",
+      "line": 86,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "docs/ENV-VARIABLES.md",
+      "line": 86,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "docs/ENV-VARIABLES.md",
+      "line": 86,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "docs/ENV-VARIABLES.md",
+      "line": 87,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "docs/ENV-VARIABLES.md",
+      "line": 87,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "docs/ENV-VARIABLES.md",
+      "line": 87,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "docs/ENV-VARIABLES.md",
+      "line": 87,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "docs/ENV-VARIABLES.md",
+      "line": 88,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "docs/ENV-VARIABLES.md",
+      "line": 88,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "docs/ENV-VARIABLES.md",
+      "line": 88,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "docs/ENV-VARIABLES.md",
+      "line": 91,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "docs/ENV-VARIABLES.md",
+      "line": 91,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "docs/ENV-VARIABLES.md",
+      "line": 91,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "docs/ENV-VARIABLES.md",
+      "line": 130,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "docs/ENV-VARIABLES.md",
+      "line": 130,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "docs/ENV-VARIABLES.md",
+      "line": 155,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "docs/HARDWARE-ROADMAP.md",
+      "line": 27,
+      "pattern": "D:\\_backups\\",
+      "match": "D:\\\\_backups\\\\"
+    },
+    {
+      "file": "docs/HARDWARE-ROADMAP.md",
+      "line": 145,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\\\Sinister\\\\Sinister Skills"
+    },
+    {
+      "file": "docs/HARDWARE-ROADMAP.md",
+      "line": 145,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\\\Sinister\\\\"
+    },
+    {
+      "file": "docs/HARDWARE-ROADMAP.md",
+      "line": 145,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "docs/MCP-NEW-SERVERS.md",
+      "line": 130,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\\\Sinister\\\\Sinister Skills"
+    },
+    {
+      "file": "docs/MCP-NEW-SERVERS.md",
+      "line": 130,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\\\Sinister\\\\"
+    },
+    {
+      "file": "docs/MCP-NEW-SERVERS.md",
+      "line": 130,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "docs/MEMORY-CODEC-AND-CRYPTO.md",
+      "line": 119,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\\\Sinister\\\\Sinister Skills"
+    },
+    {
+      "file": "docs/MEMORY-CODEC-AND-CRYPTO.md",
+      "line": 119,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\\\Sinister\\\\"
+    },
+    {
+      "file": "docs/MEMORY-CODEC-AND-CRYPTO.md",
+      "line": 119,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "docs/MEMORY-CODEC-AND-CRYPTO.md",
+      "line": 122,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\\\Sinister\\\\Sinister Skills"
+    },
+    {
+      "file": "docs/MEMORY-CODEC-AND-CRYPTO.md",
+      "line": 122,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\\\Sinister\\\\"
+    },
+    {
+      "file": "docs/MEMORY-CODEC-AND-CRYPTO.md",
+      "line": 122,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "docs/PANEL-INTEGRATION.md",
+      "line": 17,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "docs/PANEL-INTEGRATION.md",
+      "line": 24,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "docs/PANEL-INTEGRATION.md",
+      "line": 24,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "docs/PANEL-INTEGRATION.md",
+      "line": 24,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "docs/PANEL-INTEGRATION.md",
+      "line": 59,
+      "pattern": "D:\\_backups\\",
+      "match": "D:\\_backups\\"
+    },
+    {
+      "file": "docs/SETUP.md",
+      "line": 36,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "docs/SETUP.md",
+      "line": 36,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "docs/SETUP.md",
+      "line": 36,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "docs/SETUP.md",
+      "line": 64,
+      "pattern": "D:\\_backups\\",
+      "match": "D:\\_backups\\"
+    },
+    {
+      "file": "docs/UI-DESIGN-SYSTEM.md",
+      "line": 307,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "docs/UI-DESIGN-SYSTEM.md",
+      "line": 307,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "docs/UI-DESIGN-SYSTEM.md",
+      "line": 307,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "docs/WORKBENCH.md",
+      "line": 103,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "docs/WORKBENCH.md",
+      "line": 103,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "docs/WORKBENCH.md",
+      "line": 111,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "docs/WORKBENCH.md",
+      "line": 111,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "docs/WORKBENCH.md",
+      "line": 141,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "docs/WORKBENCH.md",
+      "line": 141,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "docs/WORKBENCH.md",
+      "line": 141,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "docs/WORKBENCH.md",
+      "line": 220,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "docs/WORKBENCH.md",
+      "line": 224,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "docs/WORKBENCH.md",
+      "line": 225,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "inventions/2026-05-19-plugin-cancer-purge.md",
+      "line": 30,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "inventions/2026-05-19-plugin-cancer-purge.md",
+      "line": 30,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "inventions/2026-05-19-plugin-cancer-purge.md",
+      "line": 30,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "inventions/_template.md",
+      "line": 33,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "inventions/_template.md",
+      "line": 33,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "inventions/_template.md",
+      "line": 33,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "projects/README.md",
+      "line": 3,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "projects/README.md",
+      "line": 3,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "projects/README.md",
+      "line": 3,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "projects/README.md",
+      "line": 15,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "projects/README.md",
+      "line": 16,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "projects/README.md",
+      "line": 17,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "projects/README.md",
+      "line": 18,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "projects/README.md",
+      "line": 19,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "projects/README.md",
+      "line": 48,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "projects/README.md",
+      "line": 48,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "projects/README.md",
+      "line": 48,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "projects/README.md",
+      "line": 49,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "projects/README.md",
+      "line": 49,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "projects/README.md",
+      "line": 49,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "projects/rkoj/INTEGRATION.md",
+      "line": 68,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:/sinister-vault/"
+    },
+    {
+      "file": "projects/rkoj/INTEGRATION.md",
+      "line": 68,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "projects/rkoj/MANIFEST.json",
+      "line": 49,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:/Sinister/Sinister Skills"
+    },
+    {
+      "file": "projects/rkoj/MANIFEST.json",
+      "line": 49,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:/Sinister/"
+    },
+    {
+      "file": "projects/rkoj/MANIFEST.json",
+      "line": 49,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "projects/rkoj/MANIFEST.json",
+      "line": 92,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "projects/rkoj/MANIFEST.json",
+      "line": 93,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "projects/rkoj/README.md",
+      "line": 33,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:/Sinister/Sinister Skills"
+    },
+    {
+      "file": "projects/rkoj/README.md",
+      "line": 33,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:/Sinister/"
+    },
+    {
+      "file": "projects/rkoj/README.md",
+      "line": 33,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "projects/rkoj/README.md",
+      "line": 39,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "projects/rkoj/README.md",
+      "line": 39,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "projects/rkoj/README.md",
+      "line": 65,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "projects/rkoj/README.md",
+      "line": 79,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "projects/sinister-emulator-bundle/README.md",
+      "line": 11,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "projects/sinister-emulator-bundle/README.md",
+      "line": 21,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "projects/sinister-emulator-bundle/README.md",
+      "line": 54,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "projects/sinister-freeze/STACK.md",
+      "line": 105,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "projects/sinister-kernel-apk/README.md",
+      "line": 9,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "projects/sinister-kernel-apk/README.md",
+      "line": 13,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "projects/sinister-kernel-apk/README.md",
+      "line": 13,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "projects/sinister-kernel-apk/README.md",
+      "line": 13,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "projects/sinister-kernel-apk/README.md",
+      "line": 20,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "projects/sinister-kernel-apk/README.md",
+      "line": 20,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "projects/sinister-kernel-apk/README.md",
+      "line": 20,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "projects/sinister-kernel-apk/README.md",
+      "line": 33,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "projects/sinister-panel/README.md",
+      "line": 9,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "projects/sinister-panel/README.md",
+      "line": 13,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "projects/sinister-panel/README.md",
+      "line": 13,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "projects/sinister-panel/README.md",
+      "line": 13,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "projects/sinister-panel/README.md",
+      "line": 25,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "projects/sinister-panel/README.md",
+      "line": 25,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "projects/sinister-panel/README.md",
+      "line": 25,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "projects/sinister-panel/README.md",
+      "line": 41,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "projects/sinister-snap-emu/PUSH-TO-GITHUB.bat",
+      "line": 111,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "projects/sinister-snap-emu/README.md",
+      "line": 11,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "projects/sinister-snap-emu/README.md",
+      "line": 12,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "projects/sinister-snap-emu/README.md",
+      "line": 16,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "projects/sinister-snap-emu/README.md",
+      "line": 16,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "projects/sinister-snap-emu/README.md",
+      "line": 16,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "projects/sinister-snap-emu/README.md",
+      "line": 63,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "projects/sinister-tiktok-emu/CLAUDE.md",
+      "line": 4,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "projects/sinister-tiktok-emu/CLAUDE.md",
+      "line": 14,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "projects/sinister-tiktok-emu/CLAUDE.md",
+      "line": 14,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "projects/sinister-tiktok-emu/CLAUDE.md",
+      "line": 14,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "projects/sinister-tiktok-emu/README_sanctum_pointer.md",
+      "line": 9,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "projects/sinister-tiktok-emu/README_sanctum_pointer.md",
+      "line": 12,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "projects/sinister-tiktok-emu/README_sanctum_pointer.md",
+      "line": 12,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "projects/sinister-tiktok-emu/README_sanctum_pointer.md",
+      "line": 12,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "projects/sinister-tiktok-emu/README_sanctum_pointer.md",
+      "line": 40,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "projects/sinister-tiktok-emu/README_sanctum_pointer.md",
+      "line": 41,
+      "pattern": "D:\\Sinister LLC\\",
+      "match": "D:\\Sinister LLC\\"
+    },
+    {
+      "file": "projects/sinister-tiktok-emu/README_sanctum_pointer.md",
+      "line": 42,
+      "pattern": "D:\\Sinister LLC\\",
+      "match": "D:\\Sinister LLC\\"
+    },
+    {
+      "file": "projects/sinister-tiktok-emu/README_sanctum_pointer.md",
+      "line": 43,
+      "pattern": "D:\\Sinister LLC\\",
+      "match": "D:\\Sinister LLC\\"
+    },
+    {
+      "file": "projects/sinister-tiktok-emu/REMOVE-BEFORE-COMMIT.md",
+      "line": 5,
+      "pattern": "D:\\Sinister LLC\\",
+      "match": "D:\\Sinister LLC\\"
+    },
+    {
+      "file": "projects/sinister-tiktok-emu/REMOVE-BEFORE-COMMIT.md",
+      "line": 15,
+      "pattern": "D:\\Sinister LLC\\",
+      "match": "D:\\Sinister LLC\\"
+    },
+    {
+      "file": "projects/sinister-tiktok-emu/RESUME-HERE.md",
+      "line": 12,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "projects/sinister-tiktok-emu/Sinister_TikTok_RunMe.bat",
+      "line": 42,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "projects/sinister-tiktok-emu/_obsidian-mind.md",
+      "line": 30,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "projects/sinister-tiktok-emu/_obsidian-mind.md",
+      "line": 35,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "projects/sinister-tiktok-emu/_obsidian-mind.md",
+      "line": 41,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "projects/sinister-tiktok-emu/_sanctum_copy_log.txt",
+      "line": 7,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "projects/sinister-tiktok-emu/_sanctum_copy_log.txt",
+      "line": 8,
+      "pattern": "D:\\Sinister LLC\\",
+      "match": "D:\\Sinister LLC\\"
+    },
+    {
+      "file": "projects/sinister-tiktok-emu/.claude/memory/b.md",
+      "line": 178,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "projects/sinister-tiktok-emu/.claude/memory/g.md",
+      "line": 56,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:/Sinister/"
+    },
+    {
+      "file": "projects/sinister-tiktok-emu/.claude/memory/g.md",
+      "line": 61,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:/Sinister/"
+    },
+    {
+      "file": "projects/sinister-tiktok-emu/.claude/memory/s.md",
+      "line": 71,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:/Sinister/"
+    },
+    {
+      "file": "projects/sinister-tiktok-emu/docs/AUTONOMY-LOG.md",
+      "line": 217,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "projects/sinister-tiktok-emu/docs/AUTONOMY-LOG.md",
+      "line": 217,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "projects/sinister-tiktok-emu/docs/AUTONOMY-LOG.md",
+      "line": 239,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "projects/sinister-tiktok-emu/docs/AUTONOMY-LOG.md",
+      "line": 247,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "projects/sinister-tiktok-emu/docs/TT-CROSS-PROJECT-INDEX.md",
+      "line": 134,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "projects/sinister-tiktok-emu/docs/TT-CROSS-PROJECT-INDEX.md",
+      "line": 135,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "projects/sinister-tiktok-emu/docs/TT-CROSS-PROJECT-INDEX.md",
+      "line": 136,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "projects/sinister-tiktok-emu/docs/TT-CROSS-PROJECT-INDEX.md",
+      "line": 169,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "SESSION-START/01-NETWORK.md",
+      "line": 19,
+      "pattern": "D:\\_backups\\",
+      "match": "D:\\_backups\\"
+    },
+    {
+      "file": "SESSION-START/02-OPERATOR-QUEUE.md",
+      "line": 16,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "SESSION-START/02-OPERATOR-QUEUE.md",
+      "line": 16,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "SESSION-START/02-OPERATOR-QUEUE.md",
+      "line": 16,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "SESSION-START/02-OPERATOR-QUEUE.md",
+      "line": 35,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "SESSION-START/02-OPERATOR-QUEUE.md",
+      "line": 35,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "SESSION-START/02-OPERATOR-QUEUE.md",
+      "line": 35,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "SESSION-START/04-RECOVERY.md",
+      "line": 13,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "SESSION-START/04-RECOVERY.md",
+      "line": 14,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "SESSION-START/04-RECOVERY.md",
+      "line": 21,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "SESSION-START/04-RECOVERY.md",
+      "line": 37,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "SESSION-START/04-RECOVERY.md",
+      "line": 37,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "SESSION-START/04-RECOVERY.md",
+      "line": 37,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "SESSION-START/04-RECOVERY.md",
+      "line": 54,
+      "pattern": "D:\\_backups\\",
+      "match": "D:\\_backups\\"
+    },
+    {
+      "file": "SESSION-START/04-RECOVERY.md",
+      "line": 66,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "SESSION-START/04-RECOVERY.md",
+      "line": 66,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "SESSION-START/04-RECOVERY.md",
+      "line": 66,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "SESSION-START/04-RECOVERY.md",
+      "line": 75,
+      "pattern": "D:\\_backups\\",
+      "match": "D:\\_backups\\"
+    },
+    {
+      "file": "SESSION-START/04-RECOVERY.md",
+      "line": 78,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "SESSION-START/04-RECOVERY.md",
+      "line": 78,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "SESSION-START/04-RECOVERY.md",
+      "line": 78,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "SESSION-START/06-LAUNCHER.md",
+      "line": 11,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "SESSION-START/06-LAUNCHER.md",
+      "line": 11,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "SESSION-START/06-LAUNCHER.md",
+      "line": 11,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "SESSION-START/README.md",
+      "line": 52,
+      "pattern": "D:\\Sinister LLC\\",
+      "match": "D:\\Sinister LLC\\"
+    },
+    {
+      "file": "SESSION-START/README.md",
+      "line": 53,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "SESSION-START/README.md",
+      "line": 53,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "SESSION-START/README.md",
+      "line": 53,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "SESSION-START/README.md",
+      "line": 55,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "skills/HUB.md",
+      "line": 61,
+      "pattern": "D:\\_backups\\",
+      "match": "D:\\_backups\\"
+    },
+    {
+      "file": "skills/HUB.md",
+      "line": 70,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "skills/HUB.md",
+      "line": 127,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "skills/README.md",
+      "line": 1,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "skills/SECURITY.md",
+      "line": 29,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:/Sinister/"
+    },
+    {
+      "file": "skills/SECURITY.md",
+      "line": 29,
+      "pattern": "D:\\Sinister LLC\\",
+      "match": "D:/Sinister LLC/"
+    },
+    {
+      "file": "skills/SECURITY.md",
+      "line": 36,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "skills/SECURITY.md",
+      "line": 36,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "skills/SECURITY.md",
+      "line": 36,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "skills/SECURITY.md",
+      "line": 44,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "skills/SECURITY.md",
+      "line": 44,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "skills/SECURITY.md",
+      "line": 73,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "skills/SECURITY.md",
+      "line": 75,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "skills/SECURITY.md",
+      "line": 75,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "skills/SECURITY.md",
+      "line": 75,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "skills/SECURITY.md",
+      "line": 104,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "skills/SECURITY.md",
+      "line": 104,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "skills/SECURITY.md",
+      "line": 104,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "skills/SECURITY.md",
+      "line": 151,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "skills/_INDEX.md",
+      "line": 1,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "skills/_INDEX.md",
+      "line": 32,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "skills/_INDEX.md",
+      "line": 32,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "skills/_INDEX.md",
+      "line": 32,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "skills/_INDEX.md",
+      "line": 33,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "skills/_INDEX.md",
+      "line": 33,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "skills/_INDEX.md",
+      "line": 33,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "skills/_INDEX.md",
+      "line": 34,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "skills/_INDEX.md",
+      "line": 34,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "skills/_INDEX.md",
+      "line": 34,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "skills/_INDEX.md",
+      "line": 35,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "skills/_INDEX.md",
+      "line": 35,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "skills/_INDEX.md",
+      "line": 35,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "skills/_INDEX.md",
+      "line": 36,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "skills/_INDEX.md",
+      "line": 36,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "skills/_INDEX.md",
+      "line": 36,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 42,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\\\Sinister\\\\Sinister Skills"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 42,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\\\Sinister\\\\"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 42,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 56,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\\\Sinister\\\\Sinister Skills"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 56,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\\\Sinister\\\\"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 56,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 67,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\\\Sinister\\\\Sinister Skills"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 67,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\\\Sinister\\\\"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 67,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 78,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\\\Sinister\\\\Sinister Skills"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 78,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\\\Sinister\\\\"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 78,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 89,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\\\Sinister\\\\Sinister Skills"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 89,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\\\Sinister\\\\"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 89,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 100,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\\\Sinister\\\\Sinister Skills"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 100,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\\\Sinister\\\\"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 100,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 111,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\\\Sinister\\\\Sinister Skills"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 111,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\\\Sinister\\\\"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 111,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 122,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\\\Sinister\\\\Sinister Skills"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 122,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\\\Sinister\\\\"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 122,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 133,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\\\Sinister\\\\Sinister Skills"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 133,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\\\Sinister\\\\"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 133,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 143,
+      "pattern": "D:\\_backups\\",
+      "match": "D:\\\\_backups\\\\"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 144,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\\\Sinister\\\\Sinister Skills"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 144,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\\\Sinister\\\\"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 144,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 155,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\\\Sinister\\\\Sinister Skills"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 155,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\\\Sinister\\\\"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 155,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 166,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\\\Sinister\\\\Sinister Skills"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 166,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\\\Sinister\\\\"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 166,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 181,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\\\sinister-vault\\\\"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 181,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 184,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 184,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 192,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 196,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 200,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\\\sinister-vault\\\\"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 200,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 203,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 424,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\\\Sinister\\\\Sinister Skills"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 424,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\\\Sinister\\\\"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 424,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 435,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\\\Sinister\\\\Sinister Skills"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 435,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\\\Sinister\\\\"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 435,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 446,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\\\Sinister\\\\Sinister Skills"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 446,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\\\Sinister\\\\"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 446,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 457,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\\\Sinister\\\\Sinister Skills"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 457,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\\\Sinister\\\\"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 457,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 468,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\\\Sinister\\\\Sinister Skills"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 468,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\\\Sinister\\\\"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 468,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 614,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\\\Sinister\\\\Sinister Skills"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 614,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\\\Sinister\\\\"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 614,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 732,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 736,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 738,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\\\sinister-vault\\\\"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 738,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 740,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "skills/_REGISTRY.yaml",
+      "line": 740,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "skills/sk-federation/README.md",
+      "line": 45,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "skills/sk-observability/README.md",
+      "line": 33,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "skills/sk-observability/README.md",
+      "line": 33,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "skills/sk-vector-memory/README.md",
+      "line": 37,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "skills/sk-vector-memory/README.md",
+      "line": 37,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/_INDEX.md",
+      "line": 7,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/_INDEX.md",
+      "line": 7,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/_INDEX.md",
+      "line": 7,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/md-trash-bin/README.md",
+      "line": 63,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "tools/md-trash-bin/README.md",
+      "line": 63,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "tools/md-trash-bin/README.md",
+      "line": 63,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "tools/sanctum-git/bootstrap-users.py",
+      "line": 37,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\\\sinister-vault\\\\"
+    },
+    {
+      "file": "tools/sanctum-git/bootstrap-users.py",
+      "line": 37,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sanctum-git/docker-compose.yml",
+      "line": 42,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:/sinister-vault/"
+    },
+    {
+      "file": "tools/sanctum-git/docker-compose.yml",
+      "line": 42,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sanctum-git/docker-compose.yml",
+      "line": 44,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:/sinister-vault/"
+    },
+    {
+      "file": "tools/sanctum-git/docker-compose.yml",
+      "line": 44,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sanctum-git/setup-vault-data-dir.ps1",
+      "line": 4,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "tools/sanctum-git/setup-vault-data-dir.ps1",
+      "line": 4,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sanctum-git/setup-vault-data-dir.ps1",
+      "line": 6,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sanctum-git/setup-vault-data-dir.ps1",
+      "line": 10,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "tools/sanctum-git/setup-vault-data-dir.ps1",
+      "line": 10,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "tools/sanctum-git/setup-vault-data-dir.ps1",
+      "line": 10,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sanctum-git/setup-vault-data-dir.ps1",
+      "line": 10,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sanctum-git/setup-vault-data-dir.ps1",
+      "line": 20,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "tools/sanctum-git/setup-vault-data-dir.ps1",
+      "line": 20,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sanctum-git/setup-vault-data-dir.ps1",
+      "line": 36,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault"
+    },
+    {
+      "file": "tools/sanctum-git/setup-vault-data-dir.ps1",
+      "line": 36,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sanctum-git/setup-vault-data-dir.ps1",
+      "line": 176,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:/sinister-vault/"
+    },
+    {
+      "file": "tools/sanctum-git/setup-vault-data-dir.ps1",
+      "line": 176,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sanctum-git/setup-vault-data-dir.ps1",
+      "line": 177,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:/sinister-vault/"
+    },
+    {
+      "file": "tools/sanctum-git/setup-vault-data-dir.ps1",
+      "line": 177,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sanctum-git/setup-vault-data-dir.ps1",
+      "line": 253,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "tools/sanctum-git/setup-vault-data-dir.ps1",
+      "line": 253,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sanctum-git/vault-integration.md",
+      "line": 5,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sanctum-git/vault-integration.md",
+      "line": 8,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sanctum-git/vault-integration.md",
+      "line": 9,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sanctum-git/vault-integration.md",
+      "line": 27,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "tools/sanctum-git/vault-integration.md",
+      "line": 27,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sanctum-git/vault-integration.md",
+      "line": 28,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "tools/sanctum-git/vault-integration.md",
+      "line": 28,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sanctum-git/vault-integration.md",
+      "line": 37,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "tools/sanctum-git/vault-integration.md",
+      "line": 37,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sanctum-git/vault-integration.md",
+      "line": 38,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sanctum-git/vault-integration.md",
+      "line": 39,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "tools/sanctum-git/vault-integration.md",
+      "line": 39,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sanctum-git/vault-integration.md",
+      "line": 106,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "tools/sanctum-git/vault-integration.md",
+      "line": 106,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sanctum-git/vault-integration.md",
+      "line": 125,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "tools/sanctum-git/vault-integration.md",
+      "line": 125,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sanctum-git/vault-integration.md",
+      "line": 126,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "tools/sanctum-git/vault-integration.md",
+      "line": 126,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "tools/sanctum-git/vault-integration.md",
+      "line": 126,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sanctum-git/vault-integration.md",
+      "line": 126,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sanctum-git/vault-integration.md",
+      "line": 161,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "tools/sanctum-git/vault-integration.md",
+      "line": 161,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sanctum-git/vault-integration.md",
+      "line": 170,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "tools/sanctum-git/vault-integration.md",
+      "line": 170,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sanctum-git/vault-integration.md",
+      "line": 190,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "tools/sanctum-git/vault-integration.md",
+      "line": 190,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sanctum-git/vault-integration.md",
+      "line": 198,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "tools/sanctum-git/vault-integration.md",
+      "line": 198,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sanctum-git/vault-integration.md",
+      "line": 199,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "tools/sanctum-git/vault-integration.md",
+      "line": 199,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sanctum-git/vault-integration.md",
+      "line": 209,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sanctum-git/vault-integration.md",
+      "line": 210,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sanctum-git/vault-integration.md",
+      "line": 224,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "tools/sanctum-git/vault-integration.md",
+      "line": 224,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/ACCOUNTS.md",
+      "line": 6,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "tools/sinister-vault/ACCOUNTS.md",
+      "line": 6,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/ACCOUNTS.md",
+      "line": 26,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "tools/sinister-vault/ACCOUNTS.md",
+      "line": 26,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/ACCOUNTS.md",
+      "line": 75,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "tools/sinister-vault/ACCOUNTS.md",
+      "line": 75,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/ACCOUNTS.md",
+      "line": 76,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "tools/sinister-vault/ACCOUNTS.md",
+      "line": 76,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/ACCOUNTS.md",
+      "line": 84,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "tools/sinister-vault/ACCOUNTS.md",
+      "line": 84,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/ACCOUNTS.md",
+      "line": 117,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "tools/sinister-vault/ACCOUNTS.md",
+      "line": 117,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/ACCOUNTS.md",
+      "line": 129,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "tools/sinister-vault/ACCOUNTS.md",
+      "line": 129,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/ACCOUNTS.md",
+      "line": 130,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "tools/sinister-vault/ACCOUNTS.md",
+      "line": 130,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/AUTOSTART.md",
+      "line": 13,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "tools/sinister-vault/AUTOSTART.md",
+      "line": 13,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/AUTOSTART.md",
+      "line": 17,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/AUTOSTART.md",
+      "line": 31,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/AUTOSTART.md",
+      "line": 75,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/AUTOSTART.md",
+      "line": 81,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/AUTOSTART.md",
+      "line": 88,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "tools/sinister-vault/AUTOSTART.md",
+      "line": 88,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/AUTOSTART.md",
+      "line": 96,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/AUTOSTART.md",
+      "line": 104,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/AUTOSTART.md",
+      "line": 118,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/AUTOSTART.md",
+      "line": 136,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/daemon.py",
+      "line": 2,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\\\sinister-vault\\\\"
+    },
+    {
+      "file": "tools/sinister-vault/daemon.py",
+      "line": 2,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/daemon.py",
+      "line": 25,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\\\sinister-vault\\\\"
+    },
+    {
+      "file": "tools/sinister-vault/daemon.py",
+      "line": 25,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/daemon.py",
+      "line": 26,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\\\sinister-vault\\\\"
+    },
+    {
+      "file": "tools/sinister-vault/daemon.py",
+      "line": 26,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/daemon.py",
+      "line": 27,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\\\sinister-vault\\\\"
+    },
+    {
+      "file": "tools/sinister-vault/daemon.py",
+      "line": 27,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/daemon.py",
+      "line": 52,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/daemon.py",
+      "line": 52,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/daemon.py",
+      "line": 63,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/daemon.py",
+      "line": 284,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/daemon.py",
+      "line": 478,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\\\sinister-vault\\\\"
+    },
+    {
+      "file": "tools/sinister-vault/daemon.py",
+      "line": 478,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/INSTALL-MCP.md",
+      "line": 13,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/INSTALL-MCP.md",
+      "line": 18,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/INSTALL-MCP.md",
+      "line": 33,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "tools/sinister-vault/INSTALL-MCP.md",
+      "line": 33,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "tools/sinister-vault/INSTALL-MCP.md",
+      "line": 33,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "tools/sinister-vault/INSTALL-MCP.md",
+      "line": 77,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/INSTALL-MCP.md",
+      "line": 78,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/INSTALL-MCP.md",
+      "line": 81,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/install-vault-task.ps1",
+      "line": 62,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "tools/sinister-vault/install-vault-task.ps1",
+      "line": 62,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/install-vault-task.ps1",
+      "line": 104,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/install-vault-task.ps1",
+      "line": 106,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/README.md",
+      "line": 6,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "tools/sinister-vault/README.md",
+      "line": 6,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/README.md",
+      "line": 14,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "tools/sinister-vault/README.md",
+      "line": 14,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/README.md",
+      "line": 81,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "tools/sinister-vault/README.md",
+      "line": 81,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/README.md",
+      "line": 82,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "tools/sinister-vault/README.md",
+      "line": 82,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "tools/sinister-vault/README.md",
+      "line": 82,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/README.md",
+      "line": 82,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/vault-daemon.bat",
+      "line": 6,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/vault-daemon.bat",
+      "line": 13,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/vault-daemon.bat",
+      "line": 28,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/vault-daemon.bat",
+      "line": 35,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/wire-everything.ps1",
+      "line": 213,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:/Sinister/Sinister Skills"
+    },
+    {
+      "file": "tools/sinister-vault/wire-everything.ps1",
+      "line": 213,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:/Sinister/"
+    },
+    {
+      "file": "tools/sinister-vault/wire-everything.ps1",
+      "line": 213,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "tools/sinister-vault/wire-everything.ps1",
+      "line": 245,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/_daemon-log.txt",
+      "line": 1,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/_daemon-log.txt",
+      "line": 8,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/_daemon-log.txt",
+      "line": 15,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/_daemon-log.txt",
+      "line": 15,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/syncthing/install.ps1",
+      "line": 15,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "tools/sinister-vault/syncthing/install.ps1",
+      "line": 15,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/syncthing/install.ps1",
+      "line": 36,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/syncthing/onboard-leo.md",
+      "line": 9,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "tools/sinister-vault/syncthing/onboard-leo.md",
+      "line": 9,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/syncthing/onboard-leo.md",
+      "line": 45,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "tools/sinister-vault/syncthing/onboard-leo.md",
+      "line": 45,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/syncthing/onboard-leo.md",
+      "line": 45,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/syncthing/onboard-leo.md",
+      "line": 66,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/syncthing/onboard-leo.md",
+      "line": 70,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/syncthing/onboard-leo.md",
+      "line": 77,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "tools/sinister-vault/syncthing/onboard-leo.md",
+      "line": 77,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/syncthing/onboard-leo.md",
+      "line": 97,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "tools/sinister-vault/syncthing/onboard-leo.md",
+      "line": 97,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/syncthing/README.md",
+      "line": 8,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "tools/sinister-vault/syncthing/README.md",
+      "line": 8,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/syncthing/README.md",
+      "line": 29,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "tools/sinister-vault/syncthing/README.md",
+      "line": 29,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/syncthing/README.md",
+      "line": 33,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "tools/sinister-vault/syncthing/README.md",
+      "line": 33,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/syncthing/README.md",
+      "line": 115,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "tools/sinister-vault/syncthing/README.md",
+      "line": 137,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "tools/sinister-vault/syncthing/README.md",
+      "line": 137,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/DIRECTIVES.md",
+      "line": 17,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/DIRECTIVES.md",
+      "line": 17,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/DIRECTIVES.md",
+      "line": 17,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/DIRECTIVES.md",
+      "line": 164,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "_shared-memory/DIRECTIVES.md",
+      "line": 164,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/DIRECTIVES.md",
+      "line": 166,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "_shared-memory/DIRECTIVES.md",
+      "line": 166,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/DIRECTIVES.md",
+      "line": 167,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "_shared-memory/DIRECTIVES.md",
+      "line": 167,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/DIRECTIVES.md",
+      "line": 167,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/DIRECTIVES.md",
+      "line": 168,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "_shared-memory/DIRECTIVES.md",
+      "line": 168,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/DIRECTIVES.md",
+      "line": 174,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "_shared-memory/DIRECTIVES.md",
+      "line": 174,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/DIRECTIVES.md",
+      "line": 174,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/DIRECTIVES.md",
+      "line": 178,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/DIRECTIVES.md",
+      "line": 231,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/foundation-sweep-2026-05-19.md",
+      "line": 27,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/foundation-sweep-2026-05-19.md",
+      "line": 31,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/foundation-sweep-2026-05-19.md",
+      "line": 67,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/foundation-sweep-2026-05-19.md",
+      "line": 77,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/foundation-sweep-2026-05-19.md",
+      "line": 89,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/OPERATOR-ACTION-QUEUE.md",
+      "line": 38,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/OPERATOR-ACTION-QUEUE.md",
+      "line": 41,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/OPERATOR-ACTION-QUEUE.md",
+      "line": 41,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/OPERATOR-ACTION-QUEUE.md",
+      "line": 41,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/OPERATOR-ACTION-QUEUE.md",
+      "line": 42,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/OPERATOR-ACTION-QUEUE.md",
+      "line": 56,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/OPERATOR-ACTION-QUEUE.md",
+      "line": 56,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/OPERATOR-ACTION-QUEUE.md",
+      "line": 56,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/OPERATOR-ACTION-QUEUE.md",
+      "line": 76,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/OPERATOR-ACTION-QUEUE.md",
+      "line": 76,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/OPERATOR-ACTION-QUEUE.md",
+      "line": 76,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/OPERATOR-ACTION-QUEUE.md",
+      "line": 96,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/self-heal-2026-05-19T140005Z.md",
+      "line": 29,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/self-heal-2026-05-19T140633Z.md",
+      "line": 29,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/self-heal-2026-05-19T140633Z.md",
+      "line": 29,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/self-heal-2026-05-19T145642Z.md",
+      "line": 29,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/self-heal-2026-05-19T145642Z.md",
+      "line": 29,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/WORKSTATION.md",
+      "line": 11,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/WORKSTATION.md",
+      "line": 11,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/WORKSTATION.md",
+      "line": 11,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/WORKSTATION.md",
+      "line": 24,
+      "pattern": "D:\\_backups\\",
+      "match": "D:\\\\_backups\\\\"
+    },
+    {
+      "file": "_shared-memory/WORKSTATION.md",
+      "line": 41,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/audits/github-linkage-2026-05-21.md",
+      "line": 9,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:/Sinister/"
+    },
+    {
+      "file": "_shared-memory/audits/github-linkage-2026-05-21.md",
+      "line": 25,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:/Sinister/"
+    },
+    {
+      "file": "_shared-memory/audits/_scan-d-drive-refs.py",
+      "line": 28,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\\\Sinister\\\\Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/audits/_scan-d-drive-refs.py",
+      "line": 28,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\\\Sinister\\\\"
+    },
+    {
+      "file": "_shared-memory/audits/_scan-d-drive-refs.py",
+      "line": 28,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/audits/_scan-d-drive-refs.py",
+      "line": 28,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/audits/_scan-d-drive-refs.py",
+      "line": 29,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\\\Sinister\\\\"
+    },
+    {
+      "file": "_shared-memory/audits/_scan-d-drive-refs.py",
+      "line": 30,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\\\sinister-vault\\\\"
+    },
+    {
+      "file": "_shared-memory/audits/_scan-d-drive-refs.py",
+      "line": 30,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/audits/_scan-d-drive-refs.py",
+      "line": 30,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/audits/_scan-d-drive-refs.py",
+      "line": 31,
+      "pattern": "D:\\Sinister-Term-WT\\",
+      "match": "D:\\\\Sinister-Term-WT\\\\"
+    },
+    {
+      "file": "_shared-memory/audits/_scan-d-drive-refs.py",
+      "line": 32,
+      "pattern": "D:\\_backups\\",
+      "match": "D:\\\\_backups\\\\"
+    },
+    {
+      "file": "_shared-memory/audits/_scan-d-drive-refs.py",
+      "line": 33,
+      "pattern": "D:\\Sinister LLC\\",
+      "match": "D:\\\\Sinister LLC\\\\"
+    },
+    {
+      "file": "_shared-memory/audits/_scan-d-drive-refs.py",
+      "line": 34,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/audits/_scan-d-drive-refs.py",
+      "line": 34,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/audits/_scan-d-drive-refs.py",
+      "line": 35,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/audits/_scan-d-drive-refs.py",
+      "line": 35,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/case-studies/2026-05-19-sk-observability.md",
+      "line": 22,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "_shared-memory/case-studies/2026-05-19-sk-observability.md",
+      "line": 22,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/case-studies/2026-05-19-sk-vector-memory.md",
+      "line": 25,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "_shared-memory/case-studies/2026-05-19-sk-vector-memory.md",
+      "line": 25,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/case-studies/2026-05-19-sk-vector-memory.md",
+      "line": 49,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "_shared-memory/case-studies/2026-05-19-sk-vector-memory.md",
+      "line": 49,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/case-studies/2026-05-19T1200Z-sanctum-git-vs-sanctum-vault.md",
+      "line": 15,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "_shared-memory/case-studies/2026-05-19T1200Z-sanctum-git-vs-sanctum-vault.md",
+      "line": 15,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/case-studies/2026-05-19T1200Z-sanctum-git-vs-sanctum-vault.md",
+      "line": 15,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/case-studies/2026-05-19T1200Z-sanctum-git-vs-sanctum-vault.md",
+      "line": 26,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/case-studies/2026-05-19T1200Z-sanctum-git-vs-sanctum-vault.md",
+      "line": 27,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "_shared-memory/case-studies/2026-05-19T1200Z-sanctum-git-vs-sanctum-vault.md",
+      "line": 27,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/case-studies/2026-05-19T1200Z-sanctum-git-vs-sanctum-vault.md",
+      "line": 28,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "_shared-memory/case-studies/2026-05-19T1200Z-sanctum-git-vs-sanctum-vault.md",
+      "line": 28,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/case-studies/2026-05-19T1200Z-sanctum-git-vs-sanctum-vault.md",
+      "line": 29,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "_shared-memory/case-studies/2026-05-19T1200Z-sanctum-git-vs-sanctum-vault.md",
+      "line": 29,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/case-studies/2026-05-19T1200Z-sanctum-git-vs-sanctum-vault.md",
+      "line": 30,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "_shared-memory/case-studies/2026-05-19T1200Z-sanctum-git-vs-sanctum-vault.md",
+      "line": 30,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/case-studies/2026-05-19T1200Z-sanctum-git-vs-sanctum-vault.md",
+      "line": 36,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "_shared-memory/case-studies/2026-05-19T1200Z-sanctum-git-vs-sanctum-vault.md",
+      "line": 36,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/case-studies/2026-05-19T1200Z-sanctum-git-vs-sanctum-vault.md",
+      "line": 38,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "_shared-memory/case-studies/2026-05-19T1200Z-sanctum-git-vs-sanctum-vault.md",
+      "line": 38,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/case-studies/2026-05-19T1200Z-sanctum-git-vs-sanctum-vault.md",
+      "line": 41,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/case-studies/2026-05-19T1200Z-sanctum-git-vs-sanctum-vault.md",
+      "line": 42,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/case-studies/2026-05-19T1200Z-sanctum-git-vs-sanctum-vault.md",
+      "line": 45,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "_shared-memory/case-studies/2026-05-19T1200Z-sanctum-git-vs-sanctum-vault.md",
+      "line": 45,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/case-studies/2026-05-19T1200Z-sanctum-git-vs-sanctum-vault.md",
+      "line": 52,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "_shared-memory/case-studies/2026-05-19T1200Z-sanctum-git-vs-sanctum-vault.md",
+      "line": 52,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/case-studies/2026-05-19T1200Z-sanctum-git-vs-sanctum-vault.md",
+      "line": 54,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/case-studies/2026-05-19T1200Z-sanctum-git-vs-sanctum-vault.md",
+      "line": 58,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/case-studies/2026-05-19T1200Z-sanctum-git-vs-sanctum-vault.md",
+      "line": 60,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/case-studies/2026-05-19T1200Z-sanctum-git-vs-sanctum-vault.md",
+      "line": 71,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/cross-agent/2026-05-19T1420Z-sanctum-broadcast-sweep-shipped.md",
+      "line": 25,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/cross-agent/2026-05-19T1420Z-sanctum-broadcast-sweep-shipped.md",
+      "line": 26,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/cross-agent/apk-unblock-proposal.md",
+      "line": 28,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/cross-agent/apk-unblock-proposal.md",
+      "line": 39,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/cross-agent/apk-unblock-proposal.md",
+      "line": 40,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/cross-agent/apk-unblock-proposal.md",
+      "line": 41,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/cross-agent/apk-unblock-proposal.md",
+      "line": 42,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/cross-agent/apk-unblock-proposal.md",
+      "line": 43,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/cross-agent/apk-unblock-proposal.md",
+      "line": 44,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/cross-agent/apk-unblock-proposal.md",
+      "line": 44,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/cross-agent/apk-unblock-proposal.md",
+      "line": 44,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/cross-agent/tt-snap-channel.md",
+      "line": 232,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/cross-agent/tt-snap-channel.md",
+      "line": 297,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/cross-agent/tt-snap-channel.md",
+      "line": 336,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/cycle-points/_TEMPLATE.json",
+      "line": 20,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\\\Sinister\\\\"
+    },
+    {
+      "file": "_shared-memory/cycle-points/_TEMPLATE.json",
+      "line": 21,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\\\Sinister\\\\"
+    },
+    {
+      "file": "_shared-memory/heartbeats/apk.json",
+      "line": 7,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\\\Sinister\\\\"
+    },
+    {
+      "file": "_shared-memory/heartbeats/inventions.json",
+      "line": 1,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:/Sinister/"
+    },
+    {
+      "file": "_shared-memory/heartbeats/snap-emu.json",
+      "line": 1,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:/Sinister/"
+    },
+    {
+      "file": "_shared-memory/heartbeats/tiktok-emu.json",
+      "line": 5,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\\\Sinister\\\\"
+    },
+    {
+      "file": "_shared-memory/heartbeats/tt-api.json",
+      "line": 7,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\\\Sinister\\\\"
+    },
+    {
+      "file": "_shared-memory/heartbeats/phones/phone-1.json",
+      "line": 8,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\\\Sinister\\\\"
+    },
+    {
+      "file": "_shared-memory/heartbeats/phones/phone-2.json",
+      "line": 8,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\\\Sinister\\\\"
+    },
+    {
+      "file": "_shared-memory/inbox/sinister-term/2026-05-21T1240Z-coaudit-by-sinister-term-coaudit.json",
+      "line": 11,
+      "pattern": "D:\\Sinister-Term-WT\\",
+      "match": "D:/Sinister-Term-WT/"
+    },
+    {
+      "file": "_shared-memory/inbox/sinister-term/2026-05-21T1252Z-hello-forge-memory-bridge-shipped.json",
+      "line": 14,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:/Sinister\\\\"
+    },
+    {
+      "file": "_shared-memory/knowledge/agent-browser-bridge-pattern.md",
+      "line": 47,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/knowledge/agent-browser-bridge-pattern.md",
+      "line": 93,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/knowledge/agent-intelligence-control.md",
+      "line": 44,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/knowledge/agent-intelligence-control.md",
+      "line": 44,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/knowledge/agent-intelligence-control.md",
+      "line": 44,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/knowledge/apk-classifier-aup-doctrine.md",
+      "line": 96,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/knowledge/apk-classifier-aup-doctrine.md",
+      "line": 97,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/knowledge/apk-post-reboot-adb-reverse-wipe.md",
+      "line": 94,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/knowledge/apk-ps1-grep-lock-contention.md",
+      "line": 5,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:/Sinister/"
+    },
+    {
+      "file": "_shared-memory/knowledge/apk-ps1-grep-lock-contention.md",
+      "line": 21,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/knowledge/apk-ps1-grep-lock-contention.md",
+      "line": 40,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:/Sinister/"
+    },
+    {
+      "file": "_shared-memory/knowledge/apk-ps1-grep-lock-contention.md",
+      "line": 63,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:/Sinister/"
+    },
+    {
+      "file": "_shared-memory/knowledge/apk-ps1-grep-lock-contention.md",
+      "line": 63,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:/Sinister/"
+    },
+    {
+      "file": "_shared-memory/knowledge/apk-ps1-grep-lock-contention.md",
+      "line": 94,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/knowledge/claude-sandbox-autonomy-grant.md",
+      "line": 149,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/knowledge/claude-sandbox-autonomy-grant.md",
+      "line": 149,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/knowledge/claude-sandbox-autonomy-grant.md",
+      "line": 149,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/knowledge/complete-everything-sweep-pattern.md",
+      "line": 78,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/knowledge/complete-everything-sweep-pattern.md",
+      "line": 91,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/knowledge/daemon-liveness-heartbeats.md",
+      "line": 9,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/knowledge/daemon-liveness-heartbeats.md",
+      "line": 13,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/knowledge/daemon-liveness-heartbeats.md",
+      "line": 37,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/knowledge/daemon-liveness-heartbeats.md",
+      "line": 55,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/knowledge/daemon-liveness-heartbeats.md",
+      "line": 67,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/knowledge/daemon-liveness-heartbeats.md",
+      "line": 67,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/knowledge/daemon-liveness-heartbeats.md",
+      "line": 75,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/knowledge/daemon-liveness-heartbeats.md",
+      "line": 75,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/knowledge/fleet-state-single-source.md",
+      "line": 25,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/knowledge/fleet-state-single-source.md",
+      "line": 63,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/knowledge/fleet-state-single-source.md",
+      "line": 78,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/knowledge/forever-expanding-modular-architecture-doctrine.md",
+      "line": 19,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "_shared-memory/knowledge/forever-expanding-modular-architecture-doctrine.md",
+      "line": 19,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/knowledge/image2-mcp-set.md",
+      "line": 35,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/knowledge/image2-mcp-set.md",
+      "line": 35,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/knowledge/image2-mcp-set.md",
+      "line": 35,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/knowledge/image2-mcp-set.md",
+      "line": 98,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/knowledge/image2-mcp-set.md",
+      "line": 98,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/knowledge/image2-mcp-set.md",
+      "line": 98,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/knowledge/marketplace-plugin-purge.md",
+      "line": 74,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/knowledge/marketplace-plugin-purge.md",
+      "line": 74,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/knowledge/marketplace-plugin-purge.md",
+      "line": 74,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/knowledge/modular-fleet-cross-lane-integration-2026-05-21.md",
+      "line": 73,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/knowledge/powershell-unicode-blockdraw-parse-fail.md",
+      "line": 69,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/knowledge/rkoj-fleet-state-sse.md",
+      "line": 91,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/knowledge/runtime-liveness-heartbeats.md",
+      "line": 30,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/knowledge/runtime-liveness-heartbeats.md",
+      "line": 72,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/knowledge/runtime-liveness-heartbeats.md",
+      "line": 103,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/knowledge/runtime-liveness-heartbeats.md",
+      "line": 104,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/knowledge/sanctum-shared-rename-pyinstaller-collision.md",
+      "line": 19,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:/Sinister/Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/knowledge/sanctum-shared-rename-pyinstaller-collision.md",
+      "line": 19,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:/Sinister/"
+    },
+    {
+      "file": "_shared-memory/knowledge/sanctum-shared-rename-pyinstaller-collision.md",
+      "line": 19,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/knowledge/sinister-spoofer-lukeprivacy-sim-clobber-2026-05-21.md",
+      "line": 131,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/knowledge/sinister-spoofer-lukeprivacy-sim-clobber-2026-05-21.md",
+      "line": 132,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/knowledge/sinister-vault-architecture.md",
+      "line": 5,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/knowledge/sinister-vault-architecture.md",
+      "line": 13,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/knowledge/sinister-vault-architecture.md",
+      "line": 32,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "_shared-memory/knowledge/sinister-vault-architecture.md",
+      "line": 32,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/knowledge/sinister-vault-architecture.md",
+      "line": 46,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "_shared-memory/knowledge/sinister-vault-architecture.md",
+      "line": 46,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/knowledge/sinister-vault-architecture.md",
+      "line": 52,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "_shared-memory/knowledge/sinister-vault-architecture.md",
+      "line": 52,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/knowledge/sinister-vault-architecture.md",
+      "line": 59,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/knowledge/sinister-vault-architecture.md",
+      "line": 61,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/knowledge/sinister-vault-architecture.md",
+      "line": 70,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/knowledge/sinister-vault-architecture.md",
+      "line": 80,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "_shared-memory/knowledge/sinister-vault-architecture.md",
+      "line": 80,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/knowledge/sinister-vault-architecture.md",
+      "line": 108,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "_shared-memory/knowledge/sinister-vault-architecture.md",
+      "line": 108,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/knowledge/sinister-vault-architecture.md",
+      "line": 108,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/knowledge/sinister-vault-architecture.md",
+      "line": 113,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/knowledge/vault-commit-modal-pattern.md",
+      "line": 20,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/knowledge/vault-commit-modal-pattern.md",
+      "line": 81,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/knowledge/vault-commit-modal-pattern.md",
+      "line": 81,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/knowledge/_INDEX.md",
+      "line": 50,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/knowledge/_INDEX.md",
+      "line": 62,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/notes/first-commit-message.md",
+      "line": 66,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/notes/sinister-kernel-apk-2026-05-19.md",
+      "line": 1,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 21,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 22,
+      "pattern": "D:\\Sinister LLC\\",
+      "match": "D:\\Sinister LLC"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 24,
+      "pattern": "D:\\Sinister-Term-WT\\",
+      "match": "D:\\Sinister-Term-WT\\"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 25,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 25,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 26,
+      "pattern": "D:\\_backups\\",
+      "match": "D:\\_backups\\"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 34,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 44,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 45,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 52,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 53,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 53,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 53,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 53,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 54,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 54,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 54,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 57,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 57,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 57,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 65,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 71,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 76,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 76,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 76,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 77,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 77,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 80,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 81,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 82,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 83,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 84,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 85,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 86,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 89,
+      "pattern": "D:\\Sinister-Term-WT\\",
+      "match": "D:\\Sinister-Term-WT\\"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 113,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 113,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 113,
+      "pattern": "D:\\Sinister-Term-WT\\",
+      "match": "D:\\Sinister-Term-WT\\"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 113,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 113,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 117,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 117,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 125,
+      "pattern": "D:\\_backups\\",
+      "match": "D:\\_backups\\"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 126,
+      "pattern": "D:\\Sinister LLC\\",
+      "match": "D:\\Sinister LLC"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 127,
+      "pattern": "D:\\Sinister-Term-WT\\",
+      "match": "D:\\Sinister-Term-WT\\"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 127,
+      "pattern": "D:\\Sinister-Term-WT\\",
+      "match": "D:\\Sinister-Term-WT"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 133,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 133,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 133,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 133,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 134,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 134,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 134,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 134,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 134,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 134,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 135,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 136,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 149,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 157,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 184,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 184,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 185,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 185,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 185,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 186,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 187,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 190,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 191,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 191,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 199,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 199,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 200,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault"
+    },
+    {
+      "file": "_shared-memory/plans/d-drive-reorg-2026-05-21/plan.md",
+      "line": 200,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/plans/jcode-full-audit-2026-05-21/jcode-feature-surface.md",
+      "line": 360,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "_shared-memory/plans/jcode-full-audit-2026-05-21/jcode-feature-surface.md",
+      "line": 360,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/plans/rkoj-v1.0.2-review-test-2026-05-21/plan.md",
+      "line": 43,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/plans/rkoj-v1.0.2-review-test-2026-05-21/plan.md",
+      "line": 43,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/plans/rkoj-v1.0.2-review-test-2026-05-21/plan.md",
+      "line": 43,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/plans/Sinister Term-coaudit-2026-05-21T1240Z/coaudit-report.md",
+      "line": 28,
+      "pattern": "D:\\Sinister-Term-WT\\",
+      "match": "D:/Sinister-Term-WT/"
+    },
+    {
+      "file": "_shared-memory/plans/Sinister Term-coaudit-2026-05-21T1240Z/coaudit-report.md",
+      "line": 31,
+      "pattern": "D:\\Sinister-Term-WT\\",
+      "match": "D:/Sinister-Term-WT"
+    },
+    {
+      "file": "_shared-memory/plans/Sinister Term-coaudit-2026-05-21T1240Z/coaudit-report.md",
+      "line": 31,
+      "pattern": "D:\\Sinister-Term-WT\\",
+      "match": "D:/Sinister-Term-WT/"
+    },
+    {
+      "file": "_shared-memory/plans/Sinister Term-coaudit-2026-05-21T1240Z/coaudit-report.md",
+      "line": 138,
+      "pattern": "D:\\Sinister-Term-WT\\",
+      "match": "D:/Sinister-Term-WT"
+    },
+    {
+      "file": "_shared-memory/plans/Sinister Term-coaudit-2026-05-21T1240Z/coaudit-report.md",
+      "line": 148,
+      "pattern": "D:\\Sinister-Term-WT\\",
+      "match": "D:\\\\Sinister-Term-WT\\\\"
+    },
+    {
+      "file": "_shared-memory/plans/Sinister Term-coaudit-2026-05-21T1240Z/coaudit-report.md",
+      "line": 151,
+      "pattern": "D:\\Sinister-Term-WT\\",
+      "match": "D:\\\\\\\\Sinister-Term-WT\\\\\\\\"
+    },
+    {
+      "file": "_shared-memory/plans/Sinister Term-coaudit-2026-05-21T1240Z/coaudit-report.md",
+      "line": 199,
+      "pattern": "D:\\Sinister-Term-WT\\",
+      "match": "D:/Sinister-Term-WT/"
+    },
+    {
+      "file": "_shared-memory/plans/sinister-forge-2026-05-21/forward-plan.md",
+      "line": 32,
+      "pattern": "D:\\Sinister-Term-WT\\",
+      "match": "D:/Sinister-Term-WT/"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Forge.md",
+      "line": 28,
+      "pattern": "D:\\Sinister-Term-WT\\",
+      "match": "D:/Sinister-Term-WT/"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Forge.md",
+      "line": 57,
+      "pattern": "D:\\Sinister-Term-WT\\",
+      "match": "D:/Sinister-Term-WT/"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Kernel APK.md",
+      "line": 321,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Kernel APK.md",
+      "line": 321,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Kernel APK.md",
+      "line": 321,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Kernel APK.md",
+      "line": 321,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Kernel APK.md",
+      "line": 321,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Kernel APK.md",
+      "line": 321,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Kernel APK.md",
+      "line": 321,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Kernel APK.md",
+      "line": 321,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Kernel APK.md",
+      "line": 333,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Kernel APK.md",
+      "line": 336,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Kernel APK.md",
+      "line": 336,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Kernel APK.md",
+      "line": 336,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:/Sinister/"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 268,
+      "pattern": "D:\\Sinister-Term-WT\\",
+      "match": "D:/Sinister-Term-WT/"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 863,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1090,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:/Sinister/Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1090,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:/Sinister/"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1090,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1155,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1160,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1176,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1176,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1184,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1221,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1223,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1237,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1247,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1248,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1265,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1279,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:/Sinister/Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1279,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:/Sinister/"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1279,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1289,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:/Sinister/Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1289,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:/Sinister/"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1289,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1302,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1309,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1320,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1320,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1338,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1408,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1408,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1412,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1412,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1414,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1416,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1416,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1440,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1475,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1477,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1485,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1486,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1489,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1489,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1489,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1498,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1498,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1523,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1526,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1530,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1536,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1539,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1554,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1554,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1554,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1574,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1582,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:/Sinister/Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1582,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:/Sinister/"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1582,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1593,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1593,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1595,
+      "pattern": "D:\\sinister-vault\\",
+      "match": "D:\\sinister-vault\\"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1595,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1670,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:/Sinister/Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1670,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:/Sinister/"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/Sinister Sanctum.md",
+      "line": 1670,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_shared-memory/PROGRESS/tiktok-emu.md",
+      "line": 11,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_shared-memory/resume-points/Sinister Panel/2026-05-21T072954Z.json",
+      "line": 53,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\\\Sinister\\\\"
+    },
+    {
+      "file": "_vault/mcp-vault-entry-PROPOSED.json",
+      "line": 6,
+      "pattern": "substring:sinister-vault",
+      "match": "sinister-vault"
+    },
+    {
+      "file": "_vault/mcp-vault-entry-PROPOSED.json",
+      "line": 11,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:/Sinister/Sinister Skills"
+    },
+    {
+      "file": "_vault/mcp-vault-entry-PROPOSED.json",
+      "line": 11,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:/Sinister/"
+    },
+    {
+      "file": "_vault/mcp-vault-entry-PROPOSED.json",
+      "line": 11,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_vault/_index.md",
+      "line": 14,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_vault/_index.md",
+      "line": 15,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_vault/_index.md",
+      "line": 16,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_vault/_index.md",
+      "line": 17,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_vault/_index.md",
+      "line": 18,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_vault/_index.md",
+      "line": 19,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_vault/_index.md",
+      "line": 20,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_vault/_index.md",
+      "line": 21,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_vault/_index.md",
+      "line": 47,
+      "pattern": "D:\\Sinister\\Sinister Skills",
+      "match": "D:\\Sinister\\Sinister Skills"
+    },
+    {
+      "file": "_vault/_index.md",
+      "line": 47,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    },
+    {
+      "file": "_vault/_index.md",
+      "line": 47,
+      "pattern": "substring:Sinister Skills",
+      "match": "Sinister Skills"
+    },
+    {
+      "file": "_vault/_index.md",
+      "line": 49,
+      "pattern": "D:\\_backups\\",
+      "match": "D:\\_backups\\"
+    },
+    {
+      "file": "_vault/.obsidian/README-THEME.md",
+      "line": 42,
+      "pattern": "D:\\Sinister\\ (not Sanctum)",
+      "match": "D:\\Sinister\\"
+    }
+  ],
+  "note": null,
+  "authorship": "RKOJ-ELENO :: 2026-05-21"
+}
