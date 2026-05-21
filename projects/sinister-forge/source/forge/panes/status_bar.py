@@ -8,17 +8,24 @@ from textual.widgets import Static
 
 class StatusBar(Static):
     def __init__(self) -> None:
-        super().__init__(classes="status-bar", markup=True)
+        # Textual 8.x: pass initial content so first render() returns Content, not None.
+        super().__init__(
+            " [b]SINISTER FORGE[/b]  ::  agents [b]0[/]/[b]0[/]  "
+            "::  [dim]Ctrl+W new  Ctrl+Tab cycle  F1 help[/]",
+            classes="status-bar",
+            markup=True,
+        )
         self._agent_count = 0
         self._current_idx = -1
-        self._render()
 
     def update_state(self, agent_count: int, current_idx: int) -> None:
         self._agent_count = agent_count
         self._current_idx = current_idx
-        self._render()
+        self._refresh_view()
 
-    def _render(self) -> None:
+    def _refresh_view(self) -> None:
+        # Do NOT name this _render — that shadows Widget._render which must
+        # return a Visual. See chrome.py StatusFooter for the same fix.
         cur = self._current_idx + 1 if self._current_idx >= 0 else 0
         self.update(
             f" [b]SINISTER FORGE[/b]  ::  agents [b]{cur}[/]/[b]{self._agent_count}[/]  "

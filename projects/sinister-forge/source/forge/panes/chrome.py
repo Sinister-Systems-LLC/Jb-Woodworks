@@ -30,7 +30,14 @@ class ChromeBar(Static):
     DEFAULT_CSS = ""
 
     def __init__(self) -> None:
-        super().__init__(id="chrome-bar", markup=True)
+        # Textual 8.x: Static needs initial content passed to super().__init__,
+        # otherwise the first render() returns None and crashes Visual.to_strips
+        # with AttributeError: 'NoneType' object has no attribute 'render_strips'.
+        super().__init__(
+            "[bold]◈ SINISTER FORGE[/bold]  [dim]:: operator console[/]",
+            id="chrome-bar",
+            markup=True,
+        )
 
     def on_mount(self) -> None:
         self.set_interval(1.0, self._refresh)
@@ -63,16 +70,23 @@ class ProjectChip(Static):
     """Strip showing which project the user is focused on."""
 
     def __init__(self) -> None:
-        super().__init__(id="project-chip", markup=True)
+        super().__init__(
+            f"[{DIM}]no project selected · press Ctrl+W to spawn[/]",
+            id="project-chip",
+            markup=True,
+        )
         self._project_display = ""
         self._accent = PURPLE_BRIGHT
 
     def set_project(self, display: str, accent: str = PURPLE_BRIGHT) -> None:
         self._project_display = display
         self._accent = accent
-        self._render()
+        self._refresh_view()
 
-    def _render(self) -> None:
+    def _refresh_view(self) -> None:
+        # Renamed from _render to avoid shadowing textual.widget.Widget._render
+        # which is a framework method returning Visual. Naming our helper _render
+        # caused the widget to render None, crashing Visual.to_strips at boot.
         if not self._project_display:
             self.update(f"[{DIM}]no project selected · press Ctrl+W to spawn[/]")
             return
@@ -86,7 +100,13 @@ class StatusFooter(Static):
     """Bottom info row beneath Footer. Branch / agent-count / mode."""
 
     def __init__(self) -> None:
-        super().__init__(id="status-footer", markup=True)
+        super().__init__(
+            f"[{DIM}]branch[/] [{PURPLE_HALO}]?[/]   "
+            f"[{DIM}]agents[/] [{CYAN}]0[/]   "
+            f"[{DIM}]mode[/] [{GREEN}]idle[/]",
+            id="status-footer",
+            markup=True,
+        )
         self._branch = ""
         self._agents_active = 0
         self._mode = ""
@@ -106,14 +126,16 @@ class StatusFooter(Static):
                     self._branch = head[:7]
         except Exception:
             pass
-        self._render()
+        self._refresh_view()
 
     def set_state(self, agents_active: int, mode: str) -> None:
         self._agents_active = agents_active
         self._mode = mode
-        self._render()
+        self._refresh_view()
 
-    def _render(self) -> None:
+    def _refresh_view(self) -> None:
+        # Renamed from _render to avoid shadowing textual.widget.Widget._render
+        # (same fix as ProjectChip — see comment there).
         self.update(
             f"[{DIM}]branch[/] [{PURPLE_HALO}]{self._branch or '?'}[/]   "
             f"[{DIM}]agents[/] [{CYAN}]{self._agents_active}[/]   "
