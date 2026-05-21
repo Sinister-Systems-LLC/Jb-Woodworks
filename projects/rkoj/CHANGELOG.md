@@ -4,6 +4,20 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not component versions (each lane has its own).
 
+## v1.5.0 — 2026-05-21
+
+**Pivot to native PyQt6 desktop app.** Operator (verbatim): *"i dont want a fucking web ui ... popup the ui on the fucking desktop"* + *"function like jcode but be ours and we can foreever expand"*. The pywebview path (v1.4.x) was rejected — HTML/CSS surface read as "web ui". RKOJ.exe v1.5.0 is now a frameless rounded PyQt6 window with Sinister Panel layout + Excel-style ribbon + jcode-form terminals in the Agents tab (QPlainTextEdit + QProcess wrapping `claude --dangerously-skip-permissions -p`).
+
+- Source: new `tools/sinister-rkoj-qt/` (sub-agent shipped this turn) — `sinister_rkoj_qt/{app, sidebar, header, ribbon, kpis, agents_tab, phones_tab, workstation_tab, theme, state, persona}.py`.
+- Layout matches `snap.sinijkr.com` exactly: 240px sidebar (mascot + 4 sections + status) + 96px header (chip tabs + actions + clock) + Excel ribbon (5 groups: VIEW/SPAWN/AGENT/AUTOMATE/MAINTAIN) + 4 KPI tiles + project sub-tab strip + main pane.
+- Agents tab: niri-style vertical scroll of jcode-form terminals. EVE persona injected verbatim in each opening prompt (RKOJ-ELENO authorship, full Sinister tool list, branch convention).
+- Phones tab: 4-stat strip + filter chips + 2-col body (device rail + identity/heartbeat/RKA/kill-switch/ADB shell/scrcpy launch) + live logcat tail.
+- Workstation tab: action card grid (vault / brain / watchdog / backups / mcp / explorer).
+- Slash-command intercept routes `/help /clear /save /resume /create /skill /mcp /watchdog` to existing forge.commands API; everything else to claude subprocess.
+- Extensibility doctrine landed at `_shared-memory/knowledge/sinister-rkoj-extensibility-doctrine.md` — manifest-driven plugin system so we add features forever without touching chrome/panes.
+- 5 new jcode-gap slash commands (/pair /ambient /permissions /replay /browser) added to forge.commands.py.
+- Build: `pyinstaller --clean --noconfirm tools/sinister-rkoj-qt/RKOJ.spec`. Output replaces `Desktop/RKOJ-Workstation/` so the existing `RKOJ.lnk` shortcut picks it up.
+
 ## v1.4.1 — 2026-05-21
 
 **MCP Phase 2A — `/mcp` subcommand wire-up.** Builds on v1.4.0's bundled `mcp` Python SDK. `/mcp` now supports 5 subcommands: `list` (default, shows server name + command + args), `show <name>` (pretty-print JSON config), `status` (SDK + config + server-count health probe), `tools <name>` (placeholder, documents Phase 2B follow-up + import-from-bundled-SDK example), `call <server> <tool> [json]` (placeholder, documents the async-Textual-loop integration needed).
