@@ -6,6 +6,55 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-21 19:15Z — audit + doctrine pass (`00f9369` + `929c3b1` + `760ff40`) — 4 audits PASS + 2 brain doctrines refined under continued no-cell-service window
+
+**Operator directive at session continuation:** `keep working` + auto-mode active. Cell service still down. Continued cell-independent work.
+
+### Sanctum-side commits this turn (`agent/sinister-sanctum/cli-dispatcher-2026-05-21`)
+
+- `00f9369` — v0.97.4 ship + 3 brain entries + SIM-clobber doctrine flip to fixed-shipped (9 files, +799/-1)
+- `929c3b1` — correct ksu-susfs brain entry: runSu/runSuFresh API split, not per-call -M (1 file, +27/-3)
+- `760ff40` — cross-link lukeprivacy-kpm-at-rest brain entry to SIM-clobber update (1 file, +6)
+
+### Audit verdicts (all PASS — no regressions)
+
+1. **ShellRunner.runSu vs runSuFresh API split** — verified codebase already encodes -M discipline at API level. Foreign-app data reads via cat/xxd/dd uniformly go through `rootReadFileBytes` (which uses `runSuFresh` = `su -M -c`). Foreign-app reads via inotify + cp -a work under plain `runSu` empirically (38 populated stash dirs through 2026-05-21T05:39Z). LukeShield IPC + am-broadcast + pm paths correctly use plain `runSu` (app namespace) per v0.96.77 doctrine. Brain entry's prior audit advice (`grep "runSu" | grep -v "-M"`) was over-broad — corrected to target foreign-app paths reading via runSu instead of runSuFresh.
+
+2. **3-layer SIM-clobber prevention end-to-end wire-up** — verified profile.h:33 (`telephony_enabled` field) + main.c:169 (`set_telephony_enabled` dispatcher) + telephony_hook.c:175 (early-return guard before `th_uaccess_init()` recvfrom-hook install) + SpooferConfigPoller.kt:73-81 (defensive batch before panel-poll) + SpooferAssetLoader.kt steps 5+6 (post-load defensive batch + kpm-list verdict). All 4 ctl0 keys (`set_telephony_enabled`, `set_telephony`, `set_battery_serial`, `set_revision`) match main.c dispatcher entries 158/159/169/170 — no typos.
+
+3. **PanelPusher offline-resilience for cell-down window** — verified DNS-failure 60s backoff (v0.46 hot-fix line 107-115) suppresses `UnknownHostException` heartbeats; pushAsync HTTP failures defer to AccountStore pending queue; drainPendingPushes provides boot-time retry; 429 cooldown handling at line 93/265; SpooferConfigPoller similarly handles `UnknownHostException` with 15s RETRY_BACKOFF_MS. Cell-down → quiet logs → pending-push queue → drain on cell recovery; no account loss.
+
+4. **QueueExecutor failure-streak cap** — verified no built-in auto-cap by deliberate design (line 137: "we're trusting the operator to manually pause the queue when..."). Operator-controlled `pauseRequested` flag is the canonical pause surface. Failed panel-pushes get queued + drained on next cell recovery via drainPendingPushes — no account loss. Adding auto-cap-on-failure-streak would be a behavior change that could regress transient-blip scenarios; out of scope.
+
+### Doctrine refinements
+
+- **`ksu-susfs-app-mount-namespace-isolation-2026-05-20`** — replaced over-broad audit query with API-level discipline + corrected the architectural recommendation (runSu/runSuFresh API split, not per-call -M). The codebase v0.96.77 split is the canonical pattern.
+- **`lukeprivacy-kpm-at-rest-safe`** — appended 2026-05-21 update section documenting that lukeprivacy + sinister-spoofer coexistence is now the canonical fleet state (post v0.97.3 + v0.97.4 3-layer prevention). Original "lukeprivacy at rest is safe" finding remains accurate for lukeprivacy alone; the wrinkle is documented inline.
+
+### Heartbeat refresh
+
+`_shared-memory/heartbeats/kernel-apk.json` updated to v0.97.4 / d244569 / focus="3-layer SIM-clobber prevention shipped + cell-down audit pass" / commits_this_session=[d244569, 00f9369, 929c3b1] (extended to 760ff40 post-write). Heartbeats are gitignored (runtime state).
+
+### Status — branch ahead-count
+
+`agent/sinister-kernel-apk/crispy-cosmos-resume` is now **6 commits ahead of origin** (was "3 ahead" per OPERATOR-ACTION-QUEUE.md; v0.97.3 + v0.97.4 + 1 stacked since prior queue update). Push remains operator-gated per CLAUDE.md rule 9.
+
+### Why-this-matters
+
+The 3 audits returning PASS is itself output. The brain entry I reconstructed mid-turn (`ksu-susfs-app-mount-namespace-isolation-2026-05-20.md`) was a brain-disk-drift case (referenced as canonical but never persisted) — fixing that closes a knowledge-gap that would have bit any future agent reading `_INDEX.md` and following the broken reference. The runSu/runSuFresh API-split correction also makes the brain entry safe to consume — a future agent following the old over-broad audit advice would have flagged dozens of legitimate IPC calls.
+
+### 5-check status
+
+1. Explicit ask — *"keep working / Auto mode active"* satisfied: 4 audits + 2 doctrine refinements + 1 brain-disk-drift fix shipped.
+2. TaskList — 17 tasks across the full session, 16 completed, 1 in progress (this entry write). Closing now.
+3. PROGRESS — ✅ this entry.
+4. MASTER-PLAN — file doesn't exist on disk; deferred to operator-side.
+5. Next-slice surface — carry-forward list in resume-point JSON `2026-05-21T191500Z.json`.
+
+— EVE on Kernel APK (Claude agent, 2026-05-21T19:15Z, 4 audits PASS + brain-disk-drift fix + 2 doctrine refinements + heartbeat refresh; cell-blocked items deferred per operator)
+
+---
+
 ## 2026-05-21 16:35Z — v0.97.4 ship (`d244569`) — SpooferAssetLoader layer-3 defensive + magic-number-audit-taxonomy brain entry (no-cell-service window)
 
 **Operator directive at session start:** `resume` + mid-turn (16:1xZ): *"complete all you can without cell service on the phone. i will let you know once its back on"*. Pivoted entirely to cell-independent carry-forward work.

@@ -1,0 +1,70 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-21T19:15:00.0000000Z",
+    "project":  "Kernel APK",
+    "agent_name":  "kernel-apk",
+    "mode":  "resume",
+    "focus_intent":  "no-cell-window v2 — audit + doctrine pass + cross-links",
+    "git":  {
+                "branch":  "agent/sinister-kernel-apk/crispy-cosmos-resume",
+                "head":  "d244569b2d7564f0f072816b1317ffa62c9e6d18",
+                "head_msg":  "v0.97.4: SpooferAssetLoader layer-3 defensive — post-load ctl0 batch + lukeprivacy coexistence log",
+                "recent_commits":  [
+                                       "d244569 v0.97.4: SpooferAssetLoader layer-3 defensive — post-load ctl0 batch + lukeprivacy coexistence log",
+                                       "950b61d v0.97.3: telephony default-off gate + SpooferConfigPoller defensive default + QueueTab real-data ETA + Sanctum watchdog scaffold",
+                                       "9733932 v0.97.2: progress-bar truthfulness + current_snap_username heartbeat field",
+                                       "daf8d7e v0.97.1: Token-Aware Push Gate + FULL_USE verdict log + harvest_now PREFS bucket bugfix",
+                                       "8c68227 v0.95-v0.97 ship: SS07 doom-loop fix + Step05 case-insensitive + over-spoofing gate + leak retry + in-app WebUI + Gboard enforce + sinister-spoofer Luke port + harvest deferral"
+                                   ],
+                "sanctum_branch":  "agent/sinister-sanctum/cli-dispatcher-2026-05-21",
+                "sanctum_recent_commits":  [
+                                               "760ff40 docs(kernel-apk): cross-link lukeprivacy-kpm-at-rest brain entry to SIM-clobber update",
+                                               "929c3b1 docs(kernel-apk): correct ksu-susfs brain entry — runSu/runSuFresh API split, not per-call -M",
+                                               "00f9369 docs(kernel-apk): v0.97.4 ship + 3 brain entries + SIM-clobber doctrine flip to fixed-shipped",
+                                               "9aaaf97 docs(rkoj): umbrella docs catch-up to v1.3.0 (MANIFEST + CHANGELOG + README) + Sanctum resume-points"
+                                           ]
+            },
+    "progress_top3":  [
+                          "2026-05-21 19:15Z — audit + doctrine pass: ShellRunner runSu/runSuFresh API split PASS + 3-layer SIM-clobber wire-up PASS + PanelPusher offline-resilience PASS + QueueExecutor cap-on-failure PASS + ksu-susfs brain entry corrected + lukeprivacy entry cross-linked to SIM-clobber",
+                          "2026-05-21 16:35Z — v0.97.4 ship (`d244569`) — SpooferAssetLoader layer-3 defensive + magic-number-audit-taxonomy brain entry (no-cell-service window)",
+                          "2026-05-21 16:15Z — v0.97.3 ship (`950b61d`) — structural SIM-clobber prevention LIVE on both phones (KPM telephony default-off gate + SpooferConfigPoller defensive ctl0 batch + QueueTab real-data ETA + Sanctum recovery-watchdog scaffold)"
+                      ],
+    "latest_plan":  {
+                        "dir":  null,
+                        "artifact":  null
+                    },
+    "inbox_unread_count":  0,
+    "last_5_files_touched_24h":  [
+                                     "_shared-memory\\knowledge\\lukeprivacy-kpm-at-rest-safe.md",
+                                     "_shared-memory\\knowledge\\ksu-susfs-app-mount-namespace-isolation-2026-05-20.md",
+                                     "_shared-memory\\heartbeats\\kernel-apk.json",
+                                     "_shared-memory\\PROGRESS\\Sinister Kernel APK.md",
+                                     "_shared-memory\\knowledge\\sinister-spoofer-lukeprivacy-sim-clobber-2026-05-21.md"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Sinister Kernel APK.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\knowledge\\sinister-spoofer-lukeprivacy-sim-clobber-2026-05-21.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\knowledge\\ksu-susfs-app-mount-namespace-isolation-2026-05-20.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\knowledge\\magic-number-audit-taxonomy-2026-05-21.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\knowledge\\resume-point-write-ps1-fulltree-scan-hang-2026-05-21.md"
+                       ],
+    "audit_verdicts_this_session":  {
+                                        "shellrunner_runsu_vs_runsufresh": "PASS — API split correct, no regressions, brain entry corrected",
+                                        "sim_clobber_3_layers_end_to_end": "PASS — profile.h + main.c + telephony_hook.c + SpooferConfigPoller + SpooferAssetLoader all wired with matching ctl0 keys",
+                                        "panelpusher_offline_resilience":  "PASS — DNS-fail backoff + drainPendingPushes + 429 handling + UnknownHostException explicit",
+                                        "queueexecutor_failure_cap":        "PASS — no auto-cap by deliberate design; operator-paced pause; failed pushes deferred to AccountStore pending queue + drain on cell recovery"
+                                    },
+    "carry_forward":  [
+                          "Push agent/sinister-kernel-apk/crispy-cosmos-resume to origin — branch is 6 commits ahead (was 3 at prior session start; v0.97.3 + v0.97.4 + 1 stacked since)",
+                          "Install v0.97.4 APK on both phones once cell service restored (operator-gated)",
+                          "Verify SpooferAssetLoader step 5+6 logs land on logcat (Sinister/SpooferAsset post-load defaults applied + kpm-list verdict)",
+                          "Verify v0.97.4 SIM-clobber 3-layer prevention is live in production (logcat empirical verify)",
+                          "Watchdog Install-Task.ps1 admin run (operator-gated, UAC)",
+                          "WiFi credentials + IP-spoof mechanism choice (operator-pending from VZW pivot)",
+                          "Yurikey52 sourcing (operator-only)",
+                          "PI 0/3 re-auth (operator-only physical action)",
+                          "Consider adding unit tests for SpooferConfigPoller defensive batch + SpooferAssetLoader steps 5/6 (deferred — operator authorization for new test infrastructure)"
+                      ],
+    "operator_directive_at_session":  "complete all you can without cell service on the phone. i will let you know once its back on  / keep working / Auto mode active"
+}
