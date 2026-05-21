@@ -1,0 +1,45 @@
+﻿{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-21T16:15:28.0848576Z",
+    "project":  "Kernel APK",
+    "agent_name":  "kernel-apk",
+    "mode":  "resume",
+    "focus_intent":  "",
+    "git":  {
+                "branch":  "agent/sinister-sanctum/cli-dispatcher-2026-05-21",
+                "head":  "d64ea0da21450c59ddceab12f9b00f21e4949a8b",
+                "head_msg":  "docs(sanctum): resume-point 2026-05-21T161049Z ΓÇö v1.0.2 ship + 28-commit session summary",
+                "recent_commits":  [
+                                       "d64ea0d docs(sanctum): resume-point 2026-05-21T161049Z ΓÇö v1.0.2 ship + 28-commit session summary",
+                                       "4ab2f0a ship(rkoj): v1.0.2 ΓÇö ALL 24 agents in jcode-parity sweep complete, sweep-complete broadcast dropped",
+                                       "3512608 feat(forge): real impls for /workspace /splitview /split /transfer /catchup /back /poke /improve /refactor /goals (jcode workflow parity)",
+                                       "f05ba68 docs(sanctum): PROGRESS 16:02 ΓÇö v1.0.1 SHIPPED + Y GREEN verdict + 24 commits this session",
+                                       "cfcb0e6 chore(rkoj): v1.0.1 bump ΓÇö bake toolbar + statusbar (commit 3d76da7) into the EXE",
+                                       "2286911 feat(forge): real impls for /auth /account /subscription (jcode account parity)",
+                                       "5e5a875 docs(sanctum): RKOJ integration test sweep 2026-05-21 ΓÇö GREEN",
+                                       "81057a6 feat(rkoj): v1.0.0 ΓÇö Forge TUI is now the default RKOJ.exe entry mode",
+                                       "3d76da7 feat(forge): top toolbar + bottom status bar ΓÇö jcode chrome parity",
+                                       "9d11263 feat(rkoj): umbrella project for the unified jcode-form Sinister CLI ΓÇö manifest + integration map + CHANGELOG"
+                                   ]
+            },
+    "progress_top3":  [
+                          "2026-05-21 16:15Z â€” v0.97.3 ship (`950b61d`) â€” structural SIM-clobber prevention LIVE on both phones (KPM telephony default-off gate + SpooferConfigPoller defensive ctl0 batch + QueueTab real-data ETA + Sanctum recovery-watchdog scaffold)",
+                          "2026-05-21 15:25Z â€” resume: SIM-clobber empirical diagnosis (lukeprivacy+sinister-spoofer concurrent-load) + v0.97.2 shipped (`9733932`) + installed both phones (versionCode=202)"
+                      ],
+    "latest_plan":  {
+                        "dir":  null,
+                        "artifact":  null
+                    },
+    "inbox_unread_count":  2,
+    "last_5_files_touched_24h":  [
+                                     "_shared-memory\\auto-push.log",
+                                     "_shared-memory\\PROGRESS\\Sinister Kernel APK.md",
+                                     "_shared-memory\\heartbeats\\apk.json",
+                                     "_shared-memory\\resume-points\\Sinister Sanctum\\2026-05-21T161049Z.json",
+                                     "tools\\sinister-recovery-watchdog\\Install-Task.ps1"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Sinister Kernel Apk.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}

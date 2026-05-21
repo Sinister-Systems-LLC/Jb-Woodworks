@@ -1,0 +1,45 @@
+﻿{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-21T15:32:42.2766218Z",
+    "project":  "Kernel APK",
+    "agent_name":  "kernel-apk",
+    "mode":  "resume",
+    "focus_intent":  "",
+    "git":  {
+                "branch":  "agent/sinister-sanctum/cli-dispatcher-2026-05-21",
+                "head":  "3687f30e8b54c7acfeddb83e921f96a6e7ff8867",
+                "head_msg":  "feat(launcher): prefer RKOJ.exe over PS1 + new RKOJ-Start.bat for direct EXE launch",
+                "recent_commits":  [
+                                       "3687f30 feat(launcher): prefer RKOJ.exe over PS1 + new RKOJ-Start.bat for direct EXE launch",
+                                       "789ab3c chore(sanctum): dedupe sweep ΓÇö 15 safe removals from caches + logs",
+                                       "178fbcf feat(sanctum-backup): v0.1.0 ΓÇö daily Sanctum backups with 7-day retention + /backup slash (47/47 tests)",
+                                       "c5a2e37 docs(sanctum): GitHub linkage audit 2026-05-21 + operator action queue update",
+                                       "2519f57 docs(sanctum): brain index + RKOJ README v0.6.0 update + ENV-VARIABLES confirm",
+                                       "51515ff feat(forge): SkillRegistry ΓÇö load ~/.sinister/skills/*.md + bundled skills as /skillname",
+                                       "599d1a1 feat(forge-memory-bridge): BM25 re-scoring on recall() return path",
+                                       "5e7f5c8 feat(forge): anthropic_direct v0.7.0 ΓÇö parallel tools + prompt caching + thinking panel + budget guard + JSONL journaling",
+                                       "b399cd5 feat(sinister-model): v0.1.0 ΓÇö 11-provider model registry + /model CLI (72/72 tests)",
+                                       "03f26ef docs(sanctum): jcode-agentic-loop-patterns brain entry + parallel sweep coord"
+                                   ]
+            },
+    "progress_top3":  [
+                          "2026-05-21 15:25Z â€” resume: SIM-clobber empirical diagnosis (lukeprivacy+sinister-spoofer concurrent-load) + v0.97.2 shipped (`9733932`) + installed both phones (versionCode=202)",
+                          "2026-05-21 14:35Z â€” resume + ss03 pivot: v0.97.2 ship (progress-bar truthfulness + harvest-mismatch heartbeat field) + P1 ss03 alarm = boot-prop sticky (no on-disk ss03 in last 8 iters)"
+                      ],
+    "latest_plan":  {
+                        "dir":  null,
+                        "artifact":  null
+                    },
+    "inbox_unread_count":  2,
+    "last_5_files_touched_24h":  [
+                                     "automations\\build\\forge-exe\\__pycache__\\RKOJ-entry.cpython-312.pyc",
+                                     "_shared-memory\\plans\\jcode-fork-2026-05-21\\plan.md",
+                                     "_shared-memory\\PROGRESS\\Sinister Sanctum.md",
+                                     "projects\\sinister-forge\\source\\forge\\commands.py",
+                                     "_shared-memory\\knowledge\\sinister-spoofer-lukeprivacy-sim-clobber-2026-05-21.md"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Sinister Kernel Apk.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}
