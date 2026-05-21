@@ -237,3 +237,7 @@ projects/sinister-mind/source/sinister_mind.egg-info/
 projects/sinister-term/source/**/__pycache__/
 projects/sinister-term/source/**/*.pyc
 projects/sinister-term/source/sinister_term.egg-info/
+
+# Archive POINTER dirs - source/ subdirs are NTFS junctions to operator Desktop locations
+_archive/d-sinister-01_projects-pointers-2026-05-21/*/source/
+_archive/d-sinister-01_projects-pointers-2026-05-21/*/_vault/

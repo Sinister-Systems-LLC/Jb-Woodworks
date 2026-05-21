@@ -4,6 +4,43 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-21 ~19:15 — RKOJ.exe v1.4.0 SHIPPED to Desktop (integrated bundle: Term + MCP SDK + Skills + workstation auto-launch + vault auto-spawn) — commits `e34ac7a` + `216f47d`
+
+EVE (Author: RKOJ-ELENO) on `agent/sinister-sanctum/cli-dispatcher-2026-05-21`. Operator escalation mid-turn (verbatim): *"no you are worng we are working on rkoj exe not fucking bat ... we are combingin all thigns we have been working on rkoj workstation, jcode, all the skills we ahve made, mcp, our new console system, rikki all of that"* → *"idk keep working and dont stop"*. Course-corrected from bat-scaffolding sprint to EXE-level integration.
+
+**Shipped v1.4.0 (50.2 MB, +287 KB vs v1.3.0)**:
+
+1. **Term bundled inside RKOJ.exe** — `RKOJ.spec` adds `collect_submodules("term") + collect_data_files("term")`; `projects/sinister-term/source` added to pathex. Smoke verified: `RKOJ.exe version` returns `sinister term 0.2.0 (term)`.
+2. **MCP Python SDK bundled** — `mcp` package collected; Phase 2 wiring (forge.bridge → `~/.claude/.mcp.json` for eve / sinister-panel / sinister-snap / sinister-tiktok / vault / ruflo) is a follow-up turn.
+3. **Skills/*.md content shipped inside the binary** — `datas.append((skills_root, "skills"))` puts the 6 candidate skills (sk-swarm-coord, sk-vector-memory, sk-federation, sk-observability, sk-aidefence, dashboard-skeleton) inside the EXE as a SkillRegistry fallback.
+4. **Workstation console auto-launch from EXE** — `projects/sinister-forge/source/forge/panes/workstation_panel.py` path typo fixed (`D:/Sinister/Sanctum/...` → `D:/Sinister Sanctum/...`), new `_spawn_daemon()` runs `python desktop_app.py` detached, Open-Browser auto-spawns daemon if `:5077` idle. Sibling-lane patch — canonical-10 deviation justified by direct operator EXE-integration ask; cross-agent broadcast dropped to `_shared-memory/inbox/forge/2026-05-21T1830Z-from-sanctum-workstation-panel-patch.json`.
+5. **Vault daemon auto-spawn at EXE startup** — `RKOJ-entry.py` new `_ensure_background_services(sanctum_root)` runs before TUI mount; spawns `tools/sinister-vault/daemon.py` detached if `:5078` idle.
+
+**Smoke verification (non-interactive, on shipped Desktop binary)**:
+- `RKOJ.exe version` → GREEN, all sinister-* tools enumerated incl. `sinister term 0.2.0 (term)`.
+- `RKOJ.exe login providers` → GREEN, 11-row provider wallet (claude/openai/gemini/copilot/azure/alibaba/fireworks/minimax/lmstudio/ollama/openai-compatible).
+- `RKOJ.exe usage list` → GREEN, 11-row endpoint registry.
+- `RKOJ.exe swarm list` → GREEN, JSON heartbeat list (rkoj-runtime + rkoj-scheduler both fresh).
+
+**Umbrella docs in sync with shipped binary**:
+- `projects/rkoj/MANIFEST.json` version 1.3.0 → 1.4.0; term role notes v1.4.0 bundling; new mcp-client component row.
+- `projects/rkoj/CHANGELOG.md` v1.4.0 entry detailing all 5 integration surfaces.
+- `projects/rkoj/README.md` version v1.3.0 → v1.4.0.
+
+**Side D-drive cleanup (low-risk, master-actionable per projects-audit.md sub-agent verdict)**:
+- 7 POINTER dirs (`RKOJ/`, `Inventions/`, `JOKR/Library-of-JOKR/`, `Sinister/Library-of-Alexandria/`, `Sinister/Kernel-SU-Setup/`, `Sinister/Sinister-Bumble-EMU/`, `_vault/`) archived to `_archive/d-sinister-01_projects-pointers-2026-05-21/` (no-payload doctrine scaffolds, sources symlinked to `C:/Users/Zonia/Desktop/...`).
+- `JOKR/Logo-Options/` (11 SVG logos, NEW migration target with no Sanctum equiv) moved to `projects/sinister-jokr/Logo-Options/`.
+- LIVE-BACKING junctions left untouched: `Sinister/Sinister-APK/` (3.7 GB, junction-source for `projects/sinister-kernel-apk/source`) + `Sinister/Sinister-Emulator-Bundle/` (363 MB, junction-source for `projects/sinister-emulator-bundle/source`).
+- DIVERGED `JOKR/JOKR-Global/` (470 MB src vs 8.4 MB Sanctum dest, node_modules in src) left untouched — operator-gated authoritative-direction decision per audit.
+
+**Sanctum root cleanup**: 6 stale `test-*.log` deleted; `tmp-recover-sanctum-2026-05-21-batch8/` archived.
+
+**GitHub state**: 60+ commits pushed across `00f9369..216f47d`; auto-push log was skipping (not-on-target-branch) so manual `git push origin agent/...` ran twice to drain the queue.
+
+**Operator-gated remaining**: D:/_backups custodian-stop drain, D:/Sinister → D:/Personal rename, 24h SinisterSanctumDailyBackup schtask install (UAC), DIVERGED JOKR-Global authoritative-direction pick.
+
+---
+
 ## 2026-05-21 ~18:00 — RKOJ v1.3.0 umbrella docs catch-up + UI completeness audit GREEN (commit `9aaaf97`)
 
 EVE (Author: RKOJ-ELENO) on `agent/sinister-sanctum/cli-dispatcher-2026-05-21`. Operator directive at session-start: *"pickup where we left off on organizing and working on the rkoj all in one"*. Mid-turn escalation: *"complete everything i asked for for the rkoj system with jcode. the ui. agents and phones tab all of that"*.
