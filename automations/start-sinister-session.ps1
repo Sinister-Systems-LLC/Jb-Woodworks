@@ -1394,7 +1394,7 @@ $BuiltinPhrases = @{
     # v14 (test 2026-05-21): Resume mode - pick up exactly where last session
     # left off. Top entry of PROGRESS + any in_progress task + most-recent
     # plan artifact. No re-derive scope; previous session captured it.
-    'resume'   = "$MemPreamble RESUME MODE for <PROJECT> (root: <ROOT>). Continue exactly where the last session left off. First action: Read the top entry of D:\Sinister Sanctum\_shared-memory\PROGRESS\<your-agent-name>.md to recover last-session ship-state. Then read the most-recent plan artifact at D:\Sinister Sanctum\_shared-memory\plans\<PROJECT>-*\ (highest mtime). Then check D:\Sinister Sanctum\_shared-memory\inbox\<your-slug>\ for done-*.json notifications since last session. Re-establish context from those three sources, claim any in_progress TaskList row via TaskUpdate, and BEGIN. Do NOT re-derive scope - previous session already captured it.$ContextReviewSuffix$NoStopSuffix$AUPRespectSuffix$ParallelSuffix"
+    'resume'   = "$MemPreamble RESUME MODE for <PROJECT> (root: <ROOT>). Continue exactly where last session left off via the RESUME-POINT DISCIPLINE (CONTRACT 7). FIRST action: read the LATEST resume-point at D:\Sinister Sanctum\_shared-memory\resume-points\<PROJECT>\<HIGHEST-UTC>.json. The JSON's pre_warm_reads[] field is your FOCUSED context-load list - read ONLY those files, not the whole brain. The JSON also has progress_top3, latest_plan, inbox_unread_count, last_5_files_touched_24h, and git.head/branch/recent_commits. If NO resume-point exists yet, fall back to: top entry of PROGRESS/<your-agent-name>.md + most-recent plans/<PROJECT>-*/ artifact by mtime + inbox/<your-slug>/*.json. Re-establish context surgically; claim any in_progress TaskList row; BEGIN. Do NOT re-derive scope - previous session captured it. At end of every meaningful deliverable: write a NEW resume-point via `powershell -File D:\Sinister Sanctum\automations\resume-point-write.ps1 -SanctumRoot 'D:\Sinister Sanctum' -ProjectKey <PROJECT> -AgentName <your-agent-name> -Mode resume` so the next session inherits the chain.$ContextReviewSuffix$NoStopSuffix$AUPRespectSuffix$ParallelSuffix"
     # v14 (test 2026-05-21): Expand mode - EXPAND 7-step contract per the
     # expand-mode-contract brain entry. Deep audit + clean-up proposal + brain
     # xref + fleet xref + forward-plan + broadcast + [MODE-SWITCH] inbox
@@ -2122,6 +2122,25 @@ exec bash
         Say ('  ' + ('-' * 74)) $LightP
         Type-Line "  > spawning git-bash + claude as '$AgentName' ($AccentColor)..." $Accent 8
         Say ('  ' + ('-' * 74)) $LightP
+
+        # v15 (test 2026-05-21): fire resume-point-write hidden background so
+        # every session has a baseline snapshot for the NEXT session to resume
+        # from. Per CONTRACT 7 RESUME-POINT DISCIPLINE.
+        try {
+            $rpWriter = Join-Path $SanctumRoot 'automations\resume-point-write.ps1'
+            if (Test-Path $rpWriter) {
+                $rpArgs = @(
+                    '-NoProfile', '-ExecutionPolicy', 'Bypass',
+                    '-File', $rpWriter,
+                    '-SanctumRoot', "`"$SanctumRoot`"",
+                    '-ProjectKey', $projRec.key,
+                    '-AgentName', $AgentName,
+                    '-Mode', $Mode
+                )
+                if ($script:__FocusIntent) { $rpArgs += @('-FocusIntent', "`"$($script:__FocusIntent)`"") }
+                Start-Process powershell.exe -WindowStyle Hidden -ArgumentList $rpArgs -ErrorAction SilentlyContinue | Out-Null
+            }
+        } catch { }
 
         # Resolve mintty for fine-grained color control. Fallback chain:
         # 1) mintty.exe with -t TITLE + ForegroundColour/BackgroundColour/CursorColour options
