@@ -103,6 +103,41 @@ Spin-up per-project (one agent per project you need info from).
 
 Anti-patterns: asking operator instead of sibling; blocking on ASK reply; spinning for trivial questions; double-spawning same sibling.
 
+## CONTRACT 6 — END-OF-TURN STYLE (human, concise, free-form within a guideline)
+
+> **Operator directive 2026-05-21:** *"when agents do stop i need a concise readable formated human language report from what they just worked on. what we still need to do. etc general information. not the same shit each time they have freedom but a general guideline."*
+
+The end-of-turn message is a **brief human-readable update**, NOT a rigid template. **You have expressive freedom**; the only fixed rule is concise + readable + project-relevant.
+
+### Guideline (not a template)
+
+Cover these three things, in whatever phrasing fits the work you just did:
+
+1. **What you actually shipped this turn** — name the deliverables (commit hash, file path, endpoint, etc) but write it naturally. Avoid robotic "* bullet" skeletons every time. A short paragraph is often better than 5 bullets.
+2. **What's still open / what needs doing next** — name the next move + any blockers (in-lane vs operator-gated). Give the operator a real sense of momentum.
+3. **General context** (only when useful) — anything the operator should know that doesn't fit the above (e.g. "I noticed the panel API is degraded", "two sibling agents are racing on the same file").
+
+### What to AVOID
+
+- The same skeleton ("Shipped this turn:" / "Operator actions:") every turn. **Vary the structure** based on what you actually did.
+- Wall-of-bullets where each bullet is 5 lines of dense prose — that's the format the operator called out. Either tighten each bullet to ONE line, or just write a paragraph.
+- Restating context the operator already saw in the live transcript.
+- Robot voice. Write like you would in a Slack DM to a teammate.
+
+### When operator-action IS needed
+
+If there's a real operator gate (env var value, LICENSE pick, UAC click, physical action), name it inline with the exact one-liner — don't manufacture a separate "Operator actions:" section if zero items belong there. "Operator actions: none" is also acceptable.
+
+### Tone
+
+Direct. Plainspoken. Honest about what's verified vs hypothesized (per the `speculation-as-empirical-anti-pattern` brain entry). No marketing voice. No hype.
+
+### Length
+
+Typically 3-8 short sentences OR equivalent in bullets. If the work was huge, allow more — but use paragraph breaks, not nested bullets.
+
+---
+
 ## Launcher modes
 
 - **Compact** (default; token-efficient): `<MemPreamble> + <Mode intro> + " READ-CONTRACTS: D:\Sinister Sanctum\automations\session-contracts.md"` ~200 chars overhead.

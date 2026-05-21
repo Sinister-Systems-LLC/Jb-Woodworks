@@ -173,6 +173,38 @@ Rule
 Say ''
 
 # ============================================================
-# STEP 3 -- Emit the resolved root on the LAST line so the bat captures it.
+# STEP 3 -- Fire auto-backup (24h cadence) + auto-cleanup quietly in
+#           background so the bat resumes without delay. No popups.
+# ============================================================
+try {
+    $backupPs1 = Join-Path $SanctumRoot 'automations\auto-backup.ps1'
+    $cleanupPs1 = Join-Path $SanctumRoot 'automations\auto-cleanup.ps1'
+    if (Test-Path $backupPs1) {
+        Start-Process powershell.exe -WindowStyle Hidden -ArgumentList @(
+            '-NoProfile', '-ExecutionPolicy', 'Bypass',
+            '-File', $backupPs1,
+            '-SanctumRoot', "`"$SanctumRoot`"",
+            '-Quiet'
+        ) -ErrorAction SilentlyContinue | Out-Null
+        Say '  [auto-backup] dispatched (background, hidden, 24h gate)' $Dim
+    }
+    if (Test-Path $cleanupPs1) {
+        Start-Process powershell.exe -WindowStyle Hidden -ArgumentList @(
+            '-NoProfile', '-ExecutionPolicy', 'Bypass',
+            '-File', $cleanupPs1,
+            '-SanctumRoot', "`"$SanctumRoot`"",
+            '-Quiet'
+        ) -ErrorAction SilentlyContinue | Out-Null
+        Say '  [auto-cleanup] dispatched (background, hidden)' $Dim
+    }
+} catch {
+    Say "  [WARN] auto-backup/cleanup dispatch failed: $($_.Exception.Message)" $Warn
+}
+
+Rule
+Say ''
+
+# ============================================================
+# STEP 4 -- Emit the resolved root on the LAST line so the bat captures it.
 # ============================================================
 Write-Output $SanctumRoot

@@ -179,3 +179,6 @@ projects/*/eleno/scratch/*
 !projects/*/eleno/scratch/.gitkeep
 projects/*/me/.env.local
 projects/*/eleno/.env.local
+
+# Auto-backup snapshots (24h cadence; auto-cleanup prunes >7d)
+backups/
