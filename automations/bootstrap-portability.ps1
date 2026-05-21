@@ -197,6 +197,18 @@ try {
         ) -ErrorAction SilentlyContinue | Out-Null
         Say '  [auto-cleanup] dispatched (background, hidden)' $Dim
     }
+    # v15 (test 2026-05-21): context-pruner - keeps inbox/cross-agent/plans/
+    # PROGRESS bounded so CONTEXT-REVIEW reads do not bloat the window.
+    $prunerPs1 = Join-Path $SanctumRoot 'automations\context-pruner.ps1'
+    if (Test-Path $prunerPs1) {
+        Start-Process powershell.exe -WindowStyle Hidden -ArgumentList @(
+            '-NoProfile', '-ExecutionPolicy', 'Bypass',
+            '-File', $prunerPs1,
+            '-SanctumRoot', "`"$SanctumRoot`"",
+            '-Quiet'
+        ) -ErrorAction SilentlyContinue | Out-Null
+        Say '  [context-pruner] dispatched (background, hidden)' $Dim
+    }
     # v15 (test 2026-05-21): wire github-research-watcher into cold-start.
     # Operator wants any new Desktop\Github Research\ drops auto-audited.
     $watcherPs1 = Join-Path $SanctumRoot 'automations\github-research-watcher.ps1'

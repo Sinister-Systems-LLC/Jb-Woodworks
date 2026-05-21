@@ -112,6 +112,49 @@ Spin-up per-project (one agent per project you need info from).
 
 Anti-patterns: asking operator instead of sibling; blocking on ASK reply; spinning for trivial questions; double-spawning same sibling.
 
+## CONTRACT 7 — RESUME-POINT DISCIPLINE (every project picks up clean)
+
+> **Operator 2026-05-21:** *"i need all projects to resume where they left off and always ahve resume points. i need their context to come with taht and clean as it works with things we dont need so the context never gets filled up or capped."*
+
+### Write a resume-point
+
+After every meaningful deliverable, write/update `_shared-memory/resume-points/<project>/<UTC>.json`:
+
+```
+powershell -File D:\Sinister Sanctum\automations\resume-point-write.ps1 -SanctumRoot 'D:\Sinister Sanctum' -ProjectKey <project-key> -AgentName <agent> -Mode <mode>
+```
+
+Schema (`sinister.resume-point.v1`) captures: git branch/head/recent commits, top 3 PROGRESS headings, latest plan dir, inbox unread count, last 5 files touched in 24h, `pre_warm_reads[]` (focused list the next session reads FIRST, NOT the whole brain).
+
+### Read a resume-point on RESUME
+
+`'resume'` BuiltinPhrase reads the LATEST resume-point + loads ONLY `pre_warm_reads`. Surgical context loading. Don't grep the whole brain.
+
+### Context-window discipline (background cleanup)
+
+`automations/context-pruner.ps1` runs hidden on every session-start. Rotates:
+
+- `inbox/<slug>/*.json` >7 days → `inbox/<slug>/_archive/`
+- `cross-agent/*.md` >30 days → `cross-agent/_archive/`
+- `plans/<proj>-*/` with `status=shipped` + mtime >14d → `plans/_archive/`
+- `PROGRESS/<agent>.md` >2000 lines → keep first 1000, archive rest to `PROGRESS/_archive/<agent>-pre-<UTC>.md`
+
+`_archive/` is OUT of default agent scan paths.
+
+### Per-session hygiene
+
+1. Read `pre_warm_reads` ONLY on cold-start. Don't grep the whole brain.
+2. `/compact` proactively when >3 large images or >20 file-reads accumulate per turn.
+3. Drop completed inbox items to `_archive/` rather than leaving them live.
+4. End every meaningful turn with a resume-point write.
+
+### Anti-patterns
+
+- Reading every brain entry every cold-start.
+- Letting PROGRESS grow unboundedly.
+- Keeping resolved [ASK]s in the live inbox.
+- Skipping the resume-point write because "the next session will figure it out."
+
 ## CONTRACT 6 — END-OF-TURN STYLE (human, concise, free-form within a guideline)
 
 > **Operator directive 2026-05-21:** *"when agents do stop i need a concise readable formated human language report from what they just worked on. what we still need to do. etc general information. not the same shit each time they have freedom but a general guideline."*
