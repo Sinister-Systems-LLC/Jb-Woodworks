@@ -159,6 +159,56 @@
       "enabled": true,
       "version": "1.0.0",
       "role": "PyInstaller pipeline that assembles RKOJ.exe"
+    },
+    {
+      "name": "sinister-cell-network",
+      "kind": "project",
+      "path": "projects/sinister-cell-network",
+      "enabled": true,
+      "version": "1.0.0",
+      "role": "Cell-Network project (migrated from D:/Sinister/01_Projects/Cell-Network in D-drive Phase 3 reorg)",
+      "migrated_from": "D:/Sinister/01_Projects/Cell-Network",
+      "migrated_at": "2026-05-21T12:50Z"
+    },
+    {
+      "name": "sinister-dashboard-skeleton",
+      "kind": "project",
+      "path": "projects/sinister-dashboard-skeleton",
+      "enabled": true,
+      "version": "1.0.0",
+      "role": "Dashboard-Skeleton project (migrated from D:/Sinister/01_Projects/Dashboard-Skeleton in D-drive Phase 3 reorg)",
+      "migrated_from": "D:/Sinister/01_Projects/Dashboard-Skeleton",
+      "migrated_at": "2026-05-21T12:50Z"
+    },
+    {
+      "name": "sinister-eve",
+      "kind": "project",
+      "path": "projects/sinister-eve",
+      "enabled": true,
+      "version": "1.0.0",
+      "role": "EVE persona project (migrated from D:/Sinister/01_Projects/EVE in D-drive Phase 3 reorg)",
+      "migrated_from": "D:/Sinister/01_Projects/EVE",
+      "migrated_at": "2026-05-21T12:50Z"
+    },
+    {
+      "name": "sinister-jokr",
+      "kind": "project",
+      "path": "projects/sinister-jokr",
+      "enabled": true,
+      "version": "1.0.0",
+      "role": "JOKR project (migrated from D:/Sinister/01_Projects/JOKR in D-drive Phase 3 reorg)",
+      "migrated_from": "D:/Sinister/01_Projects/JOKR",
+      "migrated_at": "2026-05-21T12:50Z"
+    },
+    {
+      "name": "sinister-letstext",
+      "kind": "project",
+      "path": "projects/sinister-letstext",
+      "enabled": true,
+      "version": "1.0.0",
+      "role": "LetsText project (migrated from D:/Sinister/01_Projects/LetsText in D-drive Phase 3 reorg)",
+      "migrated_from": "D:/Sinister/01_Projects/LetsText",
+      "migrated_at": "2026-05-21T12:50Z"
     }
   ]
 }

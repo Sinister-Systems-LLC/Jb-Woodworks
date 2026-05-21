@@ -200,6 +200,24 @@ backups/
 !projects/sinister-term/source/
 !projects/sinister-term/source/**
 
+# D-drive Phase 3 (2026-05-21, RKOJ-ELENO): 5 migrated projects + Sinister Skills
+# alias junction. These contain large amounts of historical content with their own
+# git histories; Sanctum tracks the MANIFEST entry, not the contents.
+projects/sinister-cell-network/
+projects/sinister-dashboard-skeleton/
+projects/sinister-eve/
+projects/sinister-jokr/
+projects/sinister-letstext/
+
+# Sinister Skills alias junction (canonical path is _sinister-skills/, aliased here
+# for backward-compat refs); content already shared via D:/Sinister/Sinister Skills.
+/Sinister Skills/
+_sinister-skills/
+
+# Operator-private vault renamed in Phase 3 (was _vault/, now _vault-personal/
+# to make room for sinister-vault collaborative store at _vault/).
+_vault-personal/
+
 # Sinister Claw source (Expo/RN - real code, not junction)
 !projects/sinister-claw/source/
 !projects/sinister-claw/source/**
