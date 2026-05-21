@@ -34,7 +34,7 @@ import time
 import traceback
 from pathlib import Path
 
-__version__ = "0.5.0"
+__version__ = "0.7.0"
 
 
 # ----- Sub-command dispatch (RKOJ.exe login providers etc) -----------------
@@ -323,6 +323,7 @@ def _print_status_panel(root: Path) -> None:
 def _cmd_help(args, root) -> str:
     return (
         f"{PURPLE_BRIGHT}{BOLD}commands{RESET}\n"
+        f"  {WHITE}/start{RESET}                  pick a project + mode and launch a session (bat-file parity)\n"
         f"  {WHITE}/resume{RESET}                 list resume-points grouped by project\n"
         f"  {WHITE}/resume <project>{RESET}       show resume-points for one project\n"
         f"  {WHITE}/resume <project> <N>{RESET}   load resume-point N for that project (prints summary)\n"
@@ -574,6 +575,126 @@ def _cmd_forge(args, root) -> str:
     return f"  {GRAY}forge exited.{RESET}"
 
 
+# ----- /start picker (bat-file project-picker parity) ---------------------
+
+def _start_picker(root: Path) -> bool:
+    """Interactive `/start` flow. Mirrors automations/start-sinister-session.ps1
+    UX inline at the RKOJ.exe `>` prompt. Returns True if a session was
+    launched, False on cancel.
+
+    Steps: list (sorted by recency, max 20) → pick (1-N | new | q) → mode
+    (r/e/s, default r) → set env + spawn (resume/expand → claude; shell →
+    same shell continues).
+    """
+    proj_path = root / "automations" / "session-templates" / "projects.json"
+    if not proj_path.exists():
+        print(f"  {RED}/start: projects.json missing at {proj_path}{RESET}")
+        return False
+    try:
+        data = json.loads(proj_path.read_text(encoding="utf-8"))
+    except Exception as e:
+        print(f"  {RED}/start: parse error: {e}{RESET}")
+        return False
+    projects = [p for p in data.get("projects", []) if not p.get("_subsumed_by")]
+    if not projects:
+        print(f"  {GRAY}/start: no projects in registry{RESET}")
+        return False
+
+    rp_dir = root / "_shared-memory" / "resume-points"
+
+    def _mt(p: dict) -> float:
+        for slot in (p.get("display"), p.get("key"), (p.get("key") or "").title()):
+            if not slot:
+                continue
+            d = rp_dir / slot
+            if d.exists():
+                pts = list(d.glob("*.json"))
+                if pts:
+                    return max(x.stat().st_mtime for x in pts)
+        return 0.0
+
+    projects = sorted(projects, key=_mt, reverse=True)[:20]
+    print(f"{PURPLE_BRIGHT}{BOLD}  /start — pick a project to resume{RESET}")
+    for i, p in enumerate(projects, start=1):
+        m = _mt(p)
+        ts = datetime.datetime.fromtimestamp(m).strftime("%m-%d %H:%M") if m else "never"
+        print(f"  {PURPLE_BRIGHT}{i:>2}{RESET}. {WHITE}{p.get('key', '?'):<22}{RESET} "
+              f"{GRAY}· {p.get('display', '')}{RESET}  {GRAY}({ts}){RESET}")
+    print()
+    try:
+        pick = input(f"  {PURPLE_BRIGHT}pick (1-{len(projects)}) or 'new', q to cancel:{RESET} ").strip().lower()
+    except (EOFError, KeyboardInterrupt):
+        print()
+        return False
+    if not pick or pick == "q":
+        print(f"  {GRAY}/start canceled{RESET}")
+        return False
+
+    slug = display = branch_topic = None
+    if pick == "new":
+        try:
+            slug = input(f"  {PURPLE_BRIGHT}new slug:{RESET} ").strip()
+            display = input(f"  {PURPLE_BRIGHT}display name:{RESET} ").strip() or slug
+            branch_topic = input(f"  {PURPLE_BRIGHT}branch topic (short):{RESET} ").strip() or "scratch"
+        except (EOFError, KeyboardInterrupt):
+            print()
+            return False
+        if not slug:
+            print(f"  {RED}/start: slug required{RESET}")
+            return False
+    elif pick.isdigit():
+        idx = int(pick)
+        if not (1 <= idx <= len(projects)):
+            print(f"  {RED}/start: out of range (1-{len(projects)}){RESET}")
+            return False
+        proj = projects[idx - 1]
+        slug = proj.get("key", "?")
+        display = proj.get("display", slug)
+        branch_topic = f"resume-{datetime.datetime.now().strftime('%Y-%m-%d')}"
+    else:
+        print(f"  {RED}/start: bad pick `{pick}`{RESET}")
+        return False
+
+    try:
+        m = input(f"  {PURPLE_BRIGHT}mode? [r]esume / [e]xpand / [s]hell (default r):{RESET} ").strip().lower()
+    except (EOFError, KeyboardInterrupt):
+        print()
+        return False
+    mode = "resume" if not m or m.startswith("r") else (
+           "expand" if m.startswith("e") else (
+           "shell"  if m.startswith("s") else "resume"))
+    branch = f"agent/{slug}/{branch_topic}"
+
+    # Last resume-point timestamp for display.
+    last_rp = "fresh"
+    rp_slot = rp_dir / (display or slug)
+    if rp_slot.exists():
+        pts = sorted(rp_slot.glob("*.json"), key=lambda x: x.stat().st_mtime, reverse=True)
+        if pts:
+            last_rp = datetime.datetime.fromtimestamp(pts[0].stat().st_mtime).strftime("%Y-%m-%d %H:%M")
+
+    print()
+    print(f"  {PURPLE_BRIGHT}EVE on {display}{RESET} {GRAY}· {mode} · branch {branch} · resume-point {last_rp}{RESET}")
+
+    os.environ["SINISTER_PROJECT"] = slug
+    os.environ["SINISTER_PROJECT_DISPLAY"] = display or slug
+    os.environ["SINISTER_MODE"] = mode
+    os.environ["SINISTER_BRANCH"] = branch
+
+    if mode == "shell":
+        print(f"  {GRAY}shell mode — env set; type at the `>` prompt to continue.{RESET}")
+        return True
+    prompt = f"pick up where we left off on {display}"
+    _spawn_claude(prompt, root)
+    return True
+
+
+def _cmd_start(args, root) -> str:
+    """Interactive picker — only meaningful in the `>` shell loop. Triggers
+    `_start_picker(root)` directly via the main loop bypass (see _dispatch_slash)."""
+    return f"  {GRAY}(/start picker runs inline in the shell loop — see prompt above){RESET}"
+
+
 SLASH_COMMANDS = {
     "help":     _cmd_help,
     "?":        _cmd_help,
@@ -585,6 +706,7 @@ SLASH_COMMANDS = {
     "v":        _cmd_version,
     "info":     _cmd_info,
     "projects": _cmd_projects,
+    "start":    _cmd_start,
     "resume":   _cmd_resume,
     "agents":   _cmd_agents,
     "inbox":    _cmd_inbox,
@@ -757,6 +879,12 @@ def main() -> int:
         if not line:
             continue
         if line.startswith("/"):
+            # /start needs interactive stdin (bat-file picker parity) — bypass
+            # the stateless dispatcher and call the picker directly.
+            stripped = line[1:].strip().lower()
+            if stripped == "start" or stripped.startswith("start "):
+                _start_picker(sanctum_root)
+                continue
             out = _dispatch_slash(line, sanctum_root)
             if out:
                 print(out)

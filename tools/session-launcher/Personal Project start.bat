@@ -6,9 +6,25 @@ REM (LetsText, JOKR-Global, eve-mcp, Car, Drone, Cell-Network, RKOJ-personal).
 REM The launcher PS1 + personal-projects.json DO live in Sanctum.
 REM
 REM Author: Sinister Sanctum master agent (test, Claude) :: 2026-05-21
+REM Author: RKOJ-ELENO :: 2026-05-21 (RKOJ.exe v0.7.0 preference patch)
 
 TITLE Sinister Personal :: Project Launcher
 setlocal enableextensions
+
+REM ============================================================
+REM STEP 0 -- Prefer RKOJ.exe v0.7.0+ if present (jcode-form parity).
+REM           Falls through to PS1 flow if RKOJ.exe is missing.
+REM           Arg 1 (if not resume/new) forwarded as SINISTER_PROJECT env var.
+REM ============================================================
+set "RKOJ_EXE=C:\Users\Zonia\Desktop\RKOJ.exe"
+if exist "%RKOJ_EXE%" (
+    set "SINISTER_PROJECT_MODE=personal"
+    if not "%~1"=="" (
+        if /i not "%~1"=="resume" if /i not "%~1"=="new" set "SINISTER_PROJECT=%~1"
+    )
+    start "" "%RKOJ_EXE%"
+    exit /b 0
+)
 
 REM Auto-relaunch in Windows Terminal if available + not already there
 if not defined WT_SESSION (

@@ -17,8 +17,26 @@ REM Bootstrap delegated to automations\bootstrap-portability.ps1 (operator's
 REM "I can place this on any PC in the world" directive 2026-05-21).
 REM
 REM Author: Sinister Sanctum master agent (test, Claude) :: 2026-05-21
+REM Author: RKOJ-ELENO :: 2026-05-21 (RKOJ.exe v0.7.0 preference patch)
 
 TITLE Sinister Sanctum :: Session Launcher
+
+REM ============================================================
+REM STEP 0 -- Prefer RKOJ.exe v0.7.0+ (jcode-form parity) if present.
+REM           Operator's primary launch surface. The EXE auto-spawns
+REM           the appropriate session via its /start flow.
+REM           If arg 1 is a project slug, surface it via SINISTER_PROJECT
+REM           env var so RKOJ.exe can route directly.
+REM           Falls through to PS1 flow if RKOJ.exe is missing.
+REM ============================================================
+SET "RKOJ_EXE=C:\Users\Zonia\Desktop\RKOJ.exe"
+IF EXIST "%RKOJ_EXE%" (
+    IF NOT "%~1"=="" (
+        IF /I NOT "%~1"=="resume" IF /I NOT "%~1"=="new" SET "SINISTER_PROJECT=%~1"
+    )
+    start "" "%RKOJ_EXE%"
+    exit /b 0
+)
 
 REM ============================================================
 REM Auto-relaunch in Windows Terminal (Cascadia Code; Braille art renders crisp).

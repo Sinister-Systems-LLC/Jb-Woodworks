@@ -1,6 +1,6 @@
 @echo off
 REM Sinister Start :: unified Desktop entry  (v1 :: 2026-05-21)
-REM Author: RKOJ-ELENO
+REM Author: RKOJ-ELENO :: 2026-05-21
 REM
 REM One bat. Picks which surface to launch:
 REM    1) Session   = Start-Sinister-Session.bat (per-project session via launcher PS1)
@@ -8,9 +8,25 @@ REM    2) Forge     = Sinister Forge.bat (multi-LLM TUI harness, all 11 projects
 REM    3) Mind      = Sinister Mind.bat (visual brain graph, http://127.0.0.1:5079/)
 REM    4) Personal  = Personal Project start.bat (personal-fleet projects)
 REM    5) RKOJ      = launch the RKOJ workbench EXE (http://127.0.0.1:5077/)
+REM
+REM 2026-05-21 patch (RKOJ-ELENO): if RKOJ.exe v0.7.0+ exists on Desktop,
+REM prefer it as the default surface. Old picker still reachable with arg "menu".
 
 TITLE Sinister Start :: unified launcher
 setlocal enableextensions
+
+REM ============================================================
+REM STEP 0 -- Prefer RKOJ.exe v0.7.0+ if present (jcode-form parity).
+REM           Unless arg 1 is "menu" (force-show picker), launch the EXE.
+REM ============================================================
+set "RKOJ_EXE=C:\Users\Zonia\Desktop\RKOJ.exe"
+if exist "%RKOJ_EXE%" (
+    if /i not "%~1"=="menu" (
+        if not "%~1"=="" set "SINISTER_PROJECT=%~1"
+        start "" "%RKOJ_EXE%"
+        exit /b 0
+    )
+)
 
 if not defined WT_SESSION (
     where wt.exe >nul 2>&1

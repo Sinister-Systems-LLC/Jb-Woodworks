@@ -857,9 +857,24 @@ def _cmd_debug_visual(args, pane, app) -> str:
 
 # ----- session-loop commands (delegated to siblings) ---------------------
 
-def _stub(name: str, summary: str, detail: str = "") -> Callable:
+def _stub(name: str, summary: str, detail: str = "",
+          subcommands: dict[str, str] | None = None) -> Callable:
+    """Factory for jcode-parity stub handlers.
+
+    Operator directive 2026-05-21: every command in jcode's /help overlay must
+    exist as either a real handler or a stub that tells the operator the feature
+    is tracked. Use subcommands={'resume': 'desc'} to support `/improve resume`,
+    `/refactor resume`, `/catchup next`, etc.
+    """
     def _h(args, pane, app):
-        return f"[yellow]/{name}[/]: {summary}\n  [dim]{detail or 'roadmap item — wire up in next session'}[/]"
+        if args and subcommands and args[0].lower() in subcommands:
+            sub = args[0].lower()
+            sd = subcommands[sub]
+            return (f"[yellow]/{name} {sub}[/]: {sd}\n"
+                    f"  [dim]not implemented in v0.7.0; tracked in jcode-parity-roadmap[/]")
+        return (f"[note] /{name}: {summary} — "
+                f"not implemented in v0.7.0; tracked in jcode-parity-roadmap\n"
+                f"  [dim]{detail or 'roadmap'}[/]")
     return _h
 
 
@@ -1033,7 +1048,8 @@ SLASH_COMMANDS: dict[str, dict[str, Any]] = {
     "memory":     _entry(_cmd_memory,    "on|off | search <q> | write <ns> <text> | recall <q> | list", "memory"),
     "goals":      _entry(_cmd_goals,     "show WORK-TOWARD.md goals",                 "memory"),
     "catchup":    _entry(_stub("catchup", "side-panel briefs for finished sessions",
-                                "reads _shared-memory/cross-agent/ filtered by project"), "session"),
+                                "reads _shared-memory/cross-agent/ filtered by project",
+                                subcommands={"next": "advance to next Catch Up brief"}), "session"),
     "back":       _entry(_stub("back", "return to previous Catch Up session", ""), "session"),
 
     # SWARM + COMMS
@@ -1079,8 +1095,10 @@ SLASH_COMMANDS: dict[str, dict[str, Any]] = {
 
     # LOOPS (improve / refactor / overnight)
     "improve":    _entry(_stub("improve", "autonomous code-quality loop",
-                                "wire up via Sanctum auto-mode + per-project EXACT-INSTRUCTIONS"), "loop"),
-    "refactor":   _entry(_stub("refactor", "safe refactor + review loop", ""), "loop"),
+                                "wire up via Sanctum auto-mode + per-project EXACT-INSTRUCTIONS",
+                                subcommands={"resume": "resume a paused improve loop"}), "loop"),
+    "refactor":   _entry(_stub("refactor", "safe refactor + review loop", "",
+                                subcommands={"resume": "resume a paused refactor loop"}), "loop"),
     "overnight":  _entry(_stub("overnight", "schedule long-running improvements (cron)", ""), "loop"),
     "fix":        _entry(_stub("fix", "attempt recovery from errors",
                                 "/fix re-runs the last failed turn with cleared context"), "loop"),
