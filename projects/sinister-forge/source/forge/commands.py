@@ -2654,10 +2654,8 @@ SLASH_COMMANDS: dict[str, dict[str, Any]] = {
     # MEMORY
     "memory":     _entry(_cmd_memory,    "on|off | search <q> | write <ns> <text> | recall <q> | list", "memory"),
     "goals":      _entry(_cmd_goals,     "show WORK-TOWARD.md goals",                 "memory"),
-    "catchup":    _entry(_stub("catchup", "side-panel briefs for finished sessions",
-                                "reads _shared-memory/cross-agent/ filtered by project",
-                                subcommands={"next": "advance to next Catch Up brief"}), "session"),
-    "back":       _entry(_stub("back", "return to previous Catch Up session", ""), "session"),
+    "catchup":    _entry(_cmd_catchup,   "list | next — side-panel briefs for finished sessions", "session"),
+    "back":       _entry(_cmd_back,      "return to previous Catch Up source session", "session"),
 
     # SWARM + COMMS
     "swarm":      _entry(_cmd_swarm,     "on|off | spawn N | list | dm <slug> <msg> | broadcast <msg>", "swarm"),
@@ -2700,22 +2698,18 @@ SLASH_COMMANDS: dict[str, dict[str, Any]] = {
     "dictate":    _entry(_cmd_dictate,   "external speech-to-text (SINISTER_DICTATE_CMD)", "system"),
 
     # LOOPS (improve / refactor / overnight)
-    "improve":    _entry(_stub("improve", "autonomous code-quality loop",
-                                "wire up via Sanctum auto-mode + per-project EXACT-INSTRUCTIONS",
-                                subcommands={"resume": "resume a paused improve loop"}), "loop"),
-    "refactor":   _entry(_stub("refactor", "safe refactor + review loop", "",
-                                subcommands={"resume": "resume a paused refactor loop"}), "loop"),
+    "improve":    _entry(_cmd_improve,   "autonomous code-quality loop (sub: resume)", "loop"),
+    "refactor":   _entry(_cmd_refactor,  "safe refactor + review loop (sub: resume)",  "loop"),
     "overnight":  _entry(_stub("overnight", "schedule long-running improvements (cron)", ""), "loop"),
     "fix":        _entry(_stub("fix", "attempt recovery from errors",
                                 "/fix re-runs the last failed turn with cleared context"), "loop"),
-    "poke":       _entry(_stub("poke", "nudge model to resume incomplete todos", ""), "loop"),
+    "poke":       _entry(_cmd_poke,      "on|off|status — nudge model to resume incomplete todos", "loop"),
     "recover":    _entry(_stub("recover", "recover from missing tool outputs", ""), "loop"),
     "rewind":     _entry(_cmd_rewind,    "show numbered history, /rewind N to step back", "session"),
-    "splitview":  _entry(_stub("splitview", "mirror current chat in side panel", ""), "ui"),
-    "split":      _entry(_stub("split", "clone session into new window", ""), "ui"),
-    "transfer":   _entry(_stub("transfer", "fresh session with compacted context + todos", ""), "ui"),
-    "workspace":  _entry(_stub("workspace", "Niri-style workspace splits",
-                                "Forge already has scrollable columns by default (PH18)"), "ui"),
+    "splitview":  _entry(_cmd_splitview, "on|off|status — mirror current chat in side panel", "ui"),
+    "split":      _entry(_cmd_split,     "clone current session into a new RKOJ.exe --shell window", "ui"),
+    "transfer":   _entry(_cmd_transfer,  "fresh session with compacted context + todos",      "ui"),
+    "workspace":  _entry(_cmd_workspace, "status|on|off|add — niri-style workspace splits",   "ui"),
     "subscription": _entry(_cmd_subscription, "tier + monthly_cap + current_usage + renews_at (jcode/RKOJ scaffold)", "auth"),
     "unsave":     _entry(_cmd_unsave,    "remove the most recent resume-point bookmark (use --force to confirm)", "session"),
 }
