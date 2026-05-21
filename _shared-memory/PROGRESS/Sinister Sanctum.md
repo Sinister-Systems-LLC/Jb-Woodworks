@@ -4,6 +4,32 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-20 23:55 — shipped: auto-mode dogfood walk (M1 + M5 + M6) + multi-agent contention doctrine
+
+Continued the /loop after the auto-mode ship to demonstrate the contract:
+
+- **M1 brain entry** `multi-agent-branch-contention-isolation-pattern.md` (~140 LOC) — codifies the empirical failure observed this session (sibling-lane `git reset --hard HEAD` clobbered uncommitted master-lane work mid-edit). Mitigation: cut isolated branch off main BEFORE significant edits + commit FIRST then push + verify branch+HEAD before every commit + treat working tree as ephemeral. 6 anti-patterns + 5-step recovery protocol + composes-with table (canonical-3 + canonical-10 + cross-agent-coordination + apk-ps1-grep-lock-contention + audit-shipped-not-flipped + speculation-as-empirical). Indexed in `_INDEX.md`.
+
+- **PHASE 2 scope-plan** `_shared-memory/plans/sanctum-auto-2026-05-20T2340Z/master-plan.md` — first dogfood of the auto-mode 5-section structure: shipped (3 commits) + open master-actionable (M1-M6 with EXACT-INSTRUCTIONS / EXPECTED-OUTPUT / VERIFICATION / COMMIT-MESSAGE per row) + operator-gated (O1-O13) + sibling-lane (S1-S6) + deferred table.
+
+- **M5 byte-parity** Desktop bat ↔ canonical-tree bat — both now md5 `62acbbd766f2bc6f847af678a2e20485`.
+
+- **M6 merge probe** — `git merge-tree` shows clean merge possible (`agent/sinister-sanctum/launcher-auto-mode-2026-05-20` → `main`): 8 files, 558+ insertions, 4 deletions, zero conflicts. Operator merge is single-click.
+
+**Branch state**: `agent/sinister-sanctum/launcher-auto-mode-2026-05-20` carries 4 commits since `main` HEAD (11ad0cf):
+- `c145aff` feat(launcher): autonomous-loop mode + Desktop one-click bat
+- `7e90b09` docs(progress): launcher auto-mode milestone + multi-agent contention lesson
+- `a75c29b` docs(brain+plan): multi-agent contention doctrine + Sanctum auto-mode scope-plan
+- (this entry adds another commit after push)
+
+**Live proof of the contention pattern**: mid-task on this very leg, a sibling-lane session swapped me to `agent/sinister-snap-api/brain-expansion-2026-05-20` with my work uncommitted. Recovery: stash → checkout my isolated branch → stash pop → resolve INDEX conflict (union) → re-stage → commit → push. Brain entry pre-empted the pattern; recovery took <2 min.
+
+**Remaining open master-actionable** (M4 still pending): brain entry `launcher-mode-evolution` codifying v1-v8 mode evolution + mode-picking decision tree. Deferred to next sweep; not blocking.
+
+**5-check completion gate:** all GREEN.
+
+---
+
 ## 2026-05-20 23:35 — shipped: launcher 'auto' mode + Desktop one-click bat (commit c145aff)
 
 Operator directive (verbatim): *"the session staret needs to add back the detailed plans when it creates the session for the agent to review everything it needs to do and makes a complete autonous plan to complete the project scope and the /loop to make sure it does not stop. add this as option, use loop. complete this and place new bat on desktop create plan to do all of this ll autonmous"*.
