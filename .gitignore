@@ -238,6 +238,12 @@ projects/sinister-term/source/**/__pycache__/
 projects/sinister-term/source/**/*.pyc
 projects/sinister-term/source/sinister_term.egg-info/
 
-# Archive POINTER dirs - source/ subdirs are NTFS junctions to operator Desktop locations
+# Archive POINTER dirs - source/ subdirs are NTFS junctions to operator Desktop locations.
+# Both the top-level (depth-2) and the nested Sinister/<name>/ (depth-3) shells need to
+# block git from traversing the source@ junctions into operator's Desktop tree.
+_archive/d-sinister-01_projects-pointers-2026-05-21/*/source
 _archive/d-sinister-01_projects-pointers-2026-05-21/*/source/
 _archive/d-sinister-01_projects-pointers-2026-05-21/*/_vault/
+_archive/d-sinister-01_projects-pointers-2026-05-21/Sinister/*/source
+_archive/d-sinister-01_projects-pointers-2026-05-21/Sinister/*/source/
+_archive/d-sinister-01_projects-pointers-2026-05-21/Sinister/*/_vault/
