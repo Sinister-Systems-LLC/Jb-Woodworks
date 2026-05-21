@@ -1169,32 +1169,6 @@ def _cmd_jcode(args, pane, app) -> str:
     return _capture_cli(shim_main, ["run", *args])
 
 
-def _cmd_jcode(args, pane, app) -> str:
-    """/jcode — sidecar launch of the prebuilt jcode-windows-x86_64.exe.
-
-    Delegates to `sinister_jcode_shim.cli run` so jcode boots with our
-    Sinister env (config-dir, skills-dir, sessions-dir, wallet keys,
-    selected model) injected. Operator-gated source fork lives at
-    `_shared-memory/plans/jcode-fork-2026-05-21/plan.md`.
-
-    Subcommands:
-        /jcode                -> exec jcode with injected env
-        /jcode --print-bin    -> show resolved binary path
-        /jcode --dry-run      -> show what would be exec'd + env
-        /jcode doctor         -> diagnose shim readiness
-        /jcode -- <args...>   -> forward args to jcode
-    """
-    try:
-        from sinister_jcode_shim.__main__ import main as shim_main
-    except Exception as e:
-        return (f"[red]sinister-jcode-shim unavailable: {e}[/]\n"
-                f"  install: pip install -e \"D:/Sinister Sanctum/tools/sinister-jcode-shim\"")
-    sub = args[0].lower() if args else None
-    if sub == "doctor":
-        return _capture_cli(shim_main, ["doctor"])
-    return _capture_cli(shim_main, ["run", *args])
-
-
 def _cmd_provider(args, pane, app) -> str:
     if not args:
         return _cmd_auth([], pane, app)
