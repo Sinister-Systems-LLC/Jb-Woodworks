@@ -1,0 +1,30 @@
+{
+  "expo": {
+    "name": "Sinister Claw",
+    "slug": "sinister-claw",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "primaryColor": "#7A3DD4",
+    "splash": {
+      "backgroundColor": "#07070B",
+      "resizeMode": "contain"
+    },
+    "ios": {
+      "bundleIdentifier": "com.sinistersystems.claw",
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSFaceIDUsageDescription": "Sinister Claw uses Face ID to unlock the operator's Tailscale token."
+      }
+    },
+    "android": {
+      "package": "com.sinistersystems.claw",
+      "adaptiveIcon": {
+        "backgroundColor": "#07070B"
+      }
+    },
+    "plugins": [
+      "expo-secure-store"
+    ]
+  }
+}

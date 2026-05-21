@@ -195,3 +195,8 @@ backups/
 # Sinister Term source - REAL code (not junction)
 !projects/sinister-term/source/
 !projects/sinister-term/source/**
+
+# Sinister Claw source (Expo/RN - real code, not junction)
+!projects/sinister-claw/source/
+!projects/sinister-claw/source/**
+projects/sinister-claw/source/node_modules/

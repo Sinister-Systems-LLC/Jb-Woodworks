@@ -1,24 +1,18 @@
-# Sinister Mind :: server.py
+# Sinister Mind :: server.py (v2 - SSE live reload + tag-chip support)
 # Author: RKOJ-ELENO :: 2026-05-21
 # License: AGPL-3.0-or-later
-#
-# Flask backend. Endpoints:
-#   GET  /                 -> static/index.html (the D3 graph UI)
-#   GET  /api/graph        -> nodes + edges JSON (all brain entries, projects,
-#                              plans, PROGRESS headings, cross-agent, resume-points)
-#   GET  /api/projects     -> 9 (or 10) canonical projects from projects.json
-#   GET  /api/search?q=... -> nodes whose slug/title/tags match q
-#   GET  /api/path?a=...&b=... -> shortest path between two nodes by id
 
 from __future__ import annotations
 
 import json
+import queue
 import re
+import threading
+import time
 from collections import defaultdict, deque
 from pathlib import Path
-from typing import Any
 
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, Response, jsonify, request, send_from_directory
 
 
 SANCTUM_ROOT = Path("D:/Sinister Sanctum")
@@ -33,32 +27,27 @@ HEARTBEATS_DIR = SANCTUM_ROOT / "_shared-memory" / "heartbeats"
 
 STATIC_DIR = Path(__file__).parent / "static"
 
-# Sinister palette (matches Forge's theme.py)
 NODE_COLORS = {
-    "brain":       "#A06EFF",  # purple-bright
-    "project":     "#6EE8FF",  # cyan
-    "plan":        "#6EFFA0",  # green
-    "progress":    "#FFD66E",  # yellow
-    "cross_agent": "#FF6EE8",  # magenta
-    "resume_pt":   "#FF6E6E",  # red
+    "brain":       "#A06EFF",
+    "project":     "#6EE8FF",
+    "plan":        "#6EFFA0",
+    "progress":    "#FFD66E",
+    "cross_agent": "#FF6EE8",
+    "resume_pt":   "#FF6E6E",
 }
-
 
 app = Flask(__name__, static_folder=str(STATIC_DIR), static_url_path="/static")
 
+# SSE subscriber queues
+_sse_subscribers: list[queue.Queue] = []
+_sse_lock = threading.Lock()
 
-# ---------------- Data ingest ----------------
 
 def _read_text(path: Path) -> str:
     try:
         return path.read_text(encoding="utf-8")
     except Exception:
         return ""
-
-
-def _slugify(s: str) -> str:
-    s = re.sub(r"[^a-zA-Z0-9_-]+", "-", s.strip().lower())
-    return re.sub(r"-+", "-", s).strip("-")
 
 
 def load_projects() -> list[dict]:
@@ -71,12 +60,10 @@ def load_projects() -> list[dict]:
 
 
 def load_brain_entries() -> list[dict]:
-    """Parse _INDEX.md rows + the individual .md files to build node entries."""
     entries: list[dict] = []
     if not BRAIN_INDEX.exists():
         return entries
     text = _read_text(BRAIN_INDEX)
-    # Table rows look like: | slug | title | status | tags | created | updated |
     for line in text.splitlines():
         if not line.startswith("| ") or line.startswith("| Slug |") or line.startswith("|---"):
             continue
@@ -108,7 +95,6 @@ def load_plan_artifacts() -> list[dict]:
     for plan_dir in PLANS_DIR.iterdir():
         if not plan_dir.is_dir() or plan_dir.name.startswith("_"):
             continue
-        # Plan key is usually <project>-<slug>-<UTC>
         out.append({
             "id": f"plan:{plan_dir.name}",
             "label": plan_dir.name,
@@ -120,7 +106,6 @@ def load_plan_artifacts() -> list[dict]:
 
 
 def load_progress_headings() -> list[dict]:
-    """Top heading per PROGRESS/<agent>.md file."""
     out: list[dict] = []
     if not PROGRESS_DIR.exists():
         return out
@@ -156,7 +141,7 @@ def load_cross_agent() -> list[dict]:
             "tags": [],
             "color": NODE_COLORS["cross_agent"],
         })
-    return out[:200]  # cap for sanity
+    return out[:200]
 
 
 def load_resume_points() -> list[dict]:
@@ -166,7 +151,6 @@ def load_resume_points() -> list[dict]:
     for proj_dir in RESUME_POINTS_DIR.iterdir():
         if not proj_dir.is_dir():
             continue
-        # Latest only per project
         files = sorted(proj_dir.glob("*.json"), key=lambda p: p.stat().st_mtime, reverse=True)
         if not files:
             continue
@@ -179,8 +163,6 @@ def load_resume_points() -> list[dict]:
         })
     return out
 
-
-# ---------------- Graph composition ----------------
 
 def build_graph() -> dict:
     projects = load_projects()
@@ -206,22 +188,18 @@ def build_graph() -> dict:
         })
 
     nodes = project_nodes + brain + plans + progress + xa + rp
-
     edges: list[dict] = []
 
-    # Brain -> Project edges by tag overlap with project key
     for b in brain:
         for pk in project_keys:
             if any(pk in t or t.startswith(pk) for t in b.get("tags", [])):
                 edges.append({"source": b["id"], "target": f"project:{pk}", "weight": 1, "type": "brain-project"})
 
-    # Plan -> Project edges by name prefix
     for pl in plans:
         for pk in project_keys:
             if pl["label"].lower().startswith(pk.lower()) or pk.lower() in pl["label"].lower():
                 edges.append({"source": pl["id"], "target": f"project:{pk}", "weight": 1, "type": "plan-project"})
 
-    # Resume-pt -> Project by slug match
     for r in rp:
         if r["label"] in project_keys:
             edges.append({"source": r["id"], "target": f"project:{r['label']}", "weight": 2, "type": "resume-project"})
@@ -236,6 +214,53 @@ def build_graph() -> dict:
         "total_nodes": len(nodes),
         "total_edges": len(edges),
     }}
+
+
+# ---------------- SSE machinery ----------------
+
+def _broadcast_change():
+    """Push a 'graph-change' event to every subscriber."""
+    with _sse_lock:
+        dead = []
+        for q in _sse_subscribers:
+            try:
+                q.put_nowait("change")
+            except queue.Full:
+                dead.append(q)
+        for q in dead:
+            try:
+                _sse_subscribers.remove(q)
+            except ValueError:
+                pass
+
+
+def _watch_loop():
+    """Background thread: poll _shared-memory/ mtimes; broadcast when changes."""
+    watched = [BRAIN_INDEX, PROJECTS_JSON, PLANS_DIR, PROGRESS_DIR, CROSS_AGENT_DIR, RESUME_POINTS_DIR]
+    last_max = 0.0
+    while True:
+        try:
+            mtimes = []
+            for p in watched:
+                if p.is_file():
+                    mtimes.append(p.stat().st_mtime)
+                elif p.is_dir():
+                    for f in p.rglob("*"):
+                        if f.is_file():
+                            mtimes.append(f.stat().st_mtime)
+            if mtimes:
+                cur_max = max(mtimes)
+                if last_max and cur_max > last_max + 0.5:
+                    _broadcast_change()
+                last_max = cur_max
+        except Exception:
+            pass
+        time.sleep(2)
+
+
+# Start watcher thread on first import
+_watch_thread = threading.Thread(target=_watch_loop, daemon=True)
+_watch_thread.start()
 
 
 # ---------------- Endpoints ----------------
@@ -282,22 +307,49 @@ def api_path():
     for e in graph["edges"]:
         adj[e["source"]].append(e["target"])
         adj[e["target"]].append(e["source"])
-    # BFS
     if a not in adj and b not in adj:
         return jsonify({"path": [], "found": False})
-    queue = deque([[a]])
+    qbfs = deque([[a]])
     seen = {a}
-    while queue:
-        path = queue.popleft()
+    while qbfs:
+        path = qbfs.popleft()
         if path[-1] == b:
             return jsonify({"path": path, "found": True, "length": len(path) - 1})
         for n in adj.get(path[-1], []):
             if n not in seen:
                 seen.add(n)
-                queue.append(path + [n])
+                qbfs.append(path + [n])
     return jsonify({"path": [], "found": False})
+
+
+@app.route("/api/stream")
+def api_stream():
+    """SSE endpoint - emits 'graph-change' events when _shared-memory/ changes."""
+    def event_stream():
+        sub_q: queue.Queue = queue.Queue(maxsize=10)
+        with _sse_lock:
+            _sse_subscribers.append(sub_q)
+        try:
+            yield "event: hello\ndata: connected\n\n"
+            while True:
+                try:
+                    _ = sub_q.get(timeout=30)
+                    yield "event: graph-change\ndata: 1\n\n"
+                except queue.Empty:
+                    yield ": keepalive\n\n"
+        finally:
+            with _sse_lock:
+                try:
+                    _sse_subscribers.remove(sub_q)
+                except ValueError:
+                    pass
+
+    return Response(event_stream(), mimetype="text/event-stream", headers={
+        "Cache-Control": "no-cache",
+        "X-Accel-Buffering": "no",
+    })
 
 
 @app.route("/api/health")
 def api_health():
-    return jsonify({"ok": True, "name": "Sinister Mind", "version": "0.1.0"})
+    return jsonify({"ok": True, "name": "Sinister Mind", "version": "0.2.0"})
