@@ -123,6 +123,55 @@ The Sanctum-side mirror of `SESSION-START/02-OPERATOR-QUEUE.md`, with checkboxes
 
 ---
 
+## 2026-05-21 — GitHub linkage audit
+
+Author: RKOJ-ELENO :: 2026-05-21 — see full audit at `_shared-memory/audits/github-linkage-2026-05-21.md`. Operator goal verbatim: *"everything in there will be linked to github exact"*. EVE ran a READ-ONLY discovery sweep; the actions below are the only deltas needed to make every RKOJ-ELENO repo under Sanctum reach GitHub.
+
+### Repos that need a GitHub remote added (operator-gated)
+
+- [ ] **`projects/sinister-tiktok-emu/source`** — has commits on `agent/sinister-tiktok-api/expand-2026-05-20` but NO remote at all. Pick one of:
+  - Match fleet convention (recommended — matches Panel/Snap-EMU/Sanctum/APK):
+    ```bash
+    git -C "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source" remote add origin git@github.com:Sinister-Systems-LLC/Sinister-TikTok-EMU.git
+    ```
+  - Or operator-brief literal `RKOJ-ELENO` org:
+    ```bash
+    git -C "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source" remote add origin git@github.com:RKOJ-ELENO/Sinister-TikTok-EMU.git
+    ```
+- [ ] **`projects/sinister-tiktok-emu/` (outer wrapper)** — stale empty `.git/` with zero commits. Recommended cleanup (operator-gated):
+  ```bash
+  rm -rf "D:/Sinister Sanctum/projects/sinister-tiktok-emu/.git"
+  ```
+
+### Repos that are AHEAD of origin (just need `git push`)
+
+- [ ] **Sanctum main** — branch `agent/sinister-sanctum/cli-dispatcher-2026-05-21` is **9 ahead** of `origin/agent/sinister-sanctum/cli-dispatcher-2026-05-21`. Push:
+  ```bash
+  git -C "D:/Sinister Sanctum" push origin agent/sinister-sanctum/cli-dispatcher-2026-05-21
+  ```
+- [ ] **Snap-EMU source** — branch `agent/sinister-snap-api/expand-cleanup-2026-05-20` is **9 ahead**. Push:
+  ```bash
+  git -C "D:/Sinister Sanctum/projects/sinister-snap-emu/source" push origin agent/sinister-snap-api/expand-cleanup-2026-05-20
+  ```
+- [ ] **Kernel-APK source** — branch `agent/sinister-kernel-apk/crispy-cosmos-resume` is **3 ahead**. Push:
+  ```bash
+  git -C "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source" push origin agent/sinister-kernel-apk/crispy-cosmos-resume
+  ```
+
+### Repos in scope but explicitly NOT-to-be-touched
+
+- `projects/sinister-kernel-apk/source/source/Camera-Spoof-Module/KPatch-Next` → upstream `KernelSU-Next/KPatch-Next` (vendored 3rd-party)
+- `projects/sinister-kernel-apk/source/source/_assets/5.17-luke/Luke Spoofer Source/LukePrivacyKPM` → upstream `LukeMatPyt/lukeprivacyKPM` (vendored 3rd-party)
+- `projects/sinister-kernel-apk/source/source/_rebrand_workspace/ksu-manager-sister/upstream/KernelSU-Next` → upstream `rifsxd/KernelSU-Next` (vendored 3rd-party)
+
+These are reference sources, not RKOJ-ELENO products — keep remotes as-is.
+
+### Out-of-scope / no-action
+
+- All `projects/sinister-{bumble-emu,claw,emulator-bundle,forge,freeze,mind,term}/` source trees — none have a `.git/` directory yet (they're operator-authored content under the Sanctum monorepo `.git/`, NOT independent repos). If operator later wants any of them as standalone GitHub repos, that's a separate decision.
+
+---
+
 ## How master keeps this fresh
 
 - **On every milestone:** if a new operator-blocking item lands, master appends a row here AND mirrors to `SESSION-START/02-OPERATOR-QUEUE.md` if it deserves cold-start visibility.
