@@ -34,6 +34,7 @@ import os
 import queue
 import secrets
 import subprocess
+import threading
 import time
 from pathlib import Path
 
@@ -537,11 +538,35 @@ def _compose_phrase(
 # --- Entrypoint -----------------------------------------------------------
 
 
+# --- Heartbeat writer ----------------------------------------------------
+
+
+def _heartbeat_loop() -> None:
+    """Write the bridge's own heartbeat so master/Sanctum can see it's alive."""
+    hb_path = HEARTBEATS_DIR / "forge-bridge.json"
+    HEARTBEATS_DIR.mkdir(parents=True, exist_ok=True)
+    while True:
+        try:
+            payload = {
+                "agent": "forge-bridge",
+                "ts_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                "alive": True,
+                "agents_active": sum(1 for r in REGISTRY.list() if r.status == "running"),
+                "agents_total": len(REGISTRY.list()),
+                "version": "0.1.0",
+            }
+            hb_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+        except Exception:
+            pass
+        time.sleep(60)
+
+
 def run(host: str = "0.0.0.0", port: int = 5078) -> None:
     """Start the bridge. Bind on 0.0.0.0 so Tailscale can reach it."""
     print(f"[forge-bridge] starting on http://{host}:{port}", flush=True)
     print(f"[forge-bridge] auth token (copy into Claw Settings): {AUTH_TOKEN}", flush=True)
     print(f"[forge-bridge] token file: {TOKEN_FILE}", flush=True)
+    threading.Thread(target=_heartbeat_loop, daemon=True).start()
     app.run(host=host, port=port, threaded=True, debug=False, use_reloader=False)
 
 

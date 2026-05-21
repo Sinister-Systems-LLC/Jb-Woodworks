@@ -19,6 +19,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { GlassPanel } from "@/components/GlassPanel";
 import { colors, radii, spacing, typography } from "@/theme";
+import * as SecureStore from "expo-secure-store";
 import {
   getBaseUrl,
   setBaseUrl,
@@ -26,9 +27,13 @@ import {
   setAuthToken,
 } from "@/api/sanctum";
 
+const STORE_KEY_PANEL_URL = "claw.panel.url";
+const DEFAULT_PANEL_URL = "https://snap.sinijkr.com";
+
 export function SettingsScreen() {
   const [baseUrl, setBaseUrlState] = useState("");
   const [token, setTokenState] = useState("");
+  const [panelUrl, setPanelUrlState] = useState("");
   const [saved, setSaved] = useState(false);
   const [testing, setTesting] = useState(false);
   const [healthMsg, setHealthMsg] = useState<string | null>(null);
@@ -37,12 +42,14 @@ export function SettingsScreen() {
     (async () => {
       setBaseUrlState(await getBaseUrl());
       setTokenState((await getAuthToken()) ?? "");
+      setPanelUrlState((await SecureStore.getItemAsync(STORE_KEY_PANEL_URL)) ?? DEFAULT_PANEL_URL);
     })();
   }, []);
 
   const onSave = async () => {
     await setBaseUrl(baseUrl.trim());
     await setAuthToken(token.trim());
+    await SecureStore.setItemAsync(STORE_KEY_PANEL_URL, panelUrl.trim() || DEFAULT_PANEL_URL);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
@@ -85,6 +92,23 @@ export function SettingsScreen() {
             onChangeText={setBaseUrlState}
             style={styles.input}
             placeholder="http://sanctum-pc:5078"
+            placeholderTextColor={colors.dim}
+            autoCapitalize="none"
+            autoCorrect={false}
+            keyboardType="url"
+          />
+        </GlassPanel>
+
+        <GlassPanel style={{ marginBottom: spacing.md }}>
+          <Text style={typography.h2}>Panel URL</Text>
+          <Text style={[typography.caption, { marginTop: spacing.xs }]}>
+            Sinister Panel (deployed at snap.sinijkr.com or a local dev URL).
+          </Text>
+          <TextInput
+            value={panelUrl}
+            onChangeText={setPanelUrlState}
+            style={styles.input}
+            placeholder={DEFAULT_PANEL_URL}
             placeholderTextColor={colors.dim}
             autoCapitalize="none"
             autoCorrect={false}

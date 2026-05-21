@@ -17,8 +17,8 @@ import { MindScreen } from "./screens/MindScreen";
 import { ForgeScreen } from "./screens/ForgeScreen";
 import { InboxScreen } from "./screens/InboxScreen";
 import { ProjectsScreen } from "./screens/ProjectsScreen";
+import { PanelScreen } from "./screens/PanelScreen";
 import { SettingsScreen } from "./screens/SettingsScreen";
-import { PlaceholderScreen } from "./screens/PlaceholderScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -56,15 +56,7 @@ export default function App() {
           <Tab.Screen name="Sanctum" component={SanctumScreen} />
           <Tab.Screen name="Forge" component={ForgeScreen} />
           <Tab.Screen name="Mind" component={MindScreen} />
-          <Tab.Screen name="Panel">
-            {() => (
-              <PlaceholderScreen
-                title="Panel"
-                description="Mirror of Sinister Panel (snap.sinijkr.com) optimized for mobile. Accounts / Videos / Devices / Phones / Dispatches."
-                phase="PH5 (Panel mirror)"
-              />
-            )}
-          </Tab.Screen>
+          <Tab.Screen name="Panel" component={PanelScreen} />
           <Tab.Screen name="Projects" component={ProjectsScreen} />
           <Tab.Screen name="Inbox" component={InboxScreen} />
           <Tab.Screen name="Settings" component={SettingsScreen} />
