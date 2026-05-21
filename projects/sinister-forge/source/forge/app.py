@@ -50,6 +50,7 @@ from forge.panes.picker import AgentPicker, PickerResult
 from forge.panes.swarm_modal import SwarmModal, SwarmModalResult
 from forge.panes.sidebar import Sidebar
 from forge.panes.adb_panel import AdbPanel
+from forge.panes.agents_dashboard import AgentsDashboard
 from forge.panes.workstation_panel import WorkstationPanel
 from forge.panes.toolbar import Toolbar
 from forge.panes.statusbar import Statusbar
@@ -166,9 +167,11 @@ class ForgeApp(App):
         self._booted = False
         self._memory_visible = False
         # Sinister Panel sidebar state — tracks which right-side view is mounted.
-        # "agents" = TabbedMultiPane (default), "adb" = AdbPanel,
-        # "workstation" = WorkstationPanel (RKOJ launcher stub).
+        # Operator 2026-05-21 (image 28): two tabs only — "agents" + "phones".
+        # "workstation" kept as a possible value for back-compat with /workstation
+        # command, but not shown in the sidebar anymore.
         self._sidebar_active = "agents"
+        self._agents_dashboard: AgentsDashboard | None = None
         self._adb_panel: AdbPanel | None = None
         self._workstation_panel: WorkstationPanel | None = None
 
@@ -191,10 +194,10 @@ class ForgeApp(App):
         """Remove boot screen, mount the real workspace.
 
         Layout (left-to-right):
-          [Sidebar]  [TabbedMultiPane or AdbPanel]  [optional MemoryPanel]
+          [Sidebar]  [AgentsDashboard or AdbPanel]  [optional MemoryPanel]
         The Sidebar posts Sidebar.TabSelected when the operator clicks a tab;
         on_sidebar_tab_selected swaps the right-side content between
-        TabbedMultiPane (agents) and AdbPanel (adb).
+        AgentsDashboard (agents) and AdbPanel (phones).
         """
         self._boot.remove()
         # jcode chrome parity: top Toolbar + bottom Statusbar bracket the workspace.
@@ -210,14 +213,30 @@ class ForgeApp(App):
         # Left rail (Sinister Panel-style)
         self._sidebar = Sidebar(active=self._sidebar_active)
         await self._workspace.mount(self._sidebar)
-        # Right-side content: default to the niri-style workspace grid (v1.1.0
-        # of niri-scrollable-column-pattern). Each workspace = a Vertical column
-        # holding 1..N AgentPanes. Horizontal scroll with snap, Ctrl+1..9 jump,
-        # Ctrl+T new ws, Ctrl+Left/Right move focus, Ctrl+Shift+Left/Right move
-        # pane between ws. Operator directive 2026-05-21 — niri-wm port.
-        # TabbedMultiPane still imported for fallback / legacy reference.
-        self._tabs = NiriWorkspaceGrid()
-        await self._workspace.mount(self._tabs)
+        # Right-side content: AgentsDashboard — Sinister Panel-style wrapper
+        # with per-project sub-tabs + status row, embedding the existing
+        # NiriWorkspaceGrid as its content area. Operator directive 2026-05-21
+        # (image 28 dashboard reference): per-project tabs + "All" tab inside
+        # the AGENTS pane. The dashboard exposes .grid (the underlying
+        # NiriWorkspaceGrid) so the rest of app.py keeps calling
+        # self._tabs.add_pane(...) / self._tabs.panes / etc.
+        self._agents_dashboard = AgentsDashboard()
+        await self._workspace.mount(self._agents_dashboard)
+        # Wait until AgentsDashboard.on_mount has constructed the grid.
+        # textual mounts children sync within on_mount; we forcibly trigger
+        # by yielding — but the dashboard mounts the grid in its own on_mount
+        # which runs synchronously inside .mount() above for textual >=0.50.
+        # Defensive: poll briefly if grid is still None.
+        for _ in range(20):
+            if self._agents_dashboard.grid is not None:
+                break
+            await asyncio.sleep(0.01)
+        self._tabs = self._agents_dashboard.grid
+        if self._tabs is None:
+            # Fallback: if the dashboard failed to mount its grid, fall back
+            # to a bare NiriWorkspaceGrid so the operator still gets a console.
+            self._tabs = NiriWorkspaceGrid()
+            await self._workspace.mount(self._tabs)
         # Default project chip shows "no project"
         self._chip.set_project("", PURPLE_BRIGHT)
         self._booted = True
@@ -344,44 +363,63 @@ class ForgeApp(App):
     async def on_sidebar_tab_selected(self, event: "Sidebar.TabSelected") -> None:
         """Swap the right-side content based on which sidebar tab was clicked.
 
-        agents      → NiriWorkspaceGrid (existing agent UI; subprocesses kept alive)
-        adb         → AdbPanel (live `adb devices -l` grid)
-        workstation → WorkstationPanel (RKOJ launcher stub)
+        agents      → AgentsDashboard (per-project sub-tabs + NiriWorkspaceGrid;
+                      subprocesses kept alive across switches)
+        phones      → AdbPanel (live `adb devices -l` grid; user-facing label
+                      is "Phones" per operator 2026-05-21 image 28)
+        workstation → WorkstationPanel (RKOJ launcher stub — kept for back-compat
+                      with /workstation command; not shown in sidebar anymore)
+        unknown     → log + ignore (don't crash on future tab additions)
 
-        State is preserved across switches via display toggling (Textual's
-        .remove() is destructive); each panel is mounted lazily on first use.
+        State is preserved via display toggling (Textual's .remove() is
+        destructive); each panel is mounted lazily on first use.
         """
         if not self._booted:
             return
         new_tab = event.tab
         if new_tab == self._sidebar_active:
             return
-        self._sidebar_active = new_tab
 
         # Hide every right-side panel; we'll re-show the active one below.
-        self._tabs.display = False
+        if self._agents_dashboard is not None:
+            self._agents_dashboard.display = False
         if self._adb_panel is not None:
             self._adb_panel.display = False
         if self._workstation_panel is not None:
             self._workstation_panel.display = False
 
-        if new_tab == "adb":
+        if new_tab == "phones":
             if self._adb_panel is None:
                 self._adb_panel = AdbPanel()
                 await self._workspace.mount(self._adb_panel, after=self._sidebar)
             else:
                 self._adb_panel.display = True
-            self.notify("ADB devices view", timeout=2)
+            self._sidebar_active = new_tab
+            self.notify("Phones (ADB)", timeout=2)
         elif new_tab == "workstation":
             if self._workstation_panel is None:
                 self._workstation_panel = WorkstationPanel()
                 await self._workspace.mount(self._workstation_panel, after=self._sidebar)
             else:
                 self._workstation_panel.display = True
+            self._sidebar_active = new_tab
             self.notify("RKOJ workstation view", timeout=2)
-        else:  # "agents"
-            self._tabs.display = True
-            self.notify("agents view", timeout=2)
+        elif new_tab == "agents":
+            if self._agents_dashboard is not None:
+                self._agents_dashboard.display = True
+            self._sidebar_active = new_tab
+            self.notify("Agents", timeout=2)
+        else:
+            # Unknown / future tabs — restore previous view + warn the operator.
+            if self._sidebar_active == "agents" and self._agents_dashboard is not None:
+                self._agents_dashboard.display = True
+            elif self._sidebar_active == "phones" and self._adb_panel is not None:
+                self._adb_panel.display = True
+            self.notify(
+                f"unknown sidebar tab: {new_tab}",
+                severity="warning",
+                timeout=3,
+            )
 
     # ---------- actions ----------
 

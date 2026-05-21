@@ -1,12 +1,16 @@
-# Sinister Forge :: panes/adb_panel.py — ADB devices tab (Sinister Panel style)
+# Sinister Forge :: panes/adb_panel.py — Phones tab (Sinister Panel style)
 # Author: RKOJ-ELENO :: 2026-05-21
 # License: AGPL-3.0-or-later
 #
-# Operator 2026-05-21 (verbatim): *"sidebar: two tabs one called agents that
-# has infi scroll and everything we built here. tool bar at top with simple
-# tools for now. dont take up much space with tool bar then other tab for adb.
-# just simple need to see devices"*. Mirrors the purple-detector dashboard
-# layout shown in image #14 (Pixel-6a USB cards).
+# Operator 2026-05-21 (image 28 = Sinister Panel dashboard reference):
+#   *"phones (all adb support and what not)"*.
+# User-facing label is now "Phones" everywhere — internal class name kept as
+# `AdbPanel` so the 10 existing import refs across app.py / __init__.py etc.
+# don't need rewiring.
+#
+# Auto-detects ADB devices on mount, refreshes every 10s, shows a device-card
+# grid (model · serial · state · transport). Empty state nudges the operator
+# to plug a USB phone or `adb tcpip 5555`.
 
 from __future__ import annotations
 
@@ -81,15 +85,21 @@ async def _scan_devices(timeout_s: float = 4.0) -> tuple[list[AdbDevice], str | 
 
 
 class AdbDeviceCard(Static):
-    """One purple Pixel-card per ADB device. Mirrors Sinister Panel detector card."""
+    """One purple Pixel-card per ADB device. Mirrors Sinister Panel detector card.
+
+    NOTE 2026-05-21: the underscore-prefixed static helper was renamed to
+    `_format_card` to avoid shadowing textual.Widget._render(self) — Static
+    inherits a no-arg `_render()` method via the render-cache machinery and
+    our 2-arg signature broke the render pipeline once the panel was visible.
+    """
 
     def __init__(self, idx: int, dev: AdbDevice) -> None:
-        super().__init__(self._render(idx, dev), classes="adb-card")
+        super().__init__(self._format_card(idx, dev), classes="adb-card")
         self.idx = idx
         self.dev = dev
 
     @staticmethod
-    def _render(idx: int, d: AdbDevice) -> str:
+    def _format_card(idx: int, d: AdbDevice) -> str:
         state_color = {
             "device": "[bold green]●[/]",
             "unauthorized": "[bold yellow]●[/]",
@@ -106,7 +116,7 @@ class AdbDeviceCard(Static):
 
     def update_dev(self, dev: AdbDevice) -> None:
         self.dev = dev
-        self.update(self._render(self.idx, dev))
+        self.update(self._format_card(self.idx, dev))
 
 
 class AdbPanel(VerticalScroll):
@@ -153,12 +163,15 @@ class AdbPanel(VerticalScroll):
     def __init__(self) -> None:
         super().__init__()
         self._toolbar = Static(
-            "[bold]ADB DEVICES[/]   "
+            "[bold]PHONES[/]   "
             "[dim]r=refresh · k=kill-server · s=start-server · t=tcpip 5555[/]",
             id="adb-toolbar",
         )
         self._grid = Grid(id="adb-grid")
-        self._empty = Static("[dim]no devices · is adb installed? plug a phone in[/]", classes="adb-empty")
+        self._empty = Static(
+            "[dim]No devices connected. Connect via USB or `adb tcpip 5555`.[/]",
+            classes="adb-empty",
+        )
         self._cards: list[AdbDeviceCard] = []
         self._refresh_running = False
 
@@ -168,7 +181,8 @@ class AdbPanel(VerticalScroll):
         yield self._empty
 
     async def on_mount(self) -> None:
-        self.set_interval(8.0, self._safe_refresh)
+        # Operator directive 2026-05-21: refresh every 10s (was 8s).
+        self.set_interval(10.0, self._safe_refresh)
         await self._safe_refresh()
 
     async def _safe_refresh(self) -> None:
@@ -191,7 +205,9 @@ class AdbPanel(VerticalScroll):
             self._empty.display = True
             return
         if not devs:
-            self._empty.update("[dim]no devices · is adb installed? plug a phone in[/]")
+            self._empty.update(
+                "[dim]No devices connected. Connect via USB or `adb tcpip 5555`.[/]"
+            )
             self._empty.display = True
             return
         self._empty.display = False
