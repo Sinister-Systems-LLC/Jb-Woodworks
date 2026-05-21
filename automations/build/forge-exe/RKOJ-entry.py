@@ -321,18 +321,131 @@ def _print_status_panel(root: Path) -> None:
 # ===========================================================================
 
 def _cmd_help(args, root) -> str:
+    """jcode-style /help overlay — rich.Panel grouped by section (in-EXE).
+
+    Operator directive 2026-05-21: match jcode's overlay form factor with a
+    title bearing a 0% token-usage indicator, and sections for Commands /
+    Session / Memory & Swarm / Auth & Accounts / System / Navigation. Purple
+    #A06EFF accent for headings; gray-dim descriptions.
+    """
+    if args:
+        target = args[0].lstrip("/").lower()
+        h = SLASH_COMMANDS.get(target)
+        if not h:
+            return f"  {RED}unknown command /{target}{RESET}"
+        meta = SLASH_COMMAND_META.get(target, {})
+        return (f"  {WHITE}/{target}{RESET}  {GRAY}{meta.get('summary', '')}{RESET}\n"
+                f"  {GRAY}{meta.get('detail', '(no detail)')}{RESET}")
+
+    try:
+        from rich.console import Console
+        from rich.panel import Panel
+        from rich.text import Text
+        import io
+    except Exception:
+        return _cmd_help_plaintext()
+
+    P = "#A06EFF"
+    DIM = "grey50"
+
+    sections: list[tuple[str, list[tuple[str, str]]]] = [
+        ("Commands", [
+            ("/help",         "show this overlay"),
+            ("/model",        "list | current | set <id> | info <id> | providers"),
+            ("/agents",       "live agents + heartbeat ages"),
+            ("/effort",       "none|low|medium|high|xhigh"),
+            ("/fast",         "on|off|status|default"),
+            ("/transport",    "set transport mode auto|https|websocket"),
+            ("/alignment",    "text alignment: status|centered|left"),
+            ("/config",       "show config (sub: init, edit)"),
+            ("/dictate",      "external speech-to-text"),
+            ("/git",          "git status -sb for sanctum repo"),
+            ("/context",      "full session context snapshot"),
+            ("/info",         "session info + mode / tools"),
+            ("/usage",        "token-quota / billing endpoint registry"),
+            ("/version",      "show version + bundled tools"),
+            ("/changelog",    "recent PROGRESS entries"),
+        ]),
+        ("Session", [
+            ("/clear",        "clear this pane's log"),
+            ("/compact",      "consolidate memory (memory-consolidate.ps1)"),
+            ("/rewind",       "show numbered history, /rewind N to step back"),
+            ("/fix",          "attempt recovery from errors"),
+            ("/poke",         "nudge model to resume incomplete todos"),
+            ("/improve",      "autonomous code-quality loop (sub: resume)"),
+            ("/refactor",     "safe refactor + review loop (sub: resume)"),
+            ("/split",        "clone session into new window"),
+            ("/splitview",    "mirror current chat in side panel"),
+            ("/transfer",     "fresh session with compacted context + todos"),
+            ("/workspace",    "Niri-style workspace splits"),
+            ("/catchup",      "side-panel briefs (sub: next)"),
+            ("/back",         "return to previous Catch Up session"),
+            ("/resume",       "browse + read past resume-points"),
+            ("/save",         "write a resume-point now"),
+            ("/rename",       "name / unname session"),
+            ("/unsave",       "remove bookmark"),
+        ]),
+        ("Memory & Swarm", [
+            ("/memory",       "on|off | search | write | recall | list"),
+            ("/goals",        "show WORK-TOWARD.md goals"),
+            ("/swarm",        "on|off | spawn N | list | dm | broadcast"),
+        ]),
+        ("Auth & Accounts", [
+            ("/auth",         "11-provider auth status"),
+            ("/login",        "providers | current | doctor <p> | env <p>"),
+            ("/account",      "alias of /auth (combined picker)"),
+            ("/subscription", "Sinister LLC subscription scaffold"),
+        ]),
+        ("System", [
+            ("/reload",        "reload — restart RKOJ.exe"),
+            ("/restart",       "restart with current binary"),
+            ("/rebuild",       "full rebuild — instructions"),
+            ("/client-reload", "remote-only"),
+            ("/server-reload", "remote-only"),
+            ("/debug-visual",  "enable Textual reactive inspector"),
+            ("/quit",          "exit"),
+        ]),
+        ("Navigation", [
+            ("PageUp/PageDown", "scroll the chat log"),
+            ("Esc",             "close this overlay"),
+            ("/help <cmd>",     "show detail for one command"),
+        ]),
+    ]
+
+    body = Text()
+    body.append("Help", style=f"bold {P}")
+    body.append("                                                      ")
+    body.append("0%", style=f"bold {DIM}")
+    body.append("  (token usage)\n", style=DIM)
+    body.append("\n")
+    for title, rows in sections:
+        body.append(f"{title}\n", style=f"bold {P}")
+        width = max((len(n) for n, _ in rows), default=14)
+        for name, desc in rows:
+            body.append(f"  {name:<{width + 2}}", style="white")
+            body.append(f"{desc}\n", style=DIM)
+        body.append("\n")
+
+    buf = io.StringIO()
+    console = Console(file=buf, force_terminal=True, color_system="truecolor",
+                      width=92, record=False, legacy_windows=False)
+    panel = Panel(body, title=f"[{P}]EVE — RKOJ (jcode parity)[/]",
+                  border_style=P, padding=(1, 2))
+    console.print(panel)
+    return buf.getvalue().rstrip()
+
+
+def _cmd_help_plaintext() -> str:
+    """Plain-text fallback for when rich is unavailable in the frozen EXE."""
     return (
         f"{PURPLE_BRIGHT}{BOLD}commands{RESET}\n"
-        f"  {WHITE}/start{RESET}                  pick a project + mode and launch a session (bat-file parity)\n"
+        f"  {WHITE}/start{RESET}                  pick a project + mode and launch a session\n"
         f"  {WHITE}/resume{RESET}                 list resume-points grouped by project\n"
-        f"  {WHITE}/resume <project>{RESET}       show resume-points for one project\n"
-        f"  {WHITE}/resume <project> <N>{RESET}   load resume-point N for that project (prints summary)\n"
-        f"  {WHITE}/projects{RESET}               list all known projects (Sanctum fleet + personal)\n"
+        f"  {WHITE}/projects{RESET}               list all known projects\n"
         f"  {WHITE}/agents{RESET}                 live agents + heartbeat ages\n"
         f"  {WHITE}/inbox [slug]{RESET}           list inbox messages\n"
         f"  {WHITE}/brain [tag]{RESET}            list brain entries\n"
         f"  {WHITE}/login{RESET}                  11-provider auth wallet status\n"
-        f"  {WHITE}/login providers{RESET}        full table\n"
         f"  {WHITE}/usage{RESET}                  token-quota / billing endpoint registry\n"
         f"  {WHITE}/swarm{RESET}                  multi-agent broadcast/DM/spawn\n"
         f"  {WHITE}/memory <q>{RESET}             memory recall (forge-memory-bridge)\n"
@@ -695,7 +808,46 @@ def _cmd_start(args, root) -> str:
     return f"  {GRAY}(/start picker runs inline in the shell loop — see prompt above){RESET}"
 
 
+# ----- jcode-parity stub factory ------------------------------------------
+
+def _cmd_stub(name: str, description: str,
+              subcommands: dict[str, str] | None = None):
+    """Stub factory for jcode-parity surface. Operator directive 2026-05-21:
+    every command in jcode's /help overlay must exist as either a real handler
+    or a stub. Returns a handler that prints the not-implemented note."""
+    def _h(args, root):
+        if args and subcommands and args[0].lower() in subcommands:
+            sub = args[0].lower()
+            return (f"  {GRAY}[note] /{name} {sub}: {subcommands[sub]} — "
+                    f"not implemented in v{__version__}; tracked in jcode-parity-roadmap{RESET}")
+        return (f"  {GRAY}[note] /{name}: {description} — "
+                f"not implemented in v{__version__}; tracked in jcode-parity-roadmap{RESET}")
+    return _h
+
+
+# Metadata table (used by /help <cmd>): name -> {summary, detail, category}.
+SLASH_COMMAND_META: dict[str, dict[str, str]] = {
+    # Implemented
+    "help":     {"summary": "show this overlay",                 "category": "Commands", "detail": "/help <cmd> for detail on one command"},
+    "quit":     {"summary": "exit",                              "category": "System",   "detail": ""},
+    "version":  {"summary": "show version + bundled tools",      "category": "Commands", "detail": ""},
+    "info":     {"summary": "session info + mode / tools",       "category": "Commands", "detail": ""},
+    "projects": {"summary": "list all known projects",           "category": "Commands", "detail": ""},
+    "start":    {"summary": "pick a project + mode and launch",  "category": "Session",  "detail": "bat-file parity picker"},
+    "resume":   {"summary": "browse + read past resume-points",  "category": "Session",  "detail": "/resume <project> <N>"},
+    "agents":   {"summary": "live agents + heartbeat ages",      "category": "Commands", "detail": ""},
+    "inbox":    {"summary": "list inbox messages",               "category": "Memory & Swarm", "detail": ""},
+    "brain":    {"summary": "list brain entries",                "category": "Memory & Swarm", "detail": ""},
+    "login":    {"summary": "11-provider auth wallet status",    "category": "Auth & Accounts", "detail": "/login providers for table"},
+    "usage":    {"summary": "token-quota / billing endpoint",    "category": "Commands", "detail": ""},
+    "swarm":    {"summary": "multi-agent broadcast/DM/spawn",    "category": "Memory & Swarm", "detail": ""},
+    "memory":   {"summary": "memory recall (forge-memory-bridge)", "category": "Memory & Swarm", "detail": ""},
+    "forge":    {"summary": "launch the multi-pane Forge TUI",   "category": "Commands", "detail": ""},
+}
+
+
 SLASH_COMMANDS = {
+    # ---- implemented (existing handlers) ----
     "help":     _cmd_help,
     "?":        _cmd_help,
     "h":        _cmd_help,
@@ -716,7 +868,66 @@ SLASH_COMMANDS = {
     "swarm":    _cmd_swarm,
     "memory":   _cmd_memory,
     "forge":    _cmd_forge,
+
+    # ---- jcode-parity stubs (Commands section) ----
+    "model":      _cmd_stub("model",      "list | current | set <id> | info <id> | providers"),
+    "effort":     _cmd_stub("effort",     "none|low|medium|high|xhigh"),
+    "fast":       _cmd_stub("fast",       "on|off|status|default"),
+    "transport":  _cmd_stub("transport",  "set transport mode auto|https|websocket"),
+    "alignment":  _cmd_stub("alignment",  "text alignment: status|centered|left"),
+    "config":     _cmd_stub("config",     "show config",
+                            subcommands={"init": "write default agent-prefs.json",
+                                          "edit": "open agent-prefs.json in $EDITOR"}),
+    "dictate":    _cmd_stub("dictate",    "external speech-to-text"),
+    "git":        _cmd_stub("git",        "git status -sb for sanctum repo"),
+    "context":    _cmd_stub("context",    "full session context snapshot"),
+    "changelog":  _cmd_stub("changelog",  "recent PROGRESS entries"),
+
+    # ---- Session ----
+    "clear":      _cmd_stub("clear",      "clear this pane's log"),
+    "compact":    _cmd_stub("compact",    "consolidate memory (memory-consolidate.ps1)"),
+    "rewind":     _cmd_stub("rewind",     "show numbered history, /rewind N"),
+    "fix":        _cmd_stub("fix",        "attempt recovery from errors"),
+    "poke":       _cmd_stub("poke",       "nudge model to resume incomplete todos"),
+    "improve":    _cmd_stub("improve",    "autonomous code-quality loop",
+                            subcommands={"resume": "resume a paused improve loop"}),
+    "refactor":   _cmd_stub("refactor",   "safe refactor + review loop",
+                            subcommands={"resume": "resume a paused refactor loop"}),
+    "split":      _cmd_stub("split",      "clone session into new window"),
+    "splitview":  _cmd_stub("splitview",  "mirror current chat in side panel"),
+    "transfer":   _cmd_stub("transfer",   "fresh session with compacted context + todos"),
+    "workspace":  _cmd_stub("workspace",  "Niri-style workspace splits"),
+    "catchup":    _cmd_stub("catchup",    "side-panel briefs for finished sessions",
+                            subcommands={"next": "advance to next Catch Up brief"}),
+    "back":       _cmd_stub("back",       "return to previous Catch Up session"),
+    "save":       _cmd_stub("save",       "write a resume-point now"),
+    "rename":     _cmd_stub("rename",     "name / unname session"),
+    "unsave":     _cmd_stub("unsave",     "remove bookmark"),
+
+    # ---- Memory & Swarm ----
+    "goals":      _cmd_stub("goals",      "show WORK-TOWARD.md goals"),
+
+    # ---- Auth & Accounts ----
+    "auth":       _cmd_stub("auth",       "11-provider auth status"),
+    "account":    _cmd_stub("account",    "alias of /auth (combined picker)"),
+    "subscription": _cmd_stub("subscription", "Sinister LLC subscription scaffold"),
+
+    # ---- System ----
+    "reload":         _cmd_stub("reload",         "restart RKOJ.exe"),
+    "restart":        _cmd_stub("restart",        "restart with current binary"),
+    "rebuild":        _cmd_stub("rebuild",        "full rebuild — instructions"),
+    "client-reload":  _cmd_stub("client-reload",  "remote-only"),
+    "server-reload":  _cmd_stub("server-reload",  "remote-only"),
+    "debug-visual":   _cmd_stub("debug-visual",   "enable Textual reactive inspector"),
 }
+
+# Auto-populate META for stubs (default summary = "(stub)" so /help <cmd> works).
+for _name, _h in list(SLASH_COMMANDS.items()):
+    if _name in SLASH_COMMAND_META:
+        continue
+    SLASH_COMMAND_META[_name] = {"summary": "(jcode-parity stub)",
+                                  "category": "stub",
+                                  "detail": "not implemented in v" + __version__}
 
 
 def _dispatch_slash(line: str, root: Path) -> str | None:

@@ -215,9 +215,37 @@ def _cmd_quit(args, pane, app) -> str:
 
 
 def _cmd_clear(args, pane, app) -> str:
+    """jcode /clear — wipe in-memory conversation history of the current session.
+
+    Tries forge_memory_bridge.clear_current_session() first; if absent, falls
+    back to clearing the pane's log buffer. Never raises. Returns a 1-line
+    confirmation string.
+    """
+    cleared_bridge = False
+    bridge_err = None
+    try:
+        import forge_memory_bridge  # type: ignore
+        fn = getattr(forge_memory_bridge, "clear_current_session", None)
+        if callable(fn):
+            try:
+                fn()
+                cleared_bridge = True
+            except Exception as e:
+                bridge_err = str(e)
+    except Exception:
+        pass
+
     if pane is not None and hasattr(pane, "clear_log"):
-        pane.clear_log()
-    return None
+        try:
+            pane.clear_log()
+        except Exception:
+            pass
+
+    if cleared_bridge:
+        return "  session cleared (bridge.clear_current_session ok)"
+    if bridge_err:
+        return f"  session cleared (in-memory only; bridge errored: {bridge_err})"
+    return "  session cleared (in-memory only)"
 
 
 def _cmd_version(args, pane, app) -> str:
@@ -464,16 +492,97 @@ def _cmd_rename(args, pane, app) -> str:
 
 
 def _cmd_compact(args, pane, app) -> str:
+    """jcode /compact — summarize current session into a short bullet list and
+    write it to _shared-memory/forge-memory/compacted/<ts>.md.
+
+    v0.8.0 produces a placeholder summary based on the last N (default 30)
+    messages from the most-recent session journal under
+    _shared-memory/forge-memory/anthropic-direct-sessions/*.jsonl. If no
+    journal is found we still write a minimal compaction record so the
+    operator gets a confirmation path.
+    """
     sr = _sanctum_root()
-    script = sr / "automations" / "memory-consolidate.ps1"
-    if not script.exists():
-        return f"[yellow]no consolidate script at {script}[/]"
+    sessions_dir = sr / "_shared-memory" / "forge-memory" / "anthropic-direct-sessions"
+    compacted_dir = sr / "_shared-memory" / "forge-memory" / "compacted"
+
+    # Optional arg: /compact <N>  -> bound the tail-count, max 200
+    n = 30
+    if args:
+        try:
+            n = max(5, min(int(args[0]), 200))
+        except (ValueError, TypeError):
+            pass
+
+    # Locate the most-recent session journal.
+    journal = None
+    if sessions_dir.exists():
+        jrn = sorted(sessions_dir.glob("*.jsonl"),
+                     key=lambda p: p.stat().st_mtime, reverse=True)
+        if jrn:
+            journal = jrn[0]
+
+    bullets: list[str] = []
+    role_counts = {"user": 0, "assistant": 0, "tool": 0, "system": 0, "other": 0}
+    total_chars = 0
+    if journal is not None:
+        try:
+            lines = journal.read_text(encoding="utf-8").splitlines()
+            tail = lines[-n:] if len(lines) > n else lines
+            for raw in tail:
+                raw = raw.strip()
+                if not raw:
+                    continue
+                try:
+                    rec = json.loads(raw)
+                except Exception:
+                    continue
+                role = str(rec.get("role") or rec.get("type") or "other").lower()
+                role_counts[role] = role_counts.get(role, 0) + 1
+                content = rec.get("content") or rec.get("text") or ""
+                if isinstance(content, list):
+                    content = " ".join(
+                        str(c.get("text", "")) if isinstance(c, dict) else str(c)
+                        for c in content
+                    )
+                content = str(content).strip().replace("\n", " ")
+                total_chars += len(content)
+                if content and role in {"user", "assistant"} and len(bullets) < 12:
+                    bullets.append(f"- [{role}] {content[:160]}")
+        except Exception as e:
+            bullets.append(f"- [warn] could not parse journal: {e}")
+
+    ts = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H%M%SZ")
     try:
-        subprocess.Popen(["powershell.exe", "-NoProfile", "-WindowStyle", "Hidden",
-                          "-ExecutionPolicy", "Bypass", "-File", str(script)])
-        return "  consolidate kicked off in background"
+        compacted_dir.mkdir(parents=True, exist_ok=True)
     except Exception as e:
-        return f"[red]/compact failed: {e}[/]"
+        return f"[note] /compact needs writable forge-memory/compacted/: {e}"
+
+    out_path = compacted_dir / f"{ts}.md"
+    body_lines = [
+        f"# Compacted session — {ts}",
+        f"Author: RKOJ-ELENO :: {datetime.date.today().isoformat()}",
+        "",
+        f"Source journal: `{journal.name if journal else '(none — no anthropic-direct-sessions found)'}`",
+        f"Tail-count: {n}  ·  total chars: {total_chars}",
+        f"Role counts: " + ", ".join(f"{k}={v}" for k, v in role_counts.items() if v),
+        "",
+        "## Summary bullets (placeholder — v0.8.0 heuristic)",
+        "",
+    ]
+    if bullets:
+        body_lines.extend(bullets)
+    else:
+        body_lines.append("- (no user/assistant content available to summarize)")
+
+    try:
+        out_path.write_text("\n".join(body_lines) + "\n", encoding="utf-8")
+    except Exception as e:
+        return f"[note] /compact needs writable forge-memory/compacted/: {e}"
+
+    # Mirror the compaction into in-memory state so subsequent /context can hint at it.
+    set_state("last_compaction_path", str(out_path))
+    return (f"  compacted → {out_path}\n"
+            f"  source: {journal.name if journal else '(none)'}  ·  bullets: {len(bullets)}")
 
 
 def _cmd_transcript(args, pane, app) -> str:
@@ -742,6 +851,32 @@ def _cmd_model(args, pane, app) -> str:
         except Exception:
             pass
     return body
+
+
+def _cmd_jcode(args, pane, app) -> str:
+    """/jcode — sidecar launch of the prebuilt jcode-windows-x86_64.exe.
+
+    Delegates to `sinister_jcode_shim.cli run` so jcode boots with our
+    Sinister env (config-dir, skills-dir, sessions-dir, wallet keys,
+    selected model) injected. Operator-gated source fork lives at
+    `_shared-memory/plans/jcode-fork-2026-05-21/plan.md`.
+
+    Subcommands:
+        /jcode                -> exec jcode with injected env
+        /jcode --print-bin    -> show resolved binary path
+        /jcode --dry-run      -> show what would be exec'd + env
+        /jcode doctor         -> diagnose shim readiness
+        /jcode -- <args...>   -> forward args to jcode
+    """
+    try:
+        from sinister_jcode_shim.__main__ import main as shim_main
+    except Exception as e:
+        return (f"[red]sinister-jcode-shim unavailable: {e}[/]\n"
+                f"  install: pip install -e \"D:/Sinister Sanctum/tools/sinister-jcode-shim\"")
+    sub = args[0].lower() if args else None
+    if sub == "doctor":
+        return _capture_cli(shim_main, ["doctor"])
+    return _capture_cli(shim_main, ["run", *args])
 
 
 def _cmd_provider(args, pane, app) -> str:
@@ -1073,6 +1208,7 @@ SLASH_COMMANDS: dict[str, dict[str, Any]] = {
 
     # MODEL ROUTING
     "model":      _entry(_cmd_model,     "list | current | set <id> | info <id> | providers | clear  (jcode-model parity)", "agent"),
+    "jcode":      _entry(_cmd_jcode,     "sidecar launch of prebuilt jcode.exe with Sinister env injected", "agent"),
     "effort":     _entry(_cmd_effort,    "none|low|medium|high|xhigh",                "agent"),
     "fast":       _entry(_cmd_fast,      "on|off|status|default",                     "agent"),
     "transport":  _entry(_stub("transport", "set transport mode auto|https|websocket",
