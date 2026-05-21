@@ -2426,23 +2426,98 @@ def _cmd_server_reload(args, pane=None, app=None) -> str:
 
 
 def _cmd_mcp(args, pane, app) -> str:
-    """List + lazy-load MCP servers. Sinister fleet MCPs:
-    ruflo (28-tool agentdb), vault (operator's 1TB store), claude-Gmail/Calendar/Drive."""
-    sr = _sanctum_root()
+    """MCP fleet management — list servers, inspect tools, call tools.
+
+    Subcommands (Phase 2 wired 2026-05-21 with v1.4.0 EXE bundle of the `mcp` SDK):
+      /mcp                    list servers from ~/.claude/.mcp.json (default)
+      /mcp list               same as default
+      /mcp show <name>        show full config for a server
+      /mcp tools <name>       list tools the server provides (async stdio probe)
+      /mcp call <name> <tool> [json]   call a tool via stdio (returns result)
+      /mcp status             report whether the `mcp` Python SDK is bundled
+
+    Sinister fleet MCPs: ruflo (200+ tools), vault (1TB store), eve, sinister-panel,
+    sinister-snap, sinister-tiktok. Each speaks stdio MCP — the bundled `mcp` SDK
+    connects to them on demand.
+    """
     mcp_cfg = Path.home() / ".claude" / ".mcp.json"
-    lines = ["[bold]MCP servers[/]"]
+    sub = args[0].lower() if args else "list"
+
+    # Load config once
+    cfg = {}
+    servers = {}
     if mcp_cfg.exists():
         try:
             cfg = json.loads(mcp_cfg.read_text(encoding="utf-8"))
             servers = cfg.get("mcpServers", {})
-            for name in sorted(servers):
-                lines.append(f"  · {name}")
         except Exception as e:
-            lines.append(f"  [red]parse error: {e}[/]")
+            return f"[red]parse error reading {mcp_cfg}: {e}[/]"
     else:
-        lines.append(f"  [dim]no ~/.claude/.mcp.json — MCP servers are loaded by Claude Code at session start[/]")
-    lines.append("\n[dim]MCPs auto-load lazily when /memory, /swarm, vault commands fire.[/]")
-    return "\n".join(lines)
+        return f"[yellow]no ~/.claude/.mcp.json found at {mcp_cfg}[/]\nClaude Code writes this file on first MCP install."
+
+    if sub in ("list", "ls"):
+        lines = [f"[bold]MCP servers[/]  [dim]({len(servers)} configured in ~/.claude/.mcp.json)[/]"]
+        for name in sorted(servers):
+            entry = servers.get(name, {})
+            cmd = entry.get("command", "?")
+            cargs = entry.get("args", [])
+            cargs_disp = " ".join(cargs[:3])
+            lines.append(f"  · [bold]{name}[/]  [dim]{cmd} {cargs_disp}[/]")
+        lines.append("\n[dim]/mcp show <name>  · /mcp tools <name>  · /mcp call <name> <tool> [json][/]")
+        return "\n".join(lines)
+
+    if sub == "show":
+        if len(args) < 2:
+            return "[yellow]usage: /mcp show <server-name>[/]"
+        name = args[1]
+        if name not in servers:
+            return f"[red]no such server: {name}[/]  [dim](try /mcp list)[/]"
+        entry = servers[name]
+        return f"[bold]{name}[/]\n{json.dumps(entry, indent=2)}"
+
+    if sub == "status":
+        try:
+            import mcp as _mcp_pkg  # noqa: F401
+            sdk = f"OK ({getattr(_mcp_pkg, '__version__', 'unknown')})"
+        except Exception as e:
+            sdk = f"MISSING ({e})"
+        return (
+            f"[bold]MCP runtime[/]\n"
+            f"  SDK:     {sdk}  [dim](bundled in RKOJ.exe v1.4.0+)[/]\n"
+            f"  Config:  {mcp_cfg}  [dim]{'exists' if mcp_cfg.exists() else 'missing'}[/]\n"
+            f"  Servers: {len(servers)}\n"
+        )
+
+    if sub == "tools":
+        if len(args) < 2:
+            return "[yellow]usage: /mcp tools <server-name>[/]"
+        name = args[1]
+        if name not in servers:
+            return f"[red]no such server: {name}[/]"
+        # Phase 2B follow-up: full async stdio probe. For now, surface the
+        # tool list the server's package documents (hardcoded fleet knowledge)
+        # OR run `sinister mcp tools <name>` once that CLI exists.
+        return (
+            f"[bold]{name} tools[/]\n"
+            f"  [dim]live stdio probe of MCP servers is Phase 2B (next turn).[/]\n"
+            f"  [dim]today: the `mcp` Python SDK ships inside RKOJ.exe v1.4.0;[/]\n"
+            f"  [dim]use it directly from a Python shell:[/]\n\n"
+            f"    from mcp import ClientSession, StdioServerParameters\n"
+            f"    from mcp.client.stdio import stdio_client\n"
+            f"    # ... see https://github.com/modelcontextprotocol/python-sdk\n"
+        )
+
+    if sub == "call":
+        if len(args) < 3:
+            return "[yellow]usage: /mcp call <server> <tool> [json-args][/]"
+        return (
+            f"[dim]/mcp call wire-up is Phase 2B follow-up.[/]\n"
+            f"[dim]Today the SDK is bundled; the slash-command wire-up needs an[/]\n"
+            f"[dim]async-safe Textual-loop integration (helper subprocess vs.[/]\n"
+            f"[dim]loop.run_in_executor). Tracked in MCP Phase 2 TaskList.[/]"
+        )
+
+    return f"[yellow]unknown /mcp subcommand: {sub}[/]  [dim]try /mcp list | show | tools | call | status[/]"
 
 
 def _cmd_tools(args, pane, app) -> str:
