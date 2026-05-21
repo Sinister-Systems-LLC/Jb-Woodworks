@@ -191,3 +191,7 @@ backups/
 # Sinister Mind source - REAL code (not junction)
 !projects/sinister-mind/source/
 !projects/sinister-mind/source/**
+
+# Sinister Term source - REAL code (not junction)
+!projects/sinister-term/source/
+!projects/sinister-term/source/**
