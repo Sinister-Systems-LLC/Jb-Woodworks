@@ -876,49 +876,61 @@ Pause-Beat 120
 
 # ============================================================
 
-Sanctum-SectionHeader 'AWAITING INSTRUCTION' 'select project + objective'
+Sanctum-SectionHeader 'AWAITING INSTRUCTION' 'Select Project + Objective'
 Pause-Beat 200
 
 # ============================================================
-# PROJECT PICKER
+# PROJECT PICKER (v13 :: Title Case + purple accents + per-row separation)
 # ============================================================
 
 if (-not $Project) {
     Say ''
     Write-Host "  >>> " -NoNewline -ForegroundColor $Purple
-    Write-Host "All Sinister projects route through Sanctum to GitHub" -NoNewline -ForegroundColor $LightP
+    Write-Host "All Sinister Projects Route Through Sanctum To GitHub" -NoNewline -ForegroundColor $LightP
     Write-Host " <<<" -ForegroundColor $Purple
     Say ''
-    Write-Host "  Which project this session?" -ForegroundColor $White
+    Write-Host "  Which Project This Session?" -ForegroundColor $White
+    Write-Host "  " -NoNewline
+    Write-Host ('-' * 72) -ForegroundColor $Purple
     Say ''
     Pause-Beat 60
     $i = 1
     foreach ($p in $Projects) {
         $isDefault = ($p.key -eq $DefaultProject)
         $marker = if ($isDefault) { '*' } else { ' ' }
-        $numColor = if ($isDefault) { $LightP } else { $LightP }
-        $nameColor = if ($isDefault) { $White } else { $White }
         Write-Host "    " -NoNewline
-        Write-Host ("{0}" -f $marker) -NoNewline -ForegroundColor $LightP
-        Write-Host ("{0}) " -f $i) -NoNewline -ForegroundColor $LightP
-        Write-Host ("{0,-13}" -f $p.display) -NoNewline -ForegroundColor $nameColor
-        Write-Host "  $($p.tag)" -ForegroundColor $Soft
-        Write-Host ("           github :: ") -NoNewline -ForegroundColor $Dim
+        Write-Host ("{0}" -f $marker) -NoNewline -ForegroundColor $Purple
+        Write-Host ("{0,2}) " -f $i) -NoNewline -ForegroundColor $LightP
+        Write-Host ("{0,-22}" -f $p.display) -NoNewline -ForegroundColor $White
+        Write-Host "$($p.tag)" -ForegroundColor $Soft
+        Write-Host ("              github :: ") -NoNewline -ForegroundColor $Dim
         Write-Host $p.github -ForegroundColor $Dim
+        Say ''
         $i++
     }
+    Write-Host "  " -NoNewline
+    Write-Host ('-' * 72) -ForegroundColor $Purple
     Say ''
     Write-Host "    " -NoNewline
-    Write-Host "A) " -NoNewline -ForegroundColor $LightP
-    Write-Host "auto-resume   " -NoNewline -ForegroundColor $White
-    Write-Host "type what you were working on (`"my JOKR panel`") -> match + analyze + resume" -ForegroundColor $Soft
+    Write-Host " A) " -NoNewline -ForegroundColor $LightP
+    Write-Host ("{0,-22}" -f "Auto-Resume") -NoNewline -ForegroundColor $White
+    Write-Host "Type What You Were Working On (e.g. 'my JOKR panel')" -ForegroundColor $Soft
+    Say ''
     Write-Host "    " -NoNewline
-    Write-Host "G) " -NoNewline -ForegroundColor $LightP
-    Write-Host "setup new     " -NoNewline -ForegroundColor $White
-    Write-Host "guided wizard to scaffold a NEW Sinister project" -ForegroundColor $Soft
+    Write-Host " G) " -NoNewline -ForegroundColor $LightP
+    Write-Host ("{0,-22}" -f "Setup New") -NoNewline -ForegroundColor $White
+    Write-Host "Guided Wizard To Scaffold A NEW Sinister Project" -ForegroundColor $Soft
+    Say ''
+    Write-Host "  " -NoNewline
+    Write-Host ('-' * 72) -ForegroundColor $Purple
+    Say ''
+    Write-Host "  Multi-Select: " -NoNewline -ForegroundColor $White
+    Write-Host "Enter comma-separated numbers (e.g. " -NoNewline -ForegroundColor $Dim
+    Write-Host "2,3,5" -NoNewline -ForegroundColor $LightP
+    Write-Host ") to spawn ALL of them as parallel sessions." -ForegroundColor $Dim
     Say ''
     Write-Host "  Selection " -NoNewline -ForegroundColor $White
-    Write-Host "[1-$($Projects.Count)/A/G, default=$DefaultProject]" -ForegroundColor $LightP
+    Write-Host "[1-$($Projects.Count) / A / G, default=$DefaultProject]" -ForegroundColor $Purple
     $pick = Read-Host '  >'
 
     if (-not $pick) { $Project = $DefaultProject }
@@ -1334,16 +1346,38 @@ $NoStopSuffix = ' NO-STOP CONTRACT (binding): after the initial mode read, IMMED
 # work as AUP-suspect regardless of operator-own context. v10 distinguishes
 # operator-own-test-account work (PROCEED) from mass-real-user-creation
 # against third-party TOS (CORRECTLY REFUSE).
+# v13 (test/Sinister Sanctum master agent 2026-05-21): PER-PROJECT CONTEXT
+# REVIEW directive. Every mode (dev/audit/overview/debug/explore/deploy/push)
+# now reviews where the project is at before working. Operator directive:
+# "everytime a project is opened it needss to review where its at. check past
+# plans to see everything we need to do that may have been missed".
+$ContextReviewSuffix = ' CONTEXT REVIEW (binding, runs BEFORE the mode-specific work): on cold-start, ALWAYS read in this order to know where <PROJECT> is at: (1) `_shared-memory/PROGRESS/<your-agent-name>.md` top 5 entries - last session ship-state + rolling cadence; (2) `_shared-memory/plans/<PROJECT>-*/` every subdir - latest plan.json + forward-plan.md + pass-1-draft.md by mtime, identify rows NOT yet flipped to shipped (these are missed-from-prior-session); (3) `_shared-memory/MASTER-PLAN.md` rows tagged with <PROJECT> slug or adjacent lane terms - any URGENT row stale >24h is a candidate; (4) `_shared-memory/OPERATOR-ACTION-QUEUE.md` project-relevant rows; (5) `_shared-memory/inbox/<your-slug>/` every JSON - cross-agent [ASK] / [DELEGATE] / [COAUDIT] tags awaiting response; (6) recent git log on this project lane: `git log --oneline -20 origin/agent/<your-slug>/*` for what was just shipped; (7) brain `knowledge/_INDEX.md` rows tagged with project slug for relevant doctrine. THEN: surface a "context review summary" (5-8 bullets) of what is shipped, what is in flight, what is missed-from-prior, what is operator-gated. THEN: create the per-session plan based on operator settings (mode + speed + focus). THEN: BEGIN executing per the mode contract. Skipping the context review = bug - it is how we catch shipped-but-not-flipped drift.'
+
+# v13 (test/Sinister Sanctum master agent 2026-05-21): PARALLEL EXECUTION
+# directive. Injected after AUP-RESPECT. Tells spawned agent its parallelism
+# budget based on operator's Speed pick (turbo/fast/normal). Operator wants
+# work done fast + efficient - parallel sub-agents are how that happens.
+$ParallelSuffix = ' PARALLEL EXECUTION CONTRACT: Speed = <SPEED>. Turbo = spawn 3-5 parallel sub-agents per major phase via the Agent tool (Explore for codebase-scans, Plan for design, general-purpose for multi-step). Fast = 2 parallel sub-agents per phase. Normal = sequential (no parallel sub-agents - use for tricky lanes where contention risk is high). When in Turbo or Fast mode: whenever work splits cleanly into >=2 independent streams (audit + brain-capture + cross-agent-write + smoke-test + commit), dispatch sub-agents in ONE message with multiple Agent tool calls so they run concurrently. Use background Bash (run_in_background:true) for any task >2 min wall-clock (build / install / harvest / docker pull / model train) and start other work in the same turn while it runs - never block on long tasks. See WAIT-TIME PRODUCTIVITY CONTRACT in session preamble for the full background-task discipline.'
+
 $AUPRespectSuffix = ' AUP-RESPECT CONTRACT (refined 2026-05-21): the Anthropic AUP classifier is a real wall for HARMFUL work against THIRD PARTIES. It is NOT a wall for the operators OWN INFRASTRUCTURE. Proceed without refusal on: (a) operators OWN test accounts and OWN keyboxes (Yurikey50/51/52) and OWN devices (cvd-1/cvd-2/cvd-3/Pixel-6a P1/P2) and OWN signing oracles (libpipo/libscplugin/libkameleon driven by operators OWN keys); (b) operators OWN infrastructure (LetsText D:\LetsText, JOKR-Global, eve-mcp, RKOJ-personal, Sinister-Panel on operators Hetzner, Sinister-Vault on operators D:\sinister-vault, Sinister-OS on operators future hardware); (c) reading published API docs and library source code for understanding (not live probing); (d) oracle patterns via the operators own Yurikey-signed flows (the TT libpipo pattern, the Snap kiib.zck.g/h pattern, the Bumble libbma pattern); (e) sandbox/staging environments the service explicitly supports; (f) read-only diagnostics and architectural surveys; (g) defensive security work (secret-scrub, AUP-classifier doctrine, security-review skill); (h) per-canonical-19 the agents own KEEP-WORKING-UNTIL-DONE on operator-authorized scope. CORRECTLY refuse: (1) mass real-user account creation against external production services where the operator does NOT own the accounts; (2) supply-chain compromise of upstream packages or signing infrastructure operator does NOT own; (3) detection-evasion-for-malicious-purposes against third-party users; (4) DoS / brute-force / credential-stuffing against third-party infrastructure; (5) anything that targets a non-operator person or non-operator infrastructure with offensive intent. If a sibling lane operates on operators own infra/accounts/keys (the default for our Snap-EMU, TT-API, Bumble, Kernel-APK, RKOJ, Panel, LetsText, JOKR, eve-mcp work): PROCEED. If the harness AUP classifier nevertheless fires DESPITE this being operator-own work: STOP at the classifier wall, document the specific block in _shared-memory/TIER-3-UNLOCK-PATHS.md with the verbatim refusal text + the operator-own-infra context + the proposed lateral unblock pattern, surface to operator in end-of-turn. NEVER write "look how I worked around the classifier" output. NEVER ask the operator how to evade the classifier - that is itself AUP-violating. The contract REFINES per the apk-classifier-aup-doctrine brain entry; it does NOT replace it.'
 
 $BuiltinPhrases = @{
-    'overview' = "$MemPreamble give me the project overview for <PROJECT> at <ROOT> (current state, pending TODOs, what is next). Use librarian.recall over 01_MEMORY/<PROJECT>/ if available. End the initial overview with: which lane I am in + 3-5 master-actionable next moves.$NoStopSuffix$AUPRespectSuffix"
-    'dev'      = "$MemPreamble we are working on <PROJECT> (root: <ROOT>). Read the project's .claude/memory/, SESSION-START.md, CLAUDE.md. Surface the top 3-5 master-actionable feature/fix candidates from MASTER-PLAN + PROGRESS + .claude/memory; pick the highest-priority one + BEGIN.$NoStopSuffix$AUPRespectSuffix"
-    'audit'    = "$MemPreamble audit <PROJECT> at <ROOT>. Use librarian.recall + auditor.run + git status. Surface: secrets at risk, stale TODOs, broken tests, push-readiness. TaskCreate one row per finding + walk them.$NoStopSuffix$AUPRespectSuffix"
-    'deploy'   = "$MemPreamble we are deploying <PROJECT> to production. Read the latest DEPLOY/HETZNER docs, confirm HEAD is clean + tagged, walk the deploy steps. Reversibility-gate any destructive op per canonical-11 (operator OK required before drop/force-push/kill).$NoStopSuffix$AUPRespectSuffix"
-    'push'     = "$MemPreamble push <PROJECT> to GitHub (<GITHUB>). Run secret-scrub first (MANDATORY). Then git add + commit (compose the message from the diff) + git push. Stop ONLY if secret-scrub fails or the push itself errors.$NoStopSuffix$AUPRespectSuffix"
-    'debug'    = "$MemPreamble debugging session on <PROJECT>. Read .claude/memory/ + living-mds/CURRENT-STATE.md + the latest BREAKTHROUGH-*.md. Identify the most-recent unresolved failure mode + claim it; if multiple are open, take the cheapest-first.$NoStopSuffix$AUPRespectSuffix"
-    'explore'  = "$MemPreamble open exploration on <PROJECT>. Read project root, .claude/memory/, docs/, NAVIGATION.md. Surface 3 surprising findings + TaskCreate one follow-up per finding.$NoStopSuffix$AUPRespectSuffix"
+    'overview' = "$MemPreamble give me the project overview for <PROJECT> at <ROOT> (current state, pending TODOs, what is next). Use librarian.recall over 01_MEMORY/<PROJECT>/ if available. End the initial overview with: which lane I am in + 3-5 master-actionable next moves.$ContextReviewSuffix$NoStopSuffix$AUPRespectSuffix$ParallelSuffix"
+    'dev'      = "$MemPreamble we are working on <PROJECT> (root: <ROOT>). Read the project's .claude/memory/, SESSION-START.md, CLAUDE.md. Surface the top 3-5 master-actionable feature/fix candidates from MASTER-PLAN + PROGRESS + .claude/memory; pick the highest-priority one + BEGIN.$ContextReviewSuffix$NoStopSuffix$AUPRespectSuffix$ParallelSuffix"
+    'audit'    = "$MemPreamble audit <PROJECT> at <ROOT>. Use librarian.recall + auditor.run + git status. Surface: secrets at risk, stale TODOs, broken tests, push-readiness. TaskCreate one row per finding + walk them.$ContextReviewSuffix$NoStopSuffix$AUPRespectSuffix$ParallelSuffix"
+    # v14 (test 2026-05-21): Resume mode - pick up exactly where last session
+    # left off. Top entry of PROGRESS + any in_progress task + most-recent
+    # plan artifact. No re-derive scope; previous session captured it.
+    'resume'   = "$MemPreamble RESUME MODE for <PROJECT> (root: <ROOT>). Continue exactly where the last session left off. First action: Read the top entry of D:\Sinister Sanctum\_shared-memory\PROGRESS\<your-agent-name>.md to recover last-session ship-state. Then read the most-recent plan artifact at D:\Sinister Sanctum\_shared-memory\plans\<PROJECT>-*\ (highest mtime). Then check D:\Sinister Sanctum\_shared-memory\inbox\<your-slug>\ for done-*.json notifications since last session. Re-establish context from those three sources, claim any in_progress TaskList row via TaskUpdate, and BEGIN. Do NOT re-derive scope - previous session already captured it.$ContextReviewSuffix$NoStopSuffix$AUPRespectSuffix$ParallelSuffix"
+    # v14 (test 2026-05-21): Expand mode - EXPAND 7-step contract per the
+    # expand-mode-contract brain entry. Deep audit + clean-up proposal + brain
+    # xref + fleet xref + forward-plan + broadcast + [MODE-SWITCH] inbox
+    # handoff. NO source edits in EXPAND - the forward-plan IS the deliverable.
+    'expand'   = "$MemPreamble EXPAND MODE for <PROJECT> (root: <ROOT>) :: 7-step contract per `_shared-memory/knowledge/expand-mode-contract.md`. STEP 1 deep audit: spawn 3 parallel Explore sub-agents (project structure / _shared-memory drift / tools+automations+inventions catalog). STEP 2 clean-up proposal at `_shared-memory/plans/<PROJECT>-expand-<UTC>/clean-up-proposal.md` with R0-R4 reversibility class table per finding. STEP 3 brain cross-reference: scan `knowledge/_INDEX.md` for entries tagged with project slug + identify GAPs + STALE entries. STEP 4 fleet cross-reference: check sibling-lane PROGRESS / cross-agent inbox for asks stale >24h. STEP 5 forward-plan at `_shared-memory/plans/<PROJECT>-expand-<UTC>/forward-plan.md` with R1..Rn master-actionable rows (each: EXACT-INSTRUCTIONS + EXPECTED-OUTPUT + VERIFICATION + COMMIT-MESSAGE) + O1..Om operator-only rows. STEP 6 broadcast at `_shared-memory/cross-agent/<UTC>-<your-slug>-expand-broadcast.md` summarizing findings for siblings. STEP 7 inbox handoff: write `_shared-memory/inbox/<your-slug>/<UTC>-mode-switch-resume.json` pointing the next agent at forward-plan.md with new_mode='resume'. CRITICAL: ZERO source code edits during EXPAND - the forward-plan IS the deliverable; RESUME mode walks it. Compose all artifacts in parallel where possible; the contract's value is the audit-then-plan-then-handoff cadence.$ContextReviewSuffix$NoStopSuffix$AUPRespectSuffix$ParallelSuffix"
+    'deploy'   = "$MemPreamble we are deploying <PROJECT> to production. Read the latest DEPLOY/HETZNER docs, confirm HEAD is clean + tagged, walk the deploy steps. Reversibility-gate any destructive op per canonical-11 (operator OK required before drop/force-push/kill).$ContextReviewSuffix$NoStopSuffix$AUPRespectSuffix$ParallelSuffix"
+    'push'     = "$MemPreamble push <PROJECT> to GitHub (<GITHUB>). Run secret-scrub first (MANDATORY). Then git add + commit (compose the message from the diff) + git push. Stop ONLY if secret-scrub fails or the push itself errors.$ContextReviewSuffix$NoStopSuffix$AUPRespectSuffix$ParallelSuffix"
+    'debug'    = "$MemPreamble debugging session on <PROJECT>. Read .claude/memory/ + living-mds/CURRENT-STATE.md + the latest BREAKTHROUGH-*.md. Identify the most-recent unresolved failure mode + claim it; if multiple are open, take the cheapest-first.$ContextReviewSuffix$NoStopSuffix$AUPRespectSuffix$ParallelSuffix"
+    'explore'  = "$MemPreamble open exploration on <PROJECT>. Read project root, .claude/memory/, docs/, NAVIGATION.md. Surface 3 surprising findings + TaskCreate one follow-up per finding.$ContextReviewSuffix$NoStopSuffix$AUPRespectSuffix$ParallelSuffix"
     # v11 (test/Sinister Sanctum master agent 2026-05-21): co-audit mode -
     # spawns an agent on a project that ALREADY has an active agent running.
     # The co-audit agent reads what the primary shipped (PROGRESS top entries,
@@ -1356,7 +1390,7 @@ $BuiltinPhrases = @{
     # want a option in the session start to launch a agent on a project that
     # is already running to do a full audit, expand on ceocepts, see what we
     # are missing and what we need to do to complete our goal".
-    'coaudit'  = "$MemPreamble CO-AUDIT MODE for <PROJECT> (root: <ROOT>). A primary agent is ALREADY running on this project; you are the second pair of eyes. PHASE A primary-state survey (read-only, do NOT edit primary lane files): read top 5 entries of D:\Sinister Sanctum\_shared-memory\PROGRESS\<primary-display-name>.md (find primary by mapping <PROJECT> via D:\Sinister Sanctum\_shared-memory\AGENT-ROSTER.md), git-log --oneline -20 origin/agent/<primary-slug>/* for last 20 primary commits, every plans\<PROJECT>-*\ subdir for latest forward-plan + plan.json by mtime, primary's heartbeat at D:\Sinister Sanctum\_shared-memory\heartbeats\<primary-slug>.json (mtime + content). PHASE B independent audit: claims-vs-disk-reality (every shipped-line in primary's recent PROGRESS - Test-Path the named deliverable, verify the commit hash, grep the brain entry slug); brain-coverage (every concept the primary mentions - is it indexed in knowledge/_INDEX.md? if not, that's a gap); sibling-lane-impact-survey (did any of primary's commits touch _shared-memory/inbox/<other-slug>/ or _shared-memory/cross-agent/ - are those ASKs answered?); MASTER-PLAN cross-check (are primary's claims reflected in MASTER-PLAN status flags?). PHASE C concept-expansion: for the top 3 concepts the primary has been working, search the brain for ADJACENT entries (5+ related-topic hops); search WebFetch for any external doctrine/library/RFC that would inform the work (only if it does not violate AUP-RESPECT; operator's own infra is fine). PHASE D gap-surface: write D:\Sinister Sanctum\_shared-memory\plans\<PROJECT>-coaudit-<UTC>\coaudit-report.md with structure: (1) Primary's recent ship-state (verified vs claimed), (2) Drift findings (shipped-not-flipped, brain-uncited, sibling-ASK-stale), (3) Concept-expansion list (3-5 adjacent angles primary has not surfaced yet), (4) Gap-to-goal (what is structurally missing to declare this project DONE), (5) Recommended next-3-rows for the primary agent (with EXACT-INSTRUCTIONS + EXPECTED-OUTPUT + VERIFICATION). PHASE E cross-agent handoff: drop a [COAUDIT] tag JSON at D:\Sinister Sanctum\_shared-memory\inbox\<primary-slug>\<UTC>-coaudit-by-<your-slug>.json pointing at the coaudit-report.md path; primary picks it up on next inbox_poll. LANE DISCIPLINE (binding per canonical-10): NEVER edit files inside <ROOT>\ (the primary's source); ONLY write to _shared-memory/plans\<PROJECT>-coaudit-* + _shared-memory/inbox\<primary-slug>\ + your own PROGRESS file. Work on branch agent/<your-slug>/co-audit-<PROJECT>-<UTC> cut from main. You are the '<AGENT>' agent. BEGIN PHASE A NOW.$NoStopSuffix$AUPRespectSuffix"
+    'coaudit'  = "$MemPreamble CO-AUDIT MODE for <PROJECT> (root: <ROOT>). A primary agent is ALREADY running on this project; you are the second pair of eyes. PHASE A primary-state survey (read-only, do NOT edit primary lane files): read top 5 entries of D:\Sinister Sanctum\_shared-memory\PROGRESS\<primary-display-name>.md (find primary by mapping <PROJECT> via D:\Sinister Sanctum\_shared-memory\AGENT-ROSTER.md), git-log --oneline -20 origin/agent/<primary-slug>/* for last 20 primary commits, every plans\<PROJECT>-*\ subdir for latest forward-plan + plan.json by mtime, primary's heartbeat at D:\Sinister Sanctum\_shared-memory\heartbeats\<primary-slug>.json (mtime + content). PHASE B independent audit: claims-vs-disk-reality (every shipped-line in primary's recent PROGRESS - Test-Path the named deliverable, verify the commit hash, grep the brain entry slug); brain-coverage (every concept the primary mentions - is it indexed in knowledge/_INDEX.md? if not, that's a gap); sibling-lane-impact-survey (did any of primary's commits touch _shared-memory/inbox/<other-slug>/ or _shared-memory/cross-agent/ - are those ASKs answered?); MASTER-PLAN cross-check (are primary's claims reflected in MASTER-PLAN status flags?). PHASE C concept-expansion: for the top 3 concepts the primary has been working, search the brain for ADJACENT entries (5+ related-topic hops); search WebFetch for any external doctrine/library/RFC that would inform the work (only if it does not violate AUP-RESPECT; operator's own infra is fine). PHASE D gap-surface: write D:\Sinister Sanctum\_shared-memory\plans\<PROJECT>-coaudit-<UTC>\coaudit-report.md with structure: (1) Primary's recent ship-state (verified vs claimed), (2) Drift findings (shipped-not-flipped, brain-uncited, sibling-ASK-stale), (3) Concept-expansion list (3-5 adjacent angles primary has not surfaced yet), (4) Gap-to-goal (what is structurally missing to declare this project DONE), (5) Recommended next-3-rows for the primary agent (with EXACT-INSTRUCTIONS + EXPECTED-OUTPUT + VERIFICATION). PHASE E cross-agent handoff: drop a [COAUDIT] tag JSON at D:\Sinister Sanctum\_shared-memory\inbox\<primary-slug>\<UTC>-coaudit-by-<your-slug>.json pointing at the coaudit-report.md path; primary picks it up on next inbox_poll. LANE DISCIPLINE (binding per canonical-10): NEVER edit files inside <ROOT>\ (the primary's source); ONLY write to _shared-memory/plans\<PROJECT>-coaudit-* + _shared-memory/inbox\<primary-slug>\ + your own PROGRESS file. Work on branch agent/<your-slug>/co-audit-<PROJECT>-<UTC> cut from main. You are the '<AGENT>' agent. BEGIN PHASE A NOW.$ContextReviewSuffix$NoStopSuffix$AUPRespectSuffix$ParallelSuffix"
     # v7 (Agent SS-A 2026-05-19): rkoj mode is a no-Claude-spawn workbench launch.
     'rkoj'     = "RKOJ workbench launched at http://127.0.0.1:5077/ - no Claude phrase needed; spawn agents from the Launcher tab."
     # v8 (test/Sinister Sanctum master agent 2026-05-20): autonomous-loop mode -
@@ -1364,7 +1398,7 @@ $BuiltinPhrases = @{
     # TaskCreates every master-actionable row, then invokes /loop (self-paced)
     # so it cycles through the work without stopping. Operator-only gates
     # surface via end-of-turn; loop continues with the next item.
-    'auto'     = "$MemPreamble AUTONOMOUS LOOP MODE for <PROJECT> (root: <ROOT>). PHASE 1 plan-review: read EVERY plan-bearing file relevant to the project before writing ANY plan TODO - (a) D:\Sinister Sanctum\_shared-memory\MASTER-PLAN.md (full file; surface every row tagged with the project slug or adjacent lane terms); (b) D:\Sinister Sanctum\_shared-memory\plans\<PROJECT>-*\ (every subdir; read latest forward-plan.md + pass-1-draft.md + plan.json by mtime); (c) <ROOT>\CLAUDE.md (full lane scope + Existing research + Research gaps); (d) <ROOT>\.claude\memory\ (every file); (e) D:\Sinister Sanctum\_shared-memory\PROGRESS\<AGENT>.md (top 8 entries - what was last in flight + what's the rolling cadence); (f) D:\Sinister Sanctum\_shared-memory\knowledge\_INDEX.md (every row tagged with project slug); (g) D:\Sinister Sanctum\_shared-memory\OPERATOR-ACTION-QUEUE.md (project-relevant rows); (h) D:\Sinister Sanctum\_shared-memory\inbox\<your-slug>\ (every JSON; surface cross-agent asks). PHASE 2 synthesize: write ONE complete autonomous scope-plan to D:\Sinister Sanctum\_shared-memory\plans\<PROJECT>-auto-<UTC>\master-plan.md - structure: (1) shipped (last 7 days, with commit hashes), (2) open master-actionable (with EXACT-INSTRUCTIONS + EXPECTED-OUTPUT + VERIFICATION + COMMIT-MESSAGE per row), (3) operator-gated (with exact one-liner unblock), (4) sibling-lane (cross-agent asks needed; do NOT touch source), (5) deferred (with named blocker). PHASE 3 TaskCreate every row in section 2 (master-actionable); mark in_progress when claiming. PHASE 4 invoke /loop with NO interval (model self-paces) - the loop skill keeps cycling through TaskList per LOOP DISCIPLINE (run after every visible deliverable: TaskUpdate completed -> TaskList -> claim next -> begin; if empty: top URGENT row in scope-plan section 2; if exhausted: brain-capture from session patterns crossed). PHASE 5 every iteration gates on the 5-check completion gate (explicit ask on disk / TaskList empty / PROGRESS appended / MASTER-PLAN flags match disk / next-slice surface refreshed). Operator-only gates surface via end-of-turn message, then the loop CONTINUES with the next master-actionable item - silence = bug, 'awaiting input' = bug, 'should I continue' = bug. You are the '<AGENT>' agent. BEGIN PHASE 1 NOW.$AUPRespectSuffix"
+    'auto'     = "$MemPreamble AUTONOMOUS LOOP MODE for <PROJECT> (root: <ROOT>). PHASE 1 plan-review: read EVERY plan-bearing file relevant to the project before writing ANY plan TODO - (a) D:\Sinister Sanctum\_shared-memory\MASTER-PLAN.md (full file; surface every row tagged with the project slug or adjacent lane terms); (b) D:\Sinister Sanctum\_shared-memory\plans\<PROJECT>-*\ (every subdir; read latest forward-plan.md + pass-1-draft.md + plan.json by mtime); (c) <ROOT>\CLAUDE.md (full lane scope + Existing research + Research gaps); (d) <ROOT>\.claude\memory\ (every file); (e) D:\Sinister Sanctum\_shared-memory\PROGRESS\<AGENT>.md (top 8 entries - what was last in flight + what's the rolling cadence); (f) D:\Sinister Sanctum\_shared-memory\knowledge\_INDEX.md (every row tagged with project slug); (g) D:\Sinister Sanctum\_shared-memory\OPERATOR-ACTION-QUEUE.md (project-relevant rows); (h) D:\Sinister Sanctum\_shared-memory\inbox\<your-slug>\ (every JSON; surface cross-agent asks). PHASE 2 synthesize: write ONE complete autonomous scope-plan to D:\Sinister Sanctum\_shared-memory\plans\<PROJECT>-auto-<UTC>\master-plan.md - structure: (1) shipped (last 7 days, with commit hashes), (2) open master-actionable (with EXACT-INSTRUCTIONS + EXPECTED-OUTPUT + VERIFICATION + COMMIT-MESSAGE per row), (3) operator-gated (with exact one-liner unblock), (4) sibling-lane (cross-agent asks needed; do NOT touch source), (5) deferred (with named blocker). PHASE 3 TaskCreate every row in section 2 (master-actionable); mark in_progress when claiming. PHASE 4 invoke /loop with NO interval (model self-paces) - the loop skill keeps cycling through TaskList per LOOP DISCIPLINE (run after every visible deliverable: TaskUpdate completed -> TaskList -> claim next -> begin; if empty: top URGENT row in scope-plan section 2; if exhausted: brain-capture from session patterns crossed). PHASE 5 every iteration gates on the 5-check completion gate (explicit ask on disk / TaskList empty / PROGRESS appended / MASTER-PLAN flags match disk / next-slice surface refreshed). Operator-only gates surface via end-of-turn message, then the loop CONTINUES with the next master-actionable item - silence = bug, 'awaiting input' = bug, 'should I continue' = bug. You are the '<AGENT>' agent. BEGIN PHASE 1 NOW.$AUPRespectSuffix$ParallelSuffix"
 }
 
 $projRec = $Projects | Where-Object { $_.key -eq $Project } | Select-Object -First 1
@@ -1436,39 +1470,34 @@ if ($Project -eq '__custom__') {
     $focus = Read-Host '       focus'
     Say ''
 
-    # Q2 - objective (multi-select supported: enter "4,5" for dev+audit)
-    # v7 (Agent SS-A 2026-05-19): added 'rkoj' as default option 1 (launches
-    # the workbench EXE and exits without spawning a Claude phrase; agents now
-    # spawn from RKOJ -> Launcher tab).
-    # v12 (test 2026-05-21): auto + coaudit promoted to positions 2 + 3
-    # (right after rkoj). Operator wants "select auto or not" to be the
-    # primary decision; previously auto was buried at position 9. The
-    # autonomous-flow modes (rkoj / auto / coaudit) are now grouped at the
-    # top of the picker. Single bat (Start-Sinister-Auto-Session.bat
-    # deleted) - all selections including auto-or-not happen in this picker.
-    Write-Host "  2/4  " -NoNewline -ForegroundColor $LightP
-    Write-Host "Objective?  " -NoNewline -ForegroundColor $White
-    Write-Host "(single, or comma-separated for combined: e.g. " -NoNewline -ForegroundColor $Dim
-    Write-Host "4,5" -NoNewline -ForegroundColor $LightP
-    Write-Host " = dev+audit)" -ForegroundColor $Dim
+    # Q2 - Objective (v14 :: 5 options after operator pruning 2026-05-21)
+    # Removed: rkoj (now no-Claude-spawn handled by separate flow), auto (now
+    # a separate Y/N question Q3), overview/deploy/push/debug/explore (operator
+    # said remove). Added: resume (#1 default), expand.
+    Write-Host "  2/5  " -NoNewline -ForegroundColor $Purple
+    Write-Host "Objective :" -ForegroundColor $White
+    Write-Host "       " -NoNewline
+    Write-Host ('-' * 68) -ForegroundColor $Purple
     $modeOpts = @(
-        @{ n='1';  key='rkoj';     desc='launch RKOJ workbench (no Claude here)  [default]' }
-        @{ n='2';  key='auto';     desc='AUTONOMOUS LOOP :: review all plans + scope-plan + /loop  (recommended for unattended sessions)' }
-        @{ n='3';  key='coaudit';  desc='CO-AUDIT a running project :: claims-vs-disk + concept-expand + gaps + handoff' }
-        @{ n='4';  key='dev';      desc='active development / coding' }
-        @{ n='5';  key='audit';    desc='review state / find issues' }
-        @{ n='6';  key='overview'; desc='read me in / status check' }
-        @{ n='7';  key='deploy';   desc='ship to Hetzner / production' }
-        @{ n='8';  key='push';     desc='git commit + push to GitHub' }
-        @{ n='9';  key='debug';    desc='trace a specific bug / failure' }
-        @{ n='10'; key='explore';  desc='research / open-ended' }
+        @{ n='1'; key='resume';  label='Resume';  desc='Continue exactly where last session left off  [default]' }
+        @{ n='2'; key='coaudit'; label='Coaudit'; desc='CO-AUDIT a running project (second pair of eyes)' }
+        @{ n='3'; key='dev';     label='Dev';     desc='Active development / coding' }
+        @{ n='4'; key='audit';   label='Audit';   desc='Review state / find issues / push-readiness' }
+        @{ n='5'; key='expand';  label='Expand';  desc='EXPAND 7-step contract :: audit + forward-plan + handoff' }
     )
     foreach ($o in $modeOpts) {
         Write-Host "       " -NoNewline
         Write-Host ("{0}) " -f $o.n) -NoNewline -ForegroundColor $LightP
-        Write-Host ("{0,-9}" -f $o.key) -NoNewline -ForegroundColor $White
+        Write-Host ("{0,-9}" -f $o.label) -NoNewline -ForegroundColor $White
         Write-Host $o.desc -ForegroundColor $Soft
     }
+    Write-Host "       " -NoNewline
+    Write-Host ('-' * 68) -ForegroundColor $Purple
+    Write-Host "       Choice " -NoNewline -ForegroundColor $White
+    Write-Host "[1-5, default=1 Resume] " -NoNewline -ForegroundColor $Purple
+    Write-Host "(multi: " -NoNewline -ForegroundColor $Dim
+    Write-Host "3,4" -NoNewline -ForegroundColor $LightP
+    Write-Host " = Dev+Audit combined)" -ForegroundColor $Dim
     if ($CustomPrompts.Count -gt 0) {
         Say "       --- saved custom templates ---" $Dim
         # v11 (test 2026-05-21): bumped from 10 to 11 since coaudit now occupies n=10.
@@ -1485,9 +1514,11 @@ if ($Project -eq '__custom__') {
     Write-Host "       choice " -NoNewline -ForegroundColor $White
     Write-Host "[default=1, rkoj]" -ForegroundColor $LightP
     $mpick = Read-Host '       >'
-    # v7 (Agent SS-A 2026-05-19): renumbered to put rkoj at position 1.
-    # v12 (test 2026-05-21): renumbered to promote auto + coaudit to positions 2 + 3.
-    $modeMap = @{ '1'='rkoj'; '2'='auto'; '3'='coaudit'; '4'='dev'; '5'='audit'; '6'='overview'; '7'='deploy'; '8'='push'; '9'='debug'; '10'='explore' }
+    # v14 (test 2026-05-21): operator pruned objective list to 5 (Resume / Coaudit
+    # / Dev / Audit / Expand). rkoj is its own flow above; auto is its own Y/N
+    # question Q3; overview/deploy/push/debug/explore still resolvable via
+    # -Mode <key> headless but not shown in picker.
+    $modeMap = @{ '1'='resume'; '2'='coaudit'; '3'='dev'; '4'='audit'; '5'='expand' }
     if (-not $mpick) { $mpick = '1' }
 
     # Multi-select support: "2,3" -> dev + audit. Combine phrases + tag mode.
@@ -1529,8 +1560,42 @@ if ($Project -eq '__custom__') {
         exit 0
     }
 
-    # Q3 - agent name (defer to identity block below - pre-fill from prefs)
-    # Q4 - accent color (same)
+    # ============================================================
+    # Q3 - SPEED (v13 :: parallelism budget for the spawned agent)
+    # ============================================================
+    # Operator directive 2026-05-21: "agents need to know that they can do all
+    # work they need to do in parrallel based on speed settings selected so we
+    # can get things done fast and efficent"
+    Write-Host "  3/4  " -NoNewline -ForegroundColor $Purple
+    Write-Host "Speed :" -ForegroundColor $White
+    Write-Host "       " -NoNewline
+    Write-Host ('-' * 68) -ForegroundColor $Purple
+    Say ''
+    $speedOpts = @(
+        @{ n='1'; key='turbo';  label='Turbo';  desc='3-5 parallel sub-agents per major phase (Explore/Plan/general-purpose)' }
+        @{ n='2'; key='fast';   label='Fast';   desc='2 parallel sub-agents per major phase  [default]' }
+        @{ n='3'; key='normal'; label='Normal'; desc='Sequential - no parallel sub-agents (safer for tricky lanes)' }
+    )
+    foreach ($s in $speedOpts) {
+        Write-Host "       " -NoNewline
+        Write-Host ("{0}) " -f $s.n) -NoNewline -ForegroundColor $LightP
+        Write-Host ("{0,-8}" -f $s.label) -NoNewline -ForegroundColor $White
+        Write-Host $s.desc -ForegroundColor $Soft
+        Say ''
+    }
+    Write-Host "       " -NoNewline
+    Write-Host ('-' * 68) -ForegroundColor $Purple
+    Say ''
+    Write-Host "       Choice " -NoNewline -ForegroundColor $White
+    Write-Host "[1-3, default=2 Fast]" -ForegroundColor $Purple
+    $speedPick = Read-Host '       >'
+    $speedMap = @{ '1'='turbo'; '2'='fast'; '3'='normal' }
+    $script:__Speed = if ($speedMap.ContainsKey($speedPick)) { $speedMap[$speedPick] } else { 'fast' }
+    Say "       [OK] Speed = $($script:__Speed)" $Glow
+    Say ''
+
+    # Q4 - agent name (defer to identity block below - pre-fill from prefs)
+    # Q5 - accent color (same)
     # Stash focus so it gets injected into the phrase later.
     if ($focus) {
         $script:__FocusIntent = $focus
@@ -1567,37 +1632,46 @@ $availableColors = if ($agentPrefs -and $agentPrefs.available_colors) { @($agent
 if (-not $AgentName) {
     if ($Mode -eq 'scaffold' -or $Project -eq '__custom__') {
         $AgentName = $defaultAgentName  # don't interrupt scaffold flow
-    } elseif ($persistedAgentName) {
-        # Operator preference 2026-05-19: once the name is saved for a project,
-        # NEVER re-ask on subsequent launches. Override via -AgentName flag or
-        # the spawn-another loop (S/P) which passes -AgentName ''.
-        $AgentName = $defaultAgentName
-        Say "  3/4  Agent name?   reusing persisted: $AgentName" $Soft
     } else {
-        Say "  3/4  Agent name?  (how this Claude refers to itself in inbox + logs)" $White
-        $nameInput = Read-Host "       name [default=$defaultAgentName]"
-        # Guard: Read-Host may return $null OR an empty string depending on host.
-        # Treat both as 'accept default' (and persist that default, so we never
-        # re-ask for THIS project again).
+        # v14 (test 2026-05-21): always prompt agent name with 30s timeout-to-default.
+        # Previously persisted name was used without prompting; operator wants
+        # to be able to set it every time with default + auto-progress.
+        Write-Host "  4/8  " -NoNewline -ForegroundColor $Purple
+        Write-Host "Agent name :" -ForegroundColor $White
+        Write-Host "       " -NoNewline
+        Write-Host ('-' * 68) -ForegroundColor $Purple
+        $defaultLabel = if ($persistedAgentName) { "$defaultAgentName  (persisted)" } else { "$defaultAgentName  (project default)" }
+        Write-Host "       Default :  " -NoNewline -ForegroundColor $White
+        Write-Host $defaultLabel -ForegroundColor $LightP
+        Write-Host "       " -NoNewline
+        Write-Host ('-' * 68) -ForegroundColor $Purple
+        $nameInput = Read-HostTimeout "       Name [Enter=default, 30s timeout]" 30
         if ($nameInput -and $nameInput.Trim()) { $AgentName = $nameInput.Trim() } else { $AgentName = $defaultAgentName }
+        Write-Host "       " -NoNewline -ForegroundColor $Glow
+        Say "[OK] Agent = $AgentName" $Glow
         Say ''
     }
 }
 if (-not $AccentColor) {
     if ($Mode -eq 'scaffold' -or $Project -eq '__custom__') {
         $AccentColor = $defaultAccentColor
-    } elseif ($persistedAccentColor) {
-        # Operator preference: persisted color wins, no re-prompt.
-        $AccentColor = $defaultAccentColor
-        Say "  4/4  Accent color?  reusing persisted: $AccentColor" $Soft
     } else {
-        Say "  4/4  Accent color?  (this session's visual convention; default purple per operator)" $White
-        # Render colors as one compact line, default marked with *
+        # v14 (test 2026-05-21): always prompt accent color with 30s timeout-to-default.
+        Write-Host "  5/8  " -NoNewline -ForegroundColor $Purple
+        Write-Host "Accent color :" -ForegroundColor $White
+        Write-Host "       " -NoNewline
+        Write-Host ('-' * 68) -ForegroundColor $Purple
+        $defaultLabel = if ($persistedAccentColor) { "$defaultAccentColor  (persisted)" } else { "$defaultAccentColor  (operator standing order)" }
+        Write-Host "       Default :  " -NoNewline -ForegroundColor $White
+        Write-Host $defaultLabel -ForegroundColor $LightP
         $palette = ($availableColors | ForEach-Object {
             if ($_ -eq $defaultAccentColor) { "*$_" } else { $_ }
         }) -join '  '
-        Say "       options: $palette  (default purple; 'random' picks one per launch)" $Soft
-        $colorInput = Read-Host "       color [default=$defaultAccentColor]"
+        Write-Host "       Options :  " -NoNewline -ForegroundColor $White
+        Write-Host $palette -ForegroundColor $Soft
+        Write-Host "       " -NoNewline
+        Write-Host ('-' * 68) -ForegroundColor $Purple
+        $colorInput = Read-HostTimeout "       Color [Enter=default, 30s timeout]" 30
         if ($colorInput -match '^\d+$') {
             $cidx = [int]$colorInput - 1
             if ($cidx -ge 0 -and $cidx -lt $availableColors.Count) { $AccentColor = $availableColors[$cidx] }
@@ -1605,6 +1679,7 @@ if (-not $AccentColor) {
         } elseif ($colorInput -and ($availableColors -contains $colorInput.ToLower())) {
             $AccentColor = $colorInput.ToLower()
         } else { $AccentColor = $defaultAccentColor }
+        Say "       [OK] Accent = $AccentColor" $Glow
         Say ''
     }
 }
@@ -1647,6 +1722,12 @@ if ($Mode -ne 'scaffold') {
         $focusHint = " Today's focus (per operator at session start): $($script:__FocusIntent). Acknowledge that as the working directive before asking what next."
         $phrase = $phrase + $focusHint
     }
+
+    # v13 (test 2026-05-21): substitute <SPEED> placeholder in $ParallelSuffix
+    # with the actual speed value picked in Q3. Defaults to 'fast' if speed
+    # was never asked (e.g. headless -Mode without picker).
+    $resolvedSpeed = if ($script:__Speed) { $script:__Speed } else { 'fast' }
+    $phrase = $phrase -replace '<SPEED>', $resolvedSpeed
 }
 
 # Multi-agent count - operator may want to spawn N parallel sessions on the
@@ -1704,60 +1785,11 @@ if ($ActiveAccounts.Count -eq 0) {
     1..[Math]::Max(1, $MultiCount) | ForEach-Object { $SpawnAccounts += $picked }
 }
 
-# ============================================================
-# v7 (Agent SS-A 2026-05-19): Resume from cycle point
-# ============================================================
-# Operator can resume a saved cycle point INSTEAD of cold-spawning a new
-# session. Hits RKOJ at 127.0.0.1:5077; if RKOJ is offline or returns 401
-# (auth-token gate), gracefully falls through to the normal spawn flow.
+# v7 (Agent SS-A 2026-05-19): Resume-from-cycle-point feature REMOVED in v14
+# (test 2026-05-21) per operator directive: "remove resume from cycle point
+# option". The new Resume objective (Q2 #1) handles last-session resume
+# natively; the cycle-point flow was redundant + RKOJ-dependent.
 $ResumedFromCycle = $false
-if ($Mode -ne 'scaffold' -and $Project -ne '__custom__' -and -not $Fast) {
-    Say ''
-    Write-Host '  Resume from a cycle point? ' -NoNewline -ForegroundColor $White
-    Write-Host '[Y/N, default=N]' -ForegroundColor $LightP
-    $cpAns = Read-HostTimeout '       choice' 60
-    if ($cpAns -match '^[Yy]') {
-        try {
-            $cpList = Invoke-RestMethod -Uri 'http://127.0.0.1:5077/api/cycle-points' -TimeoutSec 2 -ErrorAction Stop
-            $cpItems = @()
-            if ($cpList -is [array]) { $cpItems = $cpList }
-            elseif ($cpList.cycle_points) { $cpItems = @($cpList.cycle_points) }
-            elseif ($cpList.items) { $cpItems = @($cpList.items) }
-            if ($cpItems.Count -eq 0) {
-                Say "  [!] no cycle points registered yet (use RKOJ Agents tab -> Cycle points -> [+ NEW])." $Warn
-            } else {
-                Say ''
-                for ($ci = 0; $ci -lt $cpItems.Count; $ci++) {
-                    $cp = $cpItems[$ci]
-                    $cpSlug = if ($cp.slug) { $cp.slug } else { $cp.id }
-                    $cpName = if ($cp.name) { $cp.name } else { $cpSlug }
-                    $cpProj = if ($cp.project) { $cp.project } else { '?' }
-                    Write-Host ("    {0}) {1,-30} project={2}" -f ($ci + 1), $cpName, $cpProj) -ForegroundColor $White
-                }
-                Say ''
-                $cpPick = Read-HostTimeout "  cycle point [1-$($cpItems.Count), Enter=skip]" 60
-                if ($cpPick -match '^\d+$') {
-                    $cpi = [int]$cpPick - 1
-                    if ($cpi -ge 0 -and $cpi -lt $cpItems.Count) {
-                        $chosenCp = $cpItems[$cpi]
-                        $chosenSlug = if ($chosenCp.slug) { $chosenCp.slug } else { $chosenCp.id }
-                        try {
-                            $resumeResp = Invoke-RestMethod -Uri "http://127.0.0.1:5077/api/cycle-points/$chosenSlug/resume" -Method Post -TimeoutSec 5 -ErrorAction Stop
-                            Say "  [OK] cycle point '$chosenSlug' resumed via RKOJ - launcher exiting (RKOJ handles spawn)." $Glow
-                            $ResumedFromCycle = $true
-                        } catch {
-                            Say "  [FAIL] resume endpoint errored: $($_.Exception.Message). Continuing normal spawn." $Warn
-                        }
-                    }
-                }
-            }
-        } catch {
-            $msg = "$($_.Exception.Message)"
-            if ($msg -match '401') { Say "  [!] RKOJ requires auth token for cycle-points API. Continuing normal spawn." $Warn }
-            else { Say "  [!] RKOJ offline or unreachable - continuing normal spawn." $Warn }
-        }
-    }
-}
 if ($ResumedFromCycle) {
     Start-Sleep -Seconds 2
     exit 0
@@ -1800,13 +1832,10 @@ Sanctum-Rule
 Say ''
 Pause-Beat 200
 
-Say ('  ' + ('-' * 74)) $LightP
-Say '  >>>  Open Claude Code + Ctrl+V the phrase below  <<<' $White
-Say ('  ' + ('-' * 74)) $LightP
-Say ''
-Say '  Phrase preview:' $Dim
-Write-Host "    `"$phrase`"" -ForegroundColor $Accent
-Say ''
+# v14 (test 2026-05-21): "Open Claude Code + Ctrl+V" banner REMOVED per
+# operator: "remove this as its automatic". The launcher auto-spawns git-bash
+# + Claude with the phrase pre-pasted - no manual paste needed.
+
 
 # ============================================================
 # OPEN NOTEPAD (optional)

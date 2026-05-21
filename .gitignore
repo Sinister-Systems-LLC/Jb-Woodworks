@@ -171,3 +171,11 @@ _shared-memory/external-imports/*/.npmrc
 _shared-memory/external-imports/*/.editorconfig
 _shared-memory/external-imports/*/.prettierrc*
 _shared-memory/external-imports/*/.eslintrc*
+
+# Per-operator local-only scratch dirs (see docs/MULTI-OPERATOR-COLLABORATION.md)
+projects/*/me/scratch/*
+!projects/*/me/scratch/.gitkeep
+projects/*/eleno/scratch/*
+!projects/*/eleno/scratch/.gitkeep
+projects/*/me/.env.local
+projects/*/eleno/.env.local
