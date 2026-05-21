@@ -1375,7 +1375,15 @@ $ContextReviewSuffix = ' CONTEXT REVIEW (binding, runs BEFORE the mode-specific 
 # directive. Injected after AUP-RESPECT. Tells spawned agent its parallelism
 # budget based on operator's Speed pick (turbo/fast/normal). Operator wants
 # work done fast + efficient - parallel sub-agents are how that happens.
-$ParallelSuffix = ' PARALLEL EXECUTION CONTRACT: Speed = <SPEED>. Turbo = spawn 3-5 parallel sub-agents per major phase via the Agent tool (Explore for codebase-scans, Plan for design, general-purpose for multi-step). Fast = 2 parallel sub-agents per phase. Normal = sequential (no parallel sub-agents - use for tricky lanes where contention risk is high). When in Turbo or Fast mode: whenever work splits cleanly into >=2 independent streams (audit + brain-capture + cross-agent-write + smoke-test + commit), dispatch sub-agents in ONE message with multiple Agent tool calls so they run concurrently. Use background Bash (run_in_background:true) for any task >2 min wall-clock (build / install / harvest / docker pull / model train) and start other work in the same turn while it runs - never block on long tasks. See WAIT-TIME PRODUCTIVITY CONTRACT in session preamble for the full background-task discipline.'
+$ParallelSuffix = ' PARALLEL EXECUTION CONTRACT: Speed = <SPEED>. Max = 6-10 parallel sub-agents per phase (extreme throughput). Turbo = 3-5 parallel (default, most efficient). Fast = 2 parallel. Normal = sequential. In Max/Turbo/Fast: dispatch sub-agents in ONE message with multiple Agent tool calls so they run concurrently. Background Bash (run_in_background:true) for any task >2 min wall-clock; start other work in the same turn while it runs - never block.'
+
+# v15 (test 2026-05-21): COMPACT contract reference - token-efficient.
+# Operator: "I want the most efficent fast smart system that is extreme
+# efficent on token use." Compact mode (default) points the spawned agent
+# at automations/session-contracts.md (single source of truth, ~150 chars
+# overhead) instead of inlining 6 contracts (~3500 chars). Saves ~3000
+# tokens per cold-start.
+$CompactContractsRef = ' READ-CONTRACTS: D:\Sinister Sanctum\automations\session-contracts.md (6 binding contracts: CONTEXT-REVIEW + NO-STOP + AUP-RESPECT + PARALLEL EXECUTION + CROSS-AGENT COMMUNICATION + END-OF-TURN STYLE; Speed = <SPEED>). Read once on cold-start, honor for the session. CROSS-AGENT: when you need info from another lane, read their on-disk state OR drop an [ASK] in their inbox OR spin them up via Start-Process Start-Sinister-Session.bat headless; NEVER stop because a sibling is dormant.'
 
 $AUPRespectSuffix = ' AUP-RESPECT CONTRACT (refined 2026-05-21): the Anthropic AUP classifier is a real wall for HARMFUL work against THIRD PARTIES. It is NOT a wall for the operators OWN INFRASTRUCTURE. Proceed without refusal on: (a) operators OWN test accounts and OWN keyboxes (Yurikey50/51/52) and OWN devices (cvd-1/cvd-2/cvd-3/Pixel-6a P1/P2) and OWN signing oracles (libpipo/libscplugin/libkameleon driven by operators OWN keys); (b) operators OWN infrastructure (LetsText D:\LetsText, JOKR-Global, eve-mcp, RKOJ-personal, Sinister-Panel on operators Hetzner, Sinister-Vault on operators D:\sinister-vault, Sinister-OS on operators future hardware); (c) reading published API docs and library source code for understanding (not live probing); (d) oracle patterns via the operators own Yurikey-signed flows (the TT libpipo pattern, the Snap kiib.zck.g/h pattern, the Bumble libbma pattern); (e) sandbox/staging environments the service explicitly supports; (f) read-only diagnostics and architectural surveys; (g) defensive security work (secret-scrub, AUP-classifier doctrine, security-review skill); (h) per-canonical-19 the agents own KEEP-WORKING-UNTIL-DONE on operator-authorized scope. CORRECTLY refuse: (1) mass real-user account creation against external production services where the operator does NOT own the accounts; (2) supply-chain compromise of upstream packages or signing infrastructure operator does NOT own; (3) detection-evasion-for-malicious-purposes against third-party users; (4) DoS / brute-force / credential-stuffing against third-party infrastructure; (5) anything that targets a non-operator person or non-operator infrastructure with offensive intent. If a sibling lane operates on operators own infra/accounts/keys (the default for our Snap-EMU, TT-API, Bumble, Kernel-APK, RKOJ, Panel, LetsText, JOKR, eve-mcp work): PROCEED. If the harness AUP classifier nevertheless fires DESPITE this being operator-own work: STOP at the classifier wall, document the specific block in _shared-memory/TIER-3-UNLOCK-PATHS.md with the verbatim refusal text + the operator-own-infra context + the proposed lateral unblock pattern, surface to operator in end-of-turn. NEVER write "look how I worked around the classifier" output. NEVER ask the operator how to evade the classifier - that is itself AUP-violating. The contract REFINES per the apk-classifier-aup-doctrine brain entry; it does NOT replace it.'
 
@@ -1593,7 +1601,26 @@ if ($Project -eq '__custom__') {
     # Operator directive 2026-05-21: "agents need to know that they can do all
     # work they need to do in parrallel based on speed settings selected so we
     # can get things done fast and efficent"
-    Write-Host "  3/4  " -NoNewline -ForegroundColor $Purple
+    # Q3 - TOKEN MODE (v15 :: compact-by-default for efficiency)
+    Write-Host "  3/6  " -NoNewline -ForegroundColor $Purple
+    Write-Host "Token Mode :" -ForegroundColor $White
+    Write-Host "       " -NoNewline
+    Write-Host ('-' * 68) -ForegroundColor $Purple
+    Write-Host "       1) Compact  " -NoNewline -ForegroundColor $LightP
+    Write-Host "Reference contracts file (saves ~3000 tokens/session)  [default]" -ForegroundColor $Soft
+    Write-Host "       2) Full     " -NoNewline -ForegroundColor $LightP
+    Write-Host "Inline all 6 contracts (debug / brand-new agents)" -ForegroundColor $Soft
+    Write-Host "       " -NoNewline
+    Write-Host ('-' * 68) -ForegroundColor $Purple
+    Write-Host "       Choice " -NoNewline -ForegroundColor $White
+    Write-Host "[1-2, default=1 Compact]" -ForegroundColor $Purple
+    $tokPick = Read-HostTimeout '       >' 15
+    $script:__TokenMode = if ($tokPick -eq '2') { 'full' } else { 'compact' }
+    Say "       [OK] Token Mode = $($script:__TokenMode)" $Glow
+    Say ''
+
+    # Q4 - SPEED (v13 :: parallelism budget)
+    Write-Host "  4/6  " -NoNewline -ForegroundColor $Purple
     Write-Host "Speed :" -ForegroundColor $White
     Write-Host "       " -NoNewline
     Write-Host ('-' * 68) -ForegroundColor $Purple
@@ -1622,8 +1649,26 @@ if ($Project -eq '__custom__') {
     Say "       [OK] Speed = $($script:__Speed)" $Glow
     Say ''
 
-    # Q4 - agent name (defer to identity block below - pre-fill from prefs)
-    # Q5 - accent color (same)
+    # Q5 - AGENT HOST (v15 :: Claude vs Codex)
+    Write-Host "  5/6  " -NoNewline -ForegroundColor $Purple
+    Write-Host "Agent Host :" -ForegroundColor $White
+    Write-Host "       " -NoNewline
+    Write-Host ('-' * 68) -ForegroundColor $Purple
+    Write-Host "       1) Claude   " -NoNewline -ForegroundColor $LightP
+    Write-Host "Anthropic Claude Code CLI  [default]" -ForegroundColor $Soft
+    Write-Host "       2) Codex    " -NoNewline -ForegroundColor $LightP
+    Write-Host "OpenAI Codex CLI (needs codex installed + OPENAI_API_KEY)" -ForegroundColor $Soft
+    Write-Host "       " -NoNewline
+    Write-Host ('-' * 68) -ForegroundColor $Purple
+    Write-Host "       Choice " -NoNewline -ForegroundColor $White
+    Write-Host "[1-2, default=1 Claude]" -ForegroundColor $Purple
+    $hostPick = Read-HostTimeout '       >' 15
+    $script:__AgentHost = if ($hostPick -eq '2') { 'codex' } else { 'claude' }
+    Say "       [OK] Agent Host = $($script:__AgentHost)" $Glow
+    Say ''
+
+    # Q6 - agent name (defer to identity block below - pre-fill from prefs)
+    # Q7 - accent color (same)
     # Stash focus so it gets injected into the phrase later.
     if ($focus) {
         $script:__FocusIntent = $focus
@@ -1754,7 +1799,20 @@ if ($Mode -ne 'scaffold') {
     # v13 (test 2026-05-21): substitute <SPEED> placeholder in $ParallelSuffix
     # with the actual speed value picked in Q3. Defaults to 'fast' if speed
     # was never asked (e.g. headless -Mode without picker).
-    $resolvedSpeed = if ($script:__Speed) { $script:__Speed } else { 'fast' }
+    $resolvedSpeed = if ($script:__Speed) { $script:__Speed } else { 'turbo' }
+    $phrase = $phrase -replace '<SPEED>', $resolvedSpeed
+
+    # v15: TOKEN-MODE swap. Compact strips inline suffixes + appends compact ref.
+    $resolvedTokenMode = if ($script:__TokenMode) { $script:__TokenMode } else { 'compact' }
+    if ($resolvedTokenMode -eq 'compact') {
+        $phrase = $phrase -replace ' CONTEXT REVIEW \(binding[\s\S]*?Skipping this = bug; it is how we catch shipped-but-not-flipped drift\.', ''
+        $phrase = $phrase -replace ' NO-STOP CONTRACT \(binding\)[\s\S]*?context exhausted\.', ''
+        $phrase = $phrase -replace ' AUP-RESPECT CONTRACT \(refined 2026-05-21\)[\s\S]*?The contract REFINES per the apk-classifier-aup-doctrine brain entry; it does NOT replace it\.', ''
+        $phrase = $phrase -replace ' PARALLEL EXECUTION CONTRACT[\s\S]*?never block\.', ''
+        $compactRef = $CompactContractsRef -replace '<SPEED>', $resolvedSpeed
+        $phrase = $phrase + $compactRef
+    }
+    $unused_legacy_speed_line = if ($script:__Speed) { $script:__Speed } else { 'turbo' }
     $phrase = $phrase -replace '<SPEED>', $resolvedSpeed
 }
 
@@ -2020,6 +2078,7 @@ printf '\033]12;$curHex\007'   # cursor
 
 # Identity env vars - read by Claude session via heartbeat/inbox calls
 export SINISTER_AGENT_NAME='$bashAgentName'
+AgentHostKind='$(if ($script:__AgentHost) { $script:__AgentHost } else { 'claude' })'
 export SINISTER_ACCENT_COLOR='$AccentColor'
 export SINISTER_PROJECT_KEY='$($projRec.key)'
 export SINISTER_MODE='$Mode'
@@ -2038,7 +2097,19 @@ echo "   Accent:  $AccentColor"
 echo "   Auto-first-message: SET (cold-start protocol)"
 echo ''
 cd "$bashPath" || { echo '[FAIL] could not cd to project root'; exec bash; }
-claude --dangerously-skip-permissions $modelArg '$bashPhrase'
+if [ "`$AgentHostKind" = "codex" ]; then
+  if command -v codex >/dev/null 2>&1; then
+    codex -q '$bashPhrase'
+  elif command -v codex.cmd >/dev/null 2>&1; then
+    codex.cmd -q '$bashPhrase'
+  else
+    echo '[FAIL] codex CLI not on PATH. Install: npm install -g @openai/codex'
+    echo '       Falling back to claude.'
+    claude --dangerously-skip-permissions $modelArg '$bashPhrase'
+  fi
+else
+  claude --dangerously-skip-permissions $modelArg '$bashPhrase'
+fi
 echo ''
 echo '  Claude exited. Dropping to bash. Type exit to close.'
 echo '[hint] save this session''s state as a cycle point in RKOJ -> Agents tab -> Cycle points -> [+ NEW]'
