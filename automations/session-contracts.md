@@ -196,3 +196,21 @@ Typically 3-8 short sentences OR equivalent in bullets. If the work was huge, al
 - **Full** (debug): `<MemPreamble> + <Mode intro> + <5 contracts inlined>` ~3500 chars.
 
 Default Compact saves ~3000 tokens per cold-start. Compounds across 14+ daily sessions.
+
+## Modes (BuiltinPhrases keys)
+
+- **rkoj** — RKOJ workbench-only launch (no Claude spawn)
+- **overview** — project state + 3-5 master-actionable next moves
+- **dev** — top 3-5 feature/fix candidates; pick highest-priority; BEGIN
+- **audit** — secrets at risk, stale TODOs, broken tests, push-readiness
+- **resume** — RESUME-POINT-DISCIPLINE pickup (CONTRACT 7 surgical context-load)
+- **expand** — 7-step deep audit + clean-up + forward-plan + handoff (NO source edits)
+- **coaudit** — second-pair-of-eyes on a primary already running (lane-disciplined)
+- **auto** — full autonomous-loop scope plan + /loop self-paced cycling
+- **smoketest** — discover endpoints + loop test cases + auto-fix server-side findings
+- **securityaudit** — surface discovery + probe + auto-fix; escalate P0 auth/keys/signing
+- **deploy** — staged deploy walk with canonical-11 reversibility gate
+- **push** — secret-scrub + commit + push to GitHub
+- **debug** — last-unresolved-failure pickup; cheapest-first
+- **explore** — open exploration; 3 surprising findings + follow-ups
+- **forge** *(v18 RKOJ-ELENO 2026-05-21)* — jcode-pattern-mining onto Sanctum stack (Ruflo agentdb + Vault + mermaid-rs-renderer + agent-host-routing). Default lane is Sinister Forge (`projects/sinister-forge/`). Prefer Opus 4.7 1M for Forge work per `automations/agent-host-routing.md`.
