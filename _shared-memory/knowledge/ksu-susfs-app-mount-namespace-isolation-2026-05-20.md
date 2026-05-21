@@ -65,11 +65,35 @@ Per kernel-apk PROGRESS 2026-05-21T13:40Z catch-up — P2 stash `/data/adb/sinis
 | sanctum | master orchestrator; ships no on-device APK | **Not affected** (ACK 2026-05-21T14:10Z) |
 | library-of-alexandria | non-APK consumer | Ignore |
 
-## ShellRunner-level enforcement (recommended)
+## ShellRunner architecture — `runSu` vs `runSuFresh`
 
-For belt-and-suspenders, `ShellRunner.runSu(cmd)` could auto-prepend `su -M -c` to every invocation, eliminating the per-call discipline requirement. Risk: some commands explicitly want non-mount-master semantics. Decision: leave per-call discipline + rely on code review + grep audit.
+**Correction (2026-05-21T18:5xZ kernel-apk audit):** the codebase already encodes the `-M` discipline at API level, NOT per-caller. v0.96.77 introduced the split:
 
-`grep -rn "ShellRunner.runSu" src/ | grep -v "su -M"` is a useful pre-commit audit query.
+- **`ShellRunner.runSu(cmd)`** — plain `su -c "$cmd"` (app namespace). Intentional. Carries am-broadcast / pm / Luke-IPC traffic that needs LukeShield's per-app IPC sockets visible only from the app's namespace. v0.96.76's blanket `-M` broke LukeShield broadcasts (`SinisterSuShell: command timed out after 10000ms: am broadcast -W -n com.luke.shield4.debug/...`).
+- **`ShellRunner.runSuFresh(cmd)`** — `su -M -c "$cmd"` (mount-master namespace). For cross-app data reads. Skips the v0.46 persistent SuShell cache (every call is a fresh `su` exec).
+- **`ShellRunner.rootReadFileBytes(path, ...)` / `rootReadFileText(path, ...)`** — high-level wrapper around `runSuFresh` with multi-strategy file read (cp-to-tmp + java.io.File for the Luke-hook bypass, fallback to dd/cat/head with base64). This is the canonical surface for reading any foreign-app data.
+
+### The correct audit pattern
+
+NOT: `grep "ShellRunner.runSu" | grep -v "su -M"` — over-broad; flags legitimate IPC-namespace `runSu` calls.
+
+YES: audit any call site that reads a foreign-app data dir AND uses `runSu` instead of `runSuFresh` / `rootReadFileBytes` / `rootReadFileText`:
+
+```bash
+# Find shell strings that read foreign-app data dirs
+grep -rn "/data/data/com\.\(snapchat\|zhiliaoapp\|bumble\)\|/data/user/0/com\." src/ \
+  | grep -v "runSuFresh\|rootReadFile"
+```
+
+Any hit is suspect: the call MUST go through `runSuFresh` or `rootReadFile*` to traverse the mount-master namespace. Plain `runSu` will silently return empty under SUSFS overlay.
+
+### Why two APIs (not blanket `-M`)
+
+- `runSu` paths that hit LukeShield IPC, `am broadcast`, `pm install/uninstall`, `cmd settings`, `setprop` etc. need the app namespace to reach Luke's per-app sockets and Android's framework-side broadcast bus.
+- `runSuFresh` paths read foreign-app data via the kernel-level mount-master view.
+- A single blanket-`-M` API would correctly read foreign data but silently break the IPC paths. The empirical regression (v0.96.76) caused operator-visible breakage; v0.96.77 reverted + split the API.
+
+This is the right architectural shape — the `-M` decision is API-level, not per-call-site. Code-review focuses on "are you reading foreign-app data? then use `runSuFresh` / `rootReadFile*`" rather than "did you remember `-M`?"
 
 ## Anti-patterns
 
