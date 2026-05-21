@@ -4,6 +4,50 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-21 14:15 — sibling-shipped tools/sinister-usage/ v0.1.0 verified + matrix row 1c + agent-host-routing per-provider posture + Kernel-APK ACK
+
+Resume-mode pickup on `agent/sinister-sanctum/cli-dispatcher-2026-05-21` (turbo, compact). Pre-warm reads loaded surgically per CONTRACT 7 — PROGRESS top + last plan + session-contracts. Then surveyed inbox (3 prior hello-acks already archived) + 2 fresh Kernel-APK broadcasts (1340Z su -M, 1345Z modular-fleet directive).
+
+**Hit the multi-agent contention pattern hard this turn.** A sibling EVE sanctum window was editing `tools/sinister-usage/` in real-time while I was working in the same directory. My initial `ls -lR` snapshot showed only the partial scaffold (`pyproject.toml + __init__.py + api.py + endpoints.py + estimator.py + sources.py`); my first Write tool calls for `__main__.py` / README / `tests/test_usage.py` reported "File has not been read yet" but the files appeared on disk before I could retry — sibling had landed them. Three subsequent Edit attempts on the same files failed with "File has been modified since read". Each re-read showed a richer version than the prior snapshot. Final state: sibling shipped a full `list/check/check-all/local/today/estimate/doctor/matrix` CLI surface plus 31 unittests (vs. my draft's 18-test surface).
+
+**Pivot per multi-agent-branch-contention-isolation-pattern doctrine:** stop trying to overwrite sibling's work; verify their ship is green; add complementary work that the sibling did NOT do.
+
+**What I shipped this turn (after pivoting):**
+
+1. **Verified `tools/sinister-usage/` v0.1.0** — `pip install -e tools/sinister-usage` succeeds, `python -m unittest discover` returns `31/31 OK in 1.316s`, `python -m sinister_usage doctor --no-state-ok` returns 7/7 OK, `python -m sinister_usage today --claude-dir /tmp/nonexistent` returns a clean summary with the canonical caveat string. Smoke-clean.
+2. **`_shared-memory/knowledge/jcode-feature-matrix.md`** — sibling added row 1c but kept the "29 rows" subtitle stale; bumped to "30 rows — expanded 2026-05-21T14:10Z with sinister-usage shipped". Row 1c notes reflect the extended `local/today/estimate/doctor` surface + 31 unittests.
+3. **`automations/agent-host-routing.md`** — added the **Per-provider routing posture (added 2026-05-21T14:10Z post sinister-usage ship)** section. New table mirrors the task-class table from the provider's perspective for all 11 wallet entries, with a Quota-visibility column tying each row back to `sinister-usage check <slug>`. Includes dispatcher pseudocode showing how to compose `sinister_login.status_all()` + `sinister_usage.check()` at task-dispatch time. v0.2.0 promotion path (real quota → `[QUOTA-LOW]` chip in Forge picker Q4 + Term toolbar) documented.
+4. **`_shared-memory/cross-agent/2026-05-21T1410Z-sanctum-to-kernel-apk-ack-su-M-broadcast.md`** — combined ACK for KAPK's two 13:40Z + 13:45Z broadcasts. Answer to su -M: Sanctum ships no on-device APK, not affected. Answer to "what is Sinister Term?": confirmed-by-prior-operator-sessions terminal shell at `projects/sinister-term/source/term/`. Absorbed the modular-fleet directive as standing rule (Sanctum lane already operates under all 6 rules).
+5. **`_shared-memory/heartbeats/sanctum.json`** — refreshed to current focus.
+
+**Lane discipline (per multi-agent-branch-contention-isolation-pattern):**
+- Zero edits to `projects/sinister-forge/`, `projects/sinister-term/`, Kernel-APK / Panel PROGRESS or cross-agent files, sibling-touched session-templates.
+- Accepted sibling-shipped CLI surface for sinister-usage as-is rather than overwriting (their version is broader than mine would've been). Stopped attempting Edits after the third "File modified since read" — pivoted to complementary work (matrix row notes refresh + agent-host-routing extension) in different files.
+- The `.sanctum-staging-2026-05-21/review-*.py` drafts from prior turns still on disk — left untouched per "stale work from prior turns" out-of-scope rule.
+
+**Authorship + EVE persona:** new file (the cross-agent ACK) carries `Author: RKOJ-ELENO :: 2026-05-21T14:10Z (EVE persona on Sinister Sanctum lane)`. Edits to existing files preserve existing authorship lines per the canonical "Existing files keep their existing authorship lines for historical accuracy".
+
+**5-check completion gate:**
+1. Explicit ask (operator: "Start the loop") → addressed via CONTRACT 2 cycle (resume-point read → context survey → in-flight ship verify → complementary work → cross-agent reply → PROGRESS + resume-point + commit).
+2. TaskList — 6/6 (triage / verify / matrix-row / KAPK-ACK / agent-host-routing / PROGRESS-commit-resume).
+3. PROGRESS — this entry.
+4. MASTER-PLAN — no flags to flip (doesn't yet exist on disk).
+5. Next-slice surface — resume-point write follows this commit; pre_warm_reads bounded to PROGRESS-top + jcode-feature-matrix + session-contracts + agent-host-routing.
+
+**Open / next-up for next master cycle** (no operator gates blocking):
+- `tools/sinister-serve/` (background daemon `jcode serve` parity — still unbuilt; high contention risk if sibling claims it).
+- `tools/sinister-replay/` (session replay incl. video export — heavier lift).
+- Forge/Term consumption of `sinister-usage check` for Q4 picker chip + toolbar quota-visibility chip.
+- v0.2.0 of sinister-usage: `report` subcommand behind `--allow-network` once operator opens the network gate.
+
+**Operator surface (no action gates blocking the loop):**
+- ANTHROPIC_API_KEY / SINISTER_VAULT_PASSPHRASE env vars still listed in OPERATOR-ACTION-QUEUE.md — unblocks Scribe/Curator/Chatbot and vault-MCP for sinister-login v0.2.0.
+- Yurikey52 sourcing, PI 0/3 phones, LICENSE pick, gh-auth-refresh, Ollama-model-pulls, Sinister-OS hardware buys — all unchanged from prior session.
+
+---
+
+
+
 ## 2026-05-21 14:02 — shipped: 06bcc46 closure — EVE brain entry on disk + .gitignore harness adds + tools/_INDEX backfill + wayward-Forge surface
 
 Resume-via-Forge spawn (mode=resume, turbo, compact). Commit `06bcc46` landed three of my unique adds at HEAD plus four hitchhikers the sibling sanctum staged at the same moment (lock-race during `git add`). Captured under one commit message anyway — net effect is a clean 281-line addition.
