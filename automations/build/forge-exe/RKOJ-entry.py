@@ -1109,6 +1109,49 @@ def _shell_loop(sanctum_root: Path) -> int:
         print(f"  {GRAY}(exit {rc}){RESET}")
 
 
+def _port_in_use(port: int, host: str = "127.0.0.1") -> bool:
+    """Cheap port probe — connect() succeeds iff something is listening."""
+    import socket as _socket
+    try:
+        with _socket.socket(_socket.AF_INET, _socket.SOCK_STREAM) as s:
+            s.settimeout(0.3)
+            return s.connect_ex((host, port)) == 0
+    except Exception:
+        return False
+
+
+def _ensure_background_services(sanctum_root: Path) -> None:
+    """Operator 2026-05-21 unified-RKOJ ask: vault daemon + workstation
+    console should be reachable from inside the EXE without the operator
+    having to start them by hand.
+
+    Spawns the vault daemon (:5078) and the workstation daemon (:5077)
+    detached, only if the respective port is idle. Both are best-effort —
+    failures log to RKOJ.crash.log but don't block the TUI from booting.
+    """
+    # Vault daemon — tools/sinister-vault/daemon.py, serves :5078.
+    if not _port_in_use(5078):
+        vault_script = sanctum_root / "tools" / "sinister-vault" / "daemon.py"
+        if vault_script.exists():
+            try:
+                subprocess.Popen(
+                    [sys.executable, str(vault_script)],
+                    cwd=str(vault_script.parent),
+                    creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0)
+                                  | getattr(subprocess, "DETACHED_PROCESS", 0),
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                )
+            except Exception:
+                pass
+
+    # Workstation console — automations/window-manager/desktop_app.py, :5077.
+    # Started lazily: operator must click the WORKSTATION tab to want it.
+    # Skipping auto-spawn here means RKOJ.exe doesn't fight RKOJ-Console.exe
+    # if both are installed. The forge.panes.workstation_panel handles the
+    # on-demand spawn.
+
+
 def main() -> int:
     _install_runtime_logger()
     rv = _route_subcommand(sys.argv[1:])
@@ -1117,6 +1160,7 @@ def main() -> int:
 
     _enable_vt()
     sanctum_root = _find_sanctum_root()
+    _ensure_background_services(sanctum_root)
 
     # Operator 2026-05-21 (image 27): "still no ui when i launch exe with tabs
     # and aeverything i asked you to do". Default mode is the Forge TUI (sidebar

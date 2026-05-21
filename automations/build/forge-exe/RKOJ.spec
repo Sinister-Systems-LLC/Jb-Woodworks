@@ -27,6 +27,16 @@ from PyInstaller.utils.hooks import (
 forge_subs = collect_submodules("forge")
 forge_data = collect_data_files("forge", include_py_files=False)
 
+# Sinister Term — import-name `term`, installed via
+# projects/sinister-term/source/pyproject.toml (sinister_term egg-info).
+# Operator 2026-05-21 (unified-RKOJ ask): Term is part of the EXE bundle.
+try:
+    term_subs = collect_submodules("term")
+    term_data = collect_data_files("term", include_py_files=False)
+except Exception:
+    term_subs = []
+    term_data = []
+
 sinister_packages = (
     "sinister_cli",
     "sinister_login",
@@ -71,6 +81,16 @@ try:
 except Exception:
     anthropic_subs = []
     anthropic_data = []
+
+# `mcp` Python SDK — Model Context Protocol client. Operator 2026-05-21
+# wants the EXE to speak to the 7+ MCP servers in ~/.claude/.mcp.json
+# (eve, sinister-panel, sinister-snap, sinister-tiktok, vault, ruflo, ...).
+try:
+    mcp_subs = collect_submodules("mcp")
+    mcp_data = collect_data_files("mcp", include_py_files=False)
+except Exception:
+    mcp_subs = []
+    mcp_data = []
 try:
     httpx_subs = collect_submodules("httpx")
     httpcore_subs = collect_submodules("httpcore")
@@ -138,6 +158,7 @@ stdlib_hidden = [
 
 hiddenimports = (
     forge_subs
+    + term_subs
     + sinister_subs
     + textual_subs
     + rich_subs
@@ -145,6 +166,7 @@ hiddenimports = (
     + watchdog_subs
     + flask_subs
     + anthropic_subs
+    + mcp_subs
     + httpx_subs
     + httpcore_subs
     + pydantic_subs
@@ -159,7 +181,27 @@ hiddenimports = (
     + ["yaml", "pyyaml", "_yaml"]
 )
 
-datas = forge_data + sinister_data + textual_data + rich_data + anthropic_data
+datas = (
+    forge_data
+    + term_data
+    + sinister_data
+    + textual_data
+    + rich_data
+    + anthropic_data
+    + mcp_data
+)
+
+# Skills bundle — operator 2026-05-21: "all the skills we ahve made" must
+# ship inside the EXE. SkillRegistry (forge/skills.py) reads
+# ~/.sinister/skills/ at runtime; this bundle adds the in-tree `skills/`
+# directory as a fallback read-path so candidate skills (sk-swarm-coord,
+# sk-vector-memory, sk-federation, sk-observability, sk-aidefence,
+# dashboard-skeleton) ship inside the binary even if the operator hasn't
+# synced ~/.sinister/skills/.
+import os as _os
+_SKILLS_SRC = r"D:\Sinister Sanctum\skills"
+if _os.path.isdir(_SKILLS_SRC):
+    datas.append((_SKILLS_SRC, "skills"))
 
 binaries = []
 # Textual uses some compiled bits on Windows; pull them via collect_dynamic_libs
@@ -176,10 +218,11 @@ block_cipher = None
 a = Analysis(
     ["RKOJ-entry.py"],
     pathex=[
-        # Make Forge + sinister-X discoverable to the analyzer even though
-        # they're already installed (editable installs sometimes confuse the
-        # collector).
+        # Make Forge + Term + sinister-X discoverable to the analyzer even
+        # though they're already installed (editable installs sometimes
+        # confuse the collector).
         r"D:\Sinister Sanctum\projects\sinister-forge\source",
+        r"D:\Sinister Sanctum\projects\sinister-term\source",
         r"D:\Sinister Sanctum\tools\sinister-cli",
         r"D:\Sinister Sanctum\tools\sinister-login",
         r"D:\Sinister Sanctum\tools\sinister-usage",

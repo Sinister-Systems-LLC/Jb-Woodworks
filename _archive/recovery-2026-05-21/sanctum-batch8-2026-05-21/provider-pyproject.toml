@@ -1,0 +1,25 @@
+# Sinister Sanctum :: sinister-provider
+# Author: RKOJ-ELENO :: 2026-05-21
+# License: AGPL-3.0-or-later
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sinister-provider"
+version = "0.1.0"
+description = "Sinister Sanctum :: provider list/current/add (jcode provider parity). Light wrapper around sinister-login."
+authors = [{ name = "RKOJ-ELENO" }]
+license = { text = "AGPL-3.0-or-later" }
+requires-python = ">=3.9"
+readme = "README.md"
+
+dependencies = ["sinister-login>=0.1.0"]
+
+[project.scripts]
+sinister-provider = "sinister_provider.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["sinister_provider*"]

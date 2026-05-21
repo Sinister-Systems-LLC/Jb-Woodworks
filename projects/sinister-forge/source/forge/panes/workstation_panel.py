@@ -3,11 +3,15 @@
 # License: AGPL-3.0-or-later
 #
 # Operator 2026-05-21: *"still no ui and rkoj workstation thing i asked for"*.
-# Read-only stub surfacing the workstation console location + launch instruction.
-# Activated when the operator clicks the WORKSTATION sidebar tab.
+# Then 2026-05-21 ~18:00 (verbatim): *"we are working on rkoj exe not fucking
+# bat ... we are combingin all thigns we have been working on rkoj workstation,
+# jcode, all the skills we ahve made, mcp, our new console system"* — so the
+# panel now actually LAUNCHES the workstation daemon (if port :5077 is idle)
+# instead of only pointing at it.
 
 from __future__ import annotations
 
+import socket
 import subprocess
 import webbrowser
 from pathlib import Path
@@ -22,9 +26,23 @@ from forge.theme import (
 )
 
 
+# Path FIX 2026-05-21: was r"D:/Sinister/Sanctum/automations/window-manager"
+# (extra slash splitting "Sinister Sanctum" into two segments). The real path
+# is "D:/Sinister Sanctum/automations/window-manager".
 WORKSTATION_DIR = Path(r"D:/Sinister Sanctum/automations/window-manager")
 RKOJ_EXE_HINT = WORKSTATION_DIR / "dist" / "RKOJ.exe"
+DAEMON_SCRIPT = WORKSTATION_DIR / "desktop_app.py"
 RKOJ_URL = "http://127.0.0.1:5077/"
+
+
+def _port_in_use(port: int = 5077, host: str = "127.0.0.1") -> bool:
+    """Cheap port check — connect() succeeds iff something is listening."""
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.settimeout(0.5)
+            return s.connect_ex((host, port)) == 0
+    except Exception:
+        return False
 
 
 class WorkstationPanel(Vertical):
@@ -79,7 +97,8 @@ class WorkstationPanel(Vertical):
             f"Web UI (when RKOJ daemon is running):\n"
             f"  [bold]{RKOJ_URL}[/]\n\n"
             f"Launch [bold]RKOJ.exe workstation[/] from a terminal to run it, "
-            f"or click the buttons below."
+            f"or click the buttons below. This view stays inside the Agents tab "
+            f"so the UI chrome remains around the console."
         )
         yield Static(body, id="ws-body")
         yield Static(
@@ -92,22 +111,52 @@ class WorkstationPanel(Vertical):
     def on_button_pressed(self, event) -> None:
         bid = event.button.id
         if bid == "ws-btn-browser":
+            # Auto-spawn daemon if port :5077 idle BEFORE opening the browser,
+            # so the operator clicks ONE button instead of two.
+            if not _port_in_use(5077):
+                self._spawn_daemon()
             webbrowser.open(RKOJ_URL)
             self.app.notify(f"opened {RKOJ_URL}", timeout=3)
             return
         if bid == "ws-btn-launch":
-            if not RKOJ_EXE_HINT.exists():
-                self.app.notify(
-                    f"RKOJ.exe not built — see {WORKSTATION_DIR}",
-                    severity="warning",
-                    timeout=5,
-                )
+            # Prefer the in-tree daemon script over the dist EXE — the daemon
+            # is what serves :5077 + pywebview UI. The dist EXE is the Forge
+            # TUI build, not the workstation daemon.
+            if DAEMON_SCRIPT.exists():
+                self._spawn_daemon()
                 return
-            try:
-                subprocess.Popen(
-                    [str(RKOJ_EXE_HINT), "workstation"],
-                    creationflags=getattr(subprocess, "CREATE_NEW_CONSOLE", 0),
-                )
-                self.app.notify("launched RKOJ.exe workstation", timeout=4)
-            except Exception as e:
-                self.app.notify(f"launch failed: {e}", severity="error", timeout=5)
+            if RKOJ_EXE_HINT.exists():
+                try:
+                    subprocess.Popen(
+                        [str(RKOJ_EXE_HINT), "workstation"],
+                        creationflags=getattr(subprocess, "CREATE_NEW_CONSOLE", 0),
+                    )
+                    self.app.notify("launched RKOJ.exe workstation", timeout=4)
+                except Exception as e:
+                    self.app.notify(f"launch failed: {e}", severity="error", timeout=5)
+                return
+            self.app.notify(
+                f"workstation daemon not found — see {WORKSTATION_DIR}",
+                severity="warning",
+                timeout=5,
+            )
+
+    def _spawn_daemon(self) -> None:
+        """Start the workstation daemon (python desktop_app.py) detached."""
+        if not DAEMON_SCRIPT.exists():
+            self.app.notify(
+                f"daemon script missing: {DAEMON_SCRIPT}",
+                severity="error",
+                timeout=5,
+            )
+            return
+        try:
+            subprocess.Popen(
+                ["python", str(DAEMON_SCRIPT)],
+                cwd=str(WORKSTATION_DIR),
+                creationflags=getattr(subprocess, "CREATE_NEW_CONSOLE", 0)
+                              | getattr(subprocess, "DETACHED_PROCESS", 0),
+            )
+            self.app.notify("workstation daemon spawned :5077", timeout=4)
+        except Exception as e:
+            self.app.notify(f"spawn failed: {e}", severity="error", timeout=5)
