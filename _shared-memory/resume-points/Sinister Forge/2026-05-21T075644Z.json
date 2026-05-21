@@ -1,0 +1,46 @@
+﻿{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-21T11:56:45.8747165Z",
+    "project":  "Sinister Forge",
+    "agent_name":  "Sinister Forge",
+    "mode":  "resume",
+    "focus_intent":  "",
+    "git":  {
+                "branch":  "agent/sinister-term/ph7-resume-2026-05-21",
+                "head":  "354c28eb7363f99cfcb5907752a2da27e70f7bae",
+                "head_msg":  "docs(forge): PH16/PH17/PH18 + jcode parity brain entry + Sanctum delegation + PROGRESS",
+                "recent_commits":  [
+                                       "354c28e docs(forge): PH16/PH17/PH18 + jcode parity brain entry + Sanctum delegation + PROGRESS",
+                                       "79f3ddd fix(forge): Ctrl+W picker crash + re-apply _render shadowing fix + sibling ACKs",
+                                       "36df2c5 fix(term): slim prompt to prevent resize-overflow + tail-truncate cwd",
+                                       "500c3ae test(term): PH14 pytest suite - dispatch + status TTL + keybindings (21 tests)",
+                                       "b321b6b feat(term): PH13 forge-memory-bridge builtins + brain entry + bug reports",
+                                       "0e8490d feat(term): PH7-PH11 - toolbar + breadcrumb prompt + cross-agent builtins + keybindings",
+                                       "162300f docs(forge): PH14 agentgrep static verdict + live-benchmark gated on AUP",
+                                       "a972857 feat(forge): R7 RKOJ dashboard ASK + R8 mermaid_render.py + R11 harness brain entry",
+                                       "bce833f docs(sanctum): flush co-audit deliverables - agent-host-routing + Modes section + DISCOVERY",
+                                       "243db88 feat(forge): liquid-glass UI overhaul + personal-projects.json + bat consolidation"
+                                   ]
+            },
+    "progress_top3":  [
+                          "2026-05-21 12:00 â€” shipped: P0 forge crash fix (boot + Ctrl+W) + 3-directive absorption + brain entry",
+                          "2026-05-21 11:20 â€” survived: sibling-checkout clobbered my untracked writes; re-wrote + committing immediately",
+                          "2026-05-21 11:05 â€” opened: Sinister Forge agent first-ever PROGRESS file + branch claim"
+                      ],
+    "latest_plan":  {
+                        "dir":  null,
+                        "artifact":  null
+                    },
+    "inbox_unread_count":  0,
+    "last_5_files_touched_24h":  [
+                                     "projects\\sinister-term\\source\\term\\__init__.py",
+                                     "_shared-memory\\heartbeats\\apk.json",
+                                     "_shared-memory\\plans\\sinister-term-2026-05-21\\plan.md",
+                                     "_shared-memory\\PROGRESS\\Sinister Forge.md",
+                                     "_shared-memory\\knowledge\\_INDEX.md"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Sinister Forge.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}
