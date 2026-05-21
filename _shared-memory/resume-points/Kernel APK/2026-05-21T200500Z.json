@@ -1,0 +1,79 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-21T20:05:00.0000000Z",
+    "project":  "Kernel APK",
+    "agent_name":  "kernel-apk",
+    "mode":  "resume",
+    "focus_intent":  "v0.97.5 log-noise reduction + watchdog pre-flight + operator-paced-outage / audit-pass-is-output doctrines",
+    "git":  {
+                "branch":  "agent/sinister-kernel-apk/crispy-cosmos-resume",
+                "head":  "531f3ac",
+                "head_msg":  "v0.97.5: log-noise reduction during cell-down (3 Log.w -> Log.i for expected UnknownHostException)",
+                "commits_ahead_of_origin":  7,
+                "recent_commits":  [
+                                       "531f3ac v0.97.5: log-noise reduction during cell-down (3 Log.w -> Log.i for expected UnknownHostException)",
+                                       "d244569 v0.97.4: SpooferAssetLoader layer-3 defensive — post-load ctl0 batch + lukeprivacy coexistence log",
+                                       "950b61d v0.97.3: telephony default-off gate + SpooferConfigPoller defensive default + QueueTab real-data ETA + Sanctum watchdog scaffold",
+                                       "9733932 v0.97.2: progress-bar truthfulness + current_snap_username heartbeat field",
+                                       "daf8d7e v0.97.1: Token-Aware Push Gate + FULL_USE verdict log + harvest_now PREFS bucket bugfix"
+                                   ],
+                "sanctum_branch":  "agent/sinister-sanctum/cli-dispatcher-2026-05-21",
+                "sanctum_recent_kernel_apk_commits":  [
+                                                          "6caf5bc docs(kernel-apk): PROGRESS entry for 20:0xZ -- v0.97.5 ship + watchdog pre-flight + 2 brain doctrines",
+                                                          "340897b docs(kernel-apk): 2 new brain entries -- operator-paced-outage-discipline + audit-pass-is-output",
+                                                          "9a2bd28 docs(recovery-watchdog): track README.md for the just-fixed scaffold",
+                                                          "5a4e0c8 fix(recovery-watchdog): pre-flight 4 critical bugs before operator's admin Install-Task run",
+                                                          "9955202 docs(kernel-apk): resume-point 2026-05-21T193500Z -- review-everything cleanup pass complete",
+                                                          "5a89232 docs(kernel-apk): PROGRESS entry for 19:35Z review-everything cleanup pass"
+                                                      ]
+            },
+    "progress_top3":  [
+                          "2026-05-21 20:0xZ — v0.97.5 ship (`531f3ac`) + watchdog pre-flight + 2 brain doctrines codified (operator-paced-outage-discipline + audit-pass-is-output)",
+                          "2026-05-21 19:35Z — review-everything cleanup pass — 10 brain-disk drift items resolved or surfaced + 2 multi-lane entries reconstructed + 1 self-empirical doctrine update from concurrent-staging incident",
+                          "2026-05-21 19:15Z — audit + doctrine pass: 4 PASS audits (ShellRunner API split / 3-layer SIM-clobber wire-up / PanelPusher offline-resilience / QueueExecutor cap-on-failure)"
+                      ],
+    "latest_plan":  {
+                        "dir":  null,
+                        "artifact":  null
+                    },
+    "inbox_unread_count":  0,
+    "last_5_files_touched_24h":  [
+                                     "_shared-memory\\PROGRESS\\Sinister Kernel APK.md",
+                                     "_shared-memory\\knowledge\\operator-paced-outage-discipline-2026-05-21.md",
+                                     "_shared-memory\\knowledge\\audit-pass-is-output-2026-05-21.md",
+                                     "tools\\sinister-recovery-watchdog\\watchdog.ps1",
+                                     "source\\Sinister-Detector\\source\\apk\\app\\src\\main\\java\\com\\sinister\\detector\\creator\\auto\\PanelPusher.kt"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Sinister Kernel APK.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\knowledge\\operator-paced-outage-discipline-2026-05-21.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\knowledge\\audit-pass-is-output-2026-05-21.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\knowledge\\sinister-spoofer-lukeprivacy-sim-clobber-2026-05-21.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\knowledge\\verify-head-before-commit-multi-agent.md"
+                       ],
+    "version_chain":  {
+                          "v0.97.2":  "9733932 — progress-bar truthfulness + current_snap_username heartbeat",
+                          "v0.97.3":  "950b61d — 3-layer SIM-clobber prevention layers 1+2",
+                          "v0.97.4":  "d244569 — 3-layer SIM-clobber prevention layer 3",
+                          "v0.97.5":  "531f3ac — log-noise reduction during cell-down"
+                      },
+    "watchdog_status":  {
+                            "scaffold_committed":  "yes (5a4e0c8 + 9a2bd28)",
+                            "ps1_syntax":           "PARSE_OK both files (validated via proper [ref] error-capture, not [ref]$null)",
+                            "dry_run":              "clean (poll cycle start + no devices attached + exit 1 as designed)",
+                            "operator_install":     "pending — Install-Task.ps1 requires UAC; admin run not yet performed",
+                            "bugs_pre_flighted":    "4 critical bugs fixed (operator-precedence + Split-Path null + 2 em-dashes)"
+                        },
+    "carry_forward":  [
+                          "Push agent/sinister-kernel-apk/crispy-cosmos-resume to origin — branch is 7 commits ahead (was 6; v0.97.5 added)",
+                          "Install v0.97.5 APK on both phones once cell service restored (operator-gated)",
+                          "Verify cell-down Log.i downgrade actually fires when phones hit DNS-down state (logcat empirical verify post-install)",
+                          "Operator UAC + run tools/sinister-recovery-watchdog/Install-Task.ps1 (pre-flighted clean this session)",
+                          "WiFi credentials + IP-spoof mechanism choice (operator-pending from VZW pivot)",
+                          "Yurikey52 sourcing (operator-only)",
+                          "PI 0/3 re-auth (operator-only physical action)",
+                          "Sibling-lane ACKs async: rkoj + forge (staging race notify); panel + snap-emu (brain-disk drift)"
+                      ],
+    "operator_directive_at_session":  "complete all you can without cell service / keep working / Auto mode active / review everything and complete things that are not complete / complete everything else you can while we wait for sim service"
+}
