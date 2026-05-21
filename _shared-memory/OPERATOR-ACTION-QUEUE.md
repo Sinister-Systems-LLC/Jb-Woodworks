@@ -10,6 +10,17 @@ The Sanctum-side mirror of `SESSION-START/02-OPERATOR-QUEUE.md`, with checkboxes
 
 ---
 
+## 2026-05-21 — Sanctum session surfaces (read-only, low-stakes)
+
+- [ ] 🟡 **Desktop bat byte-parity drift** — sibling sanctum audit (14:00 PROGRESS) found three Desktop bats out of sync with the canonical tree at `D:\Sinister Sanctum\tools\session-launcher\`:
+  - `Sinister Start.bat` — 137-byte drift (Desktop 3604 / Tree 3741)
+  - `Personal Project start.bat` — 90-byte drift
+  - `Start-Sinister-Session.bat` — **MISSING from Desktop entirely** (5228 bytes in tree only). CLAUDE.md treats this as the canonical one-click launcher path. Run `copy "D:\Sinister Sanctum\tools\session-launcher\Start-Sinister-Session.bat" "C:\Users\Zonia\Desktop\"` to restore.
+  - `Sinister Freeze.bat` + `Sinister.bat` — Desktop-only (tree never had them). Probably operator-intentional but flagging in case the tree should mirror for backup.
+  - No automated mutation — Desktop is operator territory.
+- [ ] 🟡 **Wayward Forge commit on sanctum branch** — `66a5b3e feat(forge): PH18 niri columns + PH16 swarm pump + :dm/:broadcast + PH10 :host switch` landed on `agent/sinister-sanctum/cli-dispatcher-2026-05-21` instead of a forge branch (HEAD-race per `verify-head-before-commit-multi-agent` brain entry). [ASK] dropped to `_shared-memory/inbox/forge/2026-05-21T1403Z-ask-from-sanctum-wayward-commit-66a5b3e.json`. Forge lane recovery is `git update-ref refs/heads/agent/sinister-forge/<active-branch> 66a5b3e` + push.
+- [ ] 🟢 **Mixed-case resume-point dir** — `_shared-memory/resume-points/Sinister Sanctum/` (display-name, 1 file) + `_shared-memory/resume-points/Sanctum/` (slug, 6 files) both exist. Display-name is the convention (6/7 lanes use it). v1.3 PS1 fix path documented at `_shared-memory/knowledge/resume-point-dir-name-convention.md`. Deferred while cli-dispatcher branch is hot.
+
 ## 2026-05-19 — One-click bundle (master complete-everything sweep)
 
 - [ ] **DOUBLE-CLICK** `C:\Users\Zonia\Desktop\Wire-The-Rest.bat` — interactive prompts walk through all 7 operator-gated items below in one bat. Every step is skippable + idempotent. Master agent shipped this 2026-05-19 14:15 as the operator-facing bundle for the items the sandbox blocked from direct execution.
