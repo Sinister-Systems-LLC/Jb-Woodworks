@@ -1,9 +1,16 @@
 # Author: RKOJ-ELENO :: 2026-05-21
-"""200px left sidebar — mascot block + DAILY / INSIGHTS / MANAGE sections.
+"""220px left sidebar — Sinister Panel 1:1 port.
 
-Matches Sinister Panel image 13 layout (mascot tile up top, three label-cap
-sections beneath). Click-only nav (no content swap yet — placeholder per
-operator brief).
+Layout per `projects/sinister-panel/source/.../components/sidebar.tsx`:
+  - Banner block (mascot, no subtitle).
+  - Three sections (DAILY / INSIGHTS / MANAGE) — each is a 12px uppercase
+    label with a 1px hairline divider underneath, followed by nav-item rows.
+  - Every nav-item: SVG glyph (Panel's NavGlyph viewBox 24×24) + label,
+    8px gap, 12px h-padding, 10px border-radius. Active row gets the Panel
+    purple-deep fill `#7A3DD4` with white text + 1px purple-accent border.
+
+NO emoji. NO ASCII fallback. Every glyph is loaded from
+`assets/panel-icons/*.svg` via `theme.nav_icon()`.
 """
 
 from __future__ import annotations
@@ -11,56 +18,90 @@ from __future__ import annotations
 from pathlib import Path
 
 from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtGui import QFont
 from PyQt6.QtWidgets import (
-    QFrame, QLabel, QPushButton, QScrollArea, QSizePolicy, QSpacerItem,
-    QVBoxLayout, QWidget,
+    QFrame, QHBoxLayout, QLabel, QPushButton, QScrollArea, QSizePolicy,
+    QSpacerItem, QVBoxLayout, QWidget,
 )
 
 try:
     from PyQt6.QtSvgWidgets import QSvgWidget  # type: ignore
     _HAS_SVG = True
-except Exception:  # pragma: no cover — fall back to ASCII devil
+except Exception:  # pragma: no cover
     _HAS_SVG = False
 
-from .theme import SIDEBAR_WIDTH
+from .theme import SIDEBAR_WIDTH, asset_path, nav_icon
 
 
-# Sinister Panel 3-section layout — DAILY / INSIGHTS / MANAGE.
-SECTIONS: list[tuple[str, list[tuple[str, str]]]] = [
+# Sinister Panel 3-section layout: DAILY (Workspace) / INSIGHTS / MANAGE.
+# Each entry: (nav-key, label, svg-icon-name)
+SECTIONS: list[tuple[str, list[tuple[str, str, str]]]] = [
     ("DAILY", [
-        ("overview", "Overview"),
-        ("accounts", "Accounts"),
-        ("command", "Command Center"),
+        ("overview", "Overview", "nav-overview"),
+        ("accounts", "Accounts", "nav-accounts"),
+        ("command",  "Command Center", "nav-command-center"),
     ]),
     ("INSIGHTS", [
-        ("analytics", "Analytics"),
-        ("sales", "Sales"),
-        ("database", "Database"),
-        ("sanctum", "Sanctum"),
+        ("analytics", "Analytics", "nav-analytics"),
+        ("sales",     "Sales",     "nav-sales"),
+        ("database",  "Database",  "nav-database"),
+        ("sanctum",   "Sanctum",   "nav-sanctum"),
     ]),
     ("MANAGE", [
-        ("fleet", "Fleet"),
-        ("proxies", "Proxies"),
-        ("browsers", "Browsers"),
-        ("eve", "EVE AI"),
-        ("admin", "Admin"),
+        ("fleet",    "Fleet",    "nav-fleet"),
+        ("proxies",  "Proxies",  "nav-proxies"),
+        ("browsers", "Browsers", "nav-browsers"),
+        ("eve",      "EVE AI",   "nav-eve-ai"),
+        ("admin",    "Admin",    "nav-admin"),
     ]),
 ]
 
-# Skull SVG (Sanctum mascot) — bundled with window-manager web assets.
-_SKULL_SVG = Path(r"D:\Sinister Sanctum\automations\window-manager\web\skull.svg")
 
-# ASCII fallback if SVG won't load.
-_MASCOT_ASCII = (
-    "  /\\_/\\  \n"
-    " ( o.o ) \n"
-    "  > ^ <  "
-)
+# Mascot SVG bundled at `assets/mascot.svg`.
+_MASCOT_SVG = asset_path("mascot.svg")
+
+
+class _NavRow(QPushButton):
+    """Single sidebar nav row — SVG icon (left) + label, both wrapped in
+    a QPushButton. We render the icon as a child QSvgWidget rather than a
+    QIcon so the SVG strokes scale cleanly at high DPI."""
+
+    def __init__(self, key: str, label: str, icon_name: str,
+                 parent: QWidget | None = None) -> None:
+        super().__init__(parent)
+        self.setObjectName("NavItem")
+        self.setProperty("active", False)
+        self.setCursor(Qt.CursorShape.PointingHandCursor)
+        self._key = key
+        self._build(label, icon_name)
+
+    def _build(self, label: str, icon_name: str) -> None:
+        # Use HBox over the button's content so the SVG widget lives inside.
+        row = QHBoxLayout(self)
+        row.setContentsMargins(12, 8, 12, 8)
+        row.setSpacing(10)
+
+        if _HAS_SVG:
+            self._icon_widget = nav_icon(icon_name, size=18)
+            row.addWidget(self._icon_widget)
+        else:  # pragma: no cover — Qt without QtSvg
+            self._icon_widget = None
+
+        self._label_widget = QLabel(label)
+        self._label_widget.setObjectName("NavItemLabel")
+        self._label_widget.setStyleSheet("color: inherit; background: transparent;")
+        row.addWidget(self._label_widget, stretch=1)
+        # The button itself handles the click; we leave its text empty
+        # (text would render on top of the layout otherwise).
+        self.setText("")
+
+    @property
+    def nav_key(self) -> str:
+        return self._key
 
 
 class Sidebar(QWidget):
-    """Left vertical sidebar — fixed 200px width per operator brief."""
+    """Left vertical sidebar — fixed 220px width (Panel SIDEBAR_WIDTH=240
+    minus our denser 13px font)."""
 
     nav_clicked = pyqtSignal(str)
 
@@ -68,8 +109,8 @@ class Sidebar(QWidget):
         super().__init__(parent)
         self.setObjectName("Sidebar")
         self.setFixedWidth(SIDEBAR_WIDTH)
-        self._active_nav: str = "overview"
-        self._nav_buttons: dict[str, QPushButton] = {}
+        self._active_nav: str = "sanctum"
+        self._nav_rows: dict[str, _NavRow] = {}
         self._build()
         self._update_active(self._active_nav)
 
@@ -78,32 +119,20 @@ class Sidebar(QWidget):
         root.setContentsMargins(0, 0, 0, 0)
         root.setSpacing(0)
 
-        # ── Mascot block ────────────────────────────────────────────────
+        # ── Mascot block (no subtitle — Panel banner has no label) ──────
         mascot_frame = QFrame(self)
         mascot_frame.setObjectName("MascotFrame")
-        mascot_frame.setFixedHeight(140)
+        mascot_frame.setFixedHeight(96)  # Panel HEADER_HEIGHT
         mascot_layout = QVBoxLayout(mascot_frame)
-        mascot_layout.setContentsMargins(12, 14, 12, 10)
-        mascot_layout.setSpacing(4)
+        mascot_layout.setContentsMargins(0, 0, 0, 0)
+        mascot_layout.setSpacing(0)
         mascot_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        if _HAS_SVG and _SKULL_SVG.exists():
-            svg = QSvgWidget(str(_SKULL_SVG))
-            svg.setFixedSize(72, 72)
+        if _HAS_SVG and _MASCOT_SVG.exists():
+            svg = QSvgWidget(str(_MASCOT_SVG))
+            svg.setFixedSize(64, 64)
             mascot_layout.addWidget(svg, alignment=Qt.AlignmentFlag.AlignCenter)
-        else:
-            mascot = QLabel(_MASCOT_ASCII)
-            mascot.setObjectName("Mascot")
-            mascot.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            mono = QFont("Cascadia Mono")
-            mono.setStyleHint(QFont.StyleHint.Monospace)
-            mascot.setFont(mono)
-            mascot_layout.addWidget(mascot)
-
-        eve_label = QLabel("E V E")
-        eve_label.setObjectName("EveLabel")
-        eve_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        mascot_layout.addWidget(eve_label)
+        # No fallback — if SVG is missing the block just stays blank.
 
         root.addWidget(mascot_frame)
 
@@ -115,21 +144,20 @@ class Sidebar(QWidget):
 
         nav_host = QWidget()
         nav_layout = QVBoxLayout(nav_host)
-        nav_layout.setContentsMargins(0, 4, 0, 12)
+        nav_layout.setContentsMargins(0, 12, 0, 12)
         nav_layout.setSpacing(0)
 
         for section_label, items in SECTIONS:
             sec = QLabel(section_label)
             sec.setObjectName("SidebarSection")
             nav_layout.addWidget(sec)
-            for key, label in items:
-                btn = QPushButton(label)
-                btn.setObjectName("NavItem")
-                btn.setProperty("active", False)
-                btn.setCursor(Qt.CursorShape.PointingHandCursor)
-                btn.clicked.connect(lambda _checked=False, k=key: self._on_nav_clicked(k))
-                self._nav_buttons[key] = btn
-                nav_layout.addWidget(btn)
+            for key, label, icon_name in items:
+                row = _NavRow(key, label, icon_name)
+                row.clicked.connect(lambda _checked=False, k=key: self._on_nav_clicked(k))
+                self._nav_rows[key] = row
+                nav_layout.addWidget(row)
+            # Spacer between sections (Panel uses mt-5 on subsequent sections)
+            nav_layout.addSpacerItem(QSpacerItem(0, 8, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed))
 
         nav_layout.addSpacerItem(
             QSpacerItem(0, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
@@ -143,8 +171,8 @@ class Sidebar(QWidget):
 
     def _update_active(self, key: str) -> None:
         self._active_nav = key
-        for k, btn in self._nav_buttons.items():
+        for k, row in self._nav_rows.items():
             is_active = (k == key)
-            btn.setProperty("active", is_active)
-            btn.style().unpolish(btn)
-            btn.style().polish(btn)
+            row.setProperty("active", is_active)
+            row.style().unpolish(row)
+            row.style().polish(row)
