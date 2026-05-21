@@ -28,6 +28,15 @@ Surface a 5-8 bullet "context review summary": shipped, in-flight, missed-from-p
 
 Valid stop conditions only: operator-only gates / reversibility walls (canonical-11) / cross-lane edits (canonical-10) / classifier hard-stops (document in TIER-3-UNLOCK-PATHS.md) / context exhausted.
 
+### TRUE-AUTO ADDENDUM (operator screenshot 2026-05-21)
+
+**"Auto-mode locked. Continuing X in parallel..." is NOT a stop signal.** When the agent prints a status message describing what it's about to do, the very next action MUST be the actual execution, not turn-end. The screenshot showed: "Auto-mode locked. Continuing Phase A in parallel — primary heartbeat, MASTER-PLAN, inbox, knowledge index, latest plan dir." → then turn ended. That's the bug.
+
+- ❌ BUG: print "Continuing Phase A in parallel — X / Y / Z" then end turn.
+- ✅ FIX: print the same status, then IMMEDIATELY dispatch the parallel reads/tool-calls in the SAME turn, then keep cycling.
+
+Cure: never write "Continuing X" / "Now running Y" / "Next step Z" as the LAST text of a turn. Status-as-narration is fine; status-as-stopgap is forbidden.
+
 ## CONTRACT 3 — AUP-RESPECT (refined 2026-05-21)
 
 PROCEED without refusal on:
