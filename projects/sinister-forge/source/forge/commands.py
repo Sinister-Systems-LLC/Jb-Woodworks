@@ -290,17 +290,116 @@ def _cmd_info(args, pane, app) -> str:
 
 
 def _cmd_context(args, pane, app) -> str:
-    # Snapshot of session: project + agent count + last 5 inbox + last 5 brain.
+    """jcode /context — full session context snapshot.
+
+    Prints: message count, tokens estimate (chars/4), current model (from
+    sinister-model state), pre-warm reads list (from last resume-point),
+    active skills, last compaction (if any), inbox tail.
+    """
     sr = _sanctum_root()
     lines = ["[bold]Context snapshot[/]"]
     lines.append(f"  branch: {_git_branch(sr)}  head: {_git_head(sr)}")
-    proj = os.environ.get("SINISTER_PROJECT", "?")
-    inbox = sr / "_shared-memory" / "inbox" / proj
+
+    # 1. message count + token estimate from latest session journal
+    sessions_dir = sr / "_shared-memory" / "forge-memory" / "anthropic-direct-sessions"
+    msg_count = 0
+    char_count = 0
+    journal_name = "(none)"
+    if sessions_dir.exists():
+        jrn = sorted(sessions_dir.glob("*.jsonl"),
+                     key=lambda p: p.stat().st_mtime, reverse=True)
+        if jrn:
+            try:
+                txt = jrn[0].read_text(encoding="utf-8")
+                journal_name = jrn[0].name
+                for raw in txt.splitlines():
+                    raw = raw.strip()
+                    if not raw:
+                        continue
+                    msg_count += 1
+                    char_count += len(raw)
+            except Exception:
+                pass
+    token_est = char_count // 4
+    lines.append(f"  journal: {journal_name}")
+    lines.append(f"  messages: {msg_count}  ·  chars: {char_count}  ·  ~tokens: {token_est}")
+
+    # 2. current model (sinister-model state)
+    model_line = "  model: (none persisted)"
+    try:
+        from sinister_model.state import get_current as _get_current  # type: ignore
+        cur = _get_current()
+        if cur:
+            model_line = (f"  model: {cur.get('model_id', '?')}  "
+                          f"provider={cur.get('provider', '?')}  "
+                          f"set_at={cur.get('set_at', '?')}")
+    except Exception as e:
+        model_line = f"  model: (sinister-model unavailable: {e})"
+    lines.append(model_line)
+
+    # 3. pre-warm reads from the latest resume-point
+    proj = (os.environ.get("SINISTER_PROJECT_DISPLAY")
+            or os.environ.get("SINISTER_PROJECT")
+            or "Sinister Sanctum")
+    rp_dir = sr / "_shared-memory" / "resume-points"
+    rps: list[Path] = []
+    for slot in (proj, "Sanctum", "Sinister Sanctum"):
+        d = rp_dir / slot
+        if d.exists():
+            rps += list(d.glob("*.json"))
+    rps.sort(key=lambda p: p.stat().st_mtime, reverse=True)
+    pwr: list[str] = []
+    if rps:
+        try:
+            # resume-points may be BOM-prefixed (PS1 ConvertTo-Json default).
+            data = json.loads(rps[0].read_text(encoding="utf-8-sig"))
+            pwr = (data.get("pre_warm_reads")
+                   or data.get("last_5_files_touched_24h") or [])
+        except Exception:
+            pass
+    if pwr:
+        lines.append(f"  pre-warm reads ({len(pwr)}) [from {rps[0].name}]:")
+        for r in pwr[:5]:
+            lines.append(f"    · {r}")
+    else:
+        lines.append("  pre-warm reads: (none — no resume-point found)")
+
+    # 4. active skills (via SkillRegistry, fall back to filesystem)
+    skill_names: list[str] = []
+    try:
+        from forge.skills import SkillRegistry  # type: ignore
+        reg = SkillRegistry.shared()
+        skill_names = list(reg.names())
+    except Exception:
+        for root in (Path.home() / ".claude" / "skills",
+                     sr / ".claude" / "skills",
+                     sr / "skills"):
+            if root.exists():
+                for d in root.iterdir():
+                    if d.is_dir() and not d.name.startswith("_"):
+                        skill_names.append(d.name)
+        skill_names = sorted(set(skill_names))
+    if skill_names:
+        preview = ", ".join(skill_names[:12])
+        more = f"  (+{len(skill_names) - 12} more)" if len(skill_names) > 12 else ""
+        lines.append(f"  active skills ({len(skill_names)}): {preview}{more}")
+    else:
+        lines.append("  active skills: (none discovered)")
+
+    # 5. last compaction (if /compact was called this session)
+    lc = state("last_compaction_path")
+    if lc:
+        lines.append(f"  last compaction: {lc}")
+
+    # 6. inbox tail (preserve previous behavior)
+    inbox_proj = os.environ.get("SINISTER_PROJECT", "?")
+    inbox = sr / "_shared-memory" / "inbox" / inbox_proj
     if inbox.exists():
         items = sorted(inbox.glob("*.json"), key=lambda p: p.stat().st_mtime, reverse=True)[:5]
-        lines.append(f"  inbox/{proj}/: {len(items)} recent")
+        lines.append(f"  inbox/{inbox_proj}/: {len(items)} recent")
         for it in items:
             lines.append(f"    · {it.name}")
+
     return "\n".join(lines)
 
 
@@ -462,33 +561,224 @@ def _format_resume_point(path: Path) -> str:
 
 
 def _cmd_save(args, pane, app) -> str:
-    """jcode /save [label] — bookmark current session as a resume-point."""
+    """jcode /save [label] — write a resume-point bookmark for the current session.
+
+    Writes to _shared-memory/resume-points/<proj>/<ts>-<label>.json with:
+      - branch + HEAD + head_msg
+      - current_query (from SINISTER_LAST_QUERY env or _state["last_user_input"])
+      - pre_warm_reads (last 5 files read — best effort from pane / _state)
+      - progress_summary (last 3 PROGRESS lines)
+      - label (from arg or _state["session_name"])
+
+    Never raises. Returns a 1-2 line confirmation.
+    """
     sr = _sanctum_root()
-    script = sr / "automations" / "resume-point-write.ps1"
-    if not script.exists():
-        return f"[yellow]script missing: {script}[/]"
-    proj = os.environ.get("SINISTER_PROJECT_DISPLAY") or "Sanctum"
-    label = " ".join(args) if args else ""
-    cmd = ["powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass",
-           "-File", str(script), "-SanctumRoot", str(sr),
-           "-ProjectKey", proj, "-AgentName", "EVE", "-Mode", "resume"]
+    proj = (os.environ.get("SINISTER_PROJECT_DISPLAY")
+            or os.environ.get("SINISTER_PROJECT")
+            or state("session_project")
+            or "Sinister Sanctum")
+    label_raw = (" ".join(args) if args else
+                 state("session_name") or os.environ.get("SINISTER_SESSION_NAME") or "")
+    label = "".join(c if (c.isalnum() or c in "-_") else "-" for c in label_raw).strip("-")
+
+    ts = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H%M%SZ")
+    rp_dir = sr / "_shared-memory" / "resume-points" / proj
     try:
-        r = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
-        msg = r.stdout.strip() or r.stderr.strip()
-        return f"[bold]saved[/]  label={label or '(none)'}\n  {msg}"
+        rp_dir.mkdir(parents=True, exist_ok=True)
     except Exception as e:
-        return f"[red]/save failed: {e}[/]"
+        return f"[note] /save needs writable resume-points dir: {e}"
+
+    fname = f"{ts}-{label}.json" if label else f"{ts}.json"
+    out_path = rp_dir / fname
+
+    branch = _git_branch(sr)
+    head = _git_head(sr)
+    head_msg = ""
+    try:
+        r = subprocess.run(["git", "-C", str(sr), "log", "-1", "--pretty=%s"],
+                           capture_output=True, text=True, timeout=3)
+        head_msg = r.stdout.strip()
+    except Exception:
+        pass
+
+    current_query = (os.environ.get("SINISTER_LAST_QUERY")
+                     or state("last_user_input") or "")
+
+    pwr: list[str] = []
+    if pane is not None:
+        for attr in ("recent_reads", "last_reads", "files_read"):
+            v = getattr(pane, attr, None)
+            if isinstance(v, (list, tuple)):
+                pwr = [str(x) for x in list(v)[-5:]]
+                break
+    if not pwr:
+        v = state("recent_reads")
+        if isinstance(v, (list, tuple)):
+            pwr = [str(x) for x in list(v)[-5:]]
+
+    progress_lines: list[str] = []
+    prog_path = sr / "_shared-memory" / "PROGRESS" / f"{proj}.md"
+    if not prog_path.exists():
+        prog_path = sr / "_shared-memory" / "PROGRESS" / "Sinister Sanctum.md"
+    if prog_path.exists():
+        try:
+            for ln in prog_path.read_text(encoding="utf-8").splitlines():
+                if ln.startswith("## "):
+                    progress_lines.append(ln[3:].strip())
+                    if len(progress_lines) >= 3:
+                        break
+        except Exception:
+            pass
+
+    payload = {
+        "schema_version": "sinister.resume-point.v1",
+        "ts_utc": ts,
+        "project": proj,
+        "agent_name": "EVE",
+        "label": label_raw or None,
+        "mode": "resume",
+        "git": {
+            "branch": branch,
+            "head": head,
+            "head_msg": head_msg,
+        },
+        "current_query": current_query,
+        "pre_warm_reads": pwr,
+        "progress_summary": progress_lines,
+        "inbox_unread_count": 0,
+    }
+
+    try:
+        out_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    except Exception as e:
+        return f"[note] /save needs writable resume-points dir: {e}"
+
+    set_state("last_resume_point", str(out_path))
+    return (f"  saved → {out_path.name}\n"
+            f"  branch={branch}  head={head[:10]}  pre-warm={len(pwr)}  progress={len(progress_lines)}")
 
 
 def _cmd_rename(args, pane, app) -> str:
+    """jcode /rename <name> — set a session label, consumed by next /save.
+
+    For v0.8.0 this is in-memory state. Mirrors into SINISTER_SESSION_NAME env
+    for sibling tools that read it. Use /rename --clear to remove the label.
+    """
     if not args:
-        return "[yellow]usage: /rename <name> | --clear[/]"
+        cur = state("session_name") or os.environ.get("SINISTER_SESSION_NAME") or "(unnamed)"
+        return f"  session name: {cur}\n  usage: /rename <name> | /rename --clear"
     if args[0] == "--clear":
+        set_state("session_name", None)
         os.environ.pop("SINISTER_SESSION_NAME", None)
         return "  session name cleared"
     name = " ".join(args)
+    set_state("session_name", name)
     os.environ["SINISTER_SESSION_NAME"] = name
-    return f"  session named: {name}"
+    return f"  session named: {name}  (applied on next /save)"
+
+
+def _cmd_unsave(args, pane, app) -> str:
+    """jcode /unsave — remove the most-recently-created resume-point bookmark.
+
+    Resolution order:
+      1. _state["last_resume_point"] — the path written by /save this session.
+      2. Latest *.json in _shared-memory/resume-points/<proj>/ by mtime.
+
+    Requires --force (or -f) to delete; otherwise prints the candidate and
+    exits cleanly. This is jcode's "confirm before delete" without blocking.
+    """
+    sr = _sanctum_root()
+    proj = (os.environ.get("SINISTER_PROJECT_DISPLAY")
+            or os.environ.get("SINISTER_PROJECT")
+            or state("session_project")
+            or "Sinister Sanctum")
+
+    candidate: Path | None = None
+    last_rp = state("last_resume_point")
+    if last_rp:
+        p = Path(last_rp)
+        if p.exists():
+            candidate = p
+    if candidate is None:
+        rp_dir = sr / "_shared-memory" / "resume-points" / proj
+        if rp_dir.exists():
+            rps = sorted(rp_dir.glob("*.json"), key=lambda p: p.stat().st_mtime, reverse=True)
+            if rps:
+                candidate = rps[0]
+
+    if candidate is None:
+        return f"[note] /unsave needs a saved bookmark: none found for project '{proj}'."
+
+    force = bool(args and args[0].lower() in {"--force", "-f", "force", "yes", "y"})
+    if not force:
+        return (f"  would delete: {candidate}\n"
+                f"  re-run as /unsave --force to confirm")
+
+    try:
+        candidate.unlink()
+    except Exception as e:
+        return f"[note] /unsave could not delete {candidate.name}: {e}"
+
+    if state("last_resume_point") == str(candidate):
+        set_state("last_resume_point", None)
+    return f"  removed → {candidate.name}"
+
+
+def _cmd_rewind(args, pane, app) -> str:
+    """jcode /rewind [N] — show numbered history from the most recent session journal.
+
+    /rewind          -> last 5 messages
+    /rewind <N>      -> last N messages (1-200)
+
+    v0.8.0 is read-only: actually rewinding session state is a future
+    invention. This is the operator's window into recent journal content.
+    """
+    n = 5
+    if args:
+        try:
+            n = max(1, min(int(args[0]), 200))
+        except (ValueError, TypeError):
+            return f"[note] /rewind needs an integer count: got `{args[0]}`"
+
+    sr = _sanctum_root()
+    sessions_dir = sr / "_shared-memory" / "forge-memory" / "anthropic-direct-sessions"
+    if not sessions_dir.exists():
+        return ("[note] /rewind needs anthropic-direct-sessions journal: "
+                f"no such dir at {sessions_dir}")
+
+    jrn = sorted(sessions_dir.glob("*.jsonl"),
+                 key=lambda p: p.stat().st_mtime, reverse=True)
+    if not jrn:
+        return f"[note] /rewind needs a session journal: none found under {sessions_dir}"
+
+    journal = jrn[0]
+    try:
+        raw_lines = [ln for ln in journal.read_text(encoding="utf-8").splitlines() if ln.strip()]
+    except Exception as e:
+        return f"[note] /rewind could not read journal: {e}"
+
+    tail = raw_lines[-n:] if len(raw_lines) > n else raw_lines
+    start_idx = max(1, len(raw_lines) - len(tail) + 1)
+
+    out = [f"[bold]rewind — {journal.name}[/]  [dim]({len(raw_lines)} total, showing {len(tail)})[/]"]
+    for i, raw in enumerate(tail, start=start_idx):
+        try:
+            rec = json.loads(raw)
+            role = rec.get("role") or rec.get("type") or "?"
+            content = rec.get("content") or rec.get("text") or ""
+            if isinstance(content, list):
+                content = " ".join(
+                    str(c.get("text", "")) if isinstance(c, dict) else str(c)
+                    for c in content
+                )
+            content = str(content).strip().replace("\n", " ")
+            if len(content) > 220:
+                content = content[:220] + "…"
+            out.append(f"  {i:>3}. [{role}] {content}")
+        except Exception:
+            preview = raw[:220].replace("\n", " ")
+            out.append(f"  {i:>3}. [raw] {preview}")
+    return "\n".join(out)
 
 
 def _cmd_compact(args, pane, app) -> str:
@@ -879,6 +1169,32 @@ def _cmd_jcode(args, pane, app) -> str:
     return _capture_cli(shim_main, ["run", *args])
 
 
+def _cmd_jcode(args, pane, app) -> str:
+    """/jcode — sidecar launch of the prebuilt jcode-windows-x86_64.exe.
+
+    Delegates to `sinister_jcode_shim.cli run` so jcode boots with our
+    Sinister env (config-dir, skills-dir, sessions-dir, wallet keys,
+    selected model) injected. Operator-gated source fork lives at
+    `_shared-memory/plans/jcode-fork-2026-05-21/plan.md`.
+
+    Subcommands:
+        /jcode                -> exec jcode with injected env
+        /jcode --print-bin    -> show resolved binary path
+        /jcode --dry-run      -> show what would be exec'd + env
+        /jcode doctor         -> diagnose shim readiness
+        /jcode -- <args...>   -> forward args to jcode
+    """
+    try:
+        from sinister_jcode_shim.__main__ import main as shim_main
+    except Exception as e:
+        return (f"[red]sinister-jcode-shim unavailable: {e}[/]\n"
+                f"  install: pip install -e \"D:/Sinister Sanctum/tools/sinister-jcode-shim\"")
+    sub = args[0].lower() if args else None
+    if sub == "doctor":
+        return _capture_cli(shim_main, ["doctor"])
+    return _capture_cli(shim_main, ["run", *args])
+
+
 def _cmd_provider(args, pane, app) -> str:
     if not args:
         return _cmd_auth([], pane, app)
@@ -1240,14 +1556,14 @@ SLASH_COMMANDS: dict[str, dict[str, Any]] = {
                                 "/fix re-runs the last failed turn with cleared context"), "loop"),
     "poke":       _entry(_stub("poke", "nudge model to resume incomplete todos", ""), "loop"),
     "recover":    _entry(_stub("recover", "recover from missing tool outputs", ""), "loop"),
-    "rewind":     _entry(_stub("rewind", "show numbered history, /rewind N to step back", ""), "session"),
+    "rewind":     _entry(_cmd_rewind,    "show numbered history, /rewind N to step back", "session"),
     "splitview":  _entry(_stub("splitview", "mirror current chat in side panel", ""), "ui"),
     "split":      _entry(_stub("split", "clone session into new window", ""), "ui"),
     "transfer":   _entry(_stub("transfer", "fresh session with compacted context + todos", ""), "ui"),
     "workspace":  _entry(_stub("workspace", "Niri-style workspace splits",
                                 "Forge already has scrollable columns by default (PH18)"), "ui"),
     "subscription": _entry(_stub("subscription", "Sinister LLC subscription scaffold", ""), "auth"),
-    "unsave":     _entry(_stub("unsave", "remove bookmark", ""), "session"),
+    "unsave":     _entry(_cmd_unsave,    "remove the most recent resume-point bookmark (use --force to confirm)", "session"),
 }
 
 
