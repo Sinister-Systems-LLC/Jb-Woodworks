@@ -122,6 +122,23 @@
             "github": "Sinister-Systems-LLC/Sinister-Claw"
         },
         {
+            "key": "rkoj",
+            "display": "RKOJ",
+            "tag": "the unified RKOJ project — jcode-form umbrella binding Forge + Term + Workstation + skills + bots + sinister-* tools into one RKOJ.exe",
+            "root": "D:\\Sinister Sanctum\\projects\\rkoj",
+            "session_start": "",
+            "claude_md": "",
+            "github": "Sinister-Systems-LLC/Sinister-Sanctum",
+            "branch_prefix": "agent/rkoj/",
+            "focus": "the unified RKOJ project",
+            "umbrella": true,
+            "components": [
+                "sinister-forge",
+                "sinister-term",
+                "rkoj-workstation"
+            ]
+        },
+        {
             "key": "sinister-freeze",
             "display": "Sinister Freeze",
             "tag": "Full-stack car-sales suite for Joe @ Ferrari of Winter Park (first EXTERNAL-USER lane)",

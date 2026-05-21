@@ -1,0 +1,148 @@
+{
+  "_comment": "RKOJ unified-project component manifest. Author RKOJ-ELENO :: 2026-05-21. Consumed by RKOJ.exe info to print 'what's bundled'. Paths are relative to D:/Sinister Sanctum/. enabled=true means the build pipeline pulls it in.",
+  "schema_version": 1,
+  "project": "rkoj",
+  "display": "RKOJ",
+  "persona": "EVE",
+  "authorship": "RKOJ-ELENO",
+  "version": "1.0.0",
+  "updated": "2026-05-21",
+  "components": [
+    {
+      "name": "forge",
+      "path": "projects/sinister-forge/source/forge",
+      "kind": "forge",
+      "enabled": true,
+      "version": "1.0.0",
+      "role": "Multi-pane TUI front door (sidebar + ADB tab + agent panes)"
+    },
+    {
+      "name": "term",
+      "path": "projects/sinister-term/source/term",
+      "kind": "term",
+      "enabled": true,
+      "version": "1.0.0",
+      "role": "Terminal shell beneath Forge; standalone sterm CLI"
+    },
+    {
+      "name": "workstation",
+      "path": "automations/window-manager",
+      "kind": "workstation",
+      "enabled": true,
+      "version": "1.0.0",
+      "role": "Console window manager (pywebview + FastAPI :5077)"
+    },
+    {
+      "name": "skills-sanctum",
+      "path": "skills",
+      "kind": "skill-dir",
+      "enabled": true,
+      "version": "1.0.0",
+      "role": "In-repo Sanctum skill registry"
+    },
+    {
+      "name": "bots",
+      "path": "bots",
+      "kind": "bot-dir",
+      "enabled": true,
+      "version": "1.0.0",
+      "role": "12 LLM-orchestration bots (junctions to D:/Sinister/Sinister Skills/12_LLM_ORCHESTRATION/agents/)"
+    },
+    {
+      "name": "sinister-cli",
+      "path": "tools/sinister-cli",
+      "kind": "tool",
+      "enabled": true,
+      "version": "1.0.0",
+      "role": "Umbrella CLI dispatcher"
+    },
+    {
+      "name": "sinister-login",
+      "path": "tools/sinister-login",
+      "kind": "tool",
+      "enabled": true,
+      "version": "1.0.0",
+      "role": "Anthropic auth bridge"
+    },
+    {
+      "name": "sinister-usage",
+      "path": "tools/sinister-usage",
+      "kind": "tool",
+      "enabled": true,
+      "version": "1.0.0",
+      "role": "API/token usage tracker"
+    },
+    {
+      "name": "sinister-swarm",
+      "path": "tools/sinister-swarm",
+      "kind": "tool",
+      "enabled": true,
+      "version": "1.0.0",
+      "role": "Multi-agent coordinator"
+    },
+    {
+      "name": "sinister-model",
+      "path": "tools/sinister-model",
+      "kind": "tool",
+      "enabled": true,
+      "version": "1.0.0",
+      "role": "Model picker / pin"
+    },
+    {
+      "name": "sinister-vault",
+      "path": "tools/sinister-vault",
+      "kind": "tool",
+      "enabled": true,
+      "version": "1.0.0",
+      "role": "Vault MCP (1 TB collaborative store :5078)"
+    },
+    {
+      "name": "sinister-jcode-shim",
+      "path": "tools/sinister-jcode-shim",
+      "kind": "tool",
+      "enabled": true,
+      "version": "1.0.0",
+      "role": "jcode CLI shim / sidecar"
+    },
+    {
+      "name": "sinister-review",
+      "path": "tools/sinister-review",
+      "kind": "tool",
+      "enabled": true,
+      "version": "1.0.0",
+      "role": "Code review helper"
+    },
+    {
+      "name": "sinister-chatbot",
+      "path": "tools/sinister-chatbot",
+      "kind": "tool",
+      "enabled": true,
+      "version": "1.0.0",
+      "role": "Chatbot front-end"
+    },
+    {
+      "name": "sinister-crawler",
+      "path": "tools/sinister-crawler",
+      "kind": "tool",
+      "enabled": true,
+      "version": "1.0.0",
+      "role": "Web crawler"
+    },
+    {
+      "name": "sinister-phone-viewer",
+      "path": "tools/sinister-phone-viewer",
+      "kind": "tool",
+      "enabled": true,
+      "version": "1.0.0",
+      "role": "scrcpy / ADB viewer"
+    },
+    {
+      "name": "build-forge-exe",
+      "path": "automations/build/forge-exe",
+      "kind": "build",
+      "enabled": true,
+      "version": "1.0.0",
+      "role": "PyInstaller pipeline that assembles RKOJ.exe"
+    }
+  ]
+}
