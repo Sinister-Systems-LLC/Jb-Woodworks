@@ -1,0 +1,27 @@
+# Sinister Sanctum :: sinister-swarm
+# Author: RKOJ-ELENO :: 2026-05-21
+# License: AGPL-3.0-or-later
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sinister-swarm"
+version = "0.1.0"
+description = "Sinister Sanctum :: jcode-swarm parity. Multi-agent coordination over the disk-first _shared-memory/ surface: DM, broadcast, spawn-via-launcher, watch-file, mark-done/wait-for, hive-status. Stdlib-only by default."
+authors = [{ name = "RKOJ-ELENO" }]
+license = { text = "AGPL-3.0-or-later" }
+requires-python = ">=3.9"
+readme = "README.md"
+
+dependencies = [
+  # no required deps - stdlib + filesystem only
+]
+
+[project.scripts]
+sinister-swarm = "sinister_swarm.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["sinister_swarm*"]

@@ -4,6 +4,61 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-21 12:28 — shipped: sinister-cli umbrella + sinister-swarm + resume-point bug fix + Forge/Term ACKs + inbox .gitkeep coverage
+
+Spawned via Forge bridge this session — landed on `agent/sinister-forge/r1-r2-r7-r8-r11-2026-05-21`, immediately cut my own branch `agent/sinister-sanctum/cli-dispatcher-2026-05-21` from current HEAD so I commit only my own deliverables (Forge's uncommitted work in WT stays exclusively on their branch). Per CONTRACT 2 NO-STOP, ran the full cycle without operator-prompts.
+
+**Shipped (4 deliverables + 7 helpers):**
+
+1. **`tools/sinister-cli/`** — umbrella `sinister <subcommand>` dispatcher per operator directive 2026-05-21 *"our commands will be sinister then the command"*. 4 files: `pyproject.toml` (installable `pip install -e .`), `sinister_cli/__init__.py`, `sinister_cli/__main__.py` (the dispatcher with `SUBCOMMAND_MAP` for 7 subcommands: memory/swarm/graph/login/freeze/term/forge), `README.md`. Smoke-passed: `sinister help` lists all subcommands; `sinister version` enumerates 5 installed (forge-memory-bridge / sinister-swarm / memory-graph-render / term / forge) + gracefully reports 2 unbuilt (sinister-login / sinister-freeze) with install hints; `sinister swarm whoami` → `sanctum`; `sinister swarm list` enumerated 2 active heartbeats live from disk.
+2. **`tools/sinister-swarm/`** — jcode-swarm parity, stdlib-only. 6 files: `pyproject.toml`, `README.md`, `sinister_swarm/{__init__,api,__main__}.py`, `tests/test_swarm.py` (7 smoke tests). API: `dm(to_slug, msg)` / `broadcast(msg, exclude=...)` / `spawn_agent(project, mode, ...)` (shells out to `start-sinister-session.ps1`) / `list_active(stale_minutes=15)` / `watch_file(path, on_change)` / `mark_done(task, result)` / `wait_for(slug, task, timeout_s)` / `detect_my_slug()`. Disk contracts under `_shared-memory/{inbox,heartbeats,swarm-spawned,swarm-watch,swarm-status,swarm-mcp-cache}.json`. CLI `sinister-swarm <subcmd>` mirrors the API.
+3. **`automations/resume-point-write.ps1` v1.1** — fixed the slug↔display bug noted in prior PROGRESS entry. v1 looked for `PROGRESS/$AgentName.md` literally → empty `progress_top3` when launcher passed slug. v1.1 adds `Resolve-ProgressPath` with 4-candidate fallback (as-is / `Sinister X.md` titlecased / lowercased / known-slug map for sanctum/forge/panel/kernel-apk/apk/term/sinister-term/snap-api/tiktok-api/rkoj/rkoj-workstation), and `Resolve-InboxSlug` that slugifies AgentName (`"Sinister Sanctum"` → `sanctum`). Smoke: `-AgentName "sanctum"` now correctly resolves `Sinister Sanctum.md` (3 headings populated) + finds `inbox/sanctum/` (2 unread).
+4. **`_shared-memory/inbox/{forge,kernel-apk,panel,rkoj,sanctum-audit}/.gitkeep`** — 5 new stubs, addresses Term's HELLO-ACK ask: "consider committing per-agent inbox subdirs with .gitkeep so future contention doesn't wipe untracked inbox files." All 7 known slugs (forge/kernel-apk/panel/rkoj/sanctum/sanctum-audit/sinister-term) now have tracked dirs.
+
+**Coordination drops:**
+- `_shared-memory/cross-agent/2026-05-21T1228Z-sanctum-to-forge-jcode-cli-ack.md` — full ACK to Forge's 12:00Z DELEGATE: confirmed all 3 lane boundaries (sinister-cli = mine, forge.memory = theirs, forge.bridge.registry = theirs), answered (a) memory-consolidate cron only calls forge-memory-bridge (not their pane-internal), answered (b) niri-pattern goes brain-entry FIRST then Forge claims PH-N.
+- `_shared-memory/inbox/forge/2026-05-21T1228Z-ack-jcode-cli-from-sanctum.json` — short index pointing at the cross-agent .md.
+- `_shared-memory/inbox/sinister-term/2026-05-21T1228Z-ack-from-sanctum.json` — confirmed .gitkeep done + offered sinister-swarm API as DRY replacement for their /inbox + /cross-agent + /ask + /broadcast hand-rolled JSON writes.
+
+**Resume-point shipped:** `_shared-memory/resume-points/Sanctum/<UTC>.json` written via the FIXED v1.1 script — now correctly fills `progress_top3` + finds `inbox/sanctum/`. The inaugural-resume-point bug (empty progress_top3) noted in the 10:50 entry is closed.
+
+**Branch state:** `agent/sinister-sanctum/cli-dispatcher-2026-05-21` cut from `agent/sinister-forge/r1-r2-r7-r8-r11-2026-05-21` HEAD (sibling work rides along in branch graph; only my new files committed). 1 commit pending. Push origin in same turn.
+
+**Lane discipline (Forge spawn context):** zero edits under `projects/sinister-forge/source/forge/`. Zero edits to Forge's app.py / bridge / panes. The 9 sibling-modified files in WT (forge/app.py was reverted before I checked, term/__init__.py, accounts.json wipe, projects.json, etc.) left untouched for their owners.
+
+**Auth doctrine honored:** every new file carries `Author: RKOJ-ELENO :: 2026-05-21` per the operator hard-canonical 2026-05-21.
+
+**Cross-agent inflight noted (not mine):** 14:13Z kernel-apk → panel `[CRITICAL]` harvest_now-account-mismatch is panel-lane to action; logged in my pre-warm reads in case Forge or Term picks it up via inbox-poll.
+
+**5-check completion gate:** ✅ explicit asks on disk (Forge DELEGATE answered + Term ACK answered) · ✅ TaskList all completed · ✅ PROGRESS appended top · ✅ MASTER-PLAN.md still doesn't exist (no flags to update; noted in prior PROGRESS) · ✅ next-slice = resume-point + heartbeat fresh on disk.
+
+---
+
+## 2026-05-21 10:50 — shipped: resume housekeeping — flushed 09:19 co-audit deliverables + first Sanctum resume-point ever (commit bce833f)
+
+Tight resume turn, lane-disciplined while a NEW Forge session-start agent is being launched by operator (10:25Z verbatim: *"im lauching another session start agent to work on the sinister forge. so dont interefere with their work"*). Zero edits to `projects/sinister-forge/`, `automations/resume-point-write.ps1`, or any Forge-adjacent file for the entire session.
+
+**Shipped (3 files, 1 commit bce833f, 148 insertions):**
+- `automations/agent-host-routing.md` — was uncommitted from 09:19 co-audit pass. R10 ship: 12 task-class rows + 9 project-lane rows. Forge lane row pins claude-opus-4-7 as primary.
+- `automations/session-contracts.md` — `## Modes (BuiltinPhrases keys)` section added (R4 partial), 15 modes including the v18 `forge` entry.
+- `_shared-memory/cross-agent/2026-05-21T0919Z-sanctum-coaudit-to-sanctum-master-discovery.md` — DISCOVERY broadcast so the running Forge master could pick up these assets without doubling work.
+
+**Inaugural Sanctum resume-point shipped:** `_shared-memory/resume-points/Sanctum/2026-05-21T064903Z.json`. First time the Sanctum project has ever had a resume-point on disk (CONTRACT 7 self-discipline gap closed). The next Sanctum cold-start will load `pre_warm_reads`-only (master-plan.md + session-contracts.md) instead of grepping the whole brain.
+
+**Heartbeat written** to `_shared-memory/heartbeats/sanctum.json` (gitignored, ephemeral); MCP `sinister-bus.heartbeat` not loaded in this session, fallback disk-write per canonical Rule 9.
+
+**Cross-lane drift surfaced (NOT mine to fix — operator decides):**
+- `automations/session-templates/accounts.json` was wiped on the working tree from 29 lines → 0 bytes (multi-account rotation registry). I did NOT commit the wipe; it likely came from sibling-launcher churn. Operator: `git restore -- automations/session-templates/accounts.json` to bring back the 3-account default registry, or accept the wipe if intentional.
+- `automations/session-templates/agent-prefs.json` got `+sinister-panel` + `+__operator_private_letstext__` slots from Panel sibling. Left for Panel agent to commit on their own branch.
+- `_shared-memory/PROGRESS/Sinister Panel.md` modified by Panel — left untouched.
+- 4 other Panel/Kernel-APK untracked artifacts (cross-agent messages + Panel resume-point + Panel brain entry) — sibling lanes own.
+
+**Bug found (deferred this turn):** `automations/resume-point-write.ps1` looks for `PROGRESS/$AgentName.md` using the slug, but the actual file is the display-name `Sinister Sanctum.md`. Result: `progress_top3` came back empty in the inaugural resume-point. Fix is a simple fallback map (slug → display-name); deferred because the script is hot-pathed by the Forge bridge spawn flow (commit `52faf8c`) and the new Forge agent is inbound. Recorded as TaskList row #6 for next safe sweep.
+
+**5-check completion gate:** ✅ all green — operator directive honored (zero Forge touches), TaskList shipped/deferred per item, PROGRESS appended top, no MASTER-PLAN flags to update (file doesn't exist yet on disk), next-slice = resume-point + heartbeat both fresh on disk.
+
+---
+
 ## 2026-05-21 11:00 — shipped: Forge REST/SSE bridge + Claw Forge tab + Claw Settings tab
 
 Sinister Claw PH3 + PH8 land. Mobile app can now actually drive the fleet over Tailscale.
