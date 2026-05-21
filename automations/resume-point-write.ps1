@@ -187,7 +187,11 @@ $rp = [ordered]@{
     pre_warm_reads = @($preWarm)
 }
 
-($rp | ConvertTo-Json -Depth 6) | Out-File $rpFile -Encoding utf8
+# 2026-05-21 fix (sanctum-readiness audit): default `-Encoding utf8` on PS 5.1
+# emits UTF-8 with BOM, breaking Python's `json.load()` with 'Unexpected UTF-8
+# BOM'. Write via [System.IO.File]::WriteAllText with explicit no-BOM encoder.
+$utf8NoBom = New-Object System.Text.UTF8Encoding $false
+[System.IO.File]::WriteAllText($rpFile, ($rp | ConvertTo-Json -Depth 6), $utf8NoBom)
 Write-Host "[resume-point-write] saved: $rpFile" -ForegroundColor Green
 
 try {

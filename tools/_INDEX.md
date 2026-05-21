@@ -27,3 +27,7 @@ Running catalog of every registered tool in the Sanctum. Append-only. See `READM
 | sinister-rkoj-qt | tools/sinister-rkoj-qt/ | tools/sinister-rkoj-qt/sinister_rkoj_qt/app.py (PyQt6 native RKOJ.exe v1.5.0+) | building | 2026-05-21 |
 | sinister-diagnose | tools/sinister-diagnose/ | tools/sinister-diagnose/sinister_diagnose/__main__.py | shipped | 2026-05-21 |
 | sanctum-backup | tools/sanctum-backup/ | tools/sanctum-backup/sanctum_backup/__main__.py | shipped | 2026-05-21 |
+| sinister-jcode-shim | tools/sinister-jcode-shim/ | tools/sinister-jcode-shim/sinister_jcode_shim/cli.py | shipped | 2026-05-21 |
+| sinister-model | tools/sinister-model/ | tools/sinister-model/sinister_model/ | shipped | 2026-05-21 |
+| sinister-recovery-watchdog | tools/sinister-recovery-watchdog/ | tools/sinister-recovery-watchdog/watchdog.ps1 | shipped | 2026-05-21 |
+| sinister-usage | tools/sinister-usage/ | tools/sinister-usage/sinister_usage/ | shipped | 2026-05-21 |
