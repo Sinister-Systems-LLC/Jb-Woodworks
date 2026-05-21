@@ -1,11 +1,11 @@
 {
-  "name": "sinister-claw",
-  "version": "0.1.0",
+  "name": "rkoj-mobile",
+  "version": "0.2.0",
   "private": true,
-  "description": "Sinister Claw - mobile companion for the Sanctum fleet (iOS + Android via Expo).",
+  "description": "RKOJ Mobile - mobile counterpart to the RKOJ desktop workstation (iOS + Android via Expo). Drives Sinister Sanctum fleet over Tailscale.",
   "license": "AGPL-3.0-or-later",
   "author": "RKOJ-ELENO",
-  "main": "app/index.ts",
+  "main": "index.ts",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
@@ -30,7 +30,8 @@
     "react-native-webview": "13.8.0",
     "react-native-event-source": "^1.1.0",
     "@react-navigation/native": "^6.1.0",
-    "@react-navigation/bottom-tabs": "^6.5.0"
+    "@react-navigation/bottom-tabs": "^6.5.0",
+    "@react-navigation/drawer": "^6.6.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

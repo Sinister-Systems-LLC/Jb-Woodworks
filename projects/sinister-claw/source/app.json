@@ -1,27 +1,37 @@
 {
+  "_comment": "RKOJ Mobile :: app.json -- Author: RKOJ-ELENO :: 2026-05-21",
   "expo": {
-    "name": "Sinister Claw",
-    "slug": "sinister-claw",
-    "version": "0.1.0",
+    "name": "RKOJ",
+    "displayName": "RKOJ",
+    "slug": "rkoj",
+    "scheme": "rkoj",
+    "version": "0.2.0",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
-    "primaryColor": "#7A3DD4",
+    "primaryColor": "#A06EFF",
+    "icon": "./assets/icon.png",
     "splash": {
-      "backgroundColor": "#07070B",
+      "image": "./assets/splash-icon.png",
+      "backgroundColor": "#0E0A14",
       "resizeMode": "contain"
     },
     "ios": {
-      "bundleIdentifier": "com.sinistersystems.claw",
+      "bundleIdentifier": "com.rkojeleno.rkoj.ios",
       "supportsTablet": true,
+      "icon": "./assets/icon.png",
       "infoPlist": {
-        "NSFaceIDUsageDescription": "Sinister Claw uses Face ID to unlock the operator's Tailscale token."
+        "NSFaceIDUsageDescription": "RKOJ uses Face ID to unlock the operator's Tailscale token."
       }
     },
     "android": {
-      "package": "com.sinistersystems.claw",
+      "package": "com.rkojeleno.rkoj",
       "adaptiveIcon": {
-        "backgroundColor": "#07070B"
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0E0A14"
       }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-secure-store"
