@@ -42,7 +42,19 @@ param(
     # purple / magenta / cyan / green / yellow / white / random.
     [string]$AccentColor = '',
     [int]$MultiCount = 1,
-    [string]$FreeForm = ''
+    [string]$FreeForm = '',
+    # v14 (test 2026-05-21): -ProjectsFile + -FocusFile so Personal launcher
+    # can pass personal-projects.json instead of the Sanctum-fleet one. The
+    # Personal bat invokes `-ProjectsFile personal-projects.json -FocusFile
+    # personal-focus-suggestions.json`; without these params the PS1 errors.
+    [string]$ProjectsFile = 'projects.json',
+    [string]$FocusFile = 'project-focus-suggestions.json',
+    # v14: -Resume / -ForceWizard pass-throughs the Personal bat sets when
+    # the operator typed `resume` or `new` as the bat arg.
+    [switch]$Resume,
+    [switch]$ForceWizard,
+    # -FocusIntent: operator-supplied focus string injected into phrase.
+    [string]$FocusIntent = ''
 )
 
 # v4: -NoNotepad is now the default. -WithNotepad opts back in.
@@ -642,7 +654,13 @@ if ($accountsJson -and $accountsJson.accounts) {
 }
 
 # Load projects registry
-$projectsJsonPath = Join-Path $TemplatesDir 'projects.json'
+# v14 (test 2026-05-21): $ProjectsFile param lets Personal launcher pass
+# personal-projects.json instead of the Sanctum-fleet projects.json.
+$projectsJsonPath = Join-Path $TemplatesDir $ProjectsFile
+if (-not (Test-Path $projectsJsonPath)) {
+    $fallback = Join-Path $TemplatesDir 'projects.json'
+    if (Test-Path $fallback) { $projectsJsonPath = $fallback }
+}
 $projectsJson = Get-Content $projectsJsonPath -Raw | ConvertFrom-Json
 $Projects = $projectsJson.projects
 $DefaultProject = if ($projectsJson.default) { $projectsJson.default } else { 'sanctum' }
@@ -1399,6 +1417,13 @@ $BuiltinPhrases = @{
     # so it cycles through the work without stopping. Operator-only gates
     # surface via end-of-turn; loop continues with the next item.
     'auto'     = "$MemPreamble AUTONOMOUS LOOP MODE for <PROJECT> (root: <ROOT>). PHASE 1 plan-review: read EVERY plan-bearing file relevant to the project before writing ANY plan TODO - (a) D:\Sinister Sanctum\_shared-memory\MASTER-PLAN.md (full file; surface every row tagged with the project slug or adjacent lane terms); (b) D:\Sinister Sanctum\_shared-memory\plans\<PROJECT>-*\ (every subdir; read latest forward-plan.md + pass-1-draft.md + plan.json by mtime); (c) <ROOT>\CLAUDE.md (full lane scope + Existing research + Research gaps); (d) <ROOT>\.claude\memory\ (every file); (e) D:\Sinister Sanctum\_shared-memory\PROGRESS\<AGENT>.md (top 8 entries - what was last in flight + what's the rolling cadence); (f) D:\Sinister Sanctum\_shared-memory\knowledge\_INDEX.md (every row tagged with project slug); (g) D:\Sinister Sanctum\_shared-memory\OPERATOR-ACTION-QUEUE.md (project-relevant rows); (h) D:\Sinister Sanctum\_shared-memory\inbox\<your-slug>\ (every JSON; surface cross-agent asks). PHASE 2 synthesize: write ONE complete autonomous scope-plan to D:\Sinister Sanctum\_shared-memory\plans\<PROJECT>-auto-<UTC>\master-plan.md - structure: (1) shipped (last 7 days, with commit hashes), (2) open master-actionable (with EXACT-INSTRUCTIONS + EXPECTED-OUTPUT + VERIFICATION + COMMIT-MESSAGE per row), (3) operator-gated (with exact one-liner unblock), (4) sibling-lane (cross-agent asks needed; do NOT touch source), (5) deferred (with named blocker). PHASE 3 TaskCreate every row in section 2 (master-actionable); mark in_progress when claiming. PHASE 4 invoke /loop with NO interval (model self-paces) - the loop skill keeps cycling through TaskList per LOOP DISCIPLINE (run after every visible deliverable: TaskUpdate completed -> TaskList -> claim next -> begin; if empty: top URGENT row in scope-plan section 2; if exhausted: brain-capture from session patterns crossed). PHASE 5 every iteration gates on the 5-check completion gate (explicit ask on disk / TaskList empty / PROGRESS appended / MASTER-PLAN flags match disk / next-slice surface refreshed). Operator-only gates surface via end-of-turn message, then the loop CONTINUES with the next master-actionable item - silence = bug, 'awaiting input' = bug, 'should I continue' = bug. You are the '<AGENT>' agent. BEGIN PHASE 1 NOW.$AUPRespectSuffix$ParallelSuffix"
+    # v17 (test 2026-05-21): SmokeTest mode - loop API endpoints for hours +
+    # document + auto-fix findings. NO UI edits per operator. Detailed report
+    # file written at plans/<PROJECT>-smoketest-<UTC>/report.md.
+    'smoketest' = "$MemPreamble SMOKE TEST MODE for <PROJECT> (root: <ROOT>). Discover EVERY API endpoint this project exposes, then loop through them for HOURS (or until operator stops you) documenting and AUTO-FIXING every failure you find. CRITICAL CONSTRAINT: do NOT change UI / styles / themes / copy / layouts - only fix server-side bugs + endpoint contract violations + data-shape mismatches + auth + error-handling. STEP 1 endpoint discovery: scan <ROOT> for route definitions (FastAPI @router/@app, Express app.<verb>, Next.js app/api routes, Flask @bp.route, Django urls.py, server.py decorators, etc.); also read any OpenAPI/Swagger spec in the repo; also grep recent server logs for endpoints hit in production. STEP 2 build a test matrix at `_shared-memory/plans/<PROJECT>-smoketest-<UTC>/test-matrix.json` listing every endpoint x test case (happy path / bad input / auth failure / rate limit / large payload / malformed body / missing field / wrong content-type / SQL-injection-style / unicode edge). STEP 3 loop: fire each test case; on FAIL, diagnose root cause (read the handler code + adjacent code) + apply a targeted fix + re-fire to confirm + commit the fix on a per-test topic branch. STEP 4 documentation: append to `_shared-memory/plans/<PROJECT>-smoketest-<UTC>/report.md` for EVERY finding: endpoint + test case + observed failure + root cause + fix (file/line/commit) + why this fix vs alternatives. STEP 5 metrics: track total endpoints / total cases / pass / fail-fixed / fail-still-broken / time-elapsed; write a live dashboard at `_shared-memory/plans/<PROJECT>-smoketest-<UTC>/dashboard.md` updated every 30 min. KEEP-LOOPING per canonical-19; do NOT stop until operator says so OR every endpoint has zero open failures across the full test matrix run 3 times consecutively. Use Speed = <SPEED> for parallel endpoint testing.$ContextReviewSuffix$NoStopSuffix$AUPRespectSuffix$ParallelSuffix"
+    # v17 (test 2026-05-21): SecurityAudit mode - loop security surface for
+    # hours + document + auto-fix. Same shape as SmokeTest but security-focused.
+    'securityaudit' = "$MemPreamble SECURITY AUDIT MODE for <PROJECT> (root: <ROOT>). Map EVERY security-relevant surface and loop through it for HOURS documenting and AUTO-FIXING findings. CRITICAL CONSTRAINT: do NOT change UI / styles / themes / copy / layouts - only patch security issues server-side + dependency-level. STEP 1 surface discovery: catalog (a) every auth check + auth-bypass risk (route lacking @login_required / role-check / tenant-isolation), (b) every secret reference (search for hardcoded keys / .env leaks / committed creds), (c) every input boundary (request body / query param / header / file upload / cookie - check sanitization + validation), (d) every SQL/ORM call (parameterization vs string concat), (e) every shell-out (subprocess / exec / eval / spawn - shell=True risks), (f) every dependency (audit packages.json/requirements.txt for known CVEs via npm audit / pip-audit / safety), (g) every CORS/CSRF config + cookie flags + JWT signing alg, (h) every error-path that might leak stack traces or secrets, (i) every file-system access for path-traversal risk. STEP 2 catalog matrix: `_shared-memory/plans/<PROJECT>-secaudit-<UTC>/surface-matrix.json`. STEP 3 loop the matrix: for each surface, run targeted probes (curl auth-bypass attempts, dependency-audit, secret-scrub, semgrep ruleset if available); on FINDING, diagnose + apply fix + commit on per-finding topic branch + re-probe to confirm. STEP 4 documentation: append to `_shared-memory/plans/<PROJECT>-secaudit-<UTC>/report.md` for EVERY finding: surface + probe + observed risk + severity (P0/P1/P2/P3) + root cause + fix (file/line/commit) + alternative fixes considered + residual risk. STEP 5 metrics: total surfaces / findings / fixed / open / severity distribution / time-elapsed; dashboard at `_shared-memory/plans/<PROJECT>-secaudit-<UTC>/dashboard.md` updated every 30 min. KEEP-LOOPING per canonical-19; do NOT stop until operator says so OR every surface has zero open P0/P1 findings across 3 consecutive matrix sweeps. Use Speed = <SPEED> for parallel probing. ESCALATE to operator (one-liner ASK) BEFORE applying any P0 fix touching auth/keys/signing - those are reversibility-walled per canonical-11.$ContextReviewSuffix$NoStopSuffix$AUPRespectSuffix$ParallelSuffix"
 }
 
 $projRec = $Projects | Where-Object { $_.key -eq $Project } | Select-Object -First 1
