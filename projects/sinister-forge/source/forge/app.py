@@ -49,6 +49,8 @@ from forge.panes.picker import AgentPicker, PickerResult
 from forge.panes.swarm_modal import SwarmModal, SwarmModalResult
 from forge.panes.sidebar import Sidebar
 from forge.panes.adb_panel import AdbPanel
+from forge.panes.toolbar import Toolbar
+from forge.panes.statusbar import Statusbar
 from forge.swarm import send_dm as _send_dm, broadcast as _broadcast
 from forge.projects import get_project
 from forge.spawn.base import SpawnConfig
@@ -188,9 +190,16 @@ class ForgeApp(App):
         TabbedMultiPane (agents) and AdbPanel (adb).
         """
         self._boot.remove()
+        # jcode chrome parity: top Toolbar + bottom Statusbar bracket the workspace.
+        # Both widgets use dock: top / dock: bottom so they sit outside the Horizontal
+        # workspace and never compete for vertical space with the sidebar / tabs.
+        self._toolbar = Toolbar()
+        await self.mount(self._toolbar, after=self._chip)
+        self._statusbar = Statusbar()
+        await self.mount(self._statusbar)
         # Workspace = horizontal split: sidebar + main content + optional memory panel
         self._workspace = Horizontal(id="workspace")
-        await self.mount(self._workspace, after=self._chip)
+        await self.mount(self._workspace, after=self._toolbar)
         # Left rail (Sinister Panel-style)
         self._sidebar = Sidebar(active=self._sidebar_active)
         await self._workspace.mount(self._sidebar)
