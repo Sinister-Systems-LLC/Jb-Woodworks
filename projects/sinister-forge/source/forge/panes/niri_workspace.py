@@ -59,6 +59,12 @@ class WorkspaceColumn(Vertical):
     Mirrors niri's column-of-stacked-windows. Panes inside flex equally on the
     vertical axis (Textual `height: 1fr` per child) so 1 pane fills the column,
     2 panes split it in half, 3 panes into thirds, etc.
+
+    Width is REACTIVE on workspace count (operator directive 2026-05-21):
+      - 1 workspace total → width 1fr (expand to fill agent tab)
+      - 2+ workspaces      → width WORKSPACE_WIDTH=80 (niri snap columns)
+    The grid calls `set_solo(True|False)` whenever the workspace count crosses
+    the 1↔2 boundary so the single-console UX is "console fills the tab".
     """
 
     DEFAULT_CSS = f"""
@@ -70,6 +76,11 @@ class WorkspaceColumn(Vertical):
         padding: 0;
         border: round {BORDER_GLASS};
         background: $surface;
+    }}
+    WorkspaceColumn.-solo {{
+        width: 1fr;
+        min-width: 0;
+        margin: 0;
     }}
     WorkspaceColumn.-active {{
         border: round {PURPLE_BRIGHT};
@@ -96,6 +107,18 @@ class WorkspaceColumn(Vertical):
             self.remove_class("-active")
             self.border_title = f"  {self.title}  "
 
+    def set_solo(self, solo: bool) -> None:
+        """Toggle full-width 'console fills the tab' mode (operator directive).
+
+        Called by NiriWorkspaceGrid whenever the workspace count transitions
+        across the 1↔2 boundary so the only-workspace looks like a real
+        console, not a niri snap-column.
+        """
+        if solo:
+            self.add_class("-solo")
+        else:
+            self.remove_class("-solo")
+
     async def attach_pane(self, pane: "AgentPane") -> None:
         self.panes.append(pane)
         await self.mount(pane)
@@ -113,7 +136,13 @@ class WorkspaceColumn(Vertical):
 
 
 class WorkspaceStatusRow(Static):
-    """Top-of-strip status indicator: `[ws 1] [ws 2] · [ws 3*] · [ws 4]`."""
+    """Top-of-strip status indicator: `[ws 1] [ws 2] · [ws 3*] · [ws 4]`.
+
+    AUTO-HIDES when workspace count <= 1 (operator directive 2026-05-21:
+    "agents tab = ONE console view"). The strip only earns its dock space
+    once a SECOND workspace appears (Ctrl+T), so the default Agents tab is
+    a single console without confusing dead-space rectangles.
+    """
 
     DEFAULT_CSS = f"""
     WorkspaceStatusRow {{
@@ -123,9 +152,17 @@ class WorkspaceStatusRow(Static):
         background: $surface-darken-1;
         color: {PURPLE_BRIGHT};
     }}
+    WorkspaceStatusRow.-hidden {{
+        display: none;
+    }}
     """
 
     def render_status(self, count: int, active: int) -> None:
+        # Auto-hide when 0 or 1 workspaces — operator wants console-only by default.
+        if count <= 1:
+            self.add_class("-hidden")
+        else:
+            self.remove_class("-hidden")
         if count == 0:
             self.update("[dim]no workspaces · Ctrl+T to open[/]")
             return
@@ -205,13 +242,19 @@ class NiriWorkspaceGrid(ScrollableContainer):
     # ---- lifecycle ----
 
     def compose(self) -> ComposeResult:
+        # Operator directive 2026-05-21: "agents tab = ONE console view with
+        # all jcode features". Default to a single solo workspace ready for the
+        # first pane — no empty workspace strip, no 6-ws dead-space. Strip
+        # auto-appears when Ctrl+T opens a second workspace.
         yield self._status_row
-        self._placeholder = Static(
-            "no workspaces · Ctrl+T to open · Ctrl+W to spawn agent",
-            classes="empty-grid",
-        )
-        yield self._placeholder
-        self._status_row.render_status(0, -1)
+        first = WorkspaceColumn(index=0, title="ws 1")
+        first.set_solo(True)
+        first.set_active(True)
+        self.workspaces.append(first)
+        self._active_idx = 0
+        yield first
+        # Render status (will auto-hide since count == 1)
+        self._status_row.render_status(1, 0)
 
     # ---- public state ----
 
@@ -247,13 +290,21 @@ class NiriWorkspaceGrid(ScrollableContainer):
     # ---- mutation ----
 
     async def new_workspace(self, title: str | None = None) -> WorkspaceColumn:
-        """Append a new (empty) workspace and focus it."""
+        """Append a new (empty) workspace and focus it.
+
+        When the count crosses 1→2 we drop the `-solo` full-width class from
+        the existing first workspace so both fit niri's snap-column model.
+        """
         if self._placeholder is not None:
             try:
                 await self._placeholder.remove()
             except Exception:
                 pass
             self._placeholder = None
+        # Crossing 1→2: revoke solo on existing workspace(s) so they collapse
+        # back to the snap-column WORKSPACE_WIDTH=80.
+        if len(self.workspaces) == 1:
+            self.workspaces[0].set_solo(False)
         idx = len(self.workspaces)
         ws = WorkspaceColumn(index=idx, title=title)
         self.workspaces.append(ws)
@@ -263,7 +314,11 @@ class NiriWorkspaceGrid(ScrollableContainer):
 
     async def close_workspace(self, index: int | None = None) -> None:
         """Close the workspace at `index` (default: active). Panes inside are
-        removed too — caller is expected to terminate any subprocesses first."""
+        removed too — caller is expected to terminate any subprocesses first.
+
+        When the count crosses 2→1 we re-apply `-solo` to the last remaining
+        workspace so the operator gets the full-width console view back.
+        """
         if not self.workspaces:
             return
         target = self._active_idx if index is None else index
@@ -290,6 +345,9 @@ class NiriWorkspaceGrid(ScrollableContainer):
                 pass
             self._status_row.render_status(0, -1)
             return
+        # Crossing 2→1: the sole survivor gets solo full-width treatment.
+        if len(self.workspaces) == 1:
+            self.workspaces[0].set_solo(True)
         new_idx = min(target, len(self.workspaces) - 1)
         self._set_active(new_idx)
 
@@ -321,7 +379,10 @@ class NiriWorkspaceGrid(ScrollableContainer):
         if target_idx < 0 or target_idx >= len(self.workspaces):
             # niri: moving past the edge spawns a new workspace there
             if target_idx < 0:
-                # prepend
+                # prepend — count is about to grow, revoke solo from existing
+                # workspaces so the new pair share niri snap-column widths.
+                if len(self.workspaces) == 1:
+                    self.workspaces[0].set_solo(False)
                 new_ws = WorkspaceColumn(index=0, title="ws 1")
                 self.workspaces.insert(0, new_ws)
                 await self.mount(new_ws)
