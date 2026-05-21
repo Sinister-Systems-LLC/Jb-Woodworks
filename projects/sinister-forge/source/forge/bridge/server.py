@@ -338,6 +338,7 @@ def forge_spawn():
             token_mode=token_mode,
             speed=speed,
             phrase=phrase,
+            focus_intent=focus,
         )
     except FileNotFoundError as e:
         return jsonify({"error": str(e)}), 500

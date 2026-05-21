@@ -9,6 +9,7 @@
 
 from __future__ import annotations
 
+import json
 import os
 import queue
 import shutil
@@ -19,6 +20,9 @@ import uuid
 from collections import deque
 from dataclasses import dataclass, field
 from pathlib import Path
+
+
+SANCTUM_ROOT = Path(os.environ.get("SANCTUM_ROOT") or "D:/Sinister Sanctum")
 
 
 RING_SIZE = 2000  # last N lines kept per agent for late subscribers
@@ -90,6 +94,7 @@ class Registry:
         token_mode: str,
         speed: str,
         phrase: str,
+        focus_intent: str = "",
     ) -> AgentRecord:
         binary = "claude" if host == "claude" else "codex"
         resolved = shutil.which(binary)
@@ -151,6 +156,7 @@ class Registry:
             self._agents[rec.id] = rec
 
         threading.Thread(target=_pump_stdout, args=(rec,), daemon=True).start()
+        _write_resume_point(rec, focus_intent=focus_intent)
         return rec
 
     def terminate(self, agent_id: str) -> bool:
@@ -194,6 +200,66 @@ class Registry:
                 rec.subscribers.remove(sub)
             except ValueError:
                 pass
+
+
+def _write_resume_point(rec: AgentRecord, *, focus_intent: str) -> None:
+    """Drop a sinister.resume-point.v1 JSON so the spawned agent boots warm."""
+    try:
+        head, head_msg, recent = _git_head_info()
+    except Exception:
+        head, head_msg, recent = ("", "", [])
+    payload = {
+        "schema_version": "sinister.resume-point.v1",
+        "ts_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "project": rec.project_display,
+        "agent_name": rec.agent_name,
+        "mode": rec.mode,
+        "focus_intent": focus_intent,
+        "via": "forge-bridge",
+        "git": {
+            "branch": _git_branch(),
+            "head": head,
+            "head_msg": head_msg,
+            "recent_commits": recent,
+        },
+        "progress_top3": [],
+        "latest_plan": {"dir": None, "artifact": None},
+    }
+    try:
+        rp_dir = SANCTUM_ROOT / "_shared-memory" / "resume-points" / rec.project_display
+        rp_dir.mkdir(parents=True, exist_ok=True)
+        stamp = time.strftime("%Y-%m-%dT%H%M%SZ", time.gmtime())
+        (rp_dir / f"{stamp}.json").write_text(
+            json.dumps(payload, indent=4), encoding="utf-8"
+        )
+    except Exception:
+        pass
+
+
+def _git_branch() -> str:
+    try:
+        return subprocess.check_output(
+            ["git", "rev-parse", "--abbrev-ref", "HEAD"],
+            cwd=str(SANCTUM_ROOT), text=True, stderr=subprocess.DEVNULL, timeout=5,
+        ).strip()
+    except Exception:
+        return ""
+
+
+def _git_head_info() -> tuple[str, str, list[str]]:
+    try:
+        out = subprocess.check_output(
+            ["git", "log", "-10", "--pretty=format:%H|%s"],
+            cwd=str(SANCTUM_ROOT), text=True, stderr=subprocess.DEVNULL, timeout=5,
+        )
+    except Exception:
+        return ("", "", [])
+    lines = [ln for ln in out.splitlines() if "|" in ln]
+    if not lines:
+        return ("", "", [])
+    head_hash, head_msg = lines[0].split("|", 1)
+    recent = [ln.replace("|", " ", 1)[:120] for ln in lines]
+    return (head_hash, head_msg, recent)
 
 
 def _pump_stdout(rec: AgentRecord) -> None:
