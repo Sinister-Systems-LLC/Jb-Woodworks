@@ -1,0 +1,27 @@
+# Sinister Sanctum :: sinister-jcode-shim
+# Author: RKOJ-ELENO :: 2026-05-21
+# License: AGPL-3.0-or-later
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sinister-jcode-shim"
+version = "0.1.0"
+description = "Sinister Sanctum :: sidecar mode for the prebuilt jcode-windows-x86_64.exe. Finds the binary (Desktop, PATH, $JCODE_BIN), injects Sinister env config (JCODE_CONFIG_DIR / JCODE_SKILLS_DIR / JCODE_SESSIONS_DIR), pulls API keys from the sinister-login wallet, threads the sinister-model active selection through JCODE_MODEL, and execs jcode with the caller's argv passed through. Bridges the gap until we fork jcode source-level into sinister-rkoj (Rust toolchain operator-gated)."
+authors = [{ name = "RKOJ-ELENO" }]
+license = { text = "AGPL-3.0-or-later" }
+requires-python = ">=3.9"
+readme = "README.md"
+
+dependencies = [
+  "click>=8.0",
+]
+
+[project.scripts]
+sinister-jcode-shim = "sinister_jcode_shim.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["sinister_jcode_shim*"]
