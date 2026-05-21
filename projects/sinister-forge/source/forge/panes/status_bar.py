@@ -8,7 +8,7 @@ from textual.widgets import Static
 
 class StatusBar(Static):
     def __init__(self) -> None:
-        # Textual 8.x: pass initial content so first render() returns Content, not None.
+        # Textual 8.x: pass initial content positionally so first paint has Content.
         super().__init__(
             " [b]SINISTER FORGE[/b]  ::  agents [b]0[/]/[b]0[/]  "
             "::  [dim]Ctrl+W new  Ctrl+Tab cycle  F1 help[/]",
@@ -24,8 +24,7 @@ class StatusBar(Static):
         self._refresh_view()
 
     def _refresh_view(self) -> None:
-        # Do NOT name this _render — that shadows Widget._render which must
-        # return a Visual. See chrome.py StatusFooter for the same fix.
+        # Do NOT name this _render - shadows textual.widget.Widget._render.
         cur = self._current_idx + 1 if self._current_idx >= 0 else 0
         self.update(
             f" [b]SINISTER FORGE[/b]  ::  agents [b]{cur}[/]/[b]{self._agent_count}[/]  "

@@ -28,6 +28,7 @@ import webbrowser
 from pathlib import Path
 
 try:
+    from textual import work
     from textual.app import App, ComposeResult
     from textual.binding import Binding
     from textual.containers import Container, Horizontal, Vertical
@@ -141,7 +142,10 @@ class ForgeApp(App):
 
     # ---------- actions ----------
 
+    @work
     async def action_new_agent(self) -> None:
+        # Textual 8.x: push_screen_wait requires a worker context. Without @work
+        # the call raises NoActiveWorker and Ctrl+W crashes the app.
         result: PickerResult | None = await self.push_screen_wait(AgentPicker())
         if not result:
             return
@@ -228,7 +232,9 @@ class ForgeApp(App):
             self._memory_visible = False
             self.notify("memory panel closed", timeout=2)
 
+    @work
     async def action_command_palette(self) -> None:
+        # Textual 8.x: push_screen_wait requires a worker context.
         cmd_id = await self.push_screen_wait(CommandPalette())
         if not cmd_id:
             return

@@ -30,9 +30,7 @@ class ChromeBar(Static):
     DEFAULT_CSS = ""
 
     def __init__(self) -> None:
-        # Textual 8.x: Static needs initial content passed to super().__init__,
-        # otherwise the first render() returns None and crashes Visual.to_strips
-        # with AttributeError: 'NoneType' object has no attribute 'render_strips'.
+        # Textual 8.x: pass initial content positionally so first paint has Content.
         super().__init__(
             "[bold]◈ SINISTER FORGE[/bold]  [dim]:: operator console[/]",
             id="chrome-bar",
@@ -70,6 +68,7 @@ class ProjectChip(Static):
     """Strip showing which project the user is focused on."""
 
     def __init__(self) -> None:
+        # Textual 8.x: pass initial content positionally so first paint has Content.
         super().__init__(
             f"[{DIM}]no project selected · press Ctrl+W to spawn[/]",
             id="project-chip",
@@ -84,9 +83,9 @@ class ProjectChip(Static):
         self._refresh_view()
 
     def _refresh_view(self) -> None:
-        # Renamed from _render to avoid shadowing textual.widget.Widget._render
-        # which is a framework method returning Visual. Naming our helper _render
-        # caused the widget to render None, crashing Visual.to_strips at boot.
+        # Do NOT name this _render - that shadows textual.widget.Widget._render
+        # which must return a Visual. The override returns None and crashes
+        # Visual.to_strips at first paint with AttributeError.
         if not self._project_display:
             self.update(f"[{DIM}]no project selected · press Ctrl+W to spawn[/]")
             return
@@ -100,6 +99,7 @@ class StatusFooter(Static):
     """Bottom info row beneath Footer. Branch / agent-count / mode."""
 
     def __init__(self) -> None:
+        # Textual 8.x: pass initial content positionally so first paint has Content.
         super().__init__(
             f"[{DIM}]branch[/] [{PURPLE_HALO}]?[/]   "
             f"[{DIM}]agents[/] [{CYAN}]0[/]   "
@@ -134,8 +134,7 @@ class StatusFooter(Static):
         self._refresh_view()
 
     def _refresh_view(self) -> None:
-        # Renamed from _render to avoid shadowing textual.widget.Widget._render
-        # (same fix as ProjectChip — see comment there).
+        # Do NOT name this _render (see ProjectChip._refresh_view for rationale).
         self.update(
             f"[{DIM}]branch[/] [{PURPLE_HALO}]{self._branch or '?'}[/]   "
             f"[{DIM}]agents[/] [{CYAN}]{self._agents_active}[/]   "
