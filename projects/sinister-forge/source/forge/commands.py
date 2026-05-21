@@ -20,6 +20,7 @@
 from __future__ import annotations
 
 import datetime
+import difflib
 import json
 import os
 import platform
@@ -90,6 +91,53 @@ def _save_forge_prefs(prefs: dict) -> Path:
     tmp.write_text(json.dumps(prefs, indent=2, sort_keys=True), encoding="utf-8")
     os.replace(str(tmp), str(p))
     return p
+
+
+# ----- todos persistence (jcode-parity /todo) ----------------------------
+
+def _todos_path() -> Path:
+    """Returns ~/.config/sinister/todos.json or %APPDATA%/sinister/todos.json."""
+    if platform.system() == "Windows":
+        appdata = os.environ.get("APPDATA")
+        base = Path(appdata) if appdata else Path.home() / "AppData" / "Roaming"
+        return base / "sinister" / "todos.json"
+    return Path.home() / ".config" / "sinister" / "todos.json"
+
+
+def _load_todos() -> list[dict]:
+    """Read todos.json. Returns [] on any error (missing/parse/etc)."""
+    p = _todos_path()
+    if not p.exists():
+        return []
+    try:
+        data = json.loads(p.read_text(encoding="utf-8-sig"))
+        if isinstance(data, list):
+            return data
+        return []
+    except Exception:
+        return []
+
+
+def _save_todos(todos: list[dict]) -> Path:
+    """Atomic write — tmp + rename. Creates parent dirs as needed."""
+    p = _todos_path()
+    p.parent.mkdir(parents=True, exist_ok=True)
+    tmp = p.with_suffix(p.suffix + ".tmp")
+    tmp.write_text(json.dumps(todos, indent=2, sort_keys=False), encoding="utf-8")
+    os.replace(str(tmp), str(p))
+    return p
+
+
+# ----- unified-diff helper (jcode-parity /diff) --------------------------
+
+def _unified_diff_text(a: str, b: str, fromfile: str, tofile: str) -> str:
+    """Return unified diff between two text blobs. Empty string if identical."""
+    a_lines = a.splitlines(keepends=True) if a else []
+    b_lines = b.splitlines(keepends=True) if b else []
+    diff = difflib.unified_diff(
+        a_lines, b_lines, fromfile=fromfile, tofile=tofile, n=3
+    )
+    return "".join(diff)
 
 
 # ----- sanctum-root helper -----------------------------------------------
@@ -2763,6 +2811,403 @@ def _cmd_mermaid(args, pane, app) -> str:
 
 
 # ===========================================================================
+# NEW (jcode-parity batch): /todo /focus /diff /search /export
+# ===========================================================================
+
+def _cmd_todo(args, pane=None, app=None) -> str:
+    """jcode-parity /todo — per-session todo list, persists to todos.json.
+
+    Subcommands:
+      /todo                 -> list (default)
+      /todo list            -> checkbox-style list
+      /todo add <text>      -> append a new todo
+      /todo done <N>        -> mark todo N (1-indexed) done
+      /todo clear           -> remove all done todos
+
+    Each entry: {id, text, created, done}.
+    """
+    todos = _load_todos()
+    sub = (args[0].lower() if args else "list")
+
+    if sub == "list":
+        if not todos:
+            return ("  no todos.  "
+                    "[dim]/todo add <text> · /todo done <N> · /todo clear[/]")
+        lines = [f"[bold]Todos[/] [dim]({_todos_path()})[/]"]
+        for i, t in enumerate(todos, start=1):
+            box = "[x]" if t.get("done") else "[ ]"
+            text = t.get("text", "(no text)")
+            lines.append(f"  {i:>2}. {box} {text}")
+        n_done = sum(1 for t in todos if t.get("done"))
+        lines.append(f"  [dim]{n_done}/{len(todos)} done · /todo done <N> · /todo clear[/]")
+        return "\n".join(lines)
+
+    if sub == "add":
+        text = " ".join(args[1:]).strip()
+        if not text:
+            return "[yellow]usage: /todo add <text>[/]"
+        next_id = (max((t.get("id", 0) for t in todos), default=0) + 1)
+        entry = {
+            "id": next_id,
+            "text": text,
+            "created": datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "done": False,
+        }
+        todos.append(entry)
+        try:
+            p = _save_todos(todos)
+        except Exception as e:
+            return f"[red]/todo add: save failed: {e}[/]"
+        return f"  added #{next_id}: {text}  [dim]→ {p}[/]"
+
+    if sub == "done":
+        if len(args) < 2 or not args[1].isdigit():
+            return "[yellow]usage: /todo done <N>  (1-indexed)[/]"
+        idx = int(args[1])
+        if not (1 <= idx <= len(todos)):
+            return f"[yellow]/todo done: index out of range (1-{len(todos)})[/]"
+        todos[idx - 1]["done"] = True
+        try:
+            _save_todos(todos)
+        except Exception as e:
+            return f"[red]/todo done: save failed: {e}[/]"
+        return f"  done #{idx}: {todos[idx - 1].get('text', '')}"
+
+    if sub == "clear":
+        before = len(todos)
+        kept = [t for t in todos if not t.get("done")]
+        try:
+            _save_todos(kept)
+        except Exception as e:
+            return f"[red]/todo clear: save failed: {e}[/]"
+        return f"  cleared {before - len(kept)} done todo(s); {len(kept)} remain"
+
+    return f"[yellow]unknown /todo subcommand `{sub}` — list | add <text> | done <N> | clear[/]"
+
+
+def _cmd_focus(args, pane=None, app=None) -> str:
+    """jcode-parity /focus — pin a focus file consumed by /context recall + system prompt.
+
+    Subcommands:
+      /focus                -> alias of status
+      /focus status         -> show current focus
+      /focus off            -> clear focus
+      /focus <filename>     -> set focus path
+    """
+    prefs = _load_forge_prefs()
+    sub = (args[0].lower() if args else "status")
+
+    if sub == "status":
+        cur = prefs.get("focus_file")
+        if not cur:
+            return ("  focus: (none)  "
+                    "[dim]/focus <filename> to set · /focus off to clear[/]")
+        exists = Path(cur).exists()
+        flag = "[green]ok[/]" if exists else "[yellow]missing[/]"
+        return f"  focus: {cur}  {flag}"
+
+    if sub == "off":
+        if "focus_file" in prefs:
+            prefs.pop("focus_file", None)
+            try:
+                _save_forge_prefs(prefs)
+            except Exception as e:
+                return f"[red]/focus off: save failed: {e}[/]"
+            return "  focus cleared"
+        return "  focus already empty"
+
+    # treat all args as the path (supports paths with spaces via shlex)
+    path = " ".join(args).strip().strip('"').strip("'")
+    if not path:
+        return "[yellow]usage: /focus <filename> | off | status[/]"
+    prefs["focus_file"] = path
+    try:
+        p = _save_forge_prefs(prefs)
+    except Exception as e:
+        return f"[red]/focus: save failed: {e}[/]"
+    exists = Path(path).exists()
+    flag = "[green]ok[/]" if exists else "[yellow]not yet on disk[/]"
+    return f"  focus: {path}  {flag}  [dim]→ {p}[/]"
+
+
+def _cmd_diff(args, pane=None, app=None) -> str:
+    """jcode-parity /diff — unified diff between two resume-points.
+
+    Usage:
+      /diff                       -> diff most-recent vs second-most-recent
+      /diff <rp-1> <rp-2>         -> diff two named resume-points (by filename)
+
+    Diffs head_msg + pre_warm_reads + progress_top3 fields.
+    """
+    sr = _sanctum_root()
+    proj = (os.environ.get("SINISTER_PROJECT_DISPLAY")
+            or os.environ.get("SINISTER_PROJECT")
+            or "Sinister Sanctum")
+    rp_dir = sr / "_shared-memory" / "resume-points"
+    seen: set[str] = set()
+    candidates: list[Path] = []
+    for slot in (proj, "Sanctum", "Sinister Sanctum"):
+        d = rp_dir / slot
+        if d.exists():
+            for f in d.glob("*.json"):
+                key = str(f.resolve())
+                if key in seen:
+                    continue
+                seen.add(key)
+                candidates.append(f)
+    if not candidates:
+        return f"[yellow]/diff: no resume-points found for {proj}[/]"
+    candidates.sort(key=lambda p: p.stat().st_mtime, reverse=True)
+
+    def _resolve(name: str) -> Path | None:
+        # exact name first
+        for c in candidates:
+            if c.name == name:
+                return c
+        # stem match
+        for c in candidates:
+            if c.stem == name:
+                return c
+        return None
+
+    if len(args) >= 2:
+        a_path = _resolve(args[0])
+        b_path = _resolve(args[1])
+        if not a_path:
+            return f"[yellow]/diff: resume-point not found: {args[0]}[/]"
+        if not b_path:
+            return f"[yellow]/diff: resume-point not found: {args[1]}[/]"
+    else:
+        if len(candidates) < 2:
+            return ("[yellow]/diff: need at least 2 resume-points "
+                    f"(found {len(candidates)})[/]")
+        # diff older vs newer (older as 'a', newer as 'b' — so + means "added recently")
+        b_path = candidates[0]
+        a_path = candidates[1]
+
+    def _load(p: Path) -> dict:
+        try:
+            return json.loads(p.read_text(encoding="utf-8-sig"))
+        except Exception:
+            return {}
+
+    a_data = _load(a_path)
+    b_data = _load(b_path)
+
+    def _render(d: dict) -> str:
+        head_msg = (d.get("git") or {}).get("head_msg", "") or d.get("head_msg", "")
+        pwr = d.get("pre_warm_reads") or []
+        top3 = d.get("progress_top3") or d.get("progress_summary") or []
+        lines = [f"head_msg: {head_msg}", "pre_warm_reads:"]
+        for r in pwr:
+            lines.append(f"  - {r}")
+        lines.append("progress_top3:")
+        for p in top3:
+            lines.append(f"  - {p}")
+        return "\n".join(lines) + "\n"
+
+    a_text = _render(a_data)
+    b_text = _render(b_data)
+    diff = _unified_diff_text(a_text, b_text, a_path.name, b_path.name)
+    if not diff:
+        return f"  [dim]no differences between {a_path.name} and {b_path.name}[/]"
+    header = (f"[bold]/diff[/]  {a_path.name}  →  {b_path.name}\n"
+              f"  [dim]fields: head_msg + pre_warm_reads + progress_top3[/]\n")
+    return header + diff.rstrip()
+
+
+def _cmd_search(args, pane=None, app=None) -> str:
+    """jcode-parity /search — full-text search across _shared-memory/.
+
+    Prefers forge_memory_bridge.recall() (BM25-ranked) when available,
+    falls back to a grep-style scan. Prints top 5 matches with snippets.
+    """
+    if not args:
+        return "[yellow]usage: /search <query>[/]"
+    q = " ".join(args).strip()
+    if not q:
+        return "[yellow]usage: /search <query>[/]"
+
+    # 1. Try forge_memory_bridge (BM25 if it has it).
+    try:
+        import forge_memory_bridge  # type: ignore
+        fn = getattr(forge_memory_bridge, "recall", None)
+        if callable(fn):
+            try:
+                results = fn(q, limit=5)
+                if results:
+                    seq = results if isinstance(results, list) else [results]
+                    lines = [f"[bold]/search[/] {q!r}  [dim](bridge.recall — BM25)[/]"]
+                    for i, r in enumerate(seq[:5], start=1):
+                        snippet = str(r).replace("\n", " ")
+                        if len(snippet) > 200:
+                            snippet = snippet[:200] + "…"
+                        lines.append(f"  {i}. {snippet}")
+                    return "\n".join(lines)
+            except Exception:
+                pass
+    except Exception:
+        pass
+
+    # 2. Fallback: grep-style scan of _shared-memory/.
+    sr = _sanctum_root()
+    root = sr / "_shared-memory"
+    if not root.exists():
+        return f"[yellow]/search: {root} does not exist[/]"
+    needle = q.lower()
+    hits: list[tuple[Path, int, str]] = []
+    # cap walked files to keep this snappy
+    walked = 0
+    for ext in ("*.md", "*.json", "*.txt"):
+        for p in root.rglob(ext):
+            walked += 1
+            if walked > 3000:
+                break
+            try:
+                txt = p.read_text(encoding="utf-8-sig", errors="replace")
+            except Exception:
+                continue
+            low = txt.lower()
+            idx = low.find(needle)
+            if idx < 0:
+                continue
+            # snippet: 60 chars before + 120 after
+            start = max(0, idx - 60)
+            end = min(len(txt), idx + 120)
+            snippet = txt[start:end].replace("\n", " ")
+            hits.append((p, idx, snippet))
+            if len(hits) >= 50:
+                break
+        if len(hits) >= 50:
+            break
+    if not hits:
+        return f"  [dim]no matches for {q!r} in {root} ({walked} files scanned)[/]"
+    # rank: prefer shallow paths (lower depth) then by file mtime
+    hits.sort(key=lambda h: (len(h[0].relative_to(root).parts),
+                             -h[0].stat().st_mtime))
+    lines = [f"[bold]/search[/] {q!r}  [dim](grep fallback — top 5 of {len(hits)})[/]"]
+    for i, (p, _idx, snip) in enumerate(hits[:5], start=1):
+        rel = p.relative_to(sr)
+        lines.append(f"  {i}. {rel}")
+        lines.append(f"     [dim]{snip.strip()}[/]")
+    return "\n".join(lines)
+
+
+def _cmd_export(args, pane=None, app=None) -> str:
+    """jcode-parity /export — session journal / brain entries to JSONL.
+
+    Usage:
+      /export                       -> session (default), default path
+      /export session [<path>]      -> latest session journal as JSONL
+      /export brain   [<path>]      -> all brain entries (YAML+content) as JSONL
+      /export all     [<path>]      -> both
+
+    Default path: ~/Desktop/rkoj-export-<ts>.jsonl
+    """
+    kind = (args[0].lower() if args else "session")
+    if kind not in ("session", "brain", "all"):
+        return "[yellow]usage: /export [session|brain|all] [<path>][/]"
+    explicit_path = " ".join(args[1:]).strip().strip('"').strip("'") if len(args) >= 2 else ""
+
+    ts = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H%M%SZ")
+    if explicit_path:
+        out_path = Path(explicit_path).expanduser()
+    else:
+        desktop = Path.home() / "Desktop"
+        if not desktop.exists():
+            desktop = Path.home()
+        out_path = desktop / f"rkoj-export-{ts}.jsonl"
+
+    sr = _sanctum_root()
+    records: list[dict] = []
+    summary: list[str] = []
+
+    def _add_session() -> None:
+        sess_dir = sr / "_shared-memory" / "forge-memory" / "anthropic-direct-sessions"
+        if not sess_dir.exists():
+            summary.append("session: (no anthropic-direct-sessions dir)")
+            return
+        journals = sorted(sess_dir.glob("*.jsonl"),
+                          key=lambda p: p.stat().st_mtime, reverse=True)
+        if not journals:
+            summary.append("session: (no *.jsonl journals found)")
+            return
+        latest = journals[0]
+        n = 0
+        try:
+            for raw in latest.read_text(encoding="utf-8-sig", errors="replace").splitlines():
+                raw = raw.strip()
+                if not raw:
+                    continue
+                try:
+                    obj = json.loads(raw)
+                except Exception:
+                    obj = {"raw": raw}
+                if isinstance(obj, dict):
+                    obj.setdefault("_export_kind", "session")
+                    obj.setdefault("_export_source", latest.name)
+                    records.append(obj)
+                else:
+                    records.append({
+                        "_export_kind": "session",
+                        "_export_source": latest.name,
+                        "payload": obj,
+                    })
+                n += 1
+        except Exception as e:
+            summary.append(f"session: read failed: {e}")
+            return
+        summary.append(f"session: {n} message(s) from {latest.name}")
+
+    def _add_brain() -> None:
+        brain_dir = sr / "_shared-memory" / "knowledge"
+        if not brain_dir.exists():
+            summary.append("brain: (no knowledge dir)")
+            return
+        n = 0
+        for md in sorted(brain_dir.glob("*.md")):
+            try:
+                content = md.read_text(encoding="utf-8-sig", errors="replace")
+            except Exception:
+                continue
+            # naive YAML front-matter extraction (--- ... --- at file start)
+            yaml_block = ""
+            body = content
+            if content.startswith("---\n") or content.startswith("---\r\n"):
+                end = content.find("\n---", 4)
+                if end > 0:
+                    yaml_block = content[4:end].strip()
+                    body = content[end + 4:].lstrip("\r\n")
+            records.append({
+                "_export_kind": "brain",
+                "_export_source": md.name,
+                "path": str(md.relative_to(sr)),
+                "yaml": yaml_block,
+                "content": body,
+            })
+            n += 1
+        summary.append(f"brain: {n} entry/entries from knowledge/")
+
+    if kind in ("session", "all"):
+        _add_session()
+    if kind in ("brain", "all"):
+        _add_brain()
+
+    try:
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        with out_path.open("w", encoding="utf-8") as f:
+            for rec in records:
+                f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+    except Exception as e:
+        return f"[red]/export: write failed: {e}  [dim](path={out_path})[/]"
+
+    lines = [f"  exported {len(records)} record(s) → {out_path}"]
+    for s in summary:
+        lines.append(f"  · {s}")
+    return "\n".join(lines)
+
+
+# ===========================================================================
 # REGISTRY — name → handler + metadata
 # ===========================================================================
 
@@ -2856,6 +3301,18 @@ SLASH_COMMANDS: dict[str, dict[str, Any]] = {
     "workspace":  _entry(_cmd_workspace, "status|on|off|add — niri-style workspace splits",   "ui"),
     "subscription": _entry(_cmd_subscription, "tier + monthly_cap + current_usage + renews_at (jcode/RKOJ scaffold)", "auth"),
     "unsave":     _entry(_cmd_unsave,    "remove the most recent resume-point bookmark (use --force to confirm)", "session"),
+
+    # NEW (jcode-parity batch W): /todo /focus /diff /search /export
+    "todo":       _entry(_cmd_todo,      "list | add <text> | done <N> | clear  (per-session todos)", "session",
+                          "Persists to ~/.config/sinister/todos.json or %APPDATA%/sinister/todos.json. Each entry: {id, text, created, done}."),
+    "focus":      _entry(_cmd_focus,     "<filename> | off | status  (focus file for /context + system prompt)", "session",
+                          "Persisted to forge-prefs.json under `focus_file`. Consumed by /context recall."),
+    "diff":       _entry(_cmd_diff,      "[<resume-point-1> <resume-point-2>]  (unified diff)", "session",
+                          "Diffs head_msg + pre_warm_reads + progress_top3 fields. Default: latest vs previous."),
+    "search":     _entry(_cmd_search,    "<query>  (full-text across _shared-memory/)", "memory",
+                          "Prefers forge_memory_bridge.recall() (BM25) when available; falls back to grep-style scan."),
+    "export":     _entry(_cmd_export,    "[session|brain|all] [<path>]  (export to JSONL)", "session",
+                          "Default path: ~/Desktop/rkoj-export-<ts>.jsonl. Session=latest journal, brain=knowledge/*.md."),
 }
 
 
