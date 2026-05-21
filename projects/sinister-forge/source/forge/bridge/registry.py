@@ -27,6 +27,14 @@ SANCTUM_ROOT = Path(os.environ.get("SANCTUM_ROOT") or "D:/Sinister Sanctum")
 
 RING_SIZE = 2000  # last N lines kept per agent for late subscribers
 
+# PH16 file-edit watcher: scan period + glob roots. Lazily started on first
+# Registry.spawn() so test code paths that never spawn don't pay the cost.
+_WATCH_ROOTS = (SANCTUM_ROOT / "projects",)
+_WATCH_GLOB_SUFFIX = "source"  # only watch projects/<x>/source/* subtrees
+_WATCH_DEBOUNCE_SEC = 0.6      # collapse rapid-fire writes (IDE saves)
+_WATCH_IGNORE_SUFFIXES = (".pyc", ".pyo", ".swp", ".tmp", "~", ".egg-info")
+_WATCH_IGNORE_DIRS = (".git", "__pycache__", "node_modules", ".venv", ".sanctum-staging")
+
 
 @dataclass
 class AgentRecord:
@@ -68,6 +76,9 @@ class Registry:
     def __init__(self) -> None:
         self._agents: dict[str, AgentRecord] = {}
         self._lock = threading.Lock()
+        # PH16 file-edit notification pump (lazy-init on first spawn)
+        self._file_watch_started = False
+        self._file_watch_lock = threading.Lock()
 
     def list(self) -> list[AgentRecord]:
         with self._lock:
@@ -157,7 +168,49 @@ class Registry:
 
         threading.Thread(target=_pump_stdout, args=(rec,), daemon=True).start()
         _write_resume_point(rec, focus_intent=focus_intent)
+        # PH16: ensure the file-edit notification pump is running so every
+        # active agent receives [FILE-CHANGED] events from sibling editors.
+        self._ensure_file_watch_started()
         return rec
+
+    def _ensure_file_watch_started(self) -> None:
+        """Lazy-start the watchdog observer on first spawn.
+
+        Imports watchdog only when needed - tests that touch the registry
+        for unit-level smoke (no real spawn) shouldn't pay the import cost
+        or risk a missing-dep failure if watchdog isn't installed in dev.
+        """
+        with self._file_watch_lock:
+            if self._file_watch_started:
+                return
+            try:
+                _start_file_watcher(self)
+                self._file_watch_started = True
+            except Exception as e:
+                # Non-fatal: file-edit notifications are sugar, not a contract.
+                print(f"[forge-bridge] file-watch start failed: {e}", flush=True)
+
+    def all_slugs(self) -> list[str]:
+        """Distinct agent slugs/names currently in the registry (for FILE-CHANGED fanout)."""
+        with self._lock:
+            return list({rec.agent_name for rec in self._agents.values() if rec.agent_name})
+
+    def slug_owning_path(self, path: str) -> str | None:
+        """Heuristic: if `path` lives under one of the registry's project_roots,
+        return the agent_name whose project that is. Used to suppress self-
+        notifications when an agent edits its own project file.
+
+        For multi-agent on the same project, both agents are notified - the
+        editor identity isn't recoverable from filesystem events alone.
+        """
+        norm = str(Path(path).resolve()).lower()
+        with self._lock:
+            best: tuple[int, str] | None = None
+            for rec in self._agents.values():
+                proot = str(Path(rec.project_root).resolve()).lower()
+                if norm.startswith(proot) and (best is None or len(proot) > best[0]):
+                    best = (len(proot), rec.agent_name)
+            return best[1] if best else None
 
     def terminate(self, agent_id: str) -> bool:
         rec = self.get(agent_id)
@@ -297,3 +350,72 @@ def _pump_stdout(rec: AgentRecord) -> None:
 
 
 REGISTRY = Registry()
+
+
+# ---- PH16 file-edit watchdog observer ---------------------------------------
+
+
+def _start_file_watcher(registry: "Registry") -> None:
+    """Spin up the watchdog Observer that fanouts [FILE-CHANGED] inbox JSONs.
+
+    Imports watchdog lazily inside this function. The observer is daemon-
+    threaded so the bridge process exits clean on Ctrl+C.
+    """
+    from watchdog.events import FileSystemEventHandler  # noqa: WPS433
+    from watchdog.observers import Observer  # noqa: WPS433
+
+    from forge.swarm import notify_file_changed  # local import: swarm uses no Textual
+
+    class _Handler(FileSystemEventHandler):
+        def __init__(self) -> None:
+            super().__init__()
+            self._last_seen: dict[str, float] = {}
+
+        def on_modified(self, event) -> None:  # noqa: WPS110
+            try:
+                if event.is_directory:
+                    return
+                self._dispatch(event.src_path)
+            except Exception:
+                pass
+
+        def on_created(self, event) -> None:
+            try:
+                if event.is_directory:
+                    return
+                self._dispatch(event.src_path)
+            except Exception:
+                pass
+
+        def _dispatch(self, src_path: str) -> None:
+            p = Path(src_path)
+            if any(d in p.parts for d in _WATCH_IGNORE_DIRS):
+                return
+            if any(p.name.endswith(suf) for suf in _WATCH_IGNORE_SUFFIXES):
+                return
+            now = time.time()
+            last = self._last_seen.get(src_path, 0.0)
+            if now - last < _WATCH_DEBOUNCE_SEC:
+                return
+            self._last_seen[src_path] = now
+            editor = registry.slug_owning_path(src_path) or "external"
+            subscribers = registry.all_slugs()
+            if not subscribers:
+                return
+            notify_file_changed(
+                editor_slug=editor,
+                file_path=src_path,
+                subscribers=subscribers,
+            )
+
+    observer = Observer()
+    handler = _Handler()
+    for root in _WATCH_ROOTS:
+        if not root.exists():
+            continue
+        # Recursive watch, but watchdog can't filter directories before delivery
+        # so the handler applies _WATCH_IGNORE_DIRS post-hoc.
+        observer.schedule(handler, str(root), recursive=True)
+    observer.daemon = True
+    observer.start()
+    print(f"[forge-bridge] file-watch started on {_WATCH_ROOTS}", flush=True)

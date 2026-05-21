@@ -5,6 +5,15 @@
 from forge.panes.agent_pane import AgentPane
 from forge.panes.picker import AgentPicker, PickerResult
 from forge.panes.status_bar import StatusBar
-from forge.panes.tabs import TabbedMultiPane, ProjectGroup
+from forge.panes.tabs import TabbedMultiPane
+from forge.panes.columns import ScrollableColumns, AgentColumn
 
-__all__ = ["AgentPane", "AgentPicker", "PickerResult", "StatusBar", "TabbedMultiPane", "ProjectGroup"]
+__all__ = [
+    "AgentPane",
+    "AgentPicker",
+    "PickerResult",
+    "StatusBar",
+    "TabbedMultiPane",
+    "ScrollableColumns",
+    "AgentColumn",
+]

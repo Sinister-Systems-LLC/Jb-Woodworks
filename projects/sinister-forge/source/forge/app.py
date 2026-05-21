@@ -46,6 +46,8 @@ from forge.panes.command_palette import CommandPalette
 from forge.panes.tabs import TabbedMultiPane
 from forge.panes.agent_pane import AgentPane
 from forge.panes.picker import AgentPicker, PickerResult
+from forge.panes.swarm_modal import SwarmModal, SwarmModalResult
+from forge.swarm import send_dm as _send_dm, broadcast as _broadcast
 from forge.projects import get_project
 from forge.spawn.base import SpawnConfig
 from forge.spawn.claude import ClaudeSubprocess
@@ -127,6 +129,11 @@ class ForgeApp(App):
         Binding("ctrl+s", "write_resume_point", "Resume"),
         Binding("ctrl+m", "toggle_memory", "Memory"),
         Binding("ctrl+p", "command_palette", "Palette"),
+        # PH18 niri navigation
+        Binding("ctrl+right", "scroll_right", "Col→", show=False),
+        Binding("ctrl+left", "scroll_left", "Col←", show=False),
+        Binding("ctrl+shift+right", "swap_right", "Move→", show=False),
+        Binding("ctrl+shift+left", "swap_left", "Move←", show=False),
         Binding("f1", "help", "Help"),
         Binding("f2", "toggle_rkoj", "RKOJ"),
         Binding("f3", "open_mind", "Mind"),
@@ -236,6 +243,24 @@ class ForgeApp(App):
         self._update_chip_from_current()
         self._refresh_status()
 
+    def action_scroll_right(self) -> None:
+        self._tabs.cycle(1)
+        self._update_chip_from_current()
+        self._refresh_status()
+
+    def action_scroll_left(self) -> None:
+        self._tabs.cycle(-1)
+        self._update_chip_from_current()
+        self._refresh_status()
+
+    def action_swap_right(self) -> None:
+        self._tabs.swap_focused(1)
+        self._update_chip_from_current()
+
+    def action_swap_left(self) -> None:
+        self._tabs.swap_focused(-1)
+        self._update_chip_from_current()
+
     async def action_close_agent(self) -> None:
         cur = self._tabs.current_pane
         if not cur:
@@ -244,12 +269,9 @@ class ForgeApp(App):
         # terminate subprocess if any
         if cur.subprocess:
             await cur.subprocess.terminate()
-        cur.remove()
-        try:
-            self._tabs.panes.remove(cur)
-        except ValueError:
-            pass
-        self._tabs.current_idx = max(-1, min(self._tabs.current_idx, len(self._tabs.panes) - 1))
+        # remove the focused column via ScrollableColumns (handles DOM + bookkeeping)
+        if self._tabs._columns is not None:
+            self._tabs._columns.remove_focused()
         self._update_chip_from_current()
         self._refresh_status()
         self.notify("agent closed", timeout=3)
@@ -317,6 +339,10 @@ class ForgeApp(App):
             "help":           self.action_help,
             "quit":           self.action_quit,
             "swarm":          self._action_swarm,
+            "dm":             self._action_dm,
+            "broadcast":      self._action_broadcast,
+            "host_claude":    lambda: self._action_host_switch("claude"),
+            "host_codex":     lambda: self._action_host_switch("codex"),
             "focus_all":      self._action_focus_all,
         }
         h = handlers.get(cmd_id)
@@ -364,6 +390,109 @@ class ForgeApp(App):
         # TabbedContent active switch
         if self._tabs._tabbed:
             self._tabs._tabbed.active = "tab-all"
+
+    @work(exit_on_error=False)
+    async def _action_dm(self) -> None:
+        """PH16 [DM]: pop a modal, send to inbox/<slug>/."""
+        result: SwarmModalResult | None = await self.push_screen_wait(SwarmModal(kind="dm"))
+        if not result:
+            return
+        from_slug = self._current_agent_slug()
+        try:
+            path = _send_dm(
+                from_slug=from_slug,
+                to_slug=result.to_slug,
+                subject=result.subject,
+                body=result.body,
+                project_hint=self._current_project_key() or "",
+            )
+            self.notify(f"DM → {result.to_slug} :: {path.name}", timeout=4)
+        except Exception as e:
+            self.notify(f"DM failed: {e}", severity="error", timeout=6)
+
+    @work(exit_on_error=False)
+    async def _action_broadcast(self) -> None:
+        """PH16 [BROADCAST]: fan-out to every known sibling slug except sender."""
+        result: SwarmModalResult | None = await self.push_screen_wait(SwarmModal(kind="broadcast"))
+        if not result:
+            return
+        from_slug = self._current_agent_slug()
+        try:
+            paths = _broadcast(
+                from_slug=from_slug,
+                subject=result.subject,
+                body=result.body,
+                project_hint=self._current_project_key() or "",
+            )
+            self.notify(f"broadcast → {len(paths)} siblings", timeout=4)
+        except Exception as e:
+            self.notify(f"broadcast failed: {e}", severity="error", timeout=6)
+
+    def _current_agent_slug(self) -> str:
+        """Return the slug for the focused pane (or 'forge' if none)."""
+        cur = self._tabs.current_pane
+        if cur and getattr(cur, "agent_name", None):
+            return cur.agent_name.lower().replace(" ", "-")
+        return "forge"
+
+    def _current_project_key(self) -> str | None:
+        cur = self._tabs.current_pane
+        return getattr(cur, "project_key", None) if cur else None
+
+    @work(exit_on_error=False)
+    async def _action_host_switch(self, target_host: str) -> None:
+        """PH10 :host switch — terminate current subprocess, respawn with the
+        other host on the same project + same agent name.
+
+        Matches jcode multi-provider parity. The pane stays mounted; only its
+        underlying subprocess changes. RichLog buffer is preserved (operator
+        can scroll back to see the prior host's output).
+        """
+        cur = self._tabs.current_pane
+        if not cur:
+            self.notify("no active pane to switch", severity="warning", timeout=4)
+            return
+        target_host = target_host.lower()
+        if target_host not in ("claude", "codex"):
+            self.notify(f"invalid host: {target_host}", severity="error")
+            return
+
+        # Terminate the existing subprocess (if any). pane.subprocess may be
+        # None when the pane was mounted empty (project root missing on disk).
+        if cur.subprocess is not None:
+            try:
+                await cur.subprocess.terminate()
+            except Exception as e:
+                cur.write_line(f"[yellow]warning: terminate failed: {e}[/]")
+
+        # Synthesize a PickerResult-equivalent and re-build a subprocess.
+        synthetic = PickerResult(
+            project_key=cur.project_key,
+            project_display=cur.project_display,
+            objective=cur.mode,
+            token_mode="compact",
+            speed="turbo",
+            host=target_host,
+            agent_name=cur.agent_name,
+            accent=cur.accent,
+            focus="",
+        )
+        new_sub = _build_subprocess(synthetic)
+        if new_sub is None:
+            cur.write_line(
+                f"[red]:host {target_host} aborted — no source tree for "
+                f"{cur.project_display}[/]"
+            )
+            self.notify(f":host {target_host} aborted - no source tree", severity="warning")
+            return
+
+        cur.subprocess = new_sub
+        cur.write_line(
+            f"[bold]:host {target_host}[/] — respawning with {new_sub.binary_name}"
+        )
+        self.run_worker(cur.run_subprocess(), exclusive=False,
+                        name=f"sub-{cur.agent_name}-{target_host}")
+        self.notify(f"switched {cur.agent_name} → {target_host}", timeout=4)
 
 
 if __name__ == "__main__":

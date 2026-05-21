@@ -19,6 +19,10 @@ from textual.widgets.option_list import Option
 COMMANDS: list[tuple[str, str, str]] = [
     ("new_agent",        "Spawn new agent",            "Open the picker (Ctrl+W)"),
     ("swarm",            "Swarm N agents",             "Spawn N parallel agents on current project"),
+    ("dm",               "Direct-message a sibling",   "[DM] inbox JSON to <slug>"),
+    ("broadcast",        "Broadcast to fleet",         "[BROADCAST] inbox JSON to all known slugs"),
+    ("host_claude",      "Switch focused pane → Claude", "Live :host switch (terminate + respawn)"),
+    ("host_codex",       "Switch focused pane → Codex",  "Live :host switch (terminate + respawn)"),
     ("cycle_agent",      "Cycle next agent",           "Ctrl+Tab"),
     ("close_agent",      "Close current agent",        "Ctrl+Shift+W (SIGTERM, escalates to SIGKILL)"),
     ("clear_log",        "Clear current pane",         "Ctrl+L"),
