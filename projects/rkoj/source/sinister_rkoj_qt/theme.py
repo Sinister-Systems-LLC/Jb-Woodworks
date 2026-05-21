@@ -81,7 +81,7 @@ INFO_BLUE = "#0A84FF"          # Panel STATUS_COLOR.info
 BLACK = "#000000"
 
 # ── Sizes ───────────────────────────────────────────────────────────────
-SIDEBAR_WIDTH = 220
+SIDEBAR_WIDTH = 240        # Panel canonical aside width (per panel-1to1-spec § 2)
 HEADER_ROW1_HEIGHT = 32   # menu strip (drag region)
 HEADER_ROW2_HEIGHT = 64   # chip tabs + actions
 WINDOW_RADIUS = 14
@@ -194,7 +194,7 @@ def build_qss() -> str:
     /* Panel tab-header h1: text-[26px] font-bold tracking-tight */
     QLabel#PageTitle {{
         color: {PURPLE_NAV_ACTIVE};
-        font-size: 24px;
+        font-size: 26px;
         font-weight: 700;
         letter-spacing: -0.5px;
         padding-left: 8px;
@@ -205,10 +205,10 @@ def build_qss() -> str:
         color: {SOFT};
         border: 1px solid {BORDER_HAIRLINE};
         border-radius: 16px;
-        padding: 4px 14px;
+        padding: 6px 16px;
         font-size: 13px;
         font-weight: 600;
-        min-height: 26px;
+        min-height: 30px;
     }}
     QPushButton#ChipTab:hover {{
         color: white;

@@ -7,7 +7,7 @@
 
 [CmdletBinding()]
 param(
-    [string]$ExePath = 'D:\Sinister Sanctum\tools\sinister-rkoj-qt\dist\RKOJ\RKOJ.exe',
+    [string]$ExePath = 'D:\Sinister Sanctum\projects\rkoj\source\sinister_rkoj_qt\dist\RKOJ.exe',
     [int]$WaitSec = 6
 )
 

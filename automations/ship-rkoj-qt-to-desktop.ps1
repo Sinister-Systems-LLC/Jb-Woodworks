@@ -2,7 +2,8 @@
 # ship-rkoj-qt-to-desktop.ps1
 #
 # Runs AFTER the PyQt6 sub-agent's PyInstaller build lands at
-#   D:\Sinister Sanctum\tools\sinister-rkoj-qt\dist\RKOJ\
+#   D:\Sinister Sanctum\projects\rkoj\source\dist\RKOJ\
+# (Relocated from tools/sinister-rkoj-qt/ to projects/rkoj/source/ 2026-05-21.)
 #
 # Two paths:
 #   A) folder-build: copy whole dist/RKOJ/ to C:\Users\Zonia\Desktop\RKOJ\
@@ -14,7 +15,7 @@
 
 [CmdletBinding()]
 param(
-    [string]$DistDir = 'D:\Sinister Sanctum\tools\sinister-rkoj-qt\dist',
+    [string]$DistDir = 'D:\Sinister Sanctum\projects\rkoj\source\sinister_rkoj_qt\dist',
     [string]$DesktopDir = 'C:\Users\Zonia\Desktop'
 )
 
@@ -37,7 +38,7 @@ if (Test-Path $onefile) {
     Write-Host "[ship-rkoj-qt] copied -> $destExe"
     # Update RKOJ.lnk to point at the Desktop EXE
     $ws = New-Object -ComObject WScript.Shell
-    $sc = $ws.CreateShortcut(Join-Path $DesktopDir 'RKOJ.lnk')
+    $sc = $ws.CreateShortcut((Join-Path $DesktopDir 'RKOJ.lnk'))
     $sc.TargetPath = $destExe
     $sc.WorkingDirectory = $DesktopDir
     $sc.Description = 'Sinister Sanctum :: RKOJ native PyQt6 desktop UI'
@@ -56,8 +57,8 @@ if (Test-Path $onefile) {
     Write-Host "[ship-rkoj-qt] copied folder -> $destFolder"
     # Update RKOJ.lnk to point at the Desktop folder's EXE
     $ws = New-Object -ComObject WScript.Shell
-    $sc = $ws.CreateShortcut(Join-Path $DesktopDir 'RKOJ.lnk')
-    $sc.TargetPath = Join-Path $destFolder 'RKOJ.exe'
+    $sc = $ws.CreateShortcut((Join-Path $DesktopDir 'RKOJ.lnk'))
+    $sc.TargetPath = (Join-Path $destFolder 'RKOJ.exe')
     $sc.WorkingDirectory = $destFolder
     $sc.Description = 'Sinister Sanctum :: RKOJ native PyQt6 desktop UI'
     $sc.IconLocation = "$(Join-Path $destFolder 'RKOJ.exe'),0"

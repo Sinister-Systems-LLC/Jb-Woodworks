@@ -4,6 +4,51 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-21 ~23:00 — RKOJ promoted to `projects/rkoj/source` + Panel 1:1 patches + Phase-1 memory bootstrap + 4 plan docs landed (build in flight)
+
+EVE on `agent/sinister-sanctum/cli-dispatcher-2026-05-21`. Operator directive (verbatim, session start): *"i need you to do a deep audit on the sinsiter sanctum folder in the d drive. ... remove projects for sinister from the personal folder. ... i need you to make a porject in projects for rkoj and add everything there that we use for rkoj. ... I want the 1:1 exact ui as sinister panel. 1:1 nothing else everything the same and exact. with two tabs for now. ... When i click new agent it will be like we click the jcode exe and openeed a window. ... do not stop working until all this is done and tested. ... always place update exe on the desktop."*
+
+Operator addendum mid-task: *"I want exact jcode form and function, but with all my branding and the AI calls itself EVE. save source as we are going to add and change many things ... make our own anydesk to login to my servers ... intergrate my own browser system like kamelo, my own android emulator system so so many things. note these in the plans but dont build them until we are ready."*
+
+**Shipped this turn**:
+
+1. **`tools/sinister-rkoj-qt/` → `projects/rkoj/source/`** — `git mv` of 69 tracked files (history preserved). The RKOJ workstation is now a canonical Sanctum project, not a tool. Folder layout: `projects/rkoj/{CHANGELOG.md, INTEGRATION.md, MANIFEST.json, README.md, source/{assets/, extensions/, sinister_rkoj_qt/}}`. MANIFEST.json `rkoj-qt` + `rkoj-qt-extensions` component paths updated. tools/_INDEX.md rkoj-qt row removed.
+2. **Path-ref updates**: `automations/ship-rkoj-qt-to-desktop.ps1` + `automations/smoke-rkoj-qt.ps1` defaults repointed at `projects/rkoj/source/dist/`. RKOJ.spec uses `_TOOL_ROOT` relative-to-spec which survives the move unchanged.
+3. **Panel 1:1 UI patches** (theme.py per panel-1to1-spec.md § 13):
+   - `SIDEBAR_WIDTH 220 → 240` (Panel canonical aside)
+   - `QLabel#PageTitle font-size 24 → 26` (Panel `text-[26px]`)
+   - `QPushButton#ChipTab min-height 26 → 30 + padding 4×14 → 6×16` (Panel `h-8 px-4`)
+4. **Phase-1 memory⇄jcode integration bootstrap** (agents_tab.py per memory-jcode-integration-audit.md § 4):
+   - `_bootstrap_agent_memory(sess)` — pre-creates per-agent `heartbeats/<slug>.json`, `inbox/<slug>/`, `PROGRESS/EVE on <project>.md` (seeded), `resume-points/EVE on <project>/`.
+   - `_refresh_heartbeat(sess, status)` — re-writes heartbeat with fresh `ts_utc`; per-card `QTimer @ 30s` keeps presence live.
+   - `_make_child_env(sess)` — QProcessEnvironment with `SINISTER_AGENT_DISPLAY / _SLUG / _PANE_ID / _PROJECT_KEY / _HEARTBEAT_PATH / _PROGRESS_PATH / _RESUME_DIR / _INBOX_DIR / _AGENT_IDENTITY=EVE / _AUTHORSHIP=RKOJ-ELENO` so spawned claude child learns its identity from env.
+   - AgentSession dataclass gets 6 new fields (slug / display_name / heartbeat_path / progress_path / resume_dir / inbox_dir).
+   - Card `_on_close` + `shutdown()` mark heartbeat `ended` then stop refresh timer.
+5. **4 planning docs at `_shared-memory/plans/Sanctum-deepclean-2026-05-21T2300Z/`**:
+   - `forward-plan.md` — rules + 11-lane execution table + future-workstation roadmap (Devices ADB / AnyDesk-replacement / Kameleo-style anti-detect browser / own Android emulator / many more, all NOTED but NOT-BUILT-YET per operator).
+   - `panel-1to1-spec.md` — full Panel UI translation reference (color tokens, sidebar dims, header rows, chip tabs, KPI tiles, card chrome, typography, spacing, radii, animations, 13-section translation status).
+   - `memory-jcode-integration-audit.md` — gap matrix + Phase-1/2/3 fix plan + smoke tests.
+   - `cleanup-proposal.md` — 5-bullet Sanctum deep-clean report (no critical issues; 2 R0-safe Desktop-residue files surfaced to operator).
+   - `personal-folder-sinister-purge.md` — D:\Sinister 5.65 GB safe-purge candidates (all mirrored in Sanctum).
+6. **4 parallel sub-agents dispatched + reaped**:
+   - Sanctum-deepclean Explore (wrote cleanup-proposal.md)
+   - D:\Sinister-purge Explore (wrote personal-folder-sinister-purge.md)
+   - Panel UI 1:1 spec Explore (returned summary; I persisted to disk)
+   - Memory⇄jcode integration Explore (returned summary; I persisted to disk)
+7. **MANIFEST.json bumped 1.5.1 → 1.6.0**.
+
+**In flight (background)**:
+- `pyinstaller --clean --noconfirm RKOJ.spec` for v1.6.0 onefile rebuild. Wall-clock ~70s prior runs.
+
+**Operator-gated remaining (carry-forward, surface only)**:
+- UAC `Rename-Sinister-to-Personal.bat` + `Kill-Popups.bat` double-clicks.
+- `ANTHROPIC_API_KEY` env var (unblocks Phase-2 Anthropic-SDK direct path → jcode-fidelity thinking_delta + batch tool_use + persistent context).
+- LICENSE pick.
+- 2 R0-safe Desktop-copy files in automations/ (`Launch-RKOJ-Panel-Desktop-copy.bat` + `Kill-Popups-Desktop-copy.bat`) flagged by deepclean audit as accidental copies; sandbox blocked autodelete pending operator OK.
+- Future-workstation features captured in forward-plan.md § C: NOTE but DO-NOT-BUILD until operator says ready (AnyDesk-replacement, Kameleo-style browser, own emulator system, more).
+
+---
+
 ## 2026-05-21 ~18:08 — Desktop -> Sanctum migration in flight (40 GB / 9 folders) + Sanctum audit + 7-branch GitHub push (commit `6c71bb2`, sibling kernel-apk added `0b7f4fc`)
 
 EVE on `agent/sinister-sanctum/cli-dispatcher-2026-05-21`. Operator directive (verbatim): *"all these files on my desktop need to get moved into the sinister sanctume. full audit all files in the sinister sanctume to make sure its clean, organized, efficent, etc. everything is in the correct place. then push it ALL to github. ALL OF IT. ALL FILES PUSHED TO GITHUB REPO"*.

@@ -5,7 +5,7 @@
   "display": "RKOJ",
   "persona": "EVE",
   "authorship": "RKOJ-ELENO",
-  "version": "1.5.1",
+  "version": "1.6.0",
   "updated": "2026-05-21",
   "components": [
     {
@@ -50,15 +50,15 @@
     },
     {
       "name": "rkoj-qt",
-      "path": "tools/sinister-rkoj-qt",
+      "path": "projects/rkoj/source",
       "kind": "rkoj-native",
       "enabled": true,
-      "version": "1.5.1",
-      "role": "PyQt6 native frameless desktop GUI — 2 chip tabs (Agents/Devices), Panel-exact sidebar (3 sections DAILY/INSIGHTS/MANAGE), Sheets-style menu strip header, niri-scroll agent grid with per-project grouping + glow-on-pending, EVE persona per agent. Stripped from v1.5.0 ribbon+KPI bloat per operator 2026-05-21."
+      "version": "1.6.0",
+      "role": "PyQt6 native frameless desktop GUI — 2 chip tabs (Agents/Devices), Panel-exact sidebar, niri-scroll agent grid with per-project grouping + glow-on-pending, EVE persona per agent. Relocated 2026-05-21 from tools/sinister-rkoj-qt/ to projects/rkoj/source/ per operator project-shape directive."
     },
     {
       "name": "rkoj-qt-extensions",
-      "path": "tools/sinister-rkoj-qt/extensions",
+      "path": "projects/rkoj/source/extensions",
       "kind": "extension-dir",
       "enabled": true,
       "version": "0.2.0",

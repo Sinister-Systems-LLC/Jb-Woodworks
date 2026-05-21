@@ -20,13 +20,17 @@ gets a soft purple QGraphicsDropShadowEffect (operator brief).
 
 from __future__ import annotations
 
+import json
+import os
 import shutil
+import time
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Optional
 
-from PyQt6.QtCore import QProcess, Qt, pyqtSignal
+from PyQt6.QtCore import QProcess, QProcessEnvironment, Qt, QTimer, pyqtSignal
 from PyQt6.QtGui import QColor, QFont, QTextCursor
 from PyQt6.QtWidgets import (
     QFrame, QGraphicsDropShadowEffect, QHBoxLayout, QLabel, QLineEdit,
@@ -68,11 +72,116 @@ class AgentSession:
     status: str = "idle"  # idle | busy | online | offline | awaiting-input
     turns: list[dict] = field(default_factory=list)
     created_at: str = ""
+    # Phase-1 memory bootstrap (populated by _bootstrap_agent_memory)
+    slug: str = ""
+    display_name: str = ""
+    heartbeat_path: str = ""
+    progress_path: str = ""
+    resume_dir: str = ""
+    inbox_dir: str = ""
 
 
 def _find_claude_executable() -> Optional[str]:
     """Locate the `claude` CLI on PATH. Returns None if not installed."""
     return shutil.which("claude")
+
+
+def _bootstrap_agent_memory(sess: AgentSession) -> None:
+    """Phase-1 memory wire-up: pre-create dirs + write initial heartbeat.
+
+    Per `_shared-memory/plans/Sanctum-deepclean-2026-05-21T2300Z/memory-jcode-integration-audit.md`
+    section 4. Fills the AgentSession's bootstrap fields and creates on-disk
+    presence so siblings can discover the new agent within seconds.
+    """
+    sm = state.SHARED_MEMORY
+    sess.slug = f"{sess.project_key}-{sess.pane_id[:6]}"
+    sess.display_name = f"EVE on {sess.project_display}"
+    sess.heartbeat_path = str(sm / "heartbeats" / f"{sess.slug}.json")
+    sess.progress_path = str(sm / "PROGRESS" / f"{sess.display_name}.md")
+    sess.resume_dir = str(sm / "resume-points" / sess.display_name)
+    sess.inbox_dir = str(sm / "inbox" / sess.slug)
+    try:
+        for p in (
+            Path(sess.heartbeat_path).parent,
+            Path(sess.progress_path).parent,
+            Path(sess.resume_dir),
+            Path(sess.inbox_dir),
+        ):
+            p.mkdir(parents=True, exist_ok=True)
+        # Initial heartbeat
+        Path(sess.heartbeat_path).write_text(json.dumps({
+            "schema_version": "sinister.heartbeat.v1",
+            "agent_identity": "EVE",
+            "agent": sess.display_name,
+            "agent_display": sess.display_name,
+            "slug": sess.slug,
+            "ts_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            "branch": f"agent/{sess.project_key}/<topic>",
+            "mode": sess.mode,
+            "session_status": "spawned-by-rkoj",
+            "via": "rkoj-qt",
+            "pane_id": sess.pane_id,
+            "project_key": sess.project_key,
+        }, indent=2), encoding="utf-8")
+        # Seed PROGRESS only if file is new
+        pp = Path(sess.progress_path)
+        if not pp.exists():
+            pp.write_text(
+                f"# Agent: {sess.display_name}\n\n"
+                f"Append-only progress log. Most recent at top.\n\n---\n\n"
+                f"## {time.strftime('%Y-%m-%d %H:%M', time.gmtime())} — spawned\n"
+                f"Spawned by RKOJ.exe (PyQt6). slug={sess.slug} project={sess.project_key} mode={sess.mode}.\n\n",
+                encoding="utf-8",
+            )
+    except Exception:
+        # Memory bootstrap is best-effort; never block agent spawn on disk hiccups.
+        pass
+
+
+def _refresh_heartbeat(sess: AgentSession, session_status: str = "online") -> None:
+    """Re-write the per-agent heartbeat with a fresh timestamp."""
+    if not sess.heartbeat_path:
+        return
+    try:
+        hp = Path(sess.heartbeat_path)
+        if not hp.parent.exists():
+            return
+        payload = {
+            "schema_version": "sinister.heartbeat.v1",
+            "agent_identity": "EVE",
+            "agent": sess.display_name,
+            "agent_display": sess.display_name,
+            "slug": sess.slug,
+            "ts_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            "branch": f"agent/{sess.project_key}/<topic>",
+            "mode": sess.mode,
+            "session_status": session_status,
+            "via": "rkoj-qt",
+            "pane_id": sess.pane_id,
+            "project_key": sess.project_key,
+            "turn_count": len(sess.turns),
+        }
+        hp.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    except Exception:
+        pass
+
+
+def _make_child_env(sess: AgentSession) -> QProcessEnvironment:
+    """Build a QProcessEnvironment with SINISTER_* identity env vars so the
+    spawned claude child knows its slug/display/paths.
+    """
+    qenv = QProcessEnvironment.systemEnvironment()
+    qenv.insert("SINISTER_AGENT_DISPLAY", sess.display_name or sess.agent_name)
+    qenv.insert("SINISTER_AGENT_SLUG", sess.slug or sess.project_key)
+    qenv.insert("SINISTER_PANE_ID", sess.pane_id)
+    qenv.insert("SINISTER_PROJECT_KEY", sess.project_key)
+    qenv.insert("SINISTER_HEARTBEAT_PATH", sess.heartbeat_path)
+    qenv.insert("SINISTER_PROGRESS_PATH", sess.progress_path)
+    qenv.insert("SINISTER_RESUME_DIR", sess.resume_dir)
+    qenv.insert("SINISTER_INBOX_DIR", sess.inbox_dir)
+    qenv.insert("SINISTER_AGENT_IDENTITY", "EVE")
+    qenv.insert("SINISTER_AUTHORSHIP", "RKOJ-ELENO")
+    return qenv
 
 
 # ── Agent card ──────────────────────────────────────────────────────────
@@ -92,6 +201,11 @@ class AgentCard(QFrame):
         self._first_turn = True
         self._glow_effect: Optional[QGraphicsDropShadowEffect] = None
         self._build()
+        # Phase-1 memory: heartbeat refresh every 30s while card alive
+        self._hb_timer = QTimer(self)
+        self._hb_timer.setInterval(30_000)
+        self._hb_timer.timeout.connect(lambda: _refresh_heartbeat(self.session, self.session.status))
+        self._hb_timer.start()
 
     # ── UI ────────────────────────────────────────────────────────────
     def _build(self) -> None:
@@ -306,6 +420,9 @@ class AgentCard(QFrame):
         proc = QProcess(self)
         proc.setProgram(claude)
         proc.setArguments(["--dangerously-skip-permissions", "-p", prompt])
+        # Phase-1 memory bootstrap: pass SINISTER_* env vars so the child
+        # learns its identity (slug / display / paths / persona).
+        proc.setProcessEnvironment(_make_child_env(self.session))
         proc.readyReadStandardOutput.connect(self._on_stdout)
         proc.readyReadStandardError.connect(self._on_stderr)
         proc.finished.connect(self._on_finished)
@@ -345,6 +462,11 @@ class AgentCard(QFrame):
         if self._proc is not None and self._proc.state() != QProcess.ProcessState.NotRunning:
             self._proc.kill()
             self._proc.waitForFinished(2000)
+        try:
+            self._hb_timer.stop()
+            _refresh_heartbeat(self.session, "ended")
+        except Exception:
+            pass
         self.closed.emit(self.session.pane_id)
 
     def shutdown(self) -> None:
@@ -352,6 +474,11 @@ class AgentCard(QFrame):
         if self._proc is not None and self._proc.state() != QProcess.ProcessState.NotRunning:
             self._proc.kill()
             self._proc.waitForFinished(1500)
+        try:
+            self._hb_timer.stop()
+            _refresh_heartbeat(self.session, "ended")
+        except Exception:
+            pass
 
 
 # ── Agents view (folder-tab row + niri-scroll grid) ────────────────────
@@ -510,7 +637,13 @@ class AgentsView(QWidget):
     def spawn_agent(self, project_key: str = "sanctum",
                     agent_name: str | None = None,
                     mode: str = "claude") -> str:
-        """Add a new card and return its pane_id."""
+        """Add a new card and return its pane_id.
+
+        Phase-1 memory bootstrap: pre-creates heartbeat / inbox / PROGRESS /
+        resume-points entries on disk so the spawned agent is discoverable
+        to siblings within seconds. Fully wired per
+        `_shared-memory/plans/Sanctum-deepclean-2026-05-21T2300Z/memory-jcode-integration-audit.md`.
+        """
         projects = {p.key: p for p in state.load_projects()}
         proj = projects.get(project_key)
         display = proj.display if proj else project_key
@@ -522,6 +655,7 @@ class AgentsView(QWidget):
             mode=mode,
             created_at=datetime.now(timezone.utc).isoformat(),
         )
+        _bootstrap_agent_memory(sess)
         card = AgentCard(sess, parent=self.grid.host)
         card.closed.connect(self._remove_card)
         self._cards[sess.pane_id] = card
