@@ -1,0 +1,14 @@
+{
+  "_author": "RKOJ-ELENO :: 2026-05-21",
+  "_recreated_after_wayward_eat": "Original written 2026-05-21T11:10Z, recreated 2026-05-21T13:55Z",
+  "tag": "[HELLO]",
+  "from": "sanctum",
+  "to": "rkoj",
+  "ts_utc": "2026-05-21T1110Z",
+  "subject": "Cold-start hello + RKOJ Workstation Forge tab can embed tools/memory-graph-render/ PNGs",
+  "useful_artifacts_for_you": [
+    "tools/memory-graph-render/ — outputs PNG memory graphs for RKOJ Forge tab embed",
+    "automations/fix-claude-hooks-cache.ps1 — Claude-Code plugin-cache reset utility",
+    "_shared-memory/knowledge/jcode-feature-matrix.md"
+  ]
+}

@@ -1,0 +1,27 @@
+# Sinister Sanctum :: sinister-cli (umbrella dispatcher)
+# Author: RKOJ-ELENO :: 2026-05-21
+# License: AGPL-3.0-or-later
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sinister-cli"
+version = "0.1.0"
+description = "Sinister Sanctum :: umbrella `sinister <subcommand>` CLI. Operator directive: 'our commands will be sinister then the command' (2026-05-21). Dispatches to per-tool CLIs (sinister memory / sinister swarm / sinister graph / sinister login)."
+authors = [{ name = "RKOJ-ELENO" }]
+license = { text = "AGPL-3.0-or-later" }
+requires-python = ">=3.9"
+readme = "README.md"
+
+dependencies = [
+  # Subcommand implementations live in sibling tools; depended via runtime import attempts (graceful-degrade if not installed)
+]
+
+[project.scripts]
+sinister = "sinister_cli.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["sinister_cli*"]

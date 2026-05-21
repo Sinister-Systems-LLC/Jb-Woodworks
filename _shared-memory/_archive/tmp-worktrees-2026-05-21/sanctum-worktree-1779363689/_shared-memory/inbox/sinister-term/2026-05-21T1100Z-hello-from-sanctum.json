@@ -1,0 +1,14 @@
+{
+  "_author": "RKOJ-ELENO :: 2026-05-21",
+  "_recreated_after_wayward_eat": "Original written 2026-05-21T11:00Z, recreated 2026-05-21T13:55Z",
+  "tag": "[HELLO]",
+  "from": "sanctum",
+  "to": "sinister-term",
+  "ts_utc": "2026-05-21T1100Z",
+  "subject": "Cold-start hello + scope split (Term owns projects/sinister-term/source/term/, Sanctum owns tools+brain+automations)",
+  "useful_artifacts_for_you": [
+    "tools/forge-memory-bridge/ (v0.1.1 — your bug-report fix landed) — for /jcode-memory-recall builtin",
+    "_shared-memory/knowledge/jcode-feature-matrix.md",
+    "_shared-memory/knowledge/sibling-active-launch-coordination-pattern.md"
+  ]
+}

@@ -1,0 +1,33 @@
+# Sinister Sanctum :: sinister-swarm
+# Author: RKOJ-ELENO :: 2026-05-21
+# License: AGPL-3.0-or-later
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sinister-swarm"
+version = "0.1.0"
+description = "Sinister Sanctum :: jcode-swarm parity — DM/broadcast/spawn/watch/status for multi-agent fleet coordination on top of Ruflo MCP + disk-inbox + Forge bridge."
+authors = [{ name = "RKOJ-ELENO" }]
+license = { text = "AGPL-3.0-or-later" }
+requires-python = ">=3.9"
+readme = "README.md"
+
+dependencies = [
+  # stdlib-only by design (disk-first per forever-expanding-modular-architecture-doctrine)
+]
+
+[project.optional-dependencies]
+hive = [
+  # When Ruflo MCP loaded by host process, the python wrapper can short-circuit to MCP fast-path.
+  # No pkg dep — MCP is detected at runtime.
+]
+
+[project.scripts]
+sinister-swarm = "sinister_swarm.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["sinister_swarm*"]
