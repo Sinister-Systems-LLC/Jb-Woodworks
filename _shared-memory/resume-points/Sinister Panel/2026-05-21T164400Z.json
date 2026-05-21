@@ -1,0 +1,47 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-21T16:44:00.0000000Z",
+    "project": "Sinister Panel",
+    "agent_name": "sinister-panel",
+    "mode": "resume",
+    "focus_intent": "Activity header bars + Browsers toolbar consolidation + Fleet PhoneDetail default-Control all LIVE on Hetzner @ 0905443. Operator: 'stop fucking stopping' — kept shipping without asking for clarification on browsers/fleet. Both containers definitively rebuilt this deploy.",
+    "git": {
+        "branch": "main",
+        "head": "0905443",
+        "head_msg": "panel: Overview header bars + Browsers consolidation + Fleet PhoneDetail default-Control",
+        "deployed_head": "0905443",
+        "recent_commits": [
+            "0905443 panel: Overview header bars + Browsers consolidation + Fleet PhoneDetail default-Control [LIVE]",
+            "0c3da2e panel: Overview overhaul + sidebar profile rebuild [LIVE]",
+            "c9ce2e2 panel: close 3 operator deferrals — UI-N + UI-O + Wave 22 Live activity polish [LIVE]",
+            "fa87e8a panel: Stage 2 of recover-from-recovery — autoRecoveryWorker + /fleet UI [LIVE]",
+            "2da39df panel: Wave 23 — ban-checker auto-clean [LIVE]"
+        ]
+    },
+    "progress_top3": [
+        "2026-05-21T16:44Z — DEPLOYED: Activity header bars + Browsers toolbar consolidation + Fleet default-Control — LIVE @ 0905443",
+        "2026-05-21T16:28Z — DEPLOYED: Overview overhaul + sidebar rebuild + map reframe — LIVE @ 0c3da2e",
+        "2026-05-21T15:05Z — DEPLOYED: 3 operator deferrals closed + LIVE @ c9ce2e2"
+    ],
+    "latest_plan": {
+        "dir": null,
+        "artifact": null
+    },
+    "inbox_unread_count": 0,
+    "last_5_files_touched_24h": [
+        "leo_dev/dashboard/app/page.tsx",
+        "leo_dev/dashboard/app/browsers/page.tsx",
+        "leo_dev/dashboard/app/fleet/page.tsx",
+        "leo_dev/dashboard/components/layout/dashboard-sidebar.tsx",
+        "leo_dev/dashboard/components/primitives/geo-heat.tsx"
+    ],
+    "operator_gated_next": [],
+    "carry_forward_deferrals": [
+        "Drop-plaintext-authToken sweep — time-gated to ≈2026-06-20",
+        "kernel-apk's 4 outstanding cross-agent ASK replies — sibling lane"
+    ],
+    "pre_warm_reads": [
+        "D:\\Sinister Sanctum\\automations\\session-contracts.md",
+        "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Sinister Panel.md"
+    ]
+}

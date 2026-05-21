@@ -1,0 +1,32 @@
+{
+  "id": "sinister-watchdog",
+  "version": "0.1.0",
+  "author": "RKOJ-ELENO",
+  "author_date": "2026-05-21",
+  "description": "sinister-watchdog auto-online + heartbeat monitor — sidebar nav, /watchdog slash, ribbon group",
+  "hooks": {
+    "sidebar_nav": {
+      "section": "SYSTEM",
+      "label": "Watchdog",
+      "glyph": "⚷",
+      "route": "watchdog"
+    },
+    "slash_command": {
+      "name": "/watchdog",
+      "summary": "status|tail|probe|tick",
+      "args": ["subcommand", "...rest"]
+    },
+    "ribbon_group": {
+      "name": "WATCHDOG",
+      "buttons": [
+        { "id": "watchdog.start", "label": "Start",  "glyph": "▶", "action": "watchdog.start()" },
+        { "id": "watchdog.stop",  "label": "Stop",   "glyph": "■", "action": "watchdog.stop()" },
+        { "id": "watchdog.tail",  "label": "Tail",   "glyph": "≡", "action": "watchdog.tail()" },
+        { "id": "watchdog.probe", "label": "Probe",  "glyph": "⌗", "action": "watchdog.probe()" }
+      ]
+    }
+  },
+  "imports": ["sinister_watchdog"],
+  "requires_python": ">=3.10",
+  "entry": "handler:WatchdogExtension"
+}

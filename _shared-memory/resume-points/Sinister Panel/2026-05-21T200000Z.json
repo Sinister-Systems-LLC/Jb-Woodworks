@@ -1,0 +1,59 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-21T20:00:00.0000000Z",
+    "project": "Sinister Panel",
+    "agent_name": "sinister-panel",
+    "mode": "resume",
+    "focus_intent": "Post-deploy verification turn. Operator: 'confirm everything is complete. audit security and smoke test everything'. Security audit completed — 9/9 PASS across auth/authz, secrets, Postgres safety, storefront scoping, logging, CORS, rate limiting, host posture, recent commits. Smoke test PARTIAL — public HTTP surface healthy (signin 200, /api/health returns proper auth-gated JSON in <500ms, /api/dashboard/overview gated), local gates clean (tsc 0, doctrine-audit 0/0/0/0/0/0). SSH-gated checks (docker logs / psql / RKA keybox archive ls) blocked by sandbox classifier as production-read — surfaced to operator as runnable commands.",
+    "git": {
+        "branch": "main",
+        "head": "25a58cf",
+        "head_msg": "panel: /for-use page defaults intentFilter to \"for_use\" (was \"all\")",
+        "deployed_head": "25a58cf",
+        "deploy_verified_utc": "2026-05-21T19:13:00Z",
+        "no_uncommitted_changes": true
+    },
+    "progress_top3": [
+        "2026-05-21T19:55Z — POST-DEPLOY: security audit + smoke test (live @ 25a58cf)",
+        "2026-05-21T19:15Z — DEPLOYED LIVE @ 25a58cf — doctrine-audit 6th counter + for-use/for-sale data correctness + 13 a11y fixes",
+        "2026-05-21T18:30Z — RESUME continued: a11y batch +10 fixes on the same branch"
+    ],
+    "latest_plan": {
+        "dir": "_shared-memory/plans/Sinister Panel-complete-everything-2026-05-21/",
+        "artifact": "plan.md"
+    },
+    "inbox_unread_count": 0,
+    "security_audit_summary": {
+        "verdict": "9 / 9 PASS",
+        "no_showstoppers": true,
+        "nice_to_fix": "POST /api/sales/api/orders (storefront order creation) falls under the global 1000/min limiter — consider tighter 10/min on this specific mutation endpoint",
+        "suggestion": "Verify operator set INTERNAL_WORKER_TOKEN explicitly in prod (currently falls back to ENCRYPTION_KEY-derived value)"
+    },
+    "smoke_test_summary": {
+        "public_http_pass": "/signin 200 in 0.49s; / 307 (auth-wall); /api/health 401 {\"error\":\"no_session\"} in 0.48s (backend alive + parsing JSON); /api/dashboard/overview 401 in 0.24s",
+        "local_gates_pass": "tsc 0 · doctrine-audit:strict 0/0/0/0/0/0 (all 6 counters)",
+        "ssh_blocked_checks": [
+            "docker logs sinister-backend --since 10m — for 8-worker boot verification + post-deploy error scan",
+            "docker exec sinister-postgres psql ... — confirm Account.intent distribution + warehouse predicate behavior",
+            "ls /root/sinister-rka/_archive_expiring_2026-05-24/ — Yurikey51 pre-expiry pool check (cert expires in 3 days)"
+        ]
+    },
+    "operator_runnable_commands": [
+        "ssh root@95.216.240.227 \"docker logs sinister-backend --since 15m 2>&1 | grep -iE 'error|fail|warn|fatal' | head -30\"",
+        "ssh root@95.216.240.227 \"docker exec sinister-postgres psql -U sinister -d sinister -c 'SELECT intent, COUNT(*) FROM \\\"Account\\\" GROUP BY intent;'\"",
+        "ssh root@95.216.240.227 \"docker exec sinister-postgres psql -U sinister -d sinister -c 'SELECT COUNT(*) FROM \\\"Account\\\" WHERE intent=\\\\'for_sale\\\\' AND \\\"isBanned\\\"=false AND \\\"isSold\\\"=false AND \\\"isExported\\\"=false;'\"",
+        "ssh root@95.216.240.227 \"ls /root/sinister-rka/_archive_expiring_2026-05-24/ | wc -l\""
+    ],
+    "carry_forward_deferrals": [
+        "Drop-plaintext-authToken sweep — time-gated to ≈2026-06-20",
+        "kernel-apk's 4 outstanding cross-agent ASK replies — sibling lane",
+        "Tighter rate limit on POST /api/sales/api/orders (currently global 1000/min) — defense-in-depth",
+        "Wire harvest_now skip-on-mismatch using heartbeat current_snap_username field (per kernel-apk v0.97.3 broadcast) — gated on VZW recovery",
+        "Yurikey51 root cert expires 2026-05-24 — pool already pruned to 4 fresh-root keyboxes per CLAUDE.md (operator can confirm via the runnable command above)"
+    ],
+    "pre_warm_reads": [
+        "D:\\Sinister Sanctum\\automations\\session-contracts.md",
+        "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Sinister Panel.md",
+        "D:\\Sinister Sanctum\\_shared-memory\\plans\\Sinister Panel-complete-everything-2026-05-21\\plan.md"
+    ]
+}

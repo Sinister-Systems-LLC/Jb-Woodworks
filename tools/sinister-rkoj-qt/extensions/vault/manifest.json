@@ -1,0 +1,35 @@
+{
+  "id": "sinister-vault",
+  "version": "0.1.0",
+  "author": "RKOJ-ELENO",
+  "author_date": "2026-05-21",
+  "description": "sinister-vault 1 TB collaborative store (:5078) — sidebar nav, KPI tile, workstation card, /vault slash command",
+  "hooks": {
+    "sidebar_nav": {
+      "section": "OPERATIONS",
+      "label": "Vault",
+      "glyph": "⎀",
+      "route": "vault"
+    },
+    "kpi_tile": {
+      "label": "VAULT USED",
+      "source": "vault.usage_mb()",
+      "unit": "MB",
+      "refresh_seconds": 30
+    },
+    "workstation_card": {
+      "title": "Open Vault :5078",
+      "subtitle": "Browse the 1 TB collaborative store",
+      "action": "vault.open()",
+      "glyph": "⎀"
+    },
+    "slash_command": {
+      "name": "/vault",
+      "summary": "vault status|list|search|push",
+      "args": ["subcommand", "...rest"]
+    }
+  },
+  "imports": ["tools/sinister-vault/sinister_vault"],
+  "requires_python": ">=3.10",
+  "entry": "handler:VaultExtension"
+}

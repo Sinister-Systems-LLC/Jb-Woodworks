@@ -1,0 +1,25 @@
+{
+  "_author": "RKOJ-ELENO :: 2026-05-21",
+  "schema_version": "sinister.forge-memory.v1.index",
+  "records": {
+    "sinister-term/ph7-shipped": {
+      "ts_utc_last": "2026-05-21T11:28:08Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "sinister-term"
+      ],
+      "content_hash": "3b0e5ad672a2ff9d0713a29e2bd5e4866030d4588a7a752d6403859ae167d3c9"
+    },
+    "sinister-term/interactive-test": {
+      "ts_utc_last": "2026-05-21T11:42:24Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "sinister-term"
+      ],
+      "content_hash": "8a232290eeb19e6ad489b8c5351bbdc4eb3218b46b920fc877d7446ecac66c17"
+    }
+  },
+  "updated_utc": "2026-05-21T11:42:24Z"
+}

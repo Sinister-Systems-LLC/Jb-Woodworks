@@ -36,7 +36,8 @@ from . import __version__
 # Constants
 # ---------------------------------------------------------------------------
 
-SANCTUM_ROOT_DEFAULT = Path(r"D:\Sinister Sanctum")
+SANCTUM_ROOT_DEFAULT = Path(r"D:\Sinister\Sanctum")
+LEGACY_SANCTUM_ROOT = Path(r"D:\Sinister Sanctum")
 DESKTOP_BIN = Path(r"C:\Users\Zonia\Desktop\jcode-windows-x86_64.exe")
 BIN_NAMES = ("jcode-windows-x86_64.exe", "jcode-windows-x86_64", "jcode.exe", "jcode")
 
@@ -54,11 +55,15 @@ def _sanctum_root() -> Path:
     for c in (
         os.environ.get("SANCTUM_ROOT"),
         str(SANCTUM_ROOT_DEFAULT),
+        str(LEGACY_SANCTUM_ROOT),
         r"C:\Sinister Sanctum",
+        str(Path.home() / "Sinister" / "Sanctum"),
         str(Path.home() / "Sinister Sanctum"),
     ):
-        if c and (Path(c) / "CLAUDE.md").exists():
-            return Path(c)
+        if c:
+            root = Path(c)
+            if (root / "SESSION-START").exists() or (root / "CLAUDE.md").exists():
+                return root
     return SANCTUM_ROOT_DEFAULT
 
 

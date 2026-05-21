@@ -1,0 +1,53 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-21T15:05:00.0000000Z",
+    "project": "Sinister Panel",
+    "agent_name": "sinister-panel",
+    "mode": "resume",
+    "focus_intent": "All operator deferrals closed + LIVE on Hetzner @ c9ce2e2. UI-N (5 sub-tabs + no-scroll on /fleet) + UI-O (TabHeader sweep × 13 surfaces) + Wave 22 Live activity polish (chips/grouping/video-links) all shipped. Recovery Stage 1 + Stage 2 also LIVE. No pending operator gates.",
+    "git": {
+        "branch": "main",
+        "head": "c9ce2e2",
+        "head_msg": "panel: close 3 operator deferrals — UI-N /fleet detail condense (5 sub-tabs) + UI-O TabHeader sweep ×13 + Wave 22 Live activity polish",
+        "deployed_head": "c9ce2e2",
+        "recent_commits": [
+            "c9ce2e2 panel: close 3 operator deferrals — UI-N + UI-O + Wave 22 Live activity polish [LIVE]",
+            "fa87e8a panel: Stage 2 of recover-from-recovery — autoRecoveryWorker + /fleet UI [LIVE]",
+            "2da39df panel: Wave 23 — ban-checker auto-clean [LIVE]",
+            "8bfc5a8 panel: Wave 22 — Overview restructure [LIVE]",
+            "adaef63 panel: hotfix — backend .dockerignore [LIVE]",
+            "f4295b0 panel: hotfix — AuditLog.payloadJson typo → meta [LIVE]",
+            "9354016 panel: merge Wave 19+20 + recover-from-recovery backend to main [LIVE]",
+            "e824383 panel: Wave 20 — Jobs DB-style condense + /fleet TabHeader card [LIVE]",
+            "e1af4ab panel: Wave 19 — UI restructure sweep (10/13) [LIVE]",
+            "175a29b panel: recover-from-recovery backend Stage 1 [LIVE]"
+        ]
+    },
+    "progress_top3": [
+        "2026-05-21T15:05Z — DEPLOYED: 3 operator deferrals closed + LIVE on Hetzner @ c9ce2e2 (UI-N + UI-O + Wave 22 polish)",
+        "2026-05-21T14:36Z — DEPLOYED: Stage 2 LIVE on Hetzner @ fa87e8a — 'auto fix it from panel' directive complete end-to-end",
+        "2026-05-21T14:25Z — shipped: Stage 2 of recover-from-recovery (autoRecoveryWorker + /fleet UI)"
+    ],
+    "latest_plan": {
+        "dir": null,
+        "artifact": null
+    },
+    "inbox_unread_count": 0,
+    "last_5_files_touched_24h": [
+        "leo_dev/dashboard/app/fleet/page.tsx",
+        "leo_dev/dashboard/app/page.tsx",
+        "leo_dev/dashboard/app/(13 top-level page.tsx files)",
+        "_shared-memory/PROGRESS/Sinister Panel.md",
+        "leo_dev/backend/src/services/autoRecoveryWorker.ts"
+    ],
+    "operator_gated_next": [],
+    "carry_forward_deferrals": [
+        "Drop-plaintext-authToken sweep — time-gated to ≈2026-06-20 (≈30d post Wave 17). Not actionable until then.",
+        "Browsers tab polish — operator-clarification-gated (needs name of specific visual diff vs Fleet). Browsers got the TabHeader this turn.",
+        "kernel-apk's 4 outstanding ASK replies (lane ownership / endpoint paths / auth model / heartbeat timing) — sibling lane, not actionable from Panel."
+    ],
+    "pre_warm_reads": [
+        "D:\\Sinister Sanctum\\automations\\session-contracts.md",
+        "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Sinister Panel.md"
+    ]
+}

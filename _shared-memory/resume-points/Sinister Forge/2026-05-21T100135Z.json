@@ -1,0 +1,47 @@
+﻿{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-21T14:01:36.1094051Z",
+    "project":  "Sinister Forge",
+    "agent_name":  "Sinister Forge",
+    "mode":  "resume",
+    "focus_intent":  "",
+    "git":  {
+                "branch":  "agent/sinister-sanctum/cli-dispatcher-2026-05-21",
+                "head":  "66a5b3ebdeda1a249f763a8de40cde9e768fbef9",
+                "head_msg":  "feat(forge): PH18 niri columns + PH16 swarm pump + :dm/:broadcast + PH10 :host switch",
+                "recent_commits":  [
+                                       "66a5b3e feat(forge): PH18 niri columns + PH16 swarm pump + :dm/:broadcast + PH10 :host switch",
+                                       "fba6510 feat(sanctum): sinister-review v0.1.0 tool + resume-point-write v1.2 + Term [HELLO] for forge-memory-bridge",
+                                       "ec9af5e docs(sanctum): resume-point 2026-05-21T095235Z post sinister-login ship",
+                                       "be1a821 feat(sanctum): tools/sinister-login/ v0.1.0 - 11-provider auth wallet (jcode parity)",
+                                       "4f0ed94 docs(sanctum): PROGRESS 12:38 entry + niri-scrollable-column brain entry + Sanctum resume-point 083843Z",
+                                       "1895e34 docs(brain): niri-scrollable-column-pattern - fleet-wide UI doctrine",
+                                       "cef4ead feat(sanctum): Sinister Freeze scaffold + forge-memory-bridge + memory-graph-render + 6 brain entries + launcher polish",
+                                       "f3bba4b feat(sanctum): sinister-cli umbrella + sinister-swarm + resume-point fix + Forge/Term ACKs",
+                                       "242f9ca docs(forge): PROGRESS 13:00 entry + resume-point 2026-05-21T081732Z",
+                                       "90c5c7e feat(forge): F1 pytest suite + F2 wire subprocess + F3 brain trilogy + forward plan"
+                                   ]
+            },
+    "progress_top3":  [
+                          "2026-05-21 13:50 â€” shipped: PH18 niri columns + PH16 swarm pump + :dm/:broadcast + PH17 dispatcher verified + PH10 :host switch",
+                          "2026-05-21 13:00 â€” shipped: P0-C submit auto-close fix + F1 regression suite + F2 subprocess wire + brain extension + forward plan",
+                          "2026-05-21 12:00 â€” shipped: P0 forge crash fix (boot + Ctrl+W) + 3-directive absorption + brain entry"
+                      ],
+    "latest_plan":  {
+                        "dir":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\sinister-forge-2026-05-21",
+                        "artifact":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\sinister-forge-2026-05-21\\forward-plan.md"
+                    },
+    "inbox_unread_count":  3,
+    "last_5_files_touched_24h":  [
+                                     "tools\\sinister-usage\\sinister_usage\\__main__.py",
+                                     "tools\\sinister-usage\\sinister_usage.egg-info\\SOURCES.txt",
+                                     "tools\\sinister-usage\\sinister_usage.egg-info\\top_level.txt",
+                                     "tools\\sinister-usage\\sinister_usage.egg-info\\entry_points.txt",
+                                     "tools\\sinister-usage\\sinister_usage.egg-info\\dependency_links.txt"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Sinister Forge.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\plans\\sinister-forge-2026-05-21\\forward-plan.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}

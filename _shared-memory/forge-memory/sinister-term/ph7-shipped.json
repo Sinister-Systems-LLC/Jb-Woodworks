@@ -1,0 +1,15 @@
+{
+  "_author": "RKOJ-ELENO :: 2026-05-21",
+  "schema_version": "sinister.forge-memory.v1",
+  "namespace": "sinister-term",
+  "key": "ph7-shipped",
+  "value": "2026-05-21-PH7-PH11-shipped-via-Sinister-Term-commit-0e8490d",
+  "tags": [
+    "sinister-term"
+  ],
+  "ts_utc_first": "2026-05-21T11:28:08Z",
+  "ts_utc_last": "2026-05-21T11:28:08Z",
+  "writes": 1,
+  "confidence": 1.0,
+  "content_hash": "3b0e5ad672a2ff9d0713a29e2bd5e4866030d4588a7a752d6403859ae167d3c9"
+}

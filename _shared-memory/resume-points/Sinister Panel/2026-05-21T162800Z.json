@@ -1,0 +1,50 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-21T16:28:00.0000000Z",
+    "project": "Sinister Panel",
+    "agent_name": "sinister-panel",
+    "mode": "resume",
+    "focus_intent": "Overview overhaul (6-card single line + bigger icons + LetsText-style map + unified activity utility bar) + sidebar profile rebuild (Super Admin pill + Operator/ELENO user list + workspace dropdown + Sign Out) + account-health sidebar prune — all LIVE on Hetzner @ 0c3da2e. Operator-frustration audit closed.",
+    "git": {
+        "branch": "main",
+        "head": "0c3da2e",
+        "head_msg": "panel: Overview overhaul + sidebar profile rebuild — operator screenshots 2026-05-21",
+        "deployed_head": "0c3da2e",
+        "recent_commits": [
+            "0c3da2e panel: Overview overhaul + sidebar profile rebuild [LIVE]",
+            "c9ce2e2 panel: close 3 operator deferrals — UI-N + UI-O + Wave 22 Live activity polish [LIVE]",
+            "fa87e8a panel: Stage 2 of recover-from-recovery — autoRecoveryWorker + /fleet UI [LIVE]",
+            "2da39df panel: Wave 23 — ban-checker auto-clean [LIVE]",
+            "8bfc5a8 panel: Wave 22 — Overview restructure [LIVE]"
+        ]
+    },
+    "progress_top3": [
+        "2026-05-21T16:28Z — DEPLOYED: Overview overhaul + sidebar rebuild + map reframe — LIVE on Hetzner @ 0c3da2e",
+        "2026-05-21T15:05Z — DEPLOYED: 3 operator deferrals closed + LIVE on Hetzner @ c9ce2e2",
+        "2026-05-21T14:36Z — DEPLOYED: Stage 2 LIVE on Hetzner @ fa87e8a"
+    ],
+    "latest_plan": {
+        "dir": null,
+        "artifact": null
+    },
+    "inbox_unread_count": 0,
+    "last_5_files_touched_24h": [
+        "leo_dev/dashboard/app/page.tsx",
+        "leo_dev/dashboard/components/layout/dashboard-sidebar.tsx",
+        "leo_dev/dashboard/components/primitives/geo-heat.tsx",
+        "_shared-memory/PROGRESS/Sinister Panel.md",
+        "leo_dev/dashboard/app/fleet/page.tsx"
+    ],
+    "operator_gated_next": [
+        "Operator to specify what's still 'fucked' on Browsers tab (no concrete visual diff named yet)",
+        "Operator to specify what's still 'missing' on Fleet tab (5-sub-tab condense + Stage 2 RecoveryPanel just shipped)"
+    ],
+    "carry_forward_deferrals": [
+        "Drop-plaintext-authToken sweep — time-gated to ≈2026-06-20",
+        "kernel-apk's 4 outstanding cross-agent ASK replies — sibling lane"
+    ],
+    "pre_warm_reads": [
+        "D:\\Sinister Sanctum\\automations\\session-contracts.md",
+        "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Sinister Panel.md"
+    ]
+}

@@ -1,0 +1,49 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-21T17:21:00.0000000Z",
+    "project": "Sinister Panel",
+    "agent_name": "sinister-panel",
+    "mode": "resume",
+    "focus_intent": "7-fix batch LIVE on Hetzner @ 450b426 (map bare + KPI links/no-truncate + Filters menu + Fleet auto-size + Command Center/Analytics header consolidation + platform-aware Analytics title). Master plan written at _shared-memory/plans/Sinister Panel-complete-everything-2026-05-21/plan.md catalogues all 36 operator directives.",
+    "git": {
+        "branch": "main",
+        "head": "450b426",
+        "head_msg": "panel: 7-fix batch — map bare, KPI links + no-truncate, Filters menu, Fleet auto-size, CC/Analytics header consolidation",
+        "deployed_head": "450b426",
+        "recent_commits": [
+            "450b426 panel: 7-fix batch [LIVE]",
+            "0905443 panel: Overview header bars + Browsers consolidation + Fleet PhoneDetail default-Control [LIVE]",
+            "0c3da2e panel: Overview overhaul + sidebar profile rebuild [LIVE]",
+            "c9ce2e2 panel: close 3 operator deferrals — UI-N + UI-O + Wave 22 [LIVE]",
+            "fa87e8a panel: Stage 2 of recover-from-recovery [LIVE]"
+        ]
+    },
+    "progress_top3": [
+        "2026-05-21T17:21Z — DEPLOYED: 7-fix batch + master plan written — LIVE @ 450b426",
+        "2026-05-21T16:44Z — DEPLOYED: Activity header bars + Browsers toolbar consolidation + Fleet default-Control — LIVE @ 0905443",
+        "2026-05-21T16:28Z — DEPLOYED: Overview overhaul + sidebar rebuild + map reframe — LIVE @ 0c3da2e"
+    ],
+    "latest_plan": {
+        "dir": "_shared-memory/plans/Sinister Panel-complete-everything-2026-05-21/",
+        "artifact": "plan.md"
+    },
+    "inbox_unread_count": 0,
+    "last_5_files_touched_24h": [
+        "leo_dev/dashboard/app/page.tsx",
+        "leo_dev/dashboard/app/automation/page.tsx",
+        "leo_dev/dashboard/app/analytics/page.tsx",
+        "leo_dev/dashboard/app/fleet/page.tsx",
+        "leo_dev/dashboard/components/primitives/geo-heat.tsx"
+    ],
+    "operator_gated_next": [],
+    "carry_forward_deferrals": [
+        "Drop-plaintext-authToken sweep — time-gated to ≈2026-06-20",
+        "kernel-apk's 4 outstanding cross-agent ASK replies — sibling lane",
+        "Accounts page LetsText deep-rip — unreachable cross-project source; current state already matches canonical reference"
+    ],
+    "pre_warm_reads": [
+        "D:\\Sinister Sanctum\\automations\\session-contracts.md",
+        "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Sinister Panel.md",
+        "D:\\Sinister Sanctum\\_shared-memory\\plans\\Sinister Panel-complete-everything-2026-05-21\\plan.md"
+    ]
+}

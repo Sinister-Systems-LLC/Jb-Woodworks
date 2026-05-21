@@ -1,0 +1,80 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-21T18:30:00.0000000Z",
+    "project": "Sinister Panel",
+    "agent_name": "sinister-panel",
+    "mode": "resume",
+    "focus_intent": "Resume turn from 17:21Z chain. Validated 7-fix batch LIVE @ 450b426 + closed Bucket C9 verification + ACK'd sanctum [HELLO] + brain-captured screenshot-batch triage pattern + shipped 1 a11y fix on per-agent branch awaiting operator merge-auth. Working tree on origin/main is clean.",
+    "git": {
+        "branch": "main",
+        "head": "450b426",
+        "head_msg": "panel: 7-fix batch — map bare, KPI links + no-truncate, Filters menu, Fleet auto-size, CC/Analytics header consolidation",
+        "deployed_head": "450b426",
+        "open_branches_unmerged": [
+            {
+                "branch": "agent/sinister-panel/resume-2026-05-21-a11y-chevrons",
+                "head": "e3cca39",
+                "head_msg": "panel: a11y batch — 10 more icon-only Button instances get aria-label",
+                "commits_ahead_of_main": 2,
+                "second_commit": "bb857c4 panel: a11y — Browsers paginator chevrons get aria-label + title",
+                "total_a11y_fixes": 13,
+                "diff_from_main": "+15 LOC / -11 LOC / 4 files (browsers, flows, automation, fleet)",
+                "gates_status": "tsc 0 · doctrine-audit:strict 0/0/0/0/0 · next build green",
+                "merge_status": "pushed to origin; awaiting operator merge-auth per CLAUDE.md rule #4",
+                "deploy_oneliner": "ssh root@95.216.240.227 'cd /opt/sinister-panel && git fetch origin && git checkout agent/sinister-panel/resume-2026-05-21-a11y-chevrons && docker compose up -d --build'"
+            }
+        ],
+        "recent_commits": [
+            "450b426 panel: 7-fix batch [LIVE]",
+            "0905443 panel: Overview header bars + Browsers consolidation + Fleet PhoneDetail default-Control [LIVE]",
+            "0c3da2e panel: Overview overhaul + sidebar profile rebuild [LIVE]",
+            "c9ce2e2 panel: close 3 operator deferrals [LIVE]",
+            "fa87e8a panel: Stage 2 of recover-from-recovery [LIVE]"
+        ]
+    },
+    "progress_top3": [
+        "2026-05-21T18:30Z — RESUME continued: a11y batch +10 fixes on the same branch (e3cca39); branch now 2 commits / 13 fixes ahead of main",
+        "2026-05-21T13:51Z — RESUME: revalidated 450b426 LIVE + closed Bucket C open items + a11y nit on branch (bb857c4)",
+        "2026-05-21T17:21Z — DEPLOYED: 7-fix batch + master plan written — LIVE @ 450b426"
+    ],
+    "latest_plan": {
+        "dir": "_shared-memory/plans/Sinister Panel-complete-everything-2026-05-21/",
+        "artifact": "plan.md"
+    },
+    "inbox_unread_count": 0,
+    "session_deliverables_summary": {
+        "ack_drafted": "_shared-memory/inbox/sanctum/2026-05-21T1351Z-hello-ack-from-panel.json",
+        "inbox_archived": "_shared-memory/inbox/panel/_archive/2026-05-21T1120Z-hello-from-sanctum-fleet-update.json",
+        "bucket_c9_verified": "Hetzner Phone table: 4/4 cols present; 8 most-recent phones deviceState=device; autoRecover default-off; AuditLog recovery events = 0 (steady-state idle)",
+        "deploy_freshness_verified": "chunk 037a41aeac0fb6a7.js serves /for-use,/chatter,/for-sale,/account-health (KPI link hrefs from operator ask #3 are LIVE)",
+        "a11y_fix_branched": "agent/sinister-panel/resume-2026-05-21-a11y-chevrons :: bb857c4 :: Browsers paginator chevrons +aria-label",
+        "brain_captured": "_shared-memory/knowledge/panel/screenshot-batch-triage-pattern.md (indexed in _INDEX.md)"
+    },
+    "last_5_files_touched_24h": [
+        "leo_dev/dashboard/app/browsers/page.tsx",
+        "_shared-memory/inbox/sanctum/2026-05-21T1351Z-hello-ack-from-panel.json",
+        "_shared-memory/knowledge/panel/screenshot-batch-triage-pattern.md",
+        "_shared-memory/knowledge/_INDEX.md",
+        "_shared-memory/PROGRESS/Sinister Panel.md"
+    ],
+    "operator_gated_next": [
+        {
+            "ask": "Merge agent/sinister-panel/resume-2026-05-21-a11y-chevrons → main + Hetzner deploy",
+            "blocker": "CLAUDE.md rule #4 (no merge to main without operator auth)",
+            "risk": "low (4 LOC, zero functional change, gates green)"
+        }
+    ],
+    "carry_forward_deferrals": [
+        "Drop-plaintext-authToken sweep — time-gated to ≈2026-06-20",
+        "kernel-apk's 4 outstanding cross-agent ASK replies — sibling lane",
+        "Accounts page LetsText deep-rip — unreachable cross-project source; current state already matches canonical reference",
+        "Long-tail a11y sweep — 21 icon-only Buttons in 14 lower-traffic component files (top-bar, ban-checker-tab, eve-chat, groups-tab, schedule-tab, workflow-builder, dispatch-quick-modal, harvest-drawer, account-pane, dashboard-layout, job-creator-modal, inbound-pipelines-panel, loops-tab, keyboard-shortcuts); ~30 min dedicated turn. High-traffic surfaces (browsers/flows/automation/fleet) already done as of e3cca39.",
+        "Doctrine-audit rule extension to catch `variant=\"bare\"` icon-only Buttons missing aria-label (the variant=\"icon\" JSDoc gate doesn't reach this pattern). Permanent fix vs the current code-level audit-and-label approach."
+    ],
+    "pre_warm_reads": [
+        "D:\\Sinister Sanctum\\automations\\session-contracts.md",
+        "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Sinister Panel.md",
+        "D:\\Sinister Sanctum\\_shared-memory\\plans\\Sinister Panel-complete-everything-2026-05-21\\plan.md",
+        "D:\\Sinister Sanctum\\_shared-memory\\knowledge\\panel\\screenshot-batch-triage-pattern.md"
+    ]
+}

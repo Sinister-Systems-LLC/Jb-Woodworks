@@ -1,0 +1,15 @@
+{
+  "_author": "RKOJ-ELENO :: 2026-05-21",
+  "schema_version": "sinister.forge-memory.v1",
+  "namespace": "sinister-term",
+  "key": "interactive-test",
+  "value": "interactive-test-value-from-claude",
+  "tags": [
+    "sinister-term"
+  ],
+  "ts_utc_first": "2026-05-21T11:42:24Z",
+  "ts_utc_last": "2026-05-21T11:42:24Z",
+  "writes": 1,
+  "confidence": 1.0,
+  "content_hash": "8a232290eeb19e6ad489b8c5351bbdc4eb3218b46b920fc877d7446ecac66c17"
+}

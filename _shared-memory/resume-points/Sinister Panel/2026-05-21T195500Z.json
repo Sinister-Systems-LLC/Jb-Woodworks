@@ -1,0 +1,74 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-21T19:55:00.0000000Z",
+    "project": "Sinister Panel",
+    "agent_name": "sinister-panel",
+    "mode": "resume",
+    "focus_intent": "Resume turn closed all the way through to LIVE. Operator's *'keep working to complete all i asked'* triggered the merge + Hetzner deploy of the 5-commit chain (13 a11y fixes + doctrine-audit 6th counter + 4 backend predicates tightened + /for-use default-filter flip). Hetzner HEAD = 25a58cf, dashboard image ~1 minute old at verification, HTTPS 200. All data-correctness directives from the operator's mid-session bug report are now LIVE.",
+    "git": {
+        "branch": "main",
+        "head": "25a58cf",
+        "head_msg": "panel: /for-use page defaults intentFilter to \"for_use\" (was \"all\")",
+        "deployed_head": "25a58cf",
+        "deploy_verified_utc": "2026-05-21T19:13:00Z",
+        "deploy_dashboard_image_built_utc": "2026-05-21T19:12:01Z",
+        "commits_ahead_of_main": 0,
+        "recent_commits": [
+            "25a58cf panel: /for-use page defaults intentFilter to \"for_use\" (was \"all\") [LIVE]",
+            "989a125 panel: fix for-use accounts leaking into /for-sale warehouse [LIVE]",
+            "62f3a51 panel: doctrine-audit gains 6th counter + schedule-tab 4 labels [LIVE]",
+            "e3cca39 panel: a11y batch +10 fixes [LIVE]",
+            "bb857c4 panel: a11y — Browsers paginator chevrons [LIVE]",
+            "450b426 panel: 7-fix batch [LIVE-prior]"
+        ],
+        "merge_status": "ff-merged + LIVE on Hetzner",
+        "obsolete_branch_safe_to_delete": "agent/sinister-panel/resume-2026-05-21-a11y-chevrons (merged into main)"
+    },
+    "progress_top3": [
+        "2026-05-21T19:15Z — DEPLOYED LIVE @ 25a58cf — doctrine-audit 6th counter + for-use/for-sale data correctness + 13 a11y fixes",
+        "2026-05-21T18:30Z — RESUME continued: a11y batch +10 fixes on the same branch",
+        "2026-05-21T13:51Z — RESUME: revalidated 450b426 LIVE + closed Bucket C open items"
+    ],
+    "latest_plan": {
+        "dir": "_shared-memory/plans/Sinister Panel-complete-everything-2026-05-21/",
+        "artifact": "plan.md"
+    },
+    "inbox_unread_count": 0,
+    "deploy_verification": {
+        "hetzner_head": "25a58cf",
+        "dashboard_image_age_seconds_at_check": 60,
+        "containers": {
+            "sinister-backend": "Up 40s (healthy)",
+            "leo_dev-dashboard-1": "Up 40s",
+            "sinister-postgres": "Up 9 days (healthy)"
+        },
+        "https_signin": "200 in 0.30s"
+    },
+    "session_deliverables_summary": {
+        "live_at_main": "25a58cf — 5-commit ff-merge of resume-branch",
+        "doctrine_audit_extension": "6th counter `bareIconNoLabel` flags icon-only Buttons missing aria-label + title; pre-commit hook now blocks this class of drift permanently",
+        "regex_bug_fix": "buttonOpen + buttonBlock get negative lookbehind (?<!=)> — also tightens existing pillRegression which was silently missing rounded-* overrides on Buttons with arrow-fn attrs",
+        "backend_data_fixes": "4 predicates in sales.ts + dashboard.ts now require intent=for_sale instead of legacy loginStatus=harvested OR fallback; for-use accounts no longer appear in /for-sale, storefront, or Overview KPI",
+        "frontend_default_filter": "/for-use page intentFilter default flipped from 'all' to 'for_use' — matches route name + completes the inverse symmetry of the backend fix"
+    },
+    "last_5_files_touched_24h": [
+        "leo_dev/dashboard/app/for-use/page.tsx",
+        "leo_dev/backend/src/routes/sales.ts",
+        "leo_dev/backend/src/routes/dashboard.ts",
+        "leo_dev/dashboard/scripts/doctrine-audit.mjs",
+        "leo_dev/dashboard/components/automation/schedule-tab.tsx"
+    ],
+    "operator_gated_next": [],
+    "carry_forward_deferrals": [
+        "Drop-plaintext-authToken sweep — time-gated to ≈2026-06-20",
+        "kernel-apk's 4 outstanding cross-agent ASK replies — sibling lane",
+        "Accounts page LetsText deep-rip — unreachable cross-project source; current state already matches canonical reference",
+        "Wire harvest_now skip-on-mismatch using heartbeat current_snap_username field (per kernel-apk v0.97.3 broadcast) — gated on VZW recovery + operator confirm the data shape",
+        "Operator visual validation of /for-sale + /for-use behavior post-deploy (the data fix is binary so the visual change is just 'for-use accounts disappear from warehouse views')"
+    ],
+    "pre_warm_reads": [
+        "D:\\Sinister Sanctum\\automations\\session-contracts.md",
+        "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Sinister Panel.md",
+        "D:\\Sinister Sanctum\\_shared-memory\\plans\\Sinister Panel-complete-everything-2026-05-21\\plan.md"
+    ]
+}

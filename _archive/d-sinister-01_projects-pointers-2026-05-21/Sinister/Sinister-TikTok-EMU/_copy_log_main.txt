@@ -1,0 +1,38 @@
+
+-------------------------------------------------------------------------------
+   ROBOCOPY     ::     Robust File Copy for Windows                              
+-------------------------------------------------------------------------------
+
+  Started : Monday, May 18, 2026 9:21:40 PM
+   Source : C:\Users\Zonia\Desktop\Sinister Tiktok EMU.API\
+     Dest : D:\Sinister\01_Projects\Sinister\Sinister-TikTok-EMU\source\
+
+    Files : *.*
+	    
+Exc Files : *.pyc
+	    
+ Exc Dirs : .git
+	    C:\Users\Zonia\Desktop\Sinister Tiktok EMU.API\tt-path-b-captures
+	    C:\Users\Zonia\Desktop\Sinister Tiktok EMU.API\_archive\harvests
+	    node_modules
+	    __pycache__
+	    .pytest_cache
+	    
+  Options : *.* /NDL /NFL /S /E /DCOPY:D /COPY:DT /NP /MT:16 /R:0 /W:0 
+
+------------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------
+
+               Total    Copied   Skipped  Mismatch    FAILED    Extras
+    Dirs :      1855      1843       299         0         0         0
+   Files :      4831      3595      1236         0         0         0
+   Bytes :   1.858 g  410.22 m   1.457 g         0         0         0
+   Times :   1:05:34   0:04:16                       0:00:00   0:00:19
+
+
+   Speed :             1675766 Bytes/sec.
+   Speed :              95.888 MegaBytes/min.
+   Ended : Monday, May 18, 2026 9:26:16 PM
+

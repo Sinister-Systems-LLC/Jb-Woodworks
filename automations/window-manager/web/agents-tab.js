@@ -158,11 +158,37 @@
                     cursorBlink: true,
                     fontFamily: 'Consolas, "Cascadia Mono", "Courier New", monospace',
                     fontSize: 13,
+                    // Sanctum-exact tokens (matches theme.css):
+                    //   BG:           #0E0A14
+                    //   BG_GLASS_1:   #15131A
+                    //   LIGHT_PURPLE: #E8D6FF
+                    //   PURPLE_HALO:  #C39DFF
+                    //   PURPLE_ACCENT:#A06EFF
+                    //   PURPLE_DEEP:  #7A3DD4
+                    //   BG_GLOW:      #2A1F3D
                     theme: {
-                        background: '#0c0712',
-                        foreground: '#e9d8ff',
-                        cursor: '#b48cff',
-                        selectionBackground: '#3a2762',
+                        background: '#0E0A14',
+                        foreground: '#E8D6FF',
+                        cursor: '#C39DFF',
+                        cursorAccent: '#0E0A14',
+                        selectionBackground: '#2A1F3D',
+                        selectionForeground: '#E8D6FF',
+                        black: '#0E0A14',
+                        red: '#FF6B8A',
+                        green: '#85C86E',
+                        yellow: '#DAA520',
+                        blue: '#A06EFF',
+                        magenta: '#C39DFF',
+                        cyan: '#7DD3FC',
+                        white: '#E8D6FF',
+                        brightBlack: '#3A2A55',
+                        brightRed: '#FF8FA6',
+                        brightGreen: '#A6E0A6',
+                        brightYellow: '#F1C868',
+                        brightBlue: '#C39DFF',
+                        brightMagenta: '#E8D6FF',
+                        brightCyan: '#B4E5FA',
+                        brightWhite: '#FFFFFF',
                     },
                 });
                 fit = new window.FitAddon.FitAddon();

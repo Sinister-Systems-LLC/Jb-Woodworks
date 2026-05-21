@@ -1,0 +1,34 @@
+{
+  "id": "sinister-brain",
+  "version": "0.1.0",
+  "author": "RKOJ-ELENO",
+  "author_date": "2026-05-21",
+  "description": "knowledge brain — substring search of _shared-memory/knowledge + memory-graph render. Sidebar nav, header tab, /brain slash, workstation card.",
+  "hooks": {
+    "sidebar_nav": {
+      "section": "AI",
+      "label": "Brain",
+      "glyph": "⎁",
+      "route": "brain"
+    },
+    "header_tab": {
+      "key": "brain",
+      "glyph": "B",
+      "label": "Brain"
+    },
+    "slash_command": {
+      "name": "/brain",
+      "summary": "search|grep|render|index",
+      "args": ["subcommand", "...rest"]
+    },
+    "workstation_card": {
+      "title": "Open Brain Graph",
+      "subtitle": "Mermaid render of the knowledge index",
+      "action": "brain.open_graph()",
+      "glyph": "⎁"
+    }
+  },
+  "imports": ["tools/memory-graph-render/memory_graph_render"],
+  "requires_python": ">=3.10",
+  "entry": "handler:BrainExtension"
+}

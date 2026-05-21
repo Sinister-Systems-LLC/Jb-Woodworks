@@ -1,0 +1,47 @@
+﻿{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-21T19:35:32.7880381Z",
+    "project":  "Sanctum",
+    "agent_name":  "sanctum",
+    "mode":  "resume",
+    "focus_intent":  "",
+    "git":  {
+                "branch":  "agent/sinister-sanctum/cli-dispatcher-2026-05-21",
+                "head":  "ada01403c035e9c5b448bd9cd79bc5903dd13b3a",
+                "head_msg":  "chore(sanctum): D-drive Sinister/ archive pass 2 — 5 POINTER shells + doctrine + _vault (per audit v2)",
+                "recent_commits":  [
+                                       "ada0140 chore(sanctum): D-drive Sinister/ archive pass 2 — 5 POINTER shells + doctrine + _vault (per audit v2)",
+                                       "9955202 docs(kernel-apk): resume-point 2026-05-21T193500Z — review-everything cleanup pass complete",
+                                       "5a89232 docs(kernel-apk): PROGRESS entry for 19:35Z review-everything cleanup pass",
+                                       "be49eb2 ship(rkoj): v1.4.1 — MCP Phase 2A `/mcp` 5-subcommand wire-up SHIPPED (binary on Desktop)",
+                                       "723748b docs(kernel-apk): self-empirical update to verify-head doctrine (Mitigation A.2 + concurrent-staging race) + 2 lane notifications",
+                                       "ccd859c docs(kernel-apk): reconstruct 2 multi-lane brain-disk-drift entries (verify-head + speculation-as-empirical)",
+                                       "77d2362 docs(kernel-apk): track 4 prior-session resume-points + broadcast 10-entry brain-disk drift to owning lanes",
+                                       "5913372 chore(sanctum): D-drive partial cleanup + PROGRESS v1.4.0 ship entry",
+                                       "13bdf80 docs(kernel-apk): track 7 kernel-apk-authored Sanctum artifacts (brain-disk drift cleanup pass 2)",
+                                       "216f47d ship(rkoj): v1.4.0 — integrated bundle SHIPPED to Desktop (Term + MCP SDK + Skills + workstation auto-launch + vault auto-spawn)"
+                                   ]
+            },
+    "progress_top3":  [
+                          "2026-05-21 ~19:25 â€” RKOJ.exe v1.4.1 SHIPPED to Desktop â€” MCP Phase 2A `/mcp` subcommand wire-up (commit `ccd859c`, swept)",
+                          "2026-05-21 ~19:15 â€” RKOJ.exe v1.4.0 SHIPPED to Desktop (integrated bundle: Term + MCP SDK + Skills + workstation auto-launch + vault auto-spawn) â€” commits `e34ac7a` + `216f47d`",
+                          "2026-05-21 ~18:00 â€” RKOJ v1.3.0 umbrella docs catch-up + UI completeness audit GREEN (commit `9aaaf97`)"
+                      ],
+    "latest_plan":  {
+                        "dir":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\sanctum-d-drive-final-reorg-2026-05-21",
+                        "artifact":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\sanctum-d-drive-final-reorg-2026-05-21\\projects-audit-v2.md"
+                    },
+    "inbox_unread_count":  1,
+    "last_5_files_touched_24h":  [
+                                     "_shared-memory\\heartbeats\\rkoj-scheduler.beat",
+                                     "_shared-memory\\heartbeats\\rkoj-runtime.beat",
+                                     ".gitignore",
+                                     "_shared-memory\\resume-points\\Kernel APK\\2026-05-21T193500Z.json",
+                                     "_shared-memory\\PROGRESS\\Sinister Kernel APK.md"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Sinister Sanctum.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\plans\\sanctum-d-drive-final-reorg-2026-05-21\\projects-audit-v2.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}

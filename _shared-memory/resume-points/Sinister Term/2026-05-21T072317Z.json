@@ -1,0 +1,46 @@
+﻿{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-21T11:23:19.0457187Z",
+    "project":  "Sinister Term",
+    "agent_name":  "Sinister Term",
+    "mode":  "resume",
+    "focus_intent":  "",
+    "git":  {
+                "branch":  "agent/sinister-forge/r1-r2-r7-r8-r11-2026-05-21",
+                "head":  "88e3e9bf7d1734e2183849640d10a58450e46d67",
+                "head_msg":  "docs(forge): EOT - PROGRESS top entry + first Sinister Forge resume-point",
+                "recent_commits":  [
+                                       "88e3e9b docs(forge): EOT - PROGRESS top entry + first Sinister Forge resume-point",
+                                       "0e8490d feat(term): PH7-PH11 - toolbar + breadcrumb prompt + cross-agent builtins + keybindings",
+                                       "162300f docs(forge): PH14 agentgrep static verdict + live-benchmark gated on AUP",
+                                       "a972857 feat(forge): R7 RKOJ dashboard ASK + R8 mermaid_render.py + R11 harness brain entry",
+                                       "bce833f docs(sanctum): flush co-audit deliverables - agent-host-routing + Modes section + DISCOVERY",
+                                       "243db88 feat(forge): liquid-glass UI overhaul + personal-projects.json + bat consolidation",
+                                       "98e7459 feat(term): PH1-PH6 - Python+prompt_toolkit minimal shell with Sinister theme",
+                                       "52faf8c feat(forge-bridge): write resume-point on spawn so phone-spawned agents boot warm",
+                                       "34fb45e chore(gitignore): re-exclude __pycache__/*.egg-info under whitelisted python source",
+                                       "655df83 docs(brain+broadcast): forge-bridge-rest-sse-pattern + sibling-lane broadcast"
+                                   ]
+            },
+    "progress_top3":  [
+                          "2026-05-21 11:40 â€” recovered: PROGRESS file restored after concurrent inbox reorg",
+                          "2026-05-21 11:30 â€” shipped: PH7-PH11 Sinister Term enhancements",
+                          "2026-05-21 11:10 â€” resume: PH7+ session started"
+                      ],
+    "latest_plan":  {
+                        "dir":  null,
+                        "artifact":  null
+                    },
+    "inbox_unread_count":  0,
+    "last_5_files_touched_24h":  [
+                                     "_shared-memory\\knowledge\\_INDEX.md",
+                                     "_shared-memory\\inbox\\forge\\2026-05-21T1145Z-ask-from-sinister-term-wayward-commit.json",
+                                     "_shared-memory\\heartbeats\\apk.json",
+                                     "_shared-memory\\cross-agent\\2026-05-21T1130Z-sanctum-to-all-sinister-freeze-new-lane.md",
+                                     "_shared-memory\\plans\\sinister-freeze-2026-05-21\\deep-research.md"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Sinister Term.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}

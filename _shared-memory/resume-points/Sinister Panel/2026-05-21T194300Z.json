@@ -1,0 +1,71 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-21T19:43:00.0000000Z",
+    "project": "Sinister Panel",
+    "agent_name": "sinister-panel",
+    "mode": "resume",
+    "focus_intent": "Resume turn continued. Shipped 2 more commits on the existing per-agent branch: (1) doctrine-audit gains a 6th counter `bareIconNoLabel` that flags icon-only Buttons missing aria-label + title (variant-agnostic, includes a regex lookbehind fix for arrow-fn attrs that also tightens existing pillRegression); (2) operator-flagged backend data-routing bug — for-use accounts were leaking into the /for-sale warehouse via a legacy `loginStatus=harvested` OR fallback in 4 predicates. Branch now 4 commits / 13 a11y fixes + 1 audit-rule extension + 1 backend data fix ahead of main. Pushed to origin. Operator merge-auth still required (CLAUDE.md rule #4).",
+    "git": {
+        "branch": "agent/sinister-panel/resume-2026-05-21-a11y-chevrons",
+        "head": "989a125",
+        "head_msg": "panel: fix for-use accounts leaking into /for-sale warehouse (operator bug 2026-05-21)",
+        "main_head": "450b426",
+        "deployed_head": "450b426",
+        "commits_ahead_of_main": 4,
+        "recent_commits_on_branch": [
+            "989a125 panel: fix for-use accounts leaking into /for-sale warehouse (operator bug 2026-05-21)",
+            "62f3a51 panel: doctrine-audit gains 6th counter (icon-only Button must have aria-label) + schedule-tab 4 bare-icon Buttons labelled",
+            "e3cca39 panel: a11y batch — 10 more icon-only Button instances get aria-label",
+            "bb857c4 panel: a11y — Browsers paginator chevrons get aria-label + title",
+            "450b426 panel: 7-fix batch [LIVE]"
+        ],
+        "merge_status": "pushed to origin; awaiting operator merge-auth per CLAUDE.md rule #4",
+        "deploy_oneliner_branch": "ssh root@95.216.240.227 'cd /opt/sinister-panel && git fetch origin && git checkout agent/sinister-panel/resume-2026-05-21-a11y-chevrons && docker compose up -d --build'",
+        "deploy_oneliner_after_merge": "ssh root@95.216.240.227 'cd /opt/sinister-panel && git pull && docker compose up -d --build'"
+    },
+    "progress_top3": [
+        "2026-05-21T19:15Z — RESUME continued: doctrine-audit 6th counter + operator-flagged for-use → for-sale routing bug fixed",
+        "2026-05-21T18:30Z — RESUME continued: a11y batch +10 fixes on the same branch (e3cca39)",
+        "2026-05-21T13:51Z — RESUME: revalidated 450b426 LIVE + closed Bucket C open items + a11y nit on branch"
+    ],
+    "latest_plan": {
+        "dir": "_shared-memory/plans/Sinister Panel-complete-everything-2026-05-21/",
+        "artifact": "plan.md"
+    },
+    "inbox_unread_count": 1,
+    "inbox_unread_summary": "1 [BROADCAST] from kernel-apk v0.97.3 (reply_required:false) — informational; next consumer step for Panel is to wire harvest_now skip-on-mismatch using heartbeat current_snap_username field once VZW DNS recovers operator-side.",
+    "session_deliverables_summary": {
+        "commit_audit_extension": "62f3a51 — doctrine-audit gains 6th counter `bareIconNoLabel` + regex lookbehind fix + schedule-tab 4 labels",
+        "commit_data_bug_fix": "989a125 — 4 backend predicates now require `intent=for_sale` instead of legacy `loginStatus=harvested` OR fallback",
+        "gates_status_branch": "tsc 0 · doctrine-audit:strict 0/0/0/0/0/0 · next build green; backend tsc unverifiable locally (node_modules Docker-built) but my-files scope showed 0 intent-related errors"
+    },
+    "last_5_files_touched_24h": [
+        "leo_dev/backend/src/routes/sales.ts",
+        "leo_dev/backend/src/routes/dashboard.ts",
+        "leo_dev/dashboard/scripts/doctrine-audit.mjs",
+        "leo_dev/dashboard/components/automation/schedule-tab.tsx",
+        "_shared-memory/PROGRESS/Sinister Panel.md"
+    ],
+    "operator_gated_next": [
+        {
+            "ask": "Merge agent/sinister-panel/resume-2026-05-21-a11y-chevrons → main + Hetzner deploy",
+            "blocker": "CLAUDE.md rule #4 (no merge to main without operator auth)",
+            "risk": "low (a11y labels + audit rule extension are visual-zero; backend data fix is the surgical removal of an OR clause that swept the wrong accounts — operator explicitly requested this)",
+            "deploy_after_merge": "ssh root@95.216.240.227 'cd /opt/sinister-panel && git pull && docker compose up -d --build'"
+        }
+    ],
+    "carry_forward_deferrals": [
+        "Drop-plaintext-authToken sweep — time-gated to ≈2026-06-20",
+        "kernel-apk's 4 outstanding cross-agent ASK replies — sibling lane",
+        "Accounts page LetsText deep-rip — unreachable cross-project source; current state already matches canonical reference",
+        "Wire harvest_now skip-on-mismatch using heartbeat current_snap_username field (per kernel-apk v0.97.3 broadcast) — gated on VZW recovery + operator confirm the data shape",
+        "/for-use page client-side intentFilter default is `all` not `for_use` — may want to flip default to match the route name; deferred pending operator opinion (page also shows for-sale + harvested-but-no-intent rows by default which the operator may want to see together for routing decisions)"
+    ],
+    "pre_warm_reads": [
+        "D:\\Sinister Sanctum\\automations\\session-contracts.md",
+        "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Sinister Panel.md",
+        "D:\\Sinister Sanctum\\_shared-memory\\plans\\Sinister Panel-complete-everything-2026-05-21\\plan.md",
+        "D:\\Sinister\\01_Projects\\Sinister\\Sinister-Panel\\source\\leo_dev\\backend\\src\\routes\\sales.ts",
+        "D:\\Sinister\\01_Projects\\Sinister\\Sinister-Panel\\source\\leo_dev\\backend\\src\\routes\\dashboard.ts"
+    ]
+}

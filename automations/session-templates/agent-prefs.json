@@ -44,7 +44,11 @@
                         "sinister-claw":  {
                                               "agent_name":  "sinister-claw",
                                               "accent_color":  "purple"
-                                          }
+                                          },
+                        "tiktok-emulator-api":  {
+                                                    "agent_name":  "tiktok-emulator-api",
+                                                    "accent_color":  "purple"
+                                                }
                     },
     "available_colors":  [
                              "purple",

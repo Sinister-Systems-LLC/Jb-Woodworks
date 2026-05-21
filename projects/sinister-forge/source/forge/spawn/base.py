@@ -46,7 +46,15 @@ class AgentSubprocess(ABC):
                 *argv,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
-                stdin=asyncio.subprocess.PIPE,
+                # stdin=DEVNULL so Claude CLI doesn't sit waiting for stdin
+                # input after we pass the prompt positionally. Operator-reported
+                # 2026-05-21: "Warning: no stdin data received in 3s, proceeding
+                # without it" because Claude treats PIPE'd stdin as interactive
+                # mode and blocks. We pass the opening prompt via build_argv()
+                # positional, so no stdin input is needed.
+                # When PH-interactive lands, switch this back to PIPE and have
+                # send_line() feed lines from a pane input widget.
+                stdin=asyncio.subprocess.DEVNULL,
                 cwd=str(self.cfg.project_root),
                 env=env,
             )

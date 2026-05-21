@@ -1,0 +1,55 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-21T14:30:00.0000000Z",
+    "project": "Sinister Panel",
+    "agent_name": "sinister-panel",
+    "mode": "resume",
+    "focus_intent": "Stage 2 of recover-from-recovery shipped on per-agent branch agent/sinister-panel/recover-from-recovery-stage2 @ fa87e8a (autoRecoveryWorker + /fleet RecoveryPanel). Operator-gated next steps: merge to main + master-self-execute SSH deploy. Cold-start drift catch-up flipped in PROGRESS (Waves 19/20/22/23 + Stage 1 + 2 hotfixes).",
+    "git": {
+        "branch": "agent/sinister-panel/recover-from-recovery-stage2",
+        "head": "fa87e8a",
+        "head_msg": "panel: Stage 2 of recover-from-recovery — autoRecoveryWorker + /fleet UI (deviceState pill + Recover button + Auto-recover toggle)",
+        "main_head": "2da39df",
+        "main_head_msg": "panel: Wave 23 — ban-checker auto-clean (real-time clear-inactive after Check Bans)",
+        "recent_commits": [
+            "fa87e8a panel: Stage 2 of recover-from-recovery — autoRecoveryWorker + /fleet UI",
+            "2da39df panel: Wave 23 — ban-checker auto-clean (real-time clear-inactive after Check Bans)",
+            "8bfc5a8 panel: Wave 22 — Overview restructure (6 KPIs / map / activity+creation side-by-side)",
+            "adaef63 panel: hotfix — backend .dockerignore so COPY . . doesn't overwrite fresh Prisma client",
+            "f4295b0 panel: hotfix — AuditLog.payloadJson typo → meta in /recover-from-recovery/done",
+            "9354016 panel: merge Wave 19+20 + recover-from-recovery backend to main",
+            "e824383 panel: Wave 20 — Jobs DB-style condense + /fleet TabHeader card",
+            "e1af4ab panel: Wave 19 — UI restructure sweep (10 of 13 operator asks)",
+            "175a29b panel: recover-from-recovery backend (Phone.deviceState + 4 endpoints) Stage 1",
+            "518aa0e panel: Wave 18 — TikTok proxyPass encryption consistency"
+        ]
+    },
+    "progress_top3": [
+        "2026-05-21T14:25Z — shipped: Stage 2 of recover-from-recovery (autoRecoveryWorker + /fleet UI) on per-agent branch @ fa87e8a",
+        "2026-05-21T14:00Z — context-review: shipped-but-not-flipped catch-up (Stage 1 + Wave 19/20/22/23 + 2 hotfixes all LIVE)",
+        "2026-05-21T10:20Z — note: cross-agent ACK to kernel-apk's recover-from-recovery ASK + Stage 1 plan surfaced"
+    ],
+    "latest_plan": {
+        "dir": null,
+        "artifact": null
+    },
+    "inbox_unread_count": 0,
+    "last_5_files_touched_24h": [
+        "leo_dev/dashboard/app/fleet/page.tsx",
+        "leo_dev/backend/src/services/autoRecoveryWorker.ts",
+        "leo_dev/backend/src/index.ts",
+        "_shared-memory/PROGRESS/Sinister Panel.md",
+        "_shared-memory/cross-agent/2026-05-21T1015Z-sinister-panel-to-kernel-apk.md"
+    ],
+    "operator_gated_next": [
+        "Operator review fa87e8a on GitHub: https://github.com/Sinister-Systems-LLC/Sinister-Panel/pull/new/agent/sinister-panel/recover-from-recovery-stage2",
+        "If green-lit: git checkout main && git merge --ff-only agent/sinister-panel/recover-from-recovery-stage2 && git push origin main",
+        "Master-self-execute deploy via SSH: bash /tmp/remote-deploy.sh --with-backend (canonical-18, no bat)"
+    ],
+    "pre_warm_reads": [
+        "D:\\Sinister Sanctum\\automations\\session-contracts.md",
+        "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Sinister Panel.md",
+        "D:\\Sinister Sanctum\\_shared-memory\\cross-agent\\2026-05-21T1015Z-sinister-panel-to-kernel-apk.md",
+        "D:\\Sinister\\01_Projects\\Sinister\\Sinister-Panel\\source\\leo_dev\\backend\\src\\services\\autoRecoveryWorker.ts"
+    ]
+}

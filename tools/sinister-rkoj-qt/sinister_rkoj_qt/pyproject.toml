@@ -1,0 +1,30 @@
+# Author: RKOJ-ELENO :: 2026-05-21
+[project]
+name = "sinister-rkoj-qt"
+version = "1.0.0"
+description = "Native PyQt6 desktop GUI for RKOJ.exe — Sinister Panel layout, Sanctum purple theme, EVE persona."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+    { name = "RKOJ-ELENO" },
+]
+license = { text = "Proprietary — Sinister Systems LLC" }
+dependencies = [
+    "PyQt6 >= 6.11.0",
+]
+
+[project.optional-dependencies]
+build = [
+    "pyinstaller >= 6.20.0",
+]
+
+[project.scripts]
+sinister-rkoj-qt = "sinister_rkoj_qt.__main__:main"
+
+[build-system]
+requires = ["setuptools >= 68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["sinister_rkoj_qt*"]

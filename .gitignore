@@ -135,6 +135,17 @@ projects/*/source/source/
 # by tiktok-emu agent). Excluding the whole tree from Sanctum.
 projects/sinister-tiktok-emu/
 
+# sinister-snap-api-emu slot has an empty embedded .git (placeholder from prior turn);
+# excluded the same way until properly initialized with a checked-out commit.
+projects/sinister-snap-api-emu/
+
+# Git worktrees (parallel checkouts of this repo) — never staged as gitlinks.
+worktrees/
+
+# Watchdog runtime state (PID + per-scan state json) — machine-local, never push.
+tools/sinister-watchdog/watchdog.pid
+tools/sinister-watchdog/state.json
+
 # External-imports inflow loop — KEEP operator-authored audit trail
 # (CANDIDATES.md, README.md, per-slug ATTRIBUTION.md, notes.md, etc.);
 # EXCLUDE upstream-cloned source code (bulky, may pattern-match secrets in
@@ -192,6 +203,11 @@ projects/*/eleno/.env.local
 # Auto-backup snapshots (24h cadence; auto-cleanup prunes >7d)
 backups/
 
+# Desktop migration imports — bulk content relocated from C:\Users\Zonia\Desktop\
+# per operator directive 2026-05-21. Multi-GB binaries; not for GitHub.
+# Sanctum tracks the import manifest, not the contents.
+_imports/
+
 # Sinister Mind source - REAL code (not junction)
 !projects/sinister-mind/source/
 !projects/sinister-mind/source/**
@@ -247,3 +263,5 @@ _archive/d-sinister-01_projects-pointers-2026-05-21/*/_vault/
 _archive/d-sinister-01_projects-pointers-2026-05-21/Sinister/*/source
 _archive/d-sinister-01_projects-pointers-2026-05-21/Sinister/*/source/
 _archive/d-sinister-01_projects-pointers-2026-05-21/Sinister/*/_vault/
+_archive/**/_git_archive.tar
+_archive/**/*.tar

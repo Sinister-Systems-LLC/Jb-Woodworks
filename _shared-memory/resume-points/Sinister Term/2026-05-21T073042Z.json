@@ -1,0 +1,43 @@
+﻿{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-21T11:31:07.9165439Z",
+    "project":  "Sinister Term",
+    "agent_name":  "Sinister Term",
+    "mode":  "resume",
+    "focus_intent":  "",
+    "git":  {
+                "branch":  "agent/sinister-term/ph7-resume-2026-05-21",
+                "head":  "b321b6b02a420a5f0f783a4c414441172e529b2f",
+                "head_msg":  "feat(term): PH13 forge-memory-bridge builtins + brain entry + bug reports",
+                "recent_commits":  [
+                                       "b321b6b feat(term): PH13 forge-memory-bridge builtins + brain entry + bug reports",
+                                       "0e8490d feat(term): PH7-PH11 - toolbar + breadcrumb prompt + cross-agent builtins + keybindings",
+                                       "162300f docs(forge): PH14 agentgrep static verdict + live-benchmark gated on AUP",
+                                       "a972857 feat(forge): R7 RKOJ dashboard ASK + R8 mermaid_render.py + R11 harness brain entry",
+                                       "bce833f docs(sanctum): flush co-audit deliverables - agent-host-routing + Modes section + DISCOVERY",
+                                       "243db88 feat(forge): liquid-glass UI overhaul + personal-projects.json + bat consolidation",
+                                       "98e7459 feat(term): PH1-PH6 - Python+prompt_toolkit minimal shell with Sinister theme",
+                                       "52faf8c feat(forge-bridge): write resume-point on spawn so phone-spawned agents boot warm",
+                                       "34fb45e chore(gitignore): re-exclude __pycache__/*.egg-info under whitelisted python source",
+                                       "655df83 docs(brain+broadcast): forge-bridge-rest-sse-pattern + sibling-lane broadcast"
+                                   ]
+            },
+    "progress_top3":  [
+
+                      ],
+    "latest_plan":  {
+                        "dir":  null,
+                        "artifact":  null
+                    },
+    "inbox_unread_count":  0,
+    "last_5_files_touched_24h":  [
+                                     "projects\\sinister-forge\\source\\forge\\panes\\__pycache__\\chrome.cpython-312.pyc.2571736938320",
+                                     "_shared-memory\\resume-points\\Sinister Panel\\2026-05-21T072954Z.json",
+                                     "projects\\sinister-forge\\source\\forge\\panes\\chrome.py",
+                                     "_shared-memory\\PROGRESS\\Sinister Panel.md",
+                                     "projects\\sinister-term\\README.md"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}

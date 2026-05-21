@@ -778,3 +778,85 @@ body[data-density="comfortable"] .sp-pane { padding: 18px 28px 24px; }
    PWS — pywebview override: kill any UA chrome borders.
    ============================================================ */
 html, body { border: 0; }
+
+/* ============================================================
+   jcode-form xterm.js terminal stack (Agents tab)
+   Author: RKOJ-ELENO :: 2026-05-21
+   ============================================================ */
+.sa-grid { display: flex; flex-direction: column; gap: 14px; min-height: 0; }
+.sa-toolbar {
+    display: flex; align-items: center; gap: 10px;
+    padding: 6px 2px 10px; border-bottom: 1px dashed rgba(180, 140, 255, 0.18);
+    margin-bottom: 6px;
+}
+.sa-hint { color: var(--c-muted, #9e8fb8); font-size: 12px; }
+.sa-niri {
+    display: flex; flex-direction: column; gap: 14px;
+    max-height: calc(100vh - 280px);
+    overflow-y: auto; overflow-x: hidden;
+    padding: 4px 4px 24px;
+    scroll-snap-type: y proximity;
+}
+.sa-niri::-webkit-scrollbar { width: 10px; }
+.sa-niri::-webkit-scrollbar-thumb { background: rgba(180, 140, 255, 0.25); border-radius: 5px; }
+
+.sa-card {
+    scroll-snap-align: start;
+    display: flex; flex-direction: column;
+    background: linear-gradient(180deg, #1a1226 0%, #120a1c 100%);
+    border: 1px solid rgba(180, 140, 255, 0.22);
+    border-radius: 12px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35), inset 0 0 0 1px rgba(180, 140, 255, 0.06);
+    overflow: hidden;
+    min-height: 360px;
+}
+.sa-accent-purple { border-color: rgba(180, 140, 255, 0.4); }
+.sa-accent-cyan   { border-color: rgba(100, 220, 255, 0.4); }
+.sa-accent-amber  { border-color: rgba(255, 200, 100, 0.4); }
+.sa-accent-pink   { border-color: rgba(255, 120, 200, 0.4); }
+
+.sa-head {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 12px;
+    background: rgba(180, 140, 255, 0.08);
+    border-bottom: 1px solid rgba(180, 140, 255, 0.18);
+    font-size: 13px;
+}
+.sa-status-dot {
+    width: 9px; height: 9px; border-radius: 50%;
+    background: #6c5b8a; box-shadow: 0 0 0 2px rgba(0,0,0,0.25);
+    display: inline-block;
+}
+.sa-status-dot.running { background: #b48cff; box-shadow: 0 0 6px #b48cff, 0 0 0 2px rgba(0,0,0,0.25); }
+.sa-status-dot.idle    { background: #4a3a6a; }
+.sa-status-dot.closed  { background: #663333; }
+
+.sa-name    { font-weight: 600; color: #e9d8ff; }
+.sa-project { color: #b8a3d8; }
+.sa-sep     { color: #5d4a7e; }
+.sa-mode    {
+    padding: 1px 8px; border-radius: 999px;
+    background: rgba(180, 140, 255, 0.18);
+    color: #e9d8ff; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;
+}
+.sa-paneid  { color: #6c5b8a; font-family: monospace; font-size: 11px; }
+
+.sa-term-host {
+    flex: 1 1 auto;
+    min-height: 240px;
+    background: #0c0712;
+    padding: 6px;
+}
+.sa-term-host .xterm { height: 100%; }
+.sa-term-fallback {
+    margin: 0; padding: 8px; min-height: 240px; max-height: 360px; overflow: auto;
+    color: #e9d8ff; background: #0c0712; font-family: Consolas, monospace; font-size: 12px;
+    white-space: pre-wrap; word-break: break-word;
+}
+
+.sa-input-row {
+    display: flex; gap: 8px; padding: 8px;
+    background: rgba(180, 140, 255, 0.04);
+    border-top: 1px solid rgba(180, 140, 255, 0.18);
+}
+.sa-input { flex: 1; font-family: Consolas, monospace; font-size: 13px; }
