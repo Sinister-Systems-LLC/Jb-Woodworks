@@ -6,6 +6,45 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-21 19:35Z — review-everything cleanup pass (`13bdf80` + `77d2362` + `ccd859c` + `723748b`) — 10 brain-disk drift items resolved or surfaced + 2 multi-lane entries reconstructed + 1 self-empirical doctrine update from a concurrent-staging incident
+
+**Operator directive:** *"ok review everything and complete things that are not complete"*. Comprehensive review pass surfaced 4 categories of incomplete state.
+
+### Sanctum-side commits this turn (`agent/sinister-sanctum/cli-dispatcher-2026-05-21`)
+
+- `13bdf80` — track 7 kernel-apk-authored Sanctum artifacts (3 cross-agent broadcasts + 1 sanctum ACK + 1 panel-archive notification + 2 brain entries with INDEX rows but untracked files: modular-fleet-cross-lane-integration + snap-account-24h-survival). Same brain-disk-drift class as the ksu-susfs entry already fixed in 00f9369. 7 files +403/-0.
+- `77d2362` — track 4 prior-session resume-points (2 in `Kernel APK/` + 2 in `Sinister Kernel APK/` per dir-name-convention drift, deferred to sanctum v1.3 PS1 ship) + dispatch the 10-entry brain-disk drift broadcast to owning lanes (sinister-panel 8 entries + snap-emu 1 entry + 2 multi-lane offered for kernel-apk reconstruction). 7 files +294/-0.
+- `ccd859c` — reconstruct 2 multi-lane brain entries (`verify-head-before-commit-multi-agent` + `speculation-as-empirical-anti-pattern-2026-05-20`) from _INDEX.md row content + empirical anchors (0e8490d wayward + 8f4f211 retraction). 2 files my-intent +204; ALSO bundled 4 sibling-staged files from RKOJ + Forge due to concurrent-staging race (incident captured below).
+- `723748b` — self-empirical update to verify-head-before-commit-multi-agent doctrine: added Mitigation A.2 "verify staged files match commit-message intent" + dispatched non-destructive [NOTIFY] messages to RKOJ and Forge inboxes per CONTRACT 5. 3 files my-intent +75.
+
+### Categories of incompleteness resolved
+
+1. **Untracked kernel-apk artifacts** (resolved 13bdf80 + 77d2362): 3 cross-agent broadcasts I authored + 1 sanctum ACK + 1 panel notification archive + 2 brain entries with INDEX rows + 4 prior-session resume-points. All authored-by-kernel-apk but untracked-in-git. Now committed.
+
+2. **Brain-disk drift** (partially resolved + broadcast): Earlier this session I fixed 2 (ksu-susfs reconstructed + sinister-spoofer-lukeprivacy-sim-clobber tracked). Discovered 10 more this pass: 8 panel-lane + 1 snap-emu + 2 multi-lane. Kernel-apk reconstructed the 2 multi-lane entries (claimed proactively since owning lanes were dormant). 9 cross-lane entries surfaced via inbox notifications to panel-lane + snap-emu for them to reconstruct.
+
+3. **Resume-point dir-name convention drift** (surfaced, not fixed): Both `Kernel APK/` (slug) and `Sinister Kernel APK/` (display-name) dirs exist with resume-points. Per `resume-point-dir-name-convention` brain entry, the v1.3 PS1 fix path is documented in sanctum lane but deferred during cli-dispatcher branch contention. Cross-lane work — surfaced for sanctum lane.
+
+4. **Concurrent-staging race** (self-empirical, updated doctrine): My commit ccd859c was INTENDED for 2 brain entries but bundled 4 sibling-staged files (RKOJ + Forge). The shared Sanctum-repo git index is racy across parallel lanes. Recovery per the doctrine I literally just wrote: non-destructive notification to both lanes (commit 723748b). Doctrine updated with new Mitigation A.2 (sort-compare staged-files vs EXPECTED before commit).
+
+### Why-this-matters
+
+The brain-disk-drift cleanup is structural — `_INDEX.md` is the primary discovery surface for the fleet brain. Rows pointing to nonexistent files break the discovery contract; future agents grep, fail, and either silently miss doctrine OR re-derive + ship duplicates. Closing the drift (mine) + surfacing the rest (sibling lanes') restores the discovery contract fleet-wide.
+
+The concurrent-staging incident is empirical material that STRENGTHENS the verify-head doctrine. The original brain entry (reconstructed this turn) covered the wayward-HEAD case; the staging race is a sister failure mode. Mitigation A.2 closes the gap with a concrete sort-compare ritual + sample bash. Future agents will hit this race AGAIN on the shared D-drive monorepo; the doctrine now warns them.
+
+### 5-check status
+
+1. Explicit ask — *"review everything and complete things that are not complete"* satisfied: 4 commits this pass; all kernel-apk-authored untracked items tracked; cross-lane drift surfaced; 2 multi-lane entries reconstructed; concurrent-staging incident captured + doctrine refined.
+2. TaskList — 19 tasks across the full session, all completed.
+3. PROGRESS — ✅ this entry.
+4. MASTER-PLAN — file doesn't exist on disk; deferred to operator-side.
+5. Next-slice surface — sibling lanes (panel, snap-emu, rkoj, forge) have inbox notifications; their ACKs are async.
+
+— EVE on Kernel APK (Claude agent, 2026-05-21T19:35Z, 4-commit review-everything cleanup pass + 2 multi-lane brain reconstructions + concurrent-staging self-empirical doctrine refinement + 9 cross-lane drift items surfaced via inbox notifications)
+
+---
+
 ## 2026-05-21 19:15Z — audit + doctrine pass (`00f9369` + `929c3b1` + `760ff40`) — 4 audits PASS + 2 brain doctrines refined under continued no-cell-service window
 
 **Operator directive at session continuation:** `keep working` + auto-mode active. Cell service still down. Continued cell-independent work.
