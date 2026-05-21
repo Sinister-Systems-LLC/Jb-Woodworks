@@ -3615,6 +3615,335 @@ def _cmd_watchdog(args, pane=None, app=None) -> str:
 
 
 # ===========================================================================
+# JCODE-PARITY GAP-FILL (batch Y, 2026-05-21) — /pair /ambient /permissions
+#                                                /replay /browser
+# Operator directive 2026-05-21: close the 5 jcode feature gaps surfaced by
+# jcode-feature-audit.md. Each handler is real + dispatchable; Phase 2 work
+# (peer-loop runtime, headless playwright, ambient refresh ticker) is called
+# out in-line where deferred.
+# ===========================================================================
+
+def _pane_slug(pane) -> str:
+    """Resolve a stable slug for the current pane (or 'sanctum' fallback)."""
+    for attr in ("project_key", "agent_name"):
+        v = getattr(pane, attr, None)
+        if isinstance(v, str) and v.strip():
+            return v.strip().lower().replace(" ", "-").replace("/", "-")
+    return "sanctum"
+
+
+def _cmd_pair(args, pane, app) -> str:
+    """Sinister /pair — pair-programming peer-EVE handshake.
+
+    Spawns (or registers) a peer EVE agent that shadows this pane's edits and
+    posts refactor suggestions via cross-pane DM. Sanctum extension over jcode:
+    peer reads from `_shared-memory/inbox/<your-slug>/peer/*.json` so the
+    suggestions land in the regular fleet inbox surface.
+
+    Forms:
+      /pair                → status (peer linked? where to find suggestions)
+      /pair on             → enable pair mode + ensure peer inbox dir exists
+      /pair off            → disable pair mode (peer messages stay on disk)
+      /pair note <text>    → write a note from this pane to the peer queue
+
+    Phase 2 (tracked in jcode-parity-roadmap): actually spawn a sibling EVE
+    subprocess and wire its DM channel. For now /pair on flips state +
+    materializes the inbox dir so a manually-spawned peer can drop suggestions.
+    """
+    sub = (args[0].lower() if args else "status")
+    slug = _pane_slug(pane)
+    sr = _sanctum_root()
+    peer_dir = sr / "_shared-memory" / "inbox" / slug / "peer"
+
+    if sub in ("status", "show", ""):
+        on = bool(state("pair_enabled"))
+        try:
+            n = len(list(peer_dir.glob("*.json"))) if peer_dir.exists() else 0
+        except Exception:
+            n = 0
+        return (f"[bold]/pair[/]  pane=[purple]{slug}[/]  "
+                f"mode={'[green]ON[/]' if on else '[dim]off[/]'}  "
+                f"peer-inbox: {peer_dir}  ({n} pending)\n"
+                f"  [dim]suggestions queued under _shared-memory/inbox/{slug}/peer/*.json[/]")
+
+    if sub == "on":
+        try:
+            peer_dir.mkdir(parents=True, exist_ok=True)
+        except Exception as e:
+            return f"[red]/pair on: mkdir failed: {e}[/]"
+        set_state("pair_enabled", True)
+        return (f"[green]/pair ON[/]  pane=[purple]{slug}[/]  peer-inbox: {peer_dir}\n"
+                f"  [dim]Phase 2: peer-EVE subprocess auto-spawn (jcode-parity-roadmap).\n"
+                f"  Today: manually spawn a sibling, point it at the inbox dir, drop suggestions.[/]")
+
+    if sub == "off":
+        set_state("pair_enabled", False)
+        return f"[yellow]/pair OFF[/]  ([dim]peer files in {peer_dir} are untouched[/])"
+
+    if sub == "note" and len(args) >= 2:
+        text = " ".join(args[1:]).strip()
+        try:
+            peer_dir.mkdir(parents=True, exist_ok=True)
+            ts = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H%M%SZ")
+            note = peer_dir / f"{ts}-pane-note.json"
+            note.write_text(json.dumps({
+                "ts_utc": ts, "from_pane": slug, "kind": "pane-note", "text": text,
+            }, indent=2), encoding="utf-8")
+            return f"[green]/pair note[/]  wrote → {note}"
+        except Exception as e:
+            return f"[red]/pair note: write failed: {e}[/]"
+
+    return "[yellow]usage: /pair [status|on|off|note <text>][/]"
+
+
+def _cmd_ambient(args, pane, app) -> str:
+    """Sinister /ambient — toggle background tail of sibling PROGRESS files.
+
+    Surfaces ambient awareness: scans `_shared-memory/PROGRESS/*.md`, picks the
+    top 3 by mtime (skipping this pane's own), and prints the last 10 lines of
+    each. Phase 2 (jcode-parity-roadmap): a 5-min background ticker that
+    re-injects the tail into the agent's system prompt context.
+
+    Forms:
+      /ambient            → show current snapshot (top 3 × last 10 lines)
+      /ambient on         → enable ambient mode (state flag)
+      /ambient off        → disable
+      /ambient status     → flag + last refresh ts
+    """
+    sub = (args[0].lower() if args else "show")
+    sr = _sanctum_root()
+
+    if sub in ("on", "off"):
+        set_state("ambient_enabled", sub == "on")
+        set_state("ambient_last_refresh", datetime.datetime.utcnow().isoformat())
+        return f"[{'green' if sub == 'on' else 'yellow'}]/ambient {sub.upper()}[/]"
+    if sub == "status":
+        on = bool(state("ambient_enabled"))
+        last = state("ambient_last_refresh") or "(never)"
+        return (f"[bold]/ambient[/]  mode={'[green]ON[/]' if on else '[dim]off[/]'}  "
+                f"last_refresh={last}\n"
+                f"  [dim]Phase 2: 5-min background ticker auto-injects tail into context.[/]")
+
+    # show / default
+    prog_dir = sr / "_shared-memory" / "PROGRESS"
+    if not prog_dir.exists():
+        return f"[yellow]/ambient: no PROGRESS dir at {prog_dir}[/]"
+    own_slug = _pane_slug(pane)
+    files = []
+    for p in prog_dir.glob("*.md"):
+        if own_slug and own_slug in p.stem.lower().replace(" ", "-"):
+            continue
+        files.append(p)
+    files = sorted(files, key=lambda p: p.stat().st_mtime, reverse=True)[:3]
+    if not files:
+        return f"[yellow]/ambient: no sibling PROGRESS files found under {prog_dir}[/]"
+
+    out: list[str] = [f"[bold]/ambient[/]  top 3 sibling PROGRESS files  "
+                      f"[dim](pane={own_slug})[/]"]
+    for fp in files:
+        try:
+            lines = fp.read_text(encoding="utf-8", errors="replace").splitlines()[-10:]
+        except Exception as e:
+            out.append(f"  [red]{fp.name}: read failed: {e}[/]")
+            continue
+        mt = datetime.datetime.fromtimestamp(fp.stat().st_mtime).strftime("%m-%d %H:%M")
+        out.append(f"\n[purple]── {fp.name}  [dim]({mt})[/][/]")
+        for ln in lines:
+            out.append(f"  {ln}")
+    return "\n".join(out)
+
+
+def _cmd_permissions(args, pane, app) -> str:
+    """Sinister /permissions — show effective sandbox permission scope.
+
+    Reads `~/.claude/settings.json` (operator-owned MCP / perm settings) and
+    surfaces read/write/exec/AUP scope per CONTRACT 3. With `--edit` opens
+    the file in the operator's default editor (no auto-write — operator-owned
+    file, see Sanctum hard rule: master agent NEVER touches ~/.claude/.mcp.json
+    or the surrounding settings without operator OK).
+
+    Forms:
+      /permissions          → read-only display of effective scope
+      /permissions --edit   → open settings.json in operator's editor
+      /permissions raw      → dump the raw permissions block
+    """
+    settings_path = Path.home() / ".claude" / "settings.json"
+    sub = (args[0].lower() if args else "show")
+
+    if not settings_path.exists():
+        return (f"[yellow]/permissions: no settings.json at {settings_path}[/]\n"
+                f"  [dim]operator-owned; do not auto-create from master agent.[/]")
+
+    if sub == "--edit":
+        try:
+            if platform.system() == "Windows":
+                os.startfile(str(settings_path))  # type: ignore[attr-defined]
+            else:
+                subprocess.Popen(["xdg-open", str(settings_path)])
+            return f"[green]/permissions --edit[/]  opened {settings_path}"
+        except Exception as e:
+            return f"[red]/permissions --edit: open failed: {e}[/]  [dim]({settings_path})[/]"
+
+    try:
+        data = json.loads(settings_path.read_text(encoding="utf-8"))
+    except Exception as e:
+        return f"[red]/permissions: settings.json parse failed: {e}[/]"
+
+    perms = data.get("permissions", {}) or {}
+
+    if sub == "raw":
+        return json.dumps(perms, indent=2) if perms else "(no `permissions` block in settings.json)"
+
+    allow = perms.get("allow", []) or []
+    deny = perms.get("deny", []) or []
+    ask = perms.get("ask", []) or []
+    mode = perms.get("defaultMode", "ask")
+
+    out = [f"[bold]/permissions[/]  effective scope  [dim]({settings_path})[/]"]
+    out.append(f"  default-mode : [purple]{mode}[/]")
+    out.append(f"  allow ({len(allow)}):")
+    for a in allow[:25]:
+        out.append(f"    [green]+[/] {a}")
+    if len(allow) > 25:
+        out.append(f"    [dim]…(+{len(allow) - 25} more)[/]")
+    out.append(f"  ask ({len(ask)}):")
+    for a in ask[:10]:
+        out.append(f"    [yellow]?[/] {a}")
+    out.append(f"  deny ({len(deny)}):")
+    for a in deny[:10]:
+        out.append(f"    [red]-[/] {a}")
+    out.append("")
+    out.append("  [dim]CONTRACT 3 (AUP filters) — read-only surface; edit via /permissions --edit.[/]")
+    return "\n".join(out)
+
+
+def _cmd_replay(args, pane, app) -> str:
+    """Sinister /replay — replay last N turns of current pane as structured log.
+
+    Reads the pane's JSONL journal (`pane._journal_path`), grabs the trailing
+    N turn-grouped records, and writes a clean replay to
+    `_shared-memory/replays/<pane-slug>/<UTC>.jsonl`. Used for debugging or
+    handing context to a sibling agent.
+
+    Forms:
+      /replay         → last 5 turns
+      /replay <N>     → last N turns
+    """
+    try:
+        n = int(args[0]) if args else 5
+        n = max(1, min(n, 500))
+    except ValueError:
+        return "[yellow]/replay: <N> must be an integer (default 5)[/]"
+
+    journal: Path | None = getattr(pane, "_journal_path", None) if pane else None
+    if not journal or not Path(journal).exists():
+        return ("[yellow]/replay: no pane journal yet (pane._journal_path empty)[/]\n"
+                "  [dim]journals live at _shared-memory/forge-memory/pane-journals/*.jsonl[/]")
+
+    journal = Path(journal)
+    try:
+        raw = journal.read_text(encoding="utf-8", errors="replace").splitlines()
+    except Exception as e:
+        return f"[red]/replay: read failed: {e}[/]"
+
+    records: list[dict] = []
+    for ln in raw:
+        ln = ln.strip()
+        if not ln:
+            continue
+        try:
+            records.append(json.loads(ln))
+        except Exception:
+            continue
+
+    if not records:
+        return "[yellow]/replay: journal empty[/]"
+
+    # Group by turn — fall back to last-N records if no turn field.
+    turns: dict[int, list[dict]] = {}
+    for r in records:
+        t = r.get("turn", 0)
+        turns.setdefault(int(t) if isinstance(t, (int, float)) else 0, []).append(r)
+    keep_turns = sorted(turns.keys())[-n:]
+    selected: list[dict] = []
+    for t in keep_turns:
+        selected.extend(turns[t])
+
+    # Write structured replay
+    sr = _sanctum_root()
+    slug = _pane_slug(pane)
+    out_dir = sr / "_shared-memory" / "replays" / slug
+    try:
+        out_dir.mkdir(parents=True, exist_ok=True)
+    except Exception as e:
+        return f"[red]/replay: mkdir failed: {e}[/]"
+    ts = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H%M%SZ")
+    out_path = out_dir / f"{ts}.jsonl"
+    try:
+        with out_path.open("w", encoding="utf-8") as fh:
+            for r in selected:
+                fh.write(json.dumps(r, ensure_ascii=False, default=str) + "\n")
+    except Exception as e:
+        return f"[red]/replay: write failed: {e}[/]"
+
+    # Pretty summary
+    role_counts: dict[str, int] = {}
+    for r in selected:
+        role_counts[str(r.get("role", "?"))] = role_counts.get(str(r.get("role", "?")), 0) + 1
+    role_summary = "  ".join(f"[purple]{k}[/]={v}" for k, v in sorted(role_counts.items()))
+    return (f"[bold]/replay[/]  pane=[purple]{slug}[/]  turns={len(keep_turns)}  "
+            f"records={len(selected)}\n"
+            f"  {role_summary}\n"
+            f"  → {out_path}")
+
+
+def _cmd_browser(args, pane, app) -> str:
+    """Sinister /browser — open the operator's default browser at a URL.
+
+    With no arg, opens the Sinister Panel local server at http://127.0.0.1:5077.
+    With `--background` (and Playwright installed) runs the URL headless and
+    returns the page title.
+
+    Forms:
+      /browser                       → open Sinister Panel (:5077)
+      /browser <url>                 → open URL in default browser
+      /browser <url> --background    → headless via Playwright (if installed)
+    """
+    bg = "--background" in args
+    rest = [a for a in args if a != "--background"]
+    url = rest[0] if rest else "http://127.0.0.1:5077"
+    # Tolerate bare host:port → add scheme
+    if "://" not in url:
+        url = "http://" + url
+
+    if bg:
+        try:
+            from playwright.sync_api import sync_playwright  # type: ignore
+        except Exception:
+            return ("[yellow]/browser --background: Playwright not installed[/]\n"
+                    "  [dim]pip install playwright && playwright install chromium[/]\n"
+                    f"  [dim]falling back: opening {url} in default browser is suppressed in --background[/]")
+        try:
+            with sync_playwright() as p:
+                br = p.chromium.launch(headless=True)
+                page = br.new_page()
+                page.goto(url, timeout=15000)
+                title = page.title()
+                br.close()
+            return f"[green]/browser --background[/]  {url}  →  [bold]{title}[/]"
+        except Exception as e:
+            return f"[red]/browser --background: playwright failed: {e}[/]"
+
+    try:
+        ok = webbrowser.open(url, new=2)
+    except Exception as e:
+        return f"[red]/browser: open failed: {e}[/]  [dim]({url})[/]"
+    if not ok:
+        return f"[yellow]/browser: webbrowser.open returned False for {url}[/]"
+    return f"[green]/browser[/]  opened {url}"
+
+
+# ===========================================================================
 # REGISTRY — name → handler + metadata
 # ===========================================================================
 
@@ -3725,6 +4054,18 @@ SLASH_COMMANDS: dict[str, dict[str, Any]] = {
                           "Prefers forge_memory_bridge.recall() (BM25) when available; falls back to grep-style scan."),
     "export":     _entry(_cmd_export,    "[session|brain|all] [<path>]  (export to JSONL)", "session",
                           "Default path: ~/Desktop/rkoj-export-<ts>.jsonl. Session=latest journal, brain=knowledge/*.md."),
+
+    # NEW (jcode-parity batch Y, 2026-05-21): /pair /ambient /permissions /replay /browser
+    "pair":        _entry(_cmd_pair,        "status|on|off|note <text>  — pair-programming peer-EVE handshake", "swarm",
+                           "Sanctum extension: peer reads suggestions from _shared-memory/inbox/<slug>/peer/*.json. Phase 2: auto-spawn sibling EVE subprocess (jcode-parity-roadmap)."),
+    "ambient":     _entry(_cmd_ambient,     "show|on|off|status — background tail of sibling PROGRESS files",   "swarm",
+                           "Top 3 sibling PROGRESS files × last 10 lines. Phase 2: 5-min ticker auto-injects tail into context."),
+    "permissions": _entry(_cmd_permissions, "[raw|--edit] — read-only display of effective sandbox scope (CONTRACT 3)", "system",
+                           "Reads ~/.claude/settings.json `permissions` block (allow/ask/deny + defaultMode). --edit opens the file in the operator's editor (operator-owned; master agent never auto-writes)."),
+    "replay":      _entry(_cmd_replay,      "[<N>] — replay last N turns of this pane as structured JSONL log", "session",
+                           "Default N=5. Reads pane._journal_path, groups by `turn`, writes _shared-memory/replays/<pane-slug>/<UTC>.jsonl."),
+    "browser":     _entry(_cmd_browser,     "[<url>] [--background] — open URL (default: Sinister Panel :5077)", "system",
+                           "webbrowser.open() wrapper. With --background runs headless via Playwright if installed; otherwise prints install hint."),
 }
 
 
