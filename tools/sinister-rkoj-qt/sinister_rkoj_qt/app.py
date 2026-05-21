@@ -1,5 +1,19 @@
 # Author: RKOJ-ELENO :: 2026-05-21
-"""QApplication + frameless rounded MainWindow wiring."""
+"""QApplication + frameless rounded SinisterWindow wiring.
+
+Layout (operator-canonical 2026-05-21 rewrite):
+
+    ┌────────────────────────────────────────────────────────────┐
+    │  Header.row1 — File / Edit / View / ... | — □ ✕           │
+    │  Header.row2 — Page Title  · Chips · Icons · + Create     │
+    ├──────────┬─────────────────────────────────────────────────┤
+    │ Sidebar  │ AgentsView (folder tabs + niri-scroll grid)     │
+    │  EVE     │ or DevicesView (placeholder)                    │
+    │  DAILY   │                                                 │
+    │  INSIGHTS│                                                 │
+    │  MANAGE  │                                                 │
+    └──────────┴─────────────────────────────────────────────────┘
+"""
 
 from __future__ import annotations
 
@@ -7,74 +21,26 @@ import sys
 from pathlib import Path
 from typing import Optional
 
-from PyQt6.QtCore import QPoint, QRect, QSize, Qt
+from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QGuiApplication, QIcon, QKeySequence, QPainterPath, QRegion, QShortcut
 from PyQt6.QtWidgets import (
-    QApplication, QFrame, QHBoxLayout, QLabel, QMainWindow, QPushButton,
-    QSizePolicy, QStackedWidget, QVBoxLayout, QWidget,
+    QApplication, QHBoxLayout, QMainWindow, QMessageBox, QStackedWidget,
+    QVBoxLayout, QWidget,
 )
 
-from .agents_tab import AgentsTab
+from .agents_tab import AgentsView
+from .devices_tab import DevicesView
 from .header import Header
-from .kpis import KpiStrip
-from .phones_tab import PhonesTab
-from .ribbon import Ribbon
 from .sidebar import Sidebar
-from .theme import (
-    BG, BORDER_GLASS, WINDOW_RADIUS, build_qss,
-)
-from .workstation_tab import WorkstationTab
+from .theme import WINDOW_RADIUS, build_qss
 
 
 # Sinister logo for window icon (optional)
 ICON_PATH = Path(r"D:\Sinister Sanctum\automations\window-manager\web\sinister-logo.ico")
 
 
-class WinControls(QWidget):
-    """Min/Max/Close cluster, top-right."""
-    def __init__(self, parent: QWidget) -> None:
-        super().__init__(parent)
-        self._win = parent
-        layout = QHBoxLayout(self)
-        layout.setContentsMargins(4, 4, 8, 0)
-        layout.setSpacing(2)
-
-        self.btn_min = QPushButton("—")
-        self.btn_max = QPushButton("□")
-        self.btn_close = QPushButton("✕")
-        for b in (self.btn_min, self.btn_max, self.btn_close):
-            b.setObjectName("WinCtl")
-            b.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.btn_close.setObjectName("WinCtlClose")
-        self.btn_min.clicked.connect(self._on_min)
-        self.btn_max.clicked.connect(self._on_max)
-        self.btn_close.clicked.connect(self._on_close)
-        layout.addWidget(self.btn_min)
-        layout.addWidget(self.btn_max)
-        layout.addWidget(self.btn_close)
-
-    def _on_min(self) -> None:
-        w = self.window()
-        if w is not None:
-            w.showMinimized()
-
-    def _on_max(self) -> None:
-        w = self.window()
-        if w is None:
-            return
-        if w.isMaximized():
-            w.showNormal()
-        else:
-            w.showMaximized()
-
-    def _on_close(self) -> None:
-        w = self.window()
-        if w is not None:
-            w.close()
-
-
-class MainWindow(QMainWindow):
-    """Frameless rounded main window."""
+class SinisterWindow(QMainWindow):
+    """Frameless rounded main window — RKOJ.exe entry surface."""
 
     def __init__(self) -> None:
         super().__init__()
@@ -82,12 +48,12 @@ class MainWindow(QMainWindow):
         if ICON_PATH.exists():
             self.setWindowIcon(QIcon(str(ICON_PATH)))
 
-        # Frameless + transparent (so rounded mask shows)
         self.setWindowFlags(
             Qt.WindowType.FramelessWindowHint | Qt.WindowType.Window
         )
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, False)
-        self.resize(1480, 900)
+        self.setMinimumSize(1100, 720)
+        self.resize(1400, 900)
         self._center_on_screen()
         self._build()
         self._wire()
@@ -110,51 +76,25 @@ class MainWindow(QMainWindow):
         outer.setContentsMargins(1, 1, 1, 1)
         outer.setSpacing(0)
 
-        # ── Sidebar ────────────────────────────────────────────────
+        # ── Sidebar ───────────────────────────────────────────────
         self.sidebar = Sidebar(shell)
         outer.addWidget(self.sidebar)
 
-        # ── Right column (header / ribbon / kpis / pane) ───────────
+        # ── Right column (header + body) ──────────────────────────
         right = QWidget(shell)
         right_layout = QVBoxLayout(right)
         right_layout.setContentsMargins(0, 0, 0, 0)
         right_layout.setSpacing(0)
 
-        # Header + win controls overlaid
-        header_row = QWidget(right)
-        header_row.setObjectName("HeaderRow")
-        hl = QHBoxLayout(header_row)
-        hl.setContentsMargins(0, 0, 0, 0)
-        hl.setSpacing(0)
-        self.header = Header(header_row)
-        hl.addWidget(self.header, stretch=1)
-        self.win_controls = WinControls(header_row)
-        # Pin to top-right
-        winctl_holder = QWidget(header_row)
-        winctl_v = QVBoxLayout(winctl_holder)
-        winctl_v.setContentsMargins(0, 0, 0, 0)
-        winctl_v.setSpacing(0)
-        winctl_v.addWidget(self.win_controls)
-        winctl_v.addStretch(1)
-        hl.addWidget(winctl_holder)
-        right_layout.addWidget(header_row)
+        self.header = Header(right)
+        right_layout.addWidget(self.header)
 
-        # Ribbon
-        self.ribbon = Ribbon(right)
-        right_layout.addWidget(self.ribbon)
-
-        # KPIs
-        self.kpis = KpiStrip(right)
-        right_layout.addWidget(self.kpis)
-
-        # Main pane (stacked agents/phones/workstation)
+        # Body — stacked Agents / Devices
         self.stack = QStackedWidget(right)
-        self.agents_tab = AgentsTab(self.stack)
-        self.phones_tab = PhonesTab(self.stack)
-        self.workstation_tab = WorkstationTab(self.stack)
-        self.stack.addWidget(self.agents_tab)
-        self.stack.addWidget(self.phones_tab)
-        self.stack.addWidget(self.workstation_tab)
+        self.agents_view = AgentsView(self.stack)
+        self.devices_view = DevicesView(self.stack)
+        self.stack.addWidget(self.agents_view)
+        self.stack.addWidget(self.devices_view)
         right_layout.addWidget(self.stack, stretch=1)
 
         outer.addWidget(right, stretch=1)
@@ -162,157 +102,89 @@ class MainWindow(QMainWindow):
     def _wire(self) -> None:
         # Chip tabs
         self.header.chip_clicked.connect(self._on_chip)
-        # Sidebar nav -> route shortcuts
-        self.sidebar.nav_clicked.connect(self._on_nav)
-        # Ribbon actions
-        self.ribbon.action_clicked.connect(self._on_ribbon_action)
-        # Header icon actions
+        # Create Agent
+        self.header.create_agent_clicked.connect(self._on_create_agent)
+        # Header icon cluster
         self.header.icon_clicked.connect(self._on_header_icon)
-        # Ctrl+K palette
-        QShortcut(QKeySequence("Ctrl+K"), self, activated=lambda: self._on_header_icon("palette"))
+        # Window controls
+        self.header.minimize_clicked.connect(self.showMinimized)
+        self.header.maximize_clicked.connect(self._toggle_max)
+        self.header.close_clicked.connect(self.close)
+        # Menu strip actions
+        self.header.menu_action.connect(self._on_menu_action)
+        # Sidebar nav (placeholder — only highlights for now)
+        self.sidebar.nav_clicked.connect(self._on_nav)
+        # Ctrl+K palette stub
+        QShortcut(QKeySequence("Ctrl+K"), self,
+                  activated=lambda: self._on_header_icon("search"))
 
-    # ── Routing ────────────────────────────────────────────────────
+    # ── Routing ───────────────────────────────────────────────────
     def _on_chip(self, key: str) -> None:
         if key == "agents":
-            self.stack.setCurrentWidget(self.agents_tab)
-        elif key == "phones":
-            self.stack.setCurrentWidget(self.phones_tab)
-        elif key == "workstation":
-            self.stack.setCurrentWidget(self.workstation_tab)
+            self.stack.setCurrentWidget(self.agents_view)
+        elif key == "devices":
+            self.stack.setCurrentWidget(self.devices_view)
 
     def _on_nav(self, key: str) -> None:
-        # Map sidebar nav keys onto top-tabs where applicable.
-        if key == "phones":
-            self.header.set_active_chip("phones")
-            self.stack.setCurrentWidget(self.phones_tab)
-        elif key in ("eve", "automation"):
-            self.header.set_active_chip("agents")
-            self.stack.setCurrentWidget(self.agents_tab)
-        elif key == "admin":
-            self.header.set_active_chip("workstation")
-            self.stack.setCurrentWidget(self.workstation_tab)
-        # other nav keys (overview/accounts/...) leave the main pane alone
+        # Placeholder per operator brief — clicking nav only highlights.
+        # If desired later we'd swap the body content here.
+        _ = key
 
-    def _on_ribbon_action(self, key: str) -> None:
-        # Map ribbon actions onto wired stubs.
-        if key == "view.toggle_sidebar":
-            self.sidebar.setVisible(not self.sidebar.isVisible())
-        elif key == "spawn.agent":
-            self.header.set_active_chip("agents")
-            self.stack.setCurrentWidget(self.agents_tab)
-            self.agents_tab.spawn_agent("sanctum")
-        elif key == "spawn.swarm3":
-            self.header.set_active_chip("agents")
-            self.stack.setCurrentWidget(self.agents_tab)
-            for _ in range(3):
-                self.agents_tab.spawn_agent("sanctum")
-        elif key == "spawn.codex":
-            self.header.set_active_chip("agents")
-            self.stack.setCurrentWidget(self.agents_tab)
-            self.agents_tab.spawn_agent("sanctum", mode="codex")
-        elif key == "spawn.resume":
-            self.agents_tab.spawn_agent("sanctum", mode="resume")
-        elif key.startswith("agent."):
-            # Forward as a slash to the most recent agent if any
-            self._dispatch_to_latest_agent(key.split(".", 1)[1].replace("_", " "))
-        elif key == "auto.watchdog_start":
-            import subprocess
-            try:
-                subprocess.Popen(["powershell", "-NoExit", "-Command", "sinister-watchdog start"],
-                                 creationflags=getattr(subprocess, "CREATE_NEW_CONSOLE", 0))
-            except Exception:
-                pass
-        elif key == "auto.watchdog_tail":
-            import subprocess
-            try:
-                subprocess.Popen(["powershell", "-NoExit", "-Command", "Get-Content -Wait $env:USERPROFILE\\.sinister\\watchdog.log"],
-                                 creationflags=getattr(subprocess, "CREATE_NEW_CONSOLE", 0))
-            except Exception:
-                pass
-        elif key == "auto.backup_now":
-            import subprocess
-            try:
-                subprocess.Popen(["powershell", "-NoExit", "-Command", "& 'D:\\Sinister Sanctum\\automations\\sanctum-backup\\run.ps1'"],
-                                 creationflags=getattr(subprocess, "CREATE_NEW_CONSOLE", 0))
-            except Exception:
-                pass
-        elif key == "auto.push_now":
-            import subprocess
-            try:
-                subprocess.Popen(["powershell", "-NoExit", "-Command", "& 'D:\\Sinister Sanctum\\automations\\sanctum-git\\auto-push.ps1'"],
-                                 creationflags=getattr(subprocess, "CREATE_NEW_CONSOLE", 0))
-            except Exception:
-                pass
-        elif key.startswith("maint."):
-            self._on_maint(key.split(".", 1)[1])
-
-    def _on_maint(self, action: str) -> None:
-        import subprocess
-        from pathlib import Path
-        if action == "brain_index":
-            try:
-                subprocess.Popen(["powershell", "-NoExit", "-Command",
-                                 "Get-ChildItem 'D:\\Sinister Sanctum\\_shared-memory\\knowledge\\*.md' | Measure-Object | Select-Object -ExpandProperty Count"],
-                                creationflags=getattr(subprocess, "CREATE_NEW_CONSOLE", 0))
-            except Exception:
-                pass
-        elif action == "sanctum_backup":
-            import os
-            try:
-                os.startfile(r"D:\Sinister Sanctum\_shared-memory\backups")
-            except Exception:
-                pass
-        elif action == "vault_status":
-            import webbrowser
-            webbrowser.open("http://localhost:5078/health")
-        elif action == "mcp_probe":
-            import os
-            try:
-                os.startfile(str(Path.home() / ".claude" / ".mcp.json"))
-            except Exception:
-                pass
-
-    def _dispatch_to_latest_agent(self, slash_text: str) -> None:
-        cards = list(self.agents_tab._cards.values()) if hasattr(self.agents_tab, "_cards") else []
-        if not cards:
-            return
-        latest = cards[-1]
-        latest.input.setText("/" + slash_text)
-        latest._on_send()
+    def _on_create_agent(self) -> None:
+        # Default to sanctum project — multi-project picker is milestone 2.
+        self.header.set_active_chip("agents")
+        self.stack.setCurrentWidget(self.agents_view)
+        self.agents_view.spawn_agent(project_key="sanctum")
 
     def _on_header_icon(self, key: str) -> None:
-        if key == "palette":
-            # placeholder — eventually a QDialog with a search line
-            pass
-        elif key == "settings":
-            import os
-            try:
-                os.startfile(str(Path(r"D:\Sinister Sanctum\automations\session-templates\projects.json")))
-            except Exception:
-                pass
-        elif key == "inbox":
-            import os
-            try:
-                os.startfile(r"D:\Sinister Sanctum\_shared-memory\inbox\sanctum")
-            except Exception:
-                pass
+        # Stubs — wired in a follow-up. Operator brief: very basic for now.
+        _ = key
 
-    # ── Rounded mask ───────────────────────────────────────────────
+    def _on_menu_action(self, action: str) -> None:
+        if action == "File.Exit":
+            self.close()
+            return
+        if action == "File.New Agent" or action == "Agent.Spawn EVE":
+            self._on_create_agent()
+            return
+        if action == "View.Toggle Sidebar":
+            self.sidebar.setVisible(not self.sidebar.isVisible())
+            return
+        if action == "Agent.Terminate All":
+            self.agents_view.shutdown_all()
+            return
+        if action == "Help.About RKOJ":
+            QMessageBox.information(
+                self,
+                "About RKOJ",
+                "RKOJ.exe — Sinister Sanctum workstation\n"
+                "EVE orchestration agent · Sanctum purple · RKOJ-ELENO.\n"
+                "Build 2026-05-21 — milestone 1 (Agents shell).",
+            )
+            return
+        # Other items are placeholders; ignore silently.
+
+    def _toggle_max(self) -> None:
+        if self.isMaximized():
+            self.showNormal()
+        else:
+            self.showMaximized()
+
+    # ── Rounded mask ──────────────────────────────────────────────
     def resizeEvent(self, event) -> None:
         path = QPainterPath()
         path.addRoundedRect(0.0, 0.0, float(self.width()), float(self.height()),
-                           float(WINDOW_RADIUS), float(WINDOW_RADIUS))
+                            float(WINDOW_RADIUS), float(WINDOW_RADIUS))
         region = QRegion(path.toFillPolygon().toPolygon())
         self.setMask(region)
         super().resizeEvent(event)
 
-    # ── Clean shutdown ─────────────────────────────────────────────
+    # ── Clean shutdown ────────────────────────────────────────────
     def closeEvent(self, event) -> None:
         try:
-            self.agents_tab.shutdown_all()
+            self.agents_view.shutdown_all()
         except Exception:
             pass
-        # write a tiny resume-point breadcrumb
         try:
             from .state import SHARED_MEMORY
             import json
@@ -323,7 +195,12 @@ class MainWindow(QMainWindow):
                 json.dump({"shutdown_at": datetime.now(timezone.utc).isoformat()}, fh)
         except Exception:
             pass
+        event.accept()
         super().closeEvent(event)
+
+
+# Backward-compat alias
+MainWindow = SinisterWindow
 
 
 def run(argv: list[str] | None = None) -> int:
@@ -334,7 +211,9 @@ def run(argv: list[str] | None = None) -> int:
     app.setStyleSheet(build_qss())
     if ICON_PATH.exists():
         app.setWindowIcon(QIcon(str(ICON_PATH)))
+    # Important — quit when the last window closes (so X actually exits)
+    app.setQuitOnLastWindowClosed(True)
 
-    win = MainWindow()
+    win = SinisterWindow()
     win.show()
     return app.exec()

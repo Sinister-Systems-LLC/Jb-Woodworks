@@ -1,50 +1,66 @@
 # Author: RKOJ-ELENO :: 2026-05-21
-"""240px left sidebar — mascot block + 4 sections + status counters."""
+"""200px left sidebar — mascot block + DAILY / INSIGHTS / MANAGE sections.
+
+Matches Sinister Panel image 13 layout (mascot tile up top, three label-cap
+sections beneath). Click-only nav (no content swap yet — placeholder per
+operator brief).
+"""
 
 from __future__ import annotations
 
-from PyQt6.QtCore import Qt, QTimer, pyqtSignal
+from pathlib import Path
+
+from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QFont
 from PyQt6.QtWidgets import (
-    QFrame, QHBoxLayout, QLabel, QPushButton, QScrollArea, QSizePolicy,
-    QSpacerItem, QVBoxLayout, QWidget,
+    QFrame, QLabel, QPushButton, QScrollArea, QSizePolicy, QSpacerItem,
+    QVBoxLayout, QWidget,
 )
 
-from . import state
+try:
+    from PyQt6.QtSvgWidgets import QSvgWidget  # type: ignore
+    _HAS_SVG = True
+except Exception:  # pragma: no cover — fall back to ASCII devil
+    _HAS_SVG = False
+
 from .theme import SIDEBAR_WIDTH
 
 
-# Sinister Panel 4-section layout — mirrors snap.sinijkr.com sidebar.tsx.
+# Sinister Panel 3-section layout — DAILY / INSIGHTS / MANAGE.
 SECTIONS: list[tuple[str, list[tuple[str, str]]]] = [
-    ("WORKSPACE", [
+    ("DAILY", [
         ("overview", "Overview"),
         ("accounts", "Accounts"),
-        ("sales", "Sales"),
+        ("command", "Command Center"),
+    ]),
+    ("INSIGHTS", [
         ("analytics", "Analytics"),
-    ]),
-    ("OPERATIONS", [
-        ("automation", "Automation"),
-        ("phones", "Devices"),
-        ("browsers", "Browsers"),
+        ("sales", "Sales"),
         ("database", "Database"),
-        ("rka", "RKA"),
-        ("videos", "Video Manager"),
+        ("sanctum", "Sanctum"),
     ]),
-    ("AI", [
+    ("MANAGE", [
+        ("fleet", "Fleet"),
+        ("proxies", "Proxies"),
+        ("browsers", "Browsers"),
         ("eve", "EVE AI"),
-        ("bitmoji", "Bitmoji Studio"),
-    ]),
-    ("SYSTEM", [
         ("admin", "Admin"),
     ]),
 ]
 
+# Skull SVG (Sanctum mascot) — bundled with window-manager web assets.
+_SKULL_SVG = Path(r"D:\Sinister Sanctum\automations\window-manager\web\skull.svg")
 
-_MASCOT_ASCII = "  /\\_/\\  \n ( o.o ) \n  > ^ <  "
+# ASCII fallback if SVG won't load.
+_MASCOT_ASCII = (
+    "  /\\_/\\  \n"
+    " ( o.o ) \n"
+    "  > ^ <  "
+)
 
 
 class Sidebar(QWidget):
-    """Left vertical sidebar — fixed 240px width."""
+    """Left vertical sidebar — fixed 200px width per operator brief."""
 
     nav_clicked = pyqtSignal(str)
 
@@ -55,10 +71,7 @@ class Sidebar(QWidget):
         self._active_nav: str = "overview"
         self._nav_buttons: dict[str, QPushButton] = {}
         self._build()
-        self._timer = QTimer(self)
-        self._timer.timeout.connect(self._refresh_status)
-        self._timer.start(5000)
-        self._refresh_status()
+        self._update_active(self._active_nav)
 
     def _build(self) -> None:
         root = QVBoxLayout(self)
@@ -68,18 +81,24 @@ class Sidebar(QWidget):
         # ── Mascot block ────────────────────────────────────────────────
         mascot_frame = QFrame(self)
         mascot_frame.setObjectName("MascotFrame")
+        mascot_frame.setFixedHeight(140)
         mascot_layout = QVBoxLayout(mascot_frame)
-        mascot_layout.setContentsMargins(16, 16, 16, 12)
+        mascot_layout.setContentsMargins(12, 14, 12, 10)
         mascot_layout.setSpacing(4)
         mascot_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        mascot = QLabel(_MASCOT_ASCII)
-        mascot.setObjectName("Mascot")
-        mascot.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        mono = QFont("Cascadia Mono")
-        mono.setStyleHint(QFont.StyleHint.Monospace)
-        mascot.setFont(mono)
-        mascot_layout.addWidget(mascot)
+        if _HAS_SVG and _SKULL_SVG.exists():
+            svg = QSvgWidget(str(_SKULL_SVG))
+            svg.setFixedSize(72, 72)
+            mascot_layout.addWidget(svg, alignment=Qt.AlignmentFlag.AlignCenter)
+        else:
+            mascot = QLabel(_MASCOT_ASCII)
+            mascot.setObjectName("Mascot")
+            mascot.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            mono = QFont("Cascadia Mono")
+            mono.setStyleHint(QFont.StyleHint.Monospace)
+            mascot.setFont(mono)
+            mascot_layout.addWidget(mascot)
 
         eve_label = QLabel("E V E")
         eve_label.setObjectName("EveLabel")
@@ -88,7 +107,7 @@ class Sidebar(QWidget):
 
         root.addWidget(mascot_frame)
 
-        # ── Scrollable nav ──────────────────────────────────────────────
+        # ── Scrollable nav (DAILY / INSIGHTS / MANAGE) ──────────────────
         nav_scroll = QScrollArea(self)
         nav_scroll.setWidgetResizable(True)
         nav_scroll.setFrameShape(QFrame.Shape.NoFrame)
@@ -96,7 +115,7 @@ class Sidebar(QWidget):
 
         nav_host = QWidget()
         nav_layout = QVBoxLayout(nav_host)
-        nav_layout.setContentsMargins(8, 0, 8, 0)
+        nav_layout.setContentsMargins(0, 4, 0, 12)
         nav_layout.setSpacing(0)
 
         for section_label, items in SECTIONS:
@@ -104,7 +123,7 @@ class Sidebar(QWidget):
             sec.setObjectName("SidebarSection")
             nav_layout.addWidget(sec)
             for key, label in items:
-                btn = QPushButton(f"  •  {label}")
+                btn = QPushButton(label)
                 btn.setObjectName("NavItem")
                 btn.setProperty("active", False)
                 btn.setCursor(Qt.CursorShape.PointingHandCursor)
@@ -112,47 +131,11 @@ class Sidebar(QWidget):
                 self._nav_buttons[key] = btn
                 nav_layout.addWidget(btn)
 
-        nav_layout.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding))
+        nav_layout.addSpacerItem(
+            QSpacerItem(0, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+        )
         nav_scroll.setWidget(nav_host)
         root.addWidget(nav_scroll, stretch=1)
-
-        # ── Status block ────────────────────────────────────────────────
-        status_frame = QFrame(self)
-        status_frame.setObjectName("StatusFrame")
-        sl = QVBoxLayout(status_frame)
-        sl.setContentsMargins(16, 12, 16, 16)
-        sl.setSpacing(6)
-
-        sl.addWidget(self._mk_section_label("STATUS"))
-        self._row_agents = self._mk_status_row("Agents")
-        self._row_inbox = self._mk_status_row("Inbox")
-        self._row_brain = self._mk_status_row("Brain")
-        for row in (self._row_agents, self._row_inbox, self._row_brain):
-            sl.addLayout(row["layout"])
-        root.addWidget(status_frame)
-
-        # Mark initial active
-        self._update_active(self._active_nav)
-
-    def _mk_section_label(self, txt: str) -> QLabel:
-        lbl = QLabel(txt)
-        lbl.setObjectName("SidebarSection")
-        lbl.setStyleSheet("border-bottom: none; padding: 0 0 4px 0;")
-        return lbl
-
-    def _mk_status_row(self, label: str) -> dict:
-        h = QHBoxLayout()
-        h.setContentsMargins(0, 0, 0, 0)
-        h.setSpacing(8)
-        lab = QLabel(label.upper())
-        lab.setObjectName("StatusRowLabel")
-        val = QLabel("0")
-        val.setObjectName("StatusRowValue")
-        val.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
-        h.addWidget(lab)
-        h.addStretch(1)
-        h.addWidget(val)
-        return {"layout": h, "label": lab, "value": val}
 
     def _on_nav_clicked(self, key: str) -> None:
         self._update_active(key)
@@ -165,14 +148,3 @@ class Sidebar(QWidget):
             btn.setProperty("active", is_active)
             btn.style().unpolish(btn)
             btn.style().polish(btn)
-
-    def _refresh_status(self) -> None:
-        try:
-            snap = state.snapshot()
-            self._row_agents["value"].setText(f"{snap.agents_online} live / {snap.agents_total}")
-            self._row_inbox["value"].setText(str(snap.inbox_count))
-            self._row_brain["value"].setText(str(snap.brain_count))
-        except Exception:
-            self._row_agents["value"].setText("?")
-            self._row_inbox["value"].setText("?")
-            self._row_brain["value"].setText("?")

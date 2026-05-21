@@ -191,6 +191,16 @@ def adb_logcat_tail(serial: str, lines: int = 50, timeout_s: float = 4.0) -> str
         return f"[error] {exc}"
 
 
+def active_projects() -> list[str]:
+    """Return unique project_keys with at least one live agent.
+
+    Placeholder: until AgentsView/SinisterWindow wires its live registry in,
+    return ["sanctum"] so the folder-tab strip has at least one chip.
+    The AgentsView code overrides this by reading its own `_cards` map.
+    """
+    return ["sanctum"]
+
+
 @dataclass
 class CounterSnapshot:
     agents_online: int = 0

@@ -1,9 +1,21 @@
 # Author: RKOJ-ELENO :: 2026-05-21
-"""Agents tab — niri-style vertical scroll of EVE agent cards.
+"""Agents view — folder-tab row (All + per-project) + niri-style vertical scroll
+of EVE agent cards.
 
-Each card embeds a jcode-form terminal (QPlainTextEdit + QLineEdit + QProcess
-streaming claude subprocess output). EVE persona injected verbatim from
-persona.py on first send.
+Each AgentCard embeds a jcode-form terminal (QPlainTextEdit + QLineEdit +
+QProcess streaming `claude --dangerously-skip-permissions -p ...` subprocess).
+EVE persona injected verbatim from persona.py on first send.
+
+The folder-tab strip:
+    - "All" chip selected by default
+    - One chip auto-added per active project_key
+    - Chip auto-removed when no cards remain for that project_key
+
+Cards are sorted by project_key so same-project cards render adjacent, with
+a 1px purple-deep divider between different projects.
+
+"Needs input" GLOW: when `card.session.status == "awaiting-input"`, the card
+gets a soft purple QGraphicsDropShadowEffect (operator brief).
 """
 
 from __future__ import annotations
@@ -14,17 +26,20 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Optional
 
-from PyQt6.QtCore import QProcess, Qt, QTimer, pyqtSignal
-from PyQt6.QtGui import QFont, QTextCursor
+from PyQt6.QtCore import QProcess, Qt, pyqtSignal
+from PyQt6.QtGui import QColor, QFont, QTextCursor
 from PyQt6.QtWidgets import (
-    QFrame, QHBoxLayout, QLabel, QLineEdit, QPlainTextEdit, QPushButton,
-    QScrollArea, QSizePolicy, QSpacerItem, QVBoxLayout, QWidget,
+    QFrame, QGraphicsDropShadowEffect, QHBoxLayout, QLabel, QLineEdit,
+    QPlainTextEdit, QPushButton, QScrollArea, QSizePolicy, QSpacerItem,
+    QVBoxLayout, QWidget,
 )
 
 from . import state
 from .persona import build_opening_prompt, eve_label
+from .theme import PURPLE_ACCENT, SPACINGS
 
 
+# ── Session record ──────────────────────────────────────────────────────
 @dataclass
 class AgentSession:
     pane_id: str
@@ -33,7 +48,7 @@ class AgentSession:
     agent_name: str
     mode: str = "claude"
     accent: str = "purple"
-    status: str = "idle"
+    status: str = "idle"  # idle | busy | online | offline | awaiting-input
     turns: list[dict] = field(default_factory=list)
     created_at: str = ""
 
@@ -43,47 +58,57 @@ def _find_claude_executable() -> Optional[str]:
     return shutil.which("claude")
 
 
-class ClaudeRunner(QFrame):
+# ── Agent card ──────────────────────────────────────────────────────────
+class AgentCard(QFrame):
     """Single agent card with embedded terminal + input line + QProcess."""
 
     closed = pyqtSignal(str)  # pane_id
+    status_changed = pyqtSignal(str, str)  # pane_id, new_status
 
     def __init__(self, session: AgentSession, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.session = session
         self.setObjectName("AgentCard")
-        self.setMinimumHeight(360)
+        self.setProperty("needs_input", False)
+        self.setMinimumHeight(280)
         self._proc: Optional[QProcess] = None
         self._first_turn = True
+        self._glow_effect: Optional[QGraphicsDropShadowEffect] = None
         self._build()
 
-    # ── UI ─────────────────────────────────────────────────────────
+    # ── UI ────────────────────────────────────────────────────────────
     def _build(self) -> None:
         root = QVBoxLayout(self)
-        root.setContentsMargins(12, 10, 12, 10)
-        root.setSpacing(8)
+        root.setContentsMargins(SPACINGS["md"], SPACINGS["sm"], SPACINGS["md"], SPACINGS["sm"])
+        root.setSpacing(SPACINGS["sm"])
 
         # Header strip
         hdr = QHBoxLayout()
-        hdr.setSpacing(10)
+        hdr.setSpacing(SPACINGS["sm"])
 
-        title = QLabel(eve_label(self.session.agent_name, self.session.project_key))
-        title.setObjectName("AgentTitle")
-        meta = QLabel(f"· {self.session.mode}")
-        meta.setObjectName("AgentMeta")
         self.status_dot = QLabel("●")
         self.status_dot.setObjectName("StatusDot")
-        self.status_dot.setProperty("state", "offline")
+        self.status_dot.setProperty("state", "idle")
         self.status_dot.style().polish(self.status_dot)
 
+        project_label = QLabel(self.session.project_display.upper())
+        project_label.setObjectName("AgentProject")
+
+        title = QLabel(eve_label(self.session.agent_name, ""))
+        title.setObjectName("AgentTitle")
+
+        mode_pill = QLabel(self.session.mode)
+        mode_pill.setObjectName("ModePill")
+
         close_btn = QPushButton("×")
-        close_btn.setObjectName("WinCtl")
+        close_btn.setObjectName("CardCloseBtn")
         close_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         close_btn.clicked.connect(self._on_close)
 
         hdr.addWidget(self.status_dot)
+        hdr.addWidget(project_label)
         hdr.addWidget(title)
-        hdr.addWidget(meta)
+        hdr.addWidget(mode_pill)
         hdr.addStretch(1)
         hdr.addWidget(close_btn)
         root.addLayout(hdr)
@@ -95,18 +120,20 @@ class ClaudeRunner(QFrame):
         font = QFont("Cascadia Mono", 10)
         font.setStyleHint(QFont.StyleHint.Monospace)
         self.terminal.setFont(font)
-        self.terminal.setMinimumHeight(240)
+        self.terminal.setMinimumHeight(170)
         root.addWidget(self.terminal, stretch=1)
 
         # Input row
         input_row = QHBoxLayout()
-        input_row.setSpacing(8)
+        input_row.setSpacing(SPACINGS["sm"])
         self.input = QLineEdit()
         self.input.setObjectName("TerminalInput")
-        self.input.setPlaceholderText(f"Talk to {eve_label(self.session.agent_name, self.session.project_key)} — Enter to send, /help for commands")
+        self.input.setPlaceholderText(
+            f"Talk to {eve_label(self.session.agent_name, self.session.project_key)} — Enter to send, /help"
+        )
         self.input.returnPressed.connect(self._on_send)
         send_btn = QPushButton("Send")
-        send_btn.setObjectName("PrimaryBtn")
+        send_btn.setObjectName("SendBtn")
         send_btn.clicked.connect(self._on_send)
         input_row.addWidget(self.input, stretch=1)
         input_row.addWidget(send_btn)
@@ -114,7 +141,7 @@ class ClaudeRunner(QFrame):
 
         # Seed banner
         self._append_terminal(
-            f"╔══ EVE on {self.session.project_display} ══╗\n"
+            f"╔══ {eve_label(self.session.agent_name, self.session.project_key)} ══╗\n"
             f"  pane_id: {self.session.pane_id}\n"
             f"  mode: {self.session.mode}   accent: {self.session.accent}\n"
             f"  created: {self.session.created_at}\n"
@@ -132,8 +159,31 @@ class ClaudeRunner(QFrame):
         self.status_dot.setProperty("state", state_str)
         self.status_dot.style().unpolish(self.status_dot)
         self.status_dot.style().polish(self.status_dot)
+        needs_glow = (state_str == "awaiting-input")
+        self.setProperty("needs_input", needs_glow)
+        self.style().unpolish(self)
+        self.style().polish(self)
+        if needs_glow:
+            self._apply_glow()
+        else:
+            self._remove_glow()
+        self.status_changed.emit(self.session.pane_id, state_str)
 
-    # ── Slash-command intercept ────────────────────────────────────
+    def _apply_glow(self) -> None:
+        if self._glow_effect is None:
+            eff = QGraphicsDropShadowEffect(self)
+            eff.setBlurRadius(20)
+            color = QColor(PURPLE_ACCENT)
+            color.setAlpha(128)
+            eff.setColor(color)
+            eff.setOffset(0, 0)
+            self._glow_effect = eff
+        self.setGraphicsEffect(self._glow_effect)
+
+    def _remove_glow(self) -> None:
+        self.setGraphicsEffect(None)
+
+    # ── Slash-command intercept ───────────────────────────────────────
     def _maybe_intercept(self, text: str) -> bool:
         cmd = text.strip()
         if not cmd.startswith("/"):
@@ -142,11 +192,10 @@ class ClaudeRunner(QFrame):
         if head == "/help":
             self._append_terminal(
                 "[/help]\n"
-                "  /help     show this list\n"
-                "  /clear    clear terminal\n"
-                "  /save     write resume-point to disk\n"
-                "  /resume   reload last resume-point\n"
-                "  /create   create a new agent (sibling card)\n"
+                "  /help    show this list\n"
+                "  /clear   clear terminal\n"
+                "  /save    write resume-point to disk\n"
+                "  /needs   toggle 'awaiting-input' glow (test)\n"
                 "  all other slashes forward to the claude subprocess.\n"
             )
             return True
@@ -176,16 +225,14 @@ class ClaudeRunner(QFrame):
             except Exception as exc:
                 self._append_terminal(f"[/save] failed: {exc}\n")
             return True
-        if head == "/resume":
-            self._append_terminal("[/resume] no resume-point loaded yet (stub).\n")
+        if head == "/needs":
+            new_state = "awaiting-input" if self.session.status != "awaiting-input" else "online"
+            self._set_status(new_state)
+            self._append_terminal(f"[/needs] status -> {new_state}\n")
             return True
-        if head == "/create":
-            self._append_terminal("[/create] click '+ Spawn Agent' in the tab footer.\n")
-            return True
-        # forward to claude (return False so _on_send sends it through)
         return False
 
-    # ── Send / process I/O ─────────────────────────────────────────
+    # ── Send / process I/O ────────────────────────────────────────────
     def _on_send(self) -> None:
         text = self.input.text().strip()
         if not text:
@@ -197,7 +244,6 @@ class ClaudeRunner(QFrame):
         self._append_terminal(f"\n>> {text}\n")
         self.input.clear()
 
-        # Build prompt with opening + turns + new
         if self._first_turn:
             opening = build_opening_prompt(
                 project_key=self.session.project_key,
@@ -215,14 +261,12 @@ class ClaudeRunner(QFrame):
 
         self.session.turns.append({"user": text, "assistant": ""})
 
-        # Find claude
         claude = _find_claude_executable()
         if not claude:
             self._append_terminal("[error] claude CLI not on PATH. Install Claude Code first.\n")
             self._set_status("offline")
             return
 
-        # Spawn QProcess
         if self._proc is not None and self._proc.state() != QProcess.ProcessState.NotRunning:
             self._append_terminal("[busy] previous turn still running; waiting...\n")
             return
@@ -278,97 +322,162 @@ class ClaudeRunner(QFrame):
             self._proc.waitForFinished(1500)
 
 
-class AgentsTab(QWidget):
-    """Niri-scroll grid of EVE agent cards + project sub-tabs filter + spawn fab."""
-
-    spawn_requested = pyqtSignal(str)  # project_key
+# ── Agents view (folder-tab row + niri-scroll grid) ────────────────────
+class NiriScrollGrid(QScrollArea):
+    """Vertical infinite scroll container — grows as cards are added."""
 
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
-        self._cards: dict[str, ClaudeRunner] = {}
-        self._project_filter: Optional[str] = None
-        self._project_chips: dict[str, QPushButton] = {}
+        self.setWidgetResizable(True)
+        self.setFrameShape(QFrame.Shape.NoFrame)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self._host = QWidget()
+        self._layout = QVBoxLayout(self._host)
+        self._layout.setContentsMargins(0, 0, 0, 0)
+        self._layout.setSpacing(SPACINGS["md"])
+        self._layout.addStretch(1)
+        self.setWidget(self._host)
+
+    @property
+    def host(self) -> QWidget:
+        return self._host
+
+    @property
+    def layout_(self) -> QVBoxLayout:
+        return self._layout
+
+    def clear_widgets(self) -> None:
+        """Remove all cards + dividers (keeps trailing stretch)."""
+        # Walk in reverse, skip the final stretch item
+        i = self._layout.count() - 1
+        while i >= 0:
+            item = self._layout.itemAt(i)
+            w = item.widget() if item else None
+            if w is not None:
+                w.setParent(None)
+                w.deleteLater()
+            i -= 1
+
+
+class AgentsView(QWidget):
+    """Folder-tab row + NiriScrollGrid + empty-state hint."""
+
+    def __init__(self, parent: QWidget | None = None) -> None:
+        super().__init__(parent)
+        self._cards: dict[str, AgentCard] = {}
+        self._project_filter: Optional[str] = None  # None = "All"
+        self._folder_chips: dict[str, QPushButton] = {}
         self._build()
+        self._rebuild_folder_chips()
+        self._rebuild_grid()
+
+    # Backward-compat alias
+    @property
+    def spawn_requested(self):  # pragma: no cover — kept for older wiring
+        return None
 
     def _build(self) -> None:
         root = QVBoxLayout(self)
-        root.setContentsMargins(20, 8, 20, 12)
-        root.setSpacing(10)
+        root.setContentsMargins(20, SPACINGS["sm"], 20, SPACINGS["md"])
+        root.setSpacing(SPACINGS["sm"])
 
-        # Project sub-tab strip
-        chips_scroll = QScrollArea(self)
-        chips_scroll.setWidgetResizable(True)
-        chips_scroll.setFrameShape(QFrame.Shape.NoFrame)
-        chips_scroll.setFixedHeight(40)
-        chips_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        chips_host = QWidget()
-        chips_layout = QHBoxLayout(chips_host)
-        chips_layout.setContentsMargins(0, 0, 0, 0)
-        chips_layout.setSpacing(6)
-        all_btn = QPushButton("All")
-        all_btn.setObjectName("ProjectChip")
-        all_btn.setProperty("active", True)
+        # Folder-tab strip
+        self._chips_host = QWidget(self)
+        self._chips_layout = QHBoxLayout(self._chips_host)
+        self._chips_layout.setContentsMargins(0, 0, 0, 0)
+        self._chips_layout.setSpacing(6)
+        self._chips_layout.addStretch(1)
+        root.addWidget(self._chips_host)
+
+        # Niri-scroll grid
+        self.grid = NiriScrollGrid(self)
+        root.addWidget(self.grid, stretch=1)
+
+        # Empty state label (replaces grid when zero cards)
+        self.empty_label = QLabel("No agents yet — click  + Create Agent  to spawn EVE.")
+        self.empty_label.setObjectName("AgentMeta")
+        self.empty_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        root.addWidget(self.empty_label)
+
+    # ── Folder tab management ─────────────────────────────────────────
+    def _active_project_keys(self) -> list[str]:
+        keys = sorted({c.session.project_key for c in self._cards.values()})
+        return keys
+
+    def _rebuild_folder_chips(self) -> None:
+        # Wipe and rebuild
+        while self._chips_layout.count():
+            item = self._chips_layout.takeAt(0)
+            w = item.widget() if item else None
+            if w is not None:
+                w.setParent(None)
+                w.deleteLater()
+        self._folder_chips.clear()
+
+        # "All" chip
+        active_keys = self._active_project_keys()
+        n_total = len(self._cards)
+        all_btn = QPushButton(f"All  {n_total}")
+        all_btn.setObjectName("FolderTab")
+        all_btn.setProperty("active", self._project_filter is None)
         all_btn.setCursor(Qt.CursorShape.PointingHandCursor)
-        all_btn.clicked.connect(lambda: self._set_project_filter(None))
-        self._project_chips["__all__"] = all_btn
-        chips_layout.addWidget(all_btn)
-        for proj in state.load_projects():
-            chip = QPushButton(proj.display)
-            chip.setObjectName("ProjectChip")
-            chip.setProperty("active", False)
+        all_btn.clicked.connect(lambda: self._set_filter(None))
+        self._folder_chips["__all__"] = all_btn
+        self._chips_layout.addWidget(all_btn)
+
+        projects = {p.key: p for p in state.load_projects()}
+        for k in active_keys:
+            display = projects[k].display if k in projects else k
+            n = sum(1 for c in self._cards.values() if c.session.project_key == k)
+            chip = QPushButton(f"{display}  {n}")
+            chip.setObjectName("FolderTab")
+            chip.setProperty("active", self._project_filter == k)
             chip.setCursor(Qt.CursorShape.PointingHandCursor)
-            chip.clicked.connect(lambda _checked=False, k=proj.key: self._set_project_filter(k))
-            self._project_chips[proj.key] = chip
-            chips_layout.addWidget(chip)
-        chips_layout.addStretch(1)
-        chips_scroll.setWidget(chips_host)
-        root.addWidget(chips_scroll)
+            chip.clicked.connect(lambda _checked=False, key=k: self._set_filter(key))
+            self._folder_chips[k] = chip
+            self._chips_layout.addWidget(chip)
 
-        # Scrollable card list
-        self.scroll = QScrollArea(self)
-        self.scroll.setWidgetResizable(True)
-        self.scroll.setFrameShape(QFrame.Shape.NoFrame)
-        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self._chips_layout.addStretch(1)
 
-        self.host = QWidget()
-        self.host_layout = QVBoxLayout(self.host)
-        self.host_layout.setContentsMargins(0, 0, 0, 0)
-        self.host_layout.setSpacing(10)
-        self.host_layout.addStretch(1)
-        self.scroll.setWidget(self.host)
-        root.addWidget(self.scroll, stretch=1)
-
-        # FAB
-        fab_row = QHBoxLayout()
-        fab_row.addStretch(1)
-        fab = QPushButton("+ Spawn Agent")
-        fab.setObjectName("PrimaryBtn")
-        fab.setCursor(Qt.CursorShape.PointingHandCursor)
-        fab.clicked.connect(self._on_spawn_clicked)
-        fab_row.addWidget(fab)
-        root.addLayout(fab_row)
-
-    def _set_project_filter(self, key: Optional[str]) -> None:
+    def _set_filter(self, key: Optional[str]) -> None:
         self._project_filter = key
-        for k, btn in self._project_chips.items():
-            active = (k == "__all__" and key is None) or (k == key)
-            btn.setProperty("active", active)
+        for k, btn in self._folder_chips.items():
+            is_active = (k == "__all__" and key is None) or (k == key)
+            btn.setProperty("active", is_active)
             btn.style().unpolish(btn)
             btn.style().polish(btn)
-        self._apply_filter()
+        self._rebuild_grid()
 
-    def _apply_filter(self) -> None:
-        for pid, card in self._cards.items():
-            if self._project_filter is None or card.session.project_key == self._project_filter:
-                card.setVisible(True)
-            else:
-                card.setVisible(False)
+    # ── Grid layout (cards sorted by project + divider between groups) ──
+    def _rebuild_grid(self) -> None:
+        self.grid.clear_widgets()
+        # collect visible cards
+        cards = list(self._cards.values())
+        if self._project_filter is not None:
+            cards = [c for c in cards if c.session.project_key == self._project_filter]
+        cards.sort(key=lambda c: (c.session.project_key, c.session.created_at))
 
-    def _on_spawn_clicked(self) -> None:
-        key = self._project_filter or "sanctum"
-        self.spawn_agent(project_key=key)
+        last_key: Optional[str] = None
+        # insertWidget at count()-1 inserts before the trailing stretch
+        for c in cards:
+            if last_key is not None and c.session.project_key != last_key:
+                div = QFrame(self.grid.host)
+                div.setObjectName("ProjectDivider")
+                div.setFixedHeight(1)
+                self.grid.layout_.insertWidget(self.grid.layout_.count() - 1, div)
+            self.grid.layout_.insertWidget(self.grid.layout_.count() - 1, c)
+            c.setVisible(True)
+            last_key = c.session.project_key
 
-    def spawn_agent(self, project_key: str, agent_name: str | None = None, mode: str = "claude") -> str:
+        # Empty state visibility
+        self.empty_label.setVisible(len(self._cards) == 0)
+        self.grid.setVisible(len(self._cards) > 0)
+
+    # ── Public API ────────────────────────────────────────────────────
+    def spawn_agent(self, project_key: str = "sanctum",
+                    agent_name: str | None = None,
+                    mode: str = "claude") -> str:
         """Add a new card and return its pane_id."""
         projects = {p.key: p for p in state.load_projects()}
         proj = projects.get(project_key)
@@ -381,12 +490,11 @@ class AgentsTab(QWidget):
             mode=mode,
             created_at=datetime.now(timezone.utc).isoformat(),
         )
-        card = ClaudeRunner(sess, parent=self.host)
+        card = AgentCard(sess, parent=self.grid.host)
         card.closed.connect(self._remove_card)
-        # insert above the stretch
-        self.host_layout.insertWidget(self.host_layout.count() - 1, card)
         self._cards[sess.pane_id] = card
-        self._apply_filter()
+        self._rebuild_folder_chips()
+        self._rebuild_grid()
         return sess.pane_id
 
     def _remove_card(self, pane_id: str) -> None:
@@ -394,7 +502,19 @@ class AgentsTab(QWidget):
         if card:
             card.setParent(None)
             card.deleteLater()
+        # If the active filter no longer has any cards, fall back to All
+        if self._project_filter is not None and not any(
+            c.session.project_key == self._project_filter for c in self._cards.values()
+        ):
+            self._project_filter = None
+        self._rebuild_folder_chips()
+        self._rebuild_grid()
 
     def shutdown_all(self) -> None:
         for card in list(self._cards.values()):
             card.shutdown()
+
+
+# Backward-compat alias — older modules import AgentsTab.
+AgentsTab = AgentsView
+ClaudeRunner = AgentCard
