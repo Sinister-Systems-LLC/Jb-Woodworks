@@ -665,28 +665,97 @@ def _cmd_start(args, pane, app) -> str:
 
 
 def _cmd_resume(args, pane, app) -> str:
-    """jcode /resume — browse + load past resume-points."""
+    """jcode /resume — multi-project resume-point browser.
+
+    Operator directive 2026-05-21: show ALL projects with resume-points first,
+    then drill down into one.
+
+    Forms:
+      /resume                  → list every project under
+                                 _shared-memory/resume-points/ with count +
+                                 most-recent timestamp (descending by recency).
+      /resume <project>        → list resume-points within that project
+                                 (most-recent first, up to 20 rows).
+      /resume <project> <N>    → load resume-point N from that project
+                                 (1-based; same _format_resume_point output).
+      /resume <project> latest → load most-recent resume-point in project.
+
+    Project arg matches the directory name under resume-points/ either exactly
+    or case-insensitively or as a prefix (e.g. "panel" → "Sinister Panel").
+    """
     sr = _sanctum_root()
-    proj = os.environ.get("SINISTER_PROJECT_DISPLAY") or os.environ.get("SINISTER_PROJECT", "Sanctum")
     rp_dir = sr / "_shared-memory" / "resume-points"
-    candidates = []
-    for slot in (proj, "Sanctum", "Sinister Sanctum"):
-        d = rp_dir / slot
-        if d.exists():
-            candidates += list(d.glob("*.json"))
-    if not candidates:
-        return f"[yellow]no resume-points found for {proj}[/]"
-    candidates.sort(key=lambda p: p.stat().st_mtime, reverse=True)
-    if args and args[0].isdigit():
-        idx = int(args[0])
+    if not rp_dir.exists():
+        return f"[yellow]/resume: no resume-points dir at {rp_dir}[/]"
+
+    # Build {project_dir_name: [Path, ...]} for every subdir with at least one *.json.
+    projects: dict[str, list[Path]] = {}
+    for child in rp_dir.iterdir():
+        if not child.is_dir():
+            continue
+        pts = list(child.glob("*.json"))
+        if pts:
+            projects[child.name] = sorted(pts, key=lambda p: p.stat().st_mtime, reverse=True)
+    if not projects:
+        return f"[yellow]/resume: no resume-points found under {rp_dir}[/]"
+
+    # No-arg → list projects.
+    if not args:
+        rows = sorted(projects.items(),
+                      key=lambda kv: kv[1][0].stat().st_mtime, reverse=True)
+        lines = [
+            "[bold]EVE :: /resume — projects with resume-points[/]  "
+            "[dim](/resume <project>, /resume <project> <N>)[/]"
+        ]
+        for i, (name, pts) in enumerate(rows, start=1):
+            mt = datetime.datetime.fromtimestamp(pts[0].stat().st_mtime).strftime("%Y-%m-%d %H:%M")
+            lines.append(f"  [purple]{i:>2}[/]. [bold]{name:<24}[/] · {len(pts):>3} point(s)  "
+                         f"[dim]latest {mt}[/]")
+        lines.append("\n[dim]Next: /resume <project> to drill in, or /resume <project> latest.[/]")
+        return "\n".join(lines)
+
+    # Resolve project arg → directory name.
+    arg_proj = args[0]
+    resolved: str | None = None
+    if arg_proj in projects:
+        resolved = arg_proj
+    else:
+        low = arg_proj.lower()
+        # case-insensitive exact, then prefix
+        for name in projects:
+            if name.lower() == low:
+                resolved = name
+                break
+        if resolved is None:
+            for name in projects:
+                if name.lower().startswith(low):
+                    resolved = name
+                    break
+    if resolved is None:
+        avail = ", ".join(sorted(projects.keys())) or "(none)"
+        return f"[yellow]/resume: project '{arg_proj}' not found.[/]  [dim]available: {avail}[/]"
+
+    candidates = projects[resolved]
+    rest = args[1:]
+
+    # /resume <project> <N>
+    if rest and rest[0].isdigit():
+        idx = int(rest[0])
         if not (1 <= idx <= len(candidates)):
-            return f"[yellow]/resume: index out of range (1-{len(candidates)})[/]"
+            return f"[yellow]/resume: index out of range (1-{len(candidates)}) for {resolved}[/]"
         return _format_resume_point(candidates[idx - 1])
-    if args and args[0] == "latest":
+
+    # /resume <project> latest
+    if rest and rest[0] == "latest":
         return _format_resume_point(candidates[0])
-    # list mode
-    lines = [f"[bold]Resume-points for {proj}[/]  [dim](/resume <N> to load detail, /resume latest)[/]"]
-    for i, p in enumerate(candidates[:15], start=1):
+
+    # /resume <project>  → list points for that project
+    lines = [
+        f"[bold]Resume-points for {resolved}[/]  "
+        f"[dim]({len(candidates)} total — /resume {resolved} <N> to load, "
+        f"/resume {resolved} latest)[/]"
+    ]
+    for i, p in enumerate(candidates[:20], start=1):
         mt = datetime.datetime.fromtimestamp(p.stat().st_mtime).strftime("%Y-%m-%d %H:%M")
         lines.append(f"  {i:>2}. {p.name}  [dim]{mt}[/]")
     return "\n".join(lines)
@@ -1024,6 +1093,184 @@ def _cmd_compact(args, pane, app) -> str:
     set_state("last_compaction_path", str(out_path))
     return (f"  compacted → {out_path}\n"
             f"  source: {journal.name if journal else '(none)'}  ·  bullets: {len(bullets)}")
+
+
+def _cmd_create(args, pane, app) -> str:
+    """Sinister /create — scaffold a new project under projects/sinister-<slug>/.
+
+    Operator directive 2026-05-21: `/create <project>` spins up a new project
+    folder with CLAUDE.md + README.md skeletons (Author: RKOJ-ELENO :: today)
+    and appends a row to projects/rkoj/MANIFEST.json components.
+
+    Forms:
+      /create                                  → usage + prompt for required args
+      /create <name>                           → name only (default description + parent)
+      /create <name> <description...>          → name + description
+      /create <name> <description...> --parent=<dir>
+                                               → override parent directory
+
+    The <name> arg is slugified: lowercased, non-alnum → '-', and a 'sinister-'
+    prefix is added if missing. Final folder = <parent>/sinister-<slug>/.
+
+    Files created:
+      - <parent>/sinister-<slug>/CLAUDE.md   (project agent bootstrap)
+      - <parent>/sinister-<slug>/README.md   (public-ish one-pager)
+
+    MANIFEST update:
+      Appends one component row to projects/rkoj/MANIFEST.json with
+      kind=project, enabled=true, role=<description>, created_at=ISO date.
+
+    Idempotent: if the folder already exists, refuses (no clobber).
+    """
+    sr = _sanctum_root()
+    today = datetime.datetime.utcnow().strftime("%Y-%m-%d")
+
+    # --- arg parse ---------------------------------------------------------
+    if not args:
+        return (
+            "[bold]/create — scaffold a new Sinister project[/]\n"
+            "  usage: /create <name> [<description...>] [--parent=<dir>]\n"
+            "  e.g.:  /create radar  Sinister radar — RF-scan visualizer\n"
+            "  e.g.:  /create radar 'RF-scan visualizer' --parent=projects\n"
+            "  notes: name auto-slugged + 'sinister-' prefix added if missing;\n"
+            "         default parent = projects/ ;\n"
+            "         creates CLAUDE.md + README.md + appends MANIFEST row."
+        )
+
+    # Pluck out --parent=<dir> (anywhere in args).
+    parent_override: str | None = None
+    rest_args: list[str] = []
+    for a in args:
+        if a.startswith("--parent="):
+            parent_override = a.split("=", 1)[1].strip().strip('"').strip("'")
+        else:
+            rest_args.append(a)
+    if not rest_args:
+        return "[yellow]/create: name required.  /create <name> [<description...>][/]"
+
+    raw_name = rest_args[0]
+    description = (" ".join(rest_args[1:]).strip()
+                   or f"Sinister {raw_name} project (scaffolded by EVE)")
+
+    # --- slugify ---------------------------------------------------------
+    base = raw_name.lower().strip()
+    slug = "".join(c if (c.isalnum() or c == "-") else "-" for c in base)
+    slug = "-".join(seg for seg in slug.split("-") if seg)  # collapse runs
+    if not slug:
+        return f"[yellow]/create: name '{raw_name}' slugifies to empty.[/]"
+    if not slug.startswith("sinister-"):
+        slug = f"sinister-{slug}"
+
+    # --- resolve parent dir -------------------------------------------------
+    parent: Path
+    if parent_override:
+        p = Path(parent_override)
+        parent = p if p.is_absolute() else (sr / p)
+    else:
+        parent = sr / "projects"
+
+    proj_dir = parent / slug
+    if proj_dir.exists():
+        return f"[yellow]/create: refusing to clobber existing dir {proj_dir}[/]"
+
+    # --- write files -------------------------------------------------------
+    try:
+        proj_dir.mkdir(parents=True, exist_ok=False)
+    except Exception as e:
+        return f"[red]/create: mkdir failed: {e}  [dim]({proj_dir})[/]"
+
+    display = slug.replace("sinister-", "").replace("-", " ").title()
+    display = f"Sinister {display}" if not display.lower().startswith("sinister") else display
+
+    claude_md = (
+        f"# CLAUDE.md — {display}\n"
+        f"\n"
+        f"> Author: RKOJ-ELENO :: {today}\n"
+        f"> Persona: EVE (Sinister Sanctum orchestration agent)\n"
+        f"\n"
+        f"## What this project is\n"
+        f"\n"
+        f"{description}\n"
+        f"\n"
+        f"## Agent identity (per-project)\n"
+        f"\n"
+        f"- Display name: `{display}`\n"
+        f"- Slug: `{slug.replace('sinister-', '')}`\n"
+        f"- Branch convention: `agent/{slug.replace('sinister-', '')}/<short-topic>`\n"
+        f"- Heartbeat fallback: `_shared-memory/heartbeats/{slug.replace('sinister-', '')}.json`\n"
+        f"- PROGRESS log: `_shared-memory/PROGRESS/{display}.md`\n"
+        f"\n"
+        f"## Cold-start\n"
+        f"\n"
+        f"1. Read parent `D:/Sinister Sanctum/CLAUDE.md` for fleet-wide rules.\n"
+        f"2. Run `sinister-bus.heartbeat my_agent=\"{display}\"` (or write the JSON fallback).\n"
+        f"3. Poll inbox: `sinister-bus.inbox_poll my_agent=\"{display}\"`.\n"
+        f"4. Append milestones to `_shared-memory/PROGRESS/{display}.md`.\n"
+        f"\n"
+        f"## Source\n"
+        f"\n"
+        f"Scaffolded by `/create {raw_name}` on {today}.\n"
+    )
+
+    readme_md = (
+        f"# {display}\n"
+        f"\n"
+        f"> Author: RKOJ-ELENO :: {today}\n"
+        f"\n"
+        f"{description}\n"
+        f"\n"
+        f"## Status\n"
+        f"\n"
+        f"Scaffolded {today} via `/create {raw_name}` from the Sinister Forge TUI.\n"
+        f"\n"
+        f"## See also\n"
+        f"\n"
+        f"- Sanctum root: `D:/Sinister Sanctum/`\n"
+        f"- Project CLAUDE.md (agent bootstrap): `./CLAUDE.md`\n"
+        f"- Fleet manifest: `projects/rkoj/MANIFEST.json`\n"
+    )
+
+    try:
+        (proj_dir / "CLAUDE.md").write_text(claude_md, encoding="utf-8")
+        (proj_dir / "README.md").write_text(readme_md, encoding="utf-8")
+    except Exception as e:
+        return f"[red]/create: file write failed: {e}[/]"
+
+    # --- append MANIFEST row -----------------------------------------------
+    manifest_path = sr / "projects" / "rkoj" / "MANIFEST.json"
+    manifest_msg = "MANIFEST untouched (file missing)"
+    if manifest_path.exists():
+        try:
+            mf = json.loads(manifest_path.read_text(encoding="utf-8"))
+            comps = mf.setdefault("components", [])
+            # Avoid double-add if a row with same name already exists.
+            if not any((c.get("name") == slug) for c in comps if isinstance(c, dict)):
+                rel_path = proj_dir.relative_to(sr).as_posix() if proj_dir.is_relative_to(sr) else str(proj_dir)
+                comps.append({
+                    "name": slug,
+                    "kind": "project",
+                    "path": rel_path,
+                    "enabled": True,
+                    "version": "0.1.0",
+                    "role": description,
+                    "created_at": today,
+                    "created_by": "EVE /create",
+                })
+                mf["updated"] = today
+                manifest_path.write_text(json.dumps(mf, indent=2) + "\n", encoding="utf-8")
+                manifest_msg = f"MANIFEST row appended ({slug})"
+            else:
+                manifest_msg = f"MANIFEST already has '{slug}' — skipped"
+        except Exception as e:
+            manifest_msg = f"MANIFEST update failed: {e}"
+
+    return (
+        f"  [bold green]created[/] [purple]{slug}[/]\n"
+        f"  · dir:      {proj_dir}\n"
+        f"  · CLAUDE.md ✓  README.md ✓  (Author: RKOJ-ELENO :: {today})\n"
+        f"  · {manifest_msg}\n"
+        f"  next: cd into {proj_dir} or spawn an agent for it from the Forge sidebar."
+    )
 
 
 def _cmd_transcript(args, pane, app) -> str:
@@ -3283,6 +3530,91 @@ def _cmd_export(args, pane=None, app=None) -> str:
 
 
 # ===========================================================================
+# /watchdog — read-only surface onto sinister-watchdog daemon
+# ===========================================================================
+# Author: RKOJ-ELENO :: 2026-05-21
+#
+# Operator-facing read-only snapshot of the auto-online keeper.
+#   /watchdog          → status (default)
+#   /watchdog status   → same
+#   /watchdog tail [N] → last N log lines (default 20)
+#   /watchdog probe    → probe MCP servers once and print results
+#
+# This handler NEVER starts / stops the daemon — that's an operator action via
+# the install-task.ps1 / `python -m sinister_watchdog start --bg` path. Per
+# operator's "no popups" doctrine + Sanctum hard rule on lane discipline.
+
+def _cmd_watchdog(args, pane=None, app=None) -> str:
+    sub = (args[0].lower() if args else "status")
+    sr = _sanctum_root()
+
+    # Try in-process import first (zero subprocess overhead).
+    try:
+        sys.path.insert(0, str(sr / "tools" / "sinister-watchdog"))
+        from sinister_watchdog import SanctumPaths, snapshot_status, probe_mcp_servers  # type: ignore
+        paths = SanctumPaths.detect(sr)
+    except Exception as exc:  # noqa: BLE001
+        return f"[red]/watchdog: import failed: {exc}[/]"
+
+    if sub in ("status", "show", ""):
+        snap = snapshot_status(paths)
+        running = "[green]●[/]" if snap["running"] else "[dim red]○[/]"
+        out: list[str] = []
+        out.append(f"[bold]sinister-watchdog[/] {running} @ {snap['ts_utc']}")
+        out.append(f"  daemon       : {'running' if snap['running'] else 'NOT RUNNING'}  (pid file: {snap['pid_file']})")
+        out.append(f"  agents       : {snap['agent_total']} total, [yellow]{snap['stale_count']}[/] stale")
+        out.append(f"  mcp servers  : {len(snap['mcp_servers_configured'])} configured")
+        if snap["mcp_servers_configured"]:
+            out.append(f"                 {', '.join(snap['mcp_servers_configured'])}")
+        out.append(f"  log          : {snap['log_path']}")
+        out.append("")
+        out.append("  [bold]heartbeats[/]")
+        if not snap["heartbeats"]:
+            out.append("    (none)")
+        else:
+            for row in snap["heartbeats"]:
+                tag = "[red]STALE[/]" if row["stale"] else "[green]ok   [/]"
+                out.append(f"    {tag} {row['slug']:<28} {row['age_minutes']:>6.1f} min")
+        if not snap["running"]:
+            out.append("")
+            out.append("  [dim]start the daemon: `python -m sinister_watchdog start --bg`[/]")
+            out.append("  [dim]or install scheduled task: `tools/sinister-watchdog/install-task.ps1`[/]")
+        return "\n".join(out)
+
+    if sub == "tail":
+        n = 20
+        if len(args) > 1:
+            try:
+                n = max(1, int(args[1]))
+            except ValueError:
+                pass
+        log = paths.watchdog_log
+        if not log.exists():
+            return "  (no watchdog.log yet)"
+        try:
+            lines = log.read_text(encoding="utf-8", errors="replace").splitlines()
+        except OSError as exc:
+            return f"[red]/watchdog tail: read failed: {exc}[/]"
+        return "\n".join(lines[-n:]) or "  (empty)"
+
+    if sub == "probe":
+        try:
+            results = probe_mcp_servers(paths, timeout=6.0)
+        except Exception as exc:  # noqa: BLE001
+            return f"[red]/watchdog probe: failed: {exc}[/]"
+        if not results:
+            return "  (no MCP servers configured or .mcp.json unreadable)"
+        out = [f"[bold]/watchdog probe[/] :: {len(results)} mcp servers"]
+        for r in results:
+            tag = "[green]ok  [/]" if r["ok"] else "[red]FAIL[/]"
+            reason = r.get("reason") or "responsive"
+            out.append(f"  {tag} {r['name']:<22} {reason}")
+        return "\n".join(out)
+
+    return "[yellow]usage: /watchdog [status|tail [N]|probe][/]"
+
+
+# ===========================================================================
 # REGISTRY — name → handler + metadata
 # ===========================================================================
 
@@ -3306,7 +3638,10 @@ SLASH_COMMANDS: dict[str, dict[str, Any]] = {
     "clear":      _entry(_cmd_clear,     "clear this pane's log",                     "session"),
     "compact":    _entry(_cmd_compact,   "consolidate memory (kicks memory-consolidate.ps1)", "session"),
     "start":      _entry(_cmd_start,     "pick a project + mode and launch a session (bat-file parity)", "session"),
-    "resume":     _entry(_cmd_resume,    "browse + read past resume-points",          "session"),
+    "create":     _entry(_cmd_create,    "<name> [<description...>] [--parent=<dir>]  scaffold a new project", "session",
+                          "Creates projects/sinister-<slug>/ with CLAUDE.md + README.md (Author: RKOJ-ELENO :: today) and appends a MANIFEST row."),
+    "resume":     _entry(_cmd_resume,    "[<project>] [<N>|latest]  list projects → list points → load point", "session",
+                          "No args: list every project under _shared-memory/resume-points/ with count + most-recent ts. `/resume <project>` lists that project's points; `/resume <project> <N>` loads point N."),
     "save":       _entry(_cmd_save,      "write a resume-point now",                  "session"),
     "rename":     _entry(_cmd_rename,    "name / unname session",                     "session"),
     "transcript": _entry(_cmd_transcript,"path to session transcript",                "session"),
@@ -3353,6 +3688,8 @@ SLASH_COMMANDS: dict[str, dict[str, Any]] = {
     "server-reload": _entry(_cmd_server_reload, "kill + respawn agent subprocess (pane intact)",     "system"),
     "debug-visual":  _entry(_cmd_debug_visual,  "toggle SINISTER_DEBUG_VISUAL render flag", "system"),
     "mcp":        _entry(_cmd_mcp,       "list MCP servers / auto-load on call",      "system"),
+    "watchdog":   _entry(_cmd_watchdog,  "status | tail [N] | probe — sinister-watchdog auto-online keeper", "system",
+                          "Read-only surface onto the sinister-watchdog daemon (tools/sinister-watchdog). Status shows heartbeat ages + stale count + MCP list. Tail prints recent log lines. Probe checks every MCP server responds to `initialize`. Daemon is started separately via install-task.ps1 or `python -m sinister_watchdog start --bg`."),
     "tools":      _entry(_cmd_tools,     "list builtin tools + sinister-cli + MCP",   "system"),
     "skills":     _entry(_cmd_skills,    "list discovered skills",                    "skills"),
     "skill":      _entry(_cmd_skill,     "list | show <name> | run <name> | reload   (jcode skill-loader)", "skills"),
