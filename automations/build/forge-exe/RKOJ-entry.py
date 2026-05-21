@@ -34,7 +34,7 @@ import time
 import traceback
 from pathlib import Path
 
-__version__ = "1.4.1"
+__version__ = "1.4.2"
 
 
 # ----- Sub-command dispatch (RKOJ.exe login providers etc) -----------------
@@ -1121,35 +1121,39 @@ def _port_in_use(port: int, host: str = "127.0.0.1") -> bool:
 
 
 def _ensure_background_services(sanctum_root: Path) -> None:
-    """Operator 2026-05-21 unified-RKOJ ask: vault daemon + workstation
-    console should be reachable from inside the EXE without the operator
-    having to start them by hand.
+    """OPERATOR FIX 2026-05-21 v1.4.2: this function was the bug source for
+    "RKOJ.exe opened like 40 claude terminals". In a PyInstaller frozen build,
+    `sys.executable` IS RKOJ.exe — so `subprocess.Popen([sys.executable, ...])`
+    recursively launched RKOJ.exe, each instance auto-spawning more, exploding.
 
-    Spawns the vault daemon (:5078) and the workstation daemon (:5077)
-    detached, only if the respective port is idle. Both are best-effort —
-    failures log to RKOJ.crash.log but don't block the TUI from booting.
+    DEFAULT: do nothing. Operator launches vault daemon manually if wanted
+    (cd tools/sinister-vault && python daemon.py). Opt-IN via env var
+    SINISTER_AUTO_VAULT=1 + non-frozen interpreter only.
     """
-    # Vault daemon — tools/sinister-vault/daemon.py, serves :5078.
-    if not _port_in_use(5078):
-        vault_script = sanctum_root / "tools" / "sinister-vault" / "daemon.py"
-        if vault_script.exists():
-            try:
-                subprocess.Popen(
-                    [sys.executable, str(vault_script)],
-                    cwd=str(vault_script.parent),
-                    creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0)
-                                  | getattr(subprocess, "DETACHED_PROCESS", 0),
-                    stdout=subprocess.DEVNULL,
-                    stderr=subprocess.DEVNULL,
-                )
-            except Exception:
-                pass
-
-    # Workstation console — automations/window-manager/desktop_app.py, :5077.
-    # Started lazily: operator must click the WORKSTATION tab to want it.
-    # Skipping auto-spawn here means RKOJ.exe doesn't fight RKOJ-Console.exe
-    # if both are installed. The forge.panes.workstation_panel handles the
-    # on-demand spawn.
+    # Guard 1: when frozen (PyInstaller EXE), sys.executable is the EXE itself.
+    # Recursive Popen of sys.executable = spawn explosion. Never auto-spawn
+    # from a frozen build.
+    if getattr(sys, "frozen", False):
+        return
+    # Guard 2: even from a non-frozen interpreter, opt-IN only.
+    if os.environ.get("SINISTER_AUTO_VAULT", "").strip() != "1":
+        return
+    if _port_in_use(5078):
+        return
+    vault_script = sanctum_root / "tools" / "sinister-vault" / "daemon.py"
+    if not vault_script.exists():
+        return
+    try:
+        subprocess.Popen(
+            [sys.executable, str(vault_script)],
+            cwd=str(vault_script.parent),
+            creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0)
+                          | getattr(subprocess, "DETACHED_PROCESS", 0),
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+    except Exception:
+        pass
 
 
 def main() -> int:

@@ -142,7 +142,13 @@ class WorkstationPanel(Vertical):
             )
 
     def _spawn_daemon(self) -> None:
-        """Start the workstation daemon (python desktop_app.py) detached."""
+        """Start the workstation daemon (python desktop_app.py) detached.
+
+        2026-05-21 OPERATOR FIX: dropped CREATE_NEW_CONSOLE (was opening a
+        visible cmd window the operator saw as "another terminal"). Now uses
+        CREATE_NO_WINDOW so the daemon spawns silently — operator's only
+        interaction surface is the browser tab the Open-Browser button opens.
+        """
         if not DAEMON_SCRIPT.exists():
             self.app.notify(
                 f"daemon script missing: {DAEMON_SCRIPT}",
@@ -154,9 +160,11 @@ class WorkstationPanel(Vertical):
             subprocess.Popen(
                 ["python", str(DAEMON_SCRIPT)],
                 cwd=str(WORKSTATION_DIR),
-                creationflags=getattr(subprocess, "CREATE_NEW_CONSOLE", 0)
+                creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0)
                               | getattr(subprocess, "DETACHED_PROCESS", 0),
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
             )
-            self.app.notify("workstation daemon spawned :5077", timeout=4)
+            self.app.notify("workstation daemon spawned :5077 (silent)", timeout=4)
         except Exception as e:
             self.app.notify(f"spawn failed: {e}", severity="error", timeout=5)

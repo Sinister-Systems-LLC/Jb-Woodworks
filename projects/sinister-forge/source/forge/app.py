@@ -260,17 +260,20 @@ class ForgeApp(App):
           - swarm → spawn 3 additional siblings on the same project
           - login → drop a /login providers cheat-sheet into the first pane
 
-        Fallback (operator screenshot 27 of v1.2.0 — "no project selected"):
-        if no SINISTER_PROJECT env var was set by the picker AND the operator
-        has not opted out via RKOJ_NO_AUTOSPAWN=1, default-spawn an EVE agent
-        on the `sanctum` project in resume mode after a 200ms settle. This
-        populates ws 1 immediately so the console is never empty on cold boot.
+        2026-05-21 OPERATOR-RESCIND default-spawn (operator: "when i opened exe
+        it opened like 40 claude terminals. why is this so hard to do. i want
+        my sinister panel ui with tabs etc"). Default behavior is now NO
+        auto-spawn — the EXE opens to the empty Sinister Panel UI and the
+        operator hits Ctrl+W (or picks via the picker) to spawn the first
+        agent. Opt-IN via SINISTER_PROJECT env var still works (picker path).
         """
         import os
         proj_key = os.environ.get("SINISTER_PROJECT", "").strip()
         if not proj_key:
-            # No env-driven pick. Fall back to default-spawn unless opted out.
-            if os.environ.get("RKOJ_NO_AUTOSPAWN", "").strip() == "1":
+            # Default = NO auto-spawn. Operator sees the empty Sinister Panel
+            # UI (mascot + Agents/Phones tabs + status row) and explicitly
+            # spawns via Ctrl+W. Opt-IN to legacy default-spawn via env var.
+            if os.environ.get("RKOJ_DEFAULT_AUTOSPAWN", "").strip() != "1":
                 return
             default_result = PickerResult(
                 project_key="sanctum",
