@@ -61,3 +61,9 @@ The mechanism is well-documented in `Sinister-APK/source/.claude/memory/b.md` 20
 - `Sinister-APK/source/.claude/memory/b.md` 2026-05-19 phone 2 PI regression+recovery entry
 - `Sinister-APK/source/.claude/memory/resume-point.md` LOCKED rules block
 - `Sinister-APK/source/Rooting Guide/MD Files/PER-ITER-RITUAL-5.17.md` (per-iter rotation belongs HERE only)
+
+## 2026-05-21 update — coexistence with sinister-spoofer (sister entry composes)
+
+The "lukeprivacy at rest is safe" finding above remains correct for lukeprivacy ALONE. With sinister-spoofer.kpm now also part of the fleet stack (added v0.95+), lukeprivacy + sinister-spoofer **coexistence** can clobber SIM via telephony-module hook-table collision if sinister-spoofer's telephony scaffold is not ctl0-disabled. See sister entry `sinister-spoofer-lukeprivacy-sim-clobber-2026-05-21` for full empirical write-up + the 3-layer prevention stack now shipped (v0.97.3 + v0.97.4).
+
+Short version: loading lukeprivacy at rest is still safe. Loading sinister-spoofer at rest WITH lukeprivacy ALSO loaded was unsafe pre-v0.97.3 (telephony scaffold active by default at module load) but is now structurally safe at the KPM source level (default-off gate in profile.h) plus belt-and-suspenders defensive ctl0 at two further enforcement points (SpooferConfigPoller + SpooferAssetLoader). Coexistence is now the canonical state for the fleet.
