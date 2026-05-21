@@ -4,6 +4,33 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-20T19:45Z — RESUME (cont.): Workflow SSE + Fleet bulk Kill-Switch drill-down modal
+
+Operator: *"keep working"* after the R1-R12 forward-plan walk. Auto-mode. Two additional UI features shipped + 1 deferred against the "next" menu from the 17:35Z PROGRESS entry:
+
+1. **Workflow SSE per-step streaming** `505aefd` (Panel) — replaces the H3 workflow-run dialog's fire-and-forget pattern with real-time per-step progress.
+   - **Backend:** new `POST /api/workflows/:id/run-stream` emits SSE events (`start`, `step:start`, `step:done`, `delay`, `abort`, `complete`). Same execution semantics as `/run` (sequential, abort-on-fail, persists `lastRunAt`). Headers: `text/event-stream` + `X-Accel-Buffering: no` so nginx/caddy don't buffer.
+   - **Frontend:** WorkflowRunDialog refactored to consume the stream via fetch + ReadableStream + TextDecoder (EventSource doesn't support POST). New types `StreamEvent` + `StepProgress`. Per-step renders ✓/✗/⟳ disc with status + duration; pacing delay shows ⏸ between steps; abort message + final summary block. Toast announces success/abort with `stepsSucceeded/stepsTotal · durationMs`.
+2. **Fleet bulk Kill-Switch drill-down modal** `b1b9942` (Panel) — replaces native `window.confirm` with `BulkKillSwitchModal` (~190 LOC).
+   - Modes: `lock` (APK Lock all) · `unlock` (Clear APK locks) · `suspend` (RKA Suspend all) · `restore` (Clear RKA suspends). Each mode filters to the AFFECTED subset (e.g. `lock` shows only unlocked approved phones).
+   - **Preview:** affected count tile + scrollable phone list (serial/name + model + status + per-mode contextual cell — APK status / Locked since / RKA status / Suspended since). Caps at 80 with "…and N more" footer for large fleets.
+   - **Reason input:** required for activate modes (Lock / Suspend); recorded in AuditLog via the existing `reason` body param. Optional for clear modes.
+   - **Confirm gate:** affected count = 0 disables the button + shows "Nothing to do" copy. busy state disables both buttons while mutations are in flight. Cancel reverts to the bulk-controls strip.
+3. **Skipped/deferred from the menu:**
+   - **Phase E Survival polish** — verified ALREADY shipped (sweep timestamp + 30d bar chart + recent events feed all present in `components/survival/survival-body.tsx Overview`). PROGRESS menu was stale.
+   - **Accounts page filter sprawl collapse** — deferred pending operator direction on WHICH filters to collapse (the /for-use page has 5 separate FilterChipGroups: Platform header + Device + Intent + Status + Filters-toggle + Group; collapsing without operator scope risks building the wrong thing).
+   - **H4 branch node canvas** — substantial (3-6h: schema extension + execution semantics + canvas branch-node component + linearizeCanvas refactor); deferred to next sweep when operator wants branching specifically.
+
+**Gates green at every commit:** dashboard `tsc --noEmit` 0 + `next build` 30 routes + `doctrine-audit:strict` 0/0/0/0/0.
+
+**Panel branch (origin):** `agent/sinister-panel/expand-resume-2026-05-20T1413Z` now at `b1b9942` with 5 commits this turn (`4b09c78`, `88e6b61`, `7b6e3fd`, `505aefd`, `b1b9942`). Sanctum branch tip carries the brain + cross-agent + forward-plan deliverables from the earlier R1-R12 walk + this PROGRESS append.
+
+**Total session footprint:** 12 commits across 2 branches (8 Sanctum + 5 Panel including bat-author + artifact-registry + heartbeat-extension + workflow-SSE + fleet-bulk-drill-down + this PROGRESS).
+
+s.md: `head_local` panel-source topic branch = `b1b9942`. No deploy fired this turn (canonical-11 reversibility wall — production state unchanged).
+
+---
+
 ## 2026-05-19 14:45 - shipped: Master Plan Closeout — 9 net-new commits + 37 worker tests + deploy bat invoked autonomously
 Operator explicitly authorized autonomous bat invocation ("you should be able to all of this for me" + "you have in the past"). p.md updated with durable supersession of CLAUDE.md "you run it" gate.
 
