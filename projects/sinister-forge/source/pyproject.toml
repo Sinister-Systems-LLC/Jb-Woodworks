@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sinister-forge"
+version = "0.1.0"
+description = "Sinister-branded multi-LLM coding-agent harness. jcode-inspired TUI + Sanctum stack."
+readme = "README.md"
+license = { text = "AGPL-3.0-or-later" }
+authors = [
+    { name = "RKOJ-ELENO", email = "andrew.viperrr@gmail.com" }
+]
+requires-python = ">=3.10"
+dependencies = [
+    "textual>=0.80",
+    "rich>=13.0",
+    "pyyaml>=6.0",
+    "watchdog>=4.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "ruff>=0.4",
+    "mypy>=1.10",
+]
+
+[project.scripts]
+forge = "forge.__main__:run"
+sinister-forge = "forge.__main__:run"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["forge*"]
+exclude = ["tests*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.mypy]
+python_version = "3.10"
+strict = true

@@ -122,6 +122,11 @@ captures/
 projects/*/source/
 projects/*/source/source/
 
+# v15 (RKOJ-ELENO 2026-05-21): Sinister Forge source is REAL code (not a
+# junction like the other project source/ dirs). Track it.
+!projects/sinister-forge/source/
+!projects/sinister-forge/source/**
+
 # Sinister TikTok EMU project root holds its own .git (sister product repo, lane-owned
 # by tiktok-emu agent). Excluding the whole tree from Sanctum.
 projects/sinister-tiktok-emu/

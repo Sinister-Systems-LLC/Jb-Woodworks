@@ -1,6 +1,19 @@
 # CLAUDE.md — Sinister Sanctum
 
-> **Author:** Sinister Sanctum master agent (Claude) :: 2026-05-19
+> **Author:** RKOJ-ELENO :: 2026-05-19
+
+## Operator hard-canonical 2026-05-21 — AUTHORSHIP = "RKOJ-ELENO"
+
+Operator (verbatim 2026-05-21): *"everything needs to be ours. our branding sinister. our authors: RKOJ-ELENO is our author name for everything we do on all projects. update memory on that"*.
+
+**Binding for every file the fleet writes going forward.** Every new `.md`, `.py`, `.ps1`, `.bat`, `.rs`, `.ts`, `.js`, `.sh`, etc. must carry `Author: RKOJ-ELENO :: <date>` (NOT "Claude" / "Sinister Sanctum master agent" / "test agent" / any other prior convention). Existing files keep their existing authorship lines for historical accuracy — only new files use the new convention.
+
+Sub-doctrines:
+- `pyproject.toml` / `Cargo.toml` / `package.json` `authors` field = `RKOJ-ELENO`
+- Git commit `Co-Authored-By:` still allowed (operator preference) but the file-level Author lines are all RKOJ-ELENO.
+- Cross-agent message `from_display` may still be the spawning agent's slug (e.g. `Sinister Sanctum`, `Sinister Forge`) — that's identity, not authorship.
+
+
 
 Entry point for any Claude Code session opened with the working directory at `D:\Sinister Sanctum\`. If your session was launched by `Start-Sinister-Session.bat`, you already received the full cold-start protocol in the opening phrase — this file is the canonical pointer in case the launcher was skipped.
 
