@@ -1049,12 +1049,509 @@ def _cmd_memory(args, pane, app) -> str:
 
 
 def _cmd_goals(args, pane, app) -> str:
+    """jcode /goals — overview of fleet-shared goals from WORK-TOWARD.md.
+
+    Prints the first 5 lines (rolling goals are kept at the top of the file).
+    With `resume <slug>` arg, sets `_state["active_goal"]` so other loops can
+    pick it up.
+    """
     sr = _sanctum_root()
     wt = sr / "_shared-memory" / "WORK-TOWARD.md"
     if not wt.exists():
         return "[yellow]no WORK-TOWARD.md[/]"
-    snippet = "\n".join(wt.read_text(encoding="utf-8").splitlines()[:30])
-    return f"[bold]Goals (WORK-TOWARD.md, top 30)[/]\n{snippet}"
+    try:
+        raw = wt.read_text(encoding="utf-8")
+    except Exception as e:
+        return f"[red]/goals: cannot read {wt}: {e}[/]"
+
+    if args and args[0].lower() == "resume" and len(args) > 1:
+        slug = " ".join(args[1:]).strip()
+        set_state("active_goal", slug)
+        return f"  active goal set: [bold]{slug}[/]  [dim]({wt})[/]"
+
+    lines = raw.splitlines()
+    snippet = "\n".join(lines[:5])
+    return (f"[bold]Goals (WORK-TOWARD.md, top 5)[/]  [dim]{wt}[/]\n"
+            f"{snippet}")
+
+
+# ----- session/workspace management commands (jcode parity) -------------
+
+def _cmd_workspace(args, pane, app) -> str:
+    """jcode /workspace — niri-style workspace toggle/list/add.
+
+    /workspace              -> status
+    /workspace status       -> status
+    /workspace on|off       -> toggle workspaces; persists workspace_enabled
+                               to forge-prefs.json and current workspace id
+    /workspace add          -> create a new workspace pane (Forge TUI only)
+    """
+    sub = (args[0].lower() if args else "status")
+    in_tui = app is not None
+
+    if sub in {"status", ""}:
+        cur = bool(state("workspace_enabled"))
+        wsid = state("current_workspace_id", 0)
+        ctx = "Forge TUI" if in_tui else "RKOJ shell"
+        return (f"  workspace: {'[green]ON[/]' if cur else '[red]OFF[/]'}  "
+                f"id={wsid}  [dim]({ctx})[/]")
+
+    if sub in {"on", "off"}:
+        new_val = (sub == "on")
+        set_state("workspace_enabled", new_val)
+        try:
+            prefs = _load_forge_prefs()
+            prefs["workspace_enabled"] = new_val
+            prefs.setdefault("current_workspace_id",
+                             int(state("current_workspace_id", 0)))
+            path = _save_forge_prefs(prefs)
+        except Exception as e:
+            return f"[red]/workspace {sub}: persist failed: {e}[/]"
+        if in_tui:
+            try:
+                post = getattr(app, "post_message", None)
+                if callable(post):
+                    try:
+                        from textual.message import Message  # type: ignore
+                        class WorkspaceToggle(Message):  # type: ignore
+                            def __init__(self, enabled: bool) -> None:
+                                super().__init__()
+                                self.enabled = enabled
+                        post(WorkspaceToggle(new_val))
+                    except Exception:
+                        pass
+            except Exception:
+                pass
+        return f"  workspace: {sub.upper()}  [dim]({path})[/]"
+
+    if sub == "add":
+        if not in_tui:
+            return ("[note] /workspace add: needs Forge TUI — "
+                    "shell can only show status")
+        cur_id = int(state("current_workspace_id", 0))
+        new_id = cur_id + 1
+        set_state("current_workspace_id", new_id)
+        try:
+            prefs = _load_forge_prefs()
+            prefs["current_workspace_id"] = new_id
+            _save_forge_prefs(prefs)
+        except Exception:
+            pass
+        try:
+            post = getattr(app, "post_message", None)
+            if callable(post):
+                try:
+                    from textual.message import Message  # type: ignore
+                    class WorkspaceToggle(Message):  # type: ignore
+                        def __init__(self, action: str, ws_id: int) -> None:
+                            super().__init__()
+                            self.action = action
+                            self.ws_id = ws_id
+                    post(WorkspaceToggle("add", new_id))
+                except Exception:
+                    pass
+        except Exception:
+            pass
+        return f"  workspace add → id={new_id}"
+
+    return f"[yellow]/workspace: unknown sub `{sub}` — status|on|off|add[/]"
+
+
+def _cmd_splitview(args, pane, app) -> str:
+    """jcode /splitview — mirror current chat in the side panel.
+
+    /splitview            -> status
+    /splitview status     -> status
+    /splitview on|off     -> toggle splitview; spawn/close mirror pane (TUI only)
+    """
+    sub = (args[0].lower() if args else "status")
+    in_tui = app is not None
+
+    if sub in {"status", ""}:
+        cur = bool(state("splitview_enabled"))
+        if not in_tui:
+            return ("[note] /splitview: shell mode — splitview is a Forge TUI "
+                    "feature; only status is queryable here\n"
+                    f"  splitview = {'on' if cur else 'off'}")
+        return f"  splitview: {'[green]ON[/]' if cur else '[red]OFF[/]'}"
+
+    if sub in {"on", "off"}:
+        new_val = (sub == "on")
+        set_state("splitview_enabled", new_val)
+        if not in_tui:
+            return ("[note] /splitview: not applicable in shell mode — "
+                    "Forge TUI required to spawn a mirror pane.\n"
+                    f"  splitview state recorded as {sub} for next TUI launch")
+        try:
+            post = getattr(app, "post_message", None)
+            if callable(post):
+                try:
+                    from textual.message import Message  # type: ignore
+                    class SplitviewToggle(Message):  # type: ignore
+                        def __init__(self, enabled: bool) -> None:
+                            super().__init__()
+                            self.enabled = enabled
+                    post(SplitviewToggle(new_val))
+                except Exception:
+                    pass
+        except Exception:
+            pass
+        return f"  splitview: {sub.upper()}"
+
+    return f"[yellow]/splitview: unknown sub `{sub}` — on|off|status[/]"
+
+
+def _cmd_split(args, pane, app) -> str:
+    """jcode /split — clone the current session into a new window.
+
+    Spawns a new RKOJ.exe instance with `--shell` (cloning the Forge TUI inside
+    the same process is heavy). Passes env vars so the clone inherits project,
+    model, effort, and session-name context.
+    """
+    sr = _sanctum_root()
+    candidates = [
+        sr / "automations" / "build" / "forge-exe" / "dist" / "RKOJ.exe",
+        Path(sys.executable) if sys.executable else None,
+    ]
+    binary = next((c for c in candidates if c and c.exists()), None)
+    if binary is None:
+        return ("[red]/split: no RKOJ.exe found — run /rebuild first[/]\n"
+                f"  [dim]checked {candidates[0]}[/]")
+
+    env = os.environ.copy()
+    for k in ("SINISTER_PROJECT", "SINISTER_PROJECT_DISPLAY",
+              "SINISTER_SESSION_NAME", "SANCTUM_ROOT"):
+        if k in os.environ:
+            env[k] = os.environ[k]
+    env["SINISTER_PARENT_PID"] = str(os.getpid())
+    cur_model = state("default_model")
+    if cur_model:
+        env["SINISTER_DEFAULT_MODEL"] = str(cur_model)
+    cur_effort = state("effort")
+    if cur_effort:
+        env["SINISTER_EFFORT"] = str(cur_effort)
+
+    try:
+        creationflags = 0
+        if platform.system() == "Windows":
+            # DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP
+            creationflags = 0x00000008 | 0x00000200
+        subprocess.Popen(
+            [str(binary), "--shell"],
+            env=env,
+            cwd=str(sr),
+            creationflags=creationflags,
+            close_fds=True,
+        )
+    except Exception as e:
+        return f"[red]/split: failed to spawn {binary}: {e}[/]"
+    return f"  split → spawned {binary.name} --shell  [dim]({binary})[/]"
+
+
+def _cmd_transfer(args, pane, app) -> str:
+    """jcode /transfer — open a fresh session with only compacted context + todos.
+
+    Reads the latest compacted summary from
+    `_shared-memory/forge-memory/compacted/*.md`, copies todos found in the
+    latest journal under `_shared-memory/forge-memory/anthropic-direct-sessions/`,
+    writes a transfer envelope, and spawns a new shell session.
+    """
+    sr = _sanctum_root()
+    compacted_dir = sr / "_shared-memory" / "forge-memory" / "compacted"
+    sessions_dir = sr / "_shared-memory" / "forge-memory" / "anthropic-direct-sessions"
+
+    summary_path = None
+    summary_text = ""
+    if compacted_dir.exists():
+        cands = sorted(compacted_dir.glob("*.md"),
+                       key=lambda p: p.stat().st_mtime, reverse=True)
+        if cands:
+            summary_path = cands[0]
+            try:
+                summary_text = summary_path.read_text(encoding="utf-8")
+            except Exception:
+                summary_text = ""
+
+    todos: list[str] = []
+    journal = None
+    if sessions_dir.exists():
+        jrn = sorted(sessions_dir.glob("*.jsonl"),
+                     key=lambda p: p.stat().st_mtime, reverse=True)
+        if jrn:
+            journal = jrn[0]
+            try:
+                for line in journal.read_text(encoding="utf-8").splitlines():
+                    if not line.strip():
+                        continue
+                    try:
+                        rec = json.loads(line)
+                    except Exception:
+                        continue
+                    blob = json.dumps(rec)
+                    if "TodoWrite" not in blob:
+                        continue
+                    content = rec.get("content")
+                    if isinstance(content, list):
+                        for c in content:
+                            if isinstance(c, dict) and c.get("name") == "TodoWrite":
+                                inp = c.get("input") or {}
+                                for t in (inp.get("todos") or []):
+                                    if isinstance(t, dict) and t.get("content"):
+                                        todos.append(str(t["content"]))
+                    elif isinstance(content, dict) and content.get("name") == "TodoWrite":
+                        inp = content.get("input") or {}
+                        for t in (inp.get("todos") or []):
+                            if isinstance(t, dict) and t.get("content"):
+                                todos.append(str(t["content"]))
+            except Exception:
+                pass
+
+    seen: set[str] = set()
+    todos = [t for t in todos if not (t in seen or seen.add(t))][:20]
+
+    transfer_dir = sr / "_shared-memory" / "forge-memory" / "transfers"
+    try:
+        transfer_dir.mkdir(parents=True, exist_ok=True)
+    except Exception as e:
+        return f"[red]/transfer: cannot create {transfer_dir}: {e}[/]"
+
+    ts = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H%M%SZ")
+    env_path = transfer_dir / f"transfer-{ts}.md"
+    body = [
+        f"# Transfer envelope — {ts}",
+        f"Author: RKOJ-ELENO :: {datetime.date.today().isoformat()}",
+        "",
+        f"Source compaction: `{summary_path.name if summary_path else '(none)'}`",
+        f"Source journal:    `{journal.name if journal else '(none)'}`",
+        f"Todos carried:     {len(todos)}",
+        "",
+        "## Compacted context",
+        "",
+        summary_text.strip() or "(no compacted summary available)",
+        "",
+        "## Todos",
+        "",
+    ]
+    if todos:
+        body.extend(f"- [ ] {t}" for t in todos)
+    else:
+        body.append("(no todos found in latest journal)")
+    try:
+        env_path.write_text("\n".join(body) + "\n", encoding="utf-8")
+    except Exception as e:
+        return f"[red]/transfer: write failed: {e}[/]"
+
+    set_state("last_transfer_path", str(env_path))
+
+    binary = sr / "automations" / "build" / "forge-exe" / "dist" / "RKOJ.exe"
+    if binary.exists():
+        env = os.environ.copy()
+        env["SINISTER_TRANSFER_ENVELOPE"] = str(env_path)
+        env["SINISTER_PARENT_PID"] = str(os.getpid())
+        try:
+            creationflags = 0
+            if platform.system() == "Windows":
+                creationflags = 0x00000008 | 0x00000200
+            subprocess.Popen(
+                [str(binary), "--shell"],
+                env=env,
+                cwd=str(sr),
+                creationflags=creationflags,
+                close_fds=True,
+            )
+            spawn_note = f"spawned {binary.name} --shell"
+        except Exception as e:
+            spawn_note = f"spawn failed: {e}"
+    else:
+        spawn_note = "no RKOJ.exe — envelope written; launch a new session manually"
+
+    return (f"  transfer → {env_path.name}\n"
+            f"  todos:    {len(todos)}  ·  compaction: "
+            f"{summary_path.name if summary_path else '(none)'}\n"
+            f"  {spawn_note}  [dim]({env_path})[/]")
+
+
+def _catchup_last_n_msgs(journal: Path, n: int) -> list[str]:
+    """Return last N user/assistant messages from a JSONL journal."""
+    msgs: list[str] = []
+    try:
+        for line in reversed(journal.read_text(encoding="utf-8").splitlines()):
+            if not line.strip():
+                continue
+            try:
+                rec = json.loads(line)
+            except Exception:
+                continue
+            role = str(rec.get("role") or rec.get("type") or "").lower()
+            if role not in {"user", "assistant"}:
+                continue
+            c = rec.get("content") or rec.get("text") or ""
+            if isinstance(c, list):
+                c = " ".join(
+                    str(x.get("text", "")) if isinstance(x, dict) else str(x)
+                    for x in c
+                )
+            c = str(c).strip().replace("\n", " ")
+            if c:
+                msgs.append(f"[{role}] {c}")
+                if len(msgs) >= n:
+                    break
+    except Exception:
+        pass
+    return list(reversed(msgs))
+
+
+def _catchup_render(journal: Path) -> str:
+    """Render a Catch Up brief for a single journal."""
+    if not journal.exists():
+        return f"[yellow]/catchup: journal missing: {journal}[/]"
+    msgs = _catchup_last_n_msgs(journal, 6)
+    mt = datetime.datetime.fromtimestamp(journal.stat().st_mtime).strftime("%Y-%m-%d %H:%M")
+    lines = [f"[bold]Catch Up:[/] {journal.name}  [dim]({mt})[/]"]
+    for m in msgs:
+        lines.append(f"  · {m[:160]}")
+    return "\n".join(lines)
+
+
+def _cmd_catchup(args, pane, app) -> str:
+    """jcode /catchup — jump into finished sessions and open Catch Up brief.
+
+    /catchup           -> list 5 most-recent finished sessions
+    /catchup list      -> same as above
+    /catchup next      -> advance to next brief in the queue
+    """
+    sr = _sanctum_root()
+    sessions_dir = sr / "_shared-memory" / "forge-memory" / "anthropic-direct-sessions"
+
+    sub = (args[0].lower() if args else "list")
+
+    if sub == "next":
+        queue = _state.get("_catchup_queue") or []
+        if not queue:
+            if not sessions_dir.exists():
+                return "[yellow]/catchup next: no sessions dir[/]"
+            queue = [str(p) for p in sorted(
+                sessions_dir.glob("*.jsonl"),
+                key=lambda x: x.stat().st_mtime, reverse=True)[:5]]
+            _state["_catchup_queue"] = queue
+        if not queue:
+            return "[yellow]/catchup next: queue empty[/]"
+        nxt = queue.pop(0)
+        _state["_catchup_queue"] = queue
+        # Remember source for /back (the listing/prior brief we came from).
+        _state.setdefault("catchup_source", _state.get("catchup_current"))
+        _state["catchup_current"] = nxt
+        return _catchup_render(Path(nxt))
+
+    # list mode (default)
+    if not sessions_dir.exists():
+        return "[yellow]/catchup: no anthropic-direct-sessions found[/]"
+    cands = sorted(sessions_dir.glob("*.jsonl"),
+                   key=lambda p: p.stat().st_mtime, reverse=True)[:5]
+    if not cands:
+        return "[yellow]/catchup: no finished sessions[/]"
+    lines = ["[bold]Catch Up — 5 most-recent finished sessions[/]"]
+    for i, p in enumerate(cands, start=1):
+        mt = datetime.datetime.fromtimestamp(p.stat().st_mtime).strftime("%m-%d %H:%M")
+        last2 = _catchup_last_n_msgs(p, 2)
+        lines.append(f"  [purple]{i:>2}[/]. {p.name}  [dim]({mt})[/]")
+        for msg in last2:
+            lines.append(f"      [dim]· {msg[:120]}[/]")
+    lines.append("\n[dim]/catchup next to advance · /back to return[/]")
+    _state["_catchup_queue"] = [str(p) for p in cands]
+    return "\n".join(lines)
+
+
+def _cmd_back(args, pane, app) -> str:
+    """jcode /back — return to the previous Catch Up source session.
+
+    Reads `_state['catchup_source']`. If none, prints a hint.
+    """
+    src = _state.get("catchup_source")
+    if not src:
+        cur = _state.get("catchup_current")
+        if cur:
+            _state["catchup_current"] = None
+            return (f"  back: cleared current brief ({Path(cur).name})  "
+                    f"[dim](no prior source — back-stack empty)[/]")
+        return "[note] /back: no previous Catch Up source session"
+    _state["catchup_current"] = src
+    _state["catchup_source"] = None
+    return f"  back → {Path(str(src)).name}"
+
+
+def _cmd_poke(args, pane, app) -> str:
+    """jcode /poke — nudge the model to resume work on incomplete todos.
+
+    /poke           -> status
+    /poke status    -> status
+    /poke on|off    -> toggle the poke loop
+    """
+    sub = (args[0].lower() if args else "status")
+    cur = bool(state("poke_enabled"))
+
+    if sub in {"status", ""}:
+        return f"  poke: {'[green]ON[/]' if cur else '[red]OFF[/]'}"
+
+    if sub in {"on", "off"}:
+        new_val = sub == "on"
+        set_state("poke_enabled", new_val)
+        if app is None:
+            return (f"[note] /poke: shell-mode stub — state recorded "
+                    f"({sub.upper()}). Forge TUI required to fire follow-up turns.")
+        try:
+            prefs = _load_forge_prefs()
+            prefs["poke_enabled"] = new_val
+            _save_forge_prefs(prefs)
+        except Exception:
+            pass
+        if new_val and pane is not None:
+            poke_msg = "check for incomplete todos and continue"
+            try:
+                inject = (getattr(pane, "submit_user_text", None)
+                          or getattr(pane, "_submit", None)
+                          or getattr(pane, "write_stdin", None))
+                if callable(inject):
+                    inject(poke_msg)
+            except Exception:
+                pass
+        return f"  poke: {sub.upper()}"
+
+    return f"[yellow]/poke: unknown sub `{sub}` — on|off|status[/]"
+
+
+def _cmd_improve(args, pane, app) -> str:
+    """jcode /improve — autonomous repo-improvement loop.
+
+    v1.0.0: not yet implemented; tracked in jcode-parity-roadmap.md.
+    /improve resume   -> resumes from `_state['last_improve_loop']` if any.
+    """
+    if args and args[0].lower() == "resume":
+        prev = _state.get("last_improve_loop")
+        if not prev:
+            return ("[note] /improve resume: no previous loop checkpoint "
+                    "(_state['last_improve_loop'] is empty)")
+        return (f"[note] /improve resume: would resume from {prev}\n"
+                f"  [dim]not yet implemented; tracked in jcode-parity-roadmap.md[/]")
+    return ("[improve] not yet implemented; tracked in jcode-parity-roadmap.md\n"
+            "  [dim]use /improve resume to pick up a paused loop once available[/]")
+
+
+def _cmd_refactor(args, pane, app) -> str:
+    """jcode /refactor — safe refactor + review loop.
+
+    v1.0.0: not yet implemented; tracked in jcode-parity-roadmap.md.
+    /refactor resume  -> resumes from `_state['last_refactor_loop']` if any.
+    """
+    if args and args[0].lower() == "resume":
+        prev = _state.get("last_refactor_loop")
+        if not prev:
+            return ("[note] /refactor resume: no previous loop checkpoint "
+                    "(_state['last_refactor_loop'] is empty)")
+        return (f"[note] /refactor resume: would resume from {prev}\n"
+                f"  [dim]not yet implemented; tracked in jcode-parity-roadmap.md[/]")
+    return ("[refactor] not yet implemented; tracked in jcode-parity-roadmap.md\n"
+            "  [dim]use /refactor resume to pick up a paused loop once available[/]")
 
 
 # ----- swarm commands -----------------------------------------------------
@@ -1162,16 +1659,80 @@ def _heartbeat_scan() -> list[dict]:
 
 # ----- auth + provider commands ------------------------------------------
 
+def _sinister_config_path(filename: str) -> Path:
+    """Returns ~/.config/sinister/<filename> or %APPDATA%/sinister/<filename>
+    on Windows. Mirrors `_forge_prefs_path()` layout for jcode parity."""
+    if platform.system() == "Windows":
+        appdata = os.environ.get("APPDATA")
+        base = Path(appdata) if appdata else Path.home() / "AppData" / "Roaming"
+        return base / "sinister" / filename
+    return Path.home() / ".config" / "sinister" / filename
+
+
+def _load_login_state() -> dict:
+    """Read ~/.config/sinister/login-state.json. Returns {} on any error."""
+    p = _sinister_config_path("login-state.json")
+    if not p.exists():
+        return {}
+    try:
+        return json.loads(p.read_text(encoding="utf-8-sig"))
+    except Exception:
+        return {}
+
+
+def _mask_key(value: str | None, tail: int = 6, mask_chars: int = 6) -> str:
+    """Mask an API key — show last `tail` chars only with a fixed-width
+    `mask_chars`-char prefix of '*' (default '******XXXXXX'). Returns
+    '<unset>' if empty. Capping mask width keeps the /account table aligned.
+    """
+    if not value:
+        return "<unset>"
+    if len(value) <= tail:
+        return "*" * len(value)
+    return ("*" * mask_chars) + value[-tail:]
+
+
 def _cmd_auth(args, pane, app) -> str:
+    """jcode /auth [status] — show 11-provider auth status + default provider.
+
+    Delegates to sinister_login.api.status_all() for the per-provider rows;
+    adds a "current default provider" line read from
+    ~/.config/sinister/login-state.json (key: 'default_provider'). Falls
+    back to in-memory _state['default_provider'] when the file is absent
+    or the key is missing.
+    """
     try:
         from sinister_login import status_all  # type: ignore
-        rows = status_all()
     except Exception as e:
         return f"[red]sinister-login unavailable: {e}[/]"
-    lines = ["[bold]auth status[/]"]
+    # Subcommand parsing — only 'status' is recognized; everything else is
+    # treated as the default listing (jcode accepts a bare /auth too).
+    sub = args[0].lower() if args else "status"
+    if sub not in {"status", ""}:
+        return (f"[yellow]/auth: unknown subcommand `{sub}` "
+                f"(use /auth or /auth status)[/]")
+    try:
+        rows = status_all()
+    except Exception as e:
+        return f"[red]sinister-login.status_all crashed: {e}[/]"
+
+    login_state = _load_login_state()
+    default_prov = (login_state.get("default_provider")
+                    or state("default_provider")
+                    or "(auto-resolved)")
+
+    configured = sum(1 for r in rows if r.get("configured"))
+    total = len(rows)
+
+    lines = [f"[bold]auth status[/]  ({configured}/{total} configured)"]
+    lines.append(f"  [dim]default provider:[/] {default_prov}")
+    lines.append("")
     for r in rows:
         mark = "[green]●[/]" if r.get("configured") else "[dim]○[/]"
-        lines.append(f"  {mark} {r['slug']:<22} {r['auth']:<8} {r.get('key_env_found', '(local)')}")
+        slug = r.get("slug", "?")
+        auth = r.get("auth", "?")
+        env_name = r.get("key_env_found") or "(local)"
+        lines.append(f"  {mark} {slug:<22} {auth:<8} {env_name}")
     return "\n".join(lines)
 
 
@@ -1284,7 +1845,215 @@ def _cmd_provider(args, pane, app) -> str:
 
 
 def _cmd_account(args, pane, app) -> str:
-    return _cmd_auth(args, pane, app)
+    """jcode /account — combined Claude/OpenAI account picker.
+
+    Reads the 11-provider wallet from sinister-login and prints a 2-column
+    table: provider | account (last 6 chars of key shown, rest masked).
+    For local-auth providers (lmstudio, ollama) the endpoint URL is shown
+    instead of a key. For unconfigured providers the cell reads '<unset>'.
+    """
+    try:
+        from sinister_login import PROVIDERS, status_all  # type: ignore
+    except Exception as e:
+        return f"[red]sinister-login unavailable: {e}[/]"
+    try:
+        rows = status_all()
+    except Exception as e:
+        return f"[red]sinister-login.status_all crashed: {e}[/]"
+
+    login_state = _load_login_state()
+    default_prov = (login_state.get("default_provider")
+                    or state("default_provider"))
+
+    # Build provider→key lookup via the same env-vars sinister-login uses.
+    prov_by_slug = {p.slug: p for p in PROVIDERS}
+
+    # Column widths.
+    name_w = max((len(r.get("slug", "")) for r in rows), default=14) + 2
+
+    lines = ["[bold]account wallet[/]  (last 6 chars shown; rest masked)"]
+    if default_prov:
+        lines.append(f"  [dim]default:[/] {default_prov}")
+    lines.append("")
+    header = f"  {'provider':<{name_w}} account"
+    lines.append(f"[dim]{header}[/]")
+    lines.append(f"[dim]  {'-' * (name_w - 2):<{name_w}} {'-' * 30}[/]")
+
+    for r in rows:
+        slug = r.get("slug", "?")
+        p = prov_by_slug.get(slug)
+        auth = r.get("auth", "?")
+        configured = r.get("configured")
+        if auth == "local":
+            endpoint = r.get("endpoint") or (p.base_url if p else "")
+            account_cell = endpoint or "(local)"
+        elif configured and p is not None:
+            key = p.key_value()
+            account_cell = _mask_key(key, tail=6)
+        else:
+            account_cell = "<unset>"
+        mark = "[green]●[/]" if configured else "[dim]○[/]"
+        lines.append(f"  {mark} {slug:<{name_w - 2}} {account_cell}")
+    return "\n".join(lines)
+
+
+def _capture_subscription_info() -> dict:
+    """Return a unified subscription/usage/wallet snapshot.
+
+    Combines:
+      - ~/.config/sinister/subscription.json (jcode/RKOJ scaffold, if present):
+        tier, monthly_cap, renews_at, etc.
+      - forge-prefs.json (agent V's surface — read for any subscription_* keys).
+      - sinister-usage.today_summary()  (local usage estimate).
+      - sinister-login.status_all()     (which providers configured).
+
+    All sources are optional — missing modules / files degrade gracefully.
+    Returned shape (stable):
+      {
+        "subscription": {"present": bool, "path": str, "tier": str|None,
+                         "monthly_cap": int|None, "renews_at": str|None,
+                         "raw": dict},
+        "usage":        {"present": bool, "sessions_today": int,
+                         "bytes_today": int, "rough_tokens_today": int,
+                         "as_of_utc": str|None},
+        "wallet":       {"configured_count": int, "total": int,
+                         "default_provider": str|None,
+                         "configured_slugs": list[str]},
+        "prefs_keys":   list[str],   # any forge-prefs keys starting with 'subscription_'
+      }
+    """
+    out: dict = {
+        "subscription": {"present": False, "path": "", "tier": None,
+                         "monthly_cap": None, "renews_at": None,
+                         "current_usage": None, "raw": {}},
+        "usage": {"present": False, "sessions_today": 0, "bytes_today": 0,
+                  "rough_tokens_today": 0, "as_of_utc": None},
+        "wallet": {"configured_count": 0, "total": 0,
+                   "default_provider": None, "configured_slugs": []},
+        "prefs_keys": [],
+    }
+
+    # 1. subscription.json
+    sub_path = _sinister_config_path("subscription.json")
+    out["subscription"]["path"] = str(sub_path)
+    if sub_path.exists():
+        try:
+            raw = json.loads(sub_path.read_text(encoding="utf-8-sig"))
+            out["subscription"]["present"] = True
+            out["subscription"]["raw"] = raw if isinstance(raw, dict) else {}
+            if isinstance(raw, dict):
+                out["subscription"]["tier"] = raw.get("tier")
+                out["subscription"]["monthly_cap"] = raw.get("monthly_cap")
+                out["subscription"]["renews_at"] = raw.get("renews_at")
+                out["subscription"]["current_usage"] = raw.get("current_usage")
+        except Exception:
+            pass
+
+    # 2. forge-prefs.json — any subscription_* keys agent V dropped in
+    try:
+        prefs = _load_forge_prefs()
+        out["prefs_keys"] = sorted(k for k in prefs.keys()
+                                   if k.startswith("subscription"))
+    except Exception:
+        pass
+
+    # 3. sinister-usage.today_summary
+    try:
+        from sinister_usage import today_summary  # type: ignore
+        summ = today_summary()
+        out["usage"]["present"] = True
+        out["usage"]["sessions_today"] = int(summ.get("sessions_today", 0))
+        out["usage"]["bytes_today"] = int(summ.get("bytes_today", 0))
+        out["usage"]["rough_tokens_today"] = int(summ.get("rough_tokens_today", 0))
+        out["usage"]["as_of_utc"] = summ.get("as_of_utc")
+    except Exception:
+        pass
+
+    # 4. sinister-login.status_all + default-provider lookup
+    try:
+        from sinister_login import status_all  # type: ignore
+        rows = status_all()
+        configured = [r for r in rows if r.get("configured")]
+        out["wallet"]["configured_count"] = len(configured)
+        out["wallet"]["total"] = len(rows)
+        out["wallet"]["configured_slugs"] = [r.get("slug") for r in configured]
+    except Exception:
+        pass
+
+    login_state = _load_login_state()
+    out["wallet"]["default_provider"] = (login_state.get("default_provider")
+                                         or state("default_provider"))
+
+    return out
+
+
+def _cmd_subscription(args, pane, app) -> str:
+    """jcode /subscription — inspect the jcode/RKOJ subscription scaffold.
+
+    Reads ~/.config/sinister/subscription.json if present; otherwise prints
+    a placeholder showing exactly where the data WOULD live (tier,
+    monthly_cap, current_usage from sinister-usage, renews_at).
+
+    Use `/subscription raw` to dump the raw JSON payload (when present).
+    """
+    info = _capture_subscription_info()
+    sub = info["subscription"]
+    usage = info["usage"]
+    wallet = info["wallet"]
+
+    # `/subscription raw` — dump the parsed JSON (for debugging).
+    if args and args[0].lower() == "raw":
+        if not sub["present"]:
+            return f"[yellow]/subscription raw: no file at {sub['path']}[/]"
+        return json.dumps(sub["raw"], indent=2, sort_keys=True)
+
+    lines = ["[bold]subscription[/]  (jcode/RKOJ scaffold)"]
+    lines.append(f"  [dim]file:[/] {sub['path']}")
+    if sub["present"]:
+        lines.append(f"  [dim]status:[/] [green]present[/]")
+        lines.append(f"  tier:           {sub['tier'] or '(unset)'}")
+        cap = sub["monthly_cap"]
+        lines.append(f"  monthly_cap:    {cap if cap is not None else '(unset)'}")
+        lines.append(f"  renews_at:      {sub['renews_at'] or '(unset)'}")
+        cur_usage = sub.get("current_usage")
+        if cur_usage is not None:
+            lines.append(f"  current_usage:  {cur_usage}  [dim](from subscription.json)[/]")
+    else:
+        lines.append(f"  [dim]status:[/] [yellow]placeholder[/] — file not yet written")
+        lines.append("")
+        lines.append("  [dim]when present, this file would contain:[/]")
+        lines.append("    tier:           free | starter | pro | enterprise")
+        lines.append("    monthly_cap:    <int>     (token cap for the period)")
+        lines.append("    current_usage:  <int>     (rolling token count this period)")
+        lines.append("    renews_at:      <iso8601> (next billing renewal)")
+
+    # Always show current usage estimate from sinister-usage (local-only).
+    lines.append("")
+    if usage["present"]:
+        lines.append("  [dim]current usage (sinister-usage today_summary, local-only):[/]")
+        lines.append(f"    sessions_today:      {usage['sessions_today']}")
+        lines.append(f"    bytes_today:         {usage['bytes_today']}")
+        lines.append(f"    rough_tokens_today:  {usage['rough_tokens_today']}")
+        if usage["as_of_utc"]:
+            lines.append(f"    as_of_utc:           {usage['as_of_utc']}")
+    else:
+        lines.append("  [dim]sinister-usage unavailable — install:[/] "
+                     "pip install -e \"D:/Sinister Sanctum/tools/sinister-usage\"")
+
+    # Wallet summary line (which providers are configured).
+    lines.append("")
+    lines.append(f"  [dim]wallet:[/] "
+                 f"{wallet['configured_count']}/{wallet['total']} providers configured  "
+                 f"[dim]default:[/] {wallet['default_provider'] or '(auto-resolved)'}")
+    if wallet["configured_slugs"]:
+        lines.append(f"    configured: {', '.join(wallet['configured_slugs'])}")
+
+    if info["prefs_keys"]:
+        lines.append("")
+        lines.append(f"  [dim]forge-prefs subscription keys:[/] "
+                     f"{', '.join(info['prefs_keys'])}")
+
+    return "\n".join(lines)
 
 
 def _cmd_effort(args, pane, app) -> str:
@@ -1947,7 +2716,7 @@ SLASH_COMMANDS: dict[str, dict[str, Any]] = {
     "transfer":   _entry(_stub("transfer", "fresh session with compacted context + todos", ""), "ui"),
     "workspace":  _entry(_stub("workspace", "Niri-style workspace splits",
                                 "Forge already has scrollable columns by default (PH18)"), "ui"),
-    "subscription": _entry(_stub("subscription", "Sinister LLC subscription scaffold", ""), "auth"),
+    "subscription": _entry(_cmd_subscription, "tier + monthly_cap + current_usage + renews_at (jcode/RKOJ scaffold)", "auth"),
     "unsave":     _entry(_cmd_unsave,    "remove the most recent resume-point bookmark (use --force to confirm)", "session"),
 }
 
