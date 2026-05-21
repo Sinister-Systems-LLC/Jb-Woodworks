@@ -23,3 +23,7 @@ Running catalog of every registered tool in the Sanctum. Append-only. See `READM
 | sinister-review | tools/sinister-review/ | tools/sinister-review/sinister_review/__main__.py | shipped | 2026-05-21 |
 | forge-memory-bridge | tools/forge-memory-bridge/ | tools/forge-memory-bridge/forge_memory_bridge/api.py | shipped | 2026-05-21 |
 | memory-graph-render | tools/memory-graph-render/ | tools/memory-graph-render/memory_graph_render/api.py | shipped | 2026-05-21 |
+| sinister-watchdog | tools/sinister-watchdog/ | tools/sinister-watchdog/sinister_watchdog/cli.py | shipped | 2026-05-21 |
+| sinister-rkoj-qt | tools/sinister-rkoj-qt/ | tools/sinister-rkoj-qt/sinister_rkoj_qt/app.py (PyQt6 native RKOJ.exe v1.5.0+) | building | 2026-05-21 |
+| sinister-diagnose | tools/sinister-diagnose/ | tools/sinister-diagnose/sinister_diagnose/__main__.py | shipped | 2026-05-21 |
+| sanctum-backup | tools/sanctum-backup/ | tools/sanctum-backup/sanctum_backup/__main__.py | shipped | 2026-05-21 |
