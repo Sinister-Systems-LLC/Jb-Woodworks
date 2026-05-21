@@ -475,6 +475,15 @@ Toast.-error {{
     border: round {PURPLE_BRIGHT};
 }}
 
+/* Bottom status strip per pane — model · provider · tokens · live | idle */
+.agent-status {{
+    background: {BG_DEEP};
+    color: {LIGHT_PURPLE};
+    height: 1;
+    padding: 0 1;
+    text-align: left;
+}}
+
 /* Niri-style column chrome — applies the panel look to scrollable columns */
 .agent-column {{
     background: {BG};
