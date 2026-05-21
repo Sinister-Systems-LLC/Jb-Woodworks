@@ -2,7 +2,47 @@
 
 > **Author:** RKOJ-ELENO :: 2026-05-21
 > **Origin:** Operator image 2026-05-21T11:43Z (niri-wm/niri reference for Sinister Forge multi-pane layout). Forge HELLO-ACK 2026-05-21T11:45Z absorbed it for their lane. Sanctum 1228Z ACK promised this brain entry FIRST so Mind / Claw / Term / RKOJ can mirror the same vocabulary before any single project locks in tabs.
-> **Status:** doctrine, fleet-wide; no implementation yet (every multi-pane surface today uses tabs or fixed grids)
+> **Status:** **v1.1.0 SHIPPED in Sinister Forge** (NiriWorkspaceGrid, 2026-05-21). Doctrine still authoritative for fleet-wide adoption — Mind / Claw / Term / RKOJ continue to compose against this entry.
+
+## v1.1.0 SHIP — Sinister Forge NiriWorkspaceGrid (2026-05-21)
+
+Operator directive 2026-05-21 (verbatim): *"i want our windows to function just like fucking jcode... inside that a system like this: https://github.com/niri-wm/niri embeded in the agents tab. With full control like jcode has it here: https://github.com/1jehuang/niri-workspaces-rs"*.
+
+Implementation: **`projects/sinister-forge/source/forge/panes/niri_workspace.py`** — `NiriWorkspaceGrid(ScrollableContainer)`.
+
+Concept upgrade vs v1 (`panes/columns.py`):
+
+| Aspect | v1 (`columns.py`) | v1.1.0 (`niri_workspace.py`) |
+|---|---|---|
+| Column == | one AgentPane | one Workspace holding 1..N stacked AgentPanes |
+| Width | 64 cells | 80 cells |
+| New-content gesture | append column | append pane to active ws (or Ctrl+T = new ws) |
+| Pane move | swap entire column position | move pane between workspaces (Ctrl+Shift+←/→) |
+| Indexing | none | Ctrl+1..9 jumps to workspace N |
+| Status row | none | `[ws 1] [ws 2] · [ws 3*] · [ws 4]` (active *) |
+
+Mapping back to the 7 primitives:
+1. Horizontal scroll region — `ScrollableContainer` with `overflow-x: auto`
+2. Always-one-visible — placeholder Static when no workspaces (`"no workspaces · Ctrl+T to open · Ctrl+W to spawn agent"`)
+3. Per-column metadata strip — `WorkspaceColumn.border_title` + global `WorkspaceStatusRow` docked top
+4. Keyboard navigation — `Ctrl+←/→` cycle, `Ctrl+Shift+←/→` move pane across workspaces, `Ctrl+1..9` jump, `Ctrl+T` new
+5. Mousewheel — Textual default (horizontal wheel scrolls strip; vertical wheel scrolls inside focused pane's RichLog)
+6. Spawn-policy — `add_pane()` appends to active workspace; `move_active_pane(delta)` past the edge auto-creates a new workspace there (matches niri WM behavior)
+7. Persistence — left for caller (`active_idx` / `workspaces[i].panes` enumerable, ready for resume-point write)
+
+Wiring in app.py:
+- `from forge.panes.niri_workspace import NiriWorkspaceGrid` (TabbedMultiPane stays imported as legacy fallback)
+- `self._tabs = NiriWorkspaceGrid()` — replaces the old `TabbedMultiPane()` mount under the Agents sidebar tab
+- Compat shims on `NiriWorkspaceGrid` (`_columns`, `_tabbed`, `remove_focused`, `panes_for_project`, `current_project_key`) keep the existing app.py action handlers working unchanged
+- Sidebar ADB tab unaffected (display-toggle approach preserved)
+
+Test contract:
+```sh
+python -c "from forge.panes.niri_workspace import NiriWorkspaceGrid; print('ok')"
+# → ok
+```
+
+Status: doctrine, fleet-wide. Forge has shipped v1.1.0; Mind / Claw / Term / RKOJ continue PH-future per the adoption table below.
 > **Composes with:** sinister-forge-harness-pattern · rkoj-workstation-ui-layout · forever-expanding-modular-architecture-doctrine · agent-browser-bridge-pattern · jcode-feature-matrix
 
 ## What "niri-style" means in 30 seconds
@@ -33,7 +73,7 @@ For Sinister surfaces this maps cleanly onto: each agent pane / each project vie
 
 | Surface | Today | niri-pattern fit | Phase |
 |---|---|---|---|
-| Sinister Forge (TUI panes per agent) | Textual TabbedContent | **strong fit** (panes are homogeneous; operator wants ≥5 at once) | Forge claims PH-N |
+| Sinister Forge (TUI panes per agent) | **NiriWorkspaceGrid (shipped v1.1.0)** | **strong fit** (panes are homogeneous; operator wants ≥5 at once) | **SHIPPED 2026-05-21** — `panes/niri_workspace.py` |
 | Sinister Claw (mobile, agent screens) | bottom-tab nav (Sanctum/Forge/Mind/Settings) | **partial** — bottom-tabs are categorically different (≤7), good for them. But INSIDE the Forge screen, the agent list could be a niri-style strip. | Claw PH-future |
 | Sinister Mind (browser viz @ :5079) | unknown — likely SPA with tabs | **strong fit** if Mind shows per-namespace memory graphs (each ns = one column) | Mind PH-future |
 | Sinister Term (PTY split-pane future) | none yet (single shell) | **strong fit** when split-pane lands (each pane = one column; horizontal scroll = niri-style; Ctrl+Shift+←/→ to scroll) | Term PH-future |
