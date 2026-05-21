@@ -52,6 +52,11 @@ SUBCOMMAND_MAP: dict[str, tuple[str, str, str, str]] = {
         "sanctum_backup.__main__", "main",
         "pip install -e \"D:/Sinister Sanctum/tools/sanctum-backup\"",
     ),
+    "diagnose": (
+        "RKOJ/Sanctum health checker (npm-doctor / brew-doctor parity) — 14 env probes, colored or --json report",
+        "sinister_diagnose.__main__", "main",
+        "pip install -e \"D:/Sinister Sanctum/tools/sinister-diagnose\"",
+    ),
     "freeze": (
         "Joe @ Ferrari of Winter Park lane (future project)",
         "sinister_freeze.__main__", "main",

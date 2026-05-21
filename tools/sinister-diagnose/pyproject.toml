@@ -1,0 +1,31 @@
+# Sinister Sanctum :: sinister-diagnose
+# Author: RKOJ-ELENO :: 2026-05-21
+# License: AGPL-3.0-or-later
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sinister-diagnose"
+version = "0.1.0"
+description = "Sinister Sanctum :: RKOJ/Sanctum health checker. Like `npm doctor` / `brew doctor`. Runs ~14 environment checks (python version, PyInstaller, Anthropic SDK + key, Claude CLI, Rust toolchain, Sanctum root + CLAUDE.md, Backups + MANIFEST + recency, vault daemon on :5078, MCP config, git config, disk space, RKOJ.exe freshness, current branch, heartbeat freshness) and prints a colored report or JSON for scripting."
+authors = [{ name = "RKOJ-ELENO" }]
+license = { text = "AGPL-3.0-or-later" }
+requires-python = ">=3.11"
+readme = "README.md"
+
+dependencies = [
+  "click>=8.0",
+  "rich>=13.0",
+]
+
+[project.optional-dependencies]
+psutil = ["psutil>=5.9"]
+
+[project.scripts]
+sinister-diagnose = "sinister_diagnose.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["sinister_diagnose*"]
