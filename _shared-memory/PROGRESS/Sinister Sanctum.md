@@ -4,6 +4,70 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-21 11:00 — shipped: Forge REST/SSE bridge + Claw Forge tab + Claw Settings tab
+
+Sinister Claw PH3 + PH8 land. Mobile app can now actually drive the fleet over Tailscale.
+
+**Forge bridge** (`projects/sinister-forge/source/forge/bridge/`):
+- `registry.py` — threaded `subprocess.Popen` registry with ring buffer + per-agent SSE subscriber list. Stdout pump runs in a daemon thread, fans each line out to the buffer AND every live subscriber queue. Replays the ring on subscribe so late tails still see context.
+- `server.py` — Flask app on `:5078` with 9 endpoints. Auth via `Authorization: Bearer <token>` OR `?token=<token>` (the query form is needed for EventSource which can't set headers). `/api/health` is intentionally open so the operator can poll the bridge unauthenticated.
+- Auth token auto-generates at first boot, persists at `_shared-memory/forge-bridge-token.txt` (gitignored).
+- Smoke-tested via Flask `test_client()`: 401 without auth, 200 with auth, all 9 routes register, projects.json round-trip returns 12 entries (Forge + Mind + Term + Claw re-added to the canonical list after sibling-rebase reverted them; bumped version to 3).
+
+**Claw screens**:
+- `app/screens/ForgeScreen.tsx` — list + spawn + tail + kill UI. Polls `/api/forge/agents` every 4s; spawn modal has project chip-picker (uses `projectAccents` per-tenant color), objective + host + focus inputs. Tail modal opens an SSE EventSource via `openAgentStream()`, auto-scrolls.
+- `app/screens/SettingsScreen.tsx` — Tailscale base URL + bridge token inputs (secure-store backed). "TEST" button hits `/api/health` unauthenticated.
+- Both wired into the bottom tab nav (replaced PlaceholderScreen).
+
+**Polyfills + packaging**:
+- `react-native-event-source` added to package.json so RN gets a working `EventSource`.
+- `api/forge.ts` side-effect installs the polyfill on `globalThis`.
+- `pyproject.toml`: added `flask>=3.0` dep + `sinister-forge-bridge` script entry-point.
+
+**State of the fleet**:
+- Operator runs `python -m forge.bridge` from `projects/sinister-forge/source/` — bridge prints the token, binds 0.0.0.0:5078, ready for Tailscale.
+- Operator copies token into Claw Settings tab.
+- TEST button confirms `/api/health`.
+- Every other Claw tab is now live (Sanctum / Forge / Mind via WebView at :5079 / Settings).
+
+**Still placeholder**: Panel mirror (PH5), Projects detail (PH6), Inbox (PH7) — those are sibling-API consumers, not new bridge work.
+
+---
+
+## 2026-05-21 09:19 — shipped: CO-AUDIT pass on panel + Forge R10/Modes-section + coordination with running master
+
+Two-phase turn. Phase 1 = co-audit on sinister-panel primary (focus: resume per operator). Phase 2 = Forge assist (operator: "help the agent get this shit done"). Lane discipline preserved throughout — zero edits to running master's source tree at `projects/sinister-forge/source/forge/` after spotting the active build.
+
+**Phase 1 — CO-AUDIT delivered (4 files):**
+- `_shared-memory/plans/Sanctum-coaudit-2026-05-21T0846Z/coaudit-report.md` — 5-section report: 7 drift findings (D1 = 2 brain entries claimed but missing on disk; D2 = fake commit hash `bhm7gevgp` in panel Wave 7 narrative; D5/D6 = `MASTER-PLAN.md` + `AGENT-ROSTER.md` don't exist; D7 = browsers tab + Image #4 KPI strip open operator-questions).
+- `_shared-memory/inbox/panel/2026-05-21T0846Z-coaudit-by-sanctum.json` — `[COAUDIT]` tag for panel pickup.
+- `_shared-memory/knowledge/sanctum-coaudit-pattern.md` — new brain entry codifying the 5-phase methodology (this PROGRESS entry note: the `_INDEX.md` row was added then reverted by sibling churn — the brain entry file itself remains; index re-add is operator-gated).
+- Heartbeat update `_shared-memory/heartbeats/sanctum.json` (mtime 2026-05-21T08:46Z).
+
+**Phase 2 — Forge assist (2 files shipped + coordination broadcast):**
+- `_shared-memory/plans/Sanctum-forge-next-rows-2026-05-21T0912Z/forward-plan.md` — formal R4/R8/R9/R10 forward plan with EXACT-INSTRUCTIONS + COMMIT-MESSAGE + ROI per row.
+- `_shared-memory/inbox/sanctum/2026-05-21T0912Z-forge-next-rows-delegate-by-co-audit.json` — `[DELEGATE]` tag for the running master.
+- `automations/agent-host-routing.md` — R10 ship (CONTRACT 7's missing dep): 12 task-class rows + 9 project-lane rows + AUP-RESPECT carve-out + extend stanza. Forge row pins claude-opus-4-7 as primary.
+- `automations/session-contracts.md` — added `## Modes (BuiltinPhrases keys)` section (R4 partial) with `forge` entry alongside every existing mode.
+- `_shared-memory/cross-agent/2026-05-21T0919Z-sanctum-coaudit-to-sanctum-master-discovery.md` — `[DISCOVERY]` broadcast handoff so the running master can pick up or replace these assets without redoing them.
+
+**R4 bailed mid-edit:** drafted the `BuiltinPhrases.forge` phrase + `'9'='forge'` modeMap extension, but `start-sinister-session.ps1` got `File has been modified since read` errors twice — running master is editing the same file. Released R4 to them; phrase draft is preserved in the cross-agent DISCOVERY for their copy/paste.
+
+**R8 + R9 surfaced as operator-gate:** Rust toolchain absent (no `cargo` / `rustc` in PATH, no `~/.cargo/` or `~/.rustup/` on disk). Cargo install is canonical-11 reversibility (system-wide change). One-liner unblock: `winget install Rustlang.Rustup --silent` then `cargo build --release` inside `mermaid-rs-renderer-0.2.2\` + `agentgrep-0.1.1\`.
+
+**Running master's parallel work observed:** uncommitted tree shows full Forge Python TUI under construction at `projects/sinister-forge/source/forge/` — `app.py`, `panes/`, `spawn/{claude,codex}.py`, `resume/point.py`, `theme.py`, `art.py`, `keybinds.py`, `projects.py`. Recent commits `7b2dd35` + `7512d07` landed the scaffold + Sanctum-audit findings + RKOJ-ELENO authorship doctrine. Their build is far past my R4-R10 forward plan — they're building the actual jcode-equivalent TUI tool.
+
+**Coordination contract honored:** stopped editing `start-sinister-session.ps1` after second collision; stopped attempting any writes under `projects/sinister-forge/source/`; broadcast my deliverables via cross-agent `[DISCOVERY]` instead of doubling. No double-work, no master-lane clobbering.
+
+**Authorship doctrine honored:** every new file from this turn (agent-host-routing.md, coaudit-report.md, forward-plan.md, DELEGATE tag, DISCOVERY tag, brain entry sanctum-coaudit-pattern.md) carries `Author: RKOJ-ELENO :: 2026-05-21` per the 2026-05-21 hard-canonical directive.
+
+**Next moves for operator visibility:**
+- Master picks up R4 (BuiltinPhrases.forge + modeMap extension) — phrase draft already in cross-agent DISCOVERY for copy-paste.
+- Cargo install needed before R8/R9 can ship.
+- The `_INDEX.md` `sanctum-coaudit-pattern` row was reverted by sibling churn — operator can decide whether to re-add or leave the .md as orphan-but-grep-able.
+
+---
+
 ## 2026-05-20 23:55 — shipped: auto-mode dogfood walk (M1 + M5 + M6) + multi-agent contention doctrine
 
 Continued the /loop after the auto-mode ship to demonstrate the contract:

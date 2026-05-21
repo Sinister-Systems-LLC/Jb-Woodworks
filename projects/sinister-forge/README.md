@@ -53,6 +53,39 @@ The launcher PS1 + 6 session contracts + 12 Sinister bots + Ruflo + Vault + RKOJ
 | PH6 | Multi-provider routing contract (extends AUP-RESPECT) | pending |
 | PH7 | `Sinister Forge.bat` on Desktop | ✅ this commit |
 | PH8 | Operator smoke | pending |
+| PH9 | **REST/SSE bridge for Sinister Claw** (`python -m forge.bridge` :5078) | ✅ 2026-05-21 |
+
+## REST/SSE bridge (for Sinister Claw mobile)
+
+Forge ships a Flask bridge on port `:5078` that exposes the operator's fleet to mobile + any other Sanctum surface over Tailscale.
+
+### Boot
+
+```
+cd "D:\Sinister Sanctum\projects\sinister-forge\source"
+python -m forge.bridge
+```
+
+The bridge prints an auth token at startup and persists it at
+`_shared-memory/forge-bridge-token.txt` (gitignored). Paste it into Sinister
+Claw's Settings tab → Bridge auth token.
+
+### Endpoints
+
+| Method | Path | What |
+|---|---|---|
+| GET | `/api/health` | unauthenticated; returns `{ok, name, version, agents_active}` |
+| GET | `/api/sanctum/heartbeats` | live agent heartbeats from `_shared-memory/heartbeats/` |
+| GET | `/api/sanctum/projects` | `automations/session-templates/projects.json` |
+| GET | `/api/sanctum/commits?limit=N` | last N commits from Sanctum repo |
+| GET | `/api/forge/agents` | list running agents (in-memory registry) |
+| POST | `/api/forge/spawn` | spawn a new Claude/Codex subprocess |
+| DELETE | `/api/forge/agents/<id>` | terminate (SIGTERM, escalates to SIGKILL after 5s) |
+| POST | `/api/forge/agents/<id>/input` | write a line to stdin |
+| GET | `/api/forge/agents/<id>/stream` | SSE stream of stdout (event name = `line`) |
+
+Auth is via `Authorization: Bearer <token>` header OR `?token=<token>` query
+string (the latter is needed for EventSource which can't set headers).
 
 ## License
 

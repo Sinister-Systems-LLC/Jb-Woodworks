@@ -14,6 +14,8 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { colors } from "./theme";
 import { SanctumScreen } from "./screens/SanctumScreen";
 import { MindScreen } from "./screens/MindScreen";
+import { ForgeScreen } from "./screens/ForgeScreen";
+import { SettingsScreen } from "./screens/SettingsScreen";
 import { PlaceholderScreen } from "./screens/PlaceholderScreen";
 
 const Tab = createBottomTabNavigator();
@@ -50,15 +52,7 @@ export default function App() {
           }}
         >
           <Tab.Screen name="Sanctum" component={SanctumScreen} />
-          <Tab.Screen name="Forge">
-            {() => (
-              <PlaceholderScreen
-                title="Forge"
-                description="Live multi-agent harness. List + spawn + tail + kill Claude/Codex sessions from your phone. Needs Forge REST/SSE bridge on operator's PC (port :5078)."
-                phase="PH3 (Forge bridge)"
-              />
-            )}
-          </Tab.Screen>
+          <Tab.Screen name="Forge" component={ForgeScreen} />
           <Tab.Screen name="Mind" component={MindScreen} />
           <Tab.Screen name="Panel">
             {() => (
@@ -87,15 +81,7 @@ export default function App() {
               />
             )}
           </Tab.Screen>
-          <Tab.Screen name="Settings">
-            {() => (
-              <PlaceholderScreen
-                title="Settings"
-                description="Tailscale base URL + auth token (stored via expo-secure-store) + Face ID unlock + theme."
-                phase="PH8 (Settings + auth)"
-              />
-            )}
-          </Tab.Screen>
+          <Tab.Screen name="Settings" component={SettingsScreen} />
         </Tab.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

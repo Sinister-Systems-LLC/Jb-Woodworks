@@ -2,8 +2,17 @@
 // Author: RKOJ-ELENO :: 2026-05-21
 // License: AGPL-3.0-or-later
 //
-// API client for Sinister Forge over Tailscale. Forge needs a REST/SSE
-// bridge on operator's PC (Forge PH3 in plan).
+// API client for Sinister Forge over Tailscale.
+// Backend: `python -m forge.bridge` (projects/sinister-forge/source/forge/bridge/).
+
+// react-native-event-source polyfills EventSource for RN (which lacks it natively).
+// Side-effect import: registers a global so the `new EventSource(...)` calls below work.
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore - no types ship with the polyfill
+import RNEventSource from "react-native-event-source";
+if (typeof (globalThis as { EventSource?: unknown }).EventSource === "undefined") {
+  (globalThis as { EventSource: unknown }).EventSource = RNEventSource;
+}
 
 import { getBaseUrl, getAuthToken } from "./sanctum";
 

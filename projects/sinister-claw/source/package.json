@@ -28,6 +28,7 @@
     "react-native-screens": "~3.31.0",
     "react-native-svg": "15.2.0",
     "react-native-webview": "13.8.0",
+    "react-native-event-source": "^1.1.0",
     "@react-navigation/native": "^6.1.0",
     "@react-navigation/bottom-tabs": "^6.5.0"
   },

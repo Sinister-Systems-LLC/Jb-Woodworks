@@ -200,3 +200,6 @@ backups/
 !projects/sinister-claw/source/
 !projects/sinister-claw/source/**
 projects/sinister-claw/source/node_modules/
+
+# Forge bridge auth token (auto-generated, machine-local)
+_shared-memory/forge-bridge-token.txt

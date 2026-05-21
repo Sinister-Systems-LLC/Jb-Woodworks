@@ -17,6 +17,7 @@ dependencies = [
     "rich>=13.0",
     "pyyaml>=6.0",
     "watchdog>=4.0",
+    "flask>=3.0",
 ]
 
 [project.optional-dependencies]
@@ -30,6 +31,7 @@ dev = [
 [project.scripts]
 forge = "forge.__main__:run"
 sinister-forge = "forge.__main__:run"
+sinister-forge-bridge = "forge.bridge.server:run"
 
 [tool.setuptools.packages.find]
 where = ["."]
