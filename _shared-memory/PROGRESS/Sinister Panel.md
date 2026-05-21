@@ -4,6 +4,23 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-21T09:55Z — 18-wave sweep CLOSED — Command Center restructure + Flows lifecycle + 19 security findings shipped
+
+Single session, 18 production waves + 1 hotfix, all LIVE on `https://snap.sinijkr.com`. Operator's sustained directive: *"keep working and stop stopping"*. HEAD chain: `b1b9942` baseline → `7c030d8` → `5c8f5d1` → `adfe9b4` → `4fae7db` → `c390a17` (hotfix) → `cdcec85` → `ac93b00` → `b57c952` → `00d3911` → `89f9674` → `c8af35c` → `7342d98` → `12c2601` → `03bb8ef` → `8ec152b` → `ae423f9` → (Wave 18 final).
+
+**End-to-end Flows lifecycle now wired:** operator creates flow group → builds selector via inline picker (4 kinds) → toggles auto-run ON → FlowGroupRunner polls 30s + matches new Accounts → internal-worker-authenticated loopback fires workflow chain → AccountFlowState tracks per-account dispatchCount + nextFireAt + lastError → re-fires on 24h cooldown until account dies (banned/sold/exported) → operator watches per-account history in Fire history panel (10s refresh).
+
+**Security closure:** 19 of ~80 ship-priority findings shipped this session (10 critical/high + 5 medium-severity + 4 group audit-log gaps). Brain entry `panel-command-center-18-wave-sweep-2026-05-21.md` captures the full wave-by-wave table + lifecycle diagram + audit closure list.
+
+**Remaining genuine carry-forward** (sibling-lane or post-rotation-window):
+- Browsers tab polish — already structurally matches Fleet (PillTabs + KPI strip + rail+pane); needs operator clarification on what specifically differs visually.
+- Drop-plaintext-authToken sweep — wait ~30 days for all phones to rotate post-Wave-17, then drop the plaintext column.
+- kernel-apk ASK-1/2/3 reply — sibling lane, not panel work.
+
+**Composes with** brain entries: `panel-command-center-18-wave-sweep-2026-05-21` (this session) · `panel-master-self-execute-ssh-deploy` (canonical-18 used 18×) · `panel-10-agent-security-audit-2026-05-21` (the audit this sweep closes out) · `panel-artifact-registry-auto-update-spec` (R3+R4 from earlier session that this builds on) · `keep-working-until-done` (canonical-19).
+
+---
+
 ## 2026-05-20T19:45Z — RESUME (cont.): Workflow SSE + Fleet bulk Kill-Switch drill-down modal
 
 Operator: *"keep working"* after the R1-R12 forward-plan walk. Auto-mode. Two additional UI features shipped + 1 deferred against the "next" menu from the 17:35Z PROGRESS entry:
