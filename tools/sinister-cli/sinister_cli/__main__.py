@@ -42,6 +42,11 @@ SUBCOMMAND_MAP: dict[str, tuple[str, str, str, str]] = {
         "sinister_usage.__main__", "main",
         "pip install -e \"D:/Sinister Sanctum/tools/sinister-usage\"",
     ),
+    "model": (
+        "Per-provider model registry + active-model state (jcode-model parity)",
+        "sinister_model.__main__", "main",
+        "pip install -e \"D:/Sinister Sanctum/tools/sinister-model\"",
+    ),
     "freeze": (
         "Joe @ Ferrari of Winter Park lane (future project)",
         "sinister_freeze.__main__", "main",

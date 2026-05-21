@@ -1,0 +1,31 @@
+# Sinister Sanctum :: sinister-model
+# Author: RKOJ-ELENO :: 2026-05-21
+# License: AGPL-3.0-or-later
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sinister-model"
+version = "0.1.0"
+description = "Sinister Sanctum :: jcode-model parity. Per-provider model registry + active-model state. 11-provider catalog covering anthropic, openai, google, xai, mistral, groq, deepseek, openrouter, cohere, perplexity, together. Reads currently-logged-in provider from sinister-login. Persists selection to ~/.config/sinister/model.json."
+authors = [{ name = "RKOJ-ELENO" }]
+license = { text = "AGPL-3.0-or-later" }
+requires-python = ">=3.9"
+readme = "README.md"
+
+dependencies = [
+  "click>=8.0",
+  "rich>=13.0",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=7.0"]
+
+[project.scripts]
+sinister-model = "sinister_model.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["sinister_model*"]

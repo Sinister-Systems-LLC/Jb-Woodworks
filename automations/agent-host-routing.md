@@ -168,3 +168,67 @@ When `sinister-usage` ships `--remote` (v0.2.0), the dispatcher gains real quota
 - Surface a `[QUOTA-LOW]` chip in Forge picker Q4 and Term toolbar
 
 Until v0.2.0 lands, dispatchers should call `sinister-usage check <slug>` as a hint only — `endpoint_known=True` means "operator will be able to see real usage in console / dashboard", not "we currently know how much budget remains".
+
+## Per-provider model registry (sinister-model — ✅ shipped 2026-05-21)
+
+> **Operator directive 2026-05-21:** ship `sinister model` covering the 11 most-used model-providers to give the fleet a canonical "which models exist" answer + active-model state.
+
+`sinister model` is **shipped** as `tools/sinister-model/` v0.1.0. Provides the per-provider catalog the routing table above pulls model_ids from. State persisted to `~/.config/sinister/model.json`. Cross-refs `sinister-login` for "currently logged in" detection (alias-aware: `claude` -> `anthropic`, `gemini` -> `google`).
+
+### Model registry UX (v0.1.0 shipped commands)
+
+```bash
+sinister model list                       # models for currently-logged-in provider
+sinister model list anthropic             # models for a specific provider
+sinister model list openai --json         # JSON for programmatic consumption
+sinister model providers                  # all 11 providers + model counts
+sinister model current                    # show active model (or 'no model set')
+sinister model set claude-opus-4-7[1m]    # persist active selection
+sinister model set custom-foo --force     # allow custom model_id not in registry
+sinister model info gpt-5                 # model details (context, capabilities, pricing hint)
+sinister model clear                      # remove the persisted selection
+```
+
+Forge surface: `/model ...` slash command dispatches into `sinister_model.cli` (commit forthcoming). Same subcommands.
+
+### Model coverage (38 models across 11 providers)
+
+| Provider slug | Models | Notes |
+|---|---|---|
+| `anthropic` | 6 — opus-4-7 / opus-4-7[1m] / sonnet-4-6 / haiku-4-5 + 2 legacy 3.5 | Sanctum fleet default; alias of `sinister-login` slug `claude` |
+| `openai` | 7 — gpt-5 / gpt-5-mini / gpt-4o / gpt-4o-mini / o1 / o1-mini / o3 | Peer-review + reasoning fallback |
+| `google` | 3 — gemini-2.0-flash-exp / 1.5-pro / 1.5-flash | Alias of `sinister-login` slug `gemini` |
+| `xai` | 3 — grok-2 / grok-2-mini / grok-beta | Not yet wired into routing table |
+| `mistral` | 3 — mistral-large / mistral-small / codestral | codestral for narrow code tasks |
+| `groq` | 3 — llama-3.3-70b-versatile / mixtral-8x7b / deepseek-r1-distill-llama-70b | Fast LPU inference path |
+| `deepseek` | 3 — deepseek-chat / deepseek-reasoner / deepseek-coder | Reasoner alt to o1 / o3 |
+| `openrouter` | 4 — namespaced anthropic/claude-opus-4-7, openai/gpt-5, google/gemini-2.0-flash-exp, meta-llama/llama-3.3-70b-instruct | Catch-all router endpoint |
+| `cohere` | 3 — command-r-plus / command-r / command-light | Enterprise tooling |
+| `perplexity` | 2 — sonar-large + sonar-small (both 128k online) | Web-search-augmented |
+| `together` | 1 — meta-llama/Llama-3.3-70B-Instruct-Turbo | Hosted open-weight |
+
+### Composition with sinister-login + sinister-usage
+
+```python
+# Pseudocode for "pick model for this task" once sinister-model lands
+from sinister_login import resolve_active
+from sinister_model import list_models, get_current
+
+def pick_model_for_task(task_class):
+    state = get_current()
+    if state and state.get("model_id"):
+        return state["model_id"]                       # explicit operator pick wins
+    active_provider = resolve_active()                  # falls through preference order
+    if not active_provider:
+        return None
+    models = list_models(active_provider["slug"])       # alias-aware
+    # Match task_class against agent-host-routing.md primary chain (see top table)
+    return models[0].model_id if models else None
+```
+
+### v0.2.0 planned additions
+
+- `sinister model refresh` — pull provider-shipped catalogs at runtime (Anthropic `/v1/models`, OpenAI `/v1/models`, Google `models.list`, etc) behind `--allow-network`
+- `sinister model recommend <task-class>` — return the agent-host-routing.md primary for a task class
+- `sinister model cost <model-id>` — return per-token pricing (currently a freeform `pricing_hint`)
+- Forge picker Q4 binds the `set` command so the operator can swap models without leaving the TUI

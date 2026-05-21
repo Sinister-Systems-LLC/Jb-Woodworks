@@ -115,7 +115,7 @@ def _cmd_version(args, pane, app) -> str:
     except Exception:
         forge_v = "?"
     sanctum_versions = []
-    for pkg in ("sinister_cli", "sinister_login", "sinister_usage",
+    for pkg in ("sinister_cli", "sinister_login", "sinister_usage", "sinister_model",
                 "sinister_swarm", "forge_memory_bridge", "memory_graph_render"):
         try:
             import importlib
@@ -520,21 +520,37 @@ def _cmd_usage(args, pane, app) -> str:
 
 
 def _cmd_model(args, pane, app) -> str:
-    """jcode /model — list/switch model. We list per-provider via sinister-login."""
+    """jcode /model — dispatch to sinister-model CLI.
+
+    Subcommands (delegated to sinister_model.cli):
+        /model               -> list models for currently-logged-in provider
+        /model list [prov]   -> list models for a provider
+        /model current       -> show active model
+        /model set <id>      -> set active model
+        /model info <id>     -> show model details
+        /model providers     -> list providers + counts
+        /model clear         -> clear active selection
+    """
+    try:
+        from sinister_model.cli import main as model_main
+    except Exception as e:
+        return f"[red]sinister-model unavailable: {e}[/]\n  install: pip install -e \"D:/Sinister Sanctum/tools/sinister-model\""
+    # Default action: list models for currently logged-in provider.
     if not args:
+        body = _capture_cli(model_main, ["list"])
+    else:
+        body = _capture_cli(model_main, args)
+    # Mirror the selection into Forge session-state for downstream awareness.
+    if args and args[0] == "set" and len(args) >= 2:
+        set_state("default_model", args[1])
         try:
-            from sinister_login import status_all  # type: ignore
-            configured = [r for r in status_all() if r.get("configured")]
+            from sinister_model.registry import find_provider_for_model  # type: ignore
+            prov = find_provider_for_model(args[1])
+            if prov:
+                set_state("default_provider", prov)
         except Exception:
-            configured = []
-        if not configured:
-            return "[yellow]no provider configured. /login <provider>[/]"
-        return ("[bold]models per provider[/]\n"
-                + "\n".join(f"  · {r['slug']:<22} {r['display']}" for r in configured)
-                + "\n  /model <slug> to switch (sets default provider)")
-    target = args[0].lower()
-    set_state("default_provider", target)
-    return f"  default provider → {target}"
+            pass
+    return body
 
 
 def _cmd_provider(args, pane, app) -> str:
@@ -767,7 +783,7 @@ SLASH_COMMANDS: dict[str, dict[str, Any]] = {
     "usage":      _entry(_cmd_usage,     "token-quota / billing endpoint registry",   "auth"),
 
     # MODEL ROUTING
-    "model":      _entry(_cmd_model,     "list models / switch default provider",      "agent"),
+    "model":      _entry(_cmd_model,     "list | current | set <id> | info <id> | providers | clear  (jcode-model parity)", "agent"),
     "effort":     _entry(_cmd_effort,    "none|low|medium|high|xhigh",                "agent"),
     "fast":       _entry(_cmd_fast,      "on|off|status|default",                     "agent"),
     "transport":  _entry(_stub("transport", "set transport mode auto|https|websocket",
