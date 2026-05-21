@@ -4,6 +4,67 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-21 16:02 — SHIPPED: RKOJ.exe v1.0.1 to Desktop (52.3 MB) — Forge TUI is now the default + jcode chrome (toolbar + statusbar)
+
+**Operator final iteration (images 24-27)**: "still no ui when i launch exe with tabs and aeverything i asked you to do" → defaulted main() to ForgeApp().run() so click → full TUI.
+
+**v1.0.0 → v1.0.1 (this hour)**:
+- `81057a6` — Forge TUI is now the default; `--shell` falls back to v0.x `>` prompt; fallback path on TUI import/run crash
+- `3d76da7` — toolbar (top) + statusbar (bottom) added to ForgeApp `_swap_to_main()`
+- `cfcb0e6` — v1.0.1 version bump (bake chrome into EXE)
+
+**Layout when operator clicks RKOJ.exe v1.0.1**:
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│ [◈ EVE] [v1.0.1] [branch] [head] [model] [/help]      <-- toolbar  │
+├─────────────────────────────────────────────────────────────────────┤
+│ Sidebar │   TabbedMultiPane (agent panes / niri scroll)  │ Memory  │
+│ Agents  │                                                │ (Ctrl+M)│
+│ ADB     │                                                │         │
+│   ⋮     │                                                │         │
+├─────────────────────────────────────────────────────────────────────┤
+│ agents: N live · inbox: N · memory: N · tokens X/200K  <-- status  │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+**Integration test result (commit `5e5a875`)**: **GREEN** — 54/55 items pass, 187 pytest pass across 6 suites (sinister-login 21, sinister-usage 31, sinister-swarm 7, sinister-model 72, sanctum-backup 47, forge-memory-bridge 9). No regressions.
+
+**projects/rkoj/ umbrella** (`9d11263`): MANIFEST.json with 18 verified components — forge, term, workstation, skills, bots, 11 sinister-* tools, build pipeline. README + INTEGRATION + CHANGELOG. Operator's "all one project" directive shipped.
+
+**Dated backup** (`D:/sinister-sanctum-backup-2026-05-21/`): 4.4 GB, robocopy /E with junction skip + cache exclude. 1020s elapsed. Exit 9 (some files had errors, most copied) — manifest at root of backup dir.
+
+**Sub-agent jcode-parity wave (16 agents)**:
+| Lane | Agent | Commit |
+|---|---|---|
+| Sidebar wire | A | `a3c1e6c` |
+| SDK direct path | B | `ad58ef5` |
+| jcode research | C | `03f26ef` |
+| sinister-model 72/72 | D | `b399cd5` |
+| anthropic_direct v0.7.0 | E | `5e7f5c8` |
+| SkillRegistry | F | `51515ff` |
+| BM25 + docs | G | `599d1a1` + `2519f57` |
+| dedupe sweep | I | `789ab3c` |
+| GitHub audit | J | `c5a2e37` |
+| sanctum-backup 47/47 | K | `178fbcf` |
+| /start picker | P | `2c80b62` |
+| /help overlay + 40 stubs | Q | `7e6ed4e` |
+| jcode-shim + fork plan | R | `8866439` + `c6397b6` |
+| Real session impls (7 cmds) | S | `957f1d7` |
+| Launcher bats | T | `3687f30` |
+| /reload /restart /rebuild /debug-visual | U | `0a24e14` |
+| /effort /fast /transport /alignment /git /changelog | V | `d9e8561` |
+| RKOJ-OPERATOR-GUIDE.md | W | `181d3a9` |
+| projects/rkoj/ umbrella | X | `9d11263` |
+| Integration tests GREEN | Y | `5e5a875` |
+| /auth /account /subscription | AA | `2286911` |
+| Toolbar + statusbar | BB | `3d76da7` |
+
+24+ commits in this session on `agent/sinister-sanctum/cli-dispatcher-2026-05-21`.
+
+**Still in flight**: Z (/workspace /splitview /transfer etc).
+
+---
+
 ## 2026-05-21 15:43 — SHIPPED: RKOJ.exe v0.8.0 to Desktop (52 MB) — jcode-FORM parity locked in
 
 **v0.8.0 features (on top of v0.7.0)**:
