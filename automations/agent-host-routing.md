@@ -62,3 +62,49 @@ In v2+, the routing logic moves into Ruflo `agentdb_semantic-route` — at which
 - **Ollama model picks:** specific model names (`llama3.3:70b`, `qwen2.5:14b`, `nomic-embed-text`) are placeholders pending operator-confirmed local fleet. Update once `ollama list` is run.
 - **Codex depth selection:** codex-companion has 3 depths (gpt-4o-mini / gpt-4o / o1-mini). The table picks per task; a routing-aware depth-selector could be added.
 - **Cost budgets per task class:** v1 has no $/task budget; v2+ should add a `max_cost_usd` field to gate runaway sweeps.
+
+## Multi-provider login (jcode-login parity — Forge PH17 dependency)
+
+> **Operator directive 2026-05-21 (verbatim):** *"our commands will be sinister then the command"* + jcode `jcode login --provider <X>` screenshot.
+
+`sinister login --provider <X>` (TODO `tools/sinister-login/` v0.2.0) manages per-provider tokens. Tokens land in **Sinister Vault** at `vault://providers/<provider>` — never plaintext env vars. Each row pins the provider's lane integration + AUP-RESPECT posture.
+
+| Provider | `sinister login --provider` | Auth flow | Vault path | AUP-RESPECT notes |
+|---|---|---|---|---|
+| Claude (Anthropic) | `claude` | OAuth (Claude Code CLI) OR `ANTHROPIC_API_KEY` | `vault://providers/claude/token` | Primary fleet provider; canonical for Sanctum/Forge/Term/Freeze |
+| OpenAI (ChatGPT / GPT-4o / Codex) | `openai` | API key | `vault://providers/openai/key` | Peer-review + reasoning second-opinion via `tools/codex-companion/` |
+| Google Gemini | `gemini` | OAuth OR API key | `vault://providers/gemini/key` | Open question above — not yet wired; mermaid alt-renderer candidate |
+| GitHub Copilot | `copilot` | GitHub OAuth (existing `gh auth`) | `vault://providers/copilot/token` | IDE-side completions only; not for autonomous sessions |
+| Azure OpenAI | `azure` | Azure AD + endpoint | `vault://providers/azure/{endpoint,key}` | Enterprise / dealership-IT path (post-Freeze PH14 multi-tenant) |
+| Alibaba Coding Plan | `alibaba-coding-plan` | API key + endpoint | `vault://providers/alibaba/key` | Region-specific; deferred until international scope opens |
+| Fireworks | `fireworks` | API key | `vault://providers/fireworks/key` | Open-weight hosted (Llama / Mixtral / etc); fallback for Ollama-down |
+| MiniMax | `minimax` | API key | `vault://providers/minimax/key` | Region-specific; deferred |
+| LM Studio (local) | `lmstudio` | local-only (no key needed by default) | `vault://providers/lmstudio/endpoint` | Operator's local LM server; `--base-url http://127.0.0.1:1234/v1` |
+| Ollama (local) | `ollama` | local-only | `vault://providers/ollama/endpoint` | Already in fleet for embeddings + small classifiers |
+| OpenAI-compatible (custom) | `openai-compatible` | base URL + optional key | `vault://providers/openai-compatible/{base_url,key?}` | Catch-all for vLLM / TGI / LiteLLM / any OpenAI-shaped server |
+
+### Provider × task-class compatibility (preferred fallback chain)
+
+When routing falls through the table above, the order within each class is:
+
+1. **Claude** family (primary for most classes)
+2. **OpenAI** family (peer-review + reasoning fallback)
+3. **Local** (Ollama / LM Studio) for embedding + classification + privacy-sensitive
+4. **Hosted-open-weight** (Fireworks / openai-compatible) when local is down
+5. **Regional** (Gemini / Azure / Alibaba / MiniMax) only when explicitly picked
+
+### Login UX
+
+```
+sinister login --provider claude            # opens OAuth or prompts for key
+sinister login --provider ollama            # confirms local endpoint reachable
+sinister login --provider openai-compatible # prompts for base URL + optional key
+sinister login --list                       # show all configured providers + token age
+sinister login --logout --provider <X>      # revoke from vault
+```
+
+### Operator-action queue dependencies
+
+- `ANTHROPIC_API_KEY` env var still listed in OPERATOR-ACTION-QUEUE.md — `sinister login --provider claude --use-env` reads from env when present, else prompts
+- `OPENAI_API_KEY` env var — same pattern for `--provider openai`
+- Vault MCP must be loaded for Vault-backed storage; falls back to `~/.sinister-login/` plaintext (with permission 0600) when Vault MCP unavailable

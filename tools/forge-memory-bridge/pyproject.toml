@@ -1,0 +1,33 @@
+# Sinister Sanctum :: forge-memory-bridge
+# Author: RKOJ-ELENO :: 2026-05-21
+# License: AGPL-3.0-or-later
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "forge-memory-bridge"
+version = "0.1.1"
+description = "Sinister Sanctum :: disk-first memory store bridging Ruflo agentdb_* into a Python API any agent (Forge, Term, Panel, RKOJ, APK) can import without MCP plumbing. jcode-memory-feature parity."
+authors = [{ name = "RKOJ-ELENO" }]
+license = { text = "AGPL-3.0-or-later" }
+requires-python = ">=3.9"
+readme = "README.md"
+
+dependencies = [
+  # no required deps — disk-first keyword search uses only stdlib
+]
+
+[project.optional-dependencies]
+semantic = [
+  # optional: for local semantic recall without MCP
+  "scikit-learn>=1.3",
+]
+
+[project.scripts]
+forge-memory = "forge_memory_bridge.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["forge_memory_bridge*"]

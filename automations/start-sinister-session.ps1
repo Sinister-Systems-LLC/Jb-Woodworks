@@ -2083,7 +2083,9 @@ export SINISTER_ACCENT_COLOR='$AccentColor'
 export SINISTER_PROJECT_KEY='$($projRec.key)'
 export SINISTER_MODE='$Mode'
 
-clear
+# Portable clear: git-bash on Windows sometimes lacks coreutils 'clear' on PATH;
+# fall back to ANSI 'reset terminal' escape which every modern terminal honors.
+clear 2>/dev/null || printf '\033c'
 echo ''
 echo '  =============================================='
 echo '   SINISTER SANCTUM :: launching Claude Code'

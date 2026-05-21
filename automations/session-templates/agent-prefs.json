@@ -20,7 +20,27 @@
                         "kernel-apk":  {
                                            "agent_name":  "kernel-apk",
                                            "accent_color":  "purple"
-                                       }
+                                       },
+                        "sinister-panel":  {
+                                               "agent_name":  "sinister-panel",
+                                               "accent_color":  "purple"
+                                           },
+                        "__operator_private_letstext__":  {
+                                                              "agent_name":  "__operator_private_letstext__",
+                                                              "accent_color":  "purple"
+                                                          },
+                        "sinister-forge":  {
+                                               "agent_name":  "sinister-forge",
+                                               "accent_color":  "purple"
+                                           },
+                        "sinister-term":  {
+                                              "agent_name":  "sinister-term",
+                                              "accent_color":  "purple"
+                                          },
+                        "rkoj-workstation":  {
+                                                 "agent_name":  "rkoj-workstation",
+                                                 "accent_color":  "purple"
+                                             }
                     },
     "available_colors":  [
                              "purple",

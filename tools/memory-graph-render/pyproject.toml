@@ -1,0 +1,27 @@
+# Sinister Sanctum :: memory-graph-render
+# Author: RKOJ-ELENO :: 2026-05-21
+# License: AGPL-3.0-or-later
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "memory-graph-render"
+version = "0.1.0"
+description = "Sinister Sanctum :: render Ruflo agentdb / forge-memory graphs to PNG via mermaid-rs-renderer (Rust) / mmdc (Node) / inline SVG. jcode memory-graph-viz parity."
+authors = [{ name = "RKOJ-ELENO" }]
+license = { text = "AGPL-3.0-or-later" }
+requires-python = ">=3.9"
+readme = "README.md"
+
+dependencies = [
+  "forge-memory-bridge>=0.1.0",
+]
+
+[project.scripts]
+memory-graph-render = "memory_graph_render.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["memory_graph_render*"]

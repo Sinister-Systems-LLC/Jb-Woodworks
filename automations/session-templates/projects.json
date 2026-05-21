@@ -1,6 +1,6 @@
 {
-    "_comment": "Persistent project registry for Start-Sinister-Session. Operator-canonical 12-project order 2026-05-21. All emulator work consolidates in sinister-emulator/; the project-specific emulator entries (Snap / TikTok / Bumble) draw shared assets from there. Forge/Mind/Term/Claw are the new fleet-orchestration tier (RKOJ-ELENO 2026-05-21).",
-    "version": 3,
+    "_comment": "Persistent project registry for Start-Sinister-Session. Operator-canonical 2026-05-21. Forge + Term COMBINED per operator (verbatim): 'in sessions start combine sinister forge and sinister term. they should be the same thing'. Picker shows 'Sinister Forge + Term (workbench)' as option 9 (defaults to forge root); sinister-term entry preserved as standalone shell option for shell-only cold-starts. Mind and Claw stay separate. Freeze (project 13) is the first EXTERNAL-USER lane — Joe @ Ferrari of Winter Park (RKOJ-ELENO).",
+    "version": 5,
     "default": "sanctum",
     "projects": [
         {
@@ -77,12 +77,21 @@
         },
         {
             "key": "sinister-forge",
-            "display": "Sinister Forge",
-            "tag": "Multi-LLM coding-agent harness (Textual TUI + REST/SSE bridge :5078)",
+            "display": "Sinister Forge + Term (workbench)",
+            "tag": "COMBINED per operator 2026-05-21. Forge TUI (multi-pane Claude/Codex harness, bridge :5078) + Term shell (sterm / sinister term) - operator's developer workbench. Root defaults to forge; Term subsumed.",
             "root": "D:\\Sinister Sanctum\\projects\\sinister-forge\\source",
             "session_start": "",
             "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-forge\\CLAUDE.md",
-            "github": "Sinister-Systems-LLC/Sinister-Forge"
+            "github": "Sinister-Systems-LLC/Sinister-Forge",
+            "linked_lanes": [
+                {
+                    "key": "sinister-term",
+                    "root": "D:\\Sinister Sanctum\\projects\\sinister-term\\source",
+                    "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-term\\CLAUDE.md",
+                    "github": "Sinister-Systems-LLC/Sinister-Term",
+                    "_note": "Both repos remain on disk + GitHub. Combined picker entry spawns into forge root; Term tools accessible via 'sinister term <op>' subcommand once tools/sinister-cli/ installed."
+                }
+            ]
         },
         {
             "key": "sinister-mind",
@@ -95,12 +104,13 @@
         },
         {
             "key": "sinister-term",
-            "display": "Sinister Term",
-            "tag": "Sinister-themed Windows-native terminal (handterm-inspired)",
+            "display": "Sinister Term (standalone shell — combined w/ Forge in option 9)",
+            "tag": "Direct shell-only access. Operator 2026-05-21 combined Forge + Term in picker option 9; this entry remains for shell-only cold-starts when the full Forge TUI isn't wanted.",
             "root": "D:\\Sinister Sanctum\\projects\\sinister-term\\source",
             "session_start": "",
             "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-term\\CLAUDE.md",
-            "github": "Sinister-Systems-LLC/Sinister-Term"
+            "github": "Sinister-Systems-LLC/Sinister-Term",
+            "_subsumed_by": "sinister-forge"
         },
         {
             "key": "sinister-claw",
@@ -110,6 +120,15 @@
             "session_start": "",
             "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-claw\\CLAUDE.md",
             "github": "Sinister-Systems-LLC/Sinister-Claw"
+        },
+        {
+            "key": "sinister-freeze",
+            "display": "Sinister Freeze",
+            "tag": "Full-stack car-sales suite for Joe @ Ferrari of Winter Park (first EXTERNAL-USER lane)",
+            "root": "D:\\Sinister Sanctum\\projects\\sinister-freeze",
+            "session_start": "",
+            "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-freeze\\CLAUDE.md",
+            "github": "Sinister-Systems-LLC/Sinister-Freeze"
         }
     ]
 }
