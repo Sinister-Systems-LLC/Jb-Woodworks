@@ -33,9 +33,9 @@ SUBCOMMAND_MAP: dict[str, tuple[str, str, str, str]] = {
         "pip install -e \"D:/Sinister Sanctum/tools/memory-graph-render\"",
     ),
     "login": (
-        "Provider OAuth / API-key (planned v0.2.0)",
+        "11-provider auth wallet (jcode-login parity)",
         "sinister_login.__main__", "main",
-        "tools/sinister-login/ not built yet (v0.2.0). Operator owns provider wallets in _vault/.",
+        "pip install -e \"D:/Sinister Sanctum/tools/sinister-login\"",
     ),
     "freeze": (
         "Joe @ Ferrari of Winter Park lane (future project)",

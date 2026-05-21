@@ -1,0 +1,27 @@
+# Sinister Sanctum :: sinister-login
+# Author: RKOJ-ELENO :: 2026-05-21
+# License: AGPL-3.0-or-later
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sinister-login"
+version = "0.1.0"
+description = "Sinister Sanctum :: jcode-login parity. 11-provider auth wallet for the `sinister login --provider X` flow: claude, openai, gemini, copilot, azure, alibaba-coding-plan, fireworks, minimax, lmstudio, ollama, openai-compatible. Stdlib-only. Reads env-vars first; supports operator-opt-in reachability probes; never stores plaintext secrets without --allow-plaintext."
+authors = [{ name = "RKOJ-ELENO" }]
+license = { text = "AGPL-3.0-or-later" }
+requires-python = ">=3.9"
+readme = "README.md"
+
+dependencies = [
+  # no required deps - stdlib + filesystem only
+]
+
+[project.scripts]
+sinister-login = "sinister_login.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["sinister_login*"]

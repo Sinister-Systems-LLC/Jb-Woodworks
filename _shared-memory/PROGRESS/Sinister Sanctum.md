@@ -4,6 +4,63 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-21 13:50 — shipped: tools/sinister-login/ v0.1.0 — 11-provider auth wallet (jcode parity) + sinister-cli wiring + jcode-feature-matrix row
+
+Resume-mode pickup on `agent/sinister-sanctum/cli-dispatcher-2026-05-21` per operator working directive *"resume and continue work on jcode with the sinister forge agent i have open to make what jcode has like the exe on my desktop"*. Forge agent heartbeat is stale (11:22Z disk) but operator says they're open in another window — coordinated via on-disk lane discipline only, zero edits to Forge source tree.
+
+**Shipped (8 files, EVE identity, single commit incoming):**
+
+1. **`tools/sinister-login/`** v0.1.0 — Sanctum's jcode-login parity tool. 11-provider wallet matching jcode v0.12.3 `jcode login --provider X` matrix:
+   - claude (Anthropic) / openai / gemini (Google) / copilot (GitHub OAuth) / azure / alibaba-coding-plan (DashScope) / fireworks / minimax / lmstudio (local) / ollama (local) / openai-compatible (Groq/Together/OpenRouter catch-all).
+   - Stdlib-only. Env-var first. Refuses plaintext-on-disk by default — `--allow-plaintext` opt-in to write to `~/.sinister/login.env`.
+   - Opt-in TCP-handshake probe (`--probe`); read-only by definition (no HTTP body, no auth).
+   - CLI: `sinister-login providers/status/current/doctor/env/add/matrix`.
+   - Programmatic API: `list_providers`, `provider_status`, `status_all`, `resolve_active`, `doctor`, `print_env_for`, `add_to_envfile`.
+   - **5 files**: `pyproject.toml`, `README.md`, `sinister_login/{__init__,__main__,providers,api}.py`, `tests/test_login.py` (21 unittests, all green in 4ms).
+
+2. **`tools/sinister-cli/sinister_cli/__main__.py`** — flipped the `login` SUBCOMMAND_MAP row from "planned v0.2.0" → "shipped" + install hint pointed at the new tool. Verified: `sinister version` enumerates `sinister login         0.1.0 (sinister_login)`; `sinister login providers` dispatches correctly through the umbrella.
+
+3. **`_shared-memory/knowledge/jcode-feature-matrix.md`** — added row 1b for the 11-provider login wallet (status ✅ shipped, owner sanctum). Matrix now at 29 rows.
+
+**Why this work, now**: three signal sources all pointed here:
+- Operator screenshot 2026-05-21T11:50Z: *"our commands will be sinister then the command"* with jcode 11-provider login flow screenshot.
+- Forge cross-agent `2026-05-21T1200Z-forge-to-sanctum-jcode-swarm-and-sinister-cli-absorption.md` explicitly DELEGATED the provider wallet to Sanctum's `tools/` lane.
+- `sinister-cli` umbrella already had `login` listed as one of 2 unbuilt subcommands ("not built yet (v0.2.0)" hint) — this closes that gap.
+
+**Smoke-test results** (post-install):
+- `sinister-login providers` → 11-row table; with `OPENAI_API_KEY` ambient in env, openai/lmstudio/ollama show configured=yes; everything else missing.
+- `sinister-login current` → resolves `openai` (default preference puts claude first, but ANTHROPIC_API_KEY not set this session so it falls through).
+- `sinister-login doctor claude` → `[FAIL] missing: ANTHROPIC_API_KEY` (env-only diagnosis, no network touched).
+- `sinister-login env claude` → prints `# ANTHROPIC_API_KEY = <unset>` + `$env:ANTHROPIC_API_KEY = "<paste-your-key>"`.
+- `sinister help login` (umbrella) → shows updated install hint.
+- 21/21 unittests pass.
+
+**Lane discipline**: zero edits to `projects/sinister-forge/`, `projects/sinister-term/`, `automations/session-templates/agent-prefs.json` (sibling-touched), Kernel-APK PROGRESS/cross-agent, Panel PROGRESS/plans. The `.sanctum-staging-2026-05-21/review-*.py` drafts left in place from prior turns (out of scope; surface for operator). The deletion of `_shared-memory/resume-points/Sinister Sanctum/2026-05-21T083843Z.json` is from the canonical-path rename to `_shared-memory/resume-points/Sanctum/` — accepting the deletion + committing the new `Sanctum/2026-05-21T084103Z.json` resume-point that was already on disk.
+
+**Authorship**: every new file carries `# Author: RKOJ-ELENO :: 2026-05-21` per the operator hard-canonical. EVE persona observed throughout this PROGRESS entry.
+
+**Composition notes**:
+- `tools/sinister-login/` consumes `automations/agent-host-routing.md` for the task-class → provider mapping (NOT reproduced inside the tool — single source of truth).
+- Once `vault-MCP` lands in `~/.claude/.mcp.json` (operator-gated O-row), the `add_to_envfile()` API will route to vault instead of plaintext env-file. Tracked as future v0.2.0 work.
+- Forge can consume `sinister login --provider X` from inside its picker's Q4 "Agent Host" field — 11 options now available instead of just claude+codex.
+
+**5-check completion gate**:
+1. Explicit ask (operator: "resume jcode work with Forge agent / make sinister match the EXE") → addressed via 11-provider wallet ship.
+2. TaskList — 6/6 (heartbeat / scaffold / wire-into-umbrella / smoke / matrix-flip / commit-progress-resume).
+3. PROGRESS — this entry.
+4. MASTER-PLAN — no flags to flip (file doesn't exist).
+5. Next-slice surface — resume-point write follows this commit; pre_warm_reads will bound the next cold-start to PROGRESS top + jcode-feature-matrix + session-contracts.
+
+**Open / next-up for next master cycle** (no operator gates blocking):
+- `tools/sinister-serve/` (background daemon `jcode serve` parity).
+- `tools/sinister-replay/` (session replay incl. video export — heavier lift).
+- `tools/sinister-usage/` (token quota check; small).
+- Extend `automations/agent-host-routing.md` to enumerate the 11 providers' default routing.
+
+---
+
+
+
 ## 2026-05-21 12:38 — shipped: cli-dispatcher lane sweep — Sinister Freeze scaffold + forge-memory-bridge + memory-graph-render + 6 brain entries (commit cef4ead)
 
 Resume-mode pickup on `agent/sinister-sanctum/cli-dispatcher-2026-05-21`. Bootstrapped from PROGRESS top + session-contracts + git log because no Sanctum resume-point existed on disk at session start (the 10:50-claimed one never landed — likely sibling-rebase wipe).

@@ -12,11 +12,12 @@
 
 - ✅ **shipped** · 🚧 **in-flight** · 📋 **planned** · 🔄 **delegated**
 
-## The matrix (28 rows — expanded 2026-05-21T13:55Z with niri + mermaid-rs-renderer fork)
+## The matrix (29 rows — expanded 2026-05-21T13:50Z with sinister-login wallet shipped)
 
 | # | jcode capability | Our home | Status | Owner | Notes |
 |---|---|---|---|---|---|
 | 1 | Multi-LLM provider routing | `automations/agent-host-routing.md` + Forge `:host` cmd | ✅ doc / 📋 UI | sanctum + forge | doc commit `bce833f` |
+| 1b | `jcode login --provider X` (11 providers) | `tools/sinister-login/` v0.1.0 | ✅ shipped | sanctum | env-var-first wallet; 11 providers: claude/openai/gemini/copilot/azure/alibaba-coding-plan/fireworks/minimax/lmstudio/ollama/openai-compatible. Stdlib-only. Opt-in TCP probe. Refuses plaintext-on-disk by default. CLI: `sinister login providers/current/doctor/env/add/matrix`. Wired into `sinister-cli` umbrella. 21/21 unittests green. |
 | 2 | Multi-pane scrolling TUI | Forge `panes/agent_pane.py` (PH2-PH3) | ✅ scaffold | forge | Textual Log widget virtual-scroll |
 | 3 | Forever-scroll buffer per agent | Forge `panes/agent_pane.py` | ✅ scaffold | forge | context-pruner.ps1 archives long-term |
 | 4 | Ctrl+W new-agent picker | Forge `panes/picker.py` (PH3) | ✅ shipped | forge | ports `start-sinister-session.ps1` Q1-Q5 |
