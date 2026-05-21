@@ -17,3 +17,9 @@ Running catalog of every registered tool in the Sanctum. Append-only. See `READM
 | panel-config | tools/panel-config/ | D:\Sinister Sanctum\tools\panel-config\panel-config.json | shipped | 2026-05-19 |
 | sanctum-self-heal | tools/sanctum-self-heal/ | D:\Sinister Sanctum\tools\sanctum-self-heal\heal.ps1 | shipped | 2026-05-19 |
 | mcp-discover | tools/mcp-discover/ | D:\Sinister Sanctum\tools\mcp-discover\discover.py | shipped | 2026-05-19 |
+| sinister-cli | tools/sinister-cli/ | tools/sinister-cli/sinister_cli/__main__.py | shipped | 2026-05-21 |
+| sinister-swarm | tools/sinister-swarm/ | tools/sinister-swarm/sinister_swarm/__main__.py | shipped | 2026-05-21 |
+| sinister-login | tools/sinister-login/ | tools/sinister-login/sinister_login/__main__.py | shipped | 2026-05-21 |
+| sinister-review | tools/sinister-review/ | tools/sinister-review/sinister_review/__main__.py | shipped | 2026-05-21 |
+| forge-memory-bridge | tools/forge-memory-bridge/ | tools/forge-memory-bridge/forge_memory_bridge/api.py | shipped | 2026-05-21 |
+| memory-graph-render | tools/memory-graph-render/ | tools/memory-graph-render/memory_graph_render/api.py | shipped | 2026-05-21 |

@@ -95,6 +95,10 @@ _shared-memory/.auto-push.lock
 _shared-memory/auto-push.log
 _shared-memory/auto-push.log.*
 
+# Harness-managed runtime state (Claude Code worktrees + swarm cache)
+.claude/worktrees/
+.swarm/
+
 # Built artifacts (rebuildable; should not be in source control)
 automations/window-manager/_build-logs/
 automations/window-manager/dist/
