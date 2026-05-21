@@ -1479,11 +1479,13 @@ if ($Project -eq '__custom__') {
     Write-Host "       " -NoNewline
     Write-Host ('-' * 68) -ForegroundColor $Purple
     $modeOpts = @(
-        @{ n='1'; key='resume';  label='Resume';  desc='Continue exactly where last session left off  [default]' }
-        @{ n='2'; key='coaudit'; label='Coaudit'; desc='CO-AUDIT a running project (second pair of eyes)' }
-        @{ n='3'; key='dev';     label='Dev';     desc='Active development / coding' }
-        @{ n='4'; key='audit';   label='Audit';   desc='Review state / find issues / push-readiness' }
-        @{ n='5'; key='expand';  label='Expand';  desc='EXPAND 7-step contract :: audit + forward-plan + handoff' }
+        @{ n='1'; key='resume';        label='Resume';        desc='Continue exactly where last session left off  [default]' }
+        @{ n='2'; key='coaudit';       label='Coaudit';       desc='CO-AUDIT a running project (second pair of eyes)' }
+        @{ n='3'; key='dev';           label='Dev';           desc='Active development / coding' }
+        @{ n='4'; key='audit';         label='Audit';         desc='Review state / find issues / push-readiness' }
+        @{ n='5'; key='expand';        label='Expand';        desc='EXPAND 7-step contract :: audit + forward-plan + handoff' }
+        @{ n='6'; key='smoketest';     label='SmokeTest';     desc='Loop API endpoints for hours; document + auto-fix findings (no UI changes)' }
+        @{ n='7'; key='securityaudit'; label='SecAudit';      desc='Loop security surface for hours; document + auto-fix findings (no UI changes)' }
     )
     foreach ($o in $modeOpts) {
         Write-Host "       " -NoNewline
@@ -1494,14 +1496,14 @@ if ($Project -eq '__custom__') {
     Write-Host "       " -NoNewline
     Write-Host ('-' * 68) -ForegroundColor $Purple
     Write-Host "       Choice " -NoNewline -ForegroundColor $White
-    Write-Host "[1-5, default=1 Resume] " -NoNewline -ForegroundColor $Purple
+    Write-Host "[1-7, default=1 Resume] " -NoNewline -ForegroundColor $Purple
     Write-Host "(multi: " -NoNewline -ForegroundColor $Dim
     Write-Host "3,4" -NoNewline -ForegroundColor $LightP
     Write-Host " = Dev+Audit combined)" -ForegroundColor $Dim
     if ($CustomPrompts.Count -gt 0) {
         Say "       --- saved custom templates ---" $Dim
-        # v11 (test 2026-05-21): bumped from 10 to 11 since coaudit now occupies n=10.
-        $i = 11
+        # v17 (test 2026-05-21): custom prompts start at n=8 (smoketest + securityaudit took 6 + 7).
+        $i = 8
         foreach ($t in $CustomPrompts) {
             $preview = if ($t.phrase.Length -gt 40) { $t.phrase.Substring(0, 40) + '...' } else { $t.phrase }
             Write-Host "       " -NoNewline
@@ -1511,14 +1513,14 @@ if ($Project -eq '__custom__') {
             $i++
         }
     }
-    Write-Host "       choice " -NoNewline -ForegroundColor $White
-    Write-Host "[default=1, rkoj]" -ForegroundColor $LightP
-    $mpick = Read-Host '       >'
-    # v14 (test 2026-05-21): operator pruned objective list to 5 (Resume / Coaudit
-    # / Dev / Audit / Expand). rkoj is its own flow above; auto is its own Y/N
-    # question Q3; overview/deploy/push/debug/explore still resolvable via
-    # -Mode <key> headless but not shown in picker.
-    $modeMap = @{ '1'='resume'; '2'='coaudit'; '3'='dev'; '4'='audit'; '5'='expand' }
+    # v16 (test 2026-05-21): stray "choice [default=1, rkoj]" duplicate prompt
+    # REMOVED per operator screenshot. The Choice prompt above is the only one.
+    $mpick = Read-HostTimeout '       >' 30
+    # v17 (test 2026-05-21): objective list extended to 7. Added Smoke Test +
+    # Security Audit per operator directive 2026-05-21. Smoke Test loops API
+    # endpoints + documents/fixes findings (no UI changes). Security Audit
+    # same pattern for security surface.
+    $modeMap = @{ '1'='resume'; '2'='coaudit'; '3'='dev'; '4'='audit'; '5'='expand'; '6'='smoketest'; '7'='securityaudit' }
     if (-not $mpick) { $mpick = '1' }
 
     # Multi-select support: "2,3" -> dev + audit. Combine phrases + tag mode.
@@ -1541,9 +1543,9 @@ if ($Project -eq '__custom__') {
     } elseif ($modeMap.ContainsKey($mpick)) {
         $Mode = $modeMap[$mpick]
         $phrase = $BuiltinPhrases[$Mode]
-    } elseif ($mpick -match '^\d+$' -and ([int]$mpick - 11) -ge 0 -and ([int]$mpick - 11) -lt $CustomPrompts.Count) {
-        # v11 (test 2026-05-21): custom prompts now start at n=11 since coaudit took n=10.
-        $idx = [int]$mpick - 11
+    } elseif ($mpick -match '^\d+$' -and ([int]$mpick - 8) -ge 0 -and ([int]$mpick - 8) -lt $CustomPrompts.Count) {
+        # v17 (test 2026-05-21): custom prompts start at n=8.
+        $idx = [int]$mpick - 8
         $Mode = "custom-" + $CustomPrompts[$idx].name
         $phrase = $CustomPrompts[$idx].phrase
     } else {
@@ -1572,9 +1574,10 @@ if ($Project -eq '__custom__') {
     Write-Host ('-' * 68) -ForegroundColor $Purple
     Say ''
     $speedOpts = @(
-        @{ n='1'; key='turbo';  label='Turbo';  desc='3-5 parallel sub-agents per major phase (Explore/Plan/general-purpose)' }
-        @{ n='2'; key='fast';   label='Fast';   desc='2 parallel sub-agents per major phase  [default]' }
-        @{ n='3'; key='normal'; label='Normal'; desc='Sequential - no parallel sub-agents (safer for tricky lanes)' }
+        @{ n='1'; key='max';    label='Max';    desc='6-10 parallel sub-agents per phase (extreme - max throughput, accept contention risk)' }
+        @{ n='2'; key='turbo';  label='Turbo';  desc='3-5 parallel sub-agents per phase  [default - most efficient]' }
+        @{ n='3'; key='fast';   label='Fast';   desc='2 parallel sub-agents per phase' }
+        @{ n='4'; key='normal'; label='Normal'; desc='Sequential (safer for tricky lanes)' }
     )
     foreach ($s in $speedOpts) {
         Write-Host "       " -NoNewline
@@ -1587,10 +1590,10 @@ if ($Project -eq '__custom__') {
     Write-Host ('-' * 68) -ForegroundColor $Purple
     Say ''
     Write-Host "       Choice " -NoNewline -ForegroundColor $White
-    Write-Host "[1-3, default=2 Fast]" -ForegroundColor $Purple
-    $speedPick = Read-Host '       >'
-    $speedMap = @{ '1'='turbo'; '2'='fast'; '3'='normal' }
-    $script:__Speed = if ($speedMap.ContainsKey($speedPick)) { $speedMap[$speedPick] } else { 'fast' }
+    Write-Host "[1-4, default=2 Turbo]" -ForegroundColor $Purple
+    $speedPick = Read-HostTimeout '       >' 15
+    $speedMap = @{ '1'='max'; '2'='turbo'; '3'='fast'; '4'='normal' }
+    $script:__Speed = if ($speedMap.ContainsKey($speedPick)) { $speedMap[$speedPick] } else { 'turbo' }
     Say "       [OK] Speed = $($script:__Speed)" $Glow
     Say ''
 
@@ -1826,6 +1829,49 @@ if ($projRec.github) { Sanctum-KeyValue 'GitHub'       ("https://github.com/$($p
 Sanctum-KeyValue 'Mode'         $Mode
 Sanctum-KeyValue 'Agent name'   $AgentName $Accent
 Sanctum-KeyValue 'Accent color' $AccentColor $Accent
+Sanctum-KeyValue 'Token mode'   $(if ($script:__TokenMode) { $script:__TokenMode } else { 'compact' }) $Glow
+Sanctum-KeyValue 'Speed'        $(if ($script:__Speed) { $script:__Speed } else { 'turbo' }) $Glow
+Sanctum-KeyValue 'Host'         $(if ($script:__AgentHost) { $script:__AgentHost } else { 'claude' }) $Glow
+
+# v17 (test 2026-05-21): SESSION BRIEF gains plan + next-steps preview so
+# operator sees what we are about to do BEFORE the agent spawns. Operator
+# directive: "tell the current plan, what we need to do. in a short concise
+# efficent manner".
+$briefPlanLine = '(no plan artifact)'
+$briefNextLine = '(no recent progress)'
+try {
+    # Latest plan artifact for this project
+    $planDir = Join-Path $SanctumRoot "_shared-memory\plans"
+    if (Test-Path $planDir) {
+        $latestPlan = Get-ChildItem $planDir -Directory -ErrorAction SilentlyContinue | Where-Object { $_.Name -match $projRec.key -or $_.Name -match $projRec.display } | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+        if ($latestPlan) {
+            $planFile = Get-ChildItem $latestPlan.FullName -Filter 'forward-plan.md' -ErrorAction SilentlyContinue | Select-Object -First 1
+            if (-not $planFile) { $planFile = Get-ChildItem $latestPlan.FullName -Filter 'master-plan.md' -ErrorAction SilentlyContinue | Select-Object -First 1 }
+            if ($planFile) {
+                $planText = Get-Content $planFile.FullName -TotalCount 30 -ErrorAction SilentlyContinue
+                $firstRow = $planText | Where-Object { $_ -match '^###?\s*[RM]\d+' } | Select-Object -First 1
+                if ($firstRow) { $briefPlanLine = ($firstRow -replace '^###?\s*', '' -replace '^#+\s*', '').Trim() }
+                else { $briefPlanLine = "see $($latestPlan.Name)" }
+            }
+        }
+    }
+    # Top PROGRESS entry for the agent
+    $progressFile = Join-Path $SanctumRoot ("_shared-memory\PROGRESS\$AgentName.md")
+    if (-not (Test-Path $progressFile)) {
+        $progressFile = Join-Path $SanctumRoot ("_shared-memory\PROGRESS\$($projRec.display).md")
+    }
+    if (Test-Path $progressFile) {
+        $progLines = Get-Content $progressFile -TotalCount 60 -ErrorAction SilentlyContinue
+        $top = $progLines | Where-Object { $_ -match '^## \d{4}-' } | Select-Object -First 1
+        if ($top) { $briefNextLine = ($top -replace '^##\s*', '').Trim() }
+    }
+} catch { }
+
+# Truncate to keep brief tight
+if ($briefPlanLine.Length -gt 80) { $briefPlanLine = $briefPlanLine.Substring(0,77) + '...' }
+if ($briefNextLine.Length -gt 80) { $briefNextLine = $briefNextLine.Substring(0,77) + '...' }
+Sanctum-KeyValue 'Plan'         $briefPlanLine $LightP
+Sanctum-KeyValue 'Last entry'   $briefNextLine $Dim
 Sanctum-KeyValue 'Clipboard'    'armed' $Glow
 Sanctum-KeyValue 'Notepad'      $(if ($NoNotepad) { 'skipped (default)' } else { 'will open briefing docs' }) $Dim
 Sanctum-Rule
