@@ -1,0 +1,6 @@
+# Sinister Sanctum :: RKOJ.exe build artifacts (ephemeral)
+# Author: RKOJ-ELENO :: 2026-05-21
+build/
+dist/
+*.log
+__pycache__/

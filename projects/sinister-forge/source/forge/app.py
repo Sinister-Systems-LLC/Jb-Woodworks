@@ -56,14 +56,26 @@ from forge.spawn.codex import CodexSubprocess
 
 def _compose_phrase(*, project_key: str, agent_name: str, objective: str,
                     token_mode: str, speed: str, focus: str) -> str:
-    """Build the opening phrase the Claude/Codex CLI gets as its first message."""
-    contracts = "Read automations/session-contracts.md (6 binding contracts)."
+    """Build the opening phrase the Claude/Codex CLI gets as its first message.
+
+    Uses ABSOLUTE path to the Sanctum contracts file so it works regardless of
+    which project root the subprocess is spawned in. If contracts file missing
+    on disk, omit the reference entirely so the agent doesn't crash trying to
+    read a non-existent path.
+    """
+    import os as _os
+    sanctum_root = _os.environ.get("SANCTUM_ROOT") or r"D:\Sinister Sanctum"
+    contracts_path = Path(sanctum_root) / "automations" / "session-contracts.md"
+    contracts = (f"Read {contracts_path} (6 binding contracts)."
+                 if contracts_path.exists() else "")
     focus_block = f"\n\nFocus: {focus}" if focus else ""
-    return (
-        f"You are {agent_name}, the Sinister {project_key} lane agent via Forge. "
-        f"Mode={objective}, TokenMode={token_mode}, Speed={speed}. {contracts}"
-        f"{focus_block}\n\nStart the loop."
-    )
+    bits = [
+        f"You are {agent_name}, the Sinister {project_key} lane agent via Forge.",
+        f"Mode={objective}, TokenMode={token_mode}, Speed={speed}.",
+    ]
+    if contracts:
+        bits.append(contracts)
+    return " ".join(bits) + f"{focus_block}\n\nStart the loop."
 
 
 def _build_subprocess(result: PickerResult) -> "AgentSubprocess | None":
@@ -176,8 +188,72 @@ class ForgeApp(App):
         # Welcome notification
         self.notify(
             "Ctrl+W to spawn · Ctrl+P palette · Ctrl+M memory · F1 help",
-            timeout=6,
+            timeout=4,
         )
+
+        # Auto-spawn from RKOJ.exe picker env vars (the picker stashes the
+        # operator's picks in SINISTER_PROJECT etc. so Forge boots into the
+        # right lane without the operator hitting Ctrl+W again).
+        await self._auto_spawn_from_env()
+
+    async def _auto_spawn_from_env(self) -> None:
+        """If the operator picked a project via RKOJ.exe picker, spawn it now.
+
+        Optional SINISTER_TOOLS=swarm,memory,... triggers extras:
+          - swarm → spawn 3 additional siblings on the same project
+          - login → drop a /login providers cheat-sheet into the first pane
+        """
+        import os
+        proj_key = os.environ.get("SINISTER_PROJECT", "").strip()
+        if not proj_key:
+            return
+        proj_display = os.environ.get("SINISTER_PROJECT_DISPLAY", proj_key).strip() or proj_key
+        mode = os.environ.get("SINISTER_MODE", "resume").strip() or "resume"
+        tools = {t.strip() for t in os.environ.get("SINISTER_TOOLS", "").split(",") if t.strip()}
+        # Synthesize a PickerResult and drive the same spawn path as Ctrl+W.
+        agent_name = f"EVE on {proj_display}"
+        accent = "purple"
+        result = PickerResult(
+            project_key=proj_key,
+            project_display=proj_display,
+            objective=mode,
+            token_mode="compact",
+            speed="turbo",
+            host="claude",
+            agent_name=agent_name,
+            accent=accent,
+            focus="",
+        )
+        await self._spawn_from_result(result)
+        # Swarm-pre-spawn: 2 sibling agents (total 3).
+        if "swarm" in tools:
+            for n in (2, 3):
+                sib = PickerResult(
+                    project_key=proj_key, project_display=proj_display,
+                    objective=mode, token_mode="compact", speed="turbo",
+                    host="claude", agent_name=f"EVE-{n} on {proj_display}",
+                    accent=accent, focus="",
+                )
+                await self._spawn_from_result(sib)
+        self.notify(f"booted into {proj_display} ({mode})  ·  /help for commands", timeout=5)
+
+    async def _spawn_from_result(self, result: PickerResult) -> None:
+        """The spawn body shared by action_new_agent + auto-spawn."""
+        accent_hex = PROJECT_BORDER_PALETTE.get(result.project_key, PURPLE_BRIGHT)
+        subprocess = _build_subprocess(result)
+        pane = AgentPane(
+            agent_name=result.agent_name,
+            project_display=result.project_display,
+            mode=result.objective,
+            accent=result.accent,
+            subprocess=subprocess,
+            project_key=result.project_key,
+        )
+        await self._tabs.add_pane(pane, result.project_key, result.project_display)
+        self._update_chip_from_current()
+        self._refresh_status()
+        if subprocess:
+            self.run_worker(pane.run_subprocess(), exclusive=False, name=f"sub-{result.agent_name}")
 
     # ---------- helpers ----------
 

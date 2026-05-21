@@ -4,6 +4,132 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-21 14:59 — shipped: RKOJ.exe v0.5.0 — jcode-shell rewrite (one `>` prompt, all memory features, claude -p streaming)
+
+Operator escalations across the session funneled to: *"i just want the complet jcode appraoch like this and i just tell it what to do and it goes or i can use /resume and see resume based on project"* + *"make sure we use the terminal we built with all of this and make sure it funcitons like jcode does. and make sure we incorp all jcodes memory features into our system"* + *"create a plan to complete all of this without the need of me"*. Reset architecture, shipped autonomously.
+
+**Final architecture (RKOJ.exe v0.5.0, 29 MB on Desktop)**:
+
+1. **Boot**: tiny SINISTER mark (3 lines) + dense status panel (1 line each: version+branch+HEAD, provider chips, agents+inbox+brain, mcp+model+memory). No huge banner. ~7 lines total. UTF-8 forced on stdout (`SetConsoleOutputCP(65001)` + `sys.stdout.reconfigure`) so the unicode block chars don't crash on cp1252 piped stdout.
+2. **Single `>` prompt** — jcode-style. Type anything. Loop continues until `/quit`.
+3. **Slash commands** (`forge/commands.py` + in-EXE registry in `RKOJ-entry.py`):
+   - `/help` `/?` `/h` — categorized command list
+   - `/resume` — grouped by project with point-count + latest timestamp
+   - `/resume <project>` — list points for that project (fuzzy-matched)
+   - `/resume <project> <N>` — load detail for that point (branch / HEAD / progress / pre_warm_reads)
+   - `/projects` — 19-row registry (12 fleet + 7 personal)
+   - `/agents` — live heartbeats with stale/fresh markers
+   - `/inbox [slug]` — list inbox messages
+   - `/brain [tag]` — search brain entries (filtered by tag substring)
+   - `/login` — sinister-login dispatcher (11-provider wallet)
+   - `/usage` — sinister-usage dispatcher (token-quota endpoint registry)
+   - `/swarm` — sinister-swarm dispatcher (DM / broadcast / spawn / list)
+   - `/memory <q>` — forge-memory-bridge recall
+   - `/forge` — launch the full multi-pane Textual TUI in same window
+   - `/info` `/version` `/quit` — meta
+4. **Natural language** (anything not starting with `/`) — spawns `claude --dangerously-skip-permissions -p <text>` in Sanctum root, streams output inline. The `-p` flag is the critical fix for the v0.4.0 "Spawning claude..." hang: claude's default mode is interactive (needs TTY); with `stdin=DEVNULL` it hangs. `-p` switches to non-interactive print mode.
+5. **jcode memory features wired** every natural-language turn:
+   - **PRE-TURN**: `forge_memory_bridge.recall(text, limit=4)` → top-4 hits injected as `[memory: recent relevant context]` prefix
+   - **SPAWN**: `claude -p` with augmented prompt; streams to console
+   - **POST-TURN**: `forge_memory_bridge.write("rkoj-shell", text)` so next turn can recall this one
+   - All four jcode memory primitives now in our system: persistent recall, auto-write, semantic search (via Ruflo MCP if loaded, else TF-IDF), namespace scoping.
+6. **Multi-pane Forge TUI still available** — `/forge` from the shell launches it in-process; Forge's slash-command registry (`forge/commands.py`, 50+ commands) is also imported and works inside any pane.
+
+**Build artifacts** (committed):
+- `automations/build/forge-exe/RKOJ-entry.py` — 645 lines, stdlib-only chat shell
+- `automations/build/forge-exe/RKOJ.spec` — PyInstaller spec (onefile, console=True, icon=`sinister-logo.ico`, hidden imports for all 6 sinister tools + forge + jaraco/pkg_resources chain + asyncio/select/multiprocessing chain)
+- `projects/sinister-forge/source/forge/commands.py` — 50-row slash-command registry (cross-lane edit, operator-authorized)
+- `projects/sinister-forge/source/forge/spawn/claude.py` — added `-p` flag (critical fix for the hang)
+- `projects/sinister-forge/source/forge/app.py` — `_auto_spawn_from_env()` + `_spawn_from_result()` for when Forge launches with picked project env vars
+- `projects/sinister-forge/source/forge/panes/agent_pane.py` — added `/` slash dispatch BEFORE `:` builtin check (additive)
+- `projects/sinister-forge/source/forge/panes/sidebar.py` (NEW, deferred-to-v0.6) — Sinister Panel left rail with Agents/ADB tabs
+- `projects/sinister-forge/source/forge/panes/adb_panel.py` (NEW, deferred-to-v0.6) — ADB devices grid with refresh + r/k/s/t key shortcuts
+
+**Build pipeline pitfalls crossed (brain doctrine honored)**:
+- `pyinstaller-distutils-exclude-collision` — `distutils` NOT excluded (would ValueError at build)
+- `pyinstaller-tomli-hook-missing` — pre-build `pip install --force-reinstall --no-deps pyinstaller-hooks-contrib`
+- `exe-silent-crash-no-popup` — runtime crash-log hook (`RKOJ.crash.log` sidecar)
+- `sanctum-shared-rename-pyinstaller-collision` — `collect_submodules()` + `collect_data_files()` for every package (forge + 6 sinister-X tools + textual + rich)
+- **jaraco namespace** — `pip install jaraco.text jaraco.functools jaraco.context` was required for pkg_resources runtime hook (PyInstaller autodetect missed it)
+- **UTF-8 codepage** — `chcp 65001` equivalent in Python via `SetConsoleOutputCP(65001)` + `sys.stdout.reconfigure(encoding="utf-8")` BEFORE first print
+
+**Non-interactive smoke (operator can re-run)**: `printf "/projects\n/agents\n/resume\n/quit\n" | "C:/Users/Zonia/Desktop/RKOJ.exe"` → renders 19 projects, 18 agents (1 live), and 7 project-grouped resume-points slice. All clean.
+
+**Iteration history this session** (8 builds):
+- v0.3.0 — first build: animated boot + multi-step picker + delegate to PS1 launcher
+- v0.3.1 — fixed jaraco missing
+- v0.3.2 — in-process Forge boot (no more PS1 / gitbash)
+- v0.3.3 — added forge/commands.py 50-row slash registry, auto-spawn-from-env, swarm pre-spawn, random ASCII critters
+- v0.4.0 — minimal boot (dropped huge banner + multi-step Q&A), one-screen dense status + inline picker + one-line mode/tools
+- v0.5.0 — DROP picker entirely, jcode-shell with `>` prompt + slash dispatch + natural-language `claude -p` + memory bridge wiring
+- v0.5.0-utf8 — force UTF-8 codepage so unicode block chars don't crash on piped stdout
+- v0.5.0-claude-p — claude `-p` flag wired in both shell + Forge spawn/claude.py (root cause of "Spawning claude..." hang)
+
+**Other work shipped this session** (pre-EXE-pivot, all on `agent/sinister-sanctum/cli-dispatcher-2026-05-21`):
+- `tools/sinister-login/` v0.1.0 — 11-provider auth wallet (commit `be1a821`)
+- `tools/sinister-usage/` v0.1.0 — token quota / endpoint registry (commit `35ad6de`)
+- `_shared-memory/knowledge/sinister-cli-subcommand-pattern.md` — brain doctrine for the 5-file layout
+- `automations/agent-host-routing.md` — 11-provider routing matrix v0.1.0 shipped section
+- `_shared-memory/inbox/forge/2026-05-21T1355Z-sinister-login-shipped.json` + cross-agent delivery report
+- 31/31 unittests green for sinister-usage; 21/21 for sinister-login
+
+**Operator-actionable surface (no agent autonomy on these)**:
+- Test double-click `C:\Users\Zonia\Desktop\RKOJ.exe` — should boot to `>` prompt within ~2 sec
+- Set `ANTHROPIC_API_KEY` env var if natural-language path is the primary use (currently `claude` CLI uses Claude Code's stored auth)
+- Stop PID 36560 (LetsText node 2.2 GB) + PID 69300 (2-day-old hidden agent-watchdog.ps1) per earlier process-audit if RAM is tight
+- Audit the 5 scheduled tasks firing every 5-15 min for missing `-WindowStyle Hidden` (deferred from earlier process audit when EXE escalation hit)
+
+**Deferred to next session**:
+- `tools/sinister-model/` — `/model list` per-provider model enumeration (task #12 pending)
+- Sinister Panel UI integration in Forge multi-pane TUI (sidebar.py + adb_panel.py written, not yet wired into compose() — task #15)
+- Vault MCP integration for `/login add --vault` (gated on `~/.claude/.mcp.json` operator edit)
+
+**5-check completion gate**: ✅ explicit asks addressed (jcode-shell + memory + `/resume` by project + no picker + no gitbash) · TaskList 16 rows, 15 closed · PROGRESS this entry · MASTER-PLAN no flags to flip (file absent) · next-slice = operator boot-test the EXE.
+
+---
+
+
+---
+
+## 2026-05-21 14:22 — shipped: RKOJ.exe v0.3.0 — single-click Sinister launcher (jcode-EXE parity)
+
+Operator escalation 2026-05-21 (verbatim): *"i need ours to function just like the jcode exe on my desktop"* → *"I want the exe to function like our bat file does but without all the uneeded things. Just ask me first off in a window... combining the rkoj into this for tools and have the inifinte scrool thing all that... once we boot i still want this look with the animation. but everything will be our branding. and the ai will call herself EVE"* → *"call the exe RKOJ"* → *"use this logo too from our workstation"*.
+
+**Shipped (4 files + 29 MB EXE on Desktop):**
+
+1. **`C:\Users\Zonia\Desktop\RKOJ.exe`** — 29 MB onefile PyInstaller build of the new entry script. Replaces the `Sinister Forge.bat` → `Start-Sinister-Session.bat` two-step. Double-click → animated SINISTER ASCII boot (4-frame purple shimmer) → EVE greeting → first question (pick / new / something else) → project picker (14 lanes from projects.json) → mode picker (resume / expand / coaudit / smoke / security / shell) → tool questions (swarm? memory? login-status? graph?) → delegates the actual launch to `automations/start-sinister-session.ps1` with the picked params.
+2. **`automations/build/forge-exe/RKOJ-entry.py`** — the entry script PyInstaller bundles. Stdlib-only picker (ANSI colors, VT-enable, sidecar crash log). EVE persona throughout. Pure picker UI — does NOT reinvent the launcher backend; delegates to the existing battle-tested PS1.
+3. **`automations/build/forge-exe/RKOJ.spec`** — PyInstaller spec. Honors `pyinstaller-distutils-exclude-collision` (distutils NOT excluded), `sanctum-shared-rename-pyinstaller-collision` (collect_submodules everywhere), `exe-silent-crash-no-popup` (runtime crash hook), `pyinstaller-tomli-hook-missing` (pre-install hooks-contrib force-reinstall). Bundles forge + sinister-cli + sinister-login + sinister-usage + sinister-swarm + forge-memory-bridge + memory-graph-render as hidden imports. Icon = `automations/window-manager/web/sinister-logo.ico`.
+4. **`automations/build/forge-exe/{README.md, .gitignore}`** — build pipeline docs + ignore-list for `build/` + `dist/` + `*.log`.
+
+**Subcommand mode also works**: `RKOJ.exe login providers` / `RKOJ.exe usage list` / `RKOJ.exe swarm list` / `RKOJ.exe memory recall ...` all dispatch through the sinister-CLI umbrella. Verified all 6 sinister tools enumerate via `RKOJ.exe version`.
+
+**Build pitfalls hit + closed**:
+- **jaraco missing** → installed `jaraco.text` + `jaraco.functools` + `jaraco.context` (pkg_resources runtime hook autodetect miss); added them to hiddenimports too.
+- First spec built as `Sinister-Forge` then renamed to `RKOJ` per operator directive.
+- distutils kept in (NOT in excludes) per the brain doctrine — would have ValueError'd otherwise.
+
+**EVE persona observed throughout**: `_print_header` prints "S A N C T U M  ::  E V E  ::"; `_opening_choice` starts with "EVE here. Welcome back to the Sanctum."; tool questions phrased as "EVE can wire these in...". Per the operator hard-canonical 2026-05-21 *"we will no longer call you calude anywhere you are now EVE"*.
+
+**Sibling-tree noted**: `D:/Sinister-Term-WT/` is a full Sanctum mirror at a different commit where Term has the picker UI shown in the operator's screenshots. I did NOT pull from that worktree — the picker is reimplemented stdlib-only inside the EXE to keep the build self-contained + avoid the cross-worktree contention pattern.
+
+**Operator unblocked moves** (no agent autonomy on these):
+- Operator can stop using `Sinister Forge.bat` + `RKOJ.bat` — they're superseded by `RKOJ.exe`.
+- Operator can kill PID 36560 (LetsText node 2.2 GB) + PID 69300 (2-day-old hidden `agent-watchdog.ps1`) for the RAM/clutter wins surfaced in the Desktop process audit pre-escalation.
+- 5 scheduled tasks fire every 5-15 min and may be the PowerShell-window-pop source (`SinisterAPKWatchdog` / `Sinister-fleet-monitor` / `Sinister-sheets-sync` / `SinisterAPKAutoPush` / `SinisterSanctumAutoPush`); inspection got interrupted mid-run by the EXE escalation.
+
+**5-check completion gate**: explicit ask addressed (RKOJ.exe shipped to Desktop, EXE plus picker plus EVE plus animation plus delegate-to-PS1) · TaskList 13/13 (12 closed + 12 still pending = `sinister model list` deferred) · PROGRESS this entry · MASTER-PLAN no flags to flip (file absent) · next-slice = operator-test RKOJ.exe double-click flow.
+
+**Open follow-ups in lane** (not blocking operator):
+- `tools/sinister-model/` — next jcode-parity gap (`jcode model list` enumeration).
+- Niri-style scrollable infinite-columns inside RKOJ.exe's TUI — currently the EXE delegates to PS1 which spawns claude/Forge; the columns live in Forge. Operator may want a future v0.4.0 that absorbs the column TUI directly into RKOJ.exe instead of delegating.
+- The 5 scheduled tasks still need `-WindowStyle Hidden` audit.
+
+---
+
+
+---
+
 ## 2026-05-21 14:20 — committed: residual delta on top of sibling 14:15 sinister-usage closure — README CLI-layer headings + matrix-row-1c notes refresh + heartbeat + Panel HELLO-ACK archived
 
 Resume-via-Forge spawn (mode=resume, turbo, compact) running concurrently with the sibling Sanctum that authored the 14:15 entry. I'm the OTHER lane in the contention they describe — the one that originally Wrote `estimator.py` + `sources.py` + extended `__main__.py` with the `local/today/estimate/doctor` subcommands + added 19 new tests in `tests/test_usage.py`. Those files landed under sibling commit `35ad6de` while I was mid-edit (multi-agent contention exactly as the doctrine predicts).
