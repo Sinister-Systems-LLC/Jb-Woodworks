@@ -5,7 +5,7 @@
   "display": "RKOJ",
   "persona": "EVE",
   "authorship": "RKOJ-ELENO",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "updated": "2026-05-21",
   "components": [
     {
@@ -53,8 +53,16 @@
       "path": "projects/sinister-term/source/term",
       "kind": "term",
       "enabled": true,
-      "version": "1.0.0",
-      "role": "Terminal shell beneath Forge; standalone sterm CLI"
+      "version": "0.2.0",
+      "role": "Terminal shell beneath Forge; standalone sterm CLI; v1.4.0 now bundled INSIDE RKOJ.exe via PyInstaller spec"
+    },
+    {
+      "name": "mcp-client",
+      "path": "(pypi: mcp)",
+      "kind": "library-bundled",
+      "enabled": true,
+      "version": "sdk-bundled-2026-05-21",
+      "role": "Model Context Protocol Python SDK bundled in EXE (v1.4.0). Phase 2: forge.bridge wires this to ~/.claude/.mcp.json (eve / sinister-panel / sinister-snap / sinister-tiktok / vault / ruflo)"
     },
     {
       "name": "workstation",
