@@ -175,8 +175,30 @@
         });
         updateNavActive();
         // Lazy-load the active pane's data.
-        if (tabId === 'agents') refreshAgents();
-        else if (tabId === 'phones') refreshDevices();
+        if (tabId === 'agents') {
+            // jcode-form xterm.js stack (RKOJ-ELENO 2026-05-21) — owns #agents-grid.
+            // Lazy + idempotent; safe to call every tab switch.
+            try {
+                if (window.SanctumAgentsTab && window.SanctumAgentsTab.mount) {
+                    const host = document.getElementById('agents-grid');
+                    if (host) window.SanctumAgentsTab.mount(host);
+                }
+            } catch (e) { console.error('agents-tab mount failed', e); }
+            refreshAgents();
+        }
+        else if (tabId === 'phones') {
+            // devices-tab.js (RKOJ-ELENO 2026-05-21) — Panel-style fleet console.
+            // Lazy + idempotent; safe to call every tab switch. Falls back to the
+            // legacy refreshDevices() path if the module didn't load.
+            try {
+                if (window.SanctumDevicesTab && window.SanctumDevicesTab.mount) {
+                    const host = document.getElementById('devices-grid');
+                    if (host) window.SanctumDevicesTab.mount(host);
+                } else {
+                    refreshDevices();
+                }
+            } catch (e) { console.error('devices-tab mount failed', e); refreshDevices(); }
+        }
         else if (tabId === 'workstation') refreshWorkstation();
     }
 

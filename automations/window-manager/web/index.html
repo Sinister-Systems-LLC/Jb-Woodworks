@@ -14,6 +14,7 @@
     <link rel="icon" href="/static/sinister-logo.png">
     <link rel="stylesheet" href="/static/tokens.css">
     <link rel="stylesheet" href="/static/theme.css">
+    <link rel="stylesheet" href="/static/vendor/xterm.css">
 </head>
 <body data-density="cozy" data-active-tab="agents">
 
@@ -163,20 +164,23 @@
                         <div class="sp-spacer"></div>
                         <span class="sp-count" data-bind="agents-grid-count">0 visible</span>
                     </div>
-                    <div class="sp-agent-stack" id="agent-stack" data-bind="agent-stack">
+                    <!-- jcode-form niri-style xterm.js terminal stack (RKOJ-ELENO 2026-05-21).
+                         agents-tab.js owns this container on first switch to Agents tab. -->
+                    <div id="agents-grid" class="sa-grid"></div>
+                    <!-- Legacy stack kept as hidden fallback for any code still binding to it. -->
+                    <div class="sp-agent-stack" id="agent-stack" data-bind="agent-stack" hidden>
                         <div class="sp-empty">loading agents...</div>
                     </div>
                 </section>
 
-                <!-- ===== PHONES pane (device card grid) ===== -->
+                <!-- ===== PHONES pane (devices-tab.js owns this body) =====
+                     RKOJ-ELENO :: 2026-05-21 — Sinister Panel-style fleet console.
+                     devices-tab.js (loaded below) replaces the old card grid with a
+                     4-stat strip + filter chips + left rail + right pane + logcat tail. -->
                 <section class="sp-pane sp-pane-phones" id="pane-phones" hidden>
-                    <div class="sp-pane-toolbar">
-                        <button class="sp-btn primary" id="phones-scan" data-act="scan-all">Scan all</button>
-                        <button class="sp-btn ghost" id="phones-refresh" data-act="refresh-devices">Refresh</button>
-                        <div class="sp-spacer"></div>
-                        <span class="sp-count" data-bind="phones-grid-count">0 attached</span>
-                    </div>
-                    <div class="sp-device-grid" id="device-grid" data-bind="device-grid">
+                    <div id="devices-grid" class="dv-root"></div>
+                    <!-- Legacy stack kept hidden as fallback for any palette command still binding to it. -->
+                    <div class="sp-device-grid" id="device-grid" data-bind="device-grid" hidden>
                         <div class="sp-empty">loading devices...</div>
                     </div>
                 </section>
@@ -346,6 +350,12 @@
     <script src="/static/scheduler.js"></script>
     <!-- fleet-state.js MUST load before app.js — app.js subscribes to FleetState on init. -->
     <script src="/static/fleet-state.js"></script>
+    <!-- xterm.js (vendored offline) — must load before agents-tab.js -->
+    <script src="/static/vendor/xterm.js"></script>
+    <script src="/static/vendor/addon-fit.js"></script>
+    <script src="/static/agents-tab.js"></script>
+    <!-- devices-tab.js owns the Phones pane (Sinister Panel-style fleet console). -->
+    <script src="/static/devices-tab.js"></script>
     <script src="/static/app.js"></script>
 </body>
 </html>

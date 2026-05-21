@@ -37,7 +37,7 @@ from typing import Any, List, Literal, Optional
 # shave ~1.3s off cold EXE boot. Do NOT re-add `import httpx` at module scope.
 import secrets
 import socket
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect
 from fastapi.responses import FileResponse, JSONResponse, RedirectResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -1055,6 +1055,227 @@ def devices_push(serial: str, payload: DevicePushBody):
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
+
+# ============================================================
+# Phones tab — Devices console routes
+# Author: RKOJ-ELENO :: 2026-05-21
+# Powers web/devices-tab.js — Sinister Panel-style fleet console:
+#   /api/devices/details   -> identity (model, android, build, transport)
+#   /api/phone-viewer/launch -> spawn tools/sinister-phone-viewer/viewer.py
+#   /api/scrcpy/launch       -> spawn `scrcpy -s <serial>` direct
+#   /api/adb/shell           -> one-shot adb -s <serial> shell <cmd>
+#   /api/adb/logcat          -> SSE stream of last 50 logcat lines
+# All subprocess.Popen launches use CREATE_NO_WINDOW on win32 so the
+# console flash that scrcpy/python.exe would otherwise produce stays hidden.
+# ============================================================
+
+# Windows-specific: CREATE_NO_WINDOW = 0x08000000. On non-win32 this is 0
+# (so the flag silently no-ops and Popen behaves normally on linux/mac).
+_PHONE_CREATE_NO_WINDOW = 0x08000000 if sys.platform == "win32" else 0
+
+# Path constants for the Phones tab.
+_PHONE_VIEWER_PY = SANCTUM_ROOT / "tools" / "sinister-phone-viewer" / "viewer.py"
+_PHONE_HEARTBEAT_DIR = SANCTUM_ROOT / "_shared-memory" / "heartbeats" / "phones"
+_PHONE_RKA_LOG = Path(r"D:\Sinister\01_Projects\Sinister\Sinister-APK\.recovery-watchdog\recovery-watchdog.log")
+
+
+def _phone_run_adb(serial: str, *args: str, timeout: float = 10.0) -> dict[str, Any]:
+    """Run `adb -s <serial> <args>` with a short timeout. Returns
+    {ok, stdout, stderr, returncode}. Never raises — surfaces error text instead.
+    Author: RKOJ-ELENO :: 2026-05-21."""
+    try:
+        cp = subprocess.run(
+            ["adb", "-s", serial, *args],
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            creationflags=_PHONE_CREATE_NO_WINDOW,
+        )
+        return {
+            "ok": cp.returncode == 0,
+            "stdout": cp.stdout,
+            "stderr": cp.stderr,
+            "returncode": cp.returncode,
+        }
+    except FileNotFoundError:
+        return {"ok": False, "stdout": "", "stderr": "adb not on PATH", "returncode": -1}
+    except subprocess.TimeoutExpired:
+        return {"ok": False, "stdout": "", "stderr": f"adb timed out after {timeout}s", "returncode": -2}
+    except Exception as e:
+        return {"ok": False, "stdout": "", "stderr": str(e), "returncode": -3}
+
+
+@app.get("/api/devices/details")
+def devices_details(serial: str):
+    """Return per-device identity (model, android version, build fingerprint, transport)
+    via `adb -s <serial> shell getprop <key>`. Operator-facing right-pane in Phones tab.
+    Also returns heartbeat freshness + RKA log tail if those files exist.
+    Author: RKOJ-ELENO :: 2026-05-21."""
+    if not serial.strip():
+        raise HTTPException(status_code=400, detail="serial required")
+    props = {
+        "model":            "ro.product.model",
+        "manufacturer":     "ro.product.manufacturer",
+        "brand":            "ro.product.brand",
+        "android_version":  "ro.build.version.release",
+        "sdk":              "ro.build.version.sdk",
+        "build":            "ro.build.fingerprint",
+        "serialno":         "ro.serialno",
+    }
+    out: dict[str, Any] = {"ok": True, "serial": serial}
+    for key, prop in props.items():
+        r = _phone_run_adb(serial, "shell", f"getprop {prop}", timeout=5.0)
+        out[key] = (r.get("stdout") or "").strip() if r.get("ok") else ""
+    # Transport pill — try `adb devices -l` line for this serial.
+    try:
+        cp = subprocess.run(
+            ["adb", "devices", "-l"],
+            capture_output=True, text=True, timeout=5.0,
+            creationflags=_PHONE_CREATE_NO_WINDOW,
+        )
+        transport = ""
+        for ln in cp.stdout.splitlines():
+            if ln.startswith(serial):
+                # e.g. "ABCD device usb:1-2 product:cheetah model:Pixel_7_Pro transport_id:3"
+                transport = ln.split(None, 1)[1] if " " in ln else ""
+                break
+        out["transport"] = transport
+    except Exception:
+        out["transport"] = ""
+
+    # Heartbeat freshness (per-serial — falls back to serial-as-filename).
+    hb_file = _PHONE_HEARTBEAT_DIR / f"{serial}.json"
+    if hb_file.exists():
+        try:
+            hb = json.loads(hb_file.read_text(encoding="utf-8"))
+            out["heartbeat"] = {
+                "exists": True,
+                "last_seen": hb.get("last_seen"),
+                "display_name": hb.get("display_name"),
+                "project": hb.get("project"),
+                "mtime": hb_file.stat().st_mtime,
+            }
+        except Exception as e:
+            out["heartbeat"] = {"exists": True, "error": str(e)}
+    else:
+        out["heartbeat"] = {"exists": False}
+
+    # RKA daemon log tail (last 5 lines of recovery-watchdog.log if present).
+    if _PHONE_RKA_LOG.exists():
+        try:
+            txt = _PHONE_RKA_LOG.read_text(encoding="utf-8", errors="replace")
+            tail = txt.splitlines()[-5:]
+            out["rka_log_tail"] = tail
+            out["rka_log_path"] = str(_PHONE_RKA_LOG)
+        except Exception as e:
+            out["rka_log_tail"] = [f"(read error: {e})"]
+    else:
+        out["rka_log_tail"] = []
+        out["rka_log_path"] = str(_PHONE_RKA_LOG) + " (not found)"
+
+    return out
+
+
+@app.post("/api/phone-viewer/launch")
+def phone_viewer_launch(serial: str):
+    """Spawn tools/sinister-phone-viewer/viewer.py <serial> as a detached subprocess
+    so its scrcpy/Tk window outlives this request. Returns {ok, pid}.
+    Author: RKOJ-ELENO :: 2026-05-21."""
+    if not serial.strip():
+        raise HTTPException(status_code=400, detail="serial required")
+    if not _PHONE_VIEWER_PY.exists():
+        raise HTTPException(status_code=503, detail=f"phone-viewer missing: {_PHONE_VIEWER_PY}")
+    try:
+        proc = subprocess.Popen(
+            [sys.executable, str(_PHONE_VIEWER_PY), serial],
+            cwd=str(_PHONE_VIEWER_PY.parent),
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+            creationflags=_PHONE_CREATE_NO_WINDOW,
+            close_fds=True,
+        )
+        return {"ok": True, "serial": serial, "pid": proc.pid}
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
+
+@app.post("/api/scrcpy/launch")
+def scrcpy_launch(serial: str):
+    """Spawn `scrcpy -s <serial>` directly. If scrcpy not on PATH, return 503 with
+    a hint to install (so the UI can show a 'install scrcpy' nudge).
+    Author: RKOJ-ELENO :: 2026-05-21."""
+    if not serial.strip():
+        raise HTTPException(status_code=400, detail="serial required")
+    import shutil
+    if not shutil.which("scrcpy"):
+        raise HTTPException(
+            status_code=503,
+            detail="scrcpy not on PATH — install via `winget install Genymobile.scrcpy` "
+                   "or download from https://github.com/Genymobile/scrcpy/releases",
+        )
+    try:
+        proc = subprocess.Popen(
+            ["scrcpy", "-s", serial],
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+            creationflags=_PHONE_CREATE_NO_WINDOW,
+            close_fds=True,
+        )
+        return {"ok": True, "serial": serial, "pid": proc.pid}
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
+
+class _AdbShellBody(BaseModel):
+    cmd: str
+
+
+@app.post("/api/adb/shell")
+def adb_shell(serial: str, cmd: str = "", payload: _AdbShellBody | None = None):
+    """One-shot `adb -s <serial> shell <cmd>` with 10s timeout. The `cmd` can come
+    via query-string (?cmd=...) or POST body (json {cmd}). Returns
+    {ok, stdout, stderr, returncode}.
+    Author: RKOJ-ELENO :: 2026-05-21."""
+    effective = cmd or (payload.cmd if payload else "")
+    if not serial.strip() or not effective.strip():
+        raise HTTPException(status_code=400, detail="serial + cmd both required")
+    r = _phone_run_adb(serial, "shell", effective, timeout=10.0)
+    return r
+
+
+@app.get("/api/adb/logcat")
+async def adb_logcat(serial: str):
+    """SSE stream of `adb -s <serial> logcat -d -t 50` — last 50 lines, refreshed
+    every 3 seconds. The text/event-stream gives the devices-tab a clean reactive
+    tail without WebSocket overhead.
+    Author: RKOJ-ELENO :: 2026-05-21."""
+    if not serial.strip():
+        raise HTTPException(status_code=400, detail="serial required")
+
+    async def gen():
+        try:
+            while True:
+                try:
+                    cp = await asyncio.to_thread(
+                        subprocess.run,
+                        ["adb", "-s", serial, "logcat", "-d", "-t", "50"],
+                        capture_output=True, text=True, timeout=8.0,
+                    )
+                    payload = cp.stdout if cp.returncode == 0 else (cp.stderr or f"adb exit {cp.returncode}")
+                except FileNotFoundError:
+                    payload = "[adb not on PATH]"
+                except subprocess.TimeoutExpired:
+                    payload = "[adb logcat timed out]"
+                except Exception as e:
+                    payload = f"[error: {e}]"
+                # SSE: data lines must be prefixed; we collapse newlines so one event
+                # carries the full last-50-line tail (the UI just replaces innerText).
+                safe = payload.replace("\r", "").replace("\n", "\\n")
+                yield f"data: {safe}\n\n".encode("utf-8")
+                await asyncio.sleep(3.0)
+        except asyncio.CancelledError:
+            return
+
+    return StreamingResponse(gen(), media_type="text/event-stream")
 
 
 @app.get("/api/projects")
@@ -3026,6 +3247,265 @@ def inbox_update_ping(body: UpdatePingBody):
         except Exception as e:
             skipped.append({"agent": agent, "reason": f"send-failed: {e}"})
     return {"ok": True, "delivered": delivered, "skipped": skipped, "body": msg_body}
+
+
+# ============================================================================
+# jcode-form agent terminals — WebSocket-backed Claude CLI subprocess panes
+# Author: RKOJ-ELENO :: 2026-05-21
+# ----------------------------------------------------------------------------
+# Each pane wraps a `claude --dangerously-skip-permissions -p <phrase>` child.
+# Strategy chosen: Claude CLI's `-p` (print) mode is **one-shot** — it reads the
+# prompt, prints the reply, and exits. So we don't pipe stdin for follow-up
+# turns. Instead, each operator message respawns the subprocess with the
+# accumulated context (previous turns concatenated) as the new `-p` argument.
+# The pane's session state (turns list) lives in memory in PANES below.
+# Rationale: the alternative — keeping `claude` interactive — would need a
+# pty (Windows pywinpty), which adds a heavy dep we don't have yet. Once
+# we wire the `forge.spawn` interactive PTY worker, we'll switch over.
+# ============================================================================
+import uuid as _uuid_mod
+
+PANES: dict[str, dict[str, Any]] = {}
+# pane_id -> {project_key, agent_name, mode, accent, opening_phrase,
+#             turns: [{role:"operator"|"agent", text:str, ts:str}],
+#             created_at:str, status:"idle"|"running"|"closed",
+#             current_proc: asyncio.subprocess.Process | None}
+
+
+class _SpawnPaneBody(BaseModel):
+    project_key: str = "sanctum"
+    agent_name: str = "EVE"
+    mode: str = "overview"
+    accent: str = "purple"
+    opening_phrase: Optional[str] = None
+
+
+def _pane_summary(pane_id: str, p: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "pane_id": pane_id,
+        "project_key": p.get("project_key"),
+        "agent_name": p.get("agent_name"),
+        "mode": p.get("mode"),
+        "accent": p.get("accent"),
+        "status": p.get("status", "idle"),
+        "created_at": p.get("created_at"),
+        "turn_count": len(p.get("turns", [])),
+    }
+
+
+@app.post("/api/agent/spawn")
+def jcode_spawn(body: _SpawnPaneBody):
+    """Reserve a pane_id and seed initial state. The WebSocket then drives the
+    actual claude subprocess. We do NOT spawn here — that happens on
+    websocket /ws/agent/{pane_id} connect, so we can stream output."""
+    pane_id = _uuid_mod.uuid4().hex[:12]
+    opening = body.opening_phrase or (
+        f"You are EVE, the {body.agent_name} agent for project {body.project_key} "
+        f"in {body.mode} mode. Acknowledge and report what you see."
+    )
+    PANES[pane_id] = {
+        "project_key": body.project_key,
+        "agent_name": body.agent_name,
+        "mode": body.mode,
+        "accent": body.accent,
+        "opening_phrase": opening,
+        "turns": [],
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "status": "idle",
+        "current_proc": None,
+    }
+    return {"ok": True, "pane_id": pane_id, "pane": _pane_summary(pane_id, PANES[pane_id])}
+
+
+@app.get("/api/agent/list")
+def jcode_list():
+    return {"ok": True, "panes": [_pane_summary(k, v) for k, v in PANES.items()]}
+
+
+@app.post("/api/agent/{pane_id}/close")
+async def jcode_close(pane_id: str):
+    p = PANES.get(pane_id)
+    if not p:
+        raise HTTPException(status_code=404, detail="pane not found")
+    proc = p.get("current_proc")
+    if proc is not None and getattr(proc, "returncode", 0) is None:
+        try:
+            proc.terminate()
+            try:
+                await asyncio.wait_for(proc.wait(), timeout=2.0)
+            except asyncio.TimeoutError:
+                proc.kill()
+        except Exception:
+            pass
+    p["status"] = "closed"
+    p["current_proc"] = None
+    return {"ok": True, "pane_id": pane_id}
+
+
+def _build_prompt_with_history(p: dict[str, Any], new_text: Optional[str]) -> str:
+    """Concatenate prior turns + new operator line into a single -p prompt.
+    Keeps it short (last ~12 turns) so the CLI arg stays under Windows' 32 KB
+    process-arg limit."""
+    chunks: list[str] = [p.get("opening_phrase", "")]
+    history = p.get("turns", [])[-12:]
+    for t in history:
+        role = "Operator" if t.get("role") == "operator" else "EVE"
+        chunks.append(f"\n[{role}] {t.get('text', '')}")
+    if new_text:
+        chunks.append(f"\n[Operator] {new_text}")
+        chunks.append("\n[EVE]")
+    return "\n".join(chunks).strip()
+
+
+async def _run_claude_and_stream(ws: WebSocket, p: dict[str, Any], prompt: str) -> None:
+    """Spawn `claude -p <prompt>`, stream stdout/stderr to the websocket."""
+    try:
+        proc = await asyncio.create_subprocess_exec(
+            "claude",
+            "--dangerously-skip-permissions",
+            "-p",
+            prompt,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+            stdin=asyncio.subprocess.DEVNULL,
+        )
+    except FileNotFoundError:
+        await ws.send_json({
+            "kind": "stderr",
+            "data": "[ERROR] `claude` CLI not on PATH. Install Claude Code CLI or fix PATH.\r\n",
+        })
+        await ws.send_json({"kind": "status", "data": "idle"})
+        return
+    except Exception as e:
+        await ws.send_json({"kind": "stderr", "data": f"[ERROR] spawn failed: {e}\r\n"})
+        await ws.send_json({"kind": "status", "data": "idle"})
+        return
+
+    p["current_proc"] = proc
+    p["status"] = "running"
+    await ws.send_json({"kind": "status", "data": "running"})
+
+    agent_buf: list[str] = []
+
+    async def _pump(stream, kind: str) -> None:
+        while True:
+            chunk = await stream.read(1024)
+            if not chunk:
+                break
+            try:
+                text = chunk.decode("utf-8", errors="replace")
+            except Exception:
+                text = repr(chunk)
+            # Normalize bare LF to CRLF so xterm.js wraps cleanly.
+            text = text.replace("\r\n", "\n").replace("\n", "\r\n")
+            if kind == "stdout":
+                agent_buf.append(text)
+            try:
+                await ws.send_json({"kind": kind, "data": text})
+            except Exception:
+                return
+
+    try:
+        await asyncio.gather(_pump(proc.stdout, "stdout"), _pump(proc.stderr, "stderr"))
+        await proc.wait()
+    except Exception as e:
+        try:
+            await ws.send_json({"kind": "stderr", "data": f"[stream error] {e}\r\n"})
+        except Exception:
+            pass
+    finally:
+        # Record the agent reply (stdout, stripped of CR) into pane history.
+        reply = "".join(agent_buf).replace("\r\n", "\n").strip()
+        if reply:
+            p.setdefault("turns", []).append({
+                "role": "agent",
+                "text": reply,
+                "ts": datetime.now(timezone.utc).isoformat(),
+            })
+        p["current_proc"] = None
+        p["status"] = "idle"
+        try:
+            await ws.send_json({"kind": "status", "data": "idle"})
+            await ws.send_json({"kind": "turn-end", "data": ""})
+        except Exception:
+            pass
+
+
+@app.websocket("/ws/agent/{pane_id}")
+async def jcode_ws(ws: WebSocket, pane_id: str):
+    """Per-pane WebSocket. Client frames:
+        {"kind":"stdin","data":"..."}   — operator's next turn (respawns claude)
+        {"kind":"kill"}                 — terminate running subprocess
+    Server frames:
+        {"kind":"stdout"|"stderr","data":"..."}
+        {"kind":"status","data":"idle"|"running"|"closed"}
+        {"kind":"turn-end","data":""}   — current claude invocation finished
+    """
+    await ws.accept()
+    p = PANES.get(pane_id)
+    if not p:
+        await ws.send_json({"kind": "stderr", "data": "[ERROR] unknown pane_id\r\n"})
+        await ws.close()
+        return
+
+    # Header banner inside xterm.
+    banner = (
+        f"\x1b[35m─── EVE on {p.get('agent_name')} :: {p.get('project_key')} "
+        f"({p.get('mode')}) ───\x1b[0m\r\n"
+    )
+    await ws.send_json({"kind": "stdout", "data": banner})
+
+    # Initial turn: send the opening phrase.
+    initial_prompt = _build_prompt_with_history(p, None)
+    # Spawn the first invocation in the background so we can also pump operator frames.
+    initial_task = asyncio.create_task(_run_claude_and_stream(ws, p, initial_prompt))
+
+    try:
+        while True:
+            try:
+                msg = await ws.receive_json()
+            except WebSocketDisconnect:
+                break
+            except Exception:
+                continue
+            kind = (msg or {}).get("kind") or ""
+            if kind == "stdin":
+                text = (msg.get("data") or "").strip()
+                if not text:
+                    continue
+                # If a previous turn is still running, let the user know.
+                if p.get("status") == "running":
+                    await ws.send_json({
+                        "kind": "stderr",
+                        "data": "[busy] previous turn still running — wait or send /kill\r\n",
+                    })
+                    continue
+                p.setdefault("turns", []).append({
+                    "role": "operator",
+                    "text": text,
+                    "ts": datetime.now(timezone.utc).isoformat(),
+                })
+                prompt = _build_prompt_with_history(p, None)
+                asyncio.create_task(_run_claude_and_stream(ws, p, prompt))
+            elif kind == "kill":
+                proc = p.get("current_proc")
+                if proc is not None and getattr(proc, "returncode", 0) is None:
+                    try:
+                        proc.terminate()
+                    except Exception:
+                        pass
+                    await ws.send_json({"kind": "stderr", "data": "[killed]\r\n"})
+            else:
+                # Unknown frame; ignore.
+                pass
+    finally:
+        # Drain the initial task if still pending.
+        if not initial_task.done():
+            initial_task.cancel()
+        try:
+            await ws.close()
+        except Exception:
+            pass
 
 
 # Mount /static for assets (theme.css, app.js, sinister-logo.png, etc.)
