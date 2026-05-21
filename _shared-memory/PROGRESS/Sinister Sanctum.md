@@ -4,6 +4,28 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-21 ~19:25 — RKOJ.exe v1.4.1 SHIPPED to Desktop — MCP Phase 2A `/mcp` subcommand wire-up (commit `ccd859c`, swept)
+
+Continuation of v1.4.0 integration. `/mcp` slash command in `projects/sinister-forge/source/forge/commands.py::_cmd_mcp` was a thin list-only stub. Phase 2A extends it to 5 subcommands using the bundled `mcp` Python SDK:
+
+- `/mcp` (default) or `/mcp list` — list all servers from `~/.claude/.mcp.json` with command + args preview.
+- `/mcp show <name>` — pretty-print full JSON config for one server.
+- `/mcp status` — health probe: SDK importable Y/N + version, config file presence, server count.
+- `/mcp tools <name>` — placeholder, documents Phase 2B follow-up (async-Textual-loop integration) + import-from-bundled-SDK example.
+- `/mcp call <name> <tool> [json]` — placeholder, same Phase 2B follow-up.
+
+**Build pipeline**: `pyinstaller --clean --noconfirm RKOJ.spec` ran ~70 sec; new binary 52.68 MB (+2.5 KB vs v1.4.0); copied to `C:/Users/Zonia/Desktop/RKOJ.exe`. Smoke `RKOJ.exe version` returns exit 0 with the full sinister-cli umbrella enumerated.
+
+**Multi-agent contention observation**: kernel-apk lane (sibling) made 3 commits (`13bdf80`, `77d2362`, `ccd859c`) on this same branch in parallel to my work — and `ccd859c` accidentally swept my MANIFEST/CHANGELOG/RKOJ-entry/commands.py edits into a kernel-apk-titled commit via `git add .` style staging. Functionally fine (changes are at HEAD, EXE built from them, pushed to origin), but historically attributed to kernel-apk. Brain entry on this contention pattern already exists (`multi-agent-branch-contention-isolation-pattern.md`). The launcher's per-agent branch cut from `main` is the doctrine fix; both lanes were operating on the same `agent/sinister-sanctum/cli-dispatcher-2026-05-21` branch this session.
+
+**Umbrella docs**: `projects/rkoj/MANIFEST.json` version 1.4.0 → 1.4.1. `projects/rkoj/CHANGELOG.md` v1.4.1 entry added detailing the 5 subcommands + Phase 2B queue. `RKOJ-entry.py __version__` bumped 1.3.0 → 1.4.1.
+
+**Operator-gated remaining**: D:/_backups custodian-stop drain (#13), D:/Sinister → D:/Personal rename (#15), interactive UI smoke (#17), 24h SinisterSanctumDailyBackup schtask (#11 deleted earlier but still operator-action).
+
+**Sub-agent in flight**: deeper Sinister/* audit (14 residual entries — Panel/RKA/Sandbox/Snap-EMU/TG/TikTok-EMU/Workstation-Setup/iMessage-Bridge/Snap-Signer/sinister-helper/_vault). Will write `_shared-memory/plans/sanctum-d-drive-final-reorg-2026-05-21/projects-audit-v2.md` when done.
+
+---
+
 ## 2026-05-21 ~19:15 — RKOJ.exe v1.4.0 SHIPPED to Desktop (integrated bundle: Term + MCP SDK + Skills + workstation auto-launch + vault auto-spawn) — commits `e34ac7a` + `216f47d`
 
 EVE (Author: RKOJ-ELENO) on `agent/sinister-sanctum/cli-dispatcher-2026-05-21`. Operator escalation mid-turn (verbatim): *"no you are worng we are working on rkoj exe not fucking bat ... we are combingin all thigns we have been working on rkoj workstation, jcode, all the skills we ahve made, mcp, our new console system, rikki all of that"* → *"idk keep working and dont stop"*. Course-corrected from bat-scaffolding sprint to EXE-level integration.
