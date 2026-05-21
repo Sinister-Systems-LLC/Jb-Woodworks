@@ -1,0 +1,28 @@
+# Sinister Sanctum :: sanctum-backup
+# Author: RKOJ-ELENO :: 2026-05-21
+# License: AGPL-3.0-or-later
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sanctum-backup"
+version = "0.1.0"
+description = "Sinister Sanctum :: recurring backup tool. Daily robocopy snapshots of D:/Sinister Sanctum/ with 7-day retention + per-backup manifest (date, branch, HEAD, sizes, file counts, errors). Schedules a Windows Task at 03:00 local on `install-task`."
+authors = [{ name = "RKOJ-ELENO" }]
+license = { text = "AGPL-3.0-or-later" }
+requires-python = ">=3.9"
+readme = "README.md"
+
+dependencies = [
+  "click>=8.0",
+  "rich>=13.0",
+]
+
+[project.scripts]
+sanctum-backup = "sanctum_backup.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["sanctum_backup*"]

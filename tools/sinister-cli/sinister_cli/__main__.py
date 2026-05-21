@@ -47,6 +47,11 @@ SUBCOMMAND_MAP: dict[str, tuple[str, str, str, str]] = {
         "sinister_model.__main__", "main",
         "pip install -e \"D:/Sinister Sanctum/tools/sinister-model\"",
     ),
+    "sanctum-backup": (
+        "Daily Sinister Sanctum backups (robocopy snapshots, 7-day retention, manifest per backup)",
+        "sanctum_backup.__main__", "main",
+        "pip install -e \"D:/Sinister Sanctum/tools/sanctum-backup\"",
+    ),
     "freeze": (
         "Joe @ Ferrari of Winter Park lane (future project)",
         "sinister_freeze.__main__", "main",

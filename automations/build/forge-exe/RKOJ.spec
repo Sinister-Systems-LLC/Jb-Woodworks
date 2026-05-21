@@ -35,6 +35,7 @@ sinister_packages = (
     "sinister_swarm",
     "forge_memory_bridge",
     "memory_graph_render",
+    "sanctum_backup",
 )
 sinister_subs = []
 sinister_data = []
@@ -184,6 +185,7 @@ a = Analysis(
         r"D:\Sinister Sanctum\tools\sinister-swarm",
         r"D:\Sinister Sanctum\tools\forge-memory-bridge",
         r"D:\Sinister Sanctum\tools\memory-graph-render",
+        r"D:\Sinister Sanctum\tools\sanctum-backup",
     ],
     binaries=binaries,
     datas=datas,

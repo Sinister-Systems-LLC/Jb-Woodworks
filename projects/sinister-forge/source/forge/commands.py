@@ -74,18 +74,129 @@ def _sanctum_root() -> Path:
 # ===========================================================================
 
 def _cmd_help(args, pane, app) -> str:
+    """jcode-style /help overlay — rich.Panel grouped by section.
+
+    Operator directive 2026-05-21: jcode's /help opens a beautiful overlay with
+    60+ commands organized in sections. Match that form factor (Title with 0%
+    token indicator, Commands / Session / Memory & Swarm / Auth & Accounts /
+    System / Navigation sections, purple #A06EFF headings, gray-dim descs).
+    """
     if args:
         target = args[0].lstrip("/").lower()
         e = SLASH_COMMANDS.get(target)
         if not e:
             return f"[yellow]unknown command /{target}[/]"
         return f"[bold]/{target}[/]  {e.get('summary', '')}\n  {e.get('detail', '(no detail)')}"
+
+    # Build overlay via rich.Panel. Render to a string so it works in both the
+    # Textual pane (which calls pane.write) and the in-EXE shell (which prints).
+    try:
+        from rich.console import Console
+        from rich.panel import Panel
+        from rich.text import Text
+        import io
+    except Exception:
+        return _cmd_help_plaintext()
+
+    PURPLE = "#A06EFF"
+    DIM = "grey50"
+
+    sections: list[tuple[str, list[tuple[str, str]]]] = [
+        ("Commands", [
+            ("/help",         "show this overlay"),
+            ("/model",        "list | current | set <id> | info <id> | providers"),
+            ("/agents",       "live agents + heartbeat ages"),
+            ("/effort",       "none|low|medium|high|xhigh"),
+            ("/fast",         "on|off|status|default"),
+            ("/transport",    "set transport mode auto|https|websocket"),
+            ("/alignment",    "text alignment: status|centered|left"),
+            ("/config",       "show config (sub: init, edit)"),
+            ("/dictate",      "external speech-to-text"),
+            ("/git",          "git status -sb for sanctum repo"),
+            ("/context",      "full session context snapshot"),
+            ("/info",         "session info + mode / tools"),
+            ("/usage",        "token-quota / billing endpoint registry"),
+            ("/version",      "show version + bundled tools"),
+            ("/changelog",    "recent PROGRESS entries"),
+        ]),
+        ("Session", [
+            ("/clear",        "clear this pane's log"),
+            ("/compact",      "consolidate memory (memory-consolidate.ps1)"),
+            ("/rewind",       "show numbered history, /rewind N to step back"),
+            ("/fix",          "attempt recovery from errors"),
+            ("/poke",         "nudge model to resume incomplete todos"),
+            ("/improve",      "autonomous code-quality loop (sub: resume)"),
+            ("/refactor",     "safe refactor + review loop (sub: resume)"),
+            ("/split",        "clone session into new window"),
+            ("/splitview",    "mirror current chat in side panel"),
+            ("/transfer",     "fresh session with compacted context + todos"),
+            ("/workspace",    "Niri-style workspace splits"),
+            ("/catchup",      "side-panel briefs (sub: next)"),
+            ("/back",         "return to previous Catch Up session"),
+            ("/resume",       "browse + read past resume-points"),
+            ("/save",         "write a resume-point now"),
+            ("/rename",       "name / unname session"),
+            ("/unsave",       "remove bookmark"),
+        ]),
+        ("Memory & Swarm", [
+            ("/memory",       "on|off | search | write | recall | list"),
+            ("/goals",        "show WORK-TOWARD.md goals"),
+            ("/swarm",        "on|off | spawn N | list | dm | broadcast"),
+        ]),
+        ("Auth & Accounts", [
+            ("/auth",         "11-provider auth status"),
+            ("/login",        "providers | current | doctor <p> | env <p>"),
+            ("/account",      "alias of /auth (combined picker)"),
+            ("/subscription", "Sinister LLC subscription scaffold"),
+        ]),
+        ("System", [
+            ("/reload",        "reload — restart RKOJ.exe"),
+            ("/restart",       "restart with current binary"),
+            ("/rebuild",       "full rebuild — instructions"),
+            ("/client-reload", "remote-only"),
+            ("/server-reload", "remote-only"),
+            ("/debug-visual",  "enable Textual reactive inspector"),
+            ("/quit",          "exit Forge"),
+        ]),
+        ("Navigation", [
+            ("PageUp/PageDown", "scroll the chat log"),
+            ("Esc",             "close this overlay"),
+            ("/help <cmd>",     "show detail for one command"),
+        ]),
+    ]
+
+    body = Text()
+    body.append("Help", style=f"bold {PURPLE}")
+    body.append("                                                      ")
+    body.append("0%", style=f"bold {DIM}")
+    body.append("  (token usage)\n", style=DIM)
+    body.append("\n")
+    for title, rows in sections:
+        body.append(f"{title}\n", style=f"bold {PURPLE}")
+        width = max((len(n) for n, _ in rows), default=14)
+        for name, desc in rows:
+            body.append(f"  {name:<{width + 2}}", style="white")
+            body.append(f"{desc}\n", style=DIM)
+        body.append("\n")
+
+    buf = io.StringIO()
+    console = Console(file=buf, force_terminal=True, color_system="truecolor",
+                      width=92, record=False, legacy_windows=False)
+    panel = Panel(body, title=f"[{PURPLE}]EVE — Forge[/]",
+                  border_style=PURPLE, padding=(1, 2))
+    console.print(panel)
+    return buf.getvalue().rstrip()
+
+
+def _cmd_help_plaintext() -> str:
+    """Plain-text fallback for when rich is unavailable."""
     lines = ["[bold]EVE :: Forge slash commands (jcode parity)[/]\n"]
     by_cat: dict[str, list[str]] = {}
     for name, meta in sorted(SLASH_COMMANDS.items()):
         cat = meta.get("category", "misc")
         by_cat.setdefault(cat, []).append(name)
-    cat_order = ["core", "session", "memory", "swarm", "auth", "system", "agent", "ui", "loop", "skills", "misc"]
+    cat_order = ["core", "session", "memory", "swarm", "auth", "system",
+                 "agent", "ui", "loop", "skills", "misc"]
     for cat in cat_order:
         if cat not in by_cat:
             continue
@@ -93,7 +204,7 @@ def _cmd_help(args, pane, app) -> str:
         for n in by_cat[cat]:
             s = SLASH_COMMANDS[n].get("summary", "")
             lines.append(f"  /{n:<14} {s}")
-    lines.append("\n[dim]also: :dm :broadcast :host :swarm :clear (legacy `:` prefix)[/]")
+    lines.append("\n[dim]Esc closes overlay · PageUp/PageDown scroll · /help <cmd> detail[/]")
     return "\n".join(lines)
 
 
@@ -187,9 +298,25 @@ def _cmd_config(args, pane, app) -> str:
             return f"  opened {cfg}"
         except Exception as e:
             return f"[red]config edit failed: {e}[/]"
+    if args and args[0] == "init":
+        if cfg.exists():
+            return f"[yellow]config already exists: {cfg}[/]\n  /config edit to open"
+        try:
+            cfg.parent.mkdir(parents=True, exist_ok=True)
+            cfg.write_text(json.dumps({
+                "accent": "purple",
+                "theme": "sinister",
+                "memory_enabled": True,
+                "swarm_enabled": False,
+                "effort": "medium",
+                "fast_mode": "default",
+            }, indent=2), encoding="utf-8")
+            return f"[bold]wrote default config[/]  {cfg}"
+        except Exception as e:
+            return f"[red]config init failed: {e}[/]"
     if not cfg.exists():
-        return f"[yellow]no config at {cfg}[/]"
-    return f"[bold]config[/]\n  path: {cfg}\n  size: {cfg.stat().st_size} bytes\n  /config edit to open"
+        return f"[yellow]no config at {cfg}[/]\n  /config init to write defaults"
+    return f"[bold]config[/]\n  path: {cfg}\n  size: {cfg.stat().st_size} bytes\n  /config edit | /config init"
 
 
 def _cmd_changelog(args, pane, app) -> str:
@@ -213,6 +340,51 @@ def _cmd_changelog(args, pane, app) -> str:
 
 
 # ----- session commands ---------------------------------------------------
+
+def _cmd_start(args, pane, app) -> str:
+    """jcode /start — bat-file project-picker parity. Lists projects sorted by
+    last activity. Efficient, clean, fast.
+
+    Mirrors `automations/start-sinister-session.ps1` UX inline. Reads
+    `automations/session-templates/projects.json`; sorts by most-recent
+    resume-point mtime; max 20 rows. In the Forge TUI this prints the list +
+    instructions (interactive stdin picker only fires from the RKOJ.exe shell
+    loop, via `_start_picker` in RKOJ-entry.py).
+    """
+    sr = _sanctum_root()
+    proj_path = sr / "automations" / "session-templates" / "projects.json"
+    if not proj_path.exists():
+        return f"[red]/start: projects.json missing at {proj_path}[/]"
+    try:
+        data = json.loads(proj_path.read_text(encoding="utf-8"))
+    except Exception as e:
+        return f"[red]/start: projects.json parse error: {e}[/]"
+    projects = [p for p in data.get("projects", []) if not p.get("_subsumed_by")]
+    if not projects:
+        return "[yellow]/start: no projects in registry[/]"
+
+    rp_dir = sr / "_shared-memory" / "resume-points"
+
+    def _last_mtime(p: dict) -> float:
+        for slot in (p.get("display"), p.get("key"), (p.get("key") or "").title()):
+            if not slot:
+                continue
+            d = rp_dir / slot
+            if d.exists():
+                pts = list(d.glob("*.json"))
+                if pts:
+                    return max(x.stat().st_mtime for x in pts)
+        return 0.0
+
+    projects = sorted(projects, key=_last_mtime, reverse=True)[:20]
+    lines = ["[bold]EVE :: /start — pick a project (bat-file parity)[/]"]
+    for i, p in enumerate(projects, start=1):
+        mt = _last_mtime(p)
+        ts = datetime.datetime.fromtimestamp(mt).strftime("%m-%d %H:%M") if mt else "never"
+        lines.append(f"  [purple]{i:>2}[/]. [bold]{p.get('key', '?'):<22}[/] · {p.get('display', '')}  [dim]({ts})[/]")
+    lines.append("\n[dim]Run /start at the RKOJ.exe `>` prompt for the interactive picker (project + mode).[/]")
+    return "\n".join(lines)
+
 
 def _cmd_resume(args, pane, app) -> str:
     """jcode /resume — browse + load past resume-points."""
@@ -517,6 +689,25 @@ def _cmd_usage(args, pane, app) -> str:
     except Exception as e:
         return f"[red]sinister-usage unavailable: {e}[/]"
     return _capture_cli(usage_main, args or ["check-all"])
+
+
+def _cmd_backup(args, pane, app) -> str:
+    """/backup — Sinister Sanctum daily backups (sanctum-backup CLI).
+
+    Subcommands (delegated to sanctum_backup.cli):
+        /backup                -> list known backups
+        /backup now            -> run a backup right now
+        /backup list           -> list known backups
+        /backup verify <date>  -> re-check a snapshot's manifest
+        /backup prune          -> delete backups older than 7 days
+        /backup install-task   -> register the daily Windows scheduled task (operator-gated)
+    """
+    try:
+        from sanctum_backup.__main__ import main as backup_main
+    except Exception as e:
+        return (f"[red]sanctum-backup unavailable: {e}[/]\n"
+                f"  install: pip install -e \"D:/Sinister Sanctum/tools/sanctum-backup\"")
+    return _capture_cli(backup_main, args or ["list"])
 
 
 def _cmd_model(args, pane, app) -> str:
@@ -831,6 +1022,7 @@ SLASH_COMMANDS: dict[str, dict[str, Any]] = {
     # SESSION
     "clear":      _entry(_cmd_clear,     "clear this pane's log",                     "session"),
     "compact":    _entry(_cmd_compact,   "consolidate memory (kicks memory-consolidate.ps1)", "session"),
+    "start":      _entry(_cmd_start,     "pick a project + mode and launch a session (bat-file parity)", "session"),
     "resume":     _entry(_cmd_resume,    "browse + read past resume-points",          "session"),
     "save":       _entry(_cmd_save,      "write a resume-point now",                  "session"),
     "rename":     _entry(_cmd_rename,    "name / unname session",                     "session"),
@@ -861,6 +1053,7 @@ SLASH_COMMANDS: dict[str, dict[str, Any]] = {
     "account":    _entry(_cmd_account,   "alias of /auth (combined picker)",          "auth"),
     "provider":   _entry(_cmd_provider,  "list | current",                            "auth"),
     "usage":      _entry(_cmd_usage,     "token-quota / billing endpoint registry",   "auth"),
+    "backup":     _entry(_cmd_backup,    "now | list | verify <date> | prune | install-task (sanctum-backup)", "system"),
 
     # MODEL ROUTING
     "model":      _entry(_cmd_model,     "list | current | set <id> | info <id> | providers | clear  (jcode-model parity)", "agent"),
