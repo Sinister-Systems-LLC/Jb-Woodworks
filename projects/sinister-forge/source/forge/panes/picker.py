@@ -47,6 +47,7 @@ HOSTS = [
 @dataclass
 class PickerResult:
     project_key: str
+    project_display: str
     objective: str
     token_mode: str
     speed: str
@@ -71,6 +72,11 @@ class AgentPicker(ModalScreen[PickerResult | None]):
         projects = load_projects()
         project_options = [(p.display, p.key) for p in projects] or [("Sanctum", "sanctum")]
         default_project = projects[0].key if projects else "sanctum"
+        # Stash key->display map so _collect can populate PickerResult.project_display
+        # without re-loading projects (avoids race if projects.json changes mid-submit).
+        self._project_display_by_key: dict[str, str] = {p.key: p.display for p in projects}
+        if not self._project_display_by_key:
+            self._project_display_by_key = {"sanctum": "Sanctum"}
 
         with Vertical():
             yield Static("[b]NEW AGENT[/]  ::  fill the picks + Submit", markup=True)
@@ -115,13 +121,16 @@ class AgentPicker(ModalScreen[PickerResult | None]):
             return ""
 
     def _collect(self) -> PickerResult:
+        key = self._val("picker-project")
+        display = getattr(self, "_project_display_by_key", {}).get(key, key.title() if key else "")
         return PickerResult(
-            project_key=self._val("picker-project"),
+            project_key=key,
+            project_display=display,
             objective=self._val("picker-objective"),
             token_mode=self._val("picker-tokmode"),
             speed=self._val("picker-speed"),
             host=self._val("picker-host"),
-            agent_name=self._val("picker-name") or self._val("picker-project"),
+            agent_name=self._val("picker-name") or key,
             accent=self._val("picker-accent") or "purple",
             focus=self._val("picker-focus"),
         )

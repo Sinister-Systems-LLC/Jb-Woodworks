@@ -142,10 +142,13 @@ class ForgeApp(App):
 
     # ---------- actions ----------
 
-    @work
+    @work(exit_on_error=False)
     async def action_new_agent(self) -> None:
         # Textual 8.x: push_screen_wait requires a worker context. Without @work
         # the call raises NoActiveWorker and Ctrl+W crashes the app.
+        # exit_on_error=False so a bug in the post-submit flow notifies instead
+        # of killing the whole app (operator-reported submit-auto-close before
+        # adding project_display to PickerResult).
         result: PickerResult | None = await self.push_screen_wait(AgentPicker())
         if not result:
             return
@@ -232,7 +235,7 @@ class ForgeApp(App):
             self._memory_visible = False
             self.notify("memory panel closed", timeout=2)
 
-    @work
+    @work(exit_on_error=False)
     async def action_command_palette(self) -> None:
         # Textual 8.x: push_screen_wait requires a worker context.
         cmd_id = await self.push_screen_wait(CommandPalette())
