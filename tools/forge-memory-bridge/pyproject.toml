@@ -8,15 +8,18 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "forge-memory-bridge"
-version = "0.1.1"
-description = "Sinister Sanctum :: disk-first memory store bridging Ruflo agentdb_* into a Python API any agent (Forge, Term, Panel, RKOJ, APK) can import without MCP plumbing. jcode-memory-feature parity."
+version = "0.1.2"
+description = "Sinister Sanctum :: disk-first memory store bridging Ruflo agentdb_* into a Python API any agent (Forge, Term, Panel, RKOJ, APK) can import without MCP plumbing. jcode-memory-feature parity (incl. BM25 re-scoring v0.1.2)."
 authors = [{ name = "RKOJ-ELENO" }]
 license = { text = "AGPL-3.0-or-later" }
 requires-python = ">=3.9"
 readme = "README.md"
 
 dependencies = [
-  # no required deps — disk-first keyword search uses only stdlib
+  # BM25 re-scoring (jcode parity, brain entry pattern 6).
+  # rank_bm25 is pure-Python+numpy, tiny (~9KB wheel); promoted to
+  # required so RKOJ.exe builds always include it.
+  "rank_bm25>=0.2.2",
 ]
 
 [project.optional-dependencies]

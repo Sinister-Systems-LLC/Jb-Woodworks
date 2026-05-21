@@ -305,16 +305,72 @@ def _tfidf_score(query_tokens: builtins_list[str], records: builtins_list[dict])
     return scored
 
 
+def bm25_rescore(query: str, candidates: builtins_list[dict]) -> builtins_list[dict]:
+    """Re-order candidate hits using Okapi BM25 (jcode parity, pattern 6).
+
+    jcode (Rust) uses BM25 for `~/.jcode/sessions/` ranking in
+    `src/tool/session_search.rs`. Operator wants the same on RKOJ's recall
+    path. This function takes whatever `recall()` produced (TF-IDF top-k or
+    untouched pool) and re-orders by BM25 over the same record-text the
+    TF-IDF pass saw.
+
+    Each returned record gets a `_bm25_score` key (rounded float). The
+    pre-existing `_recall_score` (TF-IDF) is preserved on the dict so
+    debuggers can see both signals.
+
+    Falls back gracefully if `rank_bm25` is not installed — returns the
+    input list untouched. Empty inputs → empty list. Single-doc inputs
+    skip the corpus build (BM25 needs n>=2 for IDF to be meaningful) and
+    score 0.0.
+    """
+    if not candidates:
+        return []
+    try:
+        from rank_bm25 import BM25Okapi  # type: ignore
+    except ImportError:
+        # rank_bm25 not in this environment — caller asked for BM25 but
+        # we can't deliver. Return the input unchanged so the recall path
+        # degrades to whatever scoring it had before.
+        return candidates
+
+    query_tokens = _tokenize(query)
+    if not query_tokens:
+        return candidates
+
+    corpus = [_tokenize(_record_text(r)) for r in candidates]
+    # rank_bm25 errors on empty docs; substitute a single sentinel token.
+    corpus = [doc if doc else ["__empty__"] for doc in corpus]
+    bm25 = BM25Okapi(corpus)
+    scores = bm25.get_scores(query_tokens)
+
+    pairs = sorted(
+        zip(scores, candidates), key=lambda x: float(x[0]), reverse=True
+    )
+    out: builtins_list[dict] = []
+    for score, rec in pairs:
+        rec_copy = dict(rec)
+        rec_copy["_bm25_score"] = round(float(score), 6)
+        out.append(rec_copy)
+    return out
+
+
 def recall(
     query: str,
     namespace: str | None = None,
     limit: int = 10,
     use_mcp: bool = False,
+    bm25: bool = True,
 ) -> builtins_list[dict]:
     """Top-k matches by TF-IDF keyword (default) or Ruflo MCP semantic (use_mcp=True).
 
     MCP fast-path NOT implemented in v0.1.0 — falls back to disk TF-IDF.
     See README.md "Composes with" Ruflo section for the planned hookup.
+
+    BM25 re-scoring (jcode parity, brain entry pattern 6): when
+    `bm25=True` (default), the TF-IDF top-k is re-ordered by Okapi BM25
+    as a final pass. Records carry both `_recall_score` (TF-IDF) and
+    `_bm25_score` (BM25). Set `bm25=False` to keep the legacy TF-IDF
+    ordering (regression-test path).
     """
     if use_mcp:
         # Stub: caller must invoke mcp__ruflo__memory_search themselves in
@@ -327,13 +383,18 @@ def recall(
         return []
     query_tokens = _tokenize(query)
     if not query_tokens:
-        return pool[:limit]
+        out = pool[:limit]
+        if bm25:
+            out = bm25_rescore(query, out)
+        return out
     scored = _tfidf_score(query_tokens, pool)
     out = []
     for score, rec in scored[:limit]:
         rec_copy = dict(rec)
         rec_copy["_recall_score"] = round(score, 6)
         out.append(rec_copy)
+    if bm25:
+        out = bm25_rescore(query, out)
     return out
 
 

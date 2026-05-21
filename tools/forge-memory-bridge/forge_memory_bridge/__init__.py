@@ -5,6 +5,7 @@
 from .api import (
     write,
     recall,
+    bm25_rescore,
     ls,
     list,  # alias preserved for v0.1.0 callers; see api.py
     graph,
@@ -19,6 +20,7 @@ from .api import (
 __all__ = [
     "write",
     "recall",
+    "bm25_rescore",
     "ls",
     "list",
     "graph",
@@ -30,4 +32,4 @@ __all__ = [
     "SCHEMA_VERSION",
 ]
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
