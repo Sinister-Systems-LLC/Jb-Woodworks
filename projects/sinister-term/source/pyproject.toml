@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sinister-term"
+version = "0.1.0"
+description = "Sinister-branded terminal - handterm-inspired Sinister-themed shell for Windows."
+readme = "README.md"
+license = { text = "AGPL-3.0-or-later" }
+authors = [
+    { name = "RKOJ-ELENO", email = "andrew.viperrr@gmail.com" }
+]
+requires-python = ">=3.10"
+dependencies = [
+    "prompt_toolkit>=3.0.40",
+    "rich>=13.0",
+]
+
+[project.scripts]
+sterm = "term.__main__:run"
+sinister-term = "term.__main__:run"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["term*"]
+exclude = ["tests*"]

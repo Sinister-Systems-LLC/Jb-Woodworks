@@ -31,13 +31,27 @@ Sinister Term is our own Sinister-branded terminal — inspired by jehuang's `ha
 | Phase | What | Status |
 |---|---|---|
 | **PH0** | Scaffold (this commit) | ✅ |
-| **PH1** | Python+prompt_toolkit minimal shell w/ Sinister theme + Vault Boy boot | pending |
-| **PH2** | Builtin slash-commands (/forge /mind /launch /bot /skill) | pending |
-| **PH3** | Auto-completion from projects.json + bots/_INDEX.md + skills/_INDEX.md | pending |
-| **PH4** | History persistence (JSONL per session) | pending |
-| **PH5** | Forge integration (Ctrl+F spawns Forge pane on cwd project) | pending |
-| **PH6** | Mind integration (`/mind` opens http://127.0.0.1:5079/) | pending |
+| **PH1** | Python+prompt_toolkit minimal shell w/ Sinister theme | ✅ 2026-05-21 |
+| **PH2** | Builtin slash-commands (/forge /mind /launch /bot /skill /projects /heartbeats /commits /cd /help /exit) | ✅ 2026-05-21 |
+| **PH3** | Auto-completion (slash commands + project keys + filesystem) | ✅ 2026-05-21 |
+| **PH4** | History persistence (`_shared-memory/sinister-term-history/`) | ✅ 2026-05-21 |
+| **PH5** | Forge integration (`/forge` boots Forge TUI inline) | ✅ 2026-05-21 |
+| **PH6** | Mind integration (`/mind` opens http://localhost:5079/) | ✅ 2026-05-21 |
 | **PH7** | Rust port evaluation (only if operator says go after 30 days v0) | deferred |
+
+## Boot
+
+```
+cd "D:\Sinister Sanctum\projects\sinister-term\source"
+pip install -e .
+python -m term
+```
+
+Or after `pip install -e .`:
+
+```
+sterm
+```
 
 ## What we mine from handterm (per the audit)
 
