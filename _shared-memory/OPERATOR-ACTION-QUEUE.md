@@ -12,6 +12,8 @@ The Sanctum-side mirror of `SESSION-START/02-OPERATOR-QUEUE.md`, with checkboxes
 
 ## 2026-05-21 — Sanctum session surfaces (read-only, low-stakes)
 
+- [ ] 🟠 **Install Rust toolchain (rustup-init.exe)** — unblocks the jcode source-level fork into `projects/sinister-rkoj/`. ~1.5 GB rustup install (plus ~5-7 GB MSVC Build Tools if not already present, plus ~5-10 GB for the first `cargo build` of the 60+ crate workspace). Until then the **sidecar shim** at `tools/sinister-jcode-shim/` (v0.1.0 shipped 2026-05-21) wraps the prebuilt `jcode-windows-x86_64.exe` with our Sinister env config — that's the bridge. Full plan + risk register + rebrand checklist: `_shared-memory/plans/jcode-fork-2026-05-21/plan.md`. Toolchain installer: [https://rustup.rs](https://rustup.rs).
+
 - [ ] 🟠 **Set `ANTHROPIC_API_KEY` env var (system)** — RKOJ.exe v0.6.0 will switch to Anthropic SDK direct tool-use loop (multi-step reasoning visible like jcode) **only when this env is set**. Without it, RKOJ falls back to the existing `claude -p` one-shot path. One-line: `setx ANTHROPIC_API_KEY "sk-ant-..."` then restart any shell + RKOJ.exe. See `docs/ENV-VARIABLES.md` for the canonical list.
 
 
