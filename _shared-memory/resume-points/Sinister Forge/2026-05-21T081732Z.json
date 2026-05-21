@@ -1,0 +1,45 @@
+﻿{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-21T12:17:33.0152615Z",
+    "project":  "Sinister Forge",
+    "agent_name":  "Sinister Forge",
+    "mode":  "resume",
+    "focus_intent":  "",
+    "git":  {
+                "branch":  "agent/sinister-forge/r1-r2-r7-r8-r11-2026-05-21",
+                "head":  "90c5c7e4a10bb6a79de3077e05b7c6b80a181679",
+                "head_msg":  "feat(forge): F1 pytest suite + F2 wire subprocess + F3 brain trilogy + forward plan",
+                "recent_commits":  [
+                                       "90c5c7e feat(forge): F1 pytest suite + F2 wire subprocess + F3 brain trilogy + forward plan",
+                                       "9af3407 fix(forge): picker Submit auto-closed app - missing project_display + worker exit",
+                                       "7fce44a docs(forge): fresh resume-point 2026-05-21T075644Z",
+                                       "0422263 docs(forge): PH16/PH17/PH18 + jcode parity brain entry + Sanctum delegation + PROGRESS",
+                                       "aa04a4a fix(forge): Ctrl+W picker crash + re-apply _render shadowing fix + sibling ACKs",
+                                       "34af6a8 fix(forge): crash at boot - _render shadowing Widget._render in chrome+status_bar",
+                                       "88e3e9b docs(forge): EOT - PROGRESS top entry + first Sinister Forge resume-point",
+                                       "0e8490d feat(term): PH7-PH11 - toolbar + breadcrumb prompt + cross-agent builtins + keybindings",
+                                       "162300f docs(forge): PH14 agentgrep static verdict + live-benchmark gated on AUP",
+                                       "a972857 feat(forge): R7 RKOJ dashboard ASK + R8 mermaid_render.py + R11 harness brain entry"
+                                   ]
+            },
+    "progress_top3":  [
+                          "2026-05-21 13:00 â€” shipped: P0-C submit auto-close fix + F1 regression suite + F2 subprocess wire + brain extension + forward plan",
+                          "2026-05-21 12:00 â€” shipped: P0 forge crash fix (boot + Ctrl+W) + 3-directive absorption + brain entry"
+                      ],
+    "latest_plan":  {
+                        "dir":  null,
+                        "artifact":  null
+                    },
+    "inbox_unread_count":  0,
+    "last_5_files_touched_24h":  [
+                                     "_shared-memory\\PROGRESS\\Sinister Forge.md",
+                                     "automations\\agent-host-routing.md",
+                                     ".sanctum-staging-2026-05-21\\brain-swarm.md",
+                                     ".sanctum-staging-2026-05-21\\brain-cli.md",
+                                     "_shared-memory\\auto-push.log"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Sinister Forge.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}

@@ -6,6 +6,40 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-21 13:00 — shipped: P0-C submit auto-close fix + F1 regression suite + F2 subprocess wire + brain extension + forward plan
+
+Operator hit a THIRD textual quiet-failure bug: clicking Submit in the picker auto-closed the entire Forge app. Plus a comprehensive sweep of what's left, sibling check, and "get to work" execution.
+
+**P0-C (Submit auto-close, commit `9af3407`)**: two-part root cause —
+1. `PickerResult` dataclass missing `project_display`; `app.py:155` read `result.project_display` → `AttributeError`.
+2. `@work` defaults to `exit_on_error=True`, so the worker exception killed the entire app (return_code=1) — operator saw the window vanish with no notify.
+
+Fix: add `project_display` field to dataclass (populated via key→display map stashed in `compose()`) + `@work(exit_on_error=False)` on `action_new_agent` and `action_command_palette`. Pilot-verified: `boot + Ctrl+W + dismiss(_collect()) → pane mounted, app alive, return_code None`.
+
+**F1 (regression suite, commit `90c5c7e`)** `projects/sinister-forge/source/tests/test_boot_picker_smoke.py` — 8 tests, all pass in 26s on plain pytest (no pytest-asyncio dep; each async case wraps `asyncio.run`). Covers boot, Ctrl+W open, escape cancel, Submit mount, Ctrl+P palette, plus pure-unit checks for `_render` non-None, PickerResult fields, `_build_subprocess` dispatch. **Locks in P0-A + P0-B + P0-C so future Textual bumps regress visibly.**
+
+**F2 (subprocess wire-up, commit `90c5c7e`)**: previously the picker submitted and mounted an EMPTY pane (per PH3 spec the pane should spawn `claude --dangerously-skip-permissions <phrase>` — never wired). Added `_compose_phrase()` + `_build_subprocess()` helpers in `app.py`; `action_new_agent` now builds `ClaudeSubprocess` or `CodexSubprocess` based on picked host, passes it to `AgentPane`, and `run_worker(pane.run_subprocess())` to tail stdout/stderr into the pane. Falls back gracefully (notify warning) when picked project has no source tree on disk.
+
+**F3 (brain entry extension, commit `90c5c7e`)**: `_shared-memory/knowledge/textual-render-shadowing-pitfall.md` retitled to **"Textual 8.x quiet-failure-mode trilogy"** — now codifies ALL three P0s (shadow + worker-context + worker-exit) under one unified detection table + fast-triage grep commands.
+
+**F4 (sibling ACK, commit `90c5c7e`)**: dropped `inbox/sinister-term/2026-05-21T1255Z-ack-interactive-test-from-forge.json` acknowledging Term's 11:42Z interactive-test roundtrip.
+
+**Forward plan written** `_shared-memory/plans/sinister-forge-2026-05-21/forward-plan.md` — 5-section review for operator's "review everything" ask.
+
+**Sibling check**:
+- **Sinister Term** — heartbeat 07:42Z (fresh). Own worktree at `D:/Sinister-Term-WT/`. ACK posted to their inbox. No further action.
+- **Sinister Sanctum** — heartbeat 06:48Z (~90 min stale). Last shipped `tools/forge-memory-bridge/` + `tools/memory-graph-render/`. My [DELEGATE] for `tools/sinister-cli/` already cross-agent'd. Nothing else without touching their lane.
+
+**Operator-gated** (none blocking me):
+- O1: `scoop install mmdr` to enable R8 mermaid rendering.
+- O2: cargo build allow-rule for PH14 live agentgrep benchmark.
+- O3: `gh repo create Sinister-Systems-LLC/Sinister-Forge --private` (R12).
+- O4: PLAN.md Q1-Q5 answers (defaults in effect, optional override).
+
+**5-check completion gate** ✅ all green. Resume-point follows in next commit.
+
+---
+
 ## 2026-05-21 12:00 — shipped: P0 forge crash fix (boot + Ctrl+W) + 3-directive absorption + brain entry
 
 Heavy session, two operator-reported P0 crashes + three operator directives surfaced via images.
