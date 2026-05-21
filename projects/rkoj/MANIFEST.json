@@ -5,7 +5,7 @@
   "display": "RKOJ",
   "persona": "EVE",
   "authorship": "RKOJ-ELENO",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "updated": "2026-05-21",
   "components": [
     {
@@ -13,8 +13,24 @@
       "path": "projects/sinister-forge/source/forge",
       "kind": "forge",
       "enabled": true,
-      "version": "1.0.0",
+      "version": "1.1.0",
       "role": "Multi-pane TUI front door (sidebar + ADB tab + agent panes)"
+    },
+    {
+      "name": "forge-niri-workspace",
+      "path": "projects/sinister-forge/source/forge/panes/niri_workspace.py",
+      "kind": "forge-pane",
+      "enabled": true,
+      "version": "1.1.0",
+      "role": "NiriWorkspaceGrid scrollable-column workspace pane (Ctrl+Left/Right + Ctrl+Shift + Ctrl+1..9)"
+    },
+    {
+      "name": "forge-theme",
+      "path": "projects/sinister-forge/source/forge/theme.py",
+      "kind": "forge-theme",
+      "enabled": true,
+      "version": "1.1.0",
+      "role": "Sinister Panel chrome theme (THEME_CSS, fleet-wide)"
     },
     {
       "name": "term",

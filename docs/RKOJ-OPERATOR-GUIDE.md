@@ -1,10 +1,58 @@
 > **Author:** RKOJ-ELENO :: 2026-05-21
 
-# RKOJ.exe Operator Guide — v0.9.0
+# RKOJ.exe Operator Guide — v1.1.0
 
 `◈ EVE` — the jcode-form Sinister CLI agent.
 
 > Supersedes the older workbench-centric guide. For the full workstation overview see `docs/WORKBENCH.md`. For deep architecture see `_shared-memory/knowledge/rkoj-workbench-architecture.md`.
+
+---
+
+## What's new in v1.1.0
+
+Operator ship 2026-05-21 — fleet-wide UI doctrine, Niri-pattern ergonomics, 6 new real slash impls, D-drive reorg.
+
+### Sinister Panel chrome theme
+
+Global Forge pane theme applied on cold-start. 7497-char `THEME_CSS` block in `projects/sinister-forge/source/forge/theme.py` — purple Sanctum accent, chrome borders, scrollback styling. Picked up automatically by every pane (Agents tab, ADB tab, individual agent panes). No flag needed.
+
+### NiriWorkspaceGrid (Agents tab)
+
+Scrollable workspace columns inspired by the niri Wayland compositor. Source: `projects/sinister-forge/source/forge/panes/niri_workspace.py`.
+
+| Keybinding | Action |
+|---|---|
+| `Ctrl+Left` / `Ctrl+Right` | Navigate between workspace columns |
+| `Ctrl+Shift+Left` / `Ctrl+Shift+Right` | Reorder the active column |
+| `Ctrl+1` … `Ctrl+9` | Jump directly to column 1–9 |
+
+### `/mermaid` command
+
+Wires `memory-graph-render` into the TUI. Renders the brain knowledge graph (or the active session graph) as an ASCII mermaid block inside the current pane.
+
+Example:
+
+```
+/mermaid brain --tag forge-memory
+```
+
+### 5 more real slash impls
+
+These replace the v0.9.0 "not implemented" stubs with working implementations:
+
+- `/todo` — append/list operator-private todos for the active project
+- `/focus` — narrow the active context window to a single subsystem or tag
+- `/diff` — show staged + unstaged diff for the current branch inside the pane
+- `/search` — BM25 search across `_shared-memory/` + PROGRESS logs + brain
+- `/export` — write the active session JSONL to a chosen path for handoff
+
+### D-drive consolidation
+
+Phase 1 + 2 + 3 reorg landed:
+- `D:\Backups\*` consolidated under a single root
+- `D:\sinister-vault` → moved into Sanctum, original path is now a junction
+- `D:\Sinister\Sinister Skills` → moved into Sanctum, original path is now a junction
+- 5 clean projects relocated to `projects/sinister-*` (GG2 agent owns the Phase 3 commit + MANIFEST `components` entries for those 5)
 
 ---
 
@@ -45,7 +93,7 @@ RKOJ.exe is EVE: the jcode-form Sinister CLI agent. Click-to-launch, talks to Cl
 | System | 7 | `/reload` `/restart` `/rebuild` `/version` `/info` `/debug-visual` `/usage` |
 | Navigation | 2 | `/projects` `/agents` |
 
-Implemented today: `/help` `/quit` `/version` `/info` `/projects` `/start` `/resume` `/agents` `/inbox` `/brain` `/login` `/usage` `/swarm` `/memory` `/forge`. Everything else is a jcode-parity stub that prints "not implemented in v0.9.0" and routes to the parity roadmap.
+Implemented today (v1.1.0): `/help` `/quit` `/version` `/info` `/projects` `/start` `/resume` `/agents` `/inbox` `/brain` `/login` `/usage` `/swarm` `/memory` `/forge` `/mermaid` `/todo` `/focus` `/diff` `/search` `/export`. Everything else is a jcode-parity stub that prints "not implemented in v1.1.0" and routes to the parity roadmap.
 
 ---
 

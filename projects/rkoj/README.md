@@ -2,9 +2,13 @@
 
 # RKOJ — Sinister Sanctum's unified jcode-form agent system
 
+**Version:** v1.1.0 (2026-05-21) — see `CHANGELOG.md`.
+
 **One-line:** RKOJ is the Sinister Sanctum unified agent system — jcode form-factor at the core, expanded with every skill, bot, vault tap, swarm coordinator, and BM25 memory layer the fleet has built. EVE persona runs the orchestration. One EXE, one prompt, one console.
 
 This directory is the **umbrella project**. It does not duplicate source code — every component lives in its native lane on disk. RKOJ is the integration layer that names them, indexes them, builds them, and ships them as a single `RKOJ.exe`.
+
+**Component count:** ~23 entries in `MANIFEST.json` after v1.1.0 (forge sub-pieces + 5 newly-relocated `sinister-*` projects via GG2 Phase 3).
 
 ## What "unified" means here
 
