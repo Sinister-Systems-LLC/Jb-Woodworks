@@ -1,0 +1,9 @@
+# Author: RKOJ-ELENO :: 2026-05-21
+# Optional dependencies for re-building raster assets from SVG sources.
+#
+# Pillow is REQUIRED for _build_rasters.py (icon PNGs + splash PNG).
+# cairosvg is OPTIONAL — currently unused (we draw the mascot directly in
+# Pillow) but listed here for any future asset that needs raw SVG -> PNG
+# conversion.
+Pillow>=10.0.0
+cairosvg>=2.7.0

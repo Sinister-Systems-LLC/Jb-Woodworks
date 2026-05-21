@@ -1,0 +1,17 @@
+{
+  "_author": "RKOJ-ELENO :: 2026-05-21",
+  "_license": "AGPL-3.0",
+  "_description": "Sanctum brand palette — single source of truth for PyQt6 desktop + RN mobile + future Sanctum products. Mirrors snap.sinijkr.com Panel feel.",
+  "purpleAccent": "#A06EFF",
+  "purpleDeep": "#7A3DD4",
+  "purpleHalo": "#C39DFF",
+  "lightPurple": "#E8D6FF",
+  "bg": "#0E0A14",
+  "bgGlass1": "#15131A",
+  "bgGlass2": "#1C1626",
+  "bgGlow": "#2A1F3D",
+  "borderGlass": "#3A2A55",
+  "soft": "#999AB0",
+  "dim": "#6E6E84",
+  "greenAccent": "#85C86E"
+}

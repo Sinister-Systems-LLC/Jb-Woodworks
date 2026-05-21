@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Author: RKOJ-ELENO :: 2026-05-21
+  Asset: RKOJ devil mascot (Sanctum purple gradient).
+  Source: derived from automations/window-manager/web/skull.svg.
+  License: AGPL-3.0
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" width="60" height="60" aria-label="Sinister Sanctum devil mascot">
+  <defs>
+    <linearGradient id="mascotGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#C39DFF"/>
+      <stop offset="50%" stop-color="#A06EFF"/>
+      <stop offset="100%" stop-color="#7A3DD4"/>
+    </linearGradient>
+    <filter id="mascotGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="0.8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <g transform="scale(0.6)" fill="none" stroke="url(#mascotGrad)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" filter="url(#mascotGlow)">
+    <!-- horns -->
+    <path d="M22 10 L18 22 L26 22 Z" fill="url(#mascotGrad)"/>
+    <path d="M78 10 L82 22 L74 22 Z" fill="url(#mascotGrad)"/>
+    <!-- cranium -->
+    <path d="M50 16 C 28 16, 18 30, 18 48 C 18 58, 22 66, 28 70 L 28 80 L 40 80 L 40 86 L 60 86 L 60 80 L 72 80 L 72 70 C 78 66, 82 58, 82 48 C 82 30, 72 16, 50 16 Z"/>
+    <!-- eyes -->
+    <circle cx="38" cy="48" r="6" fill="url(#mascotGrad)" stroke="none"/>
+    <circle cx="62" cy="48" r="6" fill="url(#mascotGrad)" stroke="none"/>
+    <!-- nose -->
+    <path d="M50 56 L 46 66 L 50 68 L 54 66 Z" fill="url(#mascotGrad)" stroke="none"/>
+    <!-- teeth -->
+    <path d="M36 72 L 64 72"/>
+    <path d="M42 72 L 42 78"/>
+    <path d="M50 72 L 50 78"/>
+    <path d="M58 72 L 58 78"/>
+  </g>
+</svg>
