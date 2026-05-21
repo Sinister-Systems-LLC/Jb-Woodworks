@@ -1436,26 +1436,32 @@ if ($Project -eq '__custom__') {
     $focus = Read-Host '       focus'
     Say ''
 
-    # Q2 - objective (multi-select supported: enter "3,4" for dev+audit)
+    # Q2 - objective (multi-select supported: enter "4,5" for dev+audit)
     # v7 (Agent SS-A 2026-05-19): added 'rkoj' as default option 1 (launches
     # the workbench EXE and exits without spawning a Claude phrase; agents now
     # spawn from RKOJ -> Launcher tab).
+    # v12 (test 2026-05-21): auto + coaudit promoted to positions 2 + 3
+    # (right after rkoj). Operator wants "select auto or not" to be the
+    # primary decision; previously auto was buried at position 9. The
+    # autonomous-flow modes (rkoj / auto / coaudit) are now grouped at the
+    # top of the picker. Single bat (Start-Sinister-Auto-Session.bat
+    # deleted) - all selections including auto-or-not happen in this picker.
     Write-Host "  2/4  " -NoNewline -ForegroundColor $LightP
     Write-Host "Objective?  " -NoNewline -ForegroundColor $White
     Write-Host "(single, or comma-separated for combined: e.g. " -NoNewline -ForegroundColor $Dim
-    Write-Host "3,4" -NoNewline -ForegroundColor $LightP
+    Write-Host "4,5" -NoNewline -ForegroundColor $LightP
     Write-Host " = dev+audit)" -ForegroundColor $Dim
     $modeOpts = @(
-        @{ n='1'; key='rkoj';     desc='launch RKOJ workbench (no Claude here)  [default]' }
-        @{ n='2'; key='overview'; desc='read me in / status check' }
-        @{ n='3'; key='dev';      desc='active development / coding' }
-        @{ n='4'; key='audit';    desc='review state / find issues' }
-        @{ n='5'; key='deploy';   desc='ship to Hetzner / production' }
-        @{ n='6'; key='push';     desc='git commit + push to GitHub' }
-        @{ n='7'; key='debug';    desc='trace a specific bug / failure' }
-        @{ n='8'; key='explore';  desc='research / open-ended' }
-        @{ n='9'; key='auto';     desc='AUTONOMOUS LOOP :: review all plans + scope-plan + /loop' }
-        @{ n='10'; key='coaudit'; desc='CO-AUDIT a running project :: claims-vs-disk + concept-expand + gaps + handoff' }
+        @{ n='1';  key='rkoj';     desc='launch RKOJ workbench (no Claude here)  [default]' }
+        @{ n='2';  key='auto';     desc='AUTONOMOUS LOOP :: review all plans + scope-plan + /loop  (recommended for unattended sessions)' }
+        @{ n='3';  key='coaudit';  desc='CO-AUDIT a running project :: claims-vs-disk + concept-expand + gaps + handoff' }
+        @{ n='4';  key='dev';      desc='active development / coding' }
+        @{ n='5';  key='audit';    desc='review state / find issues' }
+        @{ n='6';  key='overview'; desc='read me in / status check' }
+        @{ n='7';  key='deploy';   desc='ship to Hetzner / production' }
+        @{ n='8';  key='push';     desc='git commit + push to GitHub' }
+        @{ n='9';  key='debug';    desc='trace a specific bug / failure' }
+        @{ n='10'; key='explore';  desc='research / open-ended' }
     )
     foreach ($o in $modeOpts) {
         Write-Host "       " -NoNewline
@@ -1480,7 +1486,8 @@ if ($Project -eq '__custom__') {
     Write-Host "[default=1, rkoj]" -ForegroundColor $LightP
     $mpick = Read-Host '       >'
     # v7 (Agent SS-A 2026-05-19): renumbered to put rkoj at position 1.
-    $modeMap = @{ '1'='rkoj'; '2'='overview'; '3'='dev'; '4'='audit'; '5'='deploy'; '6'='push'; '7'='debug'; '8'='explore'; '9'='auto'; '10'='coaudit' }
+    # v12 (test 2026-05-21): renumbered to promote auto + coaudit to positions 2 + 3.
+    $modeMap = @{ '1'='rkoj'; '2'='auto'; '3'='coaudit'; '4'='dev'; '5'='audit'; '6'='overview'; '7'='deploy'; '8'='push'; '9'='debug'; '10'='explore' }
     if (-not $mpick) { $mpick = '1' }
 
     # Multi-select support: "2,3" -> dev + audit. Combine phrases + tag mode.

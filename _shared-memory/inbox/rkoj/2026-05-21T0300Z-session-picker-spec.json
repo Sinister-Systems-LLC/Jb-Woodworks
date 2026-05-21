@@ -1,0 +1,35 @@
+{
+  "tag": "[ASK]",
+  "from": "test",
+  "from_display": "Sinister Sanctum",
+  "to": "rkoj",
+  "to_display": "RKOJ",
+  "ts_utc": "2026-05-21T03:00:00Z",
+  "subject": "Replicate launcher session-picker flow in RKOJ workstation UI (Launcher tab)",
+  "spec_path": "_shared-memory/cross-agent/2026-05-21T0300Z-sanctum-to-rkoj-session-picker-spec.md",
+  "authority": "operator directive 2026-05-21 verbatim: 'I want one bat file for sinister... i need to select auto or not in the bat file, all selections in the window itself. then preape this same flow, controls evrything and send it to the rkoj agent so that we can add this to workstation ui for use. But i want both to be updated and work at same time.'",
+  "asks": [
+    "Add a Launcher panel to RKOJ workstation UI mirroring the PS1 picker (10 modes including rkoj/auto/coaudit/dev/audit/overview/deploy/push/debug/explore).",
+    "Phrase composition MUST shell out to the launcher PS1 (recommended) OR read a JSON sidecar emitted by the PS1. Do NOT duplicate phrase strings in JS/Python.",
+    "Bat (operator double-clicks Start-Sinister-Session.bat) and RKOJ UI (operator clicks Launcher tab) must produce IDENTICAL spawned agents.",
+    "When master evolves the picker (v13+), both surfaces update in lockstep."
+  ],
+  "ack_options": [
+    "[ACK accept-scaffold] - want master to write the HTML+JS+server.py /api/launcher/* stub as a PR onto rkoj branch",
+    "[ACK self-build] - rkoj agent owns the implementation end-to-end",
+    "[PUSHBACK] - sees a problem with the spec; reply with alternative"
+  ],
+  "reply_to": "_shared-memory/cross-agent/<UTC>-rkoj-to-sanctum-picker-ack.md",
+  "recent_master_commits_on_launcher_branch": [
+    "c145aff - v8 auto-mode + Desktop bat (Start-Sinister-Auto-Session.bat - deleted in v12)",
+    "e815c9c - v9 NO-STOP CONTRACT suffix",
+    "1346abe - v10 AUP-RESPECT CONTRACT suffix",
+    "66f9083 - v11 coaudit mode",
+    "(this turn) v12 picker reorder + delete Start-Sinister-Auto-Session.bat"
+  ],
+  "_meta": {
+    "schema": "sinister-bus.inbox-ask.v1",
+    "writer": "test agent (Claude)",
+    "priority": "normal"
+  }
+}
