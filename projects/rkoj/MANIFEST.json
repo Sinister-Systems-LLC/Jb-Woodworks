@@ -5,7 +5,7 @@
   "display": "RKOJ",
   "persona": "EVE",
   "authorship": "RKOJ-ELENO",
-  "version": "1.1.0",
+  "version": "1.3.0",
   "updated": "2026-05-21",
   "components": [
     {
@@ -13,16 +13,32 @@
       "path": "projects/sinister-forge/source/forge",
       "kind": "forge",
       "enabled": true,
-      "version": "1.1.0",
-      "role": "Multi-pane TUI front door (sidebar + ADB tab + agent panes)"
+      "version": "1.3.0",
+      "role": "Multi-pane TUI front door (Sinister Panel-style sidebar with mascot + Agents/Phones tabs + per-project sub-tabs + workstation tab + auto-spawn Sanctum on first launch)"
+    },
+    {
+      "name": "forge-agents-dashboard",
+      "path": "projects/sinister-forge/source/forge/panes/agents_dashboard.py",
+      "kind": "forge-pane",
+      "enabled": true,
+      "version": "1.3.0",
+      "role": "AgentsDashboard pane with per-project sub-tabs (v1.3.0)"
+    },
+    {
+      "name": "forge-workstation-tab",
+      "path": "projects/sinister-forge/source/forge/panes/workstation_panel.py",
+      "kind": "forge-pane",
+      "enabled": true,
+      "version": "1.3.0",
+      "role": "Workstation tab in sidebar (v1.3.0)"
     },
     {
       "name": "forge-niri-workspace",
       "path": "projects/sinister-forge/source/forge/panes/niri_workspace.py",
       "kind": "forge-pane",
       "enabled": true,
-      "version": "1.1.0",
-      "role": "NiriWorkspaceGrid scrollable-column workspace pane (Ctrl+Left/Right + Ctrl+Shift + Ctrl+1..9)"
+      "version": "1.2.0",
+      "role": "NiriWorkspaceGrid scrollable-column workspace pane (Ctrl+Left/Right + Ctrl+Shift + Ctrl+1..9); v1.2.0 single-workspace mode default + auto-hide strip until 2+ workspaces"
     },
     {
       "name": "forge-theme",

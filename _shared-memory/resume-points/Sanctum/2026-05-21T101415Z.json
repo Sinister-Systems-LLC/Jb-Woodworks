@@ -1,0 +1,46 @@
+﻿{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-21T14:14:16.1186169Z",
+    "project":  "sanctum",
+    "agent_name":  "sanctum",
+    "mode":  "resume",
+    "focus_intent":  "",
+    "git":  {
+                "branch":  "agent/sinister-sanctum/cli-dispatcher-2026-05-21",
+                "head":  "38f2ab386994306e35eb8f6d8a542cb1b6984694",
+                "head_msg":  "docs(sanctum): sinister-usage README ΓÇö 3-layer CLI structure + extended API exports",
+                "recent_commits":  [
+                                       "38f2ab3 docs(sanctum): sinister-usage README ΓÇö 3-layer CLI structure + extended API exports",
+                                       "73cda95 docs(brain): resume-point-dir-name-convention (companion to sibling 811fb1c windows-case-folding)",
+                                       "811fb1c docs(brain): windows-case-folding-resume-point-trap (fall-through brain-capture per CONTRACT 2)",
+                                       "2f39915 docs(sanctum): PROGRESS 14:02 entry on disk (companion to cc84807)",
+                                       "cc84807 docs(sanctum): PROGRESS 14:02 turn-close + forge [ASK] re wayward 66a5b3e + resume-point 100514Z",
+                                       "7577a24 docs(sanctum): PROGRESS 09:56 entry + resume-point 095931Z (post sinister-review + true v1.2 ship)",
+                                       "35ad6de feat(sanctum): tools/sinister-usage/ v0.1.0 + jcode parity sweep continuation",
+                                       "06bcc46 docs(sanctum): agent-identity-eve brain entry + .gitignore harness adds + tools/_INDEX backfill (6 rows)",
+                                       "66a5b3e feat(forge): PH18 niri columns + PH16 swarm pump + :dm/:broadcast + PH10 :host switch",
+                                       "fba6510 feat(sanctum): sinister-review v0.1.0 tool + resume-point-write v1.2 + Term [HELLO] for forge-memory-bridge"
+                                   ]
+            },
+    "progress_top3":  [
+                          "2026-05-21 14:20 â€” committed: residual delta on top of sibling 14:15 sinister-usage closure â€” README CLI-layer headings + matrix-row-1c notes refresh + heartbeat + Panel HELLO-ACK archived",
+                          "2026-05-21 14:15 â€” sibling-shipped tools/sinister-usage/ v0.1.0 verified + matrix row 1c + agent-host-routing per-provider posture + Kernel-APK ACK"
+                      ],
+    "latest_plan":  {
+                        "dir":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\sanctum-auto-2026-05-20T2340Z",
+                        "artifact":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\sanctum-auto-2026-05-20T2340Z\\master-plan.md"
+                    },
+    "inbox_unread_count":  1,
+    "last_5_files_touched_24h":  [
+                                     "_shared-memory\\heartbeats\\sinister-term.json",
+                                     "_shared-memory\\sterm-ipc-sessions\\sterm-19564.json",
+                                     "automations\\build\\forge-exe\\build.log",
+                                     "automations\\build\\forge-exe\\build\\Sinister-Forge\\EXE-00.toc",
+                                     "automations\\build\\forge-exe\\build\\Sinister-Forge\\PKG-00.toc"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Sinister Sanctum.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\plans\\sanctum-auto-2026-05-20T2340Z\\master-plan.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}
