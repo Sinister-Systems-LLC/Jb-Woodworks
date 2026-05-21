@@ -1,102 +1,176 @@
-# Sinister Claw
+# RKOJ Mobile (formerly Sinister Claw)
 
 > **Author:** RKOJ-ELENO :: 2026-05-21
-> **Lane:** `sinister-claw` :: branch `agent/sinister-claw/<topic>` :: purple accent
+> **Lane:** `sinister-claw` (filesystem) / **app slug:** `rkoj` :: branch `agent/sinister-claw/<topic>` :: purple accent
 > **License:** AGPL-3.0-or-later
 > **Platforms:** iOS + Android (React Native + Expo)
 
 ## What this is
 
-**Sinister Claw** = our Sinister-branded mobile companion that lets the operator drive the entire fleet from their phone. Direct port + expansion of jcode's `Native OpenClaw` concept (operator's reference: "A native iOS application version of jcode... work with jcode on your personal machine's environment from your phone, via Tailscale. Openclaw like features will be bundled with this iOS application.")
+**RKOJ Mobile** is the mobile counterpart to the **RKOJ desktop workstation** (PyQt6, see `tools/sinister-rkoj-qt/`). It lets the operator drive the entire Sinister Sanctum fleet from their phone over Tailscale — same branding, same nav shape, same chip tabs, same `EVE` persona.
 
-Operator directive 2026-05-21:
-> *"i want this we are going to make this for ios and android to be paired with our sinister panel all featreus there and same ui. start this in parrallel"*
-> + *"make sure we are using jcode as a base and expanding on it"*
+Operator directive (verbatim 2026-05-21):
+> *"grab also the mobile ui we were making so i can mange claude agents from my phone. ios and android. call it RKOJ and use same logo. Brand ui just like the rkoj workstaton we are making and ultimately just like the sinister panel"*
 
-## jcode-as-base + Sinister expansion
+## Why "claw" renamed to "rkoj-mobile"
 
-| jcode Native OpenClaw | Sinister Claw |
-|---|---|
-| iOS-only (initially) | iOS + Android one codebase (Expo / React Native) |
-| Tailscale tunnel to personal machine | Same — operator runs Tailscale, phone joins the tailnet, Claw POSTs to Sanctum / Forge / Mind APIs over the tunnel |
-| jcode session control | Sinister Forge session control + Sinister Mind graph + Sinister Panel mirror |
-| Single-agent focus | Multi-agent + multi-project (all 11 Sanctum projects in nav) |
-| Generic terminal output | Sinister Panel UI mirrored 1:1 (Accounts / Videos / Devices / Phones / Plans / Forge agents / Mind graph) |
-| MIT license | AGPL-3.0-or-later under RKOJ-ELENO authorship |
+The original codename was **Sinister Claw** (a port of jcode's Native OpenClaw concept). The operator directive on 2026-05-21 collapsed the mobile lane into the RKOJ brand:
 
-## Architecture
+- `app.json` `name` / `slug` / `scheme` → `RKOJ` / `rkoj` / `rkoj`
+- `package.json` name → `rkoj-mobile`
+- iOS bundle id → `com.rkojeleno.rkoj.ios`
+- Android package → `com.rkojeleno.rkoj`
+- Icon + adaptive icon + splash + favicon → the RKOJ logo (same source PNG as `automations/window-manager/web/rkoj-logo.png`)
+
+The filesystem path `projects/sinister-claw/source/` is preserved so git history stays linear. The on-device product is **RKOJ**.
+
+## Branding -- one source of truth
+
+All hex values live in `app/theme/tokens.ts`. The palette is the operator-canonical Sanctum purple (matches `tools/sinister-rkoj-qt/sinister_rkoj_qt/theme.py` + Sinister Panel CSS variables verbatim):
+
+| Token            | Hex        |
+|------------------|------------|
+| `purpleAccent`   | `#A06EFF`  |
+| `purpleDeep`     | `#7A3DD4`  |
+| `purpleHalo`     | `#C39DFF`  |
+| `lightPurple`    | `#E8D6FF`  |
+| `bg`             | `#0E0A14`  |
+| `bgGlass`        | `#15131A`  |
+| `bgGlow`         | `#2A1F3D`  |
+| `borderGlass`    | `#3A2A55`  |
+| `soft`           | `#999AB0`  |
+| `dim`            | `#6E6E84`  |
+| `greenAccent`    | `#85C86E`  |
+
+Consume via the hook:
+
+```ts
+import { useTheme } from "@/theme";
+const { tokens, spacing, radii } = useTheme();
+// use tokens.purpleAccent etc. -- never inline hex.
+```
+
+A legacy `colors` alias remains in `app/theme/colors.ts` so the pre-rebrand screens (`SanctumScreen`, `ForgeScreen`, ...) still compile.
+
+## Nav shape (mirrors RKOJ desktop + Sinister Panel)
+
+### Drawer left (RkojSidebar)
+- **WORKSPACE**  — Overview · Agents · Projects
+- **OPERATIONS** — Phones · Vault · Watchdog
+- **AI**         — Brain · MCP · Skills
+- **SYSTEM**     — Settings · Account
+
+Mascot block at top: RKOJ logo + `E V E` label + `R K O J` sub-label.
+
+### Top header (RkojHeader)
+- RKOJ logo (tap = open drawer) + title `RKOJ Mobile` + subtitle `EVE · Sanctum Fleet`
+- 3 chip tabs: **Agents (●)** / **Phones (#)** / **Workstation (⚙)**
+- 4 action icons: alerts (!) · inbox (⏰) · search (⌕) · settings (⚙)
+
+### Body (chip-driven)
+- **Agents** — vertical list of agent cards. Each: project header + EVE label + mode pill + status dot + close (×) + terminal log SSE scroll + send-input row. CTA `+ SPAWN AGENT` opens the spawn sheet.
+- **Phones** — `adb devices` list with model / serial / state / transport. Tap → bottom sheet (Identity / Heartbeat / RKA arm+kill / Open scrcpy / ADB shell / Logcat tail SSE).
+- **Workstation** — grid of action tiles (Vault · Brain · Watchdog · Backups · MCP probe). Tap → calls forge bridge endpoint, renders result inline.
+
+## Forge bridge endpoints
+
+All API calls go to the operator's PC over Tailscale at `http://<host>:5078`. Configure via Settings (stored in `expo-secure-store` under `claw.sanctum.*`).
 
 ```
-                              Operator's phone
-                              (iOS / Android)
-                                   │
-                                   ▼  (over Tailscale)
-                  ┌──────────────────────────────────────┐
-                  │ Sinister Claw  (Expo / RN)           │
-                  │ - Sinister theme (purple iOS 18      │
-                  │   liquid glass, dark void)           │
-                  │ - 6 tabs: Sanctum / Forge / Mind /   │
-                  │   Panel / Projects / Settings        │
-                  └────────────────┬─────────────────────┘
-                                   │ HTTPS over Tailscale
-            ┌──────────────────────┼──────────────────────┐
-            ▼                      ▼                      ▼
-   Sinister Panel              Sinister Forge        Sinister Mind
-   (Hetzner production)        (operator PC :        (operator PC :
-   snap.sinijkr.com            python -m forge,     :5079 Flask + D3)
-   - Accounts / Videos          REST/SSE bridge      - graph JSON
-   - Devices / Phones           on :5078 [NEW])      - search / filter
-   - dispatch / loops           - spawn agent
-                                - tail stdout/stderr
-                                - terminate
+GET    /api/sanctum/heartbeats               -> Sanctum master heartbeats
+GET    /api/sanctum/projects                 -> 11+ project metadata
+GET    /api/sanctum/commits?limit=20         -> recent commits
+GET    /api/sanctum/inbox?limit=50           -> cross-agent inbox
+
+GET    /api/forge/agents                     -> list live agents
+POST   /api/forge/spawn                      -> spawn a new agent (body: SpawnParams)
+DELETE /api/forge/agents/:id                 -> terminate agent
+SSE    /api/forge/agents/:id/stream          -> tail stdout/stderr (event: line)
+POST   /api/forge/agents/:id/input           -> write to agent's stdin
+
+GET    /api/devices                          -> adb devices list
+GET    /api/devices/:serial                  -> identity + heartbeat detail
+POST   /api/devices/:serial/shell            -> adb shell (body: {cmd})
+POST   /api/devices/:serial/scrcpy           -> open scrcpy on host
+POST   /api/devices/:serial/rka/arm          -> arm RKA kill-switch
+POST   /api/devices/:serial/rka/kill         -> trigger RKA kill
+SSE    /api/devices/:serial/logcat           -> tail logcat
+
+GET    /api/workstation/vault/status         -> vault daemon probe
+GET    /api/workstation/brain/probe          -> knowledge index probe
+GET    /api/workstation/watchdog/status      -> heartbeat watcher
+POST   /api/workstation/backups/run          -> trigger backup snapshot
+GET    /api/workstation/mcp/probe            -> MCP server health
 ```
 
-## 7-tab nav (mirrors Sinister Panel + adds Forge/Mind)
+## Build for iOS / Android
 
-1. **Sanctum** — fleet overview (master heartbeat, all 11 projects, recent commits, operator-action queue)
-2. **Forge** — list of running agents, spawn new (mobile picker), tail per-pane stdout, kill button
-3. **Mind** — embed Mind's web UI in a WebView (Flask :5079 over Tailscale)
-4. **Panel** — Accounts / Videos / Devices / Phones / Dispatches (existing Panel API)
-5. **Projects** — drill into one project, see its plans / PROGRESS / resume-points / brain entries
-6. **Inbox** — cross-agent inbox messages addressed to the operator
-7. **Settings** — Tailscale connection, theme, auth token, biometric unlock
+The actual compile is an operator-action (Expo EAS Build or `expo run`):
 
-## Phases
+```bash
+cd projects/sinister-claw/source
+npm install                  # installs Expo SDK + react-navigation + RN deps
 
-| Phase | What | Status |
-|---|---|---|
-| **PH0** | Scaffold (this commit) — Expo + RN + TypeScript + theme | ✅ |
-| **PH1** | App shell: 7 tabs, navigation, Sinister theme (purple iOS 18 liquid glass) | next |
-| **PH2** | Sanctum tab — read /api/heartbeats + /api/master-plan from Sanctum (new endpoints needed on master) | next |
-| **PH3** | Forge bridge — Forge gains a REST/SSE server on :5078 that mobile can hit; List + spawn + tail + kill | week+ |
-| **PH4** | Mind tab — WebView pointing at http://<sanctum-pc-tailnet>:5079/ | next |
-| **PH5** | Panel tab — re-use existing snap.sinijkr.com endpoints (already JSON-API capable) | week+ |
-| **PH6** | Projects tab — read projects.json + per-project resume-points + plans | week+ |
-| **PH7** | Inbox tab — read _shared-memory/inbox/me/ + acknowledge UI | week+ |
-| **PH8** | Settings tab — Tailscale magic-DNS picker + auth token + biometric (FaceID/fingerprint) | week+ |
-| **PH9** | Push notifications — Sanctum master sends to operator's device when an agent breakthrough lands | week+ |
-| **PH10** | Background sync — even when app closed, fetch last-N PROGRESS top-lines for operator's wake-up screen | week+ |
-| **PH11** | Operator's voice command — Siri Shortcuts / Google Assistant intents that spawn a Forge agent | week+ |
+# Local dev (scan QR with Expo Go on the phone)
+npx expo start
 
-## Tech stack
+# iOS simulator
+npx expo run:ios
 
-- **Expo** (React Native + Hermes) — one codebase, ships to TestFlight + Play Internal in ~minutes
-- **TypeScript** — type safety across the API client + screens
-- **React Navigation** — bottom-tab nav (7 tabs)
-- **react-native-reanimated** — iOS-style spring animations
-- **expo-blur** — real backdrop-filter blur for the liquid-glass aesthetic
-- **expo-secure-store** — auth token storage
-- **WebView** (Expo) — embed Sinister Mind's D3 graph + Sinister Panel
-- **EventSource polyfill** — SSE for live Forge subprocess output
+# Android emulator / device
+npx expo run:android
 
-## License + authorship
+# Production builds (requires EAS account)
+npx eas build --platform ios
+npx eas build --platform android
+```
 
-AGPL-3.0-or-later. Every file: `Author: RKOJ-ELENO :: <date>`. Inspired-by attribution for jcode in `NOTICES.md` (jcode is MIT, openclaw concept is an architecture pattern not literal code).
+Bundle identifiers (set in `app.json`):
+- iOS: `com.rkojeleno.rkoj.ios`
+- Android: `com.rkojeleno.rkoj`
+
+App icon source: `assets/icon.png` (mirrors `automations/window-manager/web/rkoj-logo.png`).
+
+## File layout
+
+```
+projects/sinister-claw/source/
+  app.json                    # Expo manifest (RKOJ name + bundle ids + icons)
+  package.json                # rkoj-mobile, Expo SDK 51+
+  index.ts                    # Expo registerRootComponent stub
+  assets/
+    icon.png  adaptive-icon.png  splash-icon.png  favicon.png
+    rkoj-logo.png  sinister-logo.png  skull.svg
+  app/
+    index.tsx                 # ROOT -- drawer + header + chip-switched body + splash
+    theme/
+      tokens.ts               # *** SINGLE SOURCE OF TRUTH for branding ***
+      colors.ts               # legacy shim onto tokens
+      index.ts                # re-exports
+    components/
+      RkojLogo.tsx            # bitmap logo, sized
+      RkojHeader.tsx          # title + 3 chip tabs + 4 action icons
+      RkojSidebar.tsx         # mascot + 4-section nav
+      SplashOverlay.tsx       # purple-gradient splash
+      GlassPanel.tsx          # liquid-glass surface
+    views/
+      AgentsTabView.tsx       # multi-agent panes with SSE log + input
+      PhonesTabView.tsx       # device list + bottom-sheet detail
+      WorkstationTabView.tsx  # action tile grid
+    api/
+      sanctum.ts              # SecureStore-backed base URL + Sanctum endpoints
+      forge.ts                # agent spawn / list / SSE / terminate
+      devices.ts              # adb / scrcpy / RKA / logcat-SSE
+      workstation.ts          # vault / brain / watchdog / backups / mcp
+      forgeBridge.ts          # unified re-export
+    screens/                  # legacy 7-tab screens (kept for back-compat tests)
+      ...
+```
 
 ## Cross-references
 
-- `projects/sinister-forge/` — Forge needs a REST/SSE bridge for mobile (PH3)
-- `projects/sinister-mind/` — Mind's :5079 already serves a web UI; Claw WebView embeds it (PH4)
-- `projects/sinister-panel/source/` — existing JSON API; Claw reuses (PH5)
-- `_shared-memory/knowledge/research-import-pipeline.md` — jcode openclaw arrived via this pipeline
-- `Desktop\Sinister Start.bat` — operator's PC entry point (Claw is the phone counterpart)
+- `tools/sinister-rkoj-qt/` — RKOJ desktop workstation (the PyQt6 reference for chrome + chip tabs + sidebar)
+- `projects/sinister-forge/source/forge/bridge/` — REST/SSE bridge on :5078 (PH3 target)
+- `projects/sinister-mind/` — Mind D3 graph (PH4 WebView target)
+- `projects/sinister-panel/source/Andrew Panel/Sinister Panel/panel/dashboard/components/` — sidebar.tsx + tab-header.tsx reference
+- `automations/window-manager/web/rkoj-logo.png` — source icon
