@@ -30,14 +30,14 @@ The RKOJ desktop app (PyQt6 native, frameless, Sinister Panel-style) is the oper
 │  │  ├─ manifest.json (id, name, hooks)                      │
 │  │  ├─ handler.py    (the actual implementation)            │
 │  │  └─ README.md     (operator-facing doc)                  │
-│  └─ Discovery: scan tools/sinister-rkoj-qt/extensions/      │
+│  └─ Discovery: scan projects/rkoj/source/extensions/        │
 │     at startup + register each manifest's hooks.            │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ## Plugin manifest schema
 
-`tools/sinister-rkoj-qt/extensions/<slug>/manifest.json`:
+`projects/rkoj/source/extensions/<slug>/manifest.json`:
 
 ```json
 {
@@ -99,7 +99,7 @@ Inside a jcode-form terminal (agent pane), the operator types `/<command> [args]
 
 ```bash
 # 1. scaffold
-cd tools/sinister-rkoj-qt/extensions
+cd projects/rkoj/source/extensions
 mkdir my-thing && cd my-thing
 cat > manifest.json << 'EOF'
 { "id": "my-thing", "version": "0.1.0", "author": "RKOJ-ELENO",

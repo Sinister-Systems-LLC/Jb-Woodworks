@@ -12,8 +12,8 @@ from PyInstaller.utils.hooks import collect_submodules
 block_cipher = None
 
 _SPEC_DIR = os.path.dirname(os.path.abspath(SPEC))
-_TOOL_ROOT = os.path.dirname(_SPEC_DIR)  # tools/sinister-rkoj-qt/
-_ASSETS_ROOT = os.path.join(_TOOL_ROOT, "assets")
+_PROJECT_ROOT = os.path.dirname(_SPEC_DIR)  # projects/rkoj/source/ (relocated 2026-05-21 from tools/sinister-rkoj-qt/)
+_ASSETS_ROOT = os.path.join(_PROJECT_ROOT, "assets")
 
 # Brand icon — convert PNG -> ICO done at theme build time
 # (see assets/icon.ico). PyInstaller on Windows wants .ico, not .png.

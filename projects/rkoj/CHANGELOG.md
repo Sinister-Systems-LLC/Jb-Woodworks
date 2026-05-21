@@ -4,6 +4,31 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not component versions (each lane has its own).
 
+## v1.6.0 — 2026-05-21
+
+**Project-shape promotion + Panel 1:1 patches + Phase-1 memory bootstrap.** Operator (verbatim 2026-05-21, session start): *"i need you to make a porject in projects for rkoj and add everything there that we use for rkoj. ... I want the 1:1 exact ui as sinister panel. 1:1 nothing else everything the same and exact. ... When i click new agent it will be like we click the jcode exe and openeed a window."*
+
+- **MOVED**: `tools/sinister-rkoj-qt/` → `projects/rkoj/source/` via single `git mv` (69 files, history preserved). RKOJ outgrew the `tools/` shape — multi-tab UI, plugin substrate, version-stamped EXE ships, operator-facing primary surface. See `_shared-memory/knowledge/rkoj-project-shape-promotion-2026-05-21.md` for the 7-step promotion pattern + 5 anti-patterns.
+- **PATCHED (Panel 1:1)**: `SIDEBAR_WIDTH 220 → 240` (Panel canonical aside) · `QLabel#PageTitle font-size 24 → 26` (Panel `text-[26px]`) · `QPushButton#ChipTab min-height 26 → 30` + padding `4×14 → 6×16` (Panel `h-8 px-4`). Reference: `_shared-memory/plans/Sanctum-deepclean-2026-05-21T2300Z/panel-1to1-spec.md`.
+- **ADDED (Phase-1 memory⇄jcode integration)**: every spawned agent now writes a heartbeat to disk + seeds PROGRESS + creates inbox/resume dirs at spawn time. Per-card 30s `QTimer` keeps presence live. `QProcessEnvironment` propagates `SINISTER_AGENT_DISPLAY` / `_SLUG` / `_PANE_ID` / `_PROJECT_KEY` / `_HEARTBEAT_PATH` / `_PROGRESS_PATH` / `_RESUME_DIR` / `_INBOX_DIR` / `_AGENT_IDENTITY=EVE` / `_AUTHORSHIP=RKOJ-ELENO` so the spawned `claude -p` child knows its identity from env. AgentSession dataclass +6 fields. Brain entry: `_shared-memory/knowledge/rkoj-phase1-memory-bootstrap-2026-05-21.md`.
+- **PATH REFS**: `automations/ship-rkoj-qt-to-desktop.ps1` + `automations/smoke-rkoj-qt.ps1` defaults repointed at `projects/rkoj/source/sinister_rkoj_qt/dist/`. PS-5.1 `Join-Path` paren fix. RKOJ.spec `_TOOL_ROOT` → `_PROJECT_ROOT` for clarity. `projects/rkoj/MANIFEST.json` `rkoj-qt` + `rkoj-qt-extensions` component paths updated. `tools/_INDEX.md` `sinister-rkoj-qt` row removed (it's a project now). `_shared-memory/knowledge/sinister-rkoj-extensibility-doctrine.md` plugin-path refs updated.
+- **PLAN DOCS LANDED**: 5 files at `_shared-memory/plans/Sanctum-deepclean-2026-05-21T2300Z/`: cleanup-proposal · forward-plan · panel-1to1-spec · memory-jcode-integration-audit · personal-folder-sinister-purge.
+- **CROSS-AGENT BROADCAST**: `_shared-memory/cross-agent/2026-05-21T2330Z-sanctum-to-fleet-rkoj-relocation.md` (no-ACK).
+- **SMOKE**: M1 PASS (`Sinister Sanctum — RKOJ.exe` Qt window detected <8s). M2 process-survival PASS (25s × 5 samples, RSS stable). M3-M10 require operator click-through.
+- **EXE**: 75,160,157 byte onefile (71.68 MB, +4 KB vs v1.5.1 for memory bootstrap helpers) shipped to `C:\Users\Zonia\Desktop\RKOJ.exe` + `RKOJ.lnk` updated.
+- **VERSION**: `__init__.py __version__ = "1.6.0"` · `MANIFEST.json version = "1.6.0"`.
+- **COMMITS**: `caa66d4` (ship) + `40c478e` (brain).
+
+### Roadmap captured (NOTED but NOT BUILT — operator addendum 2026-05-21)
+
+Future workstation features documented in `_shared-memory/plans/Sanctum-deepclean-2026-05-21T2300Z/forward-plan.md` § C. Build sequence TBD by operator:
+
+- **Devices ADB wiring** — connect all phones, scrcpy embed, per-device logcat
+- **Self-hosted AnyDesk replacement** — RustDesk / Guacamole / MeshCentral candidate stack, Tailscale plane, Vault-backed auth
+- **Kameleo-style anti-detect browser** — Playwright + Chromium + fingerprint randomization, profile manager in Vault
+- **Own Android emulator system** — wrap Sinister Emulator Bundle as RKOJ emulator manager
+- **Open extension registry** — every new tool plugs into `projects/rkoj/source/extensions/<slug>/manifest.json`
+
 ## v1.5.1 — 2026-05-21
 
 **Strip pivot — 2 tabs + Panel-exact + niri-scroll.** Operator (verbatim 2026-05-21): *"remove ALL THIS FUCKING SHIT AND LISTEN TO ME very carefully. i want two fucking tabs. agents and devices ... exact sinister panel look ... niri infinite scroll ... glow when they need our input ... X button works"*. The v1.5.0 PyQt6 ship landed but the surface was bloated — Excel ribbon, KPI tiles, project sub-tab strip, workstation tab — none of which the operator wanted. v1.5.1 strips the chrome back to operator-canonical: 2 chip tabs, Panel-exact sidebar, Sheets-style header menu strip, niri-scroll agent grid, folder-tab row, working X.
