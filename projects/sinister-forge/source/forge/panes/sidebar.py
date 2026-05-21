@@ -13,46 +13,55 @@ from textual.containers import Vertical
 from textual.message import Message
 from textual.widgets import Static
 
+from forge.theme import (
+    BG, BG_GLASS_1, BG_GLASS_2, BG_GLOW, BORDER_GLASS,
+    PURPLE_DEEP, PURPLE_ACCENT, SOFT, DIM,
+)
+
 
 class Sidebar(Vertical):
-    """Two-tab left rail. Posts a TabSelected message when the operator clicks."""
+    """Two-tab left rail. Posts a TabSelected message when the operator clicks.
 
-    DEFAULT_CSS = """
-    Sidebar {
+    All chrome sourced from forge.theme — single source of truth for the
+    Sinister Panel purple gradient + rounded borders.
+    """
+
+    DEFAULT_CSS = f"""
+    Sidebar {{
         width: 18;
-        background: #0E0A14;
-        border-right: solid #3A2A55;
+        background: {BG};
+        border-right: solid {BORDER_GLASS};
         padding: 1 0;
-    }
-    Sidebar .sidebar-tab {
+    }}
+    Sidebar .sidebar-tab {{
         height: 3;
         margin: 0 1 1 1;
         padding: 1 1 0 2;
-        background: #15131A;
-        border: round #3A2A55;
-        color: #999AB0;
-    }
-    Sidebar .sidebar-tab.-active {
-        background: #2A1F3D;
-        color: #A06EFF;
-        border: round #A06EFF;
+        background: {BG_GLASS_1};
+        border: round {BORDER_GLASS};
+        color: {SOFT};
+    }}
+    Sidebar .sidebar-tab.-active {{
+        background: {BG_GLOW};
+        color: {PURPLE_ACCENT};
+        border: round {PURPLE_ACCENT};
         text-style: bold;
-    }
-    Sidebar #sidebar-brand {
+    }}
+    Sidebar #sidebar-brand {{
         height: 3;
         margin: 0 1 1 1;
         padding: 1 1 0 2;
-        color: #A06EFF;
+        color: {PURPLE_ACCENT};
         text-style: bold;
-        background: #1C1626;
-        border: round #7A3DD4;
-    }
-    Sidebar #sidebar-footer {
+        background: {BG_GLASS_2};
+        border: round {PURPLE_DEEP};
+    }}
+    Sidebar #sidebar-footer {{
         dock: bottom;
         height: 1;
         margin: 0 1;
-        color: #6E6E84;
-    }
+        color: {DIM};
+    }}
     """
 
     TABS = ("agents", "adb")

@@ -2621,6 +2621,147 @@ def _cmd_skill(args, pane, app) -> str:
     return f"[yellow]/skill: unknown subcommand `{sub}` — use list|show|run|reload[/]"
 
 
+# ----- /mermaid — wraps tools/memory-graph-render for inline + file renders -
+
+# Tracks last-rendered SVG/PNG path for /mermaid open.
+_LAST_MERMAID_RENDER: dict[str, str | None] = {"path": None}
+
+
+def _mermaid_renders_dir() -> Path:
+    """Output dir for /mermaid renders. Honors SANCTUM_ROOT discovery."""
+    d = _sanctum_root() / "_shared-memory" / "forge-memory" / "mermaid-renders"
+    d.mkdir(parents=True, exist_ok=True)
+    return d
+
+
+def _extract_first_mermaid_block(text: str) -> str | None:
+    """Return the contents of the first ```mermaid ... ``` fenced block, or
+    None if no fence is present. Treats whole text as mermaid if no fences."""
+    # fenced ```mermaid ... ```
+    needle = "```mermaid"
+    idx = text.lower().find(needle)
+    if idx == -1:
+        return None
+    # advance past the line containing the fence open
+    nl = text.find("\n", idx)
+    if nl == -1:
+        return None
+    rest = text[nl + 1:]
+    end = rest.find("```")
+    if end == -1:
+        return None
+    return rest[:end].strip()
+
+
+def _mermaid_help() -> str:
+    return ("[bold]/mermaid[/]  [dim]render Mermaid diagrams via memory-graph-render[/]\n"
+            "  /mermaid file <path>      read .md/.mmd, render first mermaid block\n"
+            "  /mermaid render <inline>  render inline mermaid syntax (quote it)\n"
+            "  /mermaid open             open the last rendered file in OS viewer\n"
+            "  /mermaid backends         show available render backends")
+
+
+def _cmd_mermaid(args, pane, app) -> str:
+    """/mermaid file|render|open|backends — wraps memory-graph-render."""
+    if not args:
+        return _mermaid_help()
+    sub = args[0].lower()
+    rest = args[1:]
+
+    try:
+        from memory_graph_render import render as mgr_render, detect_backend
+    except Exception as e:
+        return (f"[red]/mermaid: memory_graph_render not importable: {e}[/]\n"
+                f"  install: pip install -e \"{_sanctum_root()}/tools/memory-graph-render\"")
+
+    if sub in {"backends", "backend"}:
+        return f"[bold]/mermaid backends[/]\n  active: {detect_backend()}\n  priority: mermaid-rs-renderer → mmdc → html-fallback"
+
+    if sub == "open":
+        last = _LAST_MERMAID_RENDER.get("path")
+        if not last or not Path(last).exists():
+            return "[yellow]/mermaid open: no recent render — run /mermaid file|render first[/]"
+        try:
+            if platform.system() == "Windows":
+                os.startfile(last)  # type: ignore[attr-defined]
+            elif platform.system() == "Darwin":
+                subprocess.Popen(["open", last])
+            else:
+                subprocess.Popen(["xdg-open", last])
+            return f"  opened: {last}"
+        except Exception as e:
+            return f"[red]/mermaid open: {e}[/]"
+
+    # both `file` and `render` resolve to a mermaid source string
+    if sub == "file":
+        if not rest:
+            return "[yellow]usage: /mermaid file <path>[/]"
+        p = Path(" ".join(rest).strip('"').strip("'"))
+        if not p.is_absolute():
+            p = _sanctum_root() / p
+        if not p.exists():
+            return f"[red]/mermaid file: not found: {p}[/]"
+        try:
+            text = p.read_text(encoding="utf-8")
+        except Exception as e:
+            return f"[red]/mermaid file: read error: {e}[/]"
+        if p.suffix.lower() == ".mmd":
+            src = text.strip()
+        else:
+            block = _extract_first_mermaid_block(text)
+            if block is None:
+                return f"[yellow]/mermaid file: no ```mermaid``` block found in {p.name}[/]"
+            src = block
+        title = f"mermaid :: {p.name}"
+    elif sub == "render":
+        if not rest:
+            return "[yellow]usage: /mermaid render <inline-mermaid-syntax>[/]"
+        src = " ".join(rest)
+        # If user wrapped in backticks/fence, strip
+        block = _extract_first_mermaid_block(src)
+        if block is not None:
+            src = block
+        title = "mermaid :: inline"
+    else:
+        return f"[yellow]/mermaid: unknown subcommand `{sub}`[/]\n" + _mermaid_help()
+
+    if not src.strip():
+        return "[yellow]/mermaid: empty source[/]"
+
+    ts = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H%M%SZ")
+    out_dir = _mermaid_renders_dir()
+    # memory_graph_render writes .png + .mmd + .html; pass a .png stem and
+    # surface whichever backend produced is available; .html is always present.
+    target = out_dir / f"{ts}.png"
+    try:
+        result = mgr_render(mermaid_src=src, output=str(target), title=title)
+    except Exception as e:
+        return f"[red]/mermaid: render crashed: {e}[/]"
+
+    backend = result.get("backend") or "unknown"
+    png = result.get("png")
+    html = result.get("html")
+    mmd = result.get("mmd")
+    err = result.get("error")
+
+    # Pick what to open: prefer PNG, then HTML fallback, then MMD.
+    preferred = png or html or mmd
+    if preferred:
+        _LAST_MERMAID_RENDER["path"] = preferred
+
+    lines = [f"[bold]/mermaid[/]  backend={backend}"]
+    if png:
+        lines.append(f"  png:  {png}")
+    if html:
+        lines.append(f"  html: {html}")
+    if mmd:
+        lines.append(f"  mmd:  {mmd}")
+    if err and not png:
+        lines.append(f"  [yellow]note:[/] {err}")
+    lines.append("  [dim]/mermaid open  — open the rendered file[/]")
+    return "\n".join(lines)
+
+
 # ===========================================================================
 # REGISTRY — name → handler + metadata
 # ===========================================================================
@@ -2695,6 +2836,9 @@ SLASH_COMMANDS: dict[str, dict[str, Any]] = {
     "tools":      _entry(_cmd_tools,     "list builtin tools + sinister-cli + MCP",   "system"),
     "skills":     _entry(_cmd_skills,    "list discovered skills",                    "skills"),
     "skill":      _entry(_cmd_skill,     "list | show <name> | run <name> | reload   (jcode skill-loader)", "skills"),
+    "mermaid":    _entry(_cmd_mermaid,   "file <path> | render <inline> | open | backends — Mermaid diagram render",
+                          "system",
+                          "Wraps tools/memory-graph-render. Outputs to _shared-memory/forge-memory/mermaid-renders/<ts>.{png,html,mmd}. Backends: mermaid-rs-renderer → mmdc → html-fallback."),
     "dictate":    _entry(_cmd_dictate,   "external speech-to-text (SINISTER_DICTATE_CMD)", "system"),
 
     # LOOPS (improve / refactor / overnight)

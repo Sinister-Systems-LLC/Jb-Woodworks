@@ -1,22 +1,30 @@
-# Sinister Forge :: theme.py (v3 - liquid-glass overhaul)
+# Sinister Forge :: theme.py (v4 — global Sinister Panel chrome)
 # Author: RKOJ-ELENO :: 2026-05-21
 # License: AGPL-3.0-or-later
 #
-# Heavy liquid-glass aesthetic per operator directive 2026-05-21:
-# "the jcode liquid glass system... iOS 18 purple approach... all features
-# he has etc with what we need i asked for and expanded onto it"
+# Operator directive 2026-05-21 (verbatim): "i need my ui like the rkoj, but
+# look of my sinister panel."
 #
-# Translating CSS liquid-glass to Textual:
-#   - backdrop-filter isn't possible in a terminal -> simulate via
-#     layered borders + tinted bg steps + soft accent washes
-#   - rounded panels via Textual's "round" border style
-#   - chrome bars get gradient feel by stacking thin solid rows of
-#     gradually-stepped purples (handled by AccentBar widget)
-#   - glow tints applied to active states via brighter bg colors
-#   - no white headers anywhere - operator screenshot showed default
-#     Textual Header which we now replace with our purple ChromeBar
+# Canonicalises the Sinister Panel purple-glass chrome across EVERY Forge
+# widget. Exports:
+#   - Color constants (purple gradient + glyph/text variants)
+#   - Reusable CSS snippets (PANEL_CSS, BUTTON_CSS, TAB_CSS, INPUT_CSS, ...)
+#   - One giant THEME_CSS string mounted by ForgeApp.CSS so every Screen +
+#     widget inherits the chrome without per-widget DEFAULT_CSS bloat.
+#
+# v3 → v4 changes:
+#   - Operator-canonical names added: PURPLE_DEEP/PURPLE_DARK/PURPLE_ACCENT/
+#     PURPLE_BORDER/GREEN_ACCENT/GRAY (alongside the legacy SINISTER_CSS names)
+#   - SINISTER_CSS re-exported as THEME_CSS (back-compat — both work)
+#   - Added .sinister-panel / .sinister-tab / .sinister-button / .sinister-card
+#     utility classes any widget can opt into
+#   - All borders are `round` (Sinister Panel rounded chrome)
+#   - Toolbar/Statusbar/AdbPanel/MemoryPanel inherit instead of duplicating
 
-# Sinister-canonical hex colors (synced with Claw/Mind/Term)
+# ============================================================
+#  Sinister-canonical hex colors  (synced with Claw/Mind/Term)
+# ============================================================
+# Legacy v3 names (do not rename — used across forge/* and term/*)
 BG_DEEP        = "#07070B"   # void
 BG             = "#0E0A14"   # primary surface
 BG_GLASS_1     = "#15131A"   # tinted layer 1
@@ -24,23 +32,34 @@ BG_GLASS_2     = "#1C1626"   # tinted layer 2
 BG_GLASS_3     = "#231A33"   # tinted layer 3 (hover)
 BG_GLOW        = "#2A1F3D"   # active wash
 
-PURPLE_DEEP    = "#7A3DD4"
+# NOTE the v4 PURPLE_DEEP name from the operator directive (#0E0A14) collides
+# with the v3 PURPLE_DEEP (#7A3DD4 — a saturated mid-purple used for headers).
+# To stay back-compat we keep the v3 name on the saturated purple and expose
+# the bg-purple under PURPLE_VOID (= operator's "PURPLE_DEEP").
+PURPLE_VOID    = "#0E0A14"   # v4: operator "PURPLE_DEEP" (bg)
+PURPLE_DARK    = "#15131A"   # v4: tinted-layer-1 chip bg
+PURPLE_DEEP    = "#7A3DD4"   # v3: saturated mid-purple (header fills)
 PURPLE_BRIGHT  = "#A06EFF"   # operator standing-order accent
+PURPLE_ACCENT  = "#A06EFF"   # v4 alias of PURPLE_BRIGHT (operator directive)
+PURPLE_BORDER  = "#3A2A55"   # v4: rounded-panel borders
 PURPLE_HALO    = "#C39DFF"
 LIGHT_PURPLE   = "#E8D6FF"
 
 CYAN           = "#6EE8FF"
 GREEN          = "#6EFFA0"
+GREEN_ACCENT   = "#85C86E"   # v4: status-bar live counter
 YELLOW         = "#FFD66E"
 RED            = "#FF6E6E"
 MAGENTA        = "#FF6EE8"
 ORANGE         = "#FF8C42"
 
-WHITE          = "#F5F5FA"
+WHITE          = "#DCDCEA"   # v4 operator-directive name (slightly cooler)
+WHITE_PURE     = "#F5F5FA"   # legacy v3 brighter white (preserved)
 DIM            = "#6E6E84"
 SOFT           = "#999AB0"
+GRAY           = "#999AB0"   # v4 alias of SOFT
 
-BORDER_GLASS   = "#3A2A55"   # subtle purple-tinted border
+BORDER_GLASS   = "#3A2A55"   # subtle purple-tinted border (= PURPLE_BORDER)
 BORDER_ACTIVE  = "#A06EFF"   # active pane border
 
 # Per-agent accent palette (each spawned agent can pick one)
@@ -344,4 +363,180 @@ Toast.-warning {{
 Toast.-error {{
     border: round {RED};
 }}
+
+/* ============== Sinister Panel chrome utility classes ==============
+ * Any widget that adds .sinister-panel / .sinister-tab / .sinister-button /
+ * .sinister-card / .sinister-input / .sinister-card-strong gets the global
+ * Sinister Panel chrome (purple-tinted bg + rounded border + halo accent
+ * on focus/active). This means every NEW widget only needs `classes=
+ * "sinister-panel"` to inherit the chrome — no per-widget DEFAULT_CSS.
+ * ============================================================== */
+
+.sinister-panel {{
+    background: {BG};
+    color: {LIGHT_PURPLE};
+    border: round {BORDER_GLASS};
+    padding: 0 1;
+}}
+.sinister-panel:focus-within {{
+    border: round {PURPLE_BRIGHT};
+    background: {BG_GLASS_1};
+}}
+
+.sinister-card {{
+    background: {BG_GLASS_1};
+    color: {LIGHT_PURPLE};
+    border: round {BORDER_GLASS};
+    padding: 1 2;
+}}
+.sinister-card-strong {{
+    background: {BG_GLASS_2};
+    color: {LIGHT_PURPLE};
+    border: round {PURPLE_DEEP};
+    padding: 1 2;
+}}
+
+.sinister-tab {{
+    height: 3;
+    margin: 0 1 1 1;
+    padding: 1 1 0 2;
+    background: {BG_GLASS_1};
+    border: round {BORDER_GLASS};
+    color: {SOFT};
+}}
+.sinister-tab.-active {{
+    background: {BG_GLOW};
+    color: {PURPLE_BRIGHT};
+    border: round {PURPLE_BRIGHT};
+    text-style: bold;
+}}
+
+.sinister-button {{
+    background: {BG_GLASS_2};
+    color: {LIGHT_PURPLE};
+    border: round {BORDER_GLASS};
+    padding: 0 2;
+}}
+.sinister-button.-primary {{
+    background: {PURPLE_BRIGHT};
+    color: {BG_DEEP};
+    border: round {PURPLE_HALO};
+    text-style: bold;
+}}
+.sinister-button:hover {{
+    background: {BG_GLASS_3};
+    border: round {PURPLE_BRIGHT};
+}}
+
+.sinister-input {{
+    background: {BG_DEEP};
+    color: {LIGHT_PURPLE};
+    border: round {BORDER_GLASS};
+    padding: 0 1;
+}}
+.sinister-input:focus {{
+    border: round {PURPLE_BRIGHT};
+    background: {BG_GLASS_1};
+}}
+
+.sinister-bar-top {{
+    dock: top;
+    height: 1;
+    background: {BG};
+    color: {SOFT};
+    border-bottom: solid {BORDER_GLASS};
+    padding: 0 1;
+}}
+.sinister-bar-bottom {{
+    dock: bottom;
+    height: 1;
+    background: {BG};
+    color: {SOFT};
+    border-top: solid {BORDER_GLASS};
+    padding: 0 1;
+}}
+
+.sinister-glyph {{
+    color: {PURPLE_BRIGHT};
+    text-style: bold;
+}}
+.sinister-glyph-halo {{
+    color: {PURPLE_HALO};
+    text-style: bold;
+}}
+
+/* Inputs at the bottom of agent panes inherit chrome */
+.agent-input {{
+    background: {BG_DEEP};
+    color: {LIGHT_PURPLE};
+    border: round {BORDER_GLASS};
+}}
+.agent-input:focus {{
+    border: round {PURPLE_BRIGHT};
+}}
+
+/* Niri-style column chrome — applies the panel look to scrollable columns */
+.agent-column {{
+    background: {BG};
+    border: round {BORDER_GLASS};
+    padding: 0;
+    margin: 0 1;
+}}
+.agent-column:focus-within {{
+    border: round {PURPLE_BRIGHT};
+}}
 """
+
+# Reusable per-widget snippets. Widgets that prefer to keep their existing
+# DEFAULT_CSS can import these and concatenate, but the preferred path is to
+# rely on the global THEME_CSS classes above.
+
+PANEL_CSS = f"""
+.sinister-panel {{
+    background: {BG};
+    color: {LIGHT_PURPLE};
+    border: round {BORDER_GLASS};
+    padding: 0 1;
+}}
+"""
+
+BUTTON_CSS = f"""
+.sinister-button {{
+    background: {BG_GLASS_2};
+    color: {LIGHT_PURPLE};
+    border: round {BORDER_GLASS};
+}}
+.sinister-button.-primary {{
+    background: {PURPLE_BRIGHT};
+    color: {BG_DEEP};
+    text-style: bold;
+}}
+"""
+
+TAB_CSS = f"""
+.sinister-tab {{
+    background: {BG_GLASS_1};
+    color: {SOFT};
+    border: round {BORDER_GLASS};
+}}
+.sinister-tab.-active {{
+    background: {BG_GLOW};
+    color: {PURPLE_BRIGHT};
+    border: round {PURPLE_BRIGHT};
+    text-style: bold;
+}}
+"""
+
+INPUT_CSS = f"""
+.sinister-input {{
+    background: {BG_DEEP};
+    color: {LIGHT_PURPLE};
+    border: round {BORDER_GLASS};
+}}
+.sinister-input:focus {{
+    border: round {PURPLE_BRIGHT};
+}}
+"""
+
+# Operator-canonical export name. SINISTER_CSS kept for back-compat.
+THEME_CSS = SINISTER_CSS

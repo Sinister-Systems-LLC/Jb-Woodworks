@@ -16,18 +16,22 @@ from pathlib import Path
 
 from textual.widgets import Static
 
+from forge.theme import (
+    PURPLE_VOID, PURPLE_BORDER, GRAY, GREEN_ACCENT, DIM,
+)
+
 
 SANCTUM_ROOT = Path("D:/Sinister Sanctum")
 HEARTBEATS_DIR = SANCTUM_ROOT / "_shared-memory" / "heartbeats"
 INBOX_DIR = SANCTUM_ROOT / "_shared-memory" / "inbox"
 FORGE_MEMORY_DIR = SANCTUM_ROOT / "_shared-memory" / "forge-memory"
 
-# Sinister Panel purple chrome (jcode-parity)
-STATUSBAR_BG = "#0E0A14"
-STATUSBAR_BORDER = "#3A2A55"
-STATUSBAR_TEXT = "#999AB0"
-STATUSBAR_ACCENT = "#85C86E"   # green for live counters
-STATUSBAR_DIM = "#6E6E84"
+# Sinister Panel chrome (sourced from forge.theme — single source of truth).
+STATUSBAR_BG     = PURPLE_VOID    # #0E0A14
+STATUSBAR_BORDER = PURPLE_BORDER  # #3A2A55
+STATUSBAR_TEXT   = GRAY           # #999AB0
+STATUSBAR_ACCENT = GREEN_ACCENT   # #85C86E live counters
+STATUSBAR_DIM    = DIM            # #6E6E84
 
 
 # Heartbeat freshness window (jcode parity: 30 min).

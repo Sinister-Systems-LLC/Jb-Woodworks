@@ -17,16 +17,18 @@ from pathlib import Path
 from textual.widgets import Static
 
 from forge import __version__ as _FORGE_VERSION
-from forge.theme import PURPLE_BRIGHT, SOFT
+from forge.theme import (
+    PURPLE_VOID, PURPLE_BORDER, PURPLE_ACCENT, GRAY,
+)
 
 
 SANCTUM_ROOT = Path("D:/Sinister Sanctum")
 
-# Sinister Panel purple chrome (jcode-parity)
-TOOLBAR_BG = "#0E0A14"
-TOOLBAR_BORDER = "#3A2A55"
-TOOLBAR_ACCENT = "#A06EFF"   # [◈ EVE]
-TOOLBAR_TEXT = "#999AB0"     # everything else
+# Sinister Panel chrome (sourced from forge.theme — single source of truth).
+TOOLBAR_BG     = PURPLE_VOID     # #0E0A14
+TOOLBAR_BORDER = PURPLE_BORDER   # #3A2A55
+TOOLBAR_ACCENT = PURPLE_ACCENT   # #A06EFF  [◈ EVE]
+TOOLBAR_TEXT   = GRAY            # #999AB0
 
 
 def _read_branch() -> str:

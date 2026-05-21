@@ -18,6 +18,11 @@ from textual.app import ComposeResult
 from textual.containers import Grid, Vertical, VerticalScroll
 from textual.widgets import Static
 
+from forge.theme import (
+    BG, BG_GLASS_1, BG_GLASS_2, BORDER_GLASS, PURPLE_DEEP, PURPLE_ACCENT,
+    LIGHT_PURPLE, DIM,
+)
+
 
 @dataclass
 class AdbDevice:
@@ -107,37 +112,42 @@ class AdbDeviceCard(Static):
 class AdbPanel(VerticalScroll):
     """Scrollable list of ADB devices + refresh + simple action toolbar."""
 
-    DEFAULT_CSS = """
-    AdbPanel {
-        background: $background;
+    # Sinister Panel chrome via forge.theme constants (rounded purple borders,
+    # tinted layer-1/layer-2 backgrounds, halo-purple title text).
+    DEFAULT_CSS = f"""
+    AdbPanel {{
+        background: {BG};
         padding: 1 2;
-    }
-    AdbPanel #adb-toolbar {
+    }}
+    AdbPanel #adb-toolbar {{
         height: 3;
         padding: 0 1;
-        background: #15131A;
-        color: #A06EFF;
-        border: round #3A2A55;
-    }
-    AdbPanel #adb-grid {
+        background: {BG_GLASS_1};
+        color: {PURPLE_ACCENT};
+        border: round {BORDER_GLASS};
+    }}
+    AdbPanel #adb-grid {{
         layout: grid;
         grid-size: 2;
         grid-gutter: 1 2;
         margin: 1 0;
-    }
-    .adb-card {
+    }}
+    .adb-card {{
         height: 8;
         padding: 1 2;
-        background: #1C1626;
-        border: round #7A3DD4;
-        color: #E8D6FF;
+        background: {BG_GLASS_2};
+        border: round {PURPLE_DEEP};
+        color: {LIGHT_PURPLE};
         content-align: left top;
-    }
-    .adb-empty {
+    }}
+    .adb-card:hover {{
+        border: round {PURPLE_ACCENT};
+    }}
+    .adb-empty {{
         height: 5;
         content-align: center middle;
-        color: #6E6E84;
-    }
+        color: {DIM};
+    }}
     """
 
     def __init__(self) -> None:

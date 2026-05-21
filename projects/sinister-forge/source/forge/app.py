@@ -39,11 +39,12 @@ except ImportError as e:
     ) from e
 
 from forge.art import BOOT_FRAMES, BOOT_DURATION_SEC
-from forge.theme import SINISTER_CSS, PURPLE_BRIGHT, PROJECT_BORDER_PALETTE
+from forge.theme import THEME_CSS, PURPLE_BRIGHT, PROJECT_BORDER_PALETTE
 from forge.panes.chrome import ChromeBar, ProjectChip, StatusFooter
 from forge.panes.memory_panel import MemoryPanel
 from forge.panes.command_palette import CommandPalette
 from forge.panes.tabs import TabbedMultiPane
+from forge.panes.niri_workspace import NiriWorkspaceGrid
 from forge.panes.agent_pane import AgentPane
 from forge.panes.picker import AgentPicker, PickerResult
 from forge.panes.swarm_modal import SwarmModal, SwarmModalResult
@@ -133,7 +134,10 @@ class BootScreen(Static):
 class ForgeApp(App):
     """Sinister Forge - liquid-glass operator console."""
 
-    CSS = SINISTER_CSS
+    # Operator directive 2026-05-21: Sinister Panel chrome globally — every
+    # screen mounts inheriting THEME_CSS (purple gradient + rounded borders
+    # + glyph icons). See forge/theme.py for the canonical CSS string.
+    CSS = THEME_CSS
     TITLE = "Sinister Forge"
     SUB_TITLE = "operator console"
 
@@ -203,8 +207,13 @@ class ForgeApp(App):
         # Left rail (Sinister Panel-style)
         self._sidebar = Sidebar(active=self._sidebar_active)
         await self._workspace.mount(self._sidebar)
-        # Right-side content: default to the agent TabbedMultiPane.
-        self._tabs = TabbedMultiPane()
+        # Right-side content: default to the niri-style workspace grid (v1.1.0
+        # of niri-scrollable-column-pattern). Each workspace = a Vertical column
+        # holding 1..N AgentPanes. Horizontal scroll with snap, Ctrl+1..9 jump,
+        # Ctrl+T new ws, Ctrl+Left/Right move focus, Ctrl+Shift+Left/Right move
+        # pane between ws. Operator directive 2026-05-21 — niri-wm port.
+        # TabbedMultiPane still imported for fallback / legacy reference.
+        self._tabs = NiriWorkspaceGrid()
         await self._workspace.mount(self._tabs)
         # Default project chip shows "no project"
         self._chip.set_project("", PURPLE_BRIGHT)
@@ -522,9 +531,12 @@ class ForgeApp(App):
         self._refresh_status()
 
     def _action_focus_all(self) -> None:
-        # TabbedContent active switch
-        if self._tabs._tabbed:
+        # Legacy: when TabbedMultiPane was the host, switch to the "All" tab.
+        # Under NiriWorkspaceGrid the equivalent is "jump to workspace 1".
+        if getattr(self._tabs, "_tabbed", None):
             self._tabs._tabbed.active = "tab-all"
+        elif hasattr(self._tabs, "jump_to"):
+            self._tabs.jump_to(1)
 
     @work(exit_on_error=False)
     async def _action_dm(self) -> None:
