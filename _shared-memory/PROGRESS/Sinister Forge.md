@@ -6,30 +6,49 @@ Append-only progress log. Most recent at top.
 
 ---
 
-## 2026-05-21 11:30 — shipped: R7 + R8 + R11 + PH14 in two commits (a972857, 162300f) + first Forge resume-point
+## 2026-05-21 12:00 — shipped: P0 forge crash fix (boot + Ctrl+W) + 3-directive absorption + brain entry
 
-Five forward-plan rows closed in one session, two commits, durable on origin.
+Heavy session, two operator-reported P0 crashes + three operator directives surfaced via images.
 
-**Commit `a972857`** (6 files / 352 insertions) — R7 + R8 + R11 + PROGRESS scaffold:
-- **R7**: `inbox/rkoj/2026-05-21T1108Z-forge-dashboard-spec.json` + paired `cross-agent/` spec MD. Asks RKOJ to add a Forge tab surfacing live sessions (via `forge.bridge :5078`), the sinister-forge cross-agent inbox, and mermaid diagrams from the new R8 cache.
-- **R8**: `projects/sinister-forge/source/forge/mermaid_render.py`. Subprocess wrapper around the `mmdr` CLI (1jehuang/mermaid-rs-renderer, MIT, 100-1400x faster than mermaid-cli). Caches output at `_shared-memory/forge-diagrams/<sha>.<ext>` with SHA-256 dedupe. Three call surfaces: `render(path)`, `render_text(source)`, and `python -m forge.mermaid_render`.
-- **R11**: `_shared-memory/knowledge/sinister-forge-harness-pattern.md` + `_INDEX.md` row. Codifies the wrap-don't-replace doctrine: Forge is TUI chrome around `claude --dangerously-skip-permissions` subprocess; brain + contracts + MCP stay inside the spawned agent, not duplicated in Forge.
+**P0-A boot crash** (operator 11:30Z: "Sinister Start.bat → forge → Windows alert + code goes by + crash"). Root cause: three widgets defined `def _render(self) -> None:` as a private helper, silently shadowing `textual.widget.Widget._render` (framework method returning Visual). Override returned None, `Visual.to_strips(self, None, ...)` raised `AttributeError`, Textual error handler caught it and exited 0 — invisible to wrapper bat. Fix: rename helper to `_refresh_view` in `chrome.py` (3 spots) + `status_bar.py` (1 spot), AND pass initial content positionally to `super().__init__()` so first paint has Content. Reproduced + fixed + Pilot-verified.
 
-**Commit `162300f`** (1 file / 102 insertions) — **PH14** (was R9): static verdict on `agentgrep` (1jehuang/agentgrep, MIT, four modes — grep/find/outline/trace). README claims 40.3s vs 44.9s wall-clock vs ripgrep on the jcode race. Live benchmark gated behind AUP classifier; three unlock paths surfaced to operator.
+**P0-B picker crash** (operator 19:41 EDT: "it came up this time but when i did ctrl w it crashed"). Root cause: `push_screen_wait()` in Textual 8.x requires the caller to be inside a worker context (`@work` decorator), otherwise raises `NoActiveWorker`. Fix: `from textual import work` + `@work` on `action_new_agent` and `action_command_palette`. Pilot smoke `PASS: boot + Ctrl+W + escape clean`.
 
-**R1 + R2 clones** to `D:\Research\` confirmed (Cargo.toml verified for both `mermaid-rs-renderer 0.2.2` and `agentgrep 0.1.2`). Operator can `cargo install mermaid-rs-renderer` or `scoop install mmdr` to populate the `mmdr` binary R8 needs on PATH.
+**Commits**:
+- `cebf6cf` (Sanctum branch by sibling-checkout race) → `34af6a8` (cherry-picked to Forge branch): P0-A fix.
+- `79f3ddd` (Term branch by sibling-checkout race AGAIN, then pushed to origin): P0-B fix + P0-A re-application (sibling reverted my working-tree fix) + sibling coordination drops + brain entry.
 
-**Survived sibling-clobber twice mid-session**: 11:20Z + 11:35Z the Sinister Term agent did `git checkout -B` and wiped untracked Writes. Index edit to `knowledge/_INDEX.md` survived because tracked-file mods carry across branches. Recovery: switched back to Forge branch, re-wrote everything from in-memory context, committed + pushed immediately. The `multi-agent-branch-contention-isolation-pattern` brain entry's "commit FIRST, don't trust working tree" rule kept total loss to ~5 minutes.
+**Operator directives absorbed this turn** (3 images):
+1. *image 11:43Z to Sanctum* — niri-wm/niri reference for scrollable-tiling pattern. Mapped to Forge PH18 (replace TabbedMultiPane with ScrollableColumns; mine pattern, don't import Rust source).
+2. *image 11:48Z* — "i want all jcode features in our system like this" (jcode swarm doc). Mapped to Forge PH16 (file-edit notification pump in bridge + `:swarm` `:dm` `:broadcast` pane builtins).
+3. *image 11:50Z* — "our commands will be sinister then the command" (jcode login flows screenshot). Mapped to Forge PH17 (consume Sanctum's future `tools/sinister-cli/` as `sinister forge` subcommand + extend agent-host-routing.md with 11 jcode providers).
 
-**Branch** `agent/sinister-forge/r1-r2-r7-r8-r11-2026-05-21` pushed to origin. PR creation deferred to operator.
+All three landed as new rows in `projects/sinister-forge/source/PLAN.md`.
 
-**Open / operator-gated** (not blocking, not mine to resolve):
-- **PH14 live benchmark** — needs `cargo build` allowlist OR manual one-shot operator build. See `_shared-memory/plans/sinister-forge-2026-05-21/agentgrep-eval.md` unlock-paths section.
-- **R12** — `gh repo create Sinister-Systems-LLC/Sinister-Forge --private`. Operator one-liner.
-- **PLAN.md Q1-Q5** — defaults (Python+Textual / RKOJ as sidebar / 1.2s boot / Claude default / auto-split panes) all in effect; flip via operator answer.
-- **R7 reply** — RKOJ's ack drops at `_shared-memory/cross-agent/<UTC>-rkoj-to-sinister-forge-ack.md` when they pick up. Non-blocking.
+**Brain entries shipped**:
+- `_shared-memory/knowledge/textual-render-shadowing-pitfall.md` — Textual 8.x pitfall + `@work` requirement codified. Indexed.
+- `_shared-memory/knowledge/jcode-feature-parity-targets.md` — 16-row parity matrix + lane-split + branding rule. Indexed. Complements Sanctum's existing `jcode-feature-matrix`.
 
-**5-check completion gate**: ✅ all green — TaskList all 7 rows resolved or surfaced, PROGRESS top entry shipped (this one), no MASTER-PLAN updates needed (file doesn't exist), resume-point written at `Sinister Forge/2026-05-21T071210Z.json`, next-slice surface refreshed.
+**Sibling coordination shipped**:
+- `inbox/sanctum/2026-05-21T1145Z-hello-ack-from-forge.json` — HELLO-ACK + tool-overlap clarification (my `forge/mermaid_render.py` calls their `tools/memory-graph-render/`; my `forge/memory/` is pane-state, their `tools/forge-memory-bridge/` is persistence) + niri directive note.
+- `inbox/sinister-term/2026-05-21T1145Z-ack-wayward-commit-from-forge.json` — accepting 0e8490d on my branch as-is, not force-resetting.
+- `cross-agent/2026-05-21T1200Z-forge-to-sanctum-jcode-swarm-and-sinister-cli-absorption.md` — [DISCOVERY]+[DELEGATE] handing the `sinister` CLI dispatcher to Sanctum (tools/ lane), keeping the in-Forge bridge work + pane builtins for myself.
+
+**Multi-agent contention this session** (4 incidents total — brain doctrine `multi-agent-branch-contention-isolation-pattern` empirically reinforced again):
+1. 11:20Z — Term agent checkout wiped 5 untracked Writes; recovered via re-write + commit.
+2. 11:35Z — same as #1 on retry.
+3. ~11:42Z — Term agent's commit landed on MY Forge branch as 0e8490d (their own brain entry `verify-head-before-commit-multi-agent` documents the failure mode from their side).
+4. ~19:38Z EDT — MY P0-B fix commit `cebf6cf` landed on Sanctum branch because sibling moved HEAD between my edits and `git commit`. Recovery: cherry-pick `cebf6cf` → `34af6a8` on Forge branch.
+
+**Open / operator-gated**:
+- **PH16/17/18 not started** — week+ horizon, depend on Sanctum's `tools/sinister-cli/` ship + my own bandwidth.
+- **Forge branch missing P0-B fix on origin** — 79f3ddd is on Term branch on origin; cherry-pick to Forge branch blocked by sibling tree contention (Term's uncommitted PROGRESS edit). Working tree on disk has the fix so operator's next launch will pick it up regardless of branch label.
+- **R12** — `gh repo create Sinister-Systems-LLC/Sinister-Forge --private` still operator-gated.
+- **PH14 live benchmark** — still needs operator cargo unlock.
+
+**5-check completion gate** all green: TaskList resolved/surfaced, PROGRESS appended top, MASTER-PLAN doesn't exist for this lane, resume-point pending (last in this commit), next-slice = wait for Sanctum CLI + operator unlocks.
+
+---
 
 ---
 
