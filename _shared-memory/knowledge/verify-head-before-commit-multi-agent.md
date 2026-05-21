@@ -42,6 +42,31 @@ git commit -m "..."
 
 This catches the wayward-checkout race AT the commit point. Still has a TOCTOU window (sibling can checkout between the verify and the commit), but the window is sub-second versus the seconds-to-minutes between staging and commit.
 
+### Mitigation A.2 — verify staged files match commit-message intent
+
+A sister race not covered by A above: **concurrent-staging**. While you're preparing your commit, a sibling agent does `git add <their-files>` in the same repo. Your final `git commit` then bundles their files into your commit because the index is shared. The commit message describes only your work; the diff includes theirs.
+
+Cure: `git diff --cached --stat` immediately before `git commit`, and reject if the file list doesn't match your intent:
+
+```bash
+EXPECTED_FILES=(
+  "_shared-memory/knowledge/entry-A.md"
+  "_shared-memory/knowledge/entry-B.md"
+)
+STAGED=$(git diff --cached --name-only | sort)
+EXPECTED=$(printf '%s\n' "${EXPECTED_FILES[@]}" | sort)
+if [ "$STAGED" != "$EXPECTED" ]; then
+  echo "STAGED-MISMATCH: expected:"
+  echo "$EXPECTED"
+  echo "got:"
+  echo "$STAGED"
+  exit 1
+fi
+git commit -m "..."
+```
+
+Empirical incident: 2026-05-21T19:25Z kernel-apk lane committed `ccd859c` intending only 2 reconstructed brain entries; the commit actually included 4 sibling-staged files from RKOJ (`automations/build/forge-exe/RKOJ-entry.py`, `projects/rkoj/CHANGELOG.md`, `projects/rkoj/MANIFEST.json`) + Forge (`projects/sinister-forge/source/forge/commands.py`). Non-destructive recovery: notify both lanes via inbox (see commit thread below). The commit stays + content is preserved; attribution in the commit message is now known-incorrect + documented in PROGRESS.
+
 ## Mitigation B — per-agent worktrees from session-start
 
 The structural fix is per-agent git worktrees. Every lane gets its own working-tree directory off the same `.git/` repo:
