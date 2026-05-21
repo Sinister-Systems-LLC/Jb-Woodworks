@@ -4,6 +4,38 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-21 ~22:00 — Native PyQt6 RKOJ.exe v1.5.0 pivot — sub-agent in flight + extensibility doctrine + 5 new slash commands + Desktop cleaned
+
+EVE on `agent/sinister-sanctum/cli-dispatcher-2026-05-21`. Operator (verbatim across this turn):
+- *"bro i dont want a fucking web ui god damn you fucking idiot. i want the exe to popup the ui on the fucking desktop with everything i asked for"*
+- *"yes do it now and add all features and look i want. make itllok exact like sinister panel live on hetzner server. agent support tab exactly how i want header bar with rokstation options like microsoft excel"*
+- *"we have fullk code i want it to function like jkcode but be ours and we can foreevr expand. with featres we have that we can add"*
+- *"clean up all rkoj files like these on desktop ... store all rkoj in the sinister sanctum folder"*
+- *"complete everything you can in parrallel. let me know once rkoj is done. place on desktop once it is"*
+
+**Decision**: pivot from pywebview (v1.4.x) to native PyQt6 6.11.0 (v1.5.0). Operator rejected pywebview as "fucking web ui" + EXE crashed silently on uvicorn startup. PyQt6 = true native Windows frameless rounded window with QWidget panes (no HTML).
+
+**Shipped this turn**:
+1. **PyQt6 sub-agent dispatched** (`tools/sinister-rkoj-qt/`) — 13-file build: app + sidebar (240px, 4 sections, mascot) + header (96px chip tabs + actions + clock) + ribbon (Excel-style 5 groups: VIEW/SPAWN/AGENT/AUTOMATE/MAINTAIN) + kpis (4 live tiles) + agents_tab (niri scroll of QPlainTextEdit+QProcess jcode terminals) + phones_tab (4-stat + filter + 2-col + logcat tail) + workstation_tab + theme + state + persona (EVE injection) + RKOJ.spec + README. Source files appearing in dir during this PROGRESS write — build still running.
+2. **3-extensions sub-agent dispatched** (vault / watchdog / brain) writing plugin manifests + handlers to `tools/sinister-rkoj-qt/extensions/`.
+3. **5 new jcode-gap slash commands** in forge/commands.py (commands.py 77→82): `/pair` (peer-EVE, full status+note impl + Phase-2 peer-spawn deferred), `/ambient` (sibling-PROGRESS tail, full impl + 5-min ticker deferred), `/permissions` (settings.json display + --edit + --raw, full impl), `/replay` (last-N turns → JSONL in `_shared-memory/replays/<slug>/`, full impl), `/browser` (webbrowser.open + Playwright headless fallback, full impl).
+4. **Extensibility doctrine** at `_shared-memory/knowledge/sinister-rkoj-extensibility-doctrine.md` — manifest-driven plugin system (7 hook types: sidebar_nav, header_tab, ribbon_group, kpi_tile, slash_command, agent_pane, phone_pane, workstation_card). Each Sanctum tool plugs into RKOJ via `extensions/<slug>/manifest.json` + `handler.py`. 12 bundled extensions documented (vault/swarm/memory/mermaid/watchdog/skills/mcp/model/backup/login/usage/diagnose).
+5. **MANIFEST + CHANGELOG + README → v1.5.0** documenting the pivot.
+6. **tools/_INDEX.md** + 4 new rows (sinister-rkoj-qt, sinister-watchdog, sinister-diagnose, sanctum-backup) catching up the catalog.
+7. **Desktop cleaned** per operator directive — removed `RKOJ-Workstation/` + `Sanctum-Console/` folders; `RKOJ.lnk` repointed to Sanctum-side EXE path `D:\Sinister Sanctum\tools\sinister-rkoj-qt\dist\RKOJ\RKOJ.exe`.
+8. **smoke-rkoj-qt.ps1** ready to verify EXE pops a Qt window after build.
+9. **ship-rkoj-qt-to-desktop.ps1** ready to copy build output to Desktop (auto-detects onefile vs folder build).
+
+**In flight**:
+- PyQt6 sub-agent (a17cffd9362409e82) building the 13-file app + running PyInstaller.
+- 3-extensions sub-agent (ab85a5b6eae9e34b8) writing vault/watchdog/brain manifests.
+
+**Operator-gated remaining**:
+- Operator clicks `Desktop/Rename-Sinister-to-Personal.bat` for D:\Sinister → D:\Personal (UAC-elevated; ACL was blocking master).
+- Operator clicks `Desktop/Kill-Popups.bat` for the last 2 PowerShell-popup tasks (UAC-elevated; 3 already silent without admin).
+
+---
+
 ## 2026-05-21 ~20:18 — Parallel-execution turn — Panel UI + Watchdog + jcode audit + /create + /resume + LIVE-BACKING migration v3 (Python) in flight
 
 EVE on `agent/sinister-sanctum/cli-dispatcher-2026-05-21`. Operator (verbatim across this turn): *"complete all you can in parallel"* x2, *"do the LIVE-BACKING migration and complete everything i said to do"*, *"the rkoj is not open. that is a bug"*, *"still a powershell window popus up every 1-5 minutes. fix this shit im tired of asking"*, *"kil pid 17516 for me you can do it"*, *"place popup killer on the desktopp"*, *"i want the exact ui of the sinister panel"*, *"keep working on everything in parrallel"*.
