@@ -4,6 +4,33 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-21 14:02 — shipped: 06bcc46 closure — EVE brain entry on disk + .gitignore harness adds + tools/_INDEX backfill + wayward-Forge surface
+
+Resume-via-Forge spawn (mode=resume, turbo, compact). Commit `06bcc46` landed three of my unique adds at HEAD plus four hitchhikers the sibling sanctum staged at the same moment (lock-race during `git add`). Captured under one commit message anyway — net effect is a clean 281-line addition.
+
+**Mine in this commit (verified by `git show 06bcc46`):**
+- `_shared-memory/knowledge/agent-identity-eve.md` — 153-line brain entry on the EVE persona doctrine. CLAUDE.md already pointed at this file but it didn't exist on disk; closed.
+- `.gitignore` — `.claude/worktrees/` + `.swarm/` added so harness state stops appearing in every fleet agent's `git status`.
+- `tools/_INDEX.md` — six rows backfilled (sinister-cli / sinister-swarm / sinister-login / sinister-review / forge-memory-bridge / memory-graph-render). All shipped earlier in this session's commit chain but never made the catalog.
+
+**Hitchhikers (sibling-staged, lane-clean to land):**
+- `_shared-memory/inbox/sanctum/_archive/2026-05-21T1351Z-hello-ack-from-panel.json` — sibling's Panel HELLO-ACK archival
+- `_shared-memory/knowledge/launcher-mode-evolution.md` — sibling-written M4 closure (15-mode roster + v1-v18 changelog + decision tree)
+- `_shared-memory/resume-points/Sanctum/2026-05-21T095931Z.json` — sibling resume-point
+
+**Wayward-commit observed (`verify-head-before-commit-multi-agent` empirical evidence):** `66a5b3e feat(forge): PH18 niri columns + PH16 swarm pump + :dm/:broadcast + PH10 :host switch` landed on `agent/sinister-sanctum/cli-dispatcher-2026-05-21` from a Forge sibling agent that did not verify HEAD before commit. Recovery per the brain entry is FORGE's lane to drive (`git update-ref refs/heads/agent/sinister-forge/<branch> 66a5b3e` + force-push the forge ref). I am NOT fixing it from my agent — that would be a cross-lane edit per canonical-10. Surfaced via `[ASK]` to forge inbox below.
+
+**Lock contention this turn:** hit `.git/index.lock` twice during `git add` + `git commit` (sibling sanctum's same-branch commit cycle). Doctrine-honored: never `rm` the lock; polled with 5-6s ticks; both cleared <50s. Net wall-clock cost ~80s.
+
+**Open in-lane / next slice:**
+- Drop `[ASK]` in `forge` inbox surfacing the 66a5b3e wayward commit so Forge agent recovers via `update-ref`.
+- Master-plan items remaining: M2 (post-merge index check — operator-gated) / M3 (operator-driven launcher spawn smoke) / M5 (Desktop bat byte-parity audit — sibling already surfaced findings at 09:55) / M6 (clean fast-forward probe — sibling already confirmed ✅).
+- The 4 untracked Kernel-APK cross-agent broadcasts (12:40Z–14:13Z) still wait for their lane owner.
+
+**Resume-point + heartbeat:** fresh resume-point at turn-close (`_shared-memory/resume-points/Sanctum/<UTC>.json`); heartbeat refreshed with EVE persona field. pre_warm_reads kept bounded to 3 files for next cold-start.
+
+---
+
 ## 2026-05-21 14:00 — shipped: EVE-identity doctrine landed + v1.2 resume-point smoke + lane carve-out under heavy sibling contention
 
 Resume-mode pickup on `agent/sinister-sanctum/cli-dispatcher-2026-05-21`. CONTRACT 7 surgical context-load via `_shared-memory/resume-points/sanctum/2026-05-21T084103Z.json` worked exactly as designed — pre_warm_reads (3 files) bounded the cold-start; didn't grep the whole brain.
