@@ -47,6 +47,8 @@ from forge.panes.tabs import TabbedMultiPane
 from forge.panes.agent_pane import AgentPane
 from forge.panes.picker import AgentPicker, PickerResult
 from forge.panes.swarm_modal import SwarmModal, SwarmModalResult
+from forge.panes.sidebar import Sidebar
+from forge.panes.adb_panel import AdbPanel
 from forge.swarm import send_dm as _send_dm, broadcast as _broadcast
 from forge.projects import get_project
 from forge.spawn.base import SpawnConfig
@@ -156,6 +158,10 @@ class ForgeApp(App):
         super().__init__()
         self._booted = False
         self._memory_visible = False
+        # Sinister Panel sidebar state — tracks which right-side view is mounted.
+        # "agents" = TabbedMultiPane (default), "adb" = AdbPanel.
+        self._sidebar_active = "agents"
+        self._adb_panel: AdbPanel | None = None
 
     def compose(self) -> ComposeResult:
         self._chrome = ChromeBar()
@@ -173,11 +179,22 @@ class ForgeApp(App):
         await self._swap_to_main()
 
     async def _swap_to_main(self) -> None:
-        """Remove boot screen, mount the real workspace."""
+        """Remove boot screen, mount the real workspace.
+
+        Layout (left-to-right):
+          [Sidebar]  [TabbedMultiPane or AdbPanel]  [optional MemoryPanel]
+        The Sidebar posts Sidebar.TabSelected when the operator clicks a tab;
+        on_sidebar_tab_selected swaps the right-side content between
+        TabbedMultiPane (agents) and AdbPanel (adb).
+        """
         self._boot.remove()
-        # Workspace = horizontal split: main panes + optional memory panel
+        # Workspace = horizontal split: sidebar + main content + optional memory panel
         self._workspace = Horizontal(id="workspace")
         await self.mount(self._workspace, after=self._chip)
+        # Left rail (Sinister Panel-style)
+        self._sidebar = Sidebar(active=self._sidebar_active)
+        await self._workspace.mount(self._sidebar)
+        # Right-side content: default to the agent TabbedMultiPane.
         self._tabs = TabbedMultiPane()
         await self._workspace.mount(self._tabs)
         # Default project chip shows "no project"
@@ -272,6 +289,39 @@ class ForgeApp(App):
                 self._memory.set_project(cur.project_key, cur.project_display)
         else:
             self._chip.set_project("", PURPLE_BRIGHT)
+
+    # ---------- sidebar (Sinister Panel) ----------
+
+    async def on_sidebar_tab_selected(self, event: "Sidebar.TabSelected") -> None:
+        """Swap the right-side content based on which sidebar tab was clicked.
+
+        agents → mount TabbedMultiPane (the existing agent UI; preserved across
+                 switches so subprocesses keep running in the background).
+        adb    → mount AdbPanel (live `adb devices -l` grid).
+        """
+        if not self._booted:
+            return
+        new_tab = event.tab
+        if new_tab == self._sidebar_active:
+            return
+        self._sidebar_active = new_tab
+        if new_tab == "adb":
+            # Detach the tabs widget (don't remove — keep subprocesses alive).
+            # We unmount by removing from DOM but keep the Python reference so we
+            # can re-mount it later. Textual's .remove() is async + destructive,
+            # so use display toggling instead to preserve state.
+            self._tabs.display = False
+            if self._adb_panel is None:
+                self._adb_panel = AdbPanel()
+                await self._workspace.mount(self._adb_panel, after=self._sidebar)
+            else:
+                self._adb_panel.display = True
+            self.notify("ADB devices view", timeout=2)
+        else:  # "agents"
+            if self._adb_panel is not None:
+                self._adb_panel.display = False
+            self._tabs.display = True
+            self.notify("agents view", timeout=2)
 
     # ---------- actions ----------
 
