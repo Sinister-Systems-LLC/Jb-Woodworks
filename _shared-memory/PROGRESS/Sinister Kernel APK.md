@@ -6,6 +6,44 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-21 20:0xZ — v0.97.5 ship (`531f3ac`) + watchdog pre-flight + 2 brain doctrines codified
+
+**Operator directive:** *"complete everything else you can while we wait for sim service to come back"*. Continuing cell-independent work.
+
+### APK source ship (kernel-apk branch `agent/sinister-kernel-apk/crispy-cosmos-resume`)
+
+- `531f3ac` v0.97.5 — log-noise reduction during cell-down. Three Log.w → Log.i downgrades for UnknownHostException-class exceptions (expected during operator-acknowledged outages). Files: PanelPusher.kt heartbeat + rka-poll exception paths + SpooferConfigPoller.kt poll loop. Other exception classes still Log.w with stack trace for real-bug surfacing. Estimated reduction: ~180 Log.w/hr/phone → ~60 Log.i/hr/phone during cell-down. versionCode 204→205, versionName 0.97.4→0.97.5. compileDebugKotlin + assembleDebug both GREEN.
+
+### Sanctum-side commits this turn
+
+- `5a4e0c8` — fix(recovery-watchdog): pre-flight 4 critical bugs before operator's admin Install-Task run. Watchdog was UNCOMMITTED to git AND had 4 bugs that would have made it crash at first run: (1) operator-precedence on `-contains` test; (2) `Split-Path -Parent $MyInvocation.MyCommand.Path` returns null under `-File` invocation; (3) em-dash in watchdog.ps1 trips PS5.1 ANSI parser; (4) em-dash in Install-Task.ps1 same issue. Plus dynamic `_author` date + LogonType/IP-filter documentation. Both .ps1 PARSE_OK; watchdog.ps1 dry-run clean.
+- `9a2bd28` — docs(recovery-watchdog): track README.md alongside the fixed scaffold.
+- `340897b` — docs(kernel-apk): 2 new brain entries codifying empirical session patterns: `operator-paced-outage-discipline-2026-05-21` (when one input is gated, partition work into depends-on / independent / adjacent buckets; 6 anti-patterns including don't-ping-are-we-back) + `audit-pass-is-output-2026-05-21` (counter to "audits must find bugs"; 4 PASS audits this session are output, not nothing).
+
+### Watchdog pre-flight saved an operator roundtrip
+
+Operator hasn't UAC-elevated to run Install-Task.ps1 yet. Pre-flighting found 4 latent bugs that would have either crashed at first invocation OR silently failed (per-phone state never initialized due to the operator-precedence bug). The fix-set is shipped + tested via PowerShell ParseFile (with proper error capture — the previous attempt used `[ref]$null` which discards errors silently) + watchdog.ps1 dry-run with no devices attached confirmed "poll cycle start" + "no devices attached" + clean exit.
+
+### Brain doctrine codified
+
+Two empirical patterns from this session that the no-stop-contract didn't cover at the same level of specificity:
+
+1. **operator-paced-outage-discipline** — codifies how to partition work when operator gates an input. Composes with no-stop-contract + forever-expanding-modular. Empirical anchor: this 2026-05-21 session ran 3+ hours under "cell service down" directive, shipping v0.97.4 + v0.97.5 + 8 brain entries + 4 audit passes + watchdog pre-flight + 12+ commits.
+
+2. **audit-pass-is-output** — counter to the productivity bias that audits "must find bugs." 4 audits this session returned PASS with 0 source edits each; documented in PROGRESS + task descriptions is the fleet-value output. Anti-patterns include manufacture-finding + audit-shame + skip-PASS-documentation.
+
+### 5-check status
+
+1. Explicit ask — *"complete everything else you can while we wait"* satisfied: v0.97.5 source ship + watchdog pre-flight + 2 brain doctrines + 5 commits this pass.
+2. TaskList — 23 tasks across the full session, all completed.
+3. PROGRESS — ✅ this entry.
+4. MASTER-PLAN — file doesn't exist on disk; deferred to operator-side.
+5. Next-slice surface — branch now 7 commits ahead of origin (was 6); still operator-gated for push + install-on-cell-recovery.
+
+— EVE on Kernel APK (Claude agent, 2026-05-21T20:0xZ, v0.97.5 log-noise reduction shipped + watchdog pre-flight fixed 4 bugs + 2 empirical brain doctrines codified)
+
+---
+
 ## 2026-05-21 19:35Z — review-everything cleanup pass (`13bdf80` + `77d2362` + `ccd859c` + `723748b`) — 10 brain-disk drift items resolved or surfaced + 2 multi-lane entries reconstructed + 1 self-empirical doctrine update from a concurrent-staging incident
 
 **Operator directive:** *"ok review everything and complete things that are not complete"*. Comprehensive review pass surfaced 4 categories of incomplete state.
