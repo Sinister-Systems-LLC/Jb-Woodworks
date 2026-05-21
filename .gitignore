@@ -203,3 +203,15 @@ projects/sinister-claw/source/node_modules/
 
 # Forge bridge auth token (auto-generated, machine-local)
 _shared-memory/forge-bridge-token.txt
+
+# Re-ignore python build artifacts inside the whitelisted source trees.
+# (`!source/**` above re-includes them; we explicitly re-exclude.)
+projects/sinister-forge/source/**/__pycache__/
+projects/sinister-forge/source/**/*.pyc
+projects/sinister-forge/source/sinister_forge.egg-info/
+projects/sinister-mind/source/**/__pycache__/
+projects/sinister-mind/source/**/*.pyc
+projects/sinister-mind/source/sinister_mind.egg-info/
+projects/sinister-term/source/**/__pycache__/
+projects/sinister-term/source/**/*.pyc
+projects/sinister-term/source/sinister_term.egg-info/
