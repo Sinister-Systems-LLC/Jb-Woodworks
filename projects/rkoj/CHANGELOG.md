@@ -4,6 +4,28 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not component versions (each lane has its own).
 
+## v1.5.1 — 2026-05-21
+
+**Strip pivot — 2 tabs + Panel-exact + niri-scroll.** Operator (verbatim 2026-05-21): *"remove ALL THIS FUCKING SHIT AND LISTEN TO ME very carefully. i want two fucking tabs. agents and devices ... exact sinister panel look ... niri infinite scroll ... glow when they need our input ... X button works"*. The v1.5.0 PyQt6 ship landed but the surface was bloated — Excel ribbon, KPI tiles, project sub-tab strip, workstation tab — none of which the operator wanted. v1.5.1 strips the chrome back to operator-canonical: 2 chip tabs, Panel-exact sidebar, Sheets-style header menu strip, niri-scroll agent grid, folder-tab row, working X.
+
+- **REMOVED**:
+  - Excel ribbon (5 groups VIEW/SPAWN/AGENT/AUTOMATE/MAINTAIN — all deleted)
+  - 4 KPI tiles (deleted)
+  - Workstation tab + sub-pane (operator dropped — Console launches elsewhere)
+  - Project sub-tab strip (replaced by folder-tab row in the Agents tab)
+  - STATUS panel bottom-left of sidebar
+- **KEPT + REWORKED**:
+  - Sidebar — now Panel-exact: 3 sections (DAILY / INSIGHTS / MANAGE), mascot block, no STATUS panel
+  - Header — now 2 rows: Sheets-style menu strip (File / Edit / View / Insert / ...) on row 1; chip tabs + actions + CreateAgent on row 2
+  - Agents tab — now NiriScrollGrid (infinite horizontal/vertical scroll of agent cells, per-project grouping)
+  - `persona.py` — EVE binding unchanged
+- **NEW**:
+  - Folder-tab row in the Agents tab (All chip + per-project chips for filtering the niri-scroll grid)
+  - Glow-on-pending animation (cell pulses when the EVE inside needs operator input)
+  - Sheets-style menu strip with placeholder QMenus (File / Edit / View / Insert / Format / Data / Tools / Extensions / Help)
+  - Working X button + `closeEvent` that terminates all QProcess children before exit (no orphaned `claude` processes)
+- Reference: `_shared-memory/knowledge/rkoj-ui-exact-spec-2026-05-21.md` (operator-canonical UI spec doctrine).
+
 ## v1.5.0 — 2026-05-21
 
 **Pivot to native PyQt6 desktop app.** Operator (verbatim): *"i dont want a fucking web ui ... popup the ui on the fucking desktop"* + *"function like jcode but be ours and we can foreever expand"*. The pywebview path (v1.4.x) was rejected — HTML/CSS surface read as "web ui". RKOJ.exe v1.5.0 is now a frameless rounded PyQt6 window with Sinister Panel layout + Excel-style ribbon + jcode-form terminals in the Agents tab (QPlainTextEdit + QProcess wrapping `claude --dangerously-skip-permissions -p`).
