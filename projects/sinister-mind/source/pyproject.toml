@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sinister-mind"
+version = "0.1.0"
+description = "Sinister-branded visual mind-graph for the Sanctum brain. Flask + D3.js."
+readme = "README.md"
+license = { text = "AGPL-3.0-or-later" }
+authors = [{ name = "RKOJ-ELENO", email = "andrew.viperrr@gmail.com" }]
+requires-python = ">=3.10"
+dependencies = [
+    "flask>=3.0",
+    "watchdog>=4.0",
+]
+
+[project.scripts]
+sinister-mind = "mind.__main__:run"
+mind = "mind.__main__:run"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["mind*"]

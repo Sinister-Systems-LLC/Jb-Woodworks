@@ -187,3 +187,7 @@ projects/*/eleno/.env.local
 
 # Auto-backup snapshots (24h cadence; auto-cleanup prunes >7d)
 backups/
+
+# Sinister Mind source - REAL code (not junction)
+!projects/sinister-mind/source/
+!projects/sinister-mind/source/**

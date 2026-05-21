@@ -1,0 +1,303 @@
+# Sinister Mind :: server.py
+# Author: RKOJ-ELENO :: 2026-05-21
+# License: AGPL-3.0-or-later
+#
+# Flask backend. Endpoints:
+#   GET  /                 -> static/index.html (the D3 graph UI)
+#   GET  /api/graph        -> nodes + edges JSON (all brain entries, projects,
+#                              plans, PROGRESS headings, cross-agent, resume-points)
+#   GET  /api/projects     -> 9 (or 10) canonical projects from projects.json
+#   GET  /api/search?q=... -> nodes whose slug/title/tags match q
+#   GET  /api/path?a=...&b=... -> shortest path between two nodes by id
+
+from __future__ import annotations
+
+import json
+import re
+from collections import defaultdict, deque
+from pathlib import Path
+from typing import Any
+
+from flask import Flask, jsonify, request, send_from_directory
+
+
+SANCTUM_ROOT = Path("D:/Sinister Sanctum")
+BRAIN_INDEX = SANCTUM_ROOT / "_shared-memory" / "knowledge" / "_INDEX.md"
+BRAIN_DIR = SANCTUM_ROOT / "_shared-memory" / "knowledge"
+PROJECTS_JSON = SANCTUM_ROOT / "automations" / "session-templates" / "projects.json"
+PLANS_DIR = SANCTUM_ROOT / "_shared-memory" / "plans"
+PROGRESS_DIR = SANCTUM_ROOT / "_shared-memory" / "PROGRESS"
+CROSS_AGENT_DIR = SANCTUM_ROOT / "_shared-memory" / "cross-agent"
+RESUME_POINTS_DIR = SANCTUM_ROOT / "_shared-memory" / "resume-points"
+HEARTBEATS_DIR = SANCTUM_ROOT / "_shared-memory" / "heartbeats"
+
+STATIC_DIR = Path(__file__).parent / "static"
+
+# Sinister palette (matches Forge's theme.py)
+NODE_COLORS = {
+    "brain":       "#A06EFF",  # purple-bright
+    "project":     "#6EE8FF",  # cyan
+    "plan":        "#6EFFA0",  # green
+    "progress":    "#FFD66E",  # yellow
+    "cross_agent": "#FF6EE8",  # magenta
+    "resume_pt":   "#FF6E6E",  # red
+}
+
+
+app = Flask(__name__, static_folder=str(STATIC_DIR), static_url_path="/static")
+
+
+# ---------------- Data ingest ----------------
+
+def _read_text(path: Path) -> str:
+    try:
+        return path.read_text(encoding="utf-8")
+    except Exception:
+        return ""
+
+
+def _slugify(s: str) -> str:
+    s = re.sub(r"[^a-zA-Z0-9_-]+", "-", s.strip().lower())
+    return re.sub(r"-+", "-", s).strip("-")
+
+
+def load_projects() -> list[dict]:
+    if not PROJECTS_JSON.exists():
+        return []
+    try:
+        return json.loads(_read_text(PROJECTS_JSON)).get("projects", [])
+    except Exception:
+        return []
+
+
+def load_brain_entries() -> list[dict]:
+    """Parse _INDEX.md rows + the individual .md files to build node entries."""
+    entries: list[dict] = []
+    if not BRAIN_INDEX.exists():
+        return entries
+    text = _read_text(BRAIN_INDEX)
+    # Table rows look like: | slug | title | status | tags | created | updated |
+    for line in text.splitlines():
+        if not line.startswith("| ") or line.startswith("| Slug |") or line.startswith("|---"):
+            continue
+        parts = [p.strip() for p in line.strip("| ").split("|")]
+        if len(parts) < 4:
+            continue
+        slug = parts[0].strip("` ")
+        if not slug or slug.startswith("---"):
+            continue
+        title = parts[1] if len(parts) > 1 else slug
+        status = parts[2] if len(parts) > 2 else ""
+        tags = [t.strip() for t in (parts[3] or "").split(",") if t.strip()]
+        entries.append({
+            "id": f"brain:{slug}",
+            "label": slug,
+            "type": "brain",
+            "title": (title[:80] + "...") if len(title) > 80 else title,
+            "status": status,
+            "tags": tags,
+            "color": NODE_COLORS["brain"],
+        })
+    return entries
+
+
+def load_plan_artifacts() -> list[dict]:
+    out: list[dict] = []
+    if not PLANS_DIR.exists():
+        return out
+    for plan_dir in PLANS_DIR.iterdir():
+        if not plan_dir.is_dir() or plan_dir.name.startswith("_"):
+            continue
+        # Plan key is usually <project>-<slug>-<UTC>
+        out.append({
+            "id": f"plan:{plan_dir.name}",
+            "label": plan_dir.name,
+            "type": "plan",
+            "tags": [],
+            "color": NODE_COLORS["plan"],
+        })
+    return out
+
+
+def load_progress_headings() -> list[dict]:
+    """Top heading per PROGRESS/<agent>.md file."""
+    out: list[dict] = []
+    if not PROGRESS_DIR.exists():
+        return out
+    for f in PROGRESS_DIR.glob("*.md"):
+        if f.name.startswith("_"):
+            continue
+        agent = f.stem
+        text = _read_text(f)
+        m = re.search(r"^## (\d{4}-\d{2}-\d{2} [^\n]+)", text, flags=re.MULTILINE)
+        title = m.group(1) if m else f.stem
+        out.append({
+            "id": f"progress:{agent}",
+            "label": agent,
+            "type": "progress",
+            "title": title[:80],
+            "tags": [],
+            "color": NODE_COLORS["progress"],
+        })
+    return out
+
+
+def load_cross_agent() -> list[dict]:
+    out: list[dict] = []
+    if not CROSS_AGENT_DIR.exists():
+        return out
+    for f in CROSS_AGENT_DIR.glob("*.md"):
+        if f.parent.name == "_archive":
+            continue
+        out.append({
+            "id": f"xa:{f.stem}",
+            "label": f.stem[:40],
+            "type": "cross_agent",
+            "tags": [],
+            "color": NODE_COLORS["cross_agent"],
+        })
+    return out[:200]  # cap for sanity
+
+
+def load_resume_points() -> list[dict]:
+    out: list[dict] = []
+    if not RESUME_POINTS_DIR.exists():
+        return out
+    for proj_dir in RESUME_POINTS_DIR.iterdir():
+        if not proj_dir.is_dir():
+            continue
+        # Latest only per project
+        files = sorted(proj_dir.glob("*.json"), key=lambda p: p.stat().st_mtime, reverse=True)
+        if not files:
+            continue
+        out.append({
+            "id": f"resume:{proj_dir.name}",
+            "label": proj_dir.name,
+            "type": "resume_pt",
+            "tags": [proj_dir.name],
+            "color": NODE_COLORS["resume_pt"],
+        })
+    return out
+
+
+# ---------------- Graph composition ----------------
+
+def build_graph() -> dict:
+    projects = load_projects()
+    brain = load_brain_entries()
+    plans = load_plan_artifacts()
+    progress = load_progress_headings()
+    xa = load_cross_agent()
+    rp = load_resume_points()
+
+    project_nodes = []
+    project_keys = set()
+    for p in projects:
+        key = p.get("key", "")
+        project_keys.add(key)
+        project_nodes.append({
+            "id": f"project:{key}",
+            "label": p.get("display", key),
+            "type": "project",
+            "tag": p.get("tag", ""),
+            "github": p.get("github", ""),
+            "tags": [key],
+            "color": NODE_COLORS["project"],
+        })
+
+    nodes = project_nodes + brain + plans + progress + xa + rp
+
+    edges: list[dict] = []
+
+    # Brain -> Project edges by tag overlap with project key
+    for b in brain:
+        for pk in project_keys:
+            if any(pk in t or t.startswith(pk) for t in b.get("tags", [])):
+                edges.append({"source": b["id"], "target": f"project:{pk}", "weight": 1, "type": "brain-project"})
+
+    # Plan -> Project edges by name prefix
+    for pl in plans:
+        for pk in project_keys:
+            if pl["label"].lower().startswith(pk.lower()) or pk.lower() in pl["label"].lower():
+                edges.append({"source": pl["id"], "target": f"project:{pk}", "weight": 1, "type": "plan-project"})
+
+    # Resume-pt -> Project by slug match
+    for r in rp:
+        if r["label"] in project_keys:
+            edges.append({"source": r["id"], "target": f"project:{r['label']}", "weight": 2, "type": "resume-project"})
+
+    return {"nodes": nodes, "edges": edges, "counts": {
+        "projects": len(project_nodes),
+        "brain": len(brain),
+        "plans": len(plans),
+        "progress": len(progress),
+        "cross_agent": len(xa),
+        "resume_pts": len(rp),
+        "total_nodes": len(nodes),
+        "total_edges": len(edges),
+    }}
+
+
+# ---------------- Endpoints ----------------
+
+@app.route("/")
+def index():
+    return send_from_directory(STATIC_DIR, "index.html")
+
+
+@app.route("/api/graph")
+def api_graph():
+    return jsonify(build_graph())
+
+
+@app.route("/api/projects")
+def api_projects():
+    return jsonify(load_projects())
+
+
+@app.route("/api/search")
+def api_search():
+    q = (request.args.get("q") or "").lower().strip()
+    if not q:
+        return jsonify({"matches": []})
+    graph = build_graph()
+    matches = [
+        n for n in graph["nodes"]
+        if q in n["id"].lower()
+        or q in n.get("label", "").lower()
+        or q in n.get("title", "").lower()
+        or any(q in t.lower() for t in n.get("tags", []))
+    ]
+    return jsonify({"matches": matches[:50], "total": len(matches)})
+
+
+@app.route("/api/path")
+def api_path():
+    a = request.args.get("a")
+    b = request.args.get("b")
+    if not a or not b:
+        return jsonify({"error": "need ?a=<id>&b=<id>"}), 400
+    graph = build_graph()
+    adj: dict[str, list[str]] = defaultdict(list)
+    for e in graph["edges"]:
+        adj[e["source"]].append(e["target"])
+        adj[e["target"]].append(e["source"])
+    # BFS
+    if a not in adj and b not in adj:
+        return jsonify({"path": [], "found": False})
+    queue = deque([[a]])
+    seen = {a}
+    while queue:
+        path = queue.popleft()
+        if path[-1] == b:
+            return jsonify({"path": path, "found": True, "length": len(path) - 1})
+        for n in adj.get(path[-1], []):
+            if n not in seen:
+                seen.add(n)
+                queue.append(path + [n])
+    return jsonify({"path": [], "found": False})
+
+
+@app.route("/api/health")
+def api_health():
+    return jsonify({"ok": True, "name": "Sinister Mind", "version": "0.1.0"})
