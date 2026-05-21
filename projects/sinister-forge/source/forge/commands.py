@@ -1918,12 +1918,12 @@ SLASH_COMMANDS: dict[str, dict[str, Any]] = {
     "alignment":  _entry(_cmd_alignment, "text alignment: status|centered|left",      "ui"),
 
     # SYSTEM
-    "reload":     _entry(_cmd_reload,    "reload — restart RKOJ.exe",                 "system"),
-    "restart":    _entry(_cmd_restart,   "restart with current binary",               "system"),
-    "rebuild":    _entry(_cmd_rebuild,   "full rebuild — instructions",               "system"),
-    "client-reload": _entry(_stub("client-reload", "remote-only", ""), "system"),
-    "server-reload": _entry(_stub("server-reload", "remote-only", ""), "system"),
-    "debug-visual":  _entry(_cmd_debug_visual, "enable Textual reactive inspector",   "system"),
+    "reload":     _entry(_cmd_reload,    "reload — relaunch from newer RKOJ.exe if dist is newer", "system"),
+    "restart":    _entry(_cmd_restart,   "restart current session (no rebuild)",      "system"),
+    "rebuild":    _entry(_cmd_rebuild,   "full PyInstaller rebuild of RKOJ.exe (background)", "system"),
+    "client-reload": _entry(_cmd_client_reload, "refresh Textual pane widgets (no subprocess restart)", "system"),
+    "server-reload": _entry(_cmd_server_reload, "kill + respawn agent subprocess (pane intact)",     "system"),
+    "debug-visual":  _entry(_cmd_debug_visual,  "toggle SINISTER_DEBUG_VISUAL render flag", "system"),
     "mcp":        _entry(_cmd_mcp,       "list MCP servers / auto-load on call",      "system"),
     "tools":      _entry(_cmd_tools,     "list builtin tools + sinister-cli + MCP",   "system"),
     "skills":     _entry(_cmd_skills,    "list discovered skills",                    "skills"),
