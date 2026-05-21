@@ -36,10 +36,12 @@ class Sidebar(Vertical):
     Sidebar .sidebar-tab {{
         height: 3;
         margin: 0 1 1 1;
-        padding: 1 1 0 2;
+        padding: 1 1 1 2;
         background: {BG_GLASS_1};
         border: round {BORDER_GLASS};
         color: {SOFT};
+        content-align: center middle;
+        text-align: center;
     }}
     Sidebar .sidebar-tab.-active {{
         background: {BG_GLOW};
@@ -64,7 +66,7 @@ class Sidebar(Vertical):
     }}
     """
 
-    TABS = ("agents", "adb")
+    TABS = ("agents", "adb", "workstation")
 
     class TabSelected(Message):
         def __init__(self, tab: str) -> None:
@@ -90,9 +92,16 @@ class Sidebar(Vertical):
 
     @staticmethod
     def _label_for(name: str) -> str:
-        # Add icon + label, two lines so the tab feels chunky like Sinister Panel.
-        icons = {"agents": "👤", "adb": "📱"}
-        return f"[bold]{name.upper()}[/]\n[dim]{icons.get(name, '·')}[/]"
+        # Operator 2026-05-21 (screenshot 27 of v1.2.0): emoji glyphs (👤 📱) did
+        # not render in the operator's console font, leaving the sidebar showing
+        # empty rectangles. Drop the icon line entirely — each tab is a single
+        # bold ASCII label vertically centered by content-align: center middle.
+        labels = {
+            "agents":      "AGENTS",
+            "adb":         "ADB",
+            "workstation": "WRKSTN",
+        }
+        return f"[bold]{labels.get(name, name.upper())}[/]"
 
     def on_click(self, event) -> None:
         target = event.widget

@@ -50,6 +50,7 @@ from forge.panes.picker import AgentPicker, PickerResult
 from forge.panes.swarm_modal import SwarmModal, SwarmModalResult
 from forge.panes.sidebar import Sidebar
 from forge.panes.adb_panel import AdbPanel
+from forge.panes.workstation_panel import WorkstationPanel
 from forge.panes.toolbar import Toolbar
 from forge.panes.statusbar import Statusbar
 from forge.swarm import send_dm as _send_dm, broadcast as _broadcast
@@ -165,9 +166,11 @@ class ForgeApp(App):
         self._booted = False
         self._memory_visible = False
         # Sinister Panel sidebar state — tracks which right-side view is mounted.
-        # "agents" = TabbedMultiPane (default), "adb" = AdbPanel.
+        # "agents" = TabbedMultiPane (default), "adb" = AdbPanel,
+        # "workstation" = WorkstationPanel (RKOJ launcher stub).
         self._sidebar_active = "agents"
         self._adb_panel: AdbPanel | None = None
+        self._workstation_panel: WorkstationPanel | None = None
 
     def compose(self) -> ComposeResult:
         self._chrome = ChromeBar()
@@ -237,10 +240,38 @@ class ForgeApp(App):
         Optional SINISTER_TOOLS=swarm,memory,... triggers extras:
           - swarm → spawn 3 additional siblings on the same project
           - login → drop a /login providers cheat-sheet into the first pane
+
+        Fallback (operator screenshot 27 of v1.2.0 — "no project selected"):
+        if no SINISTER_PROJECT env var was set by the picker AND the operator
+        has not opted out via RKOJ_NO_AUTOSPAWN=1, default-spawn an EVE agent
+        on the `sanctum` project in resume mode after a 200ms settle. This
+        populates ws 1 immediately so the console is never empty on cold boot.
         """
         import os
         proj_key = os.environ.get("SINISTER_PROJECT", "").strip()
         if not proj_key:
+            # No env-driven pick. Fall back to default-spawn unless opted out.
+            if os.environ.get("RKOJ_NO_AUTOSPAWN", "").strip() == "1":
+                return
+            default_result = PickerResult(
+                project_key="sanctum",
+                project_display="Sinister Sanctum",
+                objective="resume",
+                token_mode="compact",
+                speed="turbo",
+                host="claude",
+                agent_name="EVE on Sinister Sanctum",
+                accent="purple",
+                focus="",
+            )
+            self.set_timer(
+                0.2,
+                lambda r=default_result: self.run_worker(
+                    self._spawn_from_result(r),
+                    exclusive=False,
+                    name="default-autospawn",
+                ),
+            )
             return
         proj_display = os.environ.get("SINISTER_PROJECT_DISPLAY", proj_key).strip() or proj_key
         mode = os.environ.get("SINISTER_MODE", "resume").strip() or "resume"
@@ -313,9 +344,12 @@ class ForgeApp(App):
     async def on_sidebar_tab_selected(self, event: "Sidebar.TabSelected") -> None:
         """Swap the right-side content based on which sidebar tab was clicked.
 
-        agents → mount TabbedMultiPane (the existing agent UI; preserved across
-                 switches so subprocesses keep running in the background).
-        adb    → mount AdbPanel (live `adb devices -l` grid).
+        agents      → NiriWorkspaceGrid (existing agent UI; subprocesses kept alive)
+        adb         → AdbPanel (live `adb devices -l` grid)
+        workstation → WorkstationPanel (RKOJ launcher stub)
+
+        State is preserved across switches via display toggling (Textual's
+        .remove() is destructive); each panel is mounted lazily on first use.
         """
         if not self._booted:
             return
@@ -323,21 +357,29 @@ class ForgeApp(App):
         if new_tab == self._sidebar_active:
             return
         self._sidebar_active = new_tab
+
+        # Hide every right-side panel; we'll re-show the active one below.
+        self._tabs.display = False
+        if self._adb_panel is not None:
+            self._adb_panel.display = False
+        if self._workstation_panel is not None:
+            self._workstation_panel.display = False
+
         if new_tab == "adb":
-            # Detach the tabs widget (don't remove — keep subprocesses alive).
-            # We unmount by removing from DOM but keep the Python reference so we
-            # can re-mount it later. Textual's .remove() is async + destructive,
-            # so use display toggling instead to preserve state.
-            self._tabs.display = False
             if self._adb_panel is None:
                 self._adb_panel = AdbPanel()
                 await self._workspace.mount(self._adb_panel, after=self._sidebar)
             else:
                 self._adb_panel.display = True
             self.notify("ADB devices view", timeout=2)
+        elif new_tab == "workstation":
+            if self._workstation_panel is None:
+                self._workstation_panel = WorkstationPanel()
+                await self._workspace.mount(self._workstation_panel, after=self._sidebar)
+            else:
+                self._workstation_panel.display = True
+            self.notify("RKOJ workstation view", timeout=2)
         else:  # "agents"
-            if self._adb_panel is not None:
-                self._adb_panel.display = False
             self._tabs.display = True
             self.notify("agents view", timeout=2)
 
