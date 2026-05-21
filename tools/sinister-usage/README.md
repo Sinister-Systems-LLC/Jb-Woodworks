@@ -31,21 +31,39 @@ pip install -e "D:/Sinister Sanctum/tools/sinister-usage"
 ## CLI (via umbrella or direct)
 
 ```bash
-sinister usage list              # endpoint registry (no env lookup)
-sinister usage check openai      # env-check + endpoint-known + cross-ref to sinister-login
+# Endpoint-registry layer (env-check; no network)
+sinister usage list              # 11-row endpoint registry
+sinister usage check openai      # one-provider env-check + endpoint-known + sinister-login cross-ref
 sinister usage check-all         # 11-row table
 sinister usage matrix            # the jcode-feature-matrix row for this tool
+
+# Local-state layer (no network; reads ~/.claude/)
+sinister usage local             # scan ~/.claude/ — sessions / projects / bytes / today
+sinister usage today             # UTC-today rollup with rough token estimate
+sinister usage doctor            # 5-check self-test (schemas + dir reachability)
+
+# Estimator layer (stdlib heuristic; no network)
+sinister usage estimate --text "hello world"
+sinister usage estimate --file path/to/text.md --verbose
+echo "lorem ipsum" | sinister usage estimate --json
 ```
 
 ## API
 
 ```python
-from sinister_usage import check, check_all, list_endpoints, get_endpoint
+from sinister_usage import (
+    # Endpoint registry
+    check, check_all, list_endpoints, get_endpoint, USAGE_ENDPOINTS, UsageEndpoint,
+    # Local-state scanner
+    scan_claude_local, today_summary, scan_provider_registry,
+    # Token estimator
+    estimate_tokens, estimate_text_breakdown,
+)
 
-check("openai")          # -> {"ok": True, "endpoint_url": ".../v1/usage", "configured": True, ...}
-check_all()              # [11 rows]
-list_endpoints()         # endpoint-only view (no env cross-ref)
-get_endpoint("ollama")   # UsageEndpoint dataclass
+check("openai")                # -> {"ok": True, "endpoint_url": ".../v1/usage", ...}
+scan_claude_local()            # -> {"projects_count": ..., "sessions_today": ..., ...}
+today_summary()                # -> rolled-up UTC-today payload
+estimate_tokens("hello")       # -> int (chars/4 + word-boundary heuristic)
 ```
 
 ## Soft dependency on sinister-login
