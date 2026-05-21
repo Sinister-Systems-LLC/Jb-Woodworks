@@ -34,7 +34,7 @@ import time
 import traceback
 from pathlib import Path
 
-__version__ = "0.8.0"
+__version__ = "1.0.0"
 
 
 # ----- Sub-command dispatch (RKOJ.exe login providers etc) -----------------
@@ -1061,25 +1061,29 @@ def _spawn_claude(text: str, root: Path) -> int:
 # Main shell loop
 # ===========================================================================
 
-def main() -> int:
-    _install_runtime_logger()
-    rv = _route_subcommand(sys.argv[1:])
-    if rv is not None:
-        return rv
-
-    _enable_vt()
-    # `_enable_vt` must run BEFORE the first print() since cp1252 default
-    # would crash on unicode block chars.
-    print()
+def _launch_forge_tui(sanctum_root: Path) -> int:
+    """Operator 2026-05-21: launch RKOJ.exe → goes straight to the multi-pane
+    Forge TUI (Sinister Panel sidebar + Agents/ADB tabs + niri-style scrollable
+    panes). Same code path as `/forge` at the simple `>` prompt, but the
+    default."""
     try:
-        _print_mark()
-    except UnicodeEncodeError:
-        print(PURPLE_BRIGHT + "  SINISTER" + RESET)
-    sanctum_root = _find_sanctum_root()
-    with _Spin("warming sanctum"):
-        time.sleep(0.25)
-    _print_status_panel(sanctum_root)
+        from forge.app import ForgeApp
+    except Exception as exc:
+        sys.stderr.write(f"\n[RKOJ] Forge TUI import failed: {exc}\n"
+                         f"[RKOJ] falling back to the simple `>` shell.\n\n")
+        return _shell_loop(sanctum_root)
+    try:
+        ForgeApp().run()
+        return 0
+    except (KeyboardInterrupt, SystemExit):
+        return 0
+    except Exception as exc:
+        sys.stderr.write(f"\n[RKOJ] Forge TUI crashed: {exc}\n"
+                         f"[RKOJ] falling back to the simple `>` shell.\n\n")
+        return _shell_loop(sanctum_root)
 
+
+def _shell_loop(sanctum_root: Path) -> int:
     while True:
         print()
         try:
@@ -1103,6 +1107,34 @@ def main() -> int:
         # natural language → spawn EVE on Sanctum
         rc = _spawn_claude(line, sanctum_root)
         print(f"  {GRAY}(exit {rc}){RESET}")
+
+
+def main() -> int:
+    _install_runtime_logger()
+    rv = _route_subcommand(sys.argv[1:])
+    if rv is not None:
+        return rv
+
+    _enable_vt()
+    sanctum_root = _find_sanctum_root()
+
+    # Operator 2026-05-21 (image 27): "still no ui when i launch exe with tabs
+    # and aeverything i asked you to do". Default mode is the Forge TUI (sidebar
+    # + Agents/ADB tabs + niri scroll). `--shell` keeps the jcode-style minimal
+    # `>` prompt for operators who prefer it.
+    argv = sys.argv[1:]
+    if "--shell" in argv or os.environ.get("RKOJ_DEFAULT_MODE", "").lower() == "shell":
+        print()
+        try:
+            _print_mark()
+        except UnicodeEncodeError:
+            print(PURPLE_BRIGHT + "  SINISTER" + RESET)
+        with _Spin("warming sanctum"):
+            time.sleep(0.25)
+        _print_status_panel(sanctum_root)
+        return _shell_loop(sanctum_root)
+
+    return _launch_forge_tui(sanctum_root)
 
 
 if __name__ == "__main__":

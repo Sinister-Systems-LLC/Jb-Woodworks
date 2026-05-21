@@ -4,6 +4,75 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-21 15:43 — SHIPPED: RKOJ.exe v0.8.0 to Desktop (52 MB) — jcode-FORM parity locked in
+
+**v0.8.0 features (on top of v0.7.0)**:
+- `/help` opens a **rich.Panel overlay** with 6 categorized sections (Commands, Session, Memory & Swarm, Auth & Accounts, System, Navigation) — jcode form-factor match
+- `/start` — efficient project picker that ports the Start-Sinister-Session.bat UX inline (numbered project list sorted by recency, mode r/e/s, kicks env-spawn)
+- **69 slash commands** registered in `forge.commands.SLASH_COMMANDS` (jcode itself has ~60 — we now exceed)
+- All ~40 new jcode stubs work as no-op placeholders pending future implementation
+- Real impls for `/clear`, `/compact`, `/context`, `/save`, `/unsave`, `/rename`, `/rewind` (NOT in this build — landed AFTER build start as commit `957f1d7`; v0.9.0 will include)
+- Launcher .bat files (`Start-Sinister-Session.bat`, `Sinister Start.bat`, `Personal Project start.bat`, new `RKOJ-Start.bat`) prefer RKOJ.exe over the heavy PS1 path
+- Backup tooling `tools/sanctum-backup/` v0.1.0 (47/47 tests) + dated backup at `D:/sinister-sanctum-backup-2026-05-21/` (in-progress, 4+ GB so far)
+
+**11 commits since v0.5.0**:
+| Commit | What |
+|---|---|
+| `a3c1e6c` | sidebar + ADB wire (A) |
+| `ad58ef5` | SDK direct path (B) |
+| `03f26ef` | jcode-patterns brain (C) |
+| `b399cd5` | sinister-model 72/72 (D) |
+| `5e7f5c8` | anthropic_direct v0.7.0 (E) |
+| `51515ff` | SkillRegistry (F) |
+| `599d1a1` + `2519f57` | BM25 + docs (G) |
+| `178fbcf` | sanctum-backup 47/47 (K) |
+| `789ab3c` | dedupe sweep (I) |
+| `c5a2e37` | GitHub linkage audit (J) |
+| `3687f30` | launcher bats (T) |
+| `2c80b62` | /start picker (P) |
+| `7e6ed4e` | /help overlay + 40 stubs (Q) |
+| `957f1d7` | real /clear /compact /context /save /unsave /rename /rewind (S) |
+
+**Still in-flight**: R (jcode-shim sidecar mode + Rust fork plan) + H-backup (robocopy ~4.2 GB).
+
+**Next**: v0.9.0 rebuild after R lands + S's commit included. Ship that to Desktop.
+
+---
+
+## 2026-05-21 15:40 — shipped: RKOJ.exe v0.7.0 on Desktop (52 MB) + 8 commits in parallel sweep (autonomous, no operator gating)
+
+**Form-parity wave landed**: A-G all done. 8 commits in ~25 min via 7 parallel agents.
+
+| Commit | What |
+|---|---|
+| `a3c1e6c` | Wire Sinister Panel sidebar + ADB tab into Forge compose() (agent A) |
+| `ad58ef5` | anthropic SDK direct path for multi-step tool reasoning (agent B) |
+| `03f26ef` | jcode-agentic-loop-patterns brain entry + parallel sweep coord (agent C) |
+| `b399cd5` | sinister-model v0.1.0 — 11-provider model registry + /model CLI (72/72 tests) (agent D) |
+| `5e7f5c8` | anthropic_direct v0.7.0 — parallel tools + prompt caching + thinking panel + budget guard + JSONL journaling (agent E) |
+| `51515ff` | SkillRegistry — load ~/.sinister/skills/*.md + bundled skills as /skillname (agent F) |
+| `599d1a1` | forge-memory-bridge BM25 re-scoring on recall() return path (agent G1) |
+| `2519f57` | brain index + RKOJ README v0.6.0 update + ENV-VARIABLES confirm (agent G2) |
+
+**Operator post-v0.7.0 escalation (images 24-26)**: still wants jcode form factor — `/help` overlay window with 60+ categorized commands, `/start` project picker. v0.7.0 backend parity but UI gap remains.
+
+**Second wave** (in-flight, autonomous):
+- H — dated Sanctum backup at `D:/sinister-sanctum-backup-2026-05-21/` (timed out at 51 MB partial; restarted via robocopy /E by master)
+- I — dedupe sweep DONE → `789ab3c` — 5,084 files scanned, 15 safe removals (6.7 MB freed), 120 hash-dup groups + 381 same-name diff-content groups reported
+- J — GitHub linkage audit DONE → `c5a2e37` — 8 repos audited, 1 needs remote (sinister-tiktok-emu), 3 need push (Sanctum +9, Snap-EMU +9, Kernel-APK +3)
+- K — tools/sanctum-backup/ DONE → `178fbcf` — v0.1.0, 47/47 tests, /backup slash + umbrella + Windows scheduled task installer
+- P — /start project picker + bat-file parity (in-flight)
+- Q — /help overlay form + 40+ jcode command stubs (in-flight)
+- R — tools/sinister-jcode-shim/ + Rust toolchain fork plan (in-flight)
+- S — real impls for /clear /compact /context /save /unsave /rename /rewind (in-flight)
+- T — launcher .bat updates preferring RKOJ.exe over PS1 fallback (in-flight)
+
+**v0.8.0 plan**: rebuild after P/Q/R/S/T land. Then ship to Desktop.
+
+**Rust toolchain note**: `rustc: command not found` — jcode source-level fork is operator-gated. Plan doc at `_shared-memory/plans/jcode-fork-2026-05-21/plan.md` once R lands. Sidecar mode (`tools/sinister-jcode-shim/`) is the v0.8.0 bridge — runs the real jcode binary with Sinister env vars (skills, sessions, login).
+
+---
+
 ## 2026-05-21 15:20 — in-flight: 4 parallel agents executing post-v0.5.0 jcode-parity sweep (autonomous, no operator gating)
 
 Operator final directive (image 23): *"continue working on all of this with all the parrallel agents you need to get it done. create a plan to complete evrything fast and without my input"*.
