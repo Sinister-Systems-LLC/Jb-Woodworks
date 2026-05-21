@@ -1,0 +1,43 @@
+﻿{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-21T11:12:11.2273926Z",
+    "project":  "Sinister Forge",
+    "agent_name":  "Sinister Forge",
+    "mode":  "resume",
+    "focus_intent":  "",
+    "git":  {
+                "branch":  "agent/sinister-term/ph7-resume-2026-05-21",
+                "head":  "bce833f7450b47e4bbc35e1213b529fe6b931cc2",
+                "head_msg":  "docs(sanctum): flush co-audit deliverables - agent-host-routing + Modes section + DISCOVERY",
+                "recent_commits":  [
+                                       "bce833f docs(sanctum): flush co-audit deliverables - agent-host-routing + Modes section + DISCOVERY",
+                                       "243db88 feat(forge): liquid-glass UI overhaul + personal-projects.json + bat consolidation",
+                                       "98e7459 feat(term): PH1-PH6 - Python+prompt_toolkit minimal shell with Sinister theme",
+                                       "52faf8c feat(forge-bridge): write resume-point on spawn so phone-spawned agents boot warm",
+                                       "34fb45e chore(gitignore): re-exclude __pycache__/*.egg-info under whitelisted python source",
+                                       "655df83 docs(brain+broadcast): forge-bridge-rest-sse-pattern + sibling-lane broadcast",
+                                       "a0b2347 feat(claw+bridge): Panel WebView tab + bridge heartbeat + architecture README",
+                                       "2ff0e54 feat(claw+bridge): Inbox + Projects detail tabs + 2 new bridge endpoints",
+                                       "1e5817a feat(forge+claw): REST/SSE bridge :5078 + Claw Forge tab + Settings tab",
+                                       "6a1636f feat(claw+mind+forge+start): mobile + liquid-glass + unified Sinister Start"
+                                   ]
+            },
+    "progress_top3":  [
+
+                      ],
+    "latest_plan":  {
+                        "dir":  null,
+                        "artifact":  null
+                    },
+    "inbox_unread_count":  0,
+    "last_5_files_touched_24h":  [
+                                     "automations\\session-templates\\projects.json",
+                                     "_shared-memory\\knowledge\\_INDEX.md",
+                                     "projects\\sinister-freeze\\_PARTITION-README.md",
+                                     "projects\\sinister-freeze\\CLAUDE.md",
+                                     "projects\\sinister-freeze\\README.md"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}
