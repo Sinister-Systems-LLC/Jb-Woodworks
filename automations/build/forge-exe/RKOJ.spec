@@ -57,6 +57,29 @@ pyyaml_subs = collect_submodules("yaml")
 watchdog_subs = collect_submodules("watchdog")
 flask_subs = collect_submodules("flask")
 
+# `anthropic` SDK powers the spawn/anthropic_direct.py path (multi-step
+# visible tool reasoning in the RKOJ shell). collect_submodules pulls in
+# its httpx + pydantic dependency surface that PyInstaller would otherwise
+# miss because the module is imported lazily.
+try:
+    anthropic_subs = collect_submodules("anthropic")
+    anthropic_data = collect_data_files("anthropic")
+except Exception:
+    anthropic_subs = []
+    anthropic_data = []
+try:
+    httpx_subs = collect_submodules("httpx")
+    httpcore_subs = collect_submodules("httpcore")
+except Exception:
+    httpx_subs = []
+    httpcore_subs = []
+try:
+    pydantic_subs = collect_submodules("pydantic")
+    pydantic_core_subs = collect_submodules("pydantic_core")
+except Exception:
+    pydantic_subs = []
+    pydantic_core_subs = []
+
 # --- stdlib chain (per pyinstaller-distutils-exclude-collision doctrine) ---
 
 stdlib_hidden = [
@@ -109,10 +132,15 @@ hiddenimports = (
     + pyyaml_subs
     + watchdog_subs
     + flask_subs
+    + anthropic_subs
+    + httpx_subs
+    + httpcore_subs
+    + pydantic_subs
+    + pydantic_core_subs
     + stdlib_hidden
 )
 
-datas = forge_data + sinister_data + textual_data + rich_data
+datas = forge_data + sinister_data + textual_data + rich_data + anthropic_data
 
 binaries = []
 # Textual uses some compiled bits on Windows; pull them via collect_dynamic_libs

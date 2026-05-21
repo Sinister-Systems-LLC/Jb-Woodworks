@@ -620,16 +620,52 @@ def _dispatch_slash(line: str, root: Path) -> str | None:
 # Natural-language: spawn an EVE agent on Sanctum root with that text as prompt
 # ===========================================================================
 
-def _spawn_claude(text: str, root: Path) -> int:
-    """Spawn `claude -p <text>` (non-interactive streaming) in Sanctum root.
+def _spawn_anthropic_direct(text: str, root: Path) -> int | None:
+    """Try the Anthropic SDK direct path (multi-step visible tool reasoning).
 
-    jcode-style memory wiring:
+    Returns the exit code on success, or None to signal "fallback to claude -p".
+    Activation gate: `ANTHROPIC_API_KEY` env var present AND the spawn module
+    importable. Pre-turn recall + post-turn write are handled inside the module
+    (mirror the claude -p path) so memory stays consistent across modes.
+    """
+    if not os.environ.get("ANTHROPIC_API_KEY"):
+        return None
+    try:
+        from forge.spawn.anthropic_direct import run_turn  # type: ignore
+    except Exception as e:
+        print(f"  {GRAY}(anthropic_direct unavailable: {e} — falling back to claude -p){RESET}")
+        return None
+    print(f"  {GRAY}→ EVE on Sanctum (SDK direct):{RESET} {WHITE}{text}{RESET}")
+    try:
+        return int(run_turn(text, root) or 0)
+    except KeyboardInterrupt:
+        print()
+        return 130
+    except Exception as e:
+        print(f"  {RED}anthropic_direct crashed: {e}{RESET}")
+        return None
+
+
+def _spawn_claude(text: str, root: Path) -> int:
+    """Spawn an EVE turn on Sanctum.
+
+    Prefers the Anthropic SDK direct path (visible multi-step tool reasoning)
+    when `ANTHROPIC_API_KEY` is set. Operator (2026-05-21): wants jcode-style
+    visible tool calls, not the one-shot `claude -p` print. The SDK path falls
+    through to `claude -p` if the key is missing or the SDK module crashes.
+
+    jcode-style memory wiring on the `claude -p` fallback:
       1. PRE-TURN: forge-memory-bridge.recall(text, k=4) — surface relevant
          brain entries + past turns; inject as context prefix.
       2. SPAWN claude -p with the augmented prompt; stream stdout/stderr inline.
       3. POST-TURN: forge-memory-bridge.write("session", text) so the next
          turn can recall it. All jcode memory features inherited.
     """
+    # ---- (0) Prefer SDK direct path when ANTHROPIC_API_KEY is set --------
+    rc = _spawn_anthropic_direct(text, root)
+    if rc is not None:
+        return rc
+
     print(f"  {GRAY}→ EVE on Sanctum:{RESET} {WHITE}{text}{RESET}")
     # ---- (1) PRE-TURN memory recall ----
     memory_prefix = ""
