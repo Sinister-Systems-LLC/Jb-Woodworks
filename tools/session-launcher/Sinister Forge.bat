@@ -1,19 +1,14 @@
 @echo off
-REM Sinister Forge :: Desktop launcher (v2 :: 2026-05-21)
+REM Sinister Forge :: Desktop launcher (v3 :: 2026-05-21)
 REM Author: RKOJ-ELENO
 REM
-REM One-click entry into the Sinister Forge TUI. On first run, auto-installs
-REM the Python package from projects\sinister-forge\source\ if not present.
-REM Subsequent runs are instant.
-REM
-REM Forge spawns its own pickers + multi-pane scrolling buffers - it does
-REM NOT use the launcher PS1 picker (that's the path for the per-project
-REM bats). Forge IS the picker/manager.
+REM v3 fix: delegate install to automations\install-sinister-forge.ps1 (v2
+REM with orphan ~* sweep + Start-Process isolation so PS 5.1 doesn't wrap
+REM pip stderr warnings as NativeCommandError).
 
 TITLE Sinister Forge :: operator console
 setlocal enableextensions
 
-REM Auto-relaunch in Windows Terminal for the right typography
 if not defined WT_SESSION (
     where wt.exe >nul 2>&1
     if not errorlevel 1 (
@@ -22,7 +17,6 @@ if not defined WT_SESSION (
     )
 )
 
-REM Find Sanctum
 set "SANCTUM_ROOT="
 call :tryroot "%SINISTER_SANCTUM_ROOT%"
 if not defined SANCTUM_ROOT call :tryroot "D:\Sinister Sanctum"
@@ -37,37 +31,25 @@ if exist "%~1\projects\sinister-forge\source\pyproject.toml" set "SANCTUM_ROOT=%
 exit /b 0
 
 :no_sanctum
-echo.
-echo  ==============================================================
-echo   Sinister Forge :: Sanctum not found on this PC
-echo  ==============================================================
-echo.
-echo  Forge source lives at projects\sinister-forge\source\ inside the
-echo  Sinister Sanctum repo. Clone it first:
-echo.
-echo    git clone https://github.com/Sinister-Systems-LLC/Sinister-Sanctum.git "D:\Sinister Sanctum"
-echo.
+echo  [FAIL] Sinister Sanctum repo not found.
 pause
 exit /b 1
 
 :ensure_install
-REM Try to import forge; if fails, run the installer
 python -c "import forge" 2>nul
 if not errorlevel 1 goto :launch
+
 echo.
 echo  [install] First-run setup - installing forge Python package...
 echo.
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%SANCTUM_ROOT%\automations\install-sinister-forge.ps1" -SanctumRoot "%SANCTUM_ROOT%"
 if errorlevel 1 (
-    echo.
-    echo  [FAIL] Forge install failed. See output above. Install Python 3.10+ if missing.
+    echo  [FAIL] Forge install failed. See output above.
     pause
     exit /b 1
 )
 
 :launch
-echo.
 echo  Launching Sinister Forge...
-echo.
 python -m forge
 exit /b %ERRORLEVEL%

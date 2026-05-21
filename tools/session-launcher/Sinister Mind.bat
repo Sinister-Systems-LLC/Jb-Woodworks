@@ -1,10 +1,9 @@
 @echo off
-REM Sinister Mind :: Desktop launcher (v1 :: 2026-05-21)
+REM Sinister Mind :: Desktop launcher (v2 :: 2026-05-21)
 REM Author: RKOJ-ELENO
 REM
-REM One-click entry into the Sinister Mind visual mind-graph. Auto-installs
-REM the Flask package on first run; subsequent runs are instant. Opens
-REM http://127.0.0.1:5079/ in the default browser.
+REM v2 fix: delegate install to automations\install-sinister-mind.ps1 so the
+REM stderr WARNING-noise from pip doesn't trip PS 5.1's NativeCommandError.
 
 TITLE Sinister Mind :: visual brain
 setlocal enableextensions
@@ -31,8 +30,7 @@ if exist "%~1\projects\sinister-mind\source\pyproject.toml" set "SANCTUM_ROOT=%~
 exit /b 0
 
 :no_sanctum
-echo  [FAIL] Sinister Sanctum repo not found. Clone it first:
-echo    git clone https://github.com/Sinister-Systems-LLC/Sinister-Sanctum.git "D:\Sinister Sanctum"
+echo  [FAIL] Sinister Sanctum repo not found.
 pause
 exit /b 1
 
@@ -42,13 +40,10 @@ if not errorlevel 1 goto :launch
 
 echo.
 echo  [install] First-run setup - installing mind Python package...
-pushd "%SANCTUM_ROOT%\projects\sinister-mind\source"
-python -m pip install --quiet --upgrade pip
-python -m pip install --quiet -e .
-set "INSTALL_CODE=%ERRORLEVEL%"
-popd
-if not "%INSTALL_CODE%"=="0" (
-    echo  [FAIL] mind install failed. Install Python 3.10+ if missing.
+echo.
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%SANCTUM_ROOT%\automations\install-sinister-mind.ps1" -SanctumRoot "%SANCTUM_ROOT%"
+if errorlevel 1 (
+    echo  [FAIL] mind install failed. See output above.
     pause
     exit /b 1
 )
