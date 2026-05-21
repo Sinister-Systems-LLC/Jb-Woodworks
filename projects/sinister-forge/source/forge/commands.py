@@ -1411,23 +1411,201 @@ def _cmd_dictate(args, pane, app) -> str:
 
 # ----- system commands ----------------------------------------------------
 
-def _cmd_reload(args, pane, app) -> str:
-    return "[yellow]/reload: requires EXE restart — close + reopen RKOJ.exe[/]"
+def _fmt_age(seconds: float) -> str:
+    """Human-friendly age string for a delta in seconds."""
+    seconds = max(0.0, float(seconds))
+    if seconds < 60:
+        return f"{int(seconds)}s ago"
+    if seconds < 3600:
+        return f"{int(seconds // 60)}m ago"
+    if seconds < 86400:
+        h = int(seconds // 3600)
+        m = int((seconds % 3600) // 60)
+        return f"{h}h{m:02d}m ago"
+    d = int(seconds // 86400)
+    h = int((seconds % 86400) // 3600)
+    return f"{d}d{h:02d}h ago"
 
 
-def _cmd_restart(args, pane, app) -> str:
-    if app is not None:
-        app.exit()
-    return "[dim]exiting; relaunch RKOJ.exe to restart[/]"
+def _cmd_reload(args, pane=None, app=None) -> str:
+    """Reload to a newer RKOJ.exe binary if one is available on disk.
 
-
-def _cmd_rebuild(args, pane, app) -> str:
+    Compares mtime of `automations/build/forge-exe/dist/RKOJ.exe` against the
+    currently-running interpreter / EXE (`sys.executable`). If dist is newer,
+    prints a relaunch instruction. Does NOT actually re-exec — too risky inside
+    a running Forge TUI.
+    """
     sr = _sanctum_root()
-    spec = sr / "automations" / "build" / "forge-exe"
-    return (f"[bold]/rebuild[/]  run from outside the running EXE:\n"
-            f"  cd {spec}\n"
-            f"  pyinstaller --clean --noconfirm RKOJ.spec\n"
-            f"  cp dist/RKOJ.exe \"C:/Users/Zonia/Desktop/RKOJ.exe\"")
+    dist = sr / "automations" / "build" / "forge-exe" / "dist" / "RKOJ.exe"
+    if not dist.exists():
+        return (f"[yellow]/reload[/]: no built RKOJ.exe at {dist}\n"
+                f"  [dim]run /rebuild first[/]")
+    try:
+        dist_mtime = dist.stat().st_mtime
+    except OSError as e:
+        return f"[red]/reload[/]: cannot stat {dist}: {e}"
+
+    cur_exe = sys.executable or ""
+    try:
+        cur_mtime = Path(cur_exe).stat().st_mtime if cur_exe else 0.0
+    except OSError:
+        cur_mtime = 0.0
+
+    now = time.time()
+    dist_age = _fmt_age(now - dist_mtime)
+
+    if dist_mtime <= cur_mtime:
+        return (f"[dim]/reload[/]: dist RKOJ.exe (built {dist_age}) is not newer "
+                f"than the currently-running binary.\n"
+                f"  current: {cur_exe}\n"
+                f"  dist:    {dist}\n"
+                f"  [dim]run /rebuild to produce a fresh build first[/]")
+
+    return (f"[reload] newer binary at {dist} (built {dist_age}). "
+            f"exit + relaunch from there?\n"
+            f"  [dim]/quit, then launch: {dist}[/]\n"
+            f"  [dim](re-exec from inside the running TUI is disabled — too risky)[/]")
+
+
+def _cmd_restart(args, pane=None, app=None) -> str:
+    """Restart the current session with the same params (no rebuild).
+
+    In the Forge TUI: posts a `RestartSession` message to the app (best-effort —
+    if the app doesn't handle it, falls back to `app.exit()`).
+    In the RKOJ.exe simple shell: prints an instruction.
+    """
+    if app is None:
+        return ("[restart] please type /quit then relaunch RKOJ.exe — "
+                "restart-in-place is not supported in the simple shell")
+
+    posted = False
+    try:
+        post = getattr(app, "post_message", None)
+        if callable(post):
+            try:
+                from textual.message import Message  # type: ignore
+            except Exception:
+                Message = None  # type: ignore
+            if Message is not None:
+                class RestartSession(Message):  # type: ignore
+                    pass
+                post(RestartSession())
+                posted = True
+    except Exception:
+        posted = False
+
+    if posted:
+        return "[dim]/restart[/]: RestartSession posted — app should rebuild panes shortly."
+
+    try:
+        app.exit()
+    except Exception:
+        pass
+    return "[dim]/restart[/]: exiting current session; relaunch to restart (no rebuild)."
+
+
+def _cmd_rebuild(args, pane=None, app=None) -> str:
+    """Trigger a full PyInstaller rebuild of RKOJ.exe in the background.
+
+    Spawns `pyinstaller --clean --noconfirm RKOJ.spec` in
+    `automations/build/forge-exe/` via detached subprocess.Popen, logging
+    stdout + stderr to a timestamped file. Does not block — returns
+    immediately with the log path + ETA (~3-5 min).
+    """
+    sr = _sanctum_root()
+    build_dir = sr / "automations" / "build" / "forge-exe"
+    spec = build_dir / "RKOJ.spec"
+    if not spec.exists():
+        return (f"[red]/rebuild[/]: spec file not found at {spec}\n"
+                f"  [dim]expected {build_dir}/RKOJ.spec[/]")
+
+    log_dir = build_dir / "build-logs"
+    try:
+        log_dir.mkdir(parents=True, exist_ok=True)
+    except OSError as e:
+        return f"[red]/rebuild[/]: cannot create log dir {log_dir}: {e}"
+
+    stamp = datetime.datetime.now().strftime("%Y%m%dT%H%M%S")
+    log_path = log_dir / f"rebuild-{stamp}.log"
+
+    creationflags = 0
+    start_new_session = False
+    if sys.platform.startswith("win"):
+        # DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP
+        creationflags = 0x00000008 | 0x00000200
+    else:
+        start_new_session = True
+
+    try:
+        log_fh = open(log_path, "wb")
+    except OSError as e:
+        return f"[red]/rebuild[/]: cannot open log file {log_path}: {e}"
+
+    cmd = ["pyinstaller", "--clean", "--noconfirm", "RKOJ.spec"]
+    try:
+        subprocess.Popen(
+            cmd,
+            cwd=str(build_dir),
+            stdout=log_fh,
+            stderr=subprocess.STDOUT,
+            stdin=subprocess.DEVNULL,
+            creationflags=creationflags,
+            start_new_session=start_new_session,
+            close_fds=True,
+        )
+    except FileNotFoundError:
+        log_fh.close()
+        return ("[red]/rebuild[/]: `pyinstaller` not found on PATH.\n"
+                "  [dim]pip install pyinstaller, then retry /rebuild[/]")
+    except Exception as e:
+        log_fh.close()
+        return f"[red]/rebuild[/]: failed to spawn pyinstaller: {e}"
+
+    set_state("last_rebuild_log", str(log_path))
+    set_state("last_rebuild_started", time.time())
+
+    return (f"[rebuild] spawned `pyinstaller --clean --noconfirm RKOJ.spec`\n"
+            f"  cwd: {build_dir}\n"
+            f"  log: {log_path}\n"
+            f"  ETA: ~3-5 min  (tail the log to watch progress)\n"
+            f"  [dim]calling session is not blocked; run /reload when the build completes[/]")
+
+
+def _cmd_client_reload(args, pane=None, app=None) -> str:
+    """Reload the agent pane's Textual widgets without re-spawning the subprocess.
+
+    In the Forge TUI context, calls `pane.refresh()`. In the simple shell
+    context (no pane), it's a no-op with a note.
+    """
+    if pane is None:
+        return "[client-reload] no-op in the simple shell (no Textual pane to refresh)."
+    refresh = getattr(pane, "refresh", None)
+    if not callable(refresh):
+        return "[yellow]/client-reload[/]: current pane has no .refresh() method."
+    try:
+        refresh()
+    except Exception as e:
+        return f"[red]/client-reload[/]: pane.refresh() failed: {e}"
+    return "[dim]/client-reload[/]: pane widgets refreshed (subprocess untouched)."
+
+
+def _cmd_server_reload(args, pane=None, app=None) -> str:
+    """Kill + respawn the current agent subprocess (without tearing down the pane).
+
+    In the Forge TUI: calls `pane._spawn_agent_again()` if it exists.
+    In the simple shell: prints an instruction (no agent subprocess).
+    """
+    if pane is None:
+        return "[server-reload] please /quit + relaunch"
+    respawn = getattr(pane, "_spawn_agent_again", None)
+    if not callable(respawn):
+        return ("[yellow]/server-reload[/]: current pane has no _spawn_agent_again() "
+                "hook — /quit + relaunch to reset the subprocess.")
+    try:
+        respawn()
+    except Exception as e:
+        return f"[red]/server-reload[/]: respawn failed: {e}"
+    return "[dim]/server-reload[/]: agent subprocess respawned."
 
 
 def _cmd_mcp(args, pane, app) -> str:
@@ -1481,8 +1659,38 @@ def _cmd_skills(args, pane, app) -> str:
     return "\n".join(lines)
 
 
-def _cmd_debug_visual(args, pane, app) -> str:
-    return "[yellow]/debug-visual: Textual reactive inspector. Run `textual console` in another window first.[/]"
+def _cmd_debug_visual(args, pane=None, app=None) -> str:
+    """Toggle the SINISTER_DEBUG_VISUAL flag in `_state`.
+
+    When on, future tool calls + thinking blocks include extra render markers
+    (borders, line numbers). This handler just flips the flag — the render
+    code that consumes it can be added later. Accepts optional `on`/`off`/
+    `status` argument; with no arg, toggles the current state.
+    """
+    cur = bool(_state.get("SINISTER_DEBUG_VISUAL", False))
+    if args:
+        val = args[0].lower()
+        if val in {"on", "true", "1", "yes"}:
+            new = True
+        elif val in {"off", "false", "0", "no"}:
+            new = False
+        elif val in {"status", "?"}:
+            return f"[dim]/debug-visual[/]: SINISTER_DEBUG_VISUAL = {cur}"
+        elif val in {"toggle", "flip"}:
+            new = not cur
+        else:
+            return "[yellow]/debug-visual: on|off|toggle|status[/]"
+    else:
+        new = not cur
+
+    set_state("SINISTER_DEBUG_VISUAL", new)
+    # Mirror to env so child processes / render code can see it without
+    # importing forge.commands._state directly.
+    os.environ["SINISTER_DEBUG_VISUAL"] = "1" if new else "0"
+    arrow = "ON" if new else "OFF"
+    return (f"[debug-visual] SINISTER_DEBUG_VISUAL = {arrow}  "
+            f"[dim](render markers / borders / line-numbers will appear once "
+            f"render code consumes the flag)[/]")
 
 
 # ----- session-loop commands (delegated to siblings) ---------------------
