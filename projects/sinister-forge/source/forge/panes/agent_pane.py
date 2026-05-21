@@ -15,10 +15,12 @@ from forge.theme import AGENT_ACCENTS
 
 class AgentPane(Vertical):
     def __init__(self, agent_name: str, project_display: str, mode: str,
-                 accent: str = "purple", subprocess: AgentSubprocess | None = None) -> None:
+                 accent: str = "purple", subprocess: AgentSubprocess | None = None,
+                 project_key: str = "") -> None:
         super().__init__(classes="agent-pane")
         self.agent_name = agent_name
         self.project_display = project_display
+        self.project_key = project_key or project_display.lower()
         self.mode = mode
         self.accent = accent
         self.subprocess = subprocess
