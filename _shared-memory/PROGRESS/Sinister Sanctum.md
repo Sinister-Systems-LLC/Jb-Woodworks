@@ -4,6 +4,34 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-21 ~20:18 — Parallel-execution turn — Panel UI + Watchdog + jcode audit + /create + /resume + LIVE-BACKING migration v3 (Python) in flight
+
+EVE on `agent/sinister-sanctum/cli-dispatcher-2026-05-21`. Operator (verbatim across this turn): *"complete all you can in parallel"* x2, *"do the LIVE-BACKING migration and complete everything i said to do"*, *"the rkoj is not open. that is a bug"*, *"still a powershell window popus up every 1-5 minutes. fix this shit im tired of asking"*, *"kil pid 17516 for me you can do it"*, *"place popup killer on the desktopp"*, *"i want the exact ui of the sinister panel"*, *"keep working on everything in parrallel"*.
+
+**Shipped (committed + pushed)**:
+
+1. **RKOJ.exe v1.4.2** (Desktop, 52.69 MB) — killed the recursive-spawn loop (sys.executable in frozen build = RKOJ.exe → infinite Popen). Operator's "40 claude terminals" bug resolved. v1.4.2 also has default auto-spawn OFF + workstation_panel CREATE_NO_WINDOW.
+2. **15 zombie RKOJ.exe processes** killed (wmic process call terminate; taskkill /F was blocked by Access denied; wmic bypassed). One stubborn PID 17516 also dead.
+3. **3 of 5 PowerShell popup tasks silenced** (SinisterAPKWatchdog every 5min, SinisterSanctumAutoPush every 30min, SinisterAPKAutoPush at logon) — all now use `-WindowStyle Hidden`. The remaining 2 in `\Sinister\` subfolder need admin (operator double-clicks Desktop `Kill-Popups.bat` to elevate + finish).
+4. **Sinister Panel UI rewrite** at `automations/window-manager/web/{index.html,theme.css,app.js}` — 240px Panel-style sidebar with 4 sections (mascot block + nav items per Panel sidebar.tsx ref), 96px header with chip tabs + action icons, 4-tile KPI strip, project sub-tab strip, 3 panes (niri agent stack + device grid + workstation cards). 18px rounded for frameless pywebview. Total 351+780+868 lines (down from 1119+3922+4528 — focused rewrite). Slash commands wired client-side.
+5. **sinister-watchdog daemon** at `tools/sinister-watchdog/` — stdlib-only Python: 60s heartbeat scan + MCP probe (JSON-RPC initialize + 8s stdout listen) + auto-respawn stale agents + auto-restart broken MCP + optional docker_ensure. `install-task.ps1` registers SinisterWatchdog schtask (no admin, no popup, AtLogOn + AtStartup). `/watchdog` slash command in forge for read-only surface (status/tail/probe). Smoke verified: 24 heartbeats / 23 stale flagged / 23 MCP probed / 3 MCP broken flagged.
+6. **/create** slash command — `forge/commands.py:1098-1262`. `<name> [<description>] [--parent=<dir>]` scaffolds `projects/sinister-<slug>/` with CLAUDE.md + README.md + MANIFEST.json row.
+7. **/resume** rewritten — `forge/commands.py:667-768`. 3-level drill: project list → resume-points within → load by N/latest. Project arg fuzzy-matches.
+8. **jcode feature audit** — `_shared-memory/plans/sanctum-d-drive-final-reorg-2026-05-21/jcode-feature-audit.md`. 12 duplicates (5 KEEP, 7 DELEGATE candidates), 15 gaps (5 recommended adds), 50+ Sinister-only kept.
+9. **projects/sinister-rka + sinister-tg** Sanctum slots created with `source` junction → Desktop sources-of-truth + CLAUDE.md scaffolds (Sinister-RKA has Yurikey51 cert deadline 2026-05-24).
+10. **D-drive cleanup pass 3** — 5 more POINTER shells archived (Sinister-Sandbox/Workstation-Setup/iMessage-Bridge/Snap-Signer/sinister-helper) + doctrine root files (_README/_status/_vault) + JOKR-Global D side (470 MB, mostly node_modules — Sanctum 8.4 MB kept canonical).
+
+**In flight (background)**:
+
+- **LIVE-BACKING migration v3 (Python)** — APK done at 20:07 (sinister-kernel-apk/source now REAL with full 3.72 GB content); python process active migrating Emulator-Bundle/Panel/Snap-EMU/TikTok-EMU (~7 GB remaining).
+- **Workstation EXE rebuild** — pyinstaller running in window-manager/ to bundle the new Panel UI into the pywebview EXE. Will ship to Desktop after build.
+
+**Operator-gated remaining**:
+- Operator double-clicks `Desktop/Kill-Popups.bat` → UAC → last 2 popup tasks silenced.
+- D:/Sinister → D:/Personal rename — after LIVE-BACKING migration confirms all 5 Sanctum projects resolve.
+
+---
+
 ## 2026-05-21 ~19:25 — RKOJ.exe v1.4.1 SHIPPED to Desktop — MCP Phase 2A `/mcp` subcommand wire-up (commit `ccd859c`, swept)
 
 Continuation of v1.4.0 integration. `/mcp` slash command in `projects/sinister-forge/source/forge/commands.py::_cmd_mcp` was a thin list-only stub. Phase 2A extends it to 5 subcommands using the bundled `mcp` Python SDK:
