@@ -4,6 +4,12 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-21 16:35 — Phase 1 D-drive reorg: D:\Backups\ created with MANIFEST.md, robocopy log moved into _logs\. D:\_backups\ + dated backup INTACT pending Phase 2.
+
+Created consolidated backup root at `D:\Backups\` with subdirs `_logs\`, `sanctum-daily\`, `custodian\`. Authored `D:\Backups\MANIFEST.md` (RKOJ-ELENO authorship, 2295 bytes) documenting layout, sources tracked, Phase 1/2 checklist, and rollback note. Moved `D:\sinister-sanctum-backup-2026-05-21-robocopy.log` (604681 bytes) → `D:\Backups\_logs\sanctum-daily-2026-05-21.log`. `D:\_backups\` (old custodian root) and `D:\sinister-sanctum-backup-2026-05-21\` (4.4 GB dated backup) untouched — both await operator-gated Phase 2 migration.
+
+---
+
 ## 2026-05-21 16:02 — SHIPPED: RKOJ.exe v1.0.1 to Desktop (52.3 MB) — Forge TUI is now the default + jcode chrome (toolbar + statusbar)
 
 **Operator final iteration (images 24-27)**: "still no ui when i launch exe with tabs and aeverything i asked you to do" → defaulted main() to ForgeApp().run() so click → full TUI.
