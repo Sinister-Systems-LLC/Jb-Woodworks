@@ -46,6 +46,56 @@ from forge.panes.command_palette import CommandPalette
 from forge.panes.tabs import TabbedMultiPane
 from forge.panes.agent_pane import AgentPane
 from forge.panes.picker import AgentPicker, PickerResult
+from forge.projects import get_project
+from forge.spawn.base import SpawnConfig
+from forge.spawn.claude import ClaudeSubprocess
+from forge.spawn.codex import CodexSubprocess
+
+
+def _compose_phrase(*, project_key: str, agent_name: str, objective: str,
+                    token_mode: str, speed: str, focus: str) -> str:
+    """Build the opening phrase the Claude/Codex CLI gets as its first message."""
+    contracts = "Read automations/session-contracts.md (6 binding contracts)."
+    focus_block = f"\n\nFocus: {focus}" if focus else ""
+    return (
+        f"You are {agent_name}, the Sinister {project_key} lane agent via Forge. "
+        f"Mode={objective}, TokenMode={token_mode}, Speed={speed}. {contracts}"
+        f"{focus_block}\n\nStart the loop."
+    )
+
+
+def _build_subprocess(result: PickerResult) -> "AgentSubprocess | None":
+    """Construct a ClaudeSubprocess or CodexSubprocess from picker output. Returns
+    None if no valid project root exists (operator picked a project without a
+    source tree on disk yet; pane mounts empty and the operator sees the message)."""
+    proj = get_project(result.project_key)
+    if not proj or not proj.root:
+        return None
+    project_root = Path(proj.root)
+    if not project_root.exists():
+        return None
+    phrase = _compose_phrase(
+        project_key=result.project_key,
+        agent_name=result.agent_name,
+        objective=result.objective,
+        token_mode=result.token_mode,
+        speed=result.speed,
+        focus=result.focus,
+    )
+    cfg = SpawnConfig(
+        project_key=result.project_key,
+        project_root=project_root,
+        agent_name=result.agent_name,
+        accent_color=result.accent,
+        mode=result.objective,
+        phrase=phrase,
+        token_mode=result.token_mode,
+        speed=result.speed,
+    )
+    host = (result.host or "claude").lower()
+    if host == "codex":
+        return CodexSubprocess(cfg)
+    return ClaudeSubprocess(cfg)
 
 
 class BootScreen(Static):
@@ -153,20 +203,33 @@ class ForgeApp(App):
         if not result:
             return
         accent_hex = PROJECT_BORDER_PALETTE.get(result.project_key, PURPLE_BRIGHT)
+        subprocess = _build_subprocess(result)
         pane = AgentPane(
             agent_name=result.agent_name,
             project_display=result.project_display,
             mode=result.objective,
             accent=result.accent,
+            subprocess=subprocess,
             project_key=result.project_key,
         )
         await self._tabs.add_pane(pane, result.project_key, result.project_display)
         self._update_chip_from_current()
         self._refresh_status()
-        self.notify(
-            f"spawned {result.agent_name} on {result.project_display}",
-            timeout=4,
-        )
+        if subprocess:
+            # Run the actual Claude/Codex CLI in the background; pane.run_subprocess
+            # tails stdout/stderr into the pane log. Don't await — fire-and-forget so
+            # the action handler returns and the modal closes cleanly.
+            self.run_worker(pane.run_subprocess(), exclusive=False, name=f"sub-{result.agent_name}")
+            self.notify(
+                f"spawned {result.agent_name} ({subprocess.binary_name}) on {result.project_display}",
+                timeout=4,
+            )
+        else:
+            self.notify(
+                f"{result.project_display} has no source tree on disk - empty pane",
+                severity="warning",
+                timeout=5,
+            )
 
     def action_cycle_agent(self) -> None:
         self._tabs.cycle()
