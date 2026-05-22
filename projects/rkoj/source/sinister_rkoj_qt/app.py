@@ -1,18 +1,27 @@
 # Author: RKOJ-ELENO :: 2026-05-21
-"""QApplication + frameless rounded SinisterWindow wiring.
+"""QApplication + frameless rounded SinisterWindow wiring — Panel-1:1 chrome.
 
-Layout (operator-canonical 2026-05-21 rewrite):
+Outer chrome reflects Panel `layout.tsx`:
 
-    ┌────────────────────────────────────────────────────────────┐
-    │  Header.row1 — File / Edit / View / ... | — □ ✕           │
-    │  Header.row2 — Page Title  · Chips · Icons · + Create     │
-    ├──────────┬─────────────────────────────────────────────────┤
-    │ Sidebar  │ AgentsView (folder tabs + niri-scroll grid)     │
-    │  EVE     │ or DevicesView (placeholder)                    │
-    │  DAILY   │                                                 │
-    │  INSIGHTS│                                                 │
-    │  MANAGE  │                                                 │
-    └──────────┴─────────────────────────────────────────────────┘
+    body bg-black ─ p-2 gap-2 ──────────────────────────────────────
+    ┌─────────────────┐  8px gap  ┌──────────────────────────────────┐
+    │   SidebarCard   │ <- gap -> │            MainCard              │
+    │ rounded-2xl     │           │ ┌──────────────────────────────┐ │
+    │ border #2c2c2e  │           │ │  Header (96px, single row)   │ │
+    │ bg #0a0a0c      │           │ ├──────────────────────────────┤ │
+    │ ┌─ 2px purple ─┐│           │ │  Body (Agents | Devices)     │ │
+    │ │  gradient    ││           │ └──────────────────────────────┘ │
+    │ │  left spine  ││           │                                  │
+    │ └──────────────┘│           │                                  │
+    │ ┌──────────────┐│           │                                  │
+    │ │  Banner 96px ││           │                                  │
+    │ └──────────────┘│           │                                  │
+    │ WORKSPACE       │           │                                  │
+    │   • Agents      │           │                                  │
+    │ OPERATIONS      │           │                                  │
+    │   • Devices     │           │                                  │
+    └─────────────────┘           └──────────────────────────────────┘
+    body bg-black continues outside the two cards (peeks through 8px gap)
 """
 
 from __future__ import annotations
@@ -22,7 +31,9 @@ from pathlib import Path
 from typing import Optional
 
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QGuiApplication, QIcon, QKeySequence, QPainterPath, QRegion, QShortcut
+from PyQt6.QtGui import (
+    QGuiApplication, QIcon, QKeySequence, QPainterPath, QRegion, QShortcut,
+)
 from PyQt6.QtWidgets import (
     QApplication, QHBoxLayout, QMainWindow, QMessageBox, QStackedWidget,
     QVBoxLayout, QWidget,
@@ -32,7 +43,9 @@ from .agents_tab import AgentsView
 from .devices_tab import DevicesView
 from .header import Header
 from .sidebar import Sidebar
-from .theme import WINDOW_RADIUS, build_qss
+from .theme import (
+    CARD_RADIUS, OUTER_GAP, OUTER_PADDING, WINDOW_RADIUS, build_qss,
+)
 
 
 # Sinister logo for window icon (optional)
@@ -53,7 +66,7 @@ class SinisterWindow(QMainWindow):
         )
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, False)
         self.setMinimumSize(1100, 720)
-        self.resize(1400, 900)
+        self.resize(1440, 920)
         self._center_on_screen()
         self._build()
         self._wire()
@@ -67,58 +80,58 @@ class SinisterWindow(QMainWindow):
             self.move(x, y)
 
     def _build(self) -> None:
-        # Root shell widget (rounded)
-        shell = QWidget(self)
-        shell.setObjectName("RootShell")
-        self.setCentralWidget(shell)
+        # ── Outer body: pure black, peeks through the 8px gap. ──────────
+        body = QWidget(self)
+        body.setObjectName("OuterBody")
+        self.setCentralWidget(body)
 
-        outer = QHBoxLayout(shell)
-        outer.setContentsMargins(1, 1, 1, 1)
-        outer.setSpacing(0)
+        outer = QHBoxLayout(body)
+        outer.setContentsMargins(
+            OUTER_PADDING, OUTER_PADDING, OUTER_PADDING, OUTER_PADDING
+        )
+        outer.setSpacing(OUTER_GAP)
 
-        # ── Sidebar ───────────────────────────────────────────────
-        self.sidebar = Sidebar(shell)
+        # ── Sidebar card ───────────────────────────────────────────────
+        self.sidebar = Sidebar(body)
+        # Sidebar itself owns the SidebarCard styling via QSS objectName.
         outer.addWidget(self.sidebar)
 
-        # ── Right column (header + body) ──────────────────────────
-        right = QWidget(shell)
-        right_layout = QVBoxLayout(right)
-        right_layout.setContentsMargins(0, 0, 0, 0)
-        right_layout.setSpacing(0)
+        # ── Main card (Header + body stack) ────────────────────────────
+        main_card = QWidget(body)
+        main_card.setObjectName("MainCard")
+        main_layout = QVBoxLayout(main_card)
+        main_layout.setContentsMargins(0, 0, 0, 0)
+        main_layout.setSpacing(0)
 
-        self.header = Header(right)
-        right_layout.addWidget(self.header)
+        self.header = Header(main_card)
+        main_layout.addWidget(self.header)
 
         # Body — stacked Agents / Devices
-        self.stack = QStackedWidget(right)
+        self.stack = QStackedWidget(main_card)
         self.agents_view = AgentsView(self.stack)
         self.devices_view = DevicesView(self.stack)
         self.stack.addWidget(self.agents_view)
         self.stack.addWidget(self.devices_view)
-        right_layout.addWidget(self.stack, stretch=1)
+        main_layout.addWidget(self.stack, stretch=1)
 
-        outer.addWidget(right, stretch=1)
+        outer.addWidget(main_card, stretch=1)
 
     def _wire(self) -> None:
         # Chip tabs
         self.header.chip_clicked.connect(self._on_chip)
         # Create Agent
         self.header.create_agent_clicked.connect(self._on_create_agent)
-        # Header icon cluster
+        # Header icon cluster (placeholder dispatch)
         self.header.icon_clicked.connect(self._on_header_icon)
-        # Window controls
-        self.header.minimize_clicked.connect(self.showMinimized)
-        self.header.maximize_clicked.connect(self._toggle_max)
+        # Window controls (single X — frameless)
         self.header.close_clicked.connect(self.close)
-        # Menu strip actions
-        self.header.menu_action.connect(self._on_menu_action)
-        # Sidebar nav (placeholder — only highlights for now)
+        # Sidebar nav → swap stack
         self.sidebar.nav_clicked.connect(self._on_nav)
-        # Ctrl+K palette stub
+        # Ctrl+K palette stub → header search
         QShortcut(QKeySequence("Ctrl+K"), self,
                   activated=lambda: self._on_header_icon("search"))
 
-    # ── Routing ───────────────────────────────────────────────────
+    # ── Routing ───────────────────────────────────────────────────────
     def _on_chip(self, key: str) -> None:
         if key == "agents":
             self.stack.setCurrentWidget(self.agents_view)
@@ -126,51 +139,20 @@ class SinisterWindow(QMainWindow):
             self.stack.setCurrentWidget(self.devices_view)
 
     def _on_nav(self, key: str) -> None:
-        # Placeholder per operator brief — clicking nav only highlights.
-        # If desired later we'd swap the body content here.
-        _ = key
+        # Sidebar nav mirrors chip-tab switching so either affordance works.
+        self.header.set_active_chip(key)
+        self._on_chip(key)
 
     def _on_create_agent(self) -> None:
-        # Default to sanctum project — multi-project picker is milestone 2.
         self.header.set_active_chip("agents")
         self.stack.setCurrentWidget(self.agents_view)
         self.agents_view.spawn_agent(project_key="sanctum")
 
     def _on_header_icon(self, key: str) -> None:
-        # Stubs — wired in a follow-up. Operator brief: very basic for now.
+        # Stubs — wired in a follow-up. Operator brief: basic for now.
         _ = key
 
-    def _on_menu_action(self, action: str) -> None:
-        if action == "File.Exit":
-            self.close()
-            return
-        if action == "File.New Agent" or action == "Agent.Spawn EVE":
-            self._on_create_agent()
-            return
-        if action == "View.Toggle Sidebar":
-            self.sidebar.setVisible(not self.sidebar.isVisible())
-            return
-        if action == "Agent.Terminate All":
-            self.agents_view.shutdown_all()
-            return
-        if action == "Help.About RKOJ":
-            QMessageBox.information(
-                self,
-                "About RKOJ",
-                "RKOJ.exe — Sinister Sanctum workstation\n"
-                "EVE orchestration agent · Sanctum purple · RKOJ-ELENO.\n"
-                "Build 2026-05-21 — milestone 1 (Agents shell).",
-            )
-            return
-        # Other items are placeholders; ignore silently.
-
-    def _toggle_max(self) -> None:
-        if self.isMaximized():
-            self.showNormal()
-        else:
-            self.showMaximized()
-
-    # ── Rounded mask ──────────────────────────────────────────────
+    # ── Rounded outer mask (chrome corners) ───────────────────────────
     def resizeEvent(self, event) -> None:
         path = QPainterPath()
         path.addRoundedRect(0.0, 0.0, float(self.width()), float(self.height()),
@@ -179,7 +161,7 @@ class SinisterWindow(QMainWindow):
         self.setMask(region)
         super().resizeEvent(event)
 
-    # ── Clean shutdown ────────────────────────────────────────────
+    # ── Clean shutdown (kills spawned claude children) ────────────────
     def closeEvent(self, event) -> None:
         try:
             self.agents_view.shutdown_all()
@@ -211,9 +193,7 @@ def run(argv: list[str] | None = None) -> int:
     app.setStyleSheet(build_qss())
     if ICON_PATH.exists():
         app.setWindowIcon(QIcon(str(ICON_PATH)))
-    # Important — quit when the last window closes (so X actually exits)
     app.setQuitOnLastWindowClosed(True)
-
     win = SinisterWindow()
     win.show()
     return app.exec()

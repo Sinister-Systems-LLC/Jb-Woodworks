@@ -1,19 +1,25 @@
 # Author: RKOJ-ELENO :: 2026-05-21
-"""Sanctum purple theme tokens + global QSS stylesheet + SVG icon helper.
+"""Sanctum Panel-1:1 theme — tokens + global QSS + SVG icon helper.
 
-Pixel-precise port of Sinister Panel's globals.css + tailwind.config.js:
-- Sidebar nav-item: 14px font, 12px h-padding, 8px gap, 10px border-radius,
-  active = inset purple gradient + 600 weight purple text (`#BF5AF2`).
-- Chip tabs: 32px tall, 14px font, 18px h-padding, 16px border-radius pill.
-- Round icon buttons: 32x32, transparent until hover (subtle `#15131A` bg +
-  border-glass), borderless otherwise.
-- Page title: 26px bold, tracking-tight (per Panel TabHeader).
-- Create Agent button: solid purple-accent fill, white text, 14px font,
-  10px padding, 6px border-radius.
-- Folder-tab chip: 20px tall, 12px h-padding, pill, `#15131A` bg + `#3A2A55`
-  border, active = purple-accent fill.
-- Section labels: 10px uppercase, tracking-wider, `#8e8e93`.
-- Mascot block: 64x64 mascot inside purple-tinted radial frame, no subtitle.
+Pixel-precise port of Sinister Panel's `panel/dashboard/styles/globals.css`
++ `components/sidebar.tsx` + `components/tab-header.tsx`. Updates 2026-05-21
+to drop the prior 2-row header (Panel has ONE 96px header row).
+
+Layout constants:
+- SIDEBAR_WIDTH = 240
+- HEADER_HEIGHT = 96
+- OUTER_PADDING = 8 (body padding)
+- OUTER_GAP = 8 (gap between sidebar and main)
+- CARD_RADIUS = 16 (Panel `rounded-2xl`)
+- WINDOW_RADIUS = 18 (outer window corner)
+
+Color tokens (from globals.css `@theme`):
+- BG = #000 (body bg — peeks through 8px gap)
+- PANEL_BG = #0a0a0c (the two rounded cards)
+- ELEVATED = #1c1c1e (Panel `--color-panel`)
+- BORDER = #2c2c2e (Panel hairline)
+- PURPLE_PRIMARY = #BF5AF2 (Panel `--color-purple`)
+- MUTED_FG = #8e8e93
 """
 
 from __future__ import annotations
@@ -30,7 +36,7 @@ def asset_path(name: str) -> Path:
     """Resolve a bundled brand-asset path, frozen-aware.
 
     - Frozen (PyInstaller onefile): use ``sys._MEIPASS / 'assets' / name``.
-    - Dev: walk up from this module to ``tools/sinister-rkoj-qt/assets/`` so
+    - Dev: walk up from this module to ``projects/rkoj/source/assets/`` so
       `python -m sinister_rkoj_qt` finds the same files as the bundled EXE.
     """
     if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
@@ -46,186 +52,228 @@ def _resolve_icon_path(name: str) -> str:
 
 
 def nav_icon(name: str, size: int = 19) -> QSvgWidget:
-    """Return a freshly-loaded QSvgWidget sized for nav/header use.
-
-    Panel's NavGlyph renders at 19px by default; header pill chips render at
-    14-16px. Callers can pass any size. The widget tints automatically via the
-    embedded `stroke="currentColor"` once we set a stylesheet color, but Qt
-    SVG renderer doesn't honour CSS currentColor — we ship the SVG with
-    `currentColor` literal so it inherits from the parent QWidget palette in
-    most engines, and fall back to the default purple where it doesn't.
-    """
+    """Return a freshly-loaded QSvgWidget sized for nav/header use."""
     w = QSvgWidget(_resolve_icon_path(name))
     w.setFixedSize(QSize(size, size))
     return w
 
 
-# ── Color tokens — operator-canonical Sanctum purple palette ────────────
-BG = "#0E0A14"
-BG_GLASS_1 = "#15131A"
-BG_GLASS_2 = "#1C1626"
-BG_GLOW = "#2A1F3D"
-PURPLE_ACCENT = "#A06EFF"
-PURPLE_DEEP = "#7A3DD4"
-PURPLE_HALO = "#C39DFF"
-PURPLE_NAV_ACTIVE = "#BF5AF2"  # Panel sidebar active text color
+# ── Color tokens — direct port of Panel globals.css `@theme` ────────────
+# Body bg peeks through the 8px gap between the sidebar + main cards.
+BG = "#000000"
+# The two rounded outer cards (sidebar + main).
+PANEL_BG = "#0a0a0c"
+# Slightly elevated surface (cards, terminals, inputs).
+ELEVATED = "#1c1c1e"
+# Even more elevated (header round-icon hover, chip inactive).
+ELEVATED_HI = "#2c2c2e"
+# Hairline divider.
+BORDER = "#2c2c2e"
+BORDER_STRONG = "#38383a"
+BORDER_SUBTLE = "rgba(255, 255, 255, 0.06)"
+# Text.
+FG = "#ffffff"
+MUTED_FG = "#8e8e93"
+MUTED = "#636366"
+# Brand purple — Panel `--color-purple`.
+PURPLE_PRIMARY = "#BF5AF2"
+PURPLE_DEEP = "#7B2CBF"
+PURPLE_HALO = "#A78BFA"
+# Status.
+SUCCESS = "#30D158"
+DANGER = "#FF453A"
+WARNING = "#FF9F0A"
+INFO = "#0A84FF"
+
+# ── Backwards-compat aliases for legacy modules ─────────────────────────
+PURPLE_ACCENT = PURPLE_PRIMARY
+PURPLE_NAV_ACTIVE = PURPLE_PRIMARY
 LIGHT_PURPLE = "#E8D6FF"
-SOFT = "#8e8e93"               # Panel dim text token
+SOFT = MUTED_FG
 DIM = "#6E6E84"
+BG_GLASS_1 = ELEVATED
+BG_GLASS_2 = "#2a2a2c"
+BG_GLOW = "#2A1F3D"
 BORDER_GLASS = "#3A2A55"
-BORDER_HAIRLINE = "#2c2c2e"    # Panel hairline divider
-GREEN_ACCENT = "#30D158"       # Panel STATUS_COLOR.success
-RED_ACCENT = "#FF453A"         # Panel STATUS_COLOR.danger
-AMBER_ACCENT = "#FF9F0A"       # Panel STATUS_COLOR.warning
-INFO_BLUE = "#0A84FF"          # Panel STATUS_COLOR.info
+BORDER_HAIRLINE = BORDER
+GREEN_ACCENT = SUCCESS
+RED_ACCENT = DANGER
+AMBER_ACCENT = WARNING
+INFO_BLUE = INFO
 BLACK = "#000000"
 
-# ── Sizes ───────────────────────────────────────────────────────────────
-SIDEBAR_WIDTH = 240        # Panel canonical aside width (per panel-1to1-spec § 2)
-HEADER_ROW1_HEIGHT = 32   # menu strip (drag region)
-HEADER_ROW2_HEIGHT = 64   # chip tabs + actions
-WINDOW_RADIUS = 14
+# ── Sizes — Panel layout.tsx + sidebar.tsx + tab-header.tsx ─────────────
+SIDEBAR_WIDTH = 240        # Panel `SIDEBAR_WIDTH = 240`
+HEADER_HEIGHT = 96         # Panel `HEADER_HEIGHT = 96`
+OUTER_PADDING = 8          # Panel layout.tsx `p-2`
+OUTER_GAP = 8              # Panel layout.tsx `gap-2`
+CARD_RADIUS = 16           # Panel `rounded-2xl` = 16px (Tailwind v4)
+WINDOW_RADIUS = 18         # outer window mask radius (slightly bigger so the
+                            # 8px black gap reads cleanly between cards)
+LEFT_SPINE_WIDTH = 2       # Panel sidebar left-edge accent bar
+# Backward-compat (header.py imports these but they're folded into HEADER_HEIGHT now)
+HEADER_ROW1_HEIGHT = 0
+HEADER_ROW2_HEIGHT = HEADER_HEIGHT
 
-# Generic radii + spacings (centralized constants — no inline numerics elsewhere)
-RADII = {"sm": 6, "md": 10, "lg": 14}
-SPACINGS = {"xs": 4, "sm": 8, "md": 12, "lg": 16, "xl": 24}
+# Generic radii + spacings (centralized — no inline numerics elsewhere).
+RADII = {"xs": 6, "sm": 10, "md": 14, "lg": 16, "xl": 20, "full": 999}
+SPACINGS = {"xs": 4, "sm": 8, "md": 12, "lg": 16, "xl": 20, "2xl": 24}
 
-# ── Fonts ───────────────────────────────────────────────────────────────
-MONO_FONT = "Cascadia Mono, Consolas, Courier New, monospace"
-UI_FONT = "Segoe UI, Inter, system-ui, sans-serif"
+# ── Fonts — Panel `--font-sans` / `--font-mono` ─────────────────────────
+UI_FONT = ("-apple-system, BlinkMacSystemFont, 'SF Pro Display', "
+           "'Segoe UI', 'Inter', system-ui, sans-serif")
+MONO_FONT = ("'JetBrains Mono', 'Cascadia Code', 'SF Mono', "
+             "ui-monospace, Consolas, Menlo, 'DejaVu Sans Mono', monospace")
 
 
 def build_qss() -> str:
-    """Return the full app QSS — single source of styling."""
+    """Return the full app QSS — single source of styling.
+
+    Pixel-precise translation of Panel's globals.css + sidebar.tsx +
+    tab-header.tsx. Where Tailwind classes appear in comments, they map to
+    the exact rule below.
+    """
     return f"""
-    /* ------------------------------------------------------------------
-       Sinister Sanctum — RKOJ.exe native Qt theme
+    /* ═══════════════════════════════════════════════════════════════════
+       Sinister Sanctum — RKOJ.exe Panel-1:1 chrome
        Author: RKOJ-ELENO :: 2026-05-21
-       1:1 port of Sinister Panel (snap.sinijkr.com) chrome.
-       ------------------------------------------------------------------ */
+       Source-of-truth: projects/sinister-panel/source/Andrew Panel/
+                        Sinister Panel/panel/dashboard/
+       ═══════════════════════════════════════════════════════════════════ */
 
     QWidget {{
-        background-color: {BG};
-        color: {LIGHT_PURPLE};
-        font-family: "{UI_FONT}";
+        background-color: transparent;
+        color: {FG};
+        font-family: {UI_FONT};
         font-size: 13px;
     }}
 
-    /* Outer rounded shell */
-    QWidget#RootShell {{
+    /* Outer body — black, peeks through the 8px gap between the two cards.
+       Panel layout.tsx: `bg-black` on <body>, `p-2 gap-2` wrapper. */
+    QWidget#OuterBody {{
         background-color: {BG};
-        border-radius: {WINDOW_RADIUS}px;
-        border: 1px solid {BORDER_HAIRLINE};
     }}
 
-    /* ── Sidebar — Panel `aside.rounded-2xl border-[#2c2c2e] bg-[#0a0a0c]` ─ */
+    /* The two rounded outer cards. Panel: `rounded-2xl border bg-[#0a0a0c]`. */
+    QWidget#SidebarCard,
+    QWidget#MainCard {{
+        background-color: {PANEL_BG};
+        border: 1px solid {BORDER};
+        border-radius: {CARD_RADIUS}px;
+    }}
+
+    /* ── Sidebar (left aside) ────────────────────────────────────────── */
     QWidget#Sidebar {{
-        background-color: #0a0a0c;
-        border-right: 1px solid {BORDER_HAIRLINE};
+        background-color: transparent;
     }}
-    QFrame#MascotFrame {{
-        background-color: #0a0a0c;
-        border-bottom: 1px solid {BORDER_HAIRLINE};
+    /* Banner block — 96px, matches HEADER_HEIGHT so the bottom-borders of
+       sidebar-banner and main-header line up across the whole window. */
+    QFrame#BannerFrame {{
+        background-color: {PANEL_BG};
+        border-bottom: 1px solid {BORDER};
     }}
+    /* Left-edge accent bar — purple gradient spine (Panel reads as a brand
+       marker, not a literal divider). 2px wide, full-height. */
+    QFrame#LeftSpine {{
+        background: qlineargradient(x1:0 y1:0 x2:0 y2:1,
+                                    stop:0 rgba(191,90,242,140),
+                                    stop:1 rgba(123,44,191,50));
+        border: none;
+    }}
+
+    /* Section header — Panel:
+       `px-3 mb-2 pb-2 text-[12px] font-semibold text-[#8e8e93]
+        uppercase tracking-[.12em] border-b border-[#1c1c1e]` */
     QLabel#SidebarSection {{
-        color: {SOFT};
-        font-size: 11px;
-        font-weight: 700;
-        letter-spacing: 1.5px;
-        padding: 12px 16px 6px 16px;
-        border-bottom: 1px solid #1c1c1e;
-        margin: 0 6px;
+        color: {MUTED_FG};
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 1.4px;
+        padding: 12px 12px 8px 12px;
+        border-bottom: 1px solid {ELEVATED};
+        margin: 0 0 4px 0;
     }}
-    /* Panel nav-item: rounded-[10px] px-3 py-2.5 text-[14px] gap-3 */
+
+    /* Nav item — Panel:
+       `flex items-center gap-3 rounded-[10px] px-3 py-2.5 text-[14px]`
+       Inactive: `text-[#8e8e93]` + hover `text-white bg-white/[0.05]`.
+       Active: `text-[#BF5AF2] font-semibold` + gradient bg
+               linear-gradient(180deg, rgba(191,90,242,0.22),
+                                       rgba(191,90,242,0.08)). */
     QPushButton#NavItem {{
         background-color: transparent;
-        color: {SOFT};
+        color: {MUTED_FG};
         text-align: left;
-        padding: 8px 12px;
-        border: 1px solid transparent;
+        padding: 10px 12px;
+        border: none;
         border-radius: 10px;
-        font-size: 13px;
+        font-size: 14px;
         font-weight: 500;
-        margin: 1px 6px;
+        margin: 1px 8px;
     }}
     QPushButton#NavItem:hover {{
         background-color: rgba(255,255,255,0.05);
         color: white;
     }}
     QPushButton#NavItem[active="true"] {{
-        background-color: {PURPLE_DEEP};
-        color: white;
+        color: {PURPLE_PRIMARY};
         font-weight: 600;
-        border: 1px solid {PURPLE_ACCENT};
+        background: qlineargradient(x1:0 y1:0 x2:0 y2:1,
+                                    stop:0 rgba(191,90,242,56),
+                                    stop:1 rgba(191,90,242,20));
     }}
 
-    /* ── Header — row 1 (menu strip / drag handle) ────────────────── */
-    QWidget#HeaderRow1 {{
-        background-color: #0a0a0c;
-        border-bottom: 1px solid {BORDER_HAIRLINE};
+    /* ── Header (single 96px row) ────────────────────────────────────── */
+    /* Background: Panel applies a radial wash from top-left; we approximate
+       with a vertical gradient (Qt QSS radial syntax is finicky for short
+       horizontal washes). Plus 1px purple-tinted bottom border. */
+    QWidget#Header {{
+        background: qlineargradient(x1:0 y1:0 x2:1 y2:0,
+                                    stop:0 rgba(191,90,242,10),
+                                    stop:0.5 transparent,
+                                    stop:1 transparent);
+        border-bottom: 1px solid rgba(191,90,242,115);
     }}
-    QPushButton#MenuItem {{
-        background-color: transparent;
-        color: {SOFT};
-        border: none;
-        padding: 4px 10px;
-        font-size: 11px;
-        font-weight: 500;
-    }}
-    QPushButton#MenuItem:hover {{
-        background-color: {BG_GLASS_2};
-        color: white;
-        border-radius: 4px;
-    }}
-    QLabel#MenuMascot {{
-        color: {PURPLE_NAV_ACTIVE};
-        font-size: 11px;
-        font-weight: 800;
-        letter-spacing: 2px;
-        padding-left: 14px;
-        padding-right: 12px;
-    }}
-
-    /* ── Header — row 2 (page title + chip tabs + actions) ────────── */
-    QWidget#HeaderRow2 {{
-        background-color: #0a0a0c;
-        border-bottom: 1px solid {BORDER_HAIRLINE};
-    }}
-    /* Panel tab-header h1: text-[26px] font-bold tracking-tight */
+    /* Page title — Panel: `text-[26px] font-bold tracking-tight leading-none`
+       plus `text-shadow: 0 0 14px rgba(#BF5AF2, 0.35)` (we apply a QGraphics
+       drop-shadow in header.py for the glow). */
     QLabel#PageTitle {{
-        color: {PURPLE_NAV_ACTIVE};
+        color: {PURPLE_PRIMARY};
         font-size: 26px;
-        font-weight: 700;
+        font-weight: 800;
         letter-spacing: -0.5px;
-        padding-left: 8px;
+        padding: 0;
     }}
-    /* Panel pill: rounded-full px-4 h-8 text-[13px] font-semibold */
+
+    /* Chip tab — Panel `<Chip variant=filter size=md>`:
+       `h-7 px-2.5 text-[11.5px] rounded-full` + border + bg at tint alpha. */
     QPushButton#ChipTab {{
-        background-color: {BG_GLASS_1};
-        color: {SOFT};
-        border: 1px solid {BORDER_HAIRLINE};
-        border-radius: 16px;
-        padding: 6px 16px;
-        font-size: 13px;
+        background-color: rgba(191,90,242,26);   /* 10% alpha */
+        color: {PURPLE_PRIMARY};
+        border: 1px solid rgba(191,90,242,71);    /* 28% alpha */
+        border-radius: 14px;                       /* h-7 = 28px → r=14 */
+        padding: 0 10px;
+        min-height: 26px;
+        max-height: 28px;
+        font-size: 12px;
         font-weight: 600;
-        min-height: 30px;
     }}
     QPushButton#ChipTab:hover {{
-        color: white;
-        border: 1px solid {PURPLE_DEEP};
+        background-color: rgba(191,90,242,56);
     }}
     QPushButton#ChipTab[active="true"] {{
-        background-color: {PURPLE_DEEP};
+        background-color: rgba(191,90,242,56);
         color: white;
-        border: 1px solid {PURPLE_ACCENT};
+        border: 1px solid rgba(191,90,242,140);
     }}
 
-    /* Panel header-icon button: 32x32 round w/ subtle bg on hover */
+    /* Header round-icon button — Panel `btn-icon`:
+       32x32, transparent until hover (subtle purple wash + purple icon). */
     QPushButton#HeaderIcon {{
         background-color: transparent;
-        color: {SOFT};
+        color: {MUTED_FG};
         border: 1px solid transparent;
-        border-radius: 16px;
+        border-radius: 7px;
         min-width: 32px;
         min-height: 32px;
         max-width: 32px;
@@ -233,91 +281,84 @@ def build_qss() -> str:
         padding: 0;
     }}
     QPushButton#HeaderIcon:hover {{
-        background-color: {BG_GLASS_1};
+        background-color: rgba(191,90,242,31);     /* 12% alpha */
+        color: {PURPLE_PRIMARY};
+    }}
+    /* Close button — red wash on hover (Panel doesn't have one; we add it
+       because the frameless app needs its own X). */
+    QPushButton#WinCtlClose:hover {{
+        background-color: {DANGER};
         color: white;
-        border: 1px solid {BORDER_HAIRLINE};
     }}
 
-    /* Panel "+ Create" button: solid purple, rounded-md, font-medium */
+    /* Create Agent button — Panel primary button:
+       `h-8 px-3 text-[12px] rounded-[7px] bg-[#BF5AF2] shadow-[0_2px_10px
+        rgba(191,90,242,0.30)]` + hover bg `#A78BFA`. */
     QPushButton#CreateAgentBtn {{
-        background-color: {PURPLE_ACCENT};
+        background-color: {PURPLE_PRIMARY};
         color: white;
-        border: 1px solid {PURPLE_ACCENT};
-        border-radius: 6px;
-        padding: 6px 12px;
+        border: none;
+        border-radius: 7px;
+        min-height: 32px;
+        max-height: 32px;
         font-weight: 600;
-        font-size: 13px;
-        min-height: 26px;
+        font-size: 12px;
     }}
     QPushButton#CreateAgentBtn:hover {{
         background-color: {PURPLE_HALO};
-        color: {BG};
     }}
 
-    QLabel#HealthPill {{
-        color: {GREEN_ACCENT};
-        background-color: {BG_GLASS_1};
-        border: 1px solid {BORDER_HAIRLINE};
+    /* Health pill — green dot + "online" — Panel `.pill .pill-ok` style. */
+    QFrame#HealthPillFrame {{
+        background-color: rgba(48, 209, 88, 38);    /* success-dim */
+        border: 1px solid rgba(48, 209, 88, 70);
         border-radius: 12px;
-        padding: 4px 10px;
+    }}
+    QLabel#HealthPill {{
+        color: {SUCCESS};
+        background: transparent;
         font-size: 11px;
         font-weight: 600;
+        padding: 0;
     }}
+
+    /* Live clock — mono tabular. */
     QLabel#Clock {{
-        color: {SOFT};
-        font-family: "{MONO_FONT}";
+        color: {MUTED_FG};
+        font-family: {MONO_FONT};
         font-size: 12px;
         padding: 0 8px;
     }}
 
-    /* Window controls (top-right of row 1) */
-    QPushButton#WinCtl {{
-        background-color: transparent;
-        color: {SOFT};
-        border: none;
-        min-width: 32px;
-        min-height: 24px;
-        padding: 0;
-    }}
-    QPushButton#WinCtl:hover {{
-        background-color: {BG_GLASS_2};
-        color: white;
-    }}
-    QPushButton#WinCtlClose:hover {{
-        background-color: {RED_ACCENT};
-        color: white;
-    }}
-
-    /* ── Folder tab strip (Panel "All 0" pill) ────────────────────── */
-    /* Panel: h-5 px-3 text-[11px] bg-[#15131A] border-[#3A2A55] rounded-full */
+    /* ── Folder tab strip (above body) — Panel uses similar pill style ─ */
     QPushButton#FolderTab {{
-        background-color: {BG_GLASS_1};
-        color: {SOFT};
-        border: 1px solid {BORDER_GLASS};
+        background-color: {ELEVATED};
+        color: {MUTED_FG};
+        border: 1px solid {BORDER};
         border-radius: 12px;
-        padding: 3px 12px;
+        padding: 4px 12px;
         font-size: 11px;
         font-weight: 600;
-        min-height: 20px;
+        min-height: 22px;
     }}
     QPushButton#FolderTab:hover {{
         color: white;
-        border: 1px solid {PURPLE_DEEP};
+        border: 1px solid {PURPLE_PRIMARY};
     }}
     QPushButton#FolderTab[active="true"] {{
-        background-color: {PURPLE_ACCENT};
+        background-color: rgba(191,90,242,56);
         color: white;
-        border: 1px solid {PURPLE_ACCENT};
+        border: 1px solid {PURPLE_PRIMARY};
     }}
 
-    /* ── Agent cards ──────────────────────────────────────────────── */
+    /* ── Agent cards (niri scroll grid) ──────────────────────────────── */
     QFrame#AgentCard {{
-        background-color: {BG_GLASS_1};
-        border: 1px solid {BORDER_HAIRLINE};
-        border-radius: 12px;
+        background-color: {ELEVATED};
+        border: 1px solid {BORDER};
+        border-radius: 14px;
     }}
     QFrame#AgentCard[needs_input="true"] {{
-        border: 1px solid {PURPLE_ACCENT};
+        border: 1px solid {PURPLE_PRIMARY};
     }}
     QLabel#AgentProject {{
         color: {PURPLE_HALO};
@@ -331,133 +372,133 @@ def build_qss() -> str:
         font-weight: 700;
     }}
     QLabel#AgentMeta {{
-        color: {SOFT};
+        color: {MUTED_FG};
         font-size: 11px;
     }}
     QLabel#ModePill {{
-        color: {PURPLE_HALO};
-        background-color: {BG_GLASS_2};
-        border: 1px solid {BORDER_GLASS};
+        color: {PURPLE_PRIMARY};
+        background-color: rgba(191,90,242,26);
+        border: 1px solid rgba(191,90,242,71);
         border-radius: 10px;
         padding: 2px 9px;
         font-size: 10px;
         font-weight: 600;
     }}
     QFrame#ProjectDivider {{
-        background-color: {PURPLE_DEEP};
+        background-color: {BORDER};
         max-height: 1px;
         min-height: 1px;
     }}
 
-    /* Embedded terminal */
+    /* Embedded terminal (jcode-form) */
     QPlainTextEdit#Terminal {{
-        background-color: {BG};
-        color: {LIGHT_PURPLE};
-        border: 1px solid {BORDER_HAIRLINE};
-        border-radius: 6px;
-        font-family: "{MONO_FONT}";
+        background-color: #0a0a0c;
+        color: #e8e8ea;
+        border: 1px solid {BORDER};
+        border-radius: 8px;
+        font-family: {MONO_FONT};
         font-size: 12px;
-        padding: 6px;
-        selection-background-color: {PURPLE_DEEP};
+        padding: 8px;
+        selection-background-color: rgba(191,90,242,90);
     }}
     QLineEdit#TerminalInput {{
-        background-color: {BG_GLASS_2};
+        background-color: {ELEVATED};
         color: white;
-        border: 1px solid {BORDER_HAIRLINE};
-        border-radius: 6px;
-        padding: 6px 10px;
-        font-family: "{MONO_FONT}";
+        border: 1px solid {BORDER};
+        border-radius: 7px;
+        padding: 7px 10px;
+        font-family: {MONO_FONT};
         font-size: 12px;
     }}
     QLineEdit#TerminalInput:focus {{
-        border: 1px solid {PURPLE_ACCENT};
+        border: 1px solid {PURPLE_PRIMARY};
     }}
 
     QPushButton#SendBtn {{
-        background-color: {PURPLE_ACCENT};
+        background-color: {PURPLE_PRIMARY};
         color: white;
         border: none;
-        border-radius: 6px;
-        padding: 6px 14px;
+        border-radius: 7px;
+        padding: 7px 14px;
         font-weight: 600;
+        font-size: 12px;
     }}
     QPushButton#SendBtn:hover {{
         background-color: {PURPLE_HALO};
-        color: {BG};
     }}
     QPushButton#CardCloseBtn {{
         background-color: transparent;
-        color: {SOFT};
+        color: {MUTED_FG};
         border: none;
         min-width: 22px;
         min-height: 22px;
     }}
     QPushButton#CardCloseBtn:hover {{
-        background-color: {RED_ACCENT};
+        background-color: {DANGER};
         color: white;
         border-radius: 4px;
     }}
 
-    /* Devices placeholder */
+    /* Devices placeholder hero */
     QLabel#PlaceholderHero {{
-        color: {PURPLE_NAV_ACTIVE};
+        color: {PURPLE_PRIMARY};
         font-size: 28px;
         font-weight: 700;
         letter-spacing: 1px;
     }}
     QLabel#PlaceholderSub {{
-        color: {SOFT};
+        color: {MUTED_FG};
         font-size: 13px;
     }}
 
-    /* Menus (File / Edit / View ...) */
+    /* Menus (any contextual popups) */
     QMenu {{
-        background-color: {BG_GLASS_2};
-        color: {LIGHT_PURPLE};
-        border: 1px solid {BORDER_GLASS};
+        background-color: {ELEVATED};
+        color: white;
+        border: 1px solid {BORDER};
         padding: 4px 0;
     }}
     QMenu::item {{
-        padding: 5px 22px;
+        padding: 6px 22px;
         background-color: transparent;
     }}
     QMenu::item:selected {{
-        background-color: {BG_GLOW};
+        background-color: rgba(191,90,242,56);
         color: white;
     }}
     QMenu::item:disabled {{
-        color: {DIM};
+        color: {MUTED};
     }}
     QMenu::separator {{
         height: 1px;
-        background: {BORDER_GLASS};
+        background: {BORDER};
         margin: 4px 8px;
     }}
 
-    /* Scrollbars */
+    /* Scrollbars — Panel uses 6px thin, transparent track, muted thumb */
     QScrollBar:vertical {{
-        background: {BG};
-        width: 10px;
+        background: transparent;
+        width: 6px;
         margin: 0;
     }}
     QScrollBar::handle:vertical {{
-        background: {BG_GLOW};
-        border-radius: 5px;
+        background: {BORDER};
+        border-radius: 3px;
         min-height: 30px;
     }}
     QScrollBar::handle:vertical:hover {{
-        background: {PURPLE_DEEP};
+        background: {MUTED};
     }}
     QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {{
         height: 0;
     }}
     QScrollBar:horizontal {{
-        background: {BG};
-        height: 10px;
+        background: transparent;
+        height: 6px;
     }}
     QScrollBar::handle:horizontal {{
-        background: {BG_GLOW};
-        border-radius: 5px;
+        background: {BORDER};
+        border-radius: 3px;
         min-width: 30px;
     }}
     """

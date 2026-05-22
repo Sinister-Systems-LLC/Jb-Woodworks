@@ -1,16 +1,30 @@
 # Author: RKOJ-ELENO :: 2026-05-21
-"""220px left sidebar — operator-canonical 2-tab layout (Agents + Devices).
+"""240px left sidebar (Panel SidebarCard) — 1:1 port of Sinister Panel's
+`components/sidebar.tsx`.
 
-Operator 2026-05-21 (verbatim): *"WHY THE FUCK do i not just have 2 fucking tabs.
-where the fuck is the agents and devices tab on side bar."*
+Layout (top→bottom):
+  - 2px purple gradient spine on the LEFT edge (Panel brand marker, full-height).
+  - Banner block (96px tall, matches HEADER_HEIGHT so bottom-borders line up).
+    Renders `assets/mascot.svg` centered. Future: swap to a wide banner.png.
+  - Nav (px-3 py-4) with one section per logical group:
+      WORKSPACE
+        ▸ Agents      (default active)
+      OPERATIONS
+        ▸ Devices
 
-Layout:
-  - Mascot block at top (no subtitle, no "EVE" label — Panel doesn't have one).
-  - Two nav-items only: Agents + Devices. NO sections, NO 12-item nav.
-  - Active row gets Panel purple-deep fill `#7A3DD4` with white text.
+Section style (Panel):
+  `px-3 mb-2 pb-2 text-[12px] font-semibold text-[#8e8e93] uppercase
+   tracking-[.12em] border-b border-[#1c1c1e]`
 
-Every glyph is loaded from `assets/panel-icons/*.svg` via `theme.nav_icon()`.
-NO emoji. NO ASCII fallback.
+Nav-item style (Panel):
+  `flex items-center gap-3 rounded-[10px] px-3 py-2.5 text-[14px]`
+  inactive  → `text-[#8e8e93]` + hover `text-white bg-white/[0.05]`
+  active    → `text-[#BF5AF2] font-semibold` + gradient bg
+              `linear-gradient(180deg, rgba(191,90,242,0.22),
+                                       rgba(191,90,242,0.08))`
+
+EVE/profile block at the bottom is intentionally omitted — RKOJ has no
+multi-user auth yet. We'll add it when ProfileBlock equivalents exist.
 """
 
 from __future__ import annotations
@@ -27,22 +41,33 @@ try:
 except Exception:  # pragma: no cover
     _HAS_SVG = False
 
-from .theme import SIDEBAR_WIDTH, asset_path, nav_icon
+from .theme import (
+    HEADER_HEIGHT, LEFT_SPINE_WIDTH, SIDEBAR_WIDTH, asset_path, nav_icon,
+)
 
 
-# Operator-canonical 2-tab layout. (nav-key, label, svg-icon-name)
-NAV_ITEMS: list[tuple[str, str, str]] = [
-    ("agents",  "Agents",  "nav-eve-ai"),
-    ("devices", "Devices", "nav-phones"),
+# Panel-style sections. Each section = (label, [(key, label, svg-icon-name)]).
+SECTIONS: list[tuple[str, list[tuple[str, str, str]]]] = [
+    ("WORKSPACE", [
+        ("agents",  "Agents",  "nav-eve-ai"),
+    ]),
+    ("OPERATIONS", [
+        ("devices", "Devices", "nav-phones"),
+    ]),
 ]
 
 
-# Mascot SVG bundled at `assets/mascot.svg`.
 _MASCOT_SVG = asset_path("mascot.svg")
+_BANNER_PNG = asset_path("banner.png")   # optional — falls back to mascot SVG
 
 
 class _NavRow(QPushButton):
-    """Single sidebar nav row — SVG icon (left) + label."""
+    """Single sidebar nav row — SVG icon (left) + label.
+
+    The whole row is a QPushButton with `active` property toggled to swap
+    QSS. We don't use `setText` directly — a QLabel inside owns the rendered
+    label so the SVG icon can sit next to it cleanly.
+    """
 
     def __init__(self, key: str, label: str, icon_name: str,
                  parent: QWidget | None = None) -> None:
@@ -57,18 +82,14 @@ class _NavRow(QPushButton):
         row = QHBoxLayout(self)
         row.setContentsMargins(12, 10, 12, 10)
         row.setSpacing(12)
-
         if _HAS_SVG:
-            self._icon_widget = nav_icon(icon_name, size=20)
-            row.addWidget(self._icon_widget)
-        else:  # pragma: no cover — Qt without QtSvg
-            self._icon_widget = None
-
+            row.addWidget(nav_icon(icon_name, size=18))
         self._label_widget = QLabel(label)
-        self._label_widget.setObjectName("NavItemLabel")
-        self._label_widget.setStyleSheet("color: inherit; background: transparent;")
+        self._label_widget.setStyleSheet(
+            "color: inherit; background: transparent; "
+            "font-size: 14px; font-weight: 500;"
+        )
         row.addWidget(self._label_widget, stretch=1)
-        # Empty button text — label widget owns the rendering.
         self.setText("")
 
     @property
@@ -77,13 +98,15 @@ class _NavRow(QPushButton):
 
 
 class Sidebar(QWidget):
-    """Left vertical sidebar — 2 nav items only (Agents / Devices)."""
+    """Left vertical sidebar — Panel-1:1 chrome with 2 nav items."""
 
     nav_clicked = pyqtSignal(str)
 
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
-        self.setObjectName("Sidebar")
+        # objectName matches the rounded-card QSS rule (`QWidget#SidebarCard`)
+        # so the Sidebar itself IS the card (no wrapper needed).
+        self.setObjectName("SidebarCard")
         self.setFixedWidth(SIDEBAR_WIDTH)
         self._active_nav: str = "agents"
         self._nav_rows: dict[str, _NavRow] = {}
@@ -91,43 +114,90 @@ class Sidebar(QWidget):
         self._update_active(self._active_nav)
 
     def _build(self) -> None:
-        root = QVBoxLayout(self)
+        root = QHBoxLayout(self)
         root.setContentsMargins(0, 0, 0, 0)
         root.setSpacing(0)
 
-        # ── Mascot block (no subtitle — Panel banner has no label) ──────
-        mascot_frame = QFrame(self)
-        mascot_frame.setObjectName("MascotFrame")
-        mascot_frame.setFixedHeight(96)  # Panel HEADER_HEIGHT
-        mascot_layout = QVBoxLayout(mascot_frame)
-        mascot_layout.setContentsMargins(0, 0, 0, 0)
-        mascot_layout.setSpacing(0)
-        mascot_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        # ── Left-edge accent spine (2px, full-height, purple gradient) ──
+        spine = QFrame(self)
+        spine.setObjectName("LeftSpine")
+        spine.setFixedWidth(LEFT_SPINE_WIDTH)
+        spine.setSizePolicy(QSizePolicy.Policy.Fixed,
+                            QSizePolicy.Policy.Expanding)
+        root.addWidget(spine)
 
-        if _HAS_SVG and _MASCOT_SVG.exists():
+        # ── Main column (banner + nav + footer slot) ───────────────────
+        col = QFrame(self)
+        col.setObjectName("SidebarInner")
+        col_layout = QVBoxLayout(col)
+        col_layout.setContentsMargins(0, 0, 0, 0)
+        col_layout.setSpacing(0)
+
+        # Banner block — 96px tall (HEADER_HEIGHT match).
+        banner = QFrame(col)
+        banner.setObjectName("BannerFrame")
+        banner.setFixedHeight(HEADER_HEIGHT)
+        banner_layout = QVBoxLayout(banner)
+        banner_layout.setContentsMargins(0, 0, 0, 0)
+        banner_layout.setSpacing(0)
+        banner_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        # Prefer banner.png if shipped; else center the mascot SVG.
+        if _HAS_SVG and _BANNER_PNG.exists():
+            # banner.png landed — render as full-width via QLabel + QPixmap
+            # (kept inside QSvgWidget-aware code path for symmetry).
+            from PyQt6.QtGui import QPixmap
+            from PyQt6.QtCore import QSize
+            pm = QPixmap(str(_BANNER_PNG))
+            if not pm.isNull():
+                lbl = QLabel(banner)
+                lbl.setPixmap(pm.scaled(
+                    QSize(SIDEBAR_WIDTH - LEFT_SPINE_WIDTH, HEADER_HEIGHT),
+                    Qt.AspectRatioMode.KeepAspectRatioByExpanding,
+                    Qt.TransformationMode.SmoothTransformation,
+                ))
+                lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
+                lbl.setStyleSheet("background: transparent;")
+                banner_layout.addWidget(lbl)
+        elif _HAS_SVG and _MASCOT_SVG.exists():
             svg = QSvgWidget(str(_MASCOT_SVG))
             svg.setFixedSize(64, 64)
-            mascot_layout.addWidget(svg, alignment=Qt.AlignmentFlag.AlignCenter)
-        # No fallback — if SVG is missing the block just stays blank.
+            banner_layout.addWidget(svg, alignment=Qt.AlignmentFlag.AlignCenter)
 
-        root.addWidget(mascot_frame)
+        col_layout.addWidget(banner)
 
-        # ── 2 nav items (no sections, no scrolling — fits in fixed height) ──
-        nav_host = QFrame(self)
+        # ── Nav: sections + items ──────────────────────────────────────
+        nav_host = QFrame(col)
         nav_layout = QVBoxLayout(nav_host)
-        nav_layout.setContentsMargins(8, 12, 8, 12)
-        nav_layout.setSpacing(6)
+        nav_layout.setContentsMargins(8, 14, 8, 14)
+        nav_layout.setSpacing(4)
 
-        for key, label, icon_name in NAV_ITEMS:
-            row = _NavRow(key, label, icon_name)
-            row.clicked.connect(lambda _checked=False, k=key: self._on_nav_clicked(k))
-            self._nav_rows[key] = row
-            nav_layout.addWidget(row)
+        for si, (section_label, items) in enumerate(SECTIONS):
+            if si > 0:
+                # 20px gap between sections (Panel `mt-5`)
+                gap = QSpacerItem(0, 20, QSizePolicy.Policy.Minimum,
+                                  QSizePolicy.Policy.Fixed)
+                nav_layout.addSpacerItem(gap)
+
+            section_lbl = QLabel(section_label)
+            section_lbl.setObjectName("SidebarSection")
+            nav_layout.addWidget(section_lbl)
+
+            for key, label, icon_name in items:
+                row = _NavRow(key, label, icon_name)
+                row.clicked.connect(
+                    lambda _checked=False, k=key: self._on_nav_clicked(k)
+                )
+                self._nav_rows[key] = row
+                nav_layout.addWidget(row)
 
         nav_layout.addSpacerItem(
-            QSpacerItem(0, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+            QSpacerItem(0, 0, QSizePolicy.Policy.Minimum,
+                        QSizePolicy.Policy.Expanding)
         )
-        root.addWidget(nav_host, stretch=1)
+        col_layout.addWidget(nav_host, stretch=1)
+
+        root.addWidget(col, stretch=1)
 
     def _on_nav_clicked(self, key: str) -> None:
         self._update_active(key)
