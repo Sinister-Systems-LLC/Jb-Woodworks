@@ -4,6 +4,47 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-22 ~00:30 — RKOJ v1.6.0 → v1.6.5 + 7 commits + session-continuity brain entry (rapid-iteration session)
+
+EVE on `agent/sinister-sanctum/cli-dispatcher-2026-05-21`. Operator (verbatim, this session): *"make agents work"* → *"push everything to git hub and keep working"*. Shipped 5 RKOJ.exe versions in one continuous walk after v1.6.1 chrome was visually approved (operator screenshot showed Panel-1:1 sidebar/header/cards rendering correctly).
+
+**Shipped this turn (most-recent commit at top)**:
+
+| Commit | Version | Highlights |
+|---|---|---|
+| `6f11da8` | v1.6.5 | 5 fleet slash commands (/skills /mcp /vault /memory /open) + bottom status bar (28px strip refreshing every 5s: `●  N/M agents · X inbox · Y brain · Z phones · uptime HH:MM:SS    EVE on Sanctum · v1.6.5`) |
+| `4a05c8e` | (fix) | `.gitignore` v16 — un-ignore `projects/rkoj/source/` (rescues `dialogs.py` from being silently dropped; mirrors the sinister-forge exception pattern). v1.6.4 EXE worked because PyInstaller bundles disk; a clone-and-build would have failed without this fix. |
+| `a3a71f9` | v1.6.4 | Create Agent project picker dialog (14 projects from projects.json, agent-name input, mode picker claude/haiku/opus + disabled anthropic-sdk Phase-2) + live Devices list (4s poll, status-dot + serial + model + state + transport, empty-state hero with wired/wireless instructions) + mode → `--model haiku/opus` flag passthrough in `_on_send` |
+| `d2f4f90` | v1.6.3 | **Real session continuity** — `claude --session-id <uuid>` first turn + `--resume <uuid>` subsequent. Empirical: turn 1 = 11.8s, turn 2 = 4.5s, turn 3 = 5.5s; "What's my favorite color?" → "Teal" (memory works). AgentSession +`session_uuid` field. Persona moves to `--system-prompt` (set once, persists). Eliminates history-replay entirely. New `/session` slash command. /save schema-v1 with session_uuid + resume_cmd. |
+| `b0fb819` | v1.6.2 | Agent UX wired so 10–30s `claude -p` latency feels alive — Braille spinner ⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏ thinking-indicator with elapsed-time counter; input + Send disabled during turn; EVE replies get `<<` prefix on first stdout chunk; /help expanded with /history /retry /persona; history cap last 6 turns; persona block trimmed 500→220 chars; readable QProcess error names |
+| `f3eaac8` | v1.6.1 | **REAL Panel 1:1 chrome rebuild** after operator screenshot showed v1.6.0's 3 numeric patches were not 1:1. Read actual Panel TSX (`layout.tsx`, `sidebar.tsx`, `tab-header.tsx`, `chip.tsx`, `button.tsx`, `globals.css`). Two rounded-2xl outer cards on black body w/ 8px padding+gap. Single 96px header (no menu strip). 2px purple-gradient left-spine on sidebar. 96px banner block. Section style 12px/600/0.12em + hairline divider. Nav-item gradient active state. Chip h-7 px-2.5 text-12 translucent purple. Create button h-8 px-3 text-12 rounded-7 + hover #A78BFA. Title 26px + QGraphicsDropShadow purple glow. `--color-panel` corrected #15131A→#1c1c1e. |
+| `3cf14f5` | (docs) | v1.6.0 CHANGELOG entry + path-ref scrub (RKOJ.spec `_TOOL_ROOT`→`_PROJECT_ROOT`; sinister-rkoj-extensibility-doctrine.md 3 stale `tools/sinister-rkoj-qt/extensions/` refs swapped) |
+| `40c478e` | (brain) | 2 brain entries — `rkoj-project-shape-promotion-2026-05-21` + `rkoj-phase1-memory-bootstrap-2026-05-21` + cross-agent broadcast announcing relocation |
+| `caa66d4` | v1.6.0 | `tools/sinister-rkoj-qt/` → `projects/rkoj/source/` (`git mv` 69 files, history preserved) + Phase-1 memory bootstrap (`_bootstrap_agent_memory` + `_refresh_heartbeat` 30s QTimer + `_make_child_env` SINISTER_* env vars) + 3 theme patches |
+
+**Brain entries added this session (3 new doctrine entries)**:
+1. `rkoj-project-shape-promotion-2026-05-21` — when/how to promote `tools/<slug>` → `projects/<slug>/source` (7-step + 5 anti-patterns).
+2. `rkoj-phase1-memory-bootstrap-2026-05-21` — heartbeat/inbox/PROGRESS/resume bootstrap + env var propagation (3-helper architecture).
+3. `rkoj-session-continuity-pattern-2026-05-21` — claude --session-id then --resume pattern; eliminates history-replay; 5 anti-patterns + empirical timing.
+
+**Plan docs landed (5 in `_shared-memory/plans/Sanctum-deepclean-2026-05-21T2300Z/`)**: forward-plan, panel-1to1-spec, memory-jcode-integration-audit, cleanup-proposal, personal-folder-sinister-purge.
+
+**Cross-agent broadcast**: `2026-05-21T2330Z-sanctum-to-fleet-rkoj-relocation.md` — fleet-wide no-ACK notice.
+
+**Operator visual feedback**: screenshot at v1.6.1 confirmed chrome is right (sidebar / header / chip tabs / Agents card with EVE on Sanctum :: sanctum / mode pill / folder tabs all rendering). Operator then said "ok now make agents work" → v1.6.2 wired UX → v1.6.3 wired session continuity → "push everything to github and keep working" → v1.6.4 + v1.6.5 stacked features.
+
+**Operator-gated remaining (carry-forward)**:
+- Visual smoke milestones M3-M10 (require operator click-through — chip swap / Create Agent / send turn / verify EVE persona / glow / folder tabs / extension hot-reload).
+- `ANTHROPIC_API_KEY` env var for Phase-2 Anthropic SDK direct path (jcode-fidelity streaming + tool_use).
+- LICENSE pick.
+- 2 R0-safe-delete `Desktop-copy.bat` files (sandbox denied autodelete).
+- 5.65 GB D:\Sinister purge candidates (all mirrored, see plan).
+- UAC `Rename-Sinister-to-Personal.bat` + `Kill-Popups.bat` clicks.
+
+**Roadmap noted but NOT-BUILT (per operator addendum)**: ADB scrcpy embed / self-hosted AnyDesk replacement / Kameleo-style anti-detect browser / own Android-emulator manager / open extension registry. Captured in `forward-plan.md § C`.
+
+---
+
 ## 2026-05-21 ~23:00 — RKOJ promoted to `projects/rkoj/source` + Panel 1:1 patches + Phase-1 memory bootstrap + 4 plan docs landed (build in flight)
 
 EVE on `agent/sinister-sanctum/cli-dispatcher-2026-05-21`. Operator directive (verbatim, session start): *"i need you to do a deep audit on the sinsiter sanctum folder in the d drive. ... remove projects for sinister from the personal folder. ... i need you to make a porject in projects for rkoj and add everything there that we use for rkoj. ... I want the 1:1 exact ui as sinister panel. 1:1 nothing else everything the same and exact. with two tabs for now. ... When i click new agent it will be like we click the jcode exe and openeed a window. ... do not stop working until all this is done and tested. ... always place update exe on the desktop."*
