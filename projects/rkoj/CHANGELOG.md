@@ -4,6 +4,29 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not component versions (each lane has its own).
 
+## v1.6.16 — 2026-05-22
+
+**Markdown post-stream formatting in the terminal** — code fences, inline
+code, and bold spans in EVE's replies now render with proper typography
+instead of raw backticks + asterisks. Applied once per turn at
+`_on_finished` via QTextCharFormat over the reply's document range
+(tracked by `_reply_start_pos`, recorded right after the `<< ` prefix
+is appended).
+
+- ` ```code``` ` blocks → JetBrains Mono / darker bg `#08060c` /
+  light-purple fg `#E8D6FF`. DOTALL regex so multi-line blocks match.
+- `` `inline code` `` → JetBrains Mono / subtle bg `#1c1c1e` / purple-
+  halo fg `#C39DFF`. Single-line only.
+- `**bold**` → QFont.Weight.Bold over the whole match including the
+  asterisks (asterisks stay visible — markdown-aware formatting only,
+  not full re-rendering).
+- Doesn't fight the v1.6.11 streaming path: tokens still arrive
+  letter-by-letter; formatting is layered AFTER the turn finishes.
+  Operator sees the raw markdown streaming in, then watches it pop
+  into formatted typography the moment the reply ends.
+- MANIFEST.json 1.6.15 → 1.6.16.
+- `__init__.py __version__ = "1.6.16"`.
+
 ## v1.6.15 — 2026-05-22
 
 **Recent saved sessions inline in the Agents empty-state.** Operator's

@@ -277,6 +277,10 @@ class AgentCard(QFrame):
         self._total_cost_usd: float = 0.0
         self._total_in_tokens: int = 0
         self._total_out_tokens: int = 0
+        # v1.6.16 — track where each turn's reply text starts in the document
+        # so we can apply markdown formatting (code fences, inline code, bold)
+        # at end-of-turn without re-scanning the whole terminal.
+        self._reply_start_pos: int = 0
         self._build()
         # Phase-1 memory: heartbeat refresh every 30s while card alive
         self._hb_timer = QTimer(self)
@@ -500,6 +504,57 @@ class AgentCard(QFrame):
         """Ctrl+L → mirror /clear (jcode keybinding parity)."""
         self.terminal.clear()
         self._append_terminal("[cleared via Ctrl+L]\n")
+
+    # ── v1.6.16 markdown post-stream formatting ───────────────────────
+    # Applied once per turn after _on_finished. We don't try to format
+    # mid-stream because the closing ``` / ` markers may not have arrived
+    # yet — easier to do one pass at end with QTextCursor + QTextCharFormat.
+    def _apply_markdown_format(self, start: int, end: int) -> None:
+        """Format markdown spans in the [start, end) document range:
+          - ``` ... ``` triple-backtick blocks → mono + darker bg
+          - `inline code`                      → mono + subtle bg + purple
+          - **bold**                            → bold weight
+        """
+        from PyQt6.QtGui import QTextCharFormat
+        doc = self.terminal.document()
+        # Select the reply text (Qt uses   for newline in selectedText,
+        # but positions are 1:1 with the underlying document chars).
+        sel = QTextCursor(doc)
+        sel.setPosition(start)
+        sel.setPosition(end, QTextCursor.MoveMode.KeepAnchor)
+        text = sel.selectedText().replace(' ', '\n')
+
+        def apply_fmt(s: int, e: int, fmt: QTextCharFormat) -> None:
+            c = QTextCursor(doc)
+            c.setPosition(s)
+            c.setPosition(e, QTextCursor.MoveMode.KeepAnchor)
+            c.mergeCharFormat(fmt)
+
+        # ``` code block ``` — DOTALL across newlines
+        fence_fmt = QTextCharFormat()
+        fence_font = QFont("JetBrains Mono", 10)
+        fence_font.setStyleHint(QFont.StyleHint.Monospace)
+        fence_fmt.setFont(fence_font)
+        fence_fmt.setBackground(QColor("#08060c"))
+        fence_fmt.setForeground(QColor("#E8D6FF"))
+        for m in re.finditer(r"```[\w-]*\n?(.*?)```", text, re.DOTALL):
+            apply_fmt(start + m.start(), start + m.end(), fence_fmt)
+
+        # `inline code` — single-line only (no newline allowed inside)
+        inline_fmt = QTextCharFormat()
+        inline_font = QFont("JetBrains Mono", 10)
+        inline_font.setStyleHint(QFont.StyleHint.Monospace)
+        inline_fmt.setFont(inline_font)
+        inline_fmt.setBackground(QColor("#1c1c1e"))
+        inline_fmt.setForeground(QColor("#C39DFF"))
+        for m in re.finditer(r"(?<!`)`([^`\n]+)`(?!`)", text):
+            apply_fmt(start + m.start(), start + m.end(), inline_fmt)
+
+        # **bold** — single-line emphasis
+        bold_fmt = QTextCharFormat()
+        bold_fmt.setFontWeight(QFont.Weight.Bold)
+        for m in re.finditer(r"\*\*([^*\n]+)\*\*", text):
+            apply_fmt(start + m.start(), start + m.end(), bold_fmt)
 
     def _tick_spinner(self) -> None:
         import time as _t
@@ -902,6 +957,12 @@ class AgentCard(QFrame):
                         if not self._stream_text_started:
                             self._stop_thinking()
                             self._append_terminal("<< ")
+                            # v1.6.16 — record position AFTER "<< " prefix
+                            # so markdown formatting only touches EVE's
+                            # reply, not our own prefix.
+                            self._reply_start_pos = (
+                                self.terminal.textCursor().position()
+                            )
                             self._stream_text_started = True
                             self._reply_started = True
                         self._append_terminal(text)
@@ -1022,6 +1083,15 @@ class AgentCard(QFrame):
             )
         else:
             self._append_terminal("\n")
+            # v1.6.16 — apply markdown formatting to this turn's reply text
+            # (code fences + inline code + bold). End_pos is the cursor
+            # position right before the trailing newline we just appended.
+            try:
+                end_pos = self.terminal.textCursor().position() - 1
+                if end_pos > self._reply_start_pos:
+                    self._apply_markdown_format(self._reply_start_pos, end_pos)
+            except Exception:
+                pass
         if exit_code != 0:
             self._append_terminal(f"  (exit {exit_code})\n")
         self._set_status("online")
