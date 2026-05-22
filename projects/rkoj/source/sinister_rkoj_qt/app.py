@@ -41,6 +41,7 @@ from PyQt6.QtWidgets import (
 
 from .agents_tab import AgentsView
 from .devices_tab import DevicesView
+from .dialogs import NewAgentDialog
 from .header import Header
 from .sidebar import Sidebar
 from .theme import (
@@ -144,9 +145,18 @@ class SinisterWindow(QMainWindow):
         self._on_chip(key)
 
     def _on_create_agent(self) -> None:
+        # Pop the picker; operator chooses project + name + mode.
+        dlg = NewAgentDialog(self, default_project_key="sanctum")
+        if dlg.exec() != NewAgentDialog.DialogCode.Accepted:
+            return
+        choice = dlg.result_dict or {}
         self.header.set_active_chip("agents")
         self.stack.setCurrentWidget(self.agents_view)
-        self.agents_view.spawn_agent(project_key="sanctum")
+        self.agents_view.spawn_agent(
+            project_key=choice.get("project_key", "sanctum"),
+            agent_name=choice.get("agent_name"),
+            mode=choice.get("mode", "claude"),
+        )
 
     def _on_header_icon(self, key: str) -> None:
         # Stubs — wired in a follow-up. Operator brief: basic for now.

@@ -530,7 +530,13 @@ class AgentCard(QFrame):
             return
 
         # v1.6.3 args — first turn vs continuation.
+        # v1.6.4 — mode picker can request a specific claude model via alias.
         args: list[str] = ["--dangerously-skip-permissions"]
+        if self.session.mode == "claude-haiku":
+            args += ["--model", "haiku"]
+        elif self.session.mode == "claude-opus":
+            args += ["--model", "opus"]
+        # "claude" (default model) + "anthropic-sdk" (Phase-2 stub) → no extra flag
         if self._first_turn:
             persona = build_opening_prompt(
                 project_key=self.session.project_key,
