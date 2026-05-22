@@ -4,6 +4,29 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not component versions (each lane has its own).
 
+## v1.6.33 — 2026-05-22
+
+**`/copy` + per-card project-color left stripe.**
+
+- **/copy slash command**: copies the most recent EVE reply to the OS
+  clipboard (via `QApplication.clipboard().setText(...)`). Operator
+  can paste into PR descriptions / Obsidian notes / Slack without
+  manually selecting text inside the QPlainTextEdit. Prints char count
+  + 60-char preview as confirmation. Handles "no reply yet" + empty-
+  reply cases. 23 slash commands now.
+- **Per-card project-color stripe**: each AgentCard's left border is
+  now a 3px project-tinted line. Sanctum=purple, Panel=green,
+  Kernel-APK=amber, Snap=yellow, TikTok=red, Bumble=honey, etc.
+  Curated palette for 13 known projects + deterministic HSV-from-hash
+  fallback (so new projects get a stable color across runs). Operator
+  scans colors to know "that's the Panel one" without reading labels.
+- New module-level helpers: `_PROJECT_COLORS` dict + `_project_color()`
+  function. AgentCard.__init__ applies via per-instance `setStyleSheet`
+  override of `border-left` only — preserves the hairline border /
+  card bg / radius from the global QSS rule.
+- MANIFEST.json 1.6.32 → 1.6.33.
+- `__init__.py __version__ = "1.6.33"`.
+
 ## v1.6.32 — 2026-05-22
 
 **`/ping [<project>]` status-check fan-out + brain entry for v1.6.27-31.**

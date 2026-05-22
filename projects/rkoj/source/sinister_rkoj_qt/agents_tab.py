@@ -56,6 +56,39 @@ def _strip_ansi(text: str) -> str:
     return _ANSI_RE.sub("", text)
 
 
+# v1.6.33 — per-project color for the left-stripe on agent cards.
+# Curated palette for known projects + deterministic hash fallback for
+# anything else. Operator scans colors at a glance to know which card
+# is which project without reading the project_label text.
+_PROJECT_COLORS: dict[str, str] = {
+    "sanctum":             "#BF5AF2",  # Sanctum purple (primary)
+    "sinister-panel":      "#30D158",  # green (live Hetzner panel)
+    "kernel-apk":          "#FF9F0A",  # amber (warn — sensitive kernel work)
+    "sinister-emulator":   "#0A84FF",  # iOS blue
+    "snap-emulator-api":   "#FFCC00",  # yellow (Snapchat brand)
+    "tiktok-emulator-api": "#FF453A",  # red (TikTok)
+    "bumble-emulator-api": "#FFD60A",  # honey (Bumble)
+    "sinister-forge":      "#C39DFF",  # purple-halo
+    "sinister-mind":       "#A78BFA",  # purple-light
+    "rkoj-workstation":    "#BF5AF2",  # purple primary (self-reference)
+    "sinister-jokr":       "#5AC8FA",  # cyan
+    "sinister-letstext":   "#FF2D55",  # pink
+    "sinister-eve":        "#BF5AF2",  # purple primary
+}
+
+
+def _project_color(project_key: str) -> str:
+    """Return a stable hex color for a project_key. Curated palette for
+    known projects; deterministic HSV-from-hash for unknown ones so a
+    new project always gets the SAME color across runs."""
+    if project_key in _PROJECT_COLORS:
+        return _PROJECT_COLORS[project_key]
+    import colorsys
+    h = (abs(hash(project_key)) % 360) / 360.0
+    r, g, b = colorsys.hsv_to_rgb(h, 0.55, 0.95)
+    return f"#{int(r*255):02x}{int(g*255):02x}{int(b*255):02x}"
+
+
 # v1.6.17 — slash command autocomplete registry. Each tuple is
 # (command, one-line description). The autocomplete popup filters this
 # list as operator types after `/`. New /commands added to _maybe_intercept
@@ -64,6 +97,7 @@ SLASH_COMMANDS: list[tuple[str, str]] = [
     ("/help",     "show all slash commands"),
     ("/broadcast","send the same message to all live cards"),
     ("/clear",    "clear terminal scrollback (Ctrl+L)"),
+    ("/copy",     "copy the most recent EVE reply to clipboard"),
     ("/cost",     "cumulative spend breakdown for THIS card"),
     ("/devices",  "list connected ADB devices inline"),
     ("/export",   "export conversation to a markdown file"),
@@ -478,6 +512,14 @@ class AgentCard(QFrame):
         self.setObjectName("AgentCard")
         self.setProperty("needs_input", False)
         self.setMinimumHeight(280)
+        # v1.6.33 — per-project color left-stripe (3px). Operator scans
+        # colors to identify project at a glance without reading labels.
+        # Composed with the existing #AgentCard QSS (1px hairline border)
+        # by overriding only the left edge to a 3px tinted line.
+        _stripe_color = _project_color(session.project_key)
+        self.setStyleSheet(
+            f"QFrame#AgentCard {{ border-left: 3px solid {_stripe_color}; }}"
+        )
         self._proc: Optional[QProcess] = None
         self._first_turn = True
         self._glow_effect: Optional[QGraphicsDropShadowEffect] = None
@@ -1120,6 +1162,35 @@ class AgentCard(QFrame):
         if head == "/clear":
             self.terminal.clear()
             self._append_terminal("[cleared]\n")
+            return True
+        if head == "/copy":
+            # v1.6.33 — copy the most recent EVE reply to the clipboard
+            # so operator can paste it into a PR, an Obsidian note, etc.
+            # without selecting text in the terminal manually.
+            from PyQt6.QtWidgets import QApplication
+            last = next(
+                (t for t in reversed(self.session.turns) if t.get("assistant")),
+                None,
+            )
+            if not last:
+                self._append_terminal(
+                    "[/copy] no EVE reply yet — send a message first\n"
+                )
+                return True
+            text = (last.get("assistant") or "").strip()
+            if not text:
+                self._append_terminal("[/copy] last reply was empty\n")
+                return True
+            try:
+                cb = QApplication.clipboard()
+                cb.setText(text)
+                preview = text.replace("\n", " ")[:60]
+                self._append_terminal(
+                    f"[/copy] copied {len(text):,} chars to clipboard\n"
+                    f"  preview: {preview}…\n"
+                )
+            except Exception as exc:
+                self._append_terminal(f"[/copy] failed: {exc}\n")
             return True
         if head == "/cost":
             n_turns = len([t for t in self.session.turns if t.get("user")])
