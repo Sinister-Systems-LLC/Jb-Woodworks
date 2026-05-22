@@ -432,9 +432,18 @@ class AgentCard(QFrame):
         )
 
     def _append_terminal(self, text: str) -> None:
+        # v1.6.14 — sticky-scroll: if the operator has scrolled up to read
+        # earlier output, don't yank them back to the bottom when new
+        # tokens stream in. Only auto-scroll when the scrollbar was already
+        # at (or within 6px of) the bottom.
+        sb = self.terminal.verticalScrollBar()
+        was_at_bottom = sb is None or sb.value() >= sb.maximum() - 6
         self.terminal.moveCursor(QTextCursor.MoveOperation.End)
         self.terminal.insertPlainText(text)
-        self.terminal.moveCursor(QTextCursor.MoveOperation.End)
+        if was_at_bottom:
+            self.terminal.moveCursor(QTextCursor.MoveOperation.End)
+            if sb is not None:
+                sb.setValue(sb.maximum())
 
     def _set_status(self, state_str: str) -> None:
         self.session.status = state_str

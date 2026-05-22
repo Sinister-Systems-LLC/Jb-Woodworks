@@ -4,6 +4,22 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not component versions (each lane has its own).
 
+## v1.6.14 — 2026-05-22
+
+**Sticky-scroll terminal.** Operator UX: when reading earlier output
+during a long EVE reply, the auto-scroll-to-bottom was yanking them back
+to the live stream on every token. Now the auto-scroll is conditional —
+only fires if the scrollbar was already at (or within 6px of) the bottom
+when the chunk arrived. Operator can scroll up freely and the stream
+keeps appending below without dragging them down.
+
+- `_append_terminal` reads scrollbar position before insertion → only
+  re-pins cursor + scrollbar to bottom if `was_at_bottom`.
+- 6px tolerance so mouse-wheel jiggle doesn't accidentally "lock" the
+  view in scroll-up mode.
+- MANIFEST.json version 1.6.13 → 1.6.14.
+- `__init__.py __version__ = "1.6.14"`.
+
 ## v1.6.13 — 2026-05-22
 
 **Quick-wins polish.** While operator was testing v1.6.12:
