@@ -129,6 +129,7 @@ SLASH_COMMANDS: list[tuple[str, str]] = [
     ("/save",     "write resume-point JSON to disk"),
     ("/session",  "print just the session uuid"),
     ("/shortcuts","print every keyboard binding + click affordance"),
+    ("/show",     "print full text of user turn #N (prompt + reply)"),
     ("/skill",    "load + send a saved skill .md as a turn"),
     ("/skills",   "list Sanctum skills (.md files)"),
     ("/stats",    "RKOJ fleet snapshot (agents / inbox / brain / devices)"),
@@ -1844,6 +1845,43 @@ class AgentCard(QFrame):
                 f"[/session] {uid}\n"
                 f"  Resume from any terminal:\n"
                 f"  claude --dangerously-skip-permissions -r {uid} -p 'your message'\n"
+            )
+            return True
+        if head == "/show":
+            # v1.6.49 — print full prompt + reply for user-turn #N.
+            # /history shows previews; /show pulls the full text so
+            # operator doesn't have to scroll the terminal scrollback.
+            parts = cmd.split(None, 1)
+            user_turns = [t for t in self.session.turns if t.get("user")]
+            if not user_turns:
+                self._append_terminal("[/show] no prior user turns to show\n")
+                return True
+            if len(parts) < 2 or not parts[1].strip():
+                self._append_terminal(
+                    f"[/show] usage: /show <N>  (1..{len(user_turns)})\n"
+                    "  Prints the full prompt + reply for that user turn.\n"
+                )
+                return True
+            try:
+                idx = int(parts[1].strip())
+            except ValueError:
+                self._append_terminal(
+                    f"[/show] N must be an integer 1..{len(user_turns)}\n"
+                )
+                return True
+            if idx < 1 or idx > len(user_turns):
+                self._append_terminal(
+                    f"[/show] N={idx} out of range (1..{len(user_turns)})\n"
+                )
+                return True
+            target = user_turns[idx - 1]
+            u = (target.get("user") or "").rstrip()
+            a = (target.get("assistant") or "").rstrip()
+            self._append_terminal(
+                f"[/show] turn {idx}/{len(user_turns)}:\n"
+                f"────── prompt ──────\n{u}\n"
+                f"────── reply ──────\n{a if a else '(no reply captured)'}\n"
+                f"────── end ──────\n"
             )
             return True
         if head == "/shortcuts":

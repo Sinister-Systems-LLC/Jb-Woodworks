@@ -4,6 +4,30 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not command-versions (each lane has its own).
 
+## v1.6.49 — 2026-05-22
+
+**`/show <N>` — print the full prompt + reply for user-turn #N, with
+visual separators. Companion to /history which truncates to 60 chars.**
+
+- Same 1-indexed numbering as /replay so the operator vocabulary
+  stays uniform: `/history` annotates `(replay:N)` → `/replay N`
+  re-runs, `/show N` re-reads.
+- Block layout:
+  ```
+  [/show] turn 3/7:
+  ────── prompt ──────
+  …full user text…
+  ────── reply ──────
+  …full assistant text…
+  ────── end ──────
+  ```
+- Argument validation: integer parse + range check + empty-turns guard.
+- Reply fallback text "(no reply captured)" for turns where claude
+  failed mid-stream or was /cancel-ed before any output.
+- 44 slash commands now (added /show).
+- MANIFEST.json 1.6.48 → 1.6.49.
+- `__init__.py __version__ = "1.6.49"`.
+
 ## v1.6.48 — 2026-05-22
 
 **`/shortcuts` — operator-facing cheat sheet of every keyboard binding
