@@ -4,6 +4,28 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not component versions (each lane has its own).
 
+## v1.6.19 — 2026-05-22
+
+**`/model` + `/focus` slash commands + brain entry capturing the
+stream-json arc.**
+
+- **/model**: shows current mode (claude / claude-haiku / claude-opus)
+  and (with arg) sets the mode for the NEXT spawn. Notes that
+  `claude --resume` is locked to the original model, so mid-session
+  switches don't propagate — operator must open a new card to actually
+  use a different model.
+- **/focus**: re-focuses the input box. Useful after operator clicked
+  into the terminal scrollback to copy text and lost typing focus.
+- Both added to SLASH_COMMANDS registry → discoverable via the v1.6.17
+  autocomplete popup. Total slash commands now: 16.
+- **Brain entry**: `rkoj-stream-json-jcode-parity-2026-05-22.md` —
+  codifies the v1.6.11→v1.6.18 arc into reusable doctrine. Stream-json
+  event-type table, NDJSON line-buffer pattern, required CLI flags,
+  6 anti-patterns, Phase-2 (Anthropic SDK direct) path. Indexed in
+  `_shared-memory/knowledge/_INDEX.md`.
+- MANIFEST.json 1.6.18 → 1.6.19.
+- `__init__.py __version__ = "1.6.19"`.
+
 ## v1.6.18 — 2026-05-22
 
 **Live tool-name in spinner + rotating placeholder hints + /devices + /export.**

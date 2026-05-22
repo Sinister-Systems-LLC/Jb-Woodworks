@@ -66,9 +66,11 @@ SLASH_COMMANDS: list[tuple[str, str]] = [
     ("/cost",     "cumulative spend breakdown"),
     ("/devices",  "list connected ADB devices inline"),
     ("/export",   "export conversation to a markdown file"),
+    ("/focus",    "focus the input box"),
     ("/history",  "show recent turns with previews"),
     ("/memory",   "forge-memory-bridge BM25 recall"),
     ("/mcp",      "list MCP servers from ~/.claude/.mcp.json"),
+    ("/model",    "show or change model (claude / haiku / opus)"),
     ("/needs",    "toggle awaiting-input glow (visual test)"),
     ("/open",     "print shell commands to open agent paths"),
     ("/persona",  "print identity (slug / uuid / paths)"),
@@ -939,6 +941,46 @@ class AgentCard(QFrame):
                 f"  output tok : {self._total_out_tokens:,}\n"
                 f"  total cost : ${self._total_cost_usd:.4f}\n"
                 f"  avg / turn : ${avg_cost:.4f}\n"
+            )
+            return True
+        if head == "/focus":
+            # v1.6.19 — re-focus the input box. Useful if operator clicked
+            # into the terminal scrollback to copy text + lost typing focus.
+            self.input.setFocus()
+            self._append_terminal("[/focus] input refocused\n")
+            return True
+        if head == "/model":
+            # v1.6.19 — show or change the model alias for subsequent turns.
+            # Note: claude --resume is locked to the original model. To
+            # actually pick a different model the operator should start a
+            # fresh card via + Create Agent (the dialog has the picker).
+            # This slash only affects NEW sessions / future first-turn sends.
+            parts = cmd.split(None, 1)
+            if len(parts) == 1:
+                self._append_terminal(
+                    f"[/model] current mode: {self.session.mode}\n"
+                    f"  Aliases (set with /model <alias>):\n"
+                    f"    claude        — default Claude Code model\n"
+                    f"    claude-haiku  — fast (--model haiku)\n"
+                    f"    claude-opus   — deep (--model opus)\n"
+                    f"  Note: changing mid-session has no effect — claude\n"
+                    f"  --resume is locked to the model the session was created\n"
+                    f"  with. To switch, open a new card via + Create Agent.\n"
+                )
+                return True
+            alias = parts[1].strip().lower()
+            valid = {"claude", "claude-haiku", "claude-opus"}
+            if alias not in valid:
+                self._append_terminal(
+                    f"[/model] unknown alias `{alias}`. "
+                    f"Valid: {', '.join(sorted(valid))}\n"
+                )
+                return True
+            self.session.mode = alias
+            self._append_terminal(
+                f"[/model] mode → {alias}\n"
+                f"  Will take effect on the NEXT session you spawn "
+                f"(open + Create Agent in the header).\n"
             )
             return True
         if head == "/devices":
