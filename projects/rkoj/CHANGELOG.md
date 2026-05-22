@@ -4,6 +4,21 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not component versions (each lane has its own).
 
+## v1.6.9 — 2026-05-22
+
+**Saved Sessions picker UX overhaul.** EVE on Sanctum, branch `agent/sinister-sanctum/cli-dispatcher-2026-05-21`. Operator brief was "get to work" continuing the rapid v1.6.x iteration after v1.6.8 shipped the inline-resume revert. The picker was lying — button labeled "Open in new window" but v1.6.8 routed everything inline. Plus the operator now has v1.6.7 autoclose saves piling up under `_shared-memory/resume-points/` with no in-UI cleanup. This ship fixes both.
+
+- **TRUTHFUL WORDING**: "Open in new window" → "Resume inline". Subtitle rewritten ("double-click or pick + Resume inline. Del key (or button) removes a save."). Tooltips added on both action buttons clarifying behavior.
+- **DELETE FROM PICKER**: "Delete selected" button (left of Cancel) + `Del` key shortcut. Reversible: file is renamed `<name>.json.deleted` on disk, not unlinked — operator can `ren` it back if it was a mistake. Picker self-rebuilds after each delete; Resume button disables when zero rows remain.
+- **SAVE_REASON CHIP**: rows now show `[autoclose]` vs `[manual]` so operator can tell at a glance which saves came from the v1.6.7 window-close path vs explicit `/save`.
+- **RELATIVE-TIME LABELS**: `_humanize_age()` helper turns ISO8601 `saved_at` into compact "12 min ago" / "3 hr ago" / "2 days ago" / `YYYY-MM-DD` for >30d. Way faster to scan than raw timestamps.
+- **TIGHTER ROW LAYOUT**: row 1 = `<project> · <N> turn(s) · <ago> [reason]`; row 2 = `mode <claude> · uuid <abc12345…>` (8-char uuid prefix instead of 36 — full uuid moves to tooltip-territory if needed later).
+- **EMPTY-STATE COPY**: tells operator about the v1.6.7 autoclose path so they know saves accumulate even without explicit `/save`.
+- **DIALOG SIZE**: +20w/+20h (640×500) to give the richer rows room.
+- **NO PUBLIC API CHANGE**: `result_data` schema additive (`save_reason` field added; existing keys unchanged). Callers in `app.py` (`_open_sessions_picker`) + `dialogs.py` (`NewAgentDialog._on_resume_clicked`) continue to work unmodified.
+- **MANIFEST.json**: `version 1.6.0 → 1.6.9`, `updated 2026-05-21 → 2026-05-22`.
+- **VERSION**: `__init__.py __version__ = "1.6.9"`.
+
 ## v1.6.0 — 2026-05-21
 
 **Project-shape promotion + Panel 1:1 patches + Phase-1 memory bootstrap.** Operator (verbatim 2026-05-21, session start): *"i need you to make a porject in projects for rkoj and add everything there that we use for rkoj. ... I want the 1:1 exact ui as sinister panel. 1:1 nothing else everything the same and exact. ... When i click new agent it will be like we click the jcode exe and openeed a window."*

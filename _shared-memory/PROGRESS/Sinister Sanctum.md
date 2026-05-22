@@ -4,6 +4,33 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-22 ~01:50 — shipped: RKOJ v1.6.9 — Saved Sessions picker UX overhaul (`Resume inline` + Delete + autoclose chip + relative time)
+
+EVE on Sanctum, branch `agent/sinister-sanctum/cli-dispatcher-2026-05-21`. Picked up after operator's bare *"get to work"* directive following the v1.6.0→v1.6.8 rapid walk. v1.6.8's inline-spawn revert had left the SavedSessionsPicker UI lying — button still labeled "Open in new window" — and operator's v1.6.7 autoclose saves had started piling up under `_shared-memory/resume-points/` with no in-UI cleanup. This ship makes the picker truthful + housekeepable in one tight diff.
+
+**Changes (single file: `projects/rkoj/source/sinister_rkoj_qt/dialogs.py` + version bumps)**:
+
+- **Truthful wording**: "Open in new window" → **`Resume inline`**. Subtitle rewritten. Tooltips on both action buttons clarifying behavior. Empty-state copy mentions the v1.6.7 autoclose path so operator knows saves accumulate even without explicit `/save`.
+- **Delete from picker**: "Delete selected" button (left of Cancel) + **`Del` key shortcut**. Reversible — file renamed `<name>.json.deleted` on disk, not unlinked, so operator can `ren` back. Picker self-rebuilds after each delete; Resume button disables when zero rows remain.
+- **`save_reason` chip**: rows now show `[autoclose]` vs `[manual]` so operator can tell at a glance which saves came from the v1.6.7 window-close path vs explicit `/save`.
+- **Relative-time labels** via `_humanize_age()` helper: ISO8601 `saved_at` → `30s ago` / `12 min ago` / `3 hr ago` / `2 days ago` / `YYYY-MM-DD` for >30d. 5/5 unit cases pass (smoke).
+- **Tighter rows**: line 1 `<project> · <N> turn(s) · <ago> [reason]`; line 2 `mode <claude> · uuid <abc12345…>` (8-char uuid prefix, was 36).
+- **Dialog size**: 620×480 → 640×500 for the richer rows.
+- **No public API break**: `result_data` schema is additive (`save_reason` added; existing keys + callers in `app.py` `_open_sessions_picker` + `dialogs.py` `NewAgentDialog._on_resume_clicked` work unmodified).
+
+**Shipped**: `__version__ = "1.6.9"` · `MANIFEST.json version 1.6.0 → 1.6.9` · `CHANGELOG.md` v1.6.9 section · EXE rebuild via `python -m PyInstaller --clean --noconfirm RKOJ.spec` (wall-clock ~64s) → **`C:\Users\Zonia\Desktop\RKOJ.exe` 75,193,467 bytes (71.71 MB, +4 KB vs v1.6.8)** mtime 21:48.
+
+**Smoke (import-level, headless)**:
+- `from sinister_rkoj_qt import __version__` → `'1.6.9'` ✓
+- `from sinister_rkoj_qt.dialogs import SavedSessionsPicker, NewAgentDialog, _humanize_age` → no errors ✓
+- `_humanize_age` 5 unit cases (30s / 12min / 3hr / 2days / 40days) all expected outputs ✓
+
+**M3-M10 visual smoke still requires operator click-through** (Sessions sidebar nav → picker shows new "Resume inline" wording + Delete button + chips + relative time; Del key removes selected; rebuilds after deletion; resume opens inline card).
+
+**Carry-forward (unchanged from v1.6.8)**: ANTHROPIC_API_KEY env var; LICENSE pick; 2 R0 Desktop-copy.bat cleanups; D:\Sinister 5.65 GB purge; UAC clicks.
+
+---
+
 ## 2026-05-22 ~00:30 — RKOJ v1.6.0 → v1.6.5 + 7 commits + session-continuity brain entry (rapid-iteration session)
 
 EVE on `agent/sinister-sanctum/cli-dispatcher-2026-05-21`. Operator (verbatim, this session): *"make agents work"* → *"push everything to git hub and keep working"*. Shipped 5 RKOJ.exe versions in one continuous walk after v1.6.1 chrome was visually approved (operator screenshot showed Panel-1:1 sidebar/header/cards rendering correctly).

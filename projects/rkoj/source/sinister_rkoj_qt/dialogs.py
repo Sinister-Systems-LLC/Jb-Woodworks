@@ -287,17 +287,66 @@ class NewAgentDialog(QDialog):
         self.accept()
 
 
+def _humanize_age(saved_at: str) -> str:
+    """Return a compact "N min ago" / "N hr ago" / "N day ago" label for
+    an ISO8601 saved_at string. Falls back to the raw string if parsing
+    fails so the operator can still see what's there.
+    """
+    if not saved_at:
+        return "(no timestamp)"
+    try:
+        from datetime import datetime, timezone as _tz
+        s = saved_at.rstrip("Z").replace(" ", "T")
+        # Strip microseconds + timezone — accept either YYYY-MM-DDTHH:MM:SS
+        # or YYYY-MM-DDTHH:MM:SS.ffffff[+TZ].
+        for fmt in ("%Y-%m-%dT%H:%M:%S.%f", "%Y-%m-%dT%H:%M:%S",
+                    "%Y-%m-%dT%H:%M"):
+            try:
+                dt = datetime.strptime(s[:26], fmt)
+                break
+            except ValueError:
+                continue
+        else:
+            return saved_at[:19].replace("T", " ")
+        dt = dt.replace(tzinfo=_tz.utc)
+        delta = datetime.now(_tz.utc) - dt
+        secs = int(delta.total_seconds())
+        if secs < 60:
+            return f"{secs}s ago"
+        mins = secs // 60
+        if mins < 60:
+            return f"{mins} min ago"
+        hrs = mins // 60
+        if hrs < 24:
+            return f"{hrs} hr ago"
+        days = hrs // 24
+        if days < 30:
+            return f"{days} day{'s' if days != 1 else ''} ago"
+        return saved_at[:10]  # YYYY-MM-DD fallback for old saves
+    except Exception:
+        return saved_at[:19].replace("T", " ")
+
+
 class SavedSessionsPicker(QDialog):
     """List saved resume-points and let operator pick one to resume.
 
     Scans `_shared-memory/resume-points/EVE on <project>/*.json` written by
-    the agent's `/save` slash command. Each entry shows the project, turn
-    count, saved timestamp, and short session_uuid. Double-click or Open
-    button accepts.
+    the agent's `/save` slash command (or by AgentWindow.closeEvent
+    autoclose path). Each entry shows the project, turn count, when it was
+    saved, save reason chip (autoclose / manual), mode, and short
+    session_uuid. Double-click or Resume button accepts. Delete button
+    (or Del key) removes the selected saved session from disk.
+
+    v1.6.9 — picker UX overhaul:
+      - Wording fixed: "Open in new window" → "Resume inline" (v1.6.8
+        reverted floating-window flow so the picker UI was lying).
+      - "Delete selected" button + `Del` key shortcut for housekeeping.
+      - `save_reason` surfaced as a chip on each row.
+      - Tighter row labels (relative time + mode chip + short uuid).
 
     Result on accept (`result_data` attribute):
       dict with keys: project_key, project_display, agent_name, mode,
-                      session_uuid, saved_at, turns
+                      session_uuid, saved_at, turns, save_reason
     """
 
     def __init__(self, parent: Optional[QWidget] = None) -> None:
@@ -305,13 +354,14 @@ class SavedSessionsPicker(QDialog):
         self.setObjectName("NewAgentDialog")  # reuse the dialog styling
         self.setModal(True)
         self.setWindowTitle("Resume Saved Session")
-        self.setMinimumWidth(620)
-        self.setMinimumHeight(480)
+        self.setMinimumWidth(640)
+        self.setMinimumHeight(500)
         self.setStyleSheet(_DIALOG_QSS)
         self.result_data: Optional[dict] = None
         self._sessions = self._scan_sessions()
         self._build()
         QShortcut(QKeySequence("Escape"), self, activated=self.reject)
+        QShortcut(QKeySequence("Delete"), self, activated=self._on_delete)
 
     def _scan_sessions(self) -> list[dict]:
         """Walk `_shared-memory/resume-points/<display>/*.json` and parse
@@ -344,6 +394,7 @@ class SavedSessionsPicker(QDialog):
                         "session_uuid": suid,
                         "saved_at": data.get("saved_at", ""),
                         "turns": len(data.get("turns", [])),
+                        "save_reason": data.get("save_reason", "manual"),
                         "_fp": str(fp),
                     })
         except Exception:
@@ -363,41 +414,41 @@ class SavedSessionsPicker(QDialog):
         if not self._sessions:
             empty = QLabel(
                 "No saved sessions found.\n\n"
-                "Inside any agent window, type /save to write a resume-point.\n"
-                "Saved sessions appear under _shared-memory/resume-points/."
+                "Inside any agent card, type /save to write a resume-point,\n"
+                "or just close the card — v1.6.7+ writes an autoclose save\n"
+                "to _shared-memory/resume-points/ on the way out."
             )
             empty.setObjectName("DialogSubtitle")
             empty.setWordWrap(True)
             root.addWidget(empty)
         else:
-            subtitle = QLabel(
-                f"{len(self._sessions)} saved session(s)   ·   "
-                f"double-click or pick + Open to resume in a new window:"
-            )
-            subtitle.setObjectName("DialogSubtitle")
-            subtitle.setWordWrap(True)
-            root.addWidget(subtitle)
+            self.subtitle_label = QLabel()
+            self.subtitle_label.setObjectName("DialogSubtitle")
+            self.subtitle_label.setWordWrap(True)
+            root.addWidget(self.subtitle_label)
 
             self._list = QListWidget()
             self._list.setObjectName("SavedSessionsList")
-            for s in self._sessions:
-                ts = (s.get("saved_at") or "")[:19].replace("T", " ")
-                label = (
-                    f"{s['project_display']}    ·    "
-                    f"{s['turns']} turn(s)    ·    {ts or '(no timestamp)'}\n"
-                    f"   uuid {s['session_uuid'][:36]}   ·   mode {s.get('mode', 'claude')}"
-                )
-                item = QListWidgetItem(label)
-                item.setData(Qt.ItemDataRole.UserRole, s)
-                self._list.addItem(item)
+            self._populate_list()
             self._list.itemDoubleClicked.connect(self._on_double_click)
             if self._list.count() > 0:
                 self._list.setCurrentRow(0)
             root.addWidget(self._list, stretch=1)
 
+            self._refresh_subtitle()
+
         # Buttons
         btn_row = QHBoxLayout()
         btn_row.setSpacing(10)
+        if self._sessions:
+            self.delete_btn = QPushButton("Delete selected")
+            self.delete_btn.setObjectName("DialogSecondary")
+            self.delete_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+            self.delete_btn.setToolTip(
+                "Remove the selected saved session from disk (Del key)"
+            )
+            self.delete_btn.clicked.connect(self._on_delete)
+            btn_row.addWidget(self.delete_btn)
         btn_row.addStretch(1)
         cancel = QPushButton("Cancel")
         cancel.setObjectName("DialogSecondary")
@@ -405,13 +456,40 @@ class SavedSessionsPicker(QDialog):
         cancel.clicked.connect(self.reject)
         btn_row.addWidget(cancel)
         if self._sessions:
-            self.open_btn = QPushButton("Open in new window")
+            self.open_btn = QPushButton("Resume inline")
             self.open_btn.setObjectName("DialogPrimary")
             self.open_btn.setCursor(Qt.CursorShape.PointingHandCursor)
             self.open_btn.setDefault(True)
+            self.open_btn.setToolTip(
+                "Open this saved session as a card inside the Agents tab"
+            )
             self.open_btn.clicked.connect(self._on_accept)
             btn_row.addWidget(self.open_btn)
         root.addLayout(btn_row)
+
+    def _populate_list(self) -> None:
+        """(Re)build the list-widget rows from self._sessions."""
+        self._list.clear()
+        for s in self._sessions:
+            ts = _humanize_age(s.get("saved_at", ""))
+            reason = (s.get("save_reason") or "manual").lower()
+            reason_chip = "[autoclose]" if reason == "autoclose" else "[manual]"
+            label = (
+                f"{s['project_display']}    ·    "
+                f"{s['turns']} turn(s)    ·    {ts}    {reason_chip}\n"
+                f"   mode {s.get('mode', 'claude')}   ·   "
+                f"uuid {s['session_uuid'][:8]}…"
+            )
+            item = QListWidgetItem(label)
+            item.setData(Qt.ItemDataRole.UserRole, s)
+            self._list.addItem(item)
+
+    def _refresh_subtitle(self) -> None:
+        n = len(self._sessions)
+        self.subtitle_label.setText(
+            f"{n} saved session(s)   ·   double-click or pick + Resume "
+            f"inline. Del key (or button) removes a save."
+        )
 
     def _on_double_click(self, item: QListWidgetItem) -> None:
         self.result_data = item.data(Qt.ItemDataRole.UserRole)
@@ -427,3 +505,38 @@ class SavedSessionsPicker(QDialog):
             return
         self.result_data = item.data(Qt.ItemDataRole.UserRole)
         self.accept()
+
+    def _on_delete(self) -> None:
+        """Delete the selected saved session's JSON file from disk +
+        refresh the picker. Reversible: file is renamed `_FN.json.deleted`
+        (operator can `ren` back if it was a mistake)."""
+        if not getattr(self, "_list", None):
+            return
+        item = self._list.currentItem()
+        if not item:
+            return
+        sess = item.data(Qt.ItemDataRole.UserRole) or {}
+        fp = sess.get("_fp")
+        if not fp:
+            return
+        try:
+            p = Path(fp)
+            if p.exists():
+                # Rename-not-delete — easy operator rollback.
+                p.rename(p.with_suffix(p.suffix + ".deleted"))
+        except Exception:
+            # Surface the failure quietly — keep the row so operator can
+            # retry; harmless if file is in use briefly.
+            return
+        # Drop from in-memory list + rebuild rows.
+        self._sessions = [s for s in self._sessions if s.get("_fp") != fp]
+        self._populate_list()
+        self._refresh_subtitle()
+        if self._sessions:
+            self._list.setCurrentRow(0)
+        else:
+            # No sessions left — disable Resume to avoid a no-op confirm.
+            if hasattr(self, "open_btn"):
+                self.open_btn.setEnabled(False)
+            if hasattr(self, "delete_btn"):
+                self.delete_btn.setEnabled(False)
