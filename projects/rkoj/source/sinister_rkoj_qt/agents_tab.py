@@ -20,6 +20,7 @@ gets a soft purple QGraphicsDropShadowEffect (operator brief).
 
 from __future__ import annotations
 
+import difflib
 import json
 import os
 import re
@@ -102,6 +103,7 @@ SLASH_COMMANDS: list[tuple[str, str]] = [
     ("/copy",     "copy the most recent EVE reply to clipboard"),
     ("/cost",     "cumulative spend breakdown for THIS card"),
     ("/devices",  "list connected ADB devices inline"),
+    ("/diff",     "unified diff between two assistant replies (/diff A B)"),
     ("/export",   "export conversation to a markdown file"),
     ("/focus",    "focus the input box"),
     ("/expand-all", "expand every collapsed card in the grid"),
@@ -1619,6 +1621,66 @@ class AgentCard(QFrame):
                     self._append_terminal(
                         f"  {d.state:14s}  {d.serial:24s}  {d.model or '(no model)'}\n"
                     )
+            return True
+        if head == "/diff":
+            # v1.6.50 — unified diff between two assistant replies. Uses
+            # the same 1-indexed user-turn numbering as /replay + /show.
+            # Pairs with /clone: run the same prompt in sibling cards,
+            # /diff the replies to see how the models diverged.
+            parts = cmd.split()
+            user_turns = [t for t in self.session.turns if t.get("user")]
+            if len(user_turns) < 2:
+                self._append_terminal(
+                    "[/diff] need at least 2 prior user turns with replies\n"
+                )
+                return True
+            if len(parts) < 3:
+                self._append_terminal(
+                    f"[/diff] usage: /diff <A> <B>  (1..{len(user_turns)})\n"
+                    "  Unified diff between assistant reply A and reply B.\n"
+                )
+                return True
+            try:
+                a_idx = int(parts[1])
+                b_idx = int(parts[2])
+            except ValueError:
+                self._append_terminal(
+                    f"[/diff] A and B must be integers 1..{len(user_turns)}\n"
+                )
+                return True
+            for label, n in (("A", a_idx), ("B", b_idx)):
+                if n < 1 or n > len(user_turns):
+                    self._append_terminal(
+                        f"[/diff] {label}={n} out of range (1..{len(user_turns)})\n"
+                    )
+                    return True
+            if a_idx == b_idx:
+                self._append_terminal("[/diff] A == B (no diff)\n")
+                return True
+            a_text = (user_turns[a_idx - 1].get("assistant") or "").rstrip()
+            b_text = (user_turns[b_idx - 1].get("assistant") or "").rstrip()
+            if not a_text or not b_text:
+                self._append_terminal(
+                    "[/diff] one or both replies are empty (cancelled / no reply captured)\n"
+                )
+                return True
+            a_lines = a_text.splitlines(keepends=True)
+            b_lines = b_text.splitlines(keepends=True)
+            udiff = difflib.unified_diff(
+                a_lines, b_lines,
+                fromfile=f"reply #{a_idx}",
+                tofile=f"reply #{b_idx}",
+                n=2,
+            )
+            self._append_terminal(f"[/diff] reply {a_idx} -> reply {b_idx}:\n")
+            wrote = False
+            for line in udiff:
+                if not line.endswith("\n"):
+                    line += "\n"
+                self._append_terminal(line)
+                wrote = True
+            if not wrote:
+                self._append_terminal("  (replies are identical)\n")
             return True
         if head == "/export":
             # v1.6.18 — write the full transcript to a markdown file under

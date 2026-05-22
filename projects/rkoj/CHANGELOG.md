@@ -4,6 +4,26 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not command-versions (each lane has its own).
 
+## v1.6.50 — 2026-05-22 — milestone
+
+**`/diff <A> <B>` — unified diff between two assistant replies. Pairs
+with `/clone`: run the same prompt in sibling cards, /diff the replies
+to see how the models diverged.**
+
+- Uses `difflib.unified_diff` (stdlib) with `n=2` context lines, file
+  headers `reply #A` / `reply #B`.
+- Same 1-indexed user-turn numbering as /replay + /show — uniform
+  vocabulary across re-read / re-run / compare.
+- Validation: needs ≥2 prior user turns, integer parse, range check,
+  A==B guard, empty-reply guard ("cancelled / no reply captured").
+- "(replies are identical)" message when difflib yields no lines
+  (same prompt twice can produce identical streams).
+- 45 slash commands now (added /diff).
+- v1.6.50 milestone: 50 versions from v1.6.0 — 8h/12-ship operator
+  iteration discipline still holding. CHANGELOG row count = 31.
+- MANIFEST.json 1.6.49 → 1.6.50.
+- `__init__.py __version__ = "1.6.50"`.
+
 ## v1.6.49 — 2026-05-22
 
 **`/show <N>` — print the full prompt + reply for user-turn #N, with
