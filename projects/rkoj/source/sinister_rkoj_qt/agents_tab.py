@@ -191,6 +191,9 @@ class AgentCard(QFrame):
     closed = pyqtSignal(str)  # pane_id
     status_changed = pyqtSignal(str, str)  # pane_id, new_status
 
+    # Braille spinner for the "thinking" indicator (jcode-style).
+    _SPINNER = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
+
     def __init__(self, session: AgentSession, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.session = session
@@ -200,12 +203,19 @@ class AgentCard(QFrame):
         self._proc: Optional[QProcess] = None
         self._first_turn = True
         self._glow_effect: Optional[QGraphicsDropShadowEffect] = None
+        self._reply_started = False  # have we emitted the "<< EVE:" prefix?
+        self._spinner_idx = 0
+        self._thinking_start_ts: float = 0.0
         self._build()
         # Phase-1 memory: heartbeat refresh every 30s while card alive
         self._hb_timer = QTimer(self)
         self._hb_timer.setInterval(30_000)
         self._hb_timer.timeout.connect(lambda: _refresh_heartbeat(self.session, self.session.status))
         self._hb_timer.start()
+        # Thinking spinner — 100ms tick while busy. Re-uses _thinking_label.
+        self._spinner_timer = QTimer(self)
+        self._spinner_timer.setInterval(100)
+        self._spinner_timer.timeout.connect(self._tick_spinner)
 
     # ── UI ────────────────────────────────────────────────────────────
     def _build(self) -> None:
@@ -276,21 +286,32 @@ class AgentCard(QFrame):
             f"Talk to {eve_label(self.session.agent_name, self.session.project_key)} — Enter to send, /help"
         )
         self.input.returnPressed.connect(self._on_send)
-        send_btn = QPushButton("Send")
-        send_btn.setObjectName("SendBtn")
-        send_btn.clicked.connect(self._on_send)
+        self.send_btn = QPushButton("Send")
+        self.send_btn.setObjectName("SendBtn")
+        self.send_btn.clicked.connect(self._on_send)
         input_row.addWidget(self.input, stretch=1)
-        input_row.addWidget(send_btn)
+        input_row.addWidget(self.send_btn)
         root.addLayout(input_row)
+
+        # Thinking indicator — visible only while waiting on `claude -p`.
+        self._thinking_label = QLabel("")
+        self._thinking_label.setObjectName("ThinkingLabel")
+        self._thinking_label.setStyleSheet(
+            f"color: {PURPLE_ACCENT}; background: transparent; "
+            f"font-family: 'JetBrains Mono', 'Cascadia Mono', monospace; "
+            f"font-size: 11px; padding: 0 4px;"
+        )
+        self._thinking_label.setVisible(False)
+        root.addWidget(self._thinking_label)
 
         # Seed banner
         self._append_terminal(
-            f"╔══ {eve_label(self.session.agent_name, self.session.project_key)} ══╗\n"
-            f"  pane_id: {self.session.pane_id}\n"
-            f"  mode: {self.session.mode}   accent: {self.session.accent}\n"
-            f"  created: {self.session.created_at}\n"
-            f"  Type a message to begin. /help for slash commands.\n"
-            f"╚══════════════════════════╝\n"
+            f"  ▸ {eve_label(self.session.agent_name, self.session.project_key)}\n"
+            f"    pane_id={self.session.pane_id}   mode={self.session.mode}\n"
+            f"    created {self.session.created_at}\n"
+            f"\n"
+            f"    Type a message to begin. /help for slash commands.\n"
+            f"\n"
         )
 
     def _append_terminal(self, text: str) -> None:
@@ -329,6 +350,35 @@ class AgentCard(QFrame):
     def _remove_glow(self) -> None:
         self.setGraphicsEffect(None)
 
+    # ── Thinking spinner (jcode-style busy indicator) ─────────────────
+    def _start_thinking(self) -> None:
+        import time as _t
+        self._spinner_idx = 0
+        self._thinking_start_ts = _t.time()
+        self._thinking_label.setVisible(True)
+        self._spinner_timer.start()
+        self._tick_spinner()
+        # Disable input while turn is in flight.
+        self.input.setEnabled(False)
+        self.send_btn.setEnabled(False)
+
+    def _stop_thinking(self) -> None:
+        self._spinner_timer.stop()
+        self._thinking_label.setVisible(False)
+        self._thinking_label.setText("")
+        self.input.setEnabled(True)
+        self.send_btn.setEnabled(True)
+        self.input.setFocus()
+
+    def _tick_spinner(self) -> None:
+        import time as _t
+        ch = self._SPINNER[self._spinner_idx % len(self._SPINNER)]
+        self._spinner_idx += 1
+        elapsed = _t.time() - self._thinking_start_ts
+        self._thinking_label.setText(
+            f"{ch}  EVE is thinking…  ({elapsed:.1f}s)"
+        )
+
     # ── Slash-command intercept ───────────────────────────────────────
     def _maybe_intercept(self, text: str) -> bool:
         cmd = text.strip()
@@ -337,17 +387,55 @@ class AgentCard(QFrame):
         head = cmd.split(None, 1)[0].lower()
         if head == "/help":
             self._append_terminal(
-                "[/help]\n"
-                "  /help    show this list\n"
-                "  /clear   clear terminal\n"
-                "  /save    write resume-point to disk\n"
-                "  /needs   toggle 'awaiting-input' glow (test)\n"
-                "  all other slashes forward to the claude subprocess.\n"
+                "[/help]  Slash commands (RKOJ-side intercepts):\n"
+                "  /help        show this list\n"
+                "  /clear       clear terminal scrollback\n"
+                "  /save        write resume-point JSON to disk\n"
+                "  /history     show all prior turns (count + truncated previews)\n"
+                "  /retry       resend the most recent operator message\n"
+                "  /persona     re-print the EVE persona block\n"
+                "  /needs       toggle awaiting-input glow (visual test)\n"
+                "\n"
+                "  Any other text is forwarded to `claude --dangerously-skip-permissions -p`.\n"
+                "  First turn includes the EVE persona; later turns include history.\n"
+                "  History is capped to the last 6 user turns to keep latency tight.\n"
             )
             return True
         if head == "/clear":
             self.terminal.clear()
             self._append_terminal("[cleared]\n")
+            return True
+        if head == "/history":
+            n = len(self.session.turns)
+            self._append_terminal(f"[/history] {n} turn(s):\n")
+            for i, t in enumerate(self.session.turns[-10:], start=max(1, n - 9)):
+                u = (t.get("user") or "").strip().replace("\n", " ")[:60]
+                a = (t.get("assistant") or "").strip().replace("\n", " ")[:60]
+                self._append_terminal(f"  {i:2d}. >> {u}\n      << {a}\n")
+            return True
+        if head == "/retry":
+            last = next((t for t in reversed(self.session.turns) if t.get("user")), None)
+            if not last:
+                self._append_terminal("[/retry] no prior turn to retry\n")
+                return True
+            self._append_terminal(f"[/retry] resending last operator message\n")
+            self.input.setText(last["user"])
+            # Drop the previous (failed?) turn so /retry doesn't double-record
+            try:
+                self.session.turns.pop()
+            except Exception:
+                pass
+            self._on_send()
+            return True
+        if head == "/persona":
+            self._append_terminal(
+                "[/persona]\n"
+                f"  identity: EVE on {self.session.project_display}\n"
+                f"  slug: {self.session.slug or '(not bootstrapped)'}\n"
+                f"  authorship: RKOJ-ELENO\n"
+                f"  branch hint: agent/{self.session.project_key}/<topic>\n"
+                f"  heartbeat: {self.session.heartbeat_path or '(none)'}\n"
+            )
             return True
         if head == "/save":
             from pathlib import Path
@@ -379,6 +467,11 @@ class AgentCard(QFrame):
         return False
 
     # ── Send / process I/O ────────────────────────────────────────────
+    # History cap — only send the last N user turns to keep `claude -p`
+    # prompts fast. Past that, earlier turns drop off the wire (the
+    # transcript on screen + on-disk resume-point still has everything).
+    _HISTORY_CAP = 6
+
     def _on_send(self) -> None:
         text = self.input.text().strip()
         if not text:
@@ -387,9 +480,15 @@ class AgentCard(QFrame):
             self.input.clear()
             return
 
+        if self._proc is not None and self._proc.state() != QProcess.ProcessState.NotRunning:
+            self._append_terminal("[busy] previous turn still running; waiting…\n")
+            return
+
         self._append_terminal(f"\n>> {text}\n")
         self.input.clear()
 
+        # Build the prompt — first turn carries the EVE persona; later turns
+        # carry up to _HISTORY_CAP prior user turns + EVE replies.
         if self._first_turn:
             opening = build_opening_prompt(
                 project_key=self.session.project_key,
@@ -400,21 +499,27 @@ class AgentCard(QFrame):
             prompt = opening + "\n\nOperator says: " + text
             self._first_turn = False
         else:
+            tail = self.session.turns[-self._HISTORY_CAP:]
             history = "\n".join(
-                f"User: {t['user']}\nEVE: {t.get('assistant', '')}" for t in self.session.turns
+                f"User: {t['user']}\nEVE: {t.get('assistant', '')}" for t in tail
             )
-            prompt = history + f"\nUser: {text}\nEVE:"
+            prompt = (
+                "You are EVE. Continue this conversation.\n\n"
+                + history
+                + f"\nUser: {text}\nEVE:"
+            )
 
         self.session.turns.append({"user": text, "assistant": ""})
+        self._reply_started = False
 
         claude = _find_claude_executable()
         if not claude:
-            self._append_terminal("[error] claude CLI not on PATH. Install Claude Code first.\n")
+            self._append_terminal(
+                "[error] claude CLI not found on PATH.\n"
+                "  Install Claude Code: https://claude.ai/download (CLI bundle)\n"
+                "  Or verify: open a terminal and run `claude --version`.\n"
+            )
             self._set_status("offline")
-            return
-
-        if self._proc is not None and self._proc.state() != QProcess.ProcessState.NotRunning:
-            self._append_terminal("[busy] previous turn still running; waiting...\n")
             return
 
         proc = QProcess(self)
@@ -429,16 +534,25 @@ class AgentCard(QFrame):
         proc.errorOccurred.connect(self._on_error)
         self._proc = proc
         self._set_status("busy")
+        self._start_thinking()
         try:
             proc.start()
         except Exception as exc:
             self._append_terminal(f"[error] failed to start claude: {exc}\n")
+            self._stop_thinking()
             self._set_status("offline")
 
     def _on_stdout(self) -> None:
         if not self._proc:
             return
         data = bytes(self._proc.readAllStandardOutput()).decode("utf-8", errors="replace")
+        if not data:
+            return
+        # First chunk of EVE's reply — stop the thinking spinner and prefix.
+        if not self._reply_started:
+            self._stop_thinking()
+            self._append_terminal("<< ")
+            self._reply_started = True
         self._append_terminal(data)
         if self.session.turns:
             self.session.turns[-1]["assistant"] += data
@@ -447,15 +561,36 @@ class AgentCard(QFrame):
         if not self._proc:
             return
         data = bytes(self._proc.readAllStandardError()).decode("utf-8", errors="replace")
-        self._append_terminal(data)
+        if data.strip():
+            self._append_terminal(f"\n[stderr] {data}")
 
     def _on_finished(self, exit_code: int, exit_status: QProcess.ExitStatus) -> None:
-        self._append_terminal(f"\n[exit {exit_code}]\n")
+        if not self._reply_started:
+            # Process exited with no stdout — show a meaningful error.
+            self._stop_thinking()
+            self._append_terminal(
+                f"<< [no reply] claude exited with code {exit_code} and no output. "
+                f"Try /retry, or verify `claude --version` in a terminal.\n"
+            )
+        else:
+            self._append_terminal("\n")
+        if exit_code != 0:
+            self._append_terminal(f"  (exit {exit_code})\n")
         self._set_status("online")
         self._proc = None
 
     def _on_error(self, err: QProcess.ProcessError) -> None:
-        self._append_terminal(f"\n[process error: {err}]\n")
+        self._stop_thinking()
+        # QProcess.ProcessError values: 0=FailedToStart 1=Crashed 2=Timedout
+        # 3=WriteError 4=ReadError 5=UnknownError
+        names = {0: "FailedToStart", 1: "Crashed", 2: "Timedout",
+                 3: "WriteError", 4: "ReadError", 5: "UnknownError"}
+        try:
+            err_int = int(err) if hasattr(err, "__int__") else int(err.value)
+        except Exception:
+            err_int = -1
+        name = names.get(err_int, str(err))
+        self._append_terminal(f"\n[process error: {name}]\n")
         self._set_status("offline")
 
     def _on_close(self) -> None:
