@@ -657,6 +657,27 @@ class AgentCard(QFrame):
             "Type /cost in the chat for the full breakdown."
         )
 
+        # v1.6.39 — live elapsed-time pill. Only visible during in-flight
+        # turns. Updates every 1s from a QTimer reading _turn_started_ts.
+        # Operators can see at a glance whether a turn is hung (e.g. 5m+
+        # with no streaming) and reach for Esc / /cancel reflexively.
+        self._elapsed_pill = QLabel("--")
+        self._elapsed_pill.setObjectName("ModePill")
+        self._elapsed_pill.setStyleSheet(
+            f"color: #f0a020; background-color: transparent; "
+            f"border: 1px solid {BORDER}; border-radius: 10px; "
+            f"padding: 2px 9px; font-size: 10px; font-weight: 600; "
+            f"font-family: 'JetBrains Mono', monospace;"
+        )
+        self._elapsed_pill.setToolTip(
+            "Elapsed time of the in-flight turn. Esc or /cancel kills "
+            "it. Type /timer for the full report."
+        )
+        self._elapsed_pill.hide()
+        self._elapsed_timer = QTimer(self)
+        self._elapsed_timer.setInterval(1000)
+        self._elapsed_timer.timeout.connect(self._refresh_elapsed_pill)
+
         # v1.6.28 — pin star (left of chevron). Toggles session.pinned;
         # AgentsView listens for pin_changed and re-sorts the grid so
         # pinned cards render at the top.
@@ -703,6 +724,7 @@ class AgentCard(QFrame):
         hdr.addWidget(mode_pill)
         hdr.addWidget(self._turn_pill)
         hdr.addWidget(self._cost_pill)
+        hdr.addWidget(self._elapsed_pill)
         hdr.addStretch(1)
         hdr.addWidget(self._pin_btn)
         hdr.addWidget(self._collapse_btn)
@@ -870,6 +892,28 @@ class AgentCard(QFrame):
         """Ctrl+L → mirror /clear (jcode keybinding parity)."""
         self.terminal.clear()
         self._append_terminal("[cleared via Ctrl+L]\n")
+
+    def _refresh_elapsed_pill(self) -> None:
+        """v1.6.39 — QTimer callback (1Hz) while a turn is in flight.
+        Pulls live elapsed from _turn_started_ts and updates the pill
+        text. The pill is shown/hidden by _start_elapsed/_stop_elapsed."""
+        if self._turn_started_ts is None:
+            return
+        elapsed = time.monotonic() - self._turn_started_ts
+        self._elapsed_pill.setText(f"⏱ {self._fmt_duration(elapsed)}")
+
+    def _start_elapsed(self) -> None:
+        """v1.6.39 — show the pill + tick the 1Hz timer. Called from
+        _on_send right after _turn_started_ts is set."""
+        self._elapsed_pill.setText("⏱ 0.0s")
+        self._elapsed_pill.show()
+        self._elapsed_timer.start()
+
+    def _stop_elapsed(self) -> None:
+        """v1.6.39 — stop the timer + hide pill. Called from
+        _on_finished and /cancel after _last_turn_seconds is captured."""
+        self._elapsed_timer.stop()
+        self._elapsed_pill.hide()
 
     @staticmethod
     def _fmt_duration(seconds: float | None) -> str:
@@ -1261,6 +1305,8 @@ class AgentCard(QFrame):
                 self._append_terminal(f"[/cancel] kill failed: {exc}\n")
                 return True
             self._stop_thinking()
+            # v1.6.39 — hide the live elapsed pill on cancel too.
+            self._stop_elapsed()
             # Apply markdown to whatever streamed before the cancel so
             # partial output stays readable.
             try:
@@ -1767,6 +1813,8 @@ class AgentCard(QFrame):
         self._start_thinking()
         # v1.6.38 — record turn start for /timer.
         self._turn_started_ts = time.monotonic()
+        # v1.6.39 — show + tick the live elapsed pill in the header.
+        self._start_elapsed()
         try:
             proc.start()
         except Exception as exc:
@@ -1990,6 +2038,8 @@ class AgentCard(QFrame):
         if self._turn_started_ts is not None:
             self._last_turn_seconds = time.monotonic() - self._turn_started_ts
             self._turn_started_ts = None
+        # v1.6.39 — stop ticking the live elapsed pill + hide it.
+        self._stop_elapsed()
         if not self._reply_started:
             # Process exited with no stdout — show a meaningful error.
             self._stop_thinking()

@@ -4,6 +4,28 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not component versions (each lane has its own).
 
+## v1.6.39 — 2026-05-22
+
+**Live `⏱ Xm Ys` elapsed-time pill in card header — passive companion
+to v1.6.38 `/timer` + v1.6.37 `/cancel`.**
+
+- New `_elapsed_pill` QLabel rendered next to the cost pill. Amber
+  text (`#f0a020`), `JetBrains Mono`, 1px BORDER outline matching the
+  other pills. Hidden by default.
+- New `_elapsed_timer` QTimer at 1Hz; on each tick `_refresh_elapsed_pill`
+  reads `_turn_started_ts` and updates the pill via `_fmt_duration`.
+- `_on_send` calls `_start_elapsed()` after setting the start ts —
+  pill is shown immediately at `⏱ 0.0s` and updates every second.
+- `_on_finished` and `/cancel` both call `_stop_elapsed()` — pill
+  vanishes the instant the turn completes. The `_last_turn_seconds`
+  capture still happens for `/timer` queries.
+- Operators no longer need to type `/timer` to see how long a turn
+  has been running — it's right there in the header. Hung turns
+  (e.g. 5m+ with no streaming) become eye-catching, so reaching
+  for Esc / `/cancel` becomes reflexive.
+- MANIFEST.json 1.6.38 → 1.6.39.
+- `__init__.py __version__ = "1.6.39"`.
+
 ## v1.6.38 — 2026-05-22
 
 **`/timer` — elapsed time for the in-flight turn (or last completed
