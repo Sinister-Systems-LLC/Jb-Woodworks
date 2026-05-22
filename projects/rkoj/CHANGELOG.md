@@ -2,7 +2,21 @@
 
 # RKOJ Changelog
 
-All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not component versions (each lane has its own).
+All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not command-versions (each lane has its own).
+
+## v1.6.48 — 2026-05-22
+
+**`/shortcuts` — operator-facing cheat sheet of every keyboard binding
++ click affordance.**
+
+- Lists keyboard bindings (Ctrl+L clear, Ctrl+M collapse, F3 grep-next,
+  Shift+F3 grep-prev, Esc cancel, Shift+Enter newline) + header click
+  affordances (☆/★ pin, ▾/▸ collapse chevron, ✕ close).
+- High discoverability for new operators. /help lists slash commands;
+  /shortcuts lists the non-typed input surface.
+- 43 slash commands now (added /shortcuts).
+- MANIFEST.json 1.6.47 → 1.6.48.
+- `__init__.py __version__ = "1.6.48"`.
 
 ## v1.6.47 — 2026-05-22
 

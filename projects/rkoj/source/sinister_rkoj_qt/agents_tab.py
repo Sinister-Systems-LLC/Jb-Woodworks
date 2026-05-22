@@ -128,6 +128,7 @@ SLASH_COMMANDS: list[tuple[str, str]] = [
     ("/retry",    "resend the most recent operator message"),
     ("/save",     "write resume-point JSON to disk"),
     ("/session",  "print just the session uuid"),
+    ("/shortcuts","print every keyboard binding + click affordance"),
     ("/skill",    "load + send a saved skill .md as a turn"),
     ("/skills",   "list Sanctum skills (.md files)"),
     ("/stats",    "RKOJ fleet snapshot (agents / inbox / brain / devices)"),
@@ -1843,6 +1844,25 @@ class AgentCard(QFrame):
                 f"[/session] {uid}\n"
                 f"  Resume from any terminal:\n"
                 f"  claude --dangerously-skip-permissions -r {uid} -p 'your message'\n"
+            )
+            return True
+        if head == "/shortcuts":
+            # v1.6.48 — operator-facing keyboard + click cheat sheet.
+            self._append_terminal(
+                "[/shortcuts]  keyboard:\n"
+                "  Ctrl+L     clear this card's terminal (jcode parity)\n"
+                "  Ctrl+M     collapse / expand this card\n"
+                "  F3         scroll to next /grep match\n"
+                "  Shift+F3   scroll to previous /grep match\n"
+                "  Esc        cancel the in-flight turn (same as /cancel)\n"
+                "  Shift+Enter newline in input (Enter alone sends)\n"
+                "\n"
+                "[/shortcuts]  card header click affordances:\n"
+                "  ☆ / ★      pin/unpin (pinned cards float to top of grid)\n"
+                "  ▾ / ▸      collapse / expand chevron (same as Ctrl+M)\n"
+                "  ✕          close this card (autosaves resume-point first)\n"
+                "\n"
+                "[/shortcuts]  see /help for the full slash command list.\n"
             )
             return True
         if head == "/save":
