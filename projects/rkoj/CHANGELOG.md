@@ -4,6 +4,27 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not command-versions (each lane has its own).
 
+## v1.6.53 — 2026-05-22
+
+**`/summarize` — canned TL;DR prompt sent to EVE asking for a "where
+are we" recap.**
+
+- Stages a structured ask into the input + triggers `_on_send`:
+  ```
+  1) goal: what are we trying to do? (1 sentence)
+  2) working: what's confirmed working? (2-3 bullets)
+  3) blocked: what's stuck or unclear? (2-3 bullets)
+  4) next: what should we try next? (1-3 bullets)
+  Be concrete — reference specific files / errors / decisions.
+  ```
+- Empty-turns guard: prints hint instead of sending if no prior
+  turns exist (claude --resume needs a session to summarize).
+- Uses the same stage-into-input-then-_on_send pattern as /retry +
+  /replay so spinner / streaming / cost path all run uniformly.
+- 47 slash commands now (added /summarize).
+- MANIFEST.json 1.6.52 → 1.6.53.
+- `__init__.py __version__ = "1.6.53"`.
+
 ## v1.6.52 — 2026-05-22
 
 **Clickable tag chips — clicking a chip in any card header behaves

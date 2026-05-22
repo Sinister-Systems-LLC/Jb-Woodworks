@@ -135,6 +135,7 @@ SLASH_COMMANDS: list[tuple[str, str]] = [
     ("/skill",    "load + send a saved skill .md as a turn"),
     ("/skills",   "list Sanctum skills (.md files)"),
     ("/stats",    "RKOJ fleet snapshot (agents / inbox / brain / devices)"),
+    ("/summarize","ask EVE for a TL;DR of this card's conversation"),
     ("/tag",      "add a label chip to this card (also matched by /find)"),
     ("/tags",     "fleet-wide tag census (which tags + which cards carry them)"),
     ("/timer",    "show elapsed time of the in-flight turn (or last duration)"),
@@ -1907,6 +1908,30 @@ class AgentCard(QFrame):
                 f"[/replay] re-sending turn {idx}: {preview}{'…' if len(text) > 60 else ''}\n"
             )
             self.input.setPlainText(text)
+            self._on_send()
+            return True
+        if head == "/summarize":
+            # v1.6.53 — canned TL;DR prompt sent to EVE. Useful for long
+            # sessions when operator needs a "where are we" recap. Doesn't
+            # need any turn-history math — claude --resume already has
+            # the full context server-side.
+            user_turns = [t for t in self.session.turns if t.get("user")]
+            if not user_turns:
+                self._append_terminal(
+                    "[/summarize] no prior turns yet — send a message first\n"
+                )
+                return True
+            self._append_terminal(
+                "[/summarize] asking EVE for a TL;DR…\n"
+            )
+            self.input.setPlainText(
+                "Give me a TL;DR of our conversation so far. Format:\n"
+                "1) goal: what are we trying to do? (1 sentence)\n"
+                "2) working: what's confirmed working? (2-3 bullets)\n"
+                "3) blocked: what's stuck or unclear? (2-3 bullets)\n"
+                "4) next: what should we try next? (1-3 bullets)\n"
+                "Be concrete — reference specific files / errors / decisions."
+            )
             self._on_send()
             return True
         if head == "/retry":
