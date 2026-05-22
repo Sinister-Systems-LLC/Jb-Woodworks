@@ -4,6 +4,28 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not command-versions (each lane has its own).
 
+## v1.6.59 — 2026-05-22
+
+**Persistent input drafts across resume — operator types something,
+closes the card, re-opens → draft is restored to the input.**
+
+- New `AgentSession.input_draft: str` dataclass field. Live-tracked
+  via `self.input.textChanged → self._sync_input_draft` which assigns
+  `session.input_draft = self.input.toPlainText()`.
+- Resume-point JSON payload gets `"input_draft": self.session.input_draft`.
+- `_restore_card_state_from_disk` reads the field and calls
+  `card.input.setPlainText(draft)` if non-empty + prints a hint with
+  char count + preview:
+  ```
+  ▸ input draft restored (47 chars): 'let me try refactoring this with…'
+  ```
+- `.clear()` after dispatch fires `textChanged` which auto-syncs the
+  draft to empty — no extra wiring required.
+- Pairs with v1.6.47 grep + tag persistence. Closes the last
+  "things you'd expect to survive a close" gap.
+- MANIFEST.json 1.6.58 → 1.6.59.
+- `__init__.py __version__ = "1.6.59"`.
+
 ## v1.6.58 — 2026-05-22
 
 **Per-tag chip colors — `blocked` is red, `wip`/`todo` is yellow,

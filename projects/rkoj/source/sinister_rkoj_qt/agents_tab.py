@@ -412,6 +412,9 @@ class AgentSession:
     # "research"). Rendered as small chips in the header; /find matches
     # against them too. Stored as a flat list — no per-tag color logic.
     tags: list[str] = field(default_factory=list)
+    # v1.6.59 — half-typed operator message preserved across close + resume.
+    # Live-updated by textChanged signal; cleared on _on_send dispatch.
+    input_draft: str = ""
 
 
 def _find_claude_executable() -> Optional[str]:
@@ -863,6 +866,11 @@ class AgentCard(QFrame):
         input_row = QHBoxLayout()
         input_row.setSpacing(SPACINGS["sm"])
         self.input = _MultiLineInput()
+        # v1.6.59 — mirror the input contents into session.input_draft so
+        # _write_resume_point can persist a half-typed message. Live-
+        # tracking is cheap (small string assignment per keystroke); we
+        # only pay disk on /save or auto-save on close.
+        self.input.textChanged.connect(self._sync_input_draft)
         self.input.setPlaceholderText(
             f"Talk to {eve_label(self.session.agent_name, self.session.project_key)} — "
             f"Enter to send · Shift+Enter for newline · /help"
@@ -984,6 +992,14 @@ class AgentCard(QFrame):
 
     def _remove_glow(self) -> None:
         self.setGraphicsEffect(None)
+
+    def _sync_input_draft(self) -> None:
+        """v1.6.59 — keep session.input_draft in lockstep with the input
+        contents so resume-point auto-save captures whatever's typed."""
+        try:
+            self.session.input_draft = self.input.toPlainText()
+        except Exception:
+            pass
 
     def _rebuild_tags(self) -> None:
         """v1.6.45 — render tag chips in the header. Called after /tag,
@@ -2778,6 +2794,8 @@ class AgentCard(QFrame):
             # the pattern is stored on session.grep_pattern but the
             # actual highlight rebuild happens on first reply re-render).
             "grep_pattern": self._grep_pattern or "",
+            # v1.6.59 — half-typed operator message so resume restores it
+            "input_draft": self.session.input_draft or "",
             "resume_cmd": (
                 f"claude --dangerously-skip-permissions "
                 f"-r {self.session.session_uuid} -p 'your message'"
@@ -3745,6 +3763,21 @@ class AgentsView(QWidget):
                 card._append_terminal(
                     f"  ▸ /grep pattern restored from last session: '{gp}'\n"
                     f"    Type `/grep {gp}` (or just /grep) to re-apply highlights\n"
+                )
+        except Exception:
+            pass
+        # v1.6.59 — restore the half-typed input draft. The textChanged
+        # signal will auto-update session.input_draft as soon as operator
+        # types, so the restore is self-maintaining from then on.
+        try:
+            draft = latest_data.get("input_draft") or ""
+            if draft:
+                card.session.input_draft = draft
+                card.input.setPlainText(draft)
+                preview = draft.replace("\n", " ")[:60]
+                card._append_terminal(
+                    f"  ▸ input draft restored ({len(draft)} chars): "
+                    f"'{preview}{'…' if len(draft) > 60 else ''}'\n"
                 )
         except Exception:
             pass
