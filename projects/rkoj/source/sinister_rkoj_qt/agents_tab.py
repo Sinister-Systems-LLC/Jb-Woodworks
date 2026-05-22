@@ -2013,9 +2013,19 @@ class AgentsView(QWidget):
         self._recent_sessions_layout.setSpacing(6)
         empty_layout.addWidget(self._recent_sessions_host)
 
+        # v1.6.29 — MASTER-PLAN / OPERATOR-ACTION-QUEUE urgent rows
+        # surfaced INSIDE RKOJ's empty state so operator sees Sanctum-wide
+        # actionable items without leaving the chat.
+        self._actions_host = QFrame()
+        self._actions_layout = QVBoxLayout(self._actions_host)
+        self._actions_layout.setContentsMargins(0, 16, 0, 0)
+        self._actions_layout.setSpacing(6)
+        empty_layout.addWidget(self._actions_host)
+
         empty_layout.addStretch(2)
         root.addWidget(self.empty_panel)
         self._rebuild_recent_sessions()
+        self._rebuild_operator_actions()
 
         # Backward-compat alias — _rebuild_grid toggles visibility on this.
         self.empty_label = self.empty_panel
@@ -2132,6 +2142,120 @@ class AgentsView(QWidget):
             session_uuid=sess.get("session_uuid"),
         )
 
+    # ── v1.6.29 operator-action urgent rows in empty state ─────────────
+    def _rebuild_operator_actions(self) -> None:
+        """Scan `_shared-memory/OPERATOR-ACTION-QUEUE.md` for unchecked
+        Critical (🔴) and High (🟠) items + surface up to 3 in the empty
+        state. Operator sees actionable Sanctum-wide items inside RKOJ."""
+        layout = getattr(self, "_actions_layout", None)
+        if layout is None:
+            return
+        # Clear prior rows
+        while layout.count():
+            it = layout.takeAt(0)
+            w = it.widget() if it else None
+            if w is not None:
+                w.setParent(None)
+                w.deleteLater()
+        items = self._scan_urgent_actions(limit=3)
+        if not items:
+            return
+        title = QLabel("Operator-action queue · urgent")
+        title.setStyleSheet(
+            f"color: {MUTED_FG}; background: transparent; "
+            f"font-size: 11px; font-weight: 600; letter-spacing: 1px; "
+            f"text-transform: uppercase; padding: 0 4px 6px 4px;"
+        )
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(title)
+        for it in items:
+            layout.addWidget(self._build_action_row(it))
+
+    def _scan_urgent_actions(self, limit: int = 3) -> list[dict]:
+        """Parse OPERATOR-ACTION-QUEUE.md for unchecked items under
+        🔴 Critical / 🟠 High sections. Returns up to `limit` items."""
+        fp = state.SHARED_MEMORY / "OPERATOR-ACTION-QUEUE.md"
+        if not fp.exists():
+            return []
+        try:
+            text = fp.read_text(encoding="utf-8", errors="replace")
+        except Exception:
+            return []
+        lines = text.splitlines()
+        items: list[dict] = []
+        current_severity: str | None = None
+        # Severity → emoji + display label
+        sev_map = {
+            "critical": ("🔴", "CRITICAL"),
+            "high":     ("🟠", "HIGH"),
+        }
+        section_re = re.compile(r"^##+\s*(🔴|🟠)\s*(\w+)", re.IGNORECASE)
+        item_re = re.compile(r"^-\s+\[\s\]\s+(?:(🔴|🟠)\s+)?\*\*([^*]+)\*\*(?:\s*[—-]\s*(.*))?")
+        for line in lines:
+            m_sec = section_re.match(line)
+            if m_sec:
+                sev_word = m_sec.group(2).lower()
+                if sev_word.startswith("critical"):
+                    current_severity = "critical"
+                elif sev_word.startswith("high"):
+                    current_severity = "high"
+                else:
+                    current_severity = None
+                continue
+            m_item = item_re.match(line)
+            if m_item:
+                # Inline severity (in the item itself) wins over section.
+                inline_emoji = m_item.group(1)
+                title = (m_item.group(2) or "").strip()
+                detail = (m_item.group(3) or "").strip()
+                severity = (
+                    "critical" if inline_emoji == "🔴"
+                    else "high" if inline_emoji == "🟠"
+                    else current_severity
+                )
+                if severity not in sev_map:
+                    continue
+                items.append({
+                    "severity": severity,
+                    "emoji": sev_map[severity][0],
+                    "title": title,
+                    "detail": detail[:140],
+                })
+                if len(items) >= limit:
+                    break
+        return items
+
+    def _build_action_row(self, item: dict) -> QFrame:
+        row = QFrame()
+        row.setObjectName("OperatorActionRow")
+        # Severity-tinted border
+        border_color = "#FF453A" if item["severity"] == "critical" else "#FF9F0A"
+        row.setStyleSheet(
+            f"QFrame#OperatorActionRow {{"
+            f"  background-color: {ELEVATED};"
+            f"  border: 1px solid {BORDER};"
+            f"  border-left: 3px solid {border_color};"
+            f"  border-radius: 8px;"
+            f"}}"
+        )
+        hb = QHBoxLayout(row)
+        hb.setContentsMargins(14, 9, 14, 9)
+        hb.setSpacing(10)
+        # Emoji
+        emj = QLabel(item["emoji"])
+        emj.setStyleSheet("background: transparent; font-size: 14px;")
+        hb.addWidget(emj)
+        # Title + detail (rich text in a single label)
+        body = QLabel(
+            f"<span style='color:white;font-weight:600'>{item['title']}</span> "
+            f"<span style='color:{MUTED_FG}'>— {item['detail']}</span>"
+        )
+        body.setTextFormat(Qt.TextFormat.RichText)
+        body.setStyleSheet("background: transparent; font-size: 12px;")
+        body.setWordWrap(True)
+        hb.addWidget(body, stretch=1)
+        return row
+
     # ── Folder tab management ─────────────────────────────────────────
     def _active_project_keys(self) -> list[str]:
         keys = sorted({c.session.project_key for c in self._cards.values()})
@@ -2217,6 +2341,11 @@ class AgentsView(QWidget):
         if empty_now:
             try:
                 self._rebuild_recent_sessions()
+            except Exception:
+                pass
+            # v1.6.29 — also refresh operator-action urgent rows
+            try:
+                self._rebuild_operator_actions()
             except Exception:
                 pass
 

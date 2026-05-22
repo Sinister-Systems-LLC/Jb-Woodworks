@@ -4,6 +4,26 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not component versions (each lane has its own).
 
+## v1.6.29 — 2026-05-22
+
+**Operator-action urgent rows in the Agents empty state.** Operator sees
+Sanctum-wide actionable items (🔴 Critical / 🟠 High) right where they
+spawn new agents — no need to leave RKOJ to check the queue.
+
+- New `_actions_host` panel in the empty state, sibling of
+  `_recent_sessions_host`. Renders up to 3 unchecked items pulled from
+  `_shared-memory/OPERATOR-ACTION-QUEUE.md`.
+- `_scan_urgent_actions()` parses the markdown — finds `## 🔴 Critical`
+  / `## 🟠 High` section headers, then matches lines like
+  `- [ ] **Title** — description` within them. Inline emoji (item-level)
+  overrides section context. Stops at `limit` matches.
+- `_build_action_row()` renders each as a Panel-style row with a
+  severity-tinted left border (red for critical, amber for high) +
+  emoji + title (bold white) + truncated detail (muted gray).
+- Auto-refreshes when the empty state appears (last card closed).
+- MANIFEST.json 1.6.28 → 1.6.29.
+- `__init__.py __version__ = "1.6.29"`.
+
 ## v1.6.28 — 2026-05-22
 
 **Per-card pin/star** — operator can pin favorite cards to the top of
