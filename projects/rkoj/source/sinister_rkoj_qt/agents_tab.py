@@ -521,6 +521,44 @@ def _make_child_env(sess: AgentSession) -> QProcessEnvironment:
 
 
 # ── Clickable tag chip ──────────────────────────────────────────────────
+# v1.6.58 — palette + semantic-reserved map. Hashing the tag name into
+# the palette gives stable colors per-tag across cards. Common tags get
+# reserved colors so 'blocked' is always red, 'wip' always yellow, etc.
+_TAG_PALETTE: list[tuple[str, str, str]] = [
+    # (fg, bg, border) — alpha 30 / 120 keeps chips subtle
+    ("#BF5AF2", "rgba(191,90,242,30)",  "rgba(191,90,242,120)"),   # purple
+    ("#0A84FF", "rgba(10,132,255,30)",  "rgba(10,132,255,120)"),   # blue
+    ("#64D2FF", "rgba(100,210,255,30)", "rgba(100,210,255,120)"),  # cyan
+    ("#FF9F0A", "rgba(255,159,10,30)",  "rgba(255,159,10,120)"),   # orange
+    ("#FF6482", "rgba(255,100,130,30)", "rgba(255,100,130,120)"),  # pink
+    ("#5E5CE6", "rgba(94,92,230,30)",   "rgba(94,92,230,120)"),    # indigo
+    ("#AC8FFF", "rgba(172,143,255,30)", "rgba(172,143,255,120)"),  # lavender
+]
+_TAG_RESERVED: dict[str, tuple[str, str, str]] = {
+    "blocked": ("#FF453A", "rgba(255,69,58,30)",  "rgba(255,69,58,120)"),   # red
+    "wip":     ("#FFD60A", "rgba(255,214,10,30)", "rgba(255,214,10,120)"),  # yellow
+    "todo":    ("#FFD60A", "rgba(255,214,10,30)", "rgba(255,214,10,120)"),  # yellow
+    "done":    ("#30D158", "rgba(48,209,88,30)",  "rgba(48,209,88,120)"),   # green
+    "shipped": ("#30D158", "rgba(48,209,88,30)",  "rgba(48,209,88,120)"),   # green
+    "review":  ("#FF9F0A", "rgba(255,159,10,30)", "rgba(255,159,10,120)"),  # orange
+}
+
+
+def _tag_colors(tag: str) -> tuple[str, str, str]:
+    """v1.6.58 — return (fg, bg, border) for a tag. Reserved names win;
+    others hash-index into the palette deterministically so 'foo' always
+    gets the same color across cards + sessions."""
+    key = tag.strip().lower()
+    if key in _TAG_RESERVED:
+        return _TAG_RESERVED[key]
+    # Python hash() is salted per-process — use a stable hash so colors
+    # are consistent across RKOJ launches.
+    h = 0
+    for ch in key:
+        h = (h * 131 + ord(ch)) & 0x7fffffff
+    return _TAG_PALETTE[h % len(_TAG_PALETTE)]
+
+
 class _TagChip(QLabel):
     """v1.6.52 — clickable tag chip in the card header. Clicking emits
     `find_requested` on the parent AgentCard with this chip's text, so
@@ -966,9 +1004,12 @@ class AgentCard(QFrame):
             return
         for t in tags:
             chip = _TagChip(t, self)
+            # v1.6.58 — hash-stable per-tag color (or semantic-reserved
+            # color for common tag names like blocked/wip/done).
+            fg, bg, border = _tag_colors(t)
             chip.setStyleSheet(
-                f"color: {PURPLE_PRIMARY}; background-color: rgba(191,90,242,30); "
-                f"border: 1px solid rgba(191,90,242,120); border-radius: 10px; "
+                f"color: {fg}; background-color: {bg}; "
+                f"border: 1px solid {border}; border-radius: 10px; "
                 f"padding: 2px 9px; font-size: 10px; font-weight: 600;"
             )
             self._tags_layout.addWidget(chip)

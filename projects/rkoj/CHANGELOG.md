@@ -4,6 +4,24 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not command-versions (each lane has its own).
 
+## v1.6.58 — 2026-05-22
+
+**Per-tag chip colors — `blocked` is red, `wip`/`todo` is yellow,
+`done`/`shipped` is green; other tags hash-stable across the palette
+(purple/blue/cyan/orange/pink/indigo/lavender).**
+
+- New `_TAG_PALETTE` (7-color list) + `_TAG_RESERVED` (6 semantic
+  names) + `_tag_colors(tag) -> (fg, bg, border)` function. Uses
+  stable polynomial hash `(h * 131 + ord(ch)) & 0x7fffffff` instead
+  of Python's salted `hash()` so colors are identical across launches.
+- `_rebuild_tags` applies the chip's per-tag color via setStyleSheet.
+  Verified: `foo` hashes to the same color on every call; `blocked`
+  stays red, `wip` stays yellow regardless of process restart.
+- Reserved set: `blocked`, `wip`, `todo`, `done`, `shipped`, `review`.
+  Semantic-by-convention so operator can scan a fleet at a glance.
+- MANIFEST.json 1.6.57 → 1.6.58.
+- `__init__.py __version__ = "1.6.58"`.
+
 ## v1.6.57 — 2026-05-22
 
 **/help auto-generates from `SLASH_COMMANDS` registry — kills doc rot.
