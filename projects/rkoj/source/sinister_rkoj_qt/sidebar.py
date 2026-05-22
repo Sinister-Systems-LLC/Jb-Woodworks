@@ -136,12 +136,38 @@ class Sidebar(QWidget):
         self._build()
         self._update_active(self._active_nav)
         # v1.6.22 — refresh Sessions count badge every 30s + at startup
+        # v1.6.25 — also refresh Devices count badge on the same tick
         from PyQt6.QtCore import QTimer
         self._badge_timer = QTimer(self)
         self._badge_timer.setInterval(30_000)
-        self._badge_timer.timeout.connect(self.refresh_sessions_badge)
+        self._badge_timer.timeout.connect(self.refresh_badges)
         self._badge_timer.start()
+        # ADB devices change more often than saved sessions, so also do
+        # a faster Devices-only tick (every 6s, matches Devices tab).
+        self._devices_timer = QTimer(self)
+        self._devices_timer.setInterval(6_000)
+        self._devices_timer.timeout.connect(self.refresh_devices_badge)
+        self._devices_timer.start()
+        self.refresh_badges()
+
+    def refresh_badges(self) -> None:
+        """v1.6.25 — refresh both Sessions + Devices badges."""
         self.refresh_sessions_badge()
+        self.refresh_devices_badge()
+
+    def refresh_devices_badge(self) -> None:
+        """v1.6.25 — count connected ADB devices in `device` state and
+        update the Devices nav row badge."""
+        devices_row = self._nav_rows.get("devices")
+        if devices_row is None:
+            return
+        try:
+            from . import state
+            devs = state.list_adb_devices()
+            n = len([d for d in devs if d.state == "device"])
+            devices_row.set_badge(str(n) if n > 0 else None)
+        except Exception:
+            devices_row.set_badge(None)
 
     def _build(self) -> None:
         root = QHBoxLayout(self)

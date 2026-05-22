@@ -4,6 +4,25 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not component versions (each lane has its own).
 
+## v1.6.25 — 2026-05-22
+
+**Dim timestamp gutter + Devices sidebar count badge.**
+
+- **Dim timestamp gutter**: `[HH:MM:SS] >> ` and `[HH:MM:SS] << ` now
+  render in `MUTED_FG` (`#8e8e93`) via `QTextCharFormat` so the
+  operator's message body + EVE's reply pop visually. New
+  `_append_dim(text)` helper preserves sticky-scroll. `_append_terminal`
+  resets char-format on each insert so dim doesn't bleed forward.
+- **Devices sidebar count badge** — third badge in the row (Agents,
+  Sessions already have them). Counts ADB devices in `device` state
+  (online only). Polled every 6s via a dedicated `_devices_timer` so
+  USB plug/unplug events surface fast. Sessions badge stays on the
+  30s tick.
+- `Sidebar.refresh_badges()` aggregates Sessions + Devices into one
+  pass; the 30s QTimer drives both.
+- MANIFEST.json 1.6.24 → 1.6.25.
+- `__init__.py __version__ = "1.6.25"`.
+
 ## v1.6.24 — 2026-05-22
 
 **Terminal timestamp gutter.** Each operator turn and EVE reply now

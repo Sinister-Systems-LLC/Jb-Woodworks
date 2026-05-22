@@ -32,7 +32,7 @@ from pathlib import Path
 from typing import Optional
 
 from PyQt6.QtCore import QEvent, QProcess, QProcessEnvironment, Qt, QTimer, pyqtSignal
-from PyQt6.QtGui import QColor, QFont, QKeyEvent, QKeySequence, QShortcut, QTextCursor
+from PyQt6.QtGui import QColor, QFont, QKeyEvent, QKeySequence, QShortcut, QTextCharFormat, QTextCursor
 from PyQt6.QtWidgets import (
     QFrame, QGraphicsDropShadowEffect, QHBoxLayout, QLabel, QLineEdit,
     QPlainTextEdit, QPushButton, QScrollArea, QSizePolicy, QSpacerItem,
@@ -663,12 +663,33 @@ class AgentCard(QFrame):
         # at (or within 6px of) the bottom.
         sb = self.terminal.verticalScrollBar()
         was_at_bottom = sb is None or sb.value() >= sb.maximum() - 6
-        self.terminal.moveCursor(QTextCursor.MoveOperation.End)
-        self.terminal.insertPlainText(text)
-        if was_at_bottom:
-            self.terminal.moveCursor(QTextCursor.MoveOperation.End)
-            if sb is not None:
-                sb.setValue(sb.maximum())
+        # v1.6.25 — insert at end with the DEFAULT char format (clear any
+        # prior dim format from the cursor) so a /retry or fresh stream
+        # doesn't inherit the timestamp's muted color.
+        cursor = self.terminal.textCursor()
+        cursor.movePosition(QTextCursor.MoveOperation.End)
+        cursor.setCharFormat(QTextCharFormat())
+        cursor.insertText(text)
+        self.terminal.setTextCursor(cursor)
+        if was_at_bottom and sb is not None:
+            sb.setValue(sb.maximum())
+
+    def _append_dim(self, text: str) -> None:
+        """v1.6.25 — append text rendered in MUTED_FG (timestamp gutter,
+        etc). Preserves sticky-scroll behavior."""
+        sb = self.terminal.verticalScrollBar()
+        was_at_bottom = sb is None or sb.value() >= sb.maximum() - 6
+        cursor = self.terminal.textCursor()
+        cursor.movePosition(QTextCursor.MoveOperation.End)
+        fmt = QTextCharFormat()
+        fmt.setForeground(QColor(MUTED_FG))
+        cursor.setCharFormat(fmt)
+        cursor.insertText(text)
+        # Reset format so the next _append_terminal call starts clean
+        cursor.setCharFormat(QTextCharFormat())
+        self.terminal.setTextCursor(cursor)
+        if was_at_bottom and sb is not None:
+            sb.setValue(sb.maximum())
 
     def _set_status(self, state_str: str) -> None:
         self.session.status = state_str
@@ -1234,8 +1255,12 @@ class AgentCard(QFrame):
 
         # v1.6.24 — timestamp gutter so the operator can scan the
         # conversation chronologically and time-bound debug.
+        # v1.6.25 — render the timestamp + operator-prefix in dim color
+        # so the actual message body stands out.
         ts = datetime.now().strftime("%H:%M:%S")
-        self._append_terminal(f"\n[{ts}] >> {text}\n")
+        self._append_terminal("\n")
+        self._append_dim(f"[{ts}] >> ")
+        self._append_terminal(f"{text}\n")
         self.input.clear()
         self.session.turns.append({"user": text, "assistant": ""})
         self._reply_started = False
@@ -1355,7 +1380,7 @@ class AgentCard(QFrame):
         if not self._stream_text_started:
             self._stop_thinking()
             ts = datetime.now().strftime("%H:%M:%S")
-            self._append_terminal(f"[{ts}] << ")
+            self._append_dim(f"[{ts}] << ")
             self._stream_text_started = True
             self._reply_started = True
         self._append_terminal(text)
@@ -1376,8 +1401,9 @@ class AgentCard(QFrame):
                         if not self._stream_text_started:
                             self._stop_thinking()
                             # v1.6.24 — timestamp gutter on EVE's reply too.
+                            # v1.6.25 — render dim.
                             ts = datetime.now().strftime("%H:%M:%S")
-                            self._append_terminal(f"[{ts}] << ")
+                            self._append_dim(f"[{ts}] << ")
                             # v1.6.16 — record position AFTER "<< " prefix
                             # so markdown formatting only touches EVE's
                             # reply, not our own prefix.
