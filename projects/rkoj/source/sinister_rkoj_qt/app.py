@@ -266,13 +266,14 @@ class SinisterWindow(QMainWindow):
     def _open_sessions_picker(self) -> None:
         """Open the saved-sessions picker without going through New Agent.
 
-        Picked session opens as its own AgentWindow with --resume wiring.
+        Picked session opens INLINE in the Agents tab body with --resume
+        wiring (operator wants everything in the main window).
         """
         picker = SavedSessionsPicker(self)
         if picker.exec() != SavedSessionsPicker.DialogCode.Accepted:
             return
         data = picker.result_data or {}
-        self._open_agent_window(
+        self._spawn_inline(
             project_key=data.get("project_key", "sanctum"),
             agent_name=data.get("agent_name"),
             mode=data.get("mode", "claude"),
@@ -280,42 +281,41 @@ class SinisterWindow(QMainWindow):
         )
 
     def _on_create_agent(self) -> None:
-        """Pop the picker; spawn the agent in a NEW top-level window.
-
-        Operator (verbatim, 2026-05-21): *"When i click new agent it will be
-        like we click the jcode exe and openeed a window."* Each agent
-        opens as its own frameless rounded floating window, cascade-
-        offset. Closing the window kills its subprocess + flushes
-        heartbeat. The main RKOJ window is the hub.
+        """Pop the picker; spawn the agent INSIDE the main window's
+        Agents tab body (operator-corrected 2026-05-22: *"this needs to
+        work and come up in the window itself"*). Cards appear inline in
+        the niri-scroll grid; the empty-state hint disappears the moment
+        the first agent lands.
         """
         dlg = NewAgentDialog(self, default_project_key="sanctum")
         if dlg.exec() != NewAgentDialog.DialogCode.Accepted:
             return
         choice = dlg.result_dict or {}
-        self._open_agent_window(
+        self._spawn_inline(
             project_key=choice.get("project_key", "sanctum"),
             agent_name=choice.get("agent_name"),
             mode=choice.get("mode", "claude"),
             session_uuid=choice.get("session_uuid"),
         )
 
-    def _open_agent_window(self, *, project_key: str,
-                           agent_name: Optional[str],
-                           mode: str,
-                           session_uuid: Optional[str]) -> AgentWindow:
-        win = AgentWindow(
+    def _spawn_inline(self, *, project_key: str,
+                      agent_name: Optional[str],
+                      mode: str,
+                      session_uuid: Optional[str]) -> str:
+        """Spawn an agent card inside the Agents tab body + focus the tab.
+
+        Same path for fresh agents AND for resumed sessions — the only
+        difference is whether session_uuid is None (fresh) or a saved
+        UUID (resume mode).
+        """
+        self.header.set_active_chip("agents")
+        self.stack.setCurrentWidget(self.agents_view)
+        return self.agents_view.spawn_agent(
             project_key=project_key,
             agent_name=agent_name,
             mode=mode,
             session_uuid=session_uuid,
         )
-        pane_id = win.session.pane_id
-        self._agent_windows[pane_id] = win
-        win.destroyed.connect(lambda *_: self._agent_windows.pop(pane_id, None))
-        win.show()
-        win.raise_()
-        win.activateWindow()
-        return win
 
     def _on_header_icon(self, key: str) -> None:
         # Stubs — wired in a follow-up. Operator brief: basic for now.

@@ -905,13 +905,19 @@ class AgentsView(QWidget):
     # ── Public API ────────────────────────────────────────────────────
     def spawn_agent(self, project_key: str = "sanctum",
                     agent_name: str | None = None,
-                    mode: str = "claude") -> str:
+                    mode: str = "claude",
+                    session_uuid: str | None = None) -> str:
         """Add a new card and return its pane_id.
 
         Phase-1 memory bootstrap: pre-creates heartbeat / inbox / PROGRESS /
         resume-points entries on disk so the spawned agent is discoverable
-        to siblings within seconds. Fully wired per
-        `_shared-memory/plans/Sanctum-deepclean-2026-05-21T2300Z/memory-jcode-integration-audit.md`.
+        to siblings within seconds.
+
+        v1.6.8 — `session_uuid` arg: if provided, the card starts in
+        resume mode (next operator message uses `claude --resume <uuid>`
+        instead of creating a fresh session). Used by the saved-sessions
+        picker so resumed sessions appear inline in the Agents tab body
+        — operator wants everything in the main window, not floating.
         """
         projects = {p.key: p for p in state.load_projects()}
         proj = projects.get(project_key)
@@ -923,9 +929,19 @@ class AgentsView(QWidget):
             agent_name=agent_name or display,
             mode=mode,
             created_at=datetime.now(timezone.utc).isoformat(),
+            session_uuid=session_uuid or "",
         )
         _bootstrap_agent_memory(sess)
         card = AgentCard(sess, parent=self.grid.host)
+        if session_uuid:
+            # Skip first-turn persona — claude already has the session.
+            card._first_turn = False
+            card._append_terminal(
+                f"  ▸ RESUMED session (session_uuid={session_uuid[:12]}…)\n"
+                f"    Next message uses `claude -r {session_uuid} -p ...`\n"
+                f"    Claude has the full conversation history server-side.\n"
+                f"\n"
+            )
         card.closed.connect(self._remove_card)
         self._cards[sess.pane_id] = card
         self._rebuild_folder_chips()
