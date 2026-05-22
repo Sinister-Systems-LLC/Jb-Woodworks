@@ -269,6 +269,10 @@ class AgentCard(QFrame):
         self._reply_started = False  # have we emitted the "<< EVE:" prefix?
         self._spinner_idx = 0
         self._thinking_start_ts: float = 0.0
+        # v1.6.11 stream-json parsing state
+        self._stream_buf: str = ""
+        self._stream_text_started: bool = False
+        self._stream_tools_run: list[str] = []
         self._build()
         # Phase-1 memory: heartbeat refresh every 30s while card alive
         self._hb_timer = QTimer(self)
@@ -725,9 +729,18 @@ class AgentCard(QFrame):
             self._set_status("offline")
             return
 
+        # v1.6.11 — stream-json output for true jcode parity (token-by-token
+        # streaming, thinking blocks, tool_use display, cost per turn).
+        # All operator messages now go through --output-format=stream-json
+        # --include-partial-messages --verbose.
         # v1.6.3 args — first turn vs continuation.
         # v1.6.4 — mode picker can request a specific claude model via alias.
-        args: list[str] = ["--dangerously-skip-permissions"]
+        args: list[str] = [
+            "--dangerously-skip-permissions",
+            "--output-format", "stream-json",
+            "--include-partial-messages",
+            "--verbose",
+        ]
         if self.session.mode == "claude-haiku":
             args += ["--model", "haiku"]
         elif self.session.mode == "claude-opus":
@@ -751,6 +764,10 @@ class AgentCard(QFrame):
                 "--resume", self.session.session_uuid,
                 "-p", text,
             ]
+        # Reset stream-json parsing state for the new turn.
+        self._stream_buf = ""
+        self._stream_text_started = False
+        self._stream_tools_run: list[str] = []
 
         proc = QProcess(self)
         proc.setProgram(claude)
@@ -778,25 +795,136 @@ class AgentCard(QFrame):
             self._set_status("offline")
 
     def _on_stdout(self) -> None:
+        """v1.6.11 — parses claude's `--output-format=stream-json` NDJSON
+        stream and renders each event type with jcode-style formatting:
+
+          - content_block_delta + text_delta → stream text into terminal
+          - content_block_delta + thinking_delta → spinner text shows
+            current thought head (60-char preview)
+          - content_block_start + tool_use   → `● Tool(input)` header
+          - tool_result via user/content_block → `✓ <result preview>`
+          - result event → token usage + cost summary in card footer
+        """
         if not self._proc:
             return
         raw = bytes(self._proc.readAllStandardOutput()).decode("utf-8", errors="replace")
         if not raw:
             return
-        # v1.6.9 — strip ANSI escape codes claude sometimes emits when its
-        # stdout piper thinks the destination is a TTY. Without this they
-        # show up as `\x1b[32m...\x1b[0m` garbage in the terminal.
-        data = _strip_ansi(raw)
-        if not data:
-            return
-        # First chunk of EVE's reply — stop the thinking spinner and prefix.
-        if not self._reply_started:
+        # Buffer + line-split (stream-json is NDJSON, one event per line,
+        # but Qt may give us a partial line).
+        self._stream_buf += _strip_ansi(raw)
+        while "\n" in self._stream_buf:
+            line, self._stream_buf = self._stream_buf.split("\n", 1)
+            line = line.strip()
+            if not line:
+                continue
+            # Try JSON; if it doesn't parse, treat as plain text.
+            if line.startswith("{") and line.endswith("}"):
+                try:
+                    event = json.loads(line)
+                except json.JSONDecodeError:
+                    self._render_plain_chunk(line + "\n")
+                    continue
+                self._handle_stream_event(event)
+            else:
+                self._render_plain_chunk(line + "\n")
+
+    def _render_plain_chunk(self, text: str) -> None:
+        """Fallback when output isn't JSON (e.g., pre-stream init text)."""
+        if not self._stream_text_started:
             self._stop_thinking()
             self._append_terminal("<< ")
+            self._stream_text_started = True
             self._reply_started = True
-        self._append_terminal(data)
+        self._append_terminal(text)
         if self.session.turns:
-            self.session.turns[-1]["assistant"] += data
+            self.session.turns[-1]["assistant"] += text
+
+    def _handle_stream_event(self, event: dict) -> None:
+        t = event.get("type")
+        if t == "stream_event":
+            e = event.get("event", {})
+            et = e.get("type")
+            if et == "content_block_delta":
+                delta = e.get("delta", {})
+                dt = delta.get("type")
+                if dt == "text_delta":
+                    text = delta.get("text", "")
+                    if text:
+                        if not self._stream_text_started:
+                            self._stop_thinking()
+                            self._append_terminal("<< ")
+                            self._stream_text_started = True
+                            self._reply_started = True
+                        self._append_terminal(text)
+                        if self.session.turns:
+                            self.session.turns[-1]["assistant"] += text
+                elif dt == "thinking_delta":
+                    # Live-update the spinner text with a thinking preview.
+                    text = (delta.get("thinking") or "").strip()
+                    if text and self._spinner_timer.isActive():
+                        preview = text.replace("\n", " ")[:60]
+                        ch = self._SPINNER[self._spinner_idx % len(self._SPINNER)]
+                        self._thinking_label.setText(
+                            f"{ch}  💭 {preview}"
+                        )
+            elif et == "content_block_start":
+                cb = e.get("content_block", {})
+                if cb.get("type") == "tool_use":
+                    tool = cb.get("name", "")
+                    self._stream_tools_run.append(tool)
+                    # Tool args preview — strip to 80 chars
+                    inp = cb.get("input", {})
+                    try:
+                        inp_str = json.dumps(inp, ensure_ascii=False)[:80]
+                    except Exception:
+                        inp_str = str(inp)[:80]
+                    if not self._stream_text_started:
+                        self._stop_thinking()
+                        self._stream_text_started = True
+                        self._reply_started = True
+                    self._append_terminal(f"\n● {tool}({inp_str})\n")
+                elif cb.get("type") == "thinking":
+                    # Begin a thinking block — keep the spinner running but
+                    # change its prefix so the operator knows EVE is reasoning.
+                    if self._spinner_timer.isActive():
+                        ch = self._SPINNER[self._spinner_idx % len(self._SPINNER)]
+                        self._thinking_label.setText(f"{ch}  💭 thinking…")
+        elif t == "user":
+            # tool_result emitted by claude after a tool runs.
+            msg = event.get("message", {}) or {}
+            for block in msg.get("content") or []:
+                if isinstance(block, dict) and block.get("type") == "tool_result":
+                    raw = block.get("content")
+                    if isinstance(raw, list):
+                        text = " ".join(
+                            (b.get("text") or "") for b in raw if isinstance(b, dict)
+                        )
+                    else:
+                        text = str(raw or "")
+                    preview = text.replace("\n", " ").strip()[:120]
+                    if preview:
+                        self._append_terminal(f"  ✓ {preview}\n")
+        elif t == "result":
+            # Final summary: tokens + cost + duration in a footer line.
+            usage = event.get("usage", {}) or {}
+            in_tok = usage.get("input_tokens", 0) or 0
+            out_tok = usage.get("output_tokens", 0) or 0
+            cache_read = usage.get("cache_read_input_tokens", 0) or 0
+            cost = event.get("total_cost_usd", 0) or 0
+            dur = (event.get("duration_ms", 0) or 0) / 1000
+            tools_note = (
+                f" · tools: {', '.join(self._stream_tools_run)}"
+                if self._stream_tools_run else ""
+            )
+            self._append_terminal(
+                f"\n  ▸ {in_tok:,} in + {out_tok:,} out tokens "
+                f"(cache_read={cache_read:,}) · ${cost:.4f} · {dur:.1f}s{tools_note}\n"
+            )
+        elif t == "system":
+            # System events (init / status / hook_started / hook_response).
+            # We don't render these to keep the terminal quiet — too verbose.
+            return
 
     # v1.6.10 — benign stderr lines from claude that look like bugs in the
     # terminal but are info-level / harmless. Suppressed silently; real

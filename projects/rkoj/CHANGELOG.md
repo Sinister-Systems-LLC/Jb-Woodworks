@@ -4,6 +4,38 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not component versions (each lane has its own).
 
+## v1.6.11 — 2026-05-22
+
+**Real jcode parity — stream-json token-by-token + thinking + tool_use + cost.**
+Operator (verbatim, screenshot mid-iteration): *"i want it to work like
+jcode and have everything i asked for"*. v1.6.10 fixed the visible `[stderr]
+no stdin data received` warning but the chat was still all-text-at-once.
+v1.6.11 wires the actual jcode-parity surfaces:
+
+- **STREAM-JSON OUTPUT**: every turn now goes through
+  `claude -p --output-format=stream-json --include-partial-messages
+  --verbose --session-id|--resume <uuid>`. claude emits NDJSON events
+  (one per line) — `_on_stdout` line-buffers them + parses each via
+  `_handle_stream_event`.
+- **TOKEN-BY-TOKEN STREAMING**: `content_block_delta + text_delta`
+  events stream individual tokens into the terminal as they arrive.
+  No more all-at-end dump.
+- **THINKING DISPLAY**: `thinking_delta` events update the spinner text
+  live with a 60-char preview of the current thought (`⠹ 💭 The
+  operator wants me to…`). When claude opens a thinking block, the
+  spinner prefix swaps from `EVE is thinking…` to `💭 thinking…`.
+- **TOOL USE DISPLAY**: `content_block_start + tool_use` renders a jcode
+  marker line `● <ToolName>(<input-preview-80-chars>)` then the tool's
+  result appears as `✓ <result-preview-120-chars>` from the subsequent
+  `user/tool_result` block.
+- **PER-TURN FOOTER**: `result` event emits a footer line
+  `▸ N in + M out tokens (cache_read=K) · $0.0042 · 3.1s · tools: Bash,Read`
+  so operator sees token spend + cost + duration + tools used per turn.
+- **SYSTEM EVENT SUPPRESSION**: hook_started / hook_response / init /
+  status events are silently dropped from the terminal (too noisy).
+- **MANIFEST.json** version 1.6.10 → 1.6.11.
+- **VERSION**: `__init__.py __version__ = "1.6.11"`.
+
 ## v1.6.10 — 2026-05-22
 
 **Agent-chat polish batch** — `/loop keep going make it better` cadence.
