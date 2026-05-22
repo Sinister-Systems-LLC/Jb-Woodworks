@@ -4,6 +4,27 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not component versions (each lane has its own).
 
+## v1.6.28 — 2026-05-22
+
+**Per-card pin/star** — operator can pin favorite cards to the top of
+the niri-scroll grid. Useful when running 5+ agents and only 1-2 are
+the ones you actually need to glance at right now.
+
+- `AgentSession.pinned: bool = False` — new field; survives /save +
+  /export (added to the resume-point schema via `_write_resume_point`
+  no changes since dataclass auto-includes).
+- `AgentCard._pin_btn`: hollow ☆ (MUTED_FG) → filled ★ (PURPLE_PRIMARY)
+  on click. Sits in the header strip between cost-pill and chevron.
+- `pin_changed(pane_id)` pyqtSignal; AgentsView listens + calls
+  `_rebuild_grid()` so pinned cards float to top instantly.
+- Grid sort key now: `(not c.session.pinned, project_key, created_at)`
+  — pinned cards bubble up, then project-grouping stays intact.
+- `/pin` slash command: same effect as clicking the star, so operator
+  can pin without aiming for the small button. Registered in
+  SLASH_COMMANDS → 20 commands now.
+- MANIFEST.json 1.6.27 → 1.6.28.
+- `__init__.py __version__ = "1.6.28"`.
+
 ## v1.6.27 — 2026-05-22
 
 **Card-collapse toggle** — operator can collapse any agent card to a

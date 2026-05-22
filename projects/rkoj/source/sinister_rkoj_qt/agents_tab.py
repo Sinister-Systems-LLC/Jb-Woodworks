@@ -74,6 +74,7 @@ SLASH_COMMANDS: list[tuple[str, str]] = [
     ("/needs",    "toggle awaiting-input glow (visual test)"),
     ("/open",     "print shell commands to open agent paths"),
     ("/persona",  "print identity (slug / uuid / paths)"),
+    ("/pin",      "pin (or unpin) this card to top of grid"),
     ("/retry",    "resend the most recent operator message"),
     ("/save",     "write resume-point JSON to disk"),
     ("/session",  "print just the session uuid"),
@@ -342,6 +343,9 @@ class AgentSession:
     inbox_dir: str = ""
     # v1.6.3 — claude session continuity via `--session-id` + `--resume`
     session_uuid: str = ""
+    # v1.6.28 — pin state (toggled via star button or /pin); pinned cards
+    # render at the top of the niri-scroll grid regardless of project order.
+    pinned: bool = False
 
 
 def _find_claude_executable() -> Optional[str]:
@@ -456,6 +460,9 @@ class AgentCard(QFrame):
 
     closed = pyqtSignal(str)  # pane_id
     status_changed = pyqtSignal(str, str)  # pane_id, new_status
+    # v1.6.28 — emitted when operator toggles pin state; AgentsView listens
+    # + re-sorts the grid so pinned cards stay at top.
+    pin_changed = pyqtSignal(str)  # pane_id
 
     # Braille spinner for the "thinking" indicator (jcode-style).
     _SPINNER = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
@@ -569,6 +576,21 @@ class AgentCard(QFrame):
             "Type /cost in the chat for the full breakdown."
         )
 
+        # v1.6.28 — pin star (left of chevron). Toggles session.pinned;
+        # AgentsView listens for pin_changed and re-sorts the grid so
+        # pinned cards render at the top.
+        self._pin_btn = QPushButton("☆")
+        self._pin_btn.setObjectName("CardCloseBtn")  # reuse styling
+        self._pin_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self._pin_btn.setFixedSize(22, 22)
+        self._pin_btn.setStyleSheet(
+            f"QPushButton {{ color: {MUTED_FG}; background: transparent; "
+            f"border: none; font-size: 16px; font-weight: 700; }}"
+            f"QPushButton:hover {{ color: {PURPLE_PRIMARY}; }}"
+        )
+        self._pin_btn.setToolTip("Pin to top of grid (/pin)")
+        self._pin_btn.clicked.connect(self._toggle_pin)
+
         # v1.6.27 — collapse chevron (left of close-X)
         self._collapse_btn = QPushButton("▾")
         self._collapse_btn.setObjectName("CardCloseBtn")  # reuse styling
@@ -601,6 +623,7 @@ class AgentCard(QFrame):
         hdr.addWidget(self._turn_pill)
         hdr.addWidget(self._cost_pill)
         hdr.addStretch(1)
+        hdr.addWidget(self._pin_btn)
         hdr.addWidget(self._collapse_btn)
         hdr.addWidget(close_btn)
         root.addLayout(hdr)
@@ -766,6 +789,28 @@ class AgentCard(QFrame):
         """Ctrl+L → mirror /clear (jcode keybinding parity)."""
         self.terminal.clear()
         self._append_terminal("[cleared via Ctrl+L]\n")
+
+    def _toggle_pin(self) -> None:
+        """v1.6.28 — toggle this card's pin state. Pinned cards float
+        to the top of the AgentsView grid regardless of project_key
+        sort. Visually: hollow ☆ → filled ★, gray → purple."""
+        self.session.pinned = not self.session.pinned
+        if self.session.pinned:
+            self._pin_btn.setText("★")
+            self._pin_btn.setStyleSheet(
+                f"QPushButton {{ color: {PURPLE_PRIMARY}; "
+                f"background: transparent; border: none; font-size: 16px; "
+                f"font-weight: 700; }}"
+                f"QPushButton:hover {{ color: {PURPLE_PRIMARY}; }}"
+            )
+        else:
+            self._pin_btn.setText("☆")
+            self._pin_btn.setStyleSheet(
+                f"QPushButton {{ color: {MUTED_FG}; background: transparent; "
+                f"border: none; font-size: 16px; font-weight: 700; }}"
+                f"QPushButton:hover {{ color: {PURPLE_PRIMARY}; }}"
+            )
+        self.pin_changed.emit(self.session.pane_id)
 
     def _toggle_collapsed(self) -> None:
         """v1.6.27 — collapse / expand the card body (terminal + input).
@@ -1260,6 +1305,15 @@ class AgentCard(QFrame):
                 )
             except Exception as exc:
                 self._append_terminal(f"[/stats] failed: {exc}\n")
+            return True
+        if head == "/pin":
+            # v1.6.28 — mirror the star button click. Operator can pin
+            # from the chat without aiming for the small button.
+            self._toggle_pin()
+            self._append_terminal(
+                f"[/pin] {'pinned' if self.session.pinned else 'unpinned'} this card "
+                f"({'★' if self.session.pinned else '☆'})\n"
+            )
             return True
         if head == "/needs":
             new_state = "awaiting-input" if self.session.status != "awaiting-input" else "online"
@@ -2134,7 +2188,13 @@ class AgentsView(QWidget):
         cards = list(self._cards.values())
         if self._project_filter is not None:
             cards = [c for c in cards if c.session.project_key == self._project_filter]
-        cards.sort(key=lambda c: (c.session.project_key, c.session.created_at))
+        # v1.6.28 — pinned cards bubble to the top, then by project_key
+        # so pinned-from-same-project still group together.
+        cards.sort(key=lambda c: (
+            not c.session.pinned,
+            c.session.project_key,
+            c.session.created_at,
+        ))
 
         last_key: Optional[str] = None
         # insertWidget at count()-1 inserts before the trailing stretch
@@ -2201,6 +2261,9 @@ class AgentsView(QWidget):
                 f"\n"
             )
         card.closed.connect(self._remove_card)
+        # v1.6.28 — re-sort grid when operator pins/unpins a card so
+        # pinned cards float to top
+        card.pin_changed.connect(lambda *_: self._rebuild_grid())
         self._cards[sess.pane_id] = card
         self._rebuild_folder_chips()
         self._rebuild_grid()
