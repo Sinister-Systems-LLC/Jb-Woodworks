@@ -13,5 +13,5 @@ styles/globals.css}`.
 Persona = EVE (operator hard-canonical 2026-05-21). Author = RKOJ-ELENO.
 """
 
-__version__ = "1.6.19"
+__version__ = "1.6.20"
 __author__ = "RKOJ-ELENO"

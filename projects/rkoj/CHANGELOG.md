@@ -4,6 +4,29 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not component versions (each lane has its own).
 
+## v1.6.20 — 2026-05-22
+
+**rate_limit_event surface + popup position safety + /skill loader.**
+
+- **rate_limit_event renderer**: claude's `rate_limit_event` stream-json
+  events fire on every turn but mostly with `status: allowed` (no
+  signal). Now suppressed for "allowed" + printed as `⚠ rate-limit
+  <status> (<kind>) resets at <UTC>` for warning/exceeded/etc so
+  operator isn't surprised by a hard 5-hour wall.
+- **SlashPopup position safety**: `show_above()` now adjustSize()s
+  first, then tries above; if `globalY - h - 4 < screen.y()` it flips
+  to *below* the input. Also clamps X to `screen.x() + width - popup.w
+  - 4` so a popup near the right edge doesn't truncate.
+- **/skill <name> loader**: reads a saved skill `.md` from
+  `D:\Sinister Sanctum\skills`, `~/.sinister/skills`, or
+  `~/.claude/skills` (looks for `<name>.md` AND `<name>/SKILL.md`),
+  stages it into the input, fires `_on_send` on the next event-loop
+  tick. So the regular spinner / streaming / token-accounting paths
+  all run uniformly. Registered in SLASH_COMMANDS — autocomplete
+  popup now lists 17 commands.
+- MANIFEST.json 1.6.19 → 1.6.20.
+- `__init__.py __version__ = "1.6.20"`.
+
 ## v1.6.19 — 2026-05-22
 
 **`/model` + `/focus` slash commands + brain entry capturing the

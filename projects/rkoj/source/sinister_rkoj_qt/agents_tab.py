@@ -77,6 +77,7 @@ SLASH_COMMANDS: list[tuple[str, str]] = [
     ("/retry",    "resend the most recent operator message"),
     ("/save",     "write resume-point JSON to disk"),
     ("/session",  "print just the session uuid"),
+    ("/skill",    "load + send a saved skill .md as a turn"),
     ("/skills",   "list Sanctum skills (.md files)"),
     ("/vault",    "Sinister Vault disk usage + daemon port"),
 ]
@@ -165,10 +166,34 @@ class _SlashPopup(QFrame):
             self.completed.emit(cmd)
 
     def show_above(self, anchor: QWidget) -> None:
-        """Position the popup directly above the anchor widget."""
-        global_pos = anchor.mapToGlobal(anchor.rect().topLeft())
+        """Position the popup adjacent to the anchor widget.
+
+        v1.6.20 — try above first; if that would fall off-screen, flip
+        to below. Always clamp X to the screen's available geometry so
+        a popup near the right edge doesn't truncate.
+        """
+        from PyQt6.QtGui import QGuiApplication
+        screen = QGuiApplication.primaryScreen()
+        screen_geo = screen.availableGeometry() if screen else None
+        top = anchor.mapToGlobal(anchor.rect().topLeft())
+        bot = anchor.mapToGlobal(anchor.rect().bottomLeft())
+        # Force a layout pass so sizeHint() is realistic before move().
+        self.adjustSize()
         h = self.sizeHint().height()
-        self.move(global_pos.x(), global_pos.y() - h - 4)
+        w = self.sizeHint().width()
+        # Try above; flip below if we'd clip the top of the screen.
+        above_y = top.y() - h - 4
+        if screen_geo and above_y < screen_geo.y():
+            y = bot.y() + 4
+        else:
+            y = above_y
+        # Clamp X
+        x = top.x()
+        if screen_geo:
+            max_x = screen_geo.x() + screen_geo.width() - w - 4
+            if x > max_x:
+                x = max(screen_geo.x(), max_x)
+        self.move(x, y)
         self.show()
 
 
@@ -832,6 +857,56 @@ class AgentCard(QFrame):
                 "  so each turn only sends your latest message (no history replay).\n"
             )
             return True
+        if head == "/skill":
+            # v1.6.20 — load a saved skill .md and send its content as a turn.
+            parts = cmd.split(None, 1)
+            if len(parts) < 2 or not parts[1].strip():
+                self._append_terminal(
+                    "[/skill] usage: /skill <name>\n"
+                    "  Loads `<name>.md` (or `<name>/SKILL.md`) from your skill\n"
+                    "  roots and sends its content as if you typed it. Use /skills\n"
+                    "  to list what's available.\n"
+                )
+                return True
+            name = parts[1].strip()
+            roots = [
+                Path(r"D:\Sinister Sanctum\skills"),
+                Path.home() / ".sinister" / "skills",
+                Path.home() / ".claude" / "skills",
+            ]
+            found_fp = None
+            for r in roots:
+                for cand in (r / f"{name}.md", r / name / "SKILL.md"):
+                    if cand.exists():
+                        found_fp = cand
+                        break
+                if found_fp:
+                    break
+            if not found_fp:
+                self._append_terminal(
+                    f"[/skill] no skill `{name}` found in:\n"
+                    + "\n".join(f"  - {r}" for r in roots) + "\n"
+                )
+                return True
+            try:
+                skill_text = found_fp.read_text(encoding="utf-8")
+            except Exception as exc:
+                self._append_terminal(f"[/skill] failed to read {found_fp}: {exc}\n")
+                return True
+            self._append_terminal(
+                f"[/skill] loaded {found_fp} ({len(skill_text):,} chars)\n"
+                f"  → sending content as a turn…\n"
+            )
+            # Stage into the input + trigger send via the normal path so all
+            # the spinner / streaming / history logic runs uniformly.
+            self.input.setPlainText(skill_text)
+            cur = self.input.textCursor()
+            cur.movePosition(QTextCursor.MoveOperation.End)
+            self.input.setTextCursor(cur)
+            # Schedule the send on the next event-loop tick (0ms timer) so
+            # the terminal updates render before claude starts.
+            QTimer.singleShot(0, self._on_send)
+            return True
         if head == "/skills":
             from pathlib import Path
             roots = [
@@ -1393,6 +1468,29 @@ class AgentCard(QFrame):
             # System events (init / status / hook_started / hook_response).
             # We don't render these to keep the terminal quiet — too verbose.
             return
+        elif t == "rate_limit_event":
+            # v1.6.20 — surface non-OK rate limit info inline. Suppress the
+            # always-fires `status: allowed` case (no signal). When status
+            # is `warning` / `exceeded` / anything else, print a one-line
+            # warning so the operator isn't surprised by a hard wall.
+            info = event.get("rate_limit_info", {}) or {}
+            status = (info.get("status") or "").lower()
+            if status and status != "allowed":
+                reset_ts = info.get("resetsAt")
+                kind = info.get("rateLimitType") or "rate-limit"
+                reset_str = ""
+                if isinstance(reset_ts, (int, float)):
+                    try:
+                        reset_str = (
+                            "  resets at "
+                            + datetime.fromtimestamp(reset_ts, tz=timezone.utc)
+                                .strftime("%Y-%m-%d %H:%M UTC")
+                        )
+                    except Exception:
+                        reset_str = ""
+                self._append_terminal(
+                    f"\n  ⚠ rate-limit {status} ({kind}){reset_str}\n"
+                )
 
     # v1.6.10 — benign stderr lines from claude that look like bugs in the
     # terminal but are info-level / harmless. Suppressed silently; real
