@@ -4,6 +4,28 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not component versions (each lane has its own).
 
+## v1.6.30 — 2026-05-22
+
+**`/broadcast <msg>` — fan a prompt to all live cards.** Operator wants
+the same question answered by every active EVE across projects? Type
+`/broadcast what's your status` in any card → every other card stages
+the message + fires `_on_send`. Each card runs through its own spinner
++ streaming + cost path uniformly.
+
+- `AgentCard` gets `broadcast_requested(str)` pyqtSignal (emits the
+  message body without the `/broadcast ` prefix).
+- `_maybe_intercept` handles `/broadcast` — splits off prefix, emits
+  signal with body. Empty body → usage hint.
+- `AgentsView.broadcast(msg) -> int` fans the message to every card:
+  for each, `setPlainText(msg)` + cursor-to-end + `QTimer.singleShot(0,
+  card._on_send)` so the regular flow runs. Returns count of cards
+  reached.
+- Skips cards mid-turn (process state != NotRunning) so we don't queue
+  a clobber while EVE is still responding to the prior message.
+- Registered in `SLASH_COMMANDS` (now 21 commands).
+- MANIFEST.json 1.6.29 → 1.6.30.
+- `__init__.py __version__ = "1.6.30"`.
+
 ## v1.6.29 — 2026-05-22
 
 **Operator-action urgent rows in the Agents empty state.** Operator sees

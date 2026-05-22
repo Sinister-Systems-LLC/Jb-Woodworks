@@ -62,6 +62,7 @@ def _strip_ansi(text: str) -> str:
 # should be added here too so the popup discovers them.
 SLASH_COMMANDS: list[tuple[str, str]] = [
     ("/help",     "show all slash commands"),
+    ("/broadcast","send the same message to all live cards"),
     ("/clear",    "clear terminal scrollback (Ctrl+L)"),
     ("/cost",     "cumulative spend breakdown for THIS card"),
     ("/devices",  "list connected ADB devices inline"),
@@ -463,6 +464,9 @@ class AgentCard(QFrame):
     # v1.6.28 — emitted when operator toggles pin state; AgentsView listens
     # + re-sorts the grid so pinned cards stay at top.
     pin_changed = pyqtSignal(str)  # pane_id
+    # v1.6.30 — /broadcast intercept emits this with the message body
+    # (no /broadcast prefix). AgentsView fans it to every live card.
+    broadcast_requested = pyqtSignal(str)
 
     # Braille spinner for the "thinking" indicator (jcode-style).
     _SPINNER = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
@@ -1305,6 +1309,24 @@ class AgentCard(QFrame):
                 )
             except Exception as exc:
                 self._append_terminal(f"[/stats] failed: {exc}\n")
+            return True
+        if head == "/broadcast":
+            # v1.6.30 — fan-out send: emit the rest of the message so
+            # AgentsView can route it to every live card. The originating
+            # card also receives the message (so operator gets a record
+            # in this card too).
+            parts = cmd.split(None, 1)
+            if len(parts) < 2 or not parts[1].strip():
+                self._append_terminal(
+                    "[/broadcast] usage: /broadcast <message>\n"
+                    "  Fans the message to every live agent card.\n"
+                )
+                return True
+            msg = parts[1].strip()
+            self._append_terminal(
+                f"[/broadcast] fanning to all live cards…\n"
+            )
+            self.broadcast_requested.emit(msg)
             return True
         if head == "/pin":
             # v1.6.28 — mirror the star button click. Operator can pin
@@ -2393,6 +2415,8 @@ class AgentsView(QWidget):
         # v1.6.28 — re-sort grid when operator pins/unpins a card so
         # pinned cards float to top
         card.pin_changed.connect(lambda *_: self._rebuild_grid())
+        # v1.6.30 — route /broadcast to AgentsView fan-out helper
+        card.broadcast_requested.connect(self.broadcast)
         self._cards[sess.pane_id] = card
         self._rebuild_folder_chips()
         self._rebuild_grid()
@@ -2426,6 +2450,28 @@ class AgentsView(QWidget):
     def shutdown_all(self) -> None:
         for card in list(self._cards.values()):
             card.shutdown()
+
+    # v1.6.30 — broadcast a message to every live card. Called when any
+    # card emits `broadcast_requested`. We stage the message into each
+    # card's input + fire `_on_send` on the next event-loop tick so
+    # the existing spinner+streaming+cost paths run uniformly per card.
+    def broadcast(self, msg: str) -> int:
+        n = 0
+        for card in self._cards.values():
+            try:
+                # Skip cards mid-turn — don't queue a clobber.
+                if (card._proc is not None
+                        and card._proc.state() != QProcess.ProcessState.NotRunning):
+                    continue
+                card.input.setPlainText(msg)
+                cur = card.input.textCursor()
+                cur.movePosition(QTextCursor.MoveOperation.End)
+                card.input.setTextCursor(cur)
+                QTimer.singleShot(0, card._on_send)
+                n += 1
+            except Exception:
+                continue
+        return n
 
 
 # Backward-compat alias — older modules import AgentsTab.
