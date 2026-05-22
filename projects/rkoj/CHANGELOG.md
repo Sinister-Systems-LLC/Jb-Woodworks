@@ -4,6 +4,29 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not component versions (each lane has its own).
 
+## v1.6.36 — 2026-05-22
+
+**F3 / Shift+F3 keyboard shortcuts for /grep cycling + `/minimize-all` +
+`/expand-all` bulk-toggle slash commands.**
+
+- **F3 / Shift+F3**: cycle through /grep matches without touching the
+  command line. Bound as global `QShortcut` on AgentCard; both call the
+  new `_grep_cycle(direction, verbose=False)` helper so they share state
+  + wrap-around with the slash commands. When no /grep is active, the
+  shortcuts silently no-op (only the slash forms surface the empty-state
+  hint, since they were invoked deliberately).
+- **/minimize-all + /expand-all**: bulk-toggle every card's collapse
+  state. Card emits `minimize_all_requested` / `expand_all_requested`;
+  AgentsView wires them to `collapse_all()` / `expand_all()` which
+  iterate `_cards.values()` and call each card's `_toggle_collapsed()`
+  only when its current state would change (idempotent). Each prints
+  `collapsed N card(s)` / `expanded N card(s)` to the invoking terminal.
+- /grep-next + /grep-prev descriptions now mention F3 / Shift+F3 in
+  the slash autocomplete so the keyboard binding is discoverable.
+- 29 slash commands now (added /expand-all + /minimize-all).
+- MANIFEST.json 1.6.35 → 1.6.36.
+- `__init__.py __version__ = "1.6.36"`.
+
 ## v1.6.35 — 2026-05-22
 
 **`/grep-next` + `/grep-prev` + project-color legend in empty state.**

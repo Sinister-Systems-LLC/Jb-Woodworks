@@ -102,10 +102,12 @@ SLASH_COMMANDS: list[tuple[str, str]] = [
     ("/devices",  "list connected ADB devices inline"),
     ("/export",   "export conversation to a markdown file"),
     ("/focus",    "focus the input box"),
+    ("/expand-all", "expand every collapsed card in the grid"),
     ("/grep",     "highlight matching text in the terminal (yellow bg)"),
     ("/grep-clear", "remove /grep highlights"),
-    ("/grep-next", "scroll to the next /grep match"),
-    ("/grep-prev", "scroll to the previous /grep match"),
+    ("/grep-next", "scroll to the next /grep match (F3)"),
+    ("/grep-prev", "scroll to the previous /grep match (Shift+F3)"),
+    ("/minimize-all", "collapse every expanded card in the grid"),
     ("/history",  "show recent turns with previews"),
     ("/memory",   "forge-memory-bridge BM25 recall"),
     ("/mcp",      "list MCP servers from ~/.claude/.mcp.json"),
@@ -506,6 +508,9 @@ class AgentCard(QFrame):
     # v1.6.30 — /broadcast intercept emits this with the message body
     # (no /broadcast prefix). AgentsView fans it to every live card.
     broadcast_requested = pyqtSignal(str)
+    # v1.6.36 — /minimize-all + /expand-all bulk toggles for the grid.
+    minimize_all_requested = pyqtSignal()
+    expand_all_requested = pyqtSignal()
 
     # Braille spinner for the "thinking" indicator (jcode-style).
     _SPINNER = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
@@ -571,6 +576,12 @@ class AgentCard(QFrame):
         QShortcut(QKeySequence("Ctrl+L"), self, activated=self._on_clear_shortcut)
         # v1.6.27 — Ctrl+M toggles card collapse
         QShortcut(QKeySequence("Ctrl+M"), self, activated=self._toggle_collapsed)
+        # v1.6.36 — F3 / Shift+F3 jump between /grep matches (operator
+        # stays in keyboard; mirrors standard editor "find next" binding).
+        QShortcut(QKeySequence("F3"), self,
+                  activated=lambda: self._grep_cycle("next"))
+        QShortcut(QKeySequence("Shift+F3"), self,
+                  activated=lambda: self._grep_cycle("prev"))
         # v1.6.18 — rotate the input placeholder every 5s while idle so
         # operator discovers the keybinds (/help, Shift+Enter, Ctrl+L)
         # without having to read the README.
@@ -845,6 +856,31 @@ class AgentCard(QFrame):
         """Ctrl+L → mirror /clear (jcode keybinding parity)."""
         self.terminal.clear()
         self._append_terminal("[cleared via Ctrl+L]\n")
+
+    def _grep_cycle(self, direction: str, verbose: bool = False) -> None:
+        """v1.6.36 — shared cycle helper used by both /grep-next /
+        /grep-prev slash commands AND F3 / Shift+F3 shortcuts.
+        verbose=True prints a status line; verbose=False stays silent
+        (keyboard shortcut shouldn't spam the terminal)."""
+        if not self._grep_positions:
+            if verbose:
+                self._append_terminal(
+                    "[/grep-*] no active /grep — run `/grep <pattern>` first\n"
+                )
+            return
+        n = len(self._grep_positions)
+        step = 1 if direction == "next" else -1
+        self._grep_idx = (self._grep_idx + step) % n
+        pos = self._grep_positions[self._grep_idx]
+        cur = QTextCursor(self.terminal.document())
+        cur.setPosition(pos)
+        self.terminal.setTextCursor(cur)
+        self.terminal.ensureCursorVisible()
+        if verbose:
+            self._append_terminal(
+                f"[/grep-{direction}] match {self._grep_idx + 1} / {n} "
+                f"for '{self._grep_pattern}'\n"
+            )
 
     def _toggle_pin(self) -> None:
         """v1.6.28 — toggle this card's pin state. Pinned cards float
@@ -1284,23 +1320,16 @@ class AgentCard(QFrame):
                 self._append_terminal(f"[/grep-clear] failed: {exc}\n")
             return True
         if head in ("/grep-next", "/grep-prev"):
-            if not self._grep_positions:
-                self._append_terminal(
-                    f"[{head}] no active /grep — run `/grep <pattern>` first\n"
-                )
-                return True
-            n = len(self._grep_positions)
-            step = 1 if head == "/grep-next" else -1
-            self._grep_idx = (self._grep_idx + step) % n
-            pos = self._grep_positions[self._grep_idx]
-            cur = QTextCursor(self.terminal.document())
-            cur.setPosition(pos)
-            self.terminal.setTextCursor(cur)
-            self.terminal.ensureCursorVisible()
-            self._append_terminal(
-                f"[{head}] match {self._grep_idx + 1} / {n} "
-                f"for '{self._grep_pattern}'\n"
-            )
+            direction = "next" if head == "/grep-next" else "prev"
+            self._grep_cycle(direction, verbose=True)
+            return True
+        if head == "/minimize-all":
+            self._append_terminal("[/minimize-all] collapsing all cards…\n")
+            self.minimize_all_requested.emit()
+            return True
+        if head == "/expand-all":
+            self._append_terminal("[/expand-all] expanding all cards…\n")
+            self.expand_all_requested.emit()
             return True
         if head == "/model":
             # v1.6.19 — show or change the model alias for subsequent turns.
@@ -2696,6 +2725,9 @@ class AgentsView(QWidget):
         card.pin_changed.connect(lambda *_: self._rebuild_grid())
         # v1.6.30 — route /broadcast to AgentsView fan-out helper
         card.broadcast_requested.connect(self.broadcast)
+        # v1.6.36 — route /minimize-all + /expand-all to grid-wide toggles
+        card.minimize_all_requested.connect(self.collapse_all)
+        card.expand_all_requested.connect(self.expand_all)
         self._cards[sess.pane_id] = card
         self._rebuild_folder_chips()
         self._rebuild_grid()
@@ -2729,6 +2761,24 @@ class AgentsView(QWidget):
     def shutdown_all(self) -> None:
         for card in list(self._cards.values()):
             card.shutdown()
+
+    # v1.6.36 — bulk toggles. Fired from any card's /minimize-all or
+    # /expand-all slash command via the corresponding signal.
+    def collapse_all(self) -> int:
+        n = 0
+        for c in self._cards.values():
+            if not c._collapsed:
+                c._toggle_collapsed()
+                n += 1
+        return n
+
+    def expand_all(self) -> int:
+        n = 0
+        for c in self._cards.values():
+            if c._collapsed:
+                c._toggle_collapsed()
+                n += 1
+        return n
 
     # v1.6.31 — restore card state (pin + cumulative cost) from the most
     # recent saved resume-point matching session_uuid. Called from
