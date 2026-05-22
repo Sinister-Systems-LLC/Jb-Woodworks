@@ -4,6 +4,26 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not component versions (each lane has its own).
 
+## v1.6.32 — 2026-05-22
+
+**`/ping [<project>]` status-check fan-out + brain entry for v1.6.27-31.**
+
+- **`/ping`**: canned 60-word-cap status request fanned to all live
+  cards. Optional `<project>` arg filters to one project's cards.
+  Reuses the v1.6.30 broadcast pipeline via a sentinel-prefix
+  message `__PING_PROJECT__<key>__:<body>`; AgentsView.broadcast
+  parses the sentinel + applies project filter before fanning.
+- Registered in SLASH_COMMANDS → 22 commands.
+- **Brain entry**: `rkoj-polish-cluster-v1.6.27-31-2026-05-22.md`
+  consolidates the 5-iteration arc (collapse + pin + operator-actions +
+  /broadcast + persisted-resume-state). 5 reusable patterns codified
+  (card-level state toggles with min/max-height swap, signal-driven
+  cross-component sync, markdown action-queue parser, fan-out via
+  setPlainText+singleShot, resume state restoration from latest
+  saved_at). 8 anti-patterns. Indexed in `_INDEX.md`.
+- MANIFEST.json 1.6.31 → 1.6.32.
+- `__init__.py __version__ = "1.6.32"`.
+
 ## v1.6.31 — 2026-05-22
 
 **Persisted pin state + cumulative cost on resume + /usage per-mode breakdown.**

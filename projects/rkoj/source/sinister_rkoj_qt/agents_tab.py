@@ -76,6 +76,7 @@ SLASH_COMMANDS: list[tuple[str, str]] = [
     ("/open",     "print shell commands to open agent paths"),
     ("/persona",  "print identity (slug / uuid / paths)"),
     ("/pin",      "pin (or unpin) this card to top of grid"),
+    ("/ping",     "fan a canned status-check to all (or filtered) cards"),
     ("/retry",    "resend the most recent operator message"),
     ("/save",     "write resume-point JSON to disk"),
     ("/session",  "print just the session uuid"),
@@ -1328,6 +1329,35 @@ class AgentCard(QFrame):
             )
             self.broadcast_requested.emit(msg)
             return True
+        if head == "/ping":
+            # v1.6.32 — canned status-check broadcast. Optional project
+            # filter as arg: `/ping kernel-apk` only pings cards on that
+            # project. With no arg, pings ALL live cards. Body of the
+            # message is a short status template so EVE knows to give a
+            # quick status, not a long-form reply.
+            parts = cmd.split(None, 1)
+            project_filter = parts[1].strip().lower() if len(parts) > 1 else None
+            template = (
+                "STATUS CHECK: one short paragraph — what are you working on, "
+                "any blockers, last operator-visible action you took. Keep it "
+                "under 60 words."
+            )
+            self._append_terminal(
+                f"[/ping] sending canned status-check"
+                + (f" to project={project_filter}" if project_filter else " to ALL live cards")
+                + "…\n"
+            )
+            # Emit a broadcast_requested with a sentinel prefix that
+            # AgentsView understands — we use a special signal-suffix
+            # convention so the AgentsView.broadcast can pick up the
+            # filter without us needing a second signal.
+            if project_filter:
+                self.broadcast_requested.emit(
+                    f"__PING_PROJECT__{project_filter}__:{template}"
+                )
+            else:
+                self.broadcast_requested.emit(template)
+            return True
         if head == "/pin":
             # v1.6.28 — mirror the star button click. Operator can pin
             # from the chat without aiming for the small button.
@@ -2533,10 +2563,26 @@ class AgentsView(QWidget):
     # card emits `broadcast_requested`. We stage the message into each
     # card's input + fire `_on_send` on the next event-loop tick so
     # the existing spinner+streaming+cost paths run uniformly per card.
+    # v1.6.32 — supports the `__PING_PROJECT__<key>__:<msg>` sentinel
+    # from `/ping <project>` to filter to a project.
     def broadcast(self, msg: str) -> int:
+        project_filter: str | None = None
+        if msg.startswith("__PING_PROJECT__"):
+            try:
+                _, rest = msg.split("__PING_PROJECT__", 1)
+                key, body = rest.split("__:", 1)
+                project_filter = key.strip().lower() or None
+                msg = body
+            except ValueError:
+                project_filter = None
         n = 0
         for card in self._cards.values():
             try:
+                if project_filter is not None:
+                    pk = (card.session.project_key or "").lower()
+                    pd = (card.session.project_display or "").lower()
+                    if project_filter not in (pk, pd):
+                        continue
                 # Skip cards mid-turn — don't queue a clobber.
                 if (card._proc is not None
                         and card._proc.state() != QProcess.ProcessState.NotRunning):
