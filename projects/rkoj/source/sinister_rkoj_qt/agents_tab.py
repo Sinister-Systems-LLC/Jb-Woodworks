@@ -124,6 +124,7 @@ SLASH_COMMANDS: list[tuple[str, str]] = [
     ("/skill",    "load + send a saved skill .md as a turn"),
     ("/skills",   "list Sanctum skills (.md files)"),
     ("/stats",    "RKOJ fleet snapshot (agents / inbox / brain / devices)"),
+    ("/timer",    "show elapsed time of the in-flight turn (or last duration)"),
     ("/usage",    "cross-card RKOJ spend totals (from disk)"),
     ("/vault",    "Sinister Vault disk usage + daemon port"),
 ]
@@ -563,6 +564,11 @@ class AgentCard(QFrame):
         self._grep_pattern: str = ""
         self._grep_positions: list[int] = []
         self._grep_idx: int = -1
+        # v1.6.38 — turn timing: monotonic start of in-flight turn (None
+        # when idle) + duration of the last completed turn. /timer reads
+        # both; /cancel + _on_finished clear/update them.
+        self._turn_started_ts: float | None = None
+        self._last_turn_seconds: float | None = None
         self._build()
         # Phase-1 memory: heartbeat refresh every 30s while card alive
         self._hb_timer = QTimer(self)
@@ -864,6 +870,19 @@ class AgentCard(QFrame):
         """Ctrl+L → mirror /clear (jcode keybinding parity)."""
         self.terminal.clear()
         self._append_terminal("[cleared via Ctrl+L]\n")
+
+    @staticmethod
+    def _fmt_duration(seconds: float | None) -> str:
+        """v1.6.38 — human-readable duration. <60s = `Xs`; <1h = `Mm Ss`;
+        else `Hh Mm`. None → `--`."""
+        if seconds is None or seconds < 0:
+            return "--"
+        s = int(seconds)
+        if s < 60:
+            return f"{seconds:.1f}s"
+        if s < 3600:
+            return f"{s // 60}m {s % 60}s"
+        return f"{s // 3600}h {(s % 3600) // 60}m"
 
     def _cancel_if_running(self) -> None:
         """v1.6.37 — Esc shortcut entry point. Forwards to /cancel only
@@ -1228,6 +1247,13 @@ class AgentCard(QFrame):
             if self._proc is None or self._proc.state() == QProcess.ProcessState.NotRunning:
                 self._append_terminal("[/cancel] no active turn to cancel\n")
                 return True
+            # v1.6.38 — freeze elapsed for the cancelled turn so /timer
+            # can still report "last turn took Xs (cancelled)".
+            elapsed = None
+            if self._turn_started_ts is not None:
+                elapsed = time.monotonic() - self._turn_started_ts
+                self._last_turn_seconds = elapsed
+                self._turn_started_ts = None
             try:
                 self._proc.kill()
                 self._proc.waitForFinished(1500)
@@ -1245,7 +1271,10 @@ class AgentCard(QFrame):
                 pass
             self._proc = None
             self._set_status("online")
-            self._append_terminal("\n[/cancel] turn cancelled — session still resumable\n")
+            tail = f" after {self._fmt_duration(elapsed)}" if elapsed is not None else ""
+            self._append_terminal(
+                f"\n[/cancel] turn cancelled{tail} — session still resumable\n"
+            )
             return True
         if head == "/clear":
             self.terminal.clear()
@@ -1526,6 +1555,26 @@ class AgentCard(QFrame):
             except Exception as exc:
                 self._append_terminal(f"[/usage] failed: {exc}\n")
             return True
+        if head == "/timer":
+            # v1.6.38 — report in-flight turn elapsed, or last completed
+            # duration when idle. Pairs with /cancel: operator can see
+            # "this has been running 4m17s" before deciding to kill it.
+            if self._turn_started_ts is not None:
+                live = time.monotonic() - self._turn_started_ts
+                self._append_terminal(
+                    f"[/timer] in-flight turn: {self._fmt_duration(live)} elapsed "
+                    f"(use /cancel or Esc to kill)\n"
+                )
+            elif self._last_turn_seconds is not None:
+                self._append_terminal(
+                    f"[/timer] no active turn · last turn took "
+                    f"{self._fmt_duration(self._last_turn_seconds)}\n"
+                )
+            else:
+                self._append_terminal(
+                    "[/timer] no active turn · no completed turns yet\n"
+                )
+            return True
         if head == "/stats":
             # v1.6.23 — RKOJ fleet snapshot. Reuses state.snapshot() which
             # already drives the bottom status bar.
@@ -1716,6 +1765,8 @@ class AgentCard(QFrame):
         self._proc = proc
         self._set_status("busy")
         self._start_thinking()
+        # v1.6.38 — record turn start for /timer.
+        self._turn_started_ts = time.monotonic()
         try:
             proc.start()
         except Exception as exc:
@@ -1935,6 +1986,10 @@ class AgentCard(QFrame):
         self._append_terminal(f"\n[stderr] {data}")
 
     def _on_finished(self, exit_code: int, exit_status: QProcess.ExitStatus) -> None:
+        # v1.6.38 — freeze turn duration for /timer before any UI work.
+        if self._turn_started_ts is not None:
+            self._last_turn_seconds = time.monotonic() - self._turn_started_ts
+            self._turn_started_ts = None
         if not self._reply_started:
             # Process exited with no stdout — show a meaningful error.
             self._stop_thinking()

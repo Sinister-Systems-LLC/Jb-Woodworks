@@ -4,6 +4,27 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not component versions (each lane has its own).
 
+## v1.6.38 — 2026-05-22
+
+**`/timer` — elapsed time for the in-flight turn (or last completed
+duration when idle). Pairs with v1.6.37 `/cancel`.**
+
+- Tracks `self._turn_started_ts` (monotonic) on every `_on_send` right
+  before `proc.start()`. `_on_finished` and `/cancel` both freeze the
+  duration into `self._last_turn_seconds` and clear the start ts.
+- `/timer` reports three states:
+  - in-flight: `[/timer] in-flight turn: 4m 17s elapsed (use /cancel
+    or Esc to kill)`
+  - idle w/ history: `[/timer] no active turn · last turn took 12.3s`
+  - idle no history: `[/timer] no active turn · no completed turns yet`
+- `/cancel` now appends elapsed: `[/cancel] turn cancelled after 4m 17s
+  — session still resumable`.
+- New `_fmt_duration()` static helper renders `<60s` as `Xs`, `<1h` as
+  `Mm Ss`, else `Hh Mm`. None → `--`.
+- 33 slash commands now (added /timer).
+- MANIFEST.json 1.6.37 → 1.6.38.
+- `__init__.py __version__ = "1.6.38"`.
+
 ## v1.6.37 — 2026-05-22
 
 **`/cancel` + Esc keyboard shortcut — kill the in-flight turn cleanly
