@@ -32,7 +32,7 @@ from pathlib import Path
 from typing import Optional
 
 from PyQt6.QtCore import QEvent, QProcess, QProcessEnvironment, Qt, QTimer, pyqtSignal
-from PyQt6.QtGui import QColor, QFont, QKeyEvent, QTextCursor
+from PyQt6.QtGui import QColor, QFont, QKeyEvent, QKeySequence, QShortcut, QTextCursor
 from PyQt6.QtWidgets import (
     QFrame, QGraphicsDropShadowEffect, QHBoxLayout, QLabel, QLineEdit,
     QPlainTextEdit, QPushButton, QScrollArea, QSizePolicy, QSpacerItem,
@@ -273,6 +273,10 @@ class AgentCard(QFrame):
         self._stream_buf: str = ""
         self._stream_text_started: bool = False
         self._stream_tools_run: list[str] = []
+        # v1.6.12 cumulative cost + token tally across all turns in this card
+        self._total_cost_usd: float = 0.0
+        self._total_in_tokens: int = 0
+        self._total_out_tokens: int = 0
         self._build()
         # Phase-1 memory: heartbeat refresh every 30s while card alive
         self._hb_timer = QTimer(self)
@@ -283,6 +287,8 @@ class AgentCard(QFrame):
         self._spinner_timer = QTimer(self)
         self._spinner_timer.setInterval(100)
         self._spinner_timer.timeout.connect(self._tick_spinner)
+        # v1.6.12 — Ctrl+L clears the terminal (jcode keyboard parity)
+        QShortcut(QKeySequence("Ctrl+L"), self, activated=self._on_clear_shortcut)
 
     # ── UI ────────────────────────────────────────────────────────────
     def _build(self) -> None:
@@ -323,6 +329,20 @@ class AgentCard(QFrame):
             f"padding: 2px 9px; font-size: 10px; font-weight: 600;"
         )
 
+        # v1.6.12 — cumulative cost pill (updates after each turn's result event)
+        self._cost_pill = QLabel("$0.0000")
+        self._cost_pill.setObjectName("ModePill")
+        self._cost_pill.setStyleSheet(
+            f"color: {PURPLE_PRIMARY}; background-color: transparent; "
+            f"border: 1px solid {BORDER}; border-radius: 10px; "
+            f"padding: 2px 9px; font-size: 10px; font-weight: 600; "
+            f"font-family: 'JetBrains Mono', monospace;"
+        )
+        self._cost_pill.setToolTip(
+            "Cumulative claude API cost across all turns in this card. "
+            "Type /cost in the chat for the full breakdown."
+        )
+
         # Close button — SVG x-mark, no glyph
         close_btn = QPushButton()
         close_btn.setObjectName("CardCloseBtn")
@@ -340,6 +360,7 @@ class AgentCard(QFrame):
         hdr.addWidget(title)
         hdr.addWidget(mode_pill)
         hdr.addWidget(self._turn_pill)
+        hdr.addWidget(self._cost_pill)
         hdr.addStretch(1)
         hdr.addWidget(close_btn)
         root.addLayout(hdr)
@@ -464,6 +485,11 @@ class AgentCard(QFrame):
         self.input.setEnabled(True)
         self.send_btn.setEnabled(True)
         self.input.setFocus()
+
+    def _on_clear_shortcut(self) -> None:
+        """Ctrl+L → mirror /clear (jcode keybinding parity)."""
+        self.terminal.clear()
+        self._append_terminal("[cleared via Ctrl+L]\n")
 
     def _tick_spinner(self) -> None:
         import time as _t
@@ -601,6 +627,18 @@ class AgentCard(QFrame):
         if head == "/clear":
             self.terminal.clear()
             self._append_terminal("[cleared]\n")
+            return True
+        if head == "/cost":
+            n_turns = len([t for t in self.session.turns if t.get("user")])
+            avg_cost = (self._total_cost_usd / n_turns) if n_turns else 0.0
+            self._append_terminal(
+                f"[/cost]  cumulative spend for this card:\n"
+                f"  turns      : {n_turns}\n"
+                f"  input tok  : {self._total_in_tokens:,}\n"
+                f"  output tok : {self._total_out_tokens:,}\n"
+                f"  total cost : ${self._total_cost_usd:.4f}\n"
+                f"  avg / turn : ${avg_cost:.4f}\n"
+            )
             return True
         if head == "/history":
             n = len(self.session.turns)
@@ -921,6 +959,21 @@ class AgentCard(QFrame):
                 f"\n  ▸ {in_tok:,} in + {out_tok:,} out tokens "
                 f"(cache_read={cache_read:,}) · ${cost:.4f} · {dur:.1f}s{tools_note}\n"
             )
+            # v1.6.12 — accumulate + refresh the header cost pill.
+            self._total_cost_usd += float(cost)
+            self._total_in_tokens += int(in_tok)
+            self._total_out_tokens += int(out_tok)
+            try:
+                self._cost_pill.setText(f"${self._total_cost_usd:.4f}")
+                self._cost_pill.setToolTip(
+                    f"Cumulative cost across all turns in this card.\n"
+                    f"Total in:  {self._total_in_tokens:,} tokens\n"
+                    f"Total out: {self._total_out_tokens:,} tokens\n"
+                    f"Total cost: ${self._total_cost_usd:.4f}\n"
+                    f"Type /cost in the chat for the full breakdown."
+                )
+            except Exception:
+                pass
         elif t == "system":
             # System events (init / status / hook_started / hook_response).
             # We don't render these to keep the terminal quiet — too verbose.

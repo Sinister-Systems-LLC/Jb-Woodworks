@@ -4,6 +4,29 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not component versions (each lane has its own).
 
+## v1.6.12 — 2026-05-22
+
+**Cumulative cost telemetry + Ctrl+L = clear.** Stacks on top of v1.6.11
+jcode-parity stream-json wiring. Operator: *"relaunch and test it and keep
+working"* — v1.6.11 verified working end-to-end (stream-json parser test
+PASS: 19 events parsed, 6/176 tokens, $0.07 / 4.4s footer captured).
+
+- **CUMULATIVE COST PILL**: new mono pill in the card header strip
+  (`$0.0042` style) that accumulates across all turns in the card.
+  Updated in `_handle_stream_event` when the `result` event lands.
+  Tooltip shows the full breakdown (in tok / out tok / total cost).
+  Pill color is `PURPLE_PRIMARY` so it reads as Sanctum brand.
+- **AgentCard `_total_cost_usd` / `_total_in_tokens` / `_total_out_tokens`**:
+  3 new instance attrs; auto-accumulate from the per-turn `result` event.
+- **/cost SLASH COMMAND**: prints the full breakdown into the terminal
+  with avg/turn so operator can decide whether to keep going or /close
+  the card to limit spend.
+- **Ctrl+L = clear** keyboard shortcut. jcode-style keybind parity —
+  operator can clear scrollback without typing /clear. Bound at the
+  AgentCard level so it works when any input/terminal child has focus.
+- **MANIFEST.json** version 1.6.11 → 1.6.12.
+- **VERSION**: `__init__.py __version__ = "1.6.12"`.
+
 ## v1.6.11 — 2026-05-22
 
 **Real jcode parity — stream-json token-by-token + thinking + tool_use + cost.**
