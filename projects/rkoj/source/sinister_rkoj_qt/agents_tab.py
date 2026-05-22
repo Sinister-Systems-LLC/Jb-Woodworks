@@ -490,6 +490,10 @@ class AgentCard(QFrame):
         self._current_tool: str | None = None
         # v1.6.18 — placeholder hint rotation (cycles ~every 5s while idle).
         self._placeholder_idx = 0
+        # v1.6.27 — collapsed state (toggled via chevron button or Ctrl+M).
+        # When True, hides terminal + thinking label + input row; only
+        # the 40px header strip remains. Useful when running 5+ cards.
+        self._collapsed: bool = False
         self._build()
         # Phase-1 memory: heartbeat refresh every 30s while card alive
         self._hb_timer = QTimer(self)
@@ -502,6 +506,8 @@ class AgentCard(QFrame):
         self._spinner_timer.timeout.connect(self._tick_spinner)
         # v1.6.12 — Ctrl+L clears the terminal (jcode keyboard parity)
         QShortcut(QKeySequence("Ctrl+L"), self, activated=self._on_clear_shortcut)
+        # v1.6.27 — Ctrl+M toggles card collapse
+        QShortcut(QKeySequence("Ctrl+M"), self, activated=self._toggle_collapsed)
         # v1.6.18 — rotate the input placeholder every 5s while idle so
         # operator discovers the keybinds (/help, Shift+Enter, Ctrl+L)
         # without having to read the README.
@@ -563,6 +569,19 @@ class AgentCard(QFrame):
             "Type /cost in the chat for the full breakdown."
         )
 
+        # v1.6.27 — collapse chevron (left of close-X)
+        self._collapse_btn = QPushButton("▾")
+        self._collapse_btn.setObjectName("CardCloseBtn")  # reuse styling
+        self._collapse_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self._collapse_btn.setFixedSize(22, 22)
+        self._collapse_btn.setStyleSheet(
+            f"QPushButton {{ color: {MUTED_FG}; background: transparent; "
+            f"border: none; font-size: 16px; font-weight: 700; }}"
+            f"QPushButton:hover {{ color: {PURPLE_PRIMARY}; }}"
+        )
+        self._collapse_btn.setToolTip("Collapse / expand this card (Ctrl+M)")
+        self._collapse_btn.clicked.connect(self._toggle_collapsed)
+
         # Close button — SVG x-mark, no glyph
         close_btn = QPushButton()
         close_btn.setObjectName("CardCloseBtn")
@@ -582,6 +601,7 @@ class AgentCard(QFrame):
         hdr.addWidget(self._turn_pill)
         hdr.addWidget(self._cost_pill)
         hdr.addStretch(1)
+        hdr.addWidget(self._collapse_btn)
         hdr.addWidget(close_btn)
         root.addLayout(hdr)
 
@@ -746,6 +766,28 @@ class AgentCard(QFrame):
         """Ctrl+L → mirror /clear (jcode keybinding parity)."""
         self.terminal.clear()
         self._append_terminal("[cleared via Ctrl+L]\n")
+
+    def _toggle_collapsed(self) -> None:
+        """v1.6.27 — collapse / expand the card body (terminal + input).
+        Header stays visible so operator can still see project / status /
+        cost / turn-count and click + to expand. Useful with 5+ active
+        cards stacked in the niri-scroll grid."""
+        self._collapsed = not self._collapsed
+        # Toggle child visibility
+        self.terminal.setVisible(not self._collapsed)
+        if self._collapsed:
+            self._thinking_label.setVisible(False)
+        self.input.setVisible(not self._collapsed)
+        self.send_btn.setVisible(not self._collapsed)
+        # Swap chevron glyph
+        self._collapse_btn.setText("▸" if self._collapsed else "▾")
+        # Adjust min-height: 40px header strip vs 280px full
+        if self._collapsed:
+            self.setMinimumHeight(40)
+            self.setMaximumHeight(54)   # tight strip
+        else:
+            self.setMaximumHeight(16777215)  # QWIDGETSIZE_MAX
+            self.setMinimumHeight(280)
 
     def _on_slash_completed(self, cmd: str) -> None:
         """Operator picked a slash command from the autocomplete popup.

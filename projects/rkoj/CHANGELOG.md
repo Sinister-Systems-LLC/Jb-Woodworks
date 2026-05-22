@@ -4,6 +4,26 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not component versions (each lane has its own).
 
+## v1.6.27 — 2026-05-22
+
+**Card-collapse toggle** — operator can collapse any agent card to a
+40-54px header strip (hiding terminal + thinking label + input + Send)
+so 5+ active cards stack compactly in the niri-scroll grid.
+
+- New `_collapse_btn` chevron in the card header (between `_cost_pill`
+  and close-X). `▾` when expanded, `▸` when collapsed. Hover tints
+  purple. Tooltip "Collapse / expand this card (Ctrl+M)".
+- `_toggle_collapsed()` flips `_collapsed` boolean, toggles visibility
+  of terminal / thinking label / input / send button. Adjusts min-height
+  280 → 40 + max-height 16777215 → 54 (Qt's QWIDGETSIZE_MAX is the
+  expand-back value).
+- `Ctrl+M` keyboard shortcut bound at AgentCard scope (mirrors Ctrl+L
+  for clear).
+- Streaming continues while collapsed — operator can expand later and
+  see what arrived. Cost pill / turn pill update normally.
+- MANIFEST.json 1.6.26 → 1.6.27.
+- `__init__.py __version__ = "1.6.27"`.
+
 ## v1.6.26 — 2026-05-22
 
 **Bottom-status-bar live agent count + brain entry for the v1.6.20-25 polish cluster.**
