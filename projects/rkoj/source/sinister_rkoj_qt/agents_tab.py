@@ -104,6 +104,8 @@ SLASH_COMMANDS: list[tuple[str, str]] = [
     ("/focus",    "focus the input box"),
     ("/grep",     "highlight matching text in the terminal (yellow bg)"),
     ("/grep-clear", "remove /grep highlights"),
+    ("/grep-next", "scroll to the next /grep match"),
+    ("/grep-prev", "scroll to the previous /grep match"),
     ("/history",  "show recent turns with previews"),
     ("/memory",   "forge-memory-bridge BM25 recall"),
     ("/mcp",      "list MCP servers from ~/.claude/.mcp.json"),
@@ -550,6 +552,11 @@ class AgentCard(QFrame):
         # When True, hides terminal + thinking label + input row; only
         # the 40px header strip remains. Useful when running 5+ cards.
         self._collapsed: bool = False
+        # v1.6.35 — /grep state: last pattern + cursor positions of every
+        # match + current index (wraps with /grep-next + /grep-prev).
+        self._grep_pattern: str = ""
+        self._grep_positions: list[int] = []
+        self._grep_idx: int = -1
         self._build()
         # Phase-1 memory: heartbeat refresh every 30s while card alive
         self._hb_timer = QTimer(self)
@@ -1217,11 +1224,14 @@ class AgentCard(QFrame):
             # overlay so the document's underlying char formats (markdown
             # code blocks, dim timestamp gutter) stay intact. /grep-clear
             # removes the overlay without touching anything else.
+            # v1.6.35 — also stores match positions so /grep-next /
+            # /grep-prev can cycle through without re-searching.
             parts = cmd.split(None, 1)
             if len(parts) < 2 or not parts[1].strip():
                 self._append_terminal(
                     "[/grep] usage: /grep <pattern>\n"
                     "  Highlights matching text with yellow background.\n"
+                    "  /grep-next + /grep-prev cycle through matches.\n"
                     "  /grep-clear removes the highlights.\n"
                 )
                 return True
@@ -1229,9 +1239,8 @@ class AgentCard(QFrame):
             try:
                 from PyQt6.QtWidgets import QTextEdit
                 doc = self.terminal.document()
-                # Walk the document, find every occurrence, build an
-                # ExtraSelection per match.
                 extras: list = []
+                positions: list[int] = []
                 cursor = QTextCursor(doc)
                 hl_fmt = QTextCharFormat()
                 hl_fmt.setBackground(QColor("#FFCC00"))
@@ -1244,15 +1253,18 @@ class AgentCard(QFrame):
                     sel.cursor = cursor
                     sel.format = hl_fmt
                     extras.append(sel)
+                    positions.append(cursor.position())
                 self.terminal.setExtraSelections(extras)
+                self._grep_pattern = pattern
+                self._grep_positions = positions
+                self._grep_idx = 0 if positions else -1
                 if extras:
-                    # Scroll the FIRST match into view
                     first = doc.find(pattern)
                     if not first.isNull():
                         self.terminal.setTextCursor(first)
                     self._append_terminal(
-                        f"[/grep] highlighted {len(extras)} match(es) for "
-                        f"'{pattern}' — /grep-clear to remove\n"
+                        f"[/grep] {len(extras)} match(es) for '{pattern}' "
+                        f"— /grep-next + /grep-prev cycle; /grep-clear removes\n"
                     )
                 else:
                     self._append_terminal(
@@ -1264,9 +1276,31 @@ class AgentCard(QFrame):
         if head == "/grep-clear":
             try:
                 self.terminal.setExtraSelections([])
+                self._grep_pattern = ""
+                self._grep_positions = []
+                self._grep_idx = -1
                 self._append_terminal("[/grep-clear] highlights cleared\n")
             except Exception as exc:
                 self._append_terminal(f"[/grep-clear] failed: {exc}\n")
+            return True
+        if head in ("/grep-next", "/grep-prev"):
+            if not self._grep_positions:
+                self._append_terminal(
+                    f"[{head}] no active /grep — run `/grep <pattern>` first\n"
+                )
+                return True
+            n = len(self._grep_positions)
+            step = 1 if head == "/grep-next" else -1
+            self._grep_idx = (self._grep_idx + step) % n
+            pos = self._grep_positions[self._grep_idx]
+            cur = QTextCursor(self.terminal.document())
+            cur.setPosition(pos)
+            self.terminal.setTextCursor(cur)
+            self.terminal.ensureCursorVisible()
+            self._append_terminal(
+                f"[{head}] match {self._grep_idx + 1} / {n} "
+                f"for '{self._grep_pattern}'\n"
+            )
             return True
         if head == "/model":
             # v1.6.19 — show or change the model alias for subsequent turns.
@@ -2231,6 +2265,13 @@ class AgentsView(QWidget):
         self._actions_layout.setSpacing(6)
         empty_layout.addWidget(self._actions_host)
 
+        # v1.6.35 — project-color legend so the v1.6.33 left-stripe
+        # colors are self-documenting. Shown only if at least one
+        # project from the curated palette is known.
+        self._legend_host = self._build_color_legend()
+        if self._legend_host is not None:
+            empty_layout.addWidget(self._legend_host)
+
         empty_layout.addStretch(2)
         root.addWidget(self.empty_panel)
         self._rebuild_recent_sessions()
@@ -2350,6 +2391,53 @@ class AgentsView(QWidget):
             mode=sess.get("mode", "claude"),
             session_uuid=sess.get("session_uuid"),
         )
+
+    # v1.6.35 — project-color legend in the empty state. Renders a single
+    # wrapping row of small color-chip + project-display pairs so the
+    # v1.6.33 left-stripe colors are self-documenting.
+    def _build_color_legend(self) -> QFrame | None:
+        # Show only the projects from the curated palette (deterministic
+        # hash colors are too many to list).
+        projects = state.load_projects()
+        proj_by_key = {p.key: p for p in projects}
+        rows: list[tuple[str, str]] = []
+        for key, color in _PROJECT_COLORS.items():
+            if key in proj_by_key:
+                rows.append((proj_by_key[key].display, color))
+        if not rows:
+            return None
+        host = QFrame()
+        host.setStyleSheet("QFrame { background: transparent; }")
+        outer = QVBoxLayout(host)
+        outer.setContentsMargins(0, 20, 0, 0)
+        outer.setSpacing(8)
+        title = QLabel("Project color stripe legend")
+        title.setStyleSheet(
+            f"color: {MUTED_FG}; background: transparent; "
+            f"font-size: 11px; font-weight: 600; letter-spacing: 1px; "
+            f"text-transform: uppercase; padding: 0 4px;"
+        )
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        outer.addWidget(title)
+        # Flow of chips — use a single horizontal layout (wraps via Qt's
+        # automatic line-break on narrow widths if we set wordWrap on
+        # the labels; close enough for a row of ~13 chips at 240px each).
+        flow = QHBoxLayout()
+        flow.setContentsMargins(0, 0, 0, 0)
+        flow.setSpacing(12)
+        flow.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        for display, color in rows:
+            chip = QLabel(
+                f"<span style='color:{color};font-weight:800;font-size:14px'>●</span> "
+                f"<span style='color:{MUTED_FG};font-size:11px'>{display}</span>"
+            )
+            chip.setTextFormat(Qt.TextFormat.RichText)
+            chip.setStyleSheet("background: transparent;")
+            flow.addWidget(chip)
+        flow_wrap = QFrame()
+        flow_wrap.setLayout(flow)
+        outer.addWidget(flow_wrap)
+        return host
 
     # ── v1.6.29 operator-action urgent rows in empty state ─────────────
     def _rebuild_operator_actions(self) -> None:

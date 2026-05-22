@@ -4,6 +4,25 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not component versions (each lane has its own).
 
+## v1.6.35 — 2026-05-22
+
+**`/grep-next` + `/grep-prev` + project-color legend in empty state.**
+
+- **/grep-next + /grep-prev**: cycle through /grep matches without
+  re-typing the pattern. `/grep` now stores match cursor positions in
+  `self._grep_positions: list[int]` + index `self._grep_idx`. /grep-next
+  increments (wraps to first); /grep-prev decrements (wraps to last).
+  Each prints `match N / M for '<pattern>'`. Empty-state guard tells
+  operator to run /grep first.
+- **Project-color legend in empty state**: a row of color-chips at the
+  bottom of the AgentsView empty-state, mapping each curated palette
+  color to its project display name. So `🟢 Sinister Panel` /
+  `🟡 Snap Emulator API` / etc. are self-documenting. Hidden when no
+  curated-palette projects are registered (projects.json fallback).
+- 27 slash commands now (added /grep-next + /grep-prev).
+- MANIFEST.json 1.6.34 → 1.6.35.
+- `__init__.py __version__ = "1.6.35"`.
+
 ## v1.6.34 — 2026-05-22
 
 **`/grep <pattern>` + `/grep-clear`** — highlight matching text in the
