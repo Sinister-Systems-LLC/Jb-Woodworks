@@ -4,6 +4,20 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not component versions (each lane has its own).
 
+## v1.6.13 — 2026-05-22
+
+**Quick-wins polish.** While operator was testing v1.6.12:
+
+- **AUTO-FOCUS INPUT ON SPAWN**: AgentsView.spawn_agent schedules a
+  `QTimer.singleShot(0, card.input.setFocus)` so operator can type
+  immediately after a card lands without clicking. (0ms delay so focus
+  arrives after Qt finishes laying out the new card.)
+- **TERMINAL MIN-HEIGHT 170 → 240**: agents were getting a tiny 170px
+  scrolling window for long replies. 240px breathing room (card auto-
+  grows beyond this when the operator drags the window taller).
+- **MANIFEST.json** version 1.6.12 → 1.6.13.
+- **VERSION**: `__init__.py __version__ = "1.6.13"`.
+
 ## v1.6.12 — 2026-05-22
 
 **Cumulative cost telemetry + Ctrl+L = clear.** Stacks on top of v1.6.11

@@ -365,14 +365,15 @@ class AgentCard(QFrame):
         hdr.addWidget(close_btn)
         root.addLayout(hdr)
 
-        # Terminal
+        # Terminal — v1.6.13 bumped min-height 170 → 240 for breathing room
+        # (operator was scrolling within a tiny window during long replies).
         self.terminal = QPlainTextEdit()
         self.terminal.setObjectName("Terminal")
         self.terminal.setReadOnly(True)
         font = QFont("Cascadia Mono", 10)
         font.setStyleHint(QFont.StyleHint.Monospace)
         self.terminal.setFont(font)
-        self.terminal.setMinimumHeight(170)
+        self.terminal.setMinimumHeight(240)
         root.addWidget(self.terminal, stretch=1)
 
         # Input row — multi-line, Enter to send, Shift+Enter for newline
@@ -1322,6 +1323,13 @@ class AgentsView(QWidget):
         self._cards[sess.pane_id] = card
         self._rebuild_folder_chips()
         self._rebuild_grid()
+        # v1.6.13 — auto-focus the input so operator can immediately type
+        # without clicking. Use a 0ms timer so focus lands after Qt has
+        # finished laying out the new card.
+        try:
+            QTimer.singleShot(0, card.input.setFocus)
+        except Exception:
+            pass
         return sess.pane_id
 
     def _remove_card(self, pane_id: str) -> None:
