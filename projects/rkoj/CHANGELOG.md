@@ -4,6 +4,28 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not command-versions (each lane has its own).
 
+## v1.6.54 — 2026-05-22
+
+**`/uptime` — card lifetime + turn count + last activity + live state.**
+
+- New `_spawn_ts: float` set at construction (monotonic). `_last_send_ts`
+  updated in `_on_send` right after `_turn_started_ts`.
+- Output:
+  ```
+  [/uptime]
+    card lifetime : 47m 12s
+    turns sent    : 14
+    last activity : 3m 47s ago
+    current state : idle (last turn took 8.4s)
+  ```
+- When a turn is in-flight, the state line reads `in-flight (Xm Ys elapsed)`
+  pulling from `_turn_started_ts` to match the header pill / /timer.
+- Reuses the `_fmt_duration` helper so output formatting is uniform
+  across /timer / /cancel / /uptime / live elapsed pill.
+- 48 slash commands now (added /uptime).
+- MANIFEST.json 1.6.53 → 1.6.54.
+- `__init__.py __version__ = "1.6.54"`.
+
 ## v1.6.53 — 2026-05-22
 
 **`/summarize` — canned TL;DR prompt sent to EVE asking for a "where

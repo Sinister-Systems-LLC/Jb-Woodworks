@@ -140,6 +140,7 @@ SLASH_COMMANDS: list[tuple[str, str]] = [
     ("/tags",     "fleet-wide tag census (which tags + which cards carry them)"),
     ("/timer",    "show elapsed time of the in-flight turn (or last duration)"),
     ("/untag",    "remove a label chip from this card"),
+    ("/uptime",   "card lifetime + turn count + last activity"),
     ("/usage",    "cross-card RKOJ spend totals (from disk)"),
     ("/vault",    "Sinister Vault disk usage + daemon port"),
 ]
@@ -621,6 +622,12 @@ class AgentCard(QFrame):
         # both; /cancel + _on_finished clear/update them.
         self._turn_started_ts: float | None = None
         self._last_turn_seconds: float | None = None
+        # v1.6.54 — card spawn time (monotonic) for /uptime. Set once at
+        # construction so it survives mode pivots, message sends, etc.
+        self._spawn_ts: float = time.monotonic()
+        # v1.6.54 — wall-clock timestamp of last send (turn dispatch) so
+        # /uptime can show "last activity 3m ago".
+        self._last_send_ts: float | None = None
         self._build()
         # v1.6.45 — render any restored tags after build.
         self._rebuild_tags()
@@ -1839,6 +1846,28 @@ class AgentCard(QFrame):
             # builds a tag census echoed back to this card's terminal.
             self.tags_census_requested.emit(self.session.pane_id)
             return True
+        if head == "/uptime":
+            # v1.6.54 — card lifetime + turn count + last activity.
+            now = time.monotonic()
+            lifetime = now - self._spawn_ts
+            n_turns = len([t for t in self.session.turns if t.get("user")])
+            if self._last_send_ts is None:
+                last_act = "(no turns sent yet)"
+            else:
+                last_act = self._fmt_duration(now - self._last_send_ts) + " ago"
+            if self._turn_started_ts is not None:
+                live = self._fmt_duration(now - self._turn_started_ts)
+                status_line = f"in-flight ({live} elapsed)"
+            else:
+                status_line = f"idle (last turn took {self._fmt_duration(self._last_turn_seconds)})"
+            self._append_terminal(
+                f"[/uptime]\n"
+                f"  card lifetime : {self._fmt_duration(lifetime)}\n"
+                f"  turns sent    : {n_turns}\n"
+                f"  last activity : {last_act}\n"
+                f"  current state : {status_line}\n"
+            )
+            return True
         if head == "/rename":
             # v1.6.44 — change the agent display name. Updates the
             # header title label + session.agent_name. Persists on
@@ -2290,6 +2319,8 @@ class AgentCard(QFrame):
         self._start_thinking()
         # v1.6.38 — record turn start for /timer.
         self._turn_started_ts = time.monotonic()
+        # v1.6.54 — update last activity timestamp for /uptime.
+        self._last_send_ts = self._turn_started_ts
         # v1.6.39 — show + tick the live elapsed pill in the header.
         self._start_elapsed()
         try:
