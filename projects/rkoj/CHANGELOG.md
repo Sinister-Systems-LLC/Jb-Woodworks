@@ -4,6 +4,37 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not component versions (each lane has its own).
 
+## v1.6.18 — 2026-05-22
+
+**Live tool-name in spinner + rotating placeholder hints + /devices + /export.**
+
+- **Tool name in spinner**: when claude opens a `tool_use` block, the
+  spinner swaps from `⠹ EVE is thinking…` to `⠹ ● Bash… (4.7s)`.
+  `_current_tool` is set on `content_block_start` + cleared on `result`.
+  Operator sees the LIVE step instead of generic thinking.
+- **Rotating input placeholder**: 5-second QTimer cycles through 6
+  discoverable hints in the input placeholder text — "Type / to
+  autocomplete", "Ctrl+L clears scrollback", "Shift+Enter = multi-line",
+  "/save writes a resume-point", "/cost shows cumulative spend",
+  "/skills lists Sanctum skills". Pauses when the input has text or a
+  turn is busy.
+- **/devices slash command**: inline ADB device list (mirrors the
+  Devices tab) — state + serial + model. Tells operator how to add
+  devices if none connected.
+- **/export slash command**: dumps the full transcript to a markdown
+  file under `_shared-memory/resume-points/EVE on <project>/<ts>-export.md`.
+  Operator can share / grep / commit the conversation. Schema: H1 title
+  + metadata bullets (pane_id, session_uuid, mode, cost, turns) + per-turn
+  H2 with operator-in-fenced-block + EVE-as-prose.
+- Both new commands added to `SLASH_COMMANDS` registry so they appear
+  in the v1.6.17 autocomplete popup.
+- MANIFEST.json 1.6.17 → 1.6.18.
+- `__init__.py __version__ = "1.6.18"`.
+
+**Build note**: classifier briefly throttled mid-iteration; build had to
+retry after a 180s wakeup. Captured in the brain entry
+`rkoj-stream-json-jcode-parity-2026-05-22.md` (next ship).
+
 ## v1.6.17 — 2026-05-22
 
 **Slash-command autocomplete popup** (jcode keybind parity). Operator

@@ -64,6 +64,8 @@ SLASH_COMMANDS: list[tuple[str, str]] = [
     ("/help",     "show all slash commands"),
     ("/clear",    "clear terminal scrollback (Ctrl+L)"),
     ("/cost",     "cumulative spend breakdown"),
+    ("/devices",  "list connected ADB devices inline"),
+    ("/export",   "export conversation to a markdown file"),
     ("/history",  "show recent turns with previews"),
     ("/memory",   "forge-memory-bridge BM25 recall"),
     ("/mcp",      "list MCP servers from ~/.claude/.mcp.json"),
@@ -453,6 +455,12 @@ class AgentCard(QFrame):
         # so we can apply markdown formatting (code fences, inline code, bold)
         # at end-of-turn without re-scanning the whole terminal.
         self._reply_start_pos: int = 0
+        # v1.6.18 — current tool name (set when a tool_use block opens,
+        # cleared on result event); displayed in the spinner instead of
+        # the generic "EVE is thinking" so operator sees the LIVE step.
+        self._current_tool: str | None = None
+        # v1.6.18 — placeholder hint rotation (cycles ~every 5s while idle).
+        self._placeholder_idx = 0
         self._build()
         # Phase-1 memory: heartbeat refresh every 30s while card alive
         self._hb_timer = QTimer(self)
@@ -465,6 +473,13 @@ class AgentCard(QFrame):
         self._spinner_timer.timeout.connect(self._tick_spinner)
         # v1.6.12 — Ctrl+L clears the terminal (jcode keyboard parity)
         QShortcut(QKeySequence("Ctrl+L"), self, activated=self._on_clear_shortcut)
+        # v1.6.18 — rotate the input placeholder every 5s while idle so
+        # operator discovers the keybinds (/help, Shift+Enter, Ctrl+L)
+        # without having to read the README.
+        self._placeholder_timer = QTimer(self)
+        self._placeholder_timer.setInterval(5_000)
+        self._placeholder_timer.timeout.connect(self._rotate_placeholder)
+        self._placeholder_timer.start()
 
     # ── UI ────────────────────────────────────────────────────────────
     def _build(self) -> None:
@@ -748,8 +763,42 @@ class AgentCard(QFrame):
         ch = self._SPINNER[self._spinner_idx % len(self._SPINNER)]
         self._spinner_idx += 1
         elapsed = _t.time() - self._thinking_start_ts
+        # v1.6.18 — show the current tool if one is active, else generic.
+        if self._current_tool:
+            label = f"● {self._current_tool}…"
+        else:
+            label = "EVE is thinking…"
         self._thinking_label.setText(
-            f"{ch}  EVE is thinking…  ({elapsed:.1f}s)"
+            f"{ch}  {label}  ({elapsed:.1f}s)"
+        )
+
+    # v1.6.18 — rotating placeholder hints. Cycles a small set of
+    # operator-discoverable hints in the input's placeholderText.
+    _PLACEHOLDERS_TEMPLATE = [
+        "Talk to {who} — Enter to send · Shift+Enter for newline · /help",
+        "Type / to autocomplete a slash command · /help lists all 14",
+        "Ctrl+L clears scrollback · /save writes a resume-point",
+        "Shift+Enter = multi-line · /retry resends the last message",
+        "/cost shows cumulative spend · /persona prints identity",
+        "/skills lists Sanctum skills · /vault shows vault status",
+    ]
+
+    def _rotate_placeholder(self) -> None:
+        if not hasattr(self, "input"):
+            return
+        # Skip rotation when input has text or busy turn — don't distract.
+        try:
+            if self.input.toPlainText():
+                return
+            if self._proc is not None and self._proc.state() != QProcess.ProcessState.NotRunning:
+                return
+        except Exception:
+            return
+        idx = self._placeholder_idx % len(self._PLACEHOLDERS_TEMPLATE)
+        self._placeholder_idx += 1
+        who = eve_label(self.session.agent_name, self.session.project_key)
+        self.input.setPlaceholderText(
+            self._PLACEHOLDERS_TEMPLATE[idx].format(who=who)
         )
 
     # ── Slash-command intercept ───────────────────────────────────────
@@ -891,6 +940,64 @@ class AgentCard(QFrame):
                 f"  total cost : ${self._total_cost_usd:.4f}\n"
                 f"  avg / turn : ${avg_cost:.4f}\n"
             )
+            return True
+        if head == "/devices":
+            # v1.6.18 — adb device list inline (mirrors Devices tab).
+            devs = state.list_adb_devices()
+            if not devs:
+                self._append_terminal(
+                    "[/devices] no ADB devices connected\n"
+                    "  Plug a phone in (USB) or run `adb connect <ip>:5555`.\n"
+                )
+            else:
+                self._append_terminal(f"[/devices] {len(devs)} device(s):\n")
+                for d in devs:
+                    self._append_terminal(
+                        f"  {d.state:14s}  {d.serial:24s}  {d.model or '(no model)'}\n"
+                    )
+            return True
+        if head == "/export":
+            # v1.6.18 — write the full transcript to a markdown file under
+            # the agent's resume_dir so operator can share or grep it.
+            try:
+                exp_dir = Path(self.session.resume_dir or
+                              (state.SHARED_MEMORY / "exports"))
+                exp_dir.mkdir(parents=True, exist_ok=True)
+                ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H%M%SZ")
+                fp = exp_dir / f"{ts}-export.md"
+                lines: list[str] = [
+                    f"# {self.session.display_name}",
+                    f"",
+                    f"- pane_id: `{self.session.pane_id}`",
+                    f"- session_uuid: `{self.session.session_uuid}`",
+                    f"- project_key: `{self.session.project_key}`",
+                    f"- mode: `{self.session.mode}`",
+                    f"- exported_at: {datetime.now(timezone.utc).isoformat()}",
+                    f"- turns: {len(self.session.turns)}",
+                    f"- total_cost: ${self._total_cost_usd:.4f}",
+                    f"",
+                    "---",
+                    "",
+                ]
+                for i, t in enumerate(self.session.turns, 1):
+                    lines += [
+                        f"## Turn {i}",
+                        "",
+                        "### Operator",
+                        "",
+                        "```",
+                        (t.get("user") or "").rstrip(),
+                        "```",
+                        "",
+                        "### EVE",
+                        "",
+                        (t.get("assistant") or "").rstrip(),
+                        "",
+                    ]
+                fp.write_text("\n".join(lines), encoding="utf-8")
+                self._append_terminal(f"[/export] wrote {fp}\n")
+            except Exception as exc:
+                self._append_terminal(f"[/export] failed: {exc}\n")
             return True
         if head == "/history":
             n = len(self.session.turns)
@@ -1169,6 +1276,10 @@ class AgentCard(QFrame):
                 if cb.get("type") == "tool_use":
                     tool = cb.get("name", "")
                     self._stream_tools_run.append(tool)
+                    # v1.6.18 — surface the active tool in the spinner so
+                    # operator sees the LIVE step (Bash / Read / Edit / ...)
+                    # not a generic "EVE is thinking".
+                    self._current_tool = tool
                     # Tool args preview — strip to 80 chars
                     inp = cb.get("input", {})
                     try:
@@ -1202,6 +1313,10 @@ class AgentCard(QFrame):
                     if preview:
                         self._append_terminal(f"  ✓ {preview}\n")
         elif t == "result":
+            # v1.6.18 — clear active tool name (the spinner will go back to
+            # generic "EVE is thinking" if more text streams in, though
+            # typically the spinner is stopped by now).
+            self._current_tool = None
             # Final summary: tokens + cost + duration in a footer line.
             usage = event.get("usage", {}) or {}
             in_tok = usage.get("input_tokens", 0) or 0
