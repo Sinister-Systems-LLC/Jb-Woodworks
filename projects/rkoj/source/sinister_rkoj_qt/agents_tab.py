@@ -1471,15 +1471,25 @@ class AgentCard(QFrame):
             # v1.6.35 — also stores match positions so /grep-next /
             # /grep-prev can cycle through without re-searching.
             parts = cmd.split(None, 1)
+            # v1.6.47 — /grep with no arg reuses _grep_pattern if present
+            # (restored from resume-point on card spawn). Useful workflow:
+            # close card → re-open → type /grep → highlights re-apply.
             if len(parts) < 2 or not parts[1].strip():
-                self._append_terminal(
-                    "[/grep] usage: /grep <pattern>\n"
-                    "  Highlights matching text with yellow background.\n"
-                    "  /grep-next + /grep-prev cycle through matches.\n"
-                    "  /grep-clear removes the highlights.\n"
-                )
-                return True
-            pattern = parts[1].strip()
+                if self._grep_pattern:
+                    pattern = self._grep_pattern
+                    self._append_terminal(
+                        f"[/grep] re-applying stored pattern: '{pattern}'\n"
+                    )
+                else:
+                    self._append_terminal(
+                        "[/grep] usage: /grep <pattern>\n"
+                        "  Highlights matching text with yellow background.\n"
+                        "  /grep-next + /grep-prev cycle through matches.\n"
+                        "  /grep-clear removes the highlights.\n"
+                    )
+                    return True
+            else:
+                pattern = parts[1].strip()
             try:
                 from PyQt6.QtWidgets import QTextEdit
                 doc = self.terminal.document()
@@ -2440,6 +2450,13 @@ class AgentCard(QFrame):
             "total_out_tokens": self._total_out_tokens,
             # v1.6.31 — persist pin state so it survives close + re-spawn
             "pinned": self.session.pinned,
+            # v1.6.45 — persist tag chips
+            "tags": list(self.session.tags),
+            # v1.6.47 — persist last /grep pattern so highlights re-apply
+            # when the card is resumed (caveat: scrollback is fresh so
+            # the pattern is stored on session.grep_pattern but the
+            # actual highlight rebuild happens on first reply re-render).
+            "grep_pattern": self._grep_pattern or "",
             "resume_cmd": (
                 f"claude --dangerously-skip-permissions "
                 f"-r {self.session.session_uuid} -p 'your message'"
@@ -3320,6 +3337,27 @@ class AgentsView(QWidget):
             card._total_in_tokens = int(latest_data.get("total_in_tokens", 0))
             card._total_out_tokens = int(latest_data.get("total_out_tokens", 0))
             card._cost_pill.setText(f"${card._total_cost_usd:.4f}")
+        except Exception:
+            pass
+        # v1.6.45 — restore tag chips
+        try:
+            tags = latest_data.get("tags") or []
+            if isinstance(tags, list):
+                card.session.tags = [str(t)[:24] for t in tags if t]
+                card._rebuild_tags()
+        except Exception:
+            pass
+        # v1.6.47 — restore last /grep pattern. Scrollback is fresh on
+        # resume, so we just seed the field — first new reply re-renders
+        # and operator can hit F3 (or /grep <same>) to re-highlight.
+        try:
+            gp = latest_data.get("grep_pattern") or ""
+            if gp:
+                card._grep_pattern = gp
+                card._append_terminal(
+                    f"  ▸ /grep pattern restored from last session: '{gp}'\n"
+                    f"    Type `/grep {gp}` (or just /grep) to re-apply highlights\n"
+                )
         except Exception:
             pass
 

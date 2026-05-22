@@ -4,6 +4,31 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not component versions (each lane has its own).
 
+## v1.6.47 — 2026-05-22
+
+**Persistent state across resume: `/grep` pattern + `tags` chips now
+survive close → re-open.**
+
+- Resume-point JSON payload extended with `tags` (list) and
+  `grep_pattern` (str). Both default-empty so the v1 schema stays
+  back-compatible.
+- `_restore_card_state_from_disk` reads both fields and:
+  - rebuilds tag chips via `card._rebuild_tags()` (chip strip
+    re-renders just like on first construction)
+  - seeds `card._grep_pattern` and prints a hint:
+    `▸ /grep pattern restored from last session: 'foo'`
+    `  Type /grep (or just /grep) to re-apply highlights`
+- `/grep` with no argument now re-applies the seeded pattern if
+  present (instead of just printing usage). Workflow: close → re-open
+  → operator types `/grep` once → highlights re-bind on the fresh
+  scrollback as it streams.
+- Why not auto-apply at restore time? On resume the terminal
+  scrollback is empty until the first new reply streams. Re-applying
+  an overlay against an empty document is a no-op, so we defer until
+  operator triggers (or types /grep without args).
+- MANIFEST.json 1.6.46 → 1.6.47.
+- `__init__.py __version__ = "1.6.47"`.
+
 ## v1.6.46 — 2026-05-22
 
 **`/replay <N>` — re-run user turn #N verbatim (1-indexed). /history
