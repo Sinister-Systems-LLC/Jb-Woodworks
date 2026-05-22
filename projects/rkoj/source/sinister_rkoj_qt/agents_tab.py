@@ -79,6 +79,8 @@ class AgentSession:
     progress_path: str = ""
     resume_dir: str = ""
     inbox_dir: str = ""
+    # v1.6.3 — claude session continuity via `--session-id` + `--resume`
+    session_uuid: str = ""
 
 
 def _find_claude_executable() -> Optional[str]:
@@ -96,6 +98,9 @@ def _bootstrap_agent_memory(sess: AgentSession) -> None:
     sm = state.SHARED_MEMORY
     sess.slug = f"{sess.project_key}-{sess.pane_id[:6]}"
     sess.display_name = f"EVE on {sess.project_display}"
+    # v1.6.3 — full UUID4 for claude --session-id (per-pane session continuity)
+    if not sess.session_uuid:
+        sess.session_uuid = str(uuid.uuid4())
     sess.heartbeat_path = str(sm / "heartbeats" / f"{sess.slug}.json")
     sess.progress_path = str(sm / "PROGRESS" / f"{sess.display_name}.md")
     sess.resume_dir = str(sm / "resume-points" / sess.display_name)
@@ -308,6 +313,7 @@ class AgentCard(QFrame):
         self._append_terminal(
             f"  ▸ {eve_label(self.session.agent_name, self.session.project_key)}\n"
             f"    pane_id={self.session.pane_id}   mode={self.session.mode}\n"
+            f"    session_uuid={self.session.session_uuid or '(generated on first send)'}\n"
             f"    created {self.session.created_at}\n"
             f"\n"
             f"    Type a message to begin. /help for slash commands.\n"
@@ -390,15 +396,17 @@ class AgentCard(QFrame):
                 "[/help]  Slash commands (RKOJ-side intercepts):\n"
                 "  /help        show this list\n"
                 "  /clear       clear terminal scrollback\n"
-                "  /save        write resume-point JSON to disk\n"
+                "  /save        write resume-point JSON (incl. session uuid) to disk\n"
                 "  /history     show all prior turns (count + truncated previews)\n"
                 "  /retry       resend the most recent operator message\n"
-                "  /persona     re-print the EVE persona block\n"
+                "  /persona     print identity (display, slug, session uuid, paths)\n"
+                "  /session     print just the session uuid (for `claude -r <uuid>` later)\n"
                 "  /needs       toggle awaiting-input glow (visual test)\n"
                 "\n"
-                "  Any other text is forwarded to `claude --dangerously-skip-permissions -p`.\n"
-                "  First turn includes the EVE persona; later turns include history.\n"
-                "  History is capped to the last 6 user turns to keep latency tight.\n"
+                "  Any other text is forwarded to claude as a turn in this session.\n"
+                "  v1.6.3 uses real session continuity (claude --session-id then\n"
+                "  --resume <uuid>) — claude tracks the conversation server-side,\n"
+                "  so each turn only sends your latest message (no history replay).\n"
             )
             return True
         if head == "/clear":
@@ -430,29 +438,52 @@ class AgentCard(QFrame):
         if head == "/persona":
             self._append_terminal(
                 "[/persona]\n"
-                f"  identity: EVE on {self.session.project_display}\n"
-                f"  slug: {self.session.slug or '(not bootstrapped)'}\n"
-                f"  authorship: RKOJ-ELENO\n"
+                f"  identity:    EVE on {self.session.project_display}\n"
+                f"  slug:        {self.session.slug or '(not bootstrapped)'}\n"
+                f"  session id:  {self.session.session_uuid or '(none)'}\n"
+                f"  authorship:  RKOJ-ELENO\n"
                 f"  branch hint: agent/{self.session.project_key}/<topic>\n"
-                f"  heartbeat: {self.session.heartbeat_path or '(none)'}\n"
+                f"  heartbeat:   {self.session.heartbeat_path or '(none)'}\n"
+                f"  progress:    {self.session.progress_path or '(none)'}\n"
+                f"  resume dir:  {self.session.resume_dir or '(none)'}\n"
+            )
+            return True
+        if head == "/session":
+            uid = self.session.session_uuid or "(none — first turn not sent yet)"
+            self._append_terminal(
+                f"[/session] {uid}\n"
+                f"  Resume from any terminal:\n"
+                f"  claude --dangerously-skip-permissions -r {uid} -p 'your message'\n"
             )
             return True
         if head == "/save":
-            from pathlib import Path
-            import json
-            from .state import SHARED_MEMORY
-            resume_dir = SHARED_MEMORY / "rkoj-qt" / "resume-points"
-            resume_dir.mkdir(parents=True, exist_ok=True)
-            fp = resume_dir / f"{self.session.pane_id}.json"
-            payload = {
-                "pane_id": self.session.pane_id,
-                "project_key": self.session.project_key,
-                "agent_name": self.session.agent_name,
-                "mode": self.session.mode,
-                "turns": self.session.turns,
-                "saved_at": datetime.now(timezone.utc).isoformat(),
-            }
+            # Write to the canonical resume-point dir (per agent display name).
             try:
+                if self.session.resume_dir:
+                    resume_dir = Path(self.session.resume_dir)
+                else:
+                    resume_dir = state.SHARED_MEMORY / "rkoj-qt" / "resume-points"
+                resume_dir.mkdir(parents=True, exist_ok=True)
+                ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H%M%SZ")
+                fp = resume_dir / f"{ts}.json"
+                payload = {
+                    "schema_version": "sinister.resume-point.v1",
+                    "agent_identity": "EVE",
+                    "agent_display": self.session.display_name,
+                    "slug": self.session.slug,
+                    "pane_id": self.session.pane_id,
+                    "session_uuid": self.session.session_uuid,
+                    "project_key": self.session.project_key,
+                    "project_display": self.session.project_display,
+                    "agent_name": self.session.agent_name,
+                    "mode": self.session.mode,
+                    "turns": self.session.turns,
+                    "saved_at": datetime.now(timezone.utc).isoformat(),
+                    "resume_cmd": (
+                        f"claude --dangerously-skip-permissions "
+                        f"-r {self.session.session_uuid} -p 'your message'"
+                    ),
+                }
                 with open(fp, "w", encoding="utf-8") as fh:
                     json.dump(payload, fh, indent=2)
                 self._append_terminal(f"[/save] wrote {fp}\n")
@@ -467,10 +498,9 @@ class AgentCard(QFrame):
         return False
 
     # ── Send / process I/O ────────────────────────────────────────────
-    # History cap — only send the last N user turns to keep `claude -p`
-    # prompts fast. Past that, earlier turns drop off the wire (the
-    # transcript on screen + on-disk resume-point still has everything).
-    _HISTORY_CAP = 6
+    # v1.6.3 — session continuity via `--session-id` (first turn) +
+    # `--resume <uuid>` (subsequent turns). No history-replay; claude
+    # tracks the conversation server-side.
 
     def _on_send(self) -> None:
         text = self.input.text().strip()
@@ -486,29 +516,6 @@ class AgentCard(QFrame):
 
         self._append_terminal(f"\n>> {text}\n")
         self.input.clear()
-
-        # Build the prompt — first turn carries the EVE persona; later turns
-        # carry up to _HISTORY_CAP prior user turns + EVE replies.
-        if self._first_turn:
-            opening = build_opening_prompt(
-                project_key=self.session.project_key,
-                agent_name=self.session.agent_name,
-                mode=self.session.mode,
-                accent=self.session.accent,
-            )
-            prompt = opening + "\n\nOperator says: " + text
-            self._first_turn = False
-        else:
-            tail = self.session.turns[-self._HISTORY_CAP:]
-            history = "\n".join(
-                f"User: {t['user']}\nEVE: {t.get('assistant', '')}" for t in tail
-            )
-            prompt = (
-                "You are EVE. Continue this conversation.\n\n"
-                + history
-                + f"\nUser: {text}\nEVE:"
-            )
-
         self.session.turns.append({"user": text, "assistant": ""})
         self._reply_started = False
 
@@ -522,9 +529,30 @@ class AgentCard(QFrame):
             self._set_status("offline")
             return
 
+        # v1.6.3 args — first turn vs continuation.
+        args: list[str] = ["--dangerously-skip-permissions"]
+        if self._first_turn:
+            persona = build_opening_prompt(
+                project_key=self.session.project_key,
+                agent_name=self.session.agent_name,
+                mode=self.session.mode,
+                accent=self.session.accent,
+            )
+            args += [
+                "--session-id", self.session.session_uuid,
+                "--system-prompt", persona,
+                "-p", text,
+            ]
+            self._first_turn = False
+        else:
+            args += [
+                "--resume", self.session.session_uuid,
+                "-p", text,
+            ]
+
         proc = QProcess(self)
         proc.setProgram(claude)
-        proc.setArguments(["--dangerously-skip-permissions", "-p", prompt])
+        proc.setArguments(args)
         # Phase-1 memory bootstrap: pass SINISTER_* env vars so the child
         # learns its identity (slug / display / paths / persona).
         proc.setProcessEnvironment(_make_child_env(self.session))
