@@ -4,6 +4,28 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not component versions (each lane has its own).
 
+## v1.6.37 — 2026-05-22
+
+**`/cancel` + Esc keyboard shortcut — kill the in-flight turn cleanly
+without taking down the card.**
+
+- **/cancel**: kills the running `claude` QProcess, stops the spinner,
+  applies markdown formatting to any partial output that already
+  streamed, sets status back to `online`, and prints
+  `[/cancel] turn cancelled — session still resumable`. Session UUID is
+  preserved so the next message just `--resume`s normally.
+- **Esc**: bound as a `QShortcut` on the card with
+  `WidgetWithChildrenShortcut` context so it doesn't fight dialogs or
+  global Esc handling. Routes to a `_cancel_if_running` guard that
+  silently no-ops when no turn is in-flight (Esc-mashing in idle cards
+  isn't noisy).
+- Replaces the previous "wait for Claude to finish a runaway tool loop"
+  workaround. Operator can now stop a turn the same way they would in
+  a normal terminal (Ctrl+C / Esc).
+- 32 slash commands now (added /cancel).
+- MANIFEST.json 1.6.36 → 1.6.37.
+- `__init__.py __version__ = "1.6.37"`.
+
 ## v1.6.36 — 2026-05-22
 
 **F3 / Shift+F3 keyboard shortcuts for /grep cycling + `/minimize-all` +

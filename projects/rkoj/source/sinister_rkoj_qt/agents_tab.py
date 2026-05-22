@@ -96,6 +96,7 @@ def _project_color(project_key: str) -> str:
 SLASH_COMMANDS: list[tuple[str, str]] = [
     ("/help",     "show all slash commands"),
     ("/broadcast","send the same message to all live cards"),
+    ("/cancel",   "kill the in-flight turn (Esc) — keeps card alive"),
     ("/clear",    "clear terminal scrollback (Ctrl+L)"),
     ("/copy",     "copy the most recent EVE reply to clipboard"),
     ("/cost",     "cumulative spend breakdown for THIS card"),
@@ -582,6 +583,13 @@ class AgentCard(QFrame):
                   activated=lambda: self._grep_cycle("next"))
         QShortcut(QKeySequence("Shift+F3"), self,
                   activated=lambda: self._grep_cycle("prev"))
+        # v1.6.37 — Esc kills in-flight turn cleanly (same as /cancel).
+        # Silently no-ops when no turn running so Esc-mashing isn't noisy.
+        # Scoped to this card so Esc on other widgets isn't intercepted.
+        from PyQt6.QtCore import Qt as _Qt
+        _esc = QShortcut(QKeySequence("Esc"), self,
+                         activated=self._cancel_if_running)
+        _esc.setContext(_Qt.ShortcutContext.WidgetWithChildrenShortcut)
         # v1.6.18 — rotate the input placeholder every 5s while idle so
         # operator discovers the keybinds (/help, Shift+Enter, Ctrl+L)
         # without having to read the README.
@@ -856,6 +864,14 @@ class AgentCard(QFrame):
         """Ctrl+L → mirror /clear (jcode keybinding parity)."""
         self.terminal.clear()
         self._append_terminal("[cleared via Ctrl+L]\n")
+
+    def _cancel_if_running(self) -> None:
+        """v1.6.37 — Esc shortcut entry point. Forwards to /cancel only
+        when a turn is in-flight; silently no-ops otherwise so Esc-mashing
+        in an idle card doesn't spam the terminal."""
+        if self._proc is None or self._proc.state() == QProcess.ProcessState.NotRunning:
+            return
+        self._maybe_intercept("/cancel")
 
     def _grep_cycle(self, direction: str, verbose: bool = False) -> None:
         """v1.6.36 — shared cycle helper used by both /grep-next /
@@ -1203,6 +1219,33 @@ class AgentCard(QFrame):
                 f"  brain index     : start \"\" \"D:\\Sinister Sanctum\\_shared-memory\\knowledge\\_INDEX.md\"\n"
                 f"  master plan     : start \"\" \"D:\\Sinister Sanctum\\_shared-memory\\MASTER-PLAN.md\"\n"
             )
+            return True
+        if head == "/cancel":
+            # v1.6.37 — kill the in-flight turn cleanly without taking down
+            # the card. Keeps session_uuid intact so the next message just
+            # resumes via --resume <uuid>. Esc keyboard shortcut also routes
+            # here. No-op (with hint) when nothing is running.
+            if self._proc is None or self._proc.state() == QProcess.ProcessState.NotRunning:
+                self._append_terminal("[/cancel] no active turn to cancel\n")
+                return True
+            try:
+                self._proc.kill()
+                self._proc.waitForFinished(1500)
+            except Exception as exc:
+                self._append_terminal(f"[/cancel] kill failed: {exc}\n")
+                return True
+            self._stop_thinking()
+            # Apply markdown to whatever streamed before the cancel so
+            # partial output stays readable.
+            try:
+                end_pos = self.terminal.textCursor().position()
+                if self._reply_started and end_pos > self._reply_start_pos:
+                    self._apply_markdown_format(self._reply_start_pos, end_pos)
+            except Exception:
+                pass
+            self._proc = None
+            self._set_status("online")
+            self._append_terminal("\n[/cancel] turn cancelled — session still resumable\n")
             return True
         if head == "/clear":
             self.terminal.clear()
