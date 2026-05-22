@@ -4,6 +4,23 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not component versions (each lane has its own).
 
+## v1.6.26 — 2026-05-22
+
+**Bottom-status-bar live agent count + brain entry for the v1.6.20-25 polish cluster.**
+
+- `_StatusBar.set_live_agents(n)` — new API. AgentsView's
+  `cards_changed` signal now also pushes to the status bar. When set,
+  the agents pill renders `"N live · M on disk"` instead of the prior
+  `"N/M agents"` (which was double-counting closed cards as still
+  online because heartbeats persist with `session_status=ended`).
+  Dot color also follows live count (not heartbeat count).
+- Brain entry: `_shared-memory/knowledge/rkoj-polish-cluster-v1.6.20-25-2026-05-22.md`
+  consolidates the 6-iteration polish cluster (rate_limit / SlashPopup /
+  /skill / auto-save / /usage / sidebar badges / timestamp gutter / /stats).
+  5 reusable patterns codified + 8 anti-patterns. Indexed in `_INDEX.md`.
+- MANIFEST.json 1.6.25 → 1.6.26.
+- `__init__.py __version__ = "1.6.26"`.
+
 ## v1.6.25 — 2026-05-22
 
 **Dim timestamp gutter + Devices sidebar count badge.**

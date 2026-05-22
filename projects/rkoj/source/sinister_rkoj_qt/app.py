@@ -73,11 +73,22 @@ class _StatusBar(QFrame):
             f"}}"
         )
         self._t0 = time.time()
+        # v1.6.26 — track LIVE card count separately from heartbeats.
+        # Heartbeats persist after card close (with session_status: ended)
+        # so they over-count. AgentsView.cards_changed pushes the true
+        # count via set_live_agents(n).
+        self._live_agents: Optional[int] = None
         self._build()
         self._timer = QTimer(self)
         self._timer.setInterval(5_000)
         self._timer.timeout.connect(self._refresh)
         self._timer.start()
+        self._refresh()
+
+    def set_live_agents(self, n: int) -> None:
+        """v1.6.26 — push the true live-card count from AgentsView.
+        Overrides the heartbeat-based count in the agents pill."""
+        self._live_agents = n
         self._refresh()
 
     def _build(self) -> None:
@@ -132,9 +143,19 @@ class _StatusBar(QFrame):
     def _refresh(self) -> None:
         try:
             snap = state.snapshot()
-            self._agents_lbl.setText(
-                f"{snap.agents_online}/{snap.agents_total} agents"
-            )
+            # v1.6.26 — if AgentsView has pushed a live count, use it as
+            # the FIRST number; the disk heartbeat count becomes the
+            # second ("live / total-on-disk").
+            if self._live_agents is not None:
+                self._agents_lbl.setText(
+                    f"{self._live_agents} live · {snap.agents_total} on disk"
+                )
+                has_live = self._live_agents > 0
+            else:
+                self._agents_lbl.setText(
+                    f"{snap.agents_online}/{snap.agents_total} agents"
+                )
+                has_live = snap.agents_online > 0
             self._inbox_lbl.setText(f"{snap.inbox_count} inbox")
             self._brain_lbl.setText(f"{snap.brain_count} brain")
             self._phones_lbl.setText(
@@ -147,7 +168,7 @@ class _StatusBar(QFrame):
                 f"uptime {hh:02d}:{mm:02d}:{ss:02d}" if hh else f"uptime {mm:02d}:{ss:02d}"
             )
             # If no live agents, dim the dot.
-            color = SUCCESS if snap.agents_online > 0 else MUTED_FG
+            color = SUCCESS if has_live else MUTED_FG
             self._dot.setStyleSheet(
                 f"background-color: {color}; border-radius: 4px;"
             )
@@ -251,6 +272,11 @@ class SinisterWindow(QMainWindow):
         self.agents_view.cards_changed.connect(
             lambda _n: self.sidebar.refresh_sessions_badge()
         )
+        # v1.6.26 — also push live count to the bottom status bar so its
+        # "agents" pill reflects truly-live cards (not stale heartbeats).
+        self.agents_view.cards_changed.connect(self.status_bar.set_live_agents)
+        # Seed the bottom bar with the current count (0 at boot).
+        self.status_bar.set_live_agents(0)
         # Ctrl+K palette stub → header search
         QShortcut(QKeySequence("Ctrl+K"), self,
                   activated=lambda: self._on_header_icon("search"))
