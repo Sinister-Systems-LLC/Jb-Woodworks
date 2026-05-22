@@ -98,6 +98,7 @@ SLASH_COMMANDS: list[tuple[str, str]] = [
     ("/broadcast","send the same message to all live cards"),
     ("/cancel",   "kill the in-flight turn (Esc) — keeps card alive"),
     ("/clear",    "clear terminal scrollback (Ctrl+L)"),
+    ("/clone",    "spawn a sibling card with the same project + mode"),
     ("/copy",     "copy the most recent EVE reply to clipboard"),
     ("/cost",     "cumulative spend breakdown for THIS card"),
     ("/devices",  "list connected ADB devices inline"),
@@ -515,6 +516,9 @@ class AgentCard(QFrame):
     # v1.6.36 — /minimize-all + /expand-all bulk toggles for the grid.
     minimize_all_requested = pyqtSignal()
     expand_all_requested = pyqtSignal()
+    # v1.6.41 — /clone emits (project_key, mode) so AgentsView spawns a
+    # sibling card with the same setup but a fresh session UUID.
+    clone_requested = pyqtSignal(str, str)
 
     # Braille spinner for the "thinking" indicator (jcode-style).
     _SPINNER = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
@@ -1327,6 +1331,18 @@ class AgentCard(QFrame):
         if head == "/clear":
             self.terminal.clear()
             self._append_terminal("[cleared]\n")
+            return True
+        if head in ("/clone", "/dup"):
+            # v1.6.41 — spawn a sibling card with the same project + mode
+            # but a fresh session UUID. Useful when one agent is set up
+            # well and operator wants a parallel session on a related
+            # task without re-picking from the New Agent dialog.
+            pk = self.session.project_key or "sanctum"
+            mode = self.session.mode or "claude"
+            self._append_terminal(
+                f"[/clone] spawning sibling card → project={self.session.project_display} mode={mode}\n"
+            )
+            self.clone_requested.emit(pk, mode)
             return True
         if head == "/copy":
             # v1.6.33 — copy the most recent EVE reply to the clipboard
@@ -2920,6 +2936,10 @@ class AgentsView(QWidget):
         # v1.6.36 — route /minimize-all + /expand-all to grid-wide toggles
         card.minimize_all_requested.connect(self.collapse_all)
         card.expand_all_requested.connect(self.expand_all)
+        # v1.6.41 — /clone fans into spawn_agent for a fresh sibling card.
+        card.clone_requested.connect(
+            lambda pk, m: self.spawn_agent(project_key=pk, mode=m)
+        )
         self._cards[sess.pane_id] = card
         self._rebuild_folder_chips()
         self._rebuild_grid()

@@ -4,6 +4,23 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not component versions (each lane has its own).
 
+## v1.6.41 — 2026-05-22
+
+**`/clone` (alias `/dup`) — spawn a sibling card with the same project
++ mode but a fresh session UUID.**
+
+- Card emits new `clone_requested(project_key, mode)` signal which
+  AgentsView wires to a lambda calling `self.spawn_agent(project_key,
+  mode)`. No `session_uuid` passed → fresh session bootstraps normally
+  (new pane_id, new heartbeat, new resume-points dir).
+- Operator workflow: agent A is dialed in for project X with claude-opus,
+  type `/clone`, get agent B with the same project + opus but no
+  conversation history. Useful for running two parallel approaches on
+  related tasks without re-picking from the New Agent dialog.
+- 36 slash commands now (added /clone + alias /dup).
+- MANIFEST.json 1.6.40 → 1.6.41.
+- `__init__.py __version__ = "1.6.41"`.
+
 ## v1.6.40 — 2026-05-22
 
 **`/note <text>` + `/notes` — contextual annotations interleaved in
