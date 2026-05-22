@@ -124,6 +124,7 @@ SLASH_COMMANDS: list[tuple[str, str]] = [
     ("/pin",      "pin (or unpin) this card to top of grid"),
     ("/ping",     "fan a canned status-check to all (or filtered) cards"),
     ("/rename",   "change the agent display name on this card"),
+    ("/replay",   "re-run user turn #N verbatim (1-indexed; see /history)"),
     ("/retry",    "resend the most recent operator message"),
     ("/save",     "write resume-point JSON to disk"),
     ("/session",  "print just the session uuid"),
@@ -1653,16 +1654,28 @@ class AgentCard(QFrame):
         if head == "/history":
             n = len(self.session.turns)
             self._append_terminal(f"[/history] {n} entr(y/ies):\n")
-            for i, t in enumerate(self.session.turns[-10:], start=max(1, n - 9)):
-                # v1.6.40 — notes render distinct so operator can scan
-                # the conversation timeline at a glance.
+            # v1.6.46 — pre-compute user-turn index map so /replay N annotation
+            # is visible inline (notes interleave but don't count for /replay).
+            user_idx = 0
+            visible = self.session.turns[-10:]
+            start = max(1, n - 9)
+            # Walk the head we're skipping just to advance user_idx correctly.
+            for t in self.session.turns[:start - 1]:
+                if t.get("user") and t.get("kind") != "note":
+                    user_idx += 1
+            for i, t in enumerate(visible, start=start):
                 if t.get("kind") == "note":
                     txt = (t.get("text") or "").strip().replace("\n", " ")[:60]
                     self._append_terminal(f"  {i:2d}. ·· {txt}\n")
                     continue
                 u = (t.get("user") or "").strip().replace("\n", " ")[:60]
                 a = (t.get("assistant") or "").strip().replace("\n", " ")[:60]
-                self._append_terminal(f"  {i:2d}. >> {u}\n      << {a}\n")
+                if u:
+                    user_idx += 1
+                    tag = f"replay:{user_idx}"
+                    self._append_terminal(f"  {i:2d}. ({tag}) >> {u}\n      << {a}\n")
+                else:
+                    self._append_terminal(f"  {i:2d}. >> {u}\n      << {a}\n")
             return True
         if head == "/tag":
             # v1.6.45 — add a label chip to this card. Chips are also
@@ -1744,6 +1757,47 @@ class AgentCard(QFrame):
             self._append_terminal(
                 f"[/rename] {old_name!r} -> {new_name!r}\n"
             )
+            return True
+        if head == "/replay":
+            # v1.6.46 — re-run user turn #N verbatim. Unlike /retry which
+            # pops the previous turn (assumed-failed), /replay stages an
+            # old prompt without touching history. claude --resume already
+            # has the full server-side context, so the replayed message
+            # just becomes a fresh turn referring back to the prior one.
+            parts = cmd.split(None, 1)
+            user_turns = [t for t in self.session.turns if t.get("user")]
+            if not user_turns:
+                self._append_terminal("[/replay] no prior user turns to replay\n")
+                return True
+            if len(parts) < 2 or not parts[1].strip():
+                self._append_terminal(
+                    f"[/replay] usage: /replay <N>  (1..{len(user_turns)})\n"
+                    "  Re-runs the N-th user turn verbatim. /history lists them.\n"
+                )
+                return True
+            try:
+                idx = int(parts[1].strip())
+            except ValueError:
+                self._append_terminal(
+                    f"[/replay] N must be an integer 1..{len(user_turns)}\n"
+                )
+                return True
+            if idx < 1 or idx > len(user_turns):
+                self._append_terminal(
+                    f"[/replay] N={idx} out of range (1..{len(user_turns)})\n"
+                )
+                return True
+            target = user_turns[idx - 1]
+            text = (target.get("user") or "").strip()
+            if not text:
+                self._append_terminal(f"[/replay] turn {idx} has empty user text\n")
+                return True
+            preview = text.replace("\n", " ")[:60]
+            self._append_terminal(
+                f"[/replay] re-sending turn {idx}: {preview}{'…' if len(text) > 60 else ''}\n"
+            )
+            self.input.setPlainText(text)
+            self._on_send()
             return True
         if head == "/retry":
             last = next((t for t in reversed(self.session.turns) if t.get("user")), None)

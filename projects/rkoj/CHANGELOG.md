@@ -4,6 +4,26 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not component versions (each lane has its own).
 
+## v1.6.46 — 2026-05-22
+
+**`/replay <N>` — re-run user turn #N verbatim (1-indexed). /history
+now annotates each user turn with `(replay:N)` so operator knows which
+index to pass.**
+
+- Filters `session.turns` for entries with a `user` field, stages the
+  N-th into the input, and triggers `_on_send`. Doesn't pop history
+  like /retry — replayed message becomes a fresh turn referring back
+  to the prior context (claude --resume has the full server-side
+  thread).
+- Argument validation: integer parse, range check `1..len(user_turns)`,
+  reject empty user text.
+- /history pre-computes the user-turn index walking the full turns
+  list so notes interleaved between user/assistant pairs don't
+  confuse the replay numbering.
+- 42 slash commands now (added /replay).
+- MANIFEST.json 1.6.45 → 1.6.46.
+- `__init__.py __version__ = "1.6.46"`.
+
 ## v1.6.45 — 2026-05-22
 
 **`/tag <label>` + `/untag <label>` (or `/untag *`) — operator-defined
