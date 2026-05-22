@@ -102,6 +102,8 @@ SLASH_COMMANDS: list[tuple[str, str]] = [
     ("/devices",  "list connected ADB devices inline"),
     ("/export",   "export conversation to a markdown file"),
     ("/focus",    "focus the input box"),
+    ("/grep",     "highlight matching text in the terminal (yellow bg)"),
+    ("/grep-clear", "remove /grep highlights"),
     ("/history",  "show recent turns with previews"),
     ("/memory",   "forge-memory-bridge BM25 recall"),
     ("/mcp",      "list MCP servers from ~/.claude/.mcp.json"),
@@ -1209,6 +1211,62 @@ class AgentCard(QFrame):
             # into the terminal scrollback to copy text + lost typing focus.
             self.input.setFocus()
             self._append_terminal("[/focus] input refocused\n")
+            return True
+        if head == "/grep":
+            # v1.6.34 — highlight matching text via QTextEdit.ExtraSelection
+            # overlay so the document's underlying char formats (markdown
+            # code blocks, dim timestamp gutter) stay intact. /grep-clear
+            # removes the overlay without touching anything else.
+            parts = cmd.split(None, 1)
+            if len(parts) < 2 or not parts[1].strip():
+                self._append_terminal(
+                    "[/grep] usage: /grep <pattern>\n"
+                    "  Highlights matching text with yellow background.\n"
+                    "  /grep-clear removes the highlights.\n"
+                )
+                return True
+            pattern = parts[1].strip()
+            try:
+                from PyQt6.QtWidgets import QTextEdit
+                doc = self.terminal.document()
+                # Walk the document, find every occurrence, build an
+                # ExtraSelection per match.
+                extras: list = []
+                cursor = QTextCursor(doc)
+                hl_fmt = QTextCharFormat()
+                hl_fmt.setBackground(QColor("#FFCC00"))
+                hl_fmt.setForeground(QColor("#000000"))
+                while True:
+                    cursor = doc.find(pattern, cursor)
+                    if cursor.isNull():
+                        break
+                    sel = QTextEdit.ExtraSelection()
+                    sel.cursor = cursor
+                    sel.format = hl_fmt
+                    extras.append(sel)
+                self.terminal.setExtraSelections(extras)
+                if extras:
+                    # Scroll the FIRST match into view
+                    first = doc.find(pattern)
+                    if not first.isNull():
+                        self.terminal.setTextCursor(first)
+                    self._append_terminal(
+                        f"[/grep] highlighted {len(extras)} match(es) for "
+                        f"'{pattern}' — /grep-clear to remove\n"
+                    )
+                else:
+                    self._append_terminal(
+                        f"[/grep] no matches for '{pattern}'\n"
+                    )
+            except Exception as exc:
+                self._append_terminal(f"[/grep] failed: {exc}\n")
+            return True
+        if head == "/grep-clear":
+            try:
+                self.terminal.setExtraSelections([])
+                self._append_terminal("[/grep-clear] highlights cleared\n")
+            except Exception as exc:
+                self._append_terminal(f"[/grep-clear] failed: {exc}\n")
             return True
         if head == "/model":
             # v1.6.19 — show or change the model alias for subsequent turns.

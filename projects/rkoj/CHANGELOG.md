@@ -4,6 +4,25 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not component versions (each lane has its own).
 
+## v1.6.34 — 2026-05-22
+
+**`/grep <pattern>` + `/grep-clear`** — highlight matching text in the
+terminal scrollback (yellow background) without damaging the existing
+char-format layers (markdown code-fences from v1.6.16, dim timestamp
+gutter from v1.6.25).
+
+- Uses `QTextEdit.ExtraSelection` as an OVERLAY rather than modifying
+  document char-formats — so /grep-clear can wipe highlights without
+  nuking the markdown / dim-gutter styling underneath.
+- Walks the document with `QTextDocument.find()` in a loop, building
+  one `ExtraSelection` per match. Passes the full list to
+  `self.terminal.setExtraSelections(extras)`.
+- Scrolls the FIRST match into view via `setTextCursor(first_match)`.
+- `/grep-clear` calls `setExtraSelections([])` — empties the overlay.
+- 25 slash commands now (added /grep + /grep-clear).
+- MANIFEST.json 1.6.33 → 1.6.34.
+- `__init__.py __version__ = "1.6.34"`.
+
 ## v1.6.33 — 2026-05-22
 
 **`/copy` + per-card project-color left stripe.**
