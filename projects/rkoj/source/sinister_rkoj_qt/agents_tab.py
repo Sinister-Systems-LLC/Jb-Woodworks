@@ -114,6 +114,8 @@ SLASH_COMMANDS: list[tuple[str, str]] = [
     ("/mcp",      "list MCP servers from ~/.claude/.mcp.json"),
     ("/model",    "show or change model (claude / haiku / opus)"),
     ("/needs",    "toggle awaiting-input glow (visual test)"),
+    ("/note",     "drop a dim contextual annotation (not sent to EVE)"),
+    ("/notes",    "list all notes accumulated in this card"),
     ("/open",     "print shell commands to open agent paths"),
     ("/persona",  "print identity (slug / uuid / paths)"),
     ("/pin",      "pin (or unpin) this card to top of grid"),
@@ -1543,8 +1545,14 @@ class AgentCard(QFrame):
             return True
         if head == "/history":
             n = len(self.session.turns)
-            self._append_terminal(f"[/history] {n} turn(s):\n")
+            self._append_terminal(f"[/history] {n} entr(y/ies):\n")
             for i, t in enumerate(self.session.turns[-10:], start=max(1, n - 9)):
+                # v1.6.40 — notes render distinct so operator can scan
+                # the conversation timeline at a glance.
+                if t.get("kind") == "note":
+                    txt = (t.get("text") or "").strip().replace("\n", " ")[:60]
+                    self._append_terminal(f"  {i:2d}. ·· {txt}\n")
+                    continue
                 u = (t.get("user") or "").strip().replace("\n", " ")[:60]
                 a = (t.get("assistant") or "").strip().replace("\n", " ")[:60]
                 self._append_terminal(f"  {i:2d}. >> {u}\n      << {a}\n")
@@ -1701,6 +1709,42 @@ class AgentCard(QFrame):
             new_state = "awaiting-input" if self.session.status != "awaiting-input" else "online"
             self._set_status(new_state)
             self._append_terminal(f"[/needs] status -> {new_state}\n")
+            return True
+        if head == "/note":
+            # v1.6.40 — drop a contextual annotation into the terminal.
+            # NOT sent to EVE; stored on session.turns with kind="note"
+            # so resume-point JSON serializes it. /retry + turn-pill
+            # already filter via `t.get("user")` so notes don't pollute.
+            parts = cmd.split(None, 1)
+            if len(parts) < 2 or not parts[1].strip():
+                self._append_terminal(
+                    "[/note] usage: /note <text>\n"
+                    "  Drops a dim annotation line into the terminal and\n"
+                    "  persists it with the session (visible via /notes).\n"
+                )
+                return True
+            note_text = parts[1].strip()
+            ts = datetime.now().strftime("%H:%M:%S")
+            iso = datetime.now().isoformat()
+            self._append_dim(f"[{ts}] · note · {note_text}\n")
+            self.session.turns.append({
+                "kind": "note",
+                "ts": iso,
+                "text": note_text,
+            })
+            return True
+        if head == "/notes":
+            # v1.6.40 — list every note in this card's session.turns.
+            notes = [t for t in self.session.turns if t.get("kind") == "note"]
+            if not notes:
+                self._append_terminal(
+                    "[/notes] no notes yet — drop one with `/note <text>`\n"
+                )
+                return True
+            self._append_terminal(f"[/notes] {len(notes)} note(s):\n")
+            for i, n in enumerate(notes, start=1):
+                ts = (n.get("ts") or "")[:19].replace("T", " ")
+                self._append_terminal(f"  {i:2d}. [{ts}] {n.get('text', '')}\n")
             return True
         return False
 

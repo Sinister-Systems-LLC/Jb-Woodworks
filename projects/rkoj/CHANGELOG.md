@@ -4,6 +4,28 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not component versions (each lane has its own).
 
+## v1.6.40 — 2026-05-22
+
+**`/note <text>` + `/notes` — contextual annotations interleaved in
+the timeline, persisted with the session.**
+
+- **/note <text>**: drops a dim `[HH:MM:SS] · note · <text>` line into
+  the terminal. NOT sent to EVE. Stored on `session.turns` as
+  `{"kind": "note", "ts": ISO, "text": ...}` so the resume-point JSON
+  auto-serializes it via `_write_resume_point` and the note survives
+  card close → resume.
+- **/notes**: lists every note in this card with index + timestamp:
+  `1. [2026-05-22 14:23:45] tried bumping retries to 5 — still flaky`
+- **/history**: now renders notes inline with a distinct `··` marker
+  (`  3. ·· tried bumping retries to 5`) so the conversation timeline
+  reads chronologically without losing them in the user/assistant pair
+  format.
+- Existing filters on `t.get("user")` (in /retry + turn-pill count)
+  already skip notes correctly — no other call sites needed updates.
+- 35 slash commands now (added /note + /notes).
+- MANIFEST.json 1.6.39 → 1.6.40.
+- `__init__.py __version__ = "1.6.40"`.
+
 ## v1.6.39 — 2026-05-22
 
 **Live `⏱ Xm Ys` elapsed-time pill in card header — passive companion
