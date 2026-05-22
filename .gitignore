@@ -131,6 +131,18 @@ projects/*/source/source/
 !projects/sinister-forge/source/
 !projects/sinister-forge/source/**
 
+# v16 (RKOJ-ELENO 2026-05-21): RKOJ source promoted to projects/rkoj/source/
+# from tools/sinister-rkoj-qt/ — it is REAL code (PyQt6 native shell), not a
+# junction. Track it. Build/dist/__pycache__ still ignored by the patterns
+# higher up in this file.
+!projects/rkoj/source/
+!projects/rkoj/source/**
+projects/rkoj/source/**/build/
+projects/rkoj/source/**/dist/
+projects/rkoj/source/**/__pycache__/
+projects/rkoj/source/**/*.tmp
+projects/rkoj/source/**/pyinstaller-*.log
+
 # Sinister TikTok EMU project root holds its own .git (sister product repo, lane-owned
 # by tiktok-emu agent). Excluding the whole tree from Sanctum.
 projects/sinister-tiktok-emu/
