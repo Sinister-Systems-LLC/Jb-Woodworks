@@ -1782,6 +1782,8 @@ class AgentCard(QFrame):
             "total_cost_usd": self._total_cost_usd,
             "total_in_tokens": self._total_in_tokens,
             "total_out_tokens": self._total_out_tokens,
+            # v1.6.31 — persist pin state so it survives close + re-spawn
+            "pinned": self.session.pinned,
             "resume_cmd": (
                 f"claude --dangerously-skip-permissions "
                 f"-r {self.session.session_uuid} -p 'your message'"
@@ -1795,7 +1797,10 @@ class AgentCard(QFrame):
         """Walk _shared-memory/resume-points/EVE on */*.json and print
         per-project + grand totals. Newer saves overwrite older counts
         from the same session_uuid so multiple autosaves don't double-
-        count (we keep the highest cost per uuid)."""
+        count (we keep the highest cost per uuid).
+
+        v1.6.31 — also breaks out cost by mode (claude / haiku / opus)
+        so operator can see which model is eating their budget."""
         rp_root = state.SHARED_MEMORY / "resume-points"
         if not rp_root.exists():
             self._append_terminal("[/usage] no resume-points dir yet\n")
@@ -1823,6 +1828,7 @@ class AgentCard(QFrame):
                 if prev is None or cost > prev["cost"]:
                     per_uuid[uid] = {
                         "project": d.get("project_display") or proj_dir.name.replace("EVE on ", ""),
+                        "mode": d.get("mode", "claude"),
                         "cost": cost,
                         "in_tok": in_tok,
                         "out_tok": out_tok,
@@ -1883,6 +1889,28 @@ class AgentCard(QFrame):
             f"· {tot_in:>7,} in "
             f"· {tot_out:>5,} out\n"
         )
+        # v1.6.31 — per-mode breakdown (which model is eating budget?)
+        per_mode: dict[str, dict] = {}
+        for v in per_uuid.values():
+            m = per_mode.setdefault(v["mode"], {
+                "sessions": 0, "cost": 0.0, "in_tok": 0, "out_tok": 0,
+            })
+            m["sessions"] += 1
+            m["cost"] += v["cost"]
+            m["in_tok"] += v["in_tok"]
+            m["out_tok"] += v["out_tok"]
+        if len(per_mode) > 1 or any(m for m in per_mode if m != "claude"):
+            self._append_terminal("\n  By model:\n")
+            for mode in sorted(per_mode.keys(), key=lambda m: -per_mode[m]["cost"]):
+                m = per_mode[mode]
+                self._append_terminal(
+                    f"  {mode:<22s} "
+                    f"· {m['sessions']:>2d} sess "
+                    f"· {' ' * 8} "
+                    f"· ${m['cost']:>7.4f} "
+                    f"· {m['in_tok']:>7,} in "
+                    f"· {m['out_tok']:>5,} out\n"
+                )
 
 
 # ── Agents view (folder-tab row + niri-scroll grid) ────────────────────
@@ -2405,6 +2433,10 @@ class AgentsView(QWidget):
         if session_uuid:
             # Skip first-turn persona — claude already has the session.
             card._first_turn = False
+            # v1.6.31 — restore pin state + cumulative cost from the
+            # latest saved resume-point for this session_uuid so the
+            # card looks like the same one you closed.
+            self._restore_card_state_from_disk(card, session_uuid)
             card._append_terminal(
                 f"  ▸ RESUMED session (session_uuid={session_uuid[:12]}…)\n"
                 f"    Next message uses `claude -r {session_uuid} -p ...`\n"
@@ -2450,6 +2482,52 @@ class AgentsView(QWidget):
     def shutdown_all(self) -> None:
         for card in list(self._cards.values()):
             card.shutdown()
+
+    # v1.6.31 — restore card state (pin + cumulative cost) from the most
+    # recent saved resume-point matching session_uuid. Called from
+    # spawn_agent when session_uuid is provided.
+    def _restore_card_state_from_disk(self, card: AgentCard,
+                                       session_uuid: str) -> None:
+        rp_root = state.SHARED_MEMORY / "resume-points"
+        if not rp_root.exists():
+            return
+        latest_ts = ""
+        latest_data: dict | None = None
+        try:
+            for proj_dir in rp_root.iterdir():
+                if not proj_dir.is_dir():
+                    continue
+                for fp in proj_dir.glob("*.json"):
+                    try:
+                        with open(fp, "r", encoding="utf-8") as fh:
+                            d = json.load(fh)
+                    except Exception:
+                        continue
+                    if d.get("session_uuid") != session_uuid:
+                        continue
+                    ts = d.get("saved_at", "")
+                    if ts > latest_ts:
+                        latest_ts = ts
+                        latest_data = d
+        except Exception:
+            return
+        if latest_data is None:
+            return
+        # Restore pin
+        if bool(latest_data.get("pinned", False)):
+            try:
+                card._toggle_pin()  # flips False → True + updates visual
+            except Exception:
+                pass
+        # Restore cumulative cost telemetry so the cost pill shows the
+        # carried total instead of $0.0000 from a fresh resume.
+        try:
+            card._total_cost_usd = float(latest_data.get("total_cost_usd", 0))
+            card._total_in_tokens = int(latest_data.get("total_in_tokens", 0))
+            card._total_out_tokens = int(latest_data.get("total_out_tokens", 0))
+            card._cost_pill.setText(f"${card._total_cost_usd:.4f}")
+        except Exception:
+            pass
 
     # v1.6.30 — broadcast a message to every live card. Called when any
     # card emits `broadcast_requested`. We stage the message into each

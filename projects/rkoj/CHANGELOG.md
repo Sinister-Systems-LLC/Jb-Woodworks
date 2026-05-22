@@ -4,6 +4,27 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not component versions (each lane has its own).
 
+## v1.6.31 — 2026-05-22
+
+**Persisted pin state + cumulative cost on resume + /usage per-mode breakdown.**
+
+- **Resume preserves pin state**: `_write_resume_point` payload now
+  carries `pinned: bool`. `AgentsView.spawn_agent` with `session_uuid`
+  scans the latest matching JSON via `_restore_card_state_from_disk()`,
+  calls `card._toggle_pin()` if it was pinned. Pin survives close →
+  re-open from Sessions picker.
+- **Resume preserves cumulative cost**: same helper restores
+  `_total_cost_usd` / `_total_in_tokens` / `_total_out_tokens` and
+  updates the header cost pill. A resumed conversation no longer
+  reads `$0.0000` — it picks up where it left off.
+- **/usage per-mode breakdown**: new "By model" section under the
+  per-project totals when there's a non-claude mode in play, or
+  multiple modes. Shows `claude` / `claude-haiku` / `claude-opus`
+  sessions + cost + tokens. Operator sees which model is eating
+  budget without digging into individual saves.
+- MANIFEST.json 1.6.30 → 1.6.31.
+- `__init__.py __version__ = "1.6.31"`.
+
 ## v1.6.30 — 2026-05-22
 
 **`/broadcast <msg>` — fan a prompt to all live cards.** Operator wants
