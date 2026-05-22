@@ -4,6 +4,36 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not component versions (each lane has its own).
 
+## v1.6.10 — 2026-05-22
+
+**Agent-chat polish batch** — `/loop keep going make it better` cadence.
+Stacks on top of v1.6.9's picker overhaul. Same EVE on Sanctum branch.
+
+- **MULTI-LINE INPUT**: agent card input is now `_MultiLineInput`
+  (QPlainTextEdit subclass) — Enter sends, Shift+Enter inserts a newline.
+  Auto-resizes vertically up to a 5-line cap so a long prompt grows the
+  input cleanly without blowing up the card; `/retry` switched to
+  `setPlainText`. Operator can finally paste / compose multi-paragraph
+  prompts without the prior single-line forced-truncation pain.
+- **ANSI STRIP**: `_strip_ansi()` regex over every stdout chunk in
+  `_on_stdout`. `claude -p` sometimes emits ANSI escape codes when its
+  output piper thinks stdout is a TTY; previously those rendered as
+  `\x1b[32m...\x1b[0m` garbage in the terminal. Now stripped to plain.
+- **TURN COUNTER PILL**: new pill in the card header strip ("0 turns" /
+  "1 turn" / "N turns") that bumps in `_on_finished` after each
+  completed turn. Operator sees conversation length at a glance without
+  having to `/history`.
+- **EMPTY-STATE HERO**: `AgentsView` empty state was a single flat label
+  "No agents yet — click Create Agent to spawn EVE." Replaced with a
+  centered Panel-style hero: 28px purple title + 2-line subtitle (CTA
+  → + Create Agent + Sessions sidebar) + a 3-tip row underneath
+  (Per-agent session memory · Folder tabs · /help inside any card).
+  Makes a fresh-launch RKOJ feel like a destination, not a blank canvas.
+- **MANIFEST.json**: `version 1.6.9 → 1.6.10`.
+- **VERSION**: `__init__.py __version__ = "1.6.10"`.
+- **BUILD**: 44s, 71.68 MB onefile, M1 PASS. Smoke confirmed Qt window
+  detected within 8s. EXE on Desktop.
+
 ## v1.6.9 — 2026-05-22
 
 **Saved Sessions picker UX overhaul.** EVE on Sanctum, branch `agent/sinister-sanctum/cli-dispatcher-2026-05-21`. Operator brief was "get to work" continuing the rapid v1.6.x iteration after v1.6.8 shipped the inline-resume revert. The picker was lying — button labeled "Open in new window" but v1.6.8 routed everything inline. Plus the operator now has v1.6.7 autoclose saves piling up under `_shared-memory/resume-points/` with no in-UI cleanup. This ship fixes both.

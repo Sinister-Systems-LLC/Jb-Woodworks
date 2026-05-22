@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import shutil
 import time
 import uuid
@@ -30,8 +31,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
-from PyQt6.QtCore import QProcess, QProcessEnvironment, Qt, QTimer, pyqtSignal
-from PyQt6.QtGui import QColor, QFont, QTextCursor
+from PyQt6.QtCore import QEvent, QProcess, QProcessEnvironment, Qt, QTimer, pyqtSignal
+from PyQt6.QtGui import QColor, QFont, QKeyEvent, QTextCursor
 from PyQt6.QtWidgets import (
     QFrame, QGraphicsDropShadowEffect, QHBoxLayout, QLabel, QLineEdit,
     QPlainTextEdit, QPushButton, QScrollArea, QSizePolicy, QSpacerItem,
@@ -41,8 +42,65 @@ from PyQt6.QtWidgets import (
 from . import state
 from .persona import build_opening_prompt, eve_label
 from .theme import (
-    AMBER_ACCENT, DIM, GREEN_ACCENT, PURPLE_ACCENT, SPACINGS, nav_icon,
+    AMBER_ACCENT, BORDER, DIM, ELEVATED, FG, GREEN_ACCENT, MONO_FONT, MUTED_FG,
+    PURPLE_ACCENT, PURPLE_PRIMARY, SPACINGS, nav_icon,
 )
+
+
+# ANSI escape sequences claude sometimes emits when its output piper thinks
+# stdout is a TTY. Strip them so they don't render as `\x1b[32m` junk.
+_ANSI_RE = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
+
+
+def _strip_ansi(text: str) -> str:
+    return _ANSI_RE.sub("", text)
+
+
+class _MultiLineInput(QPlainTextEdit):
+    """jcode-style input: Enter sends, Shift+Enter inserts newline.
+
+    Auto-resizes vertically up to a 5-line cap so a long prompt doesn't
+    blow up the card. Emits `submit` (pyqtSignal[str]) when the operator
+    presses Enter without Shift held.
+    """
+
+    submit = pyqtSignal(str)
+
+    def __init__(self, parent: QWidget | None = None) -> None:
+        super().__init__(parent)
+        self.setObjectName("MultiLineInput")
+        # Behave like a single-line field by default — auto-grow when content
+        # wraps or contains newlines.
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.setLineWrapMode(QPlainTextEdit.LineWrapMode.WidgetWidth)
+        self.setTabChangesFocus(True)
+        self.document().documentLayout().documentSizeChanged.connect(self._fit_height)
+        self._min_h = 36
+        self._max_h = 132
+        self.setFixedHeight(self._min_h)
+
+    def _fit_height(self, *_args) -> None:
+        h = int(self.document().size().height()) + 12
+        h = max(self._min_h, min(self._max_h, h))
+        if h != self.height():
+            self.setFixedHeight(h)
+            self.setVerticalScrollBarPolicy(
+                Qt.ScrollBarPolicy.ScrollBarAsNeeded if h >= self._max_h
+                else Qt.ScrollBarPolicy.ScrollBarAlwaysOff
+            )
+
+    def keyPressEvent(self, event: QKeyEvent) -> None:
+        if event.key() in (Qt.Key.Key_Return, Qt.Key.Key_Enter):
+            if event.modifiers() & Qt.KeyboardModifier.ShiftModifier:
+                # Shift+Enter → newline (default QPlainTextEdit behavior)
+                super().keyPressEvent(event)
+                return
+            # Plain Enter (and Ctrl+Enter) → submit
+            text = self.toPlainText().rstrip()
+            self.submit.emit(text)
+            return
+        super().keyPressEvent(event)
 
 try:
     from PyQt6.QtSvgWidgets import QSvgWidget  # type: ignore
@@ -252,6 +310,15 @@ class AgentCard(QFrame):
         mode_pill = QLabel(self.session.mode)
         mode_pill.setObjectName("ModePill")
 
+        # v1.6.9 — turn counter pill (updates after each /send completes)
+        self._turn_pill = QLabel("0 turns")
+        self._turn_pill.setObjectName("ModePill")
+        self._turn_pill.setStyleSheet(
+            f"color: {MUTED_FG}; background-color: transparent; "
+            f"border: 1px solid {BORDER}; border-radius: 10px; "
+            f"padding: 2px 9px; font-size: 10px; font-weight: 600;"
+        )
+
         # Close button — SVG x-mark, no glyph
         close_btn = QPushButton()
         close_btn.setObjectName("CardCloseBtn")
@@ -268,6 +335,7 @@ class AgentCard(QFrame):
         hdr.addWidget(project_label)
         hdr.addWidget(title)
         hdr.addWidget(mode_pill)
+        hdr.addWidget(self._turn_pill)
         hdr.addStretch(1)
         hdr.addWidget(close_btn)
         root.addLayout(hdr)
@@ -282,20 +350,37 @@ class AgentCard(QFrame):
         self.terminal.setMinimumHeight(170)
         root.addWidget(self.terminal, stretch=1)
 
-        # Input row
+        # Input row — multi-line, Enter to send, Shift+Enter for newline
         input_row = QHBoxLayout()
         input_row.setSpacing(SPACINGS["sm"])
-        self.input = QLineEdit()
-        self.input.setObjectName("TerminalInput")
+        self.input = _MultiLineInput()
         self.input.setPlaceholderText(
-            f"Talk to {eve_label(self.session.agent_name, self.session.project_key)} — Enter to send, /help"
+            f"Talk to {eve_label(self.session.agent_name, self.session.project_key)} — "
+            f"Enter to send · Shift+Enter for newline · /help"
         )
-        self.input.returnPressed.connect(self._on_send)
+        # Style the multi-line input to match the prior QLineEdit look
+        # (Terminal already has its own QSS rule via #TerminalInput; we
+        # alias the object name so both pick up the same theme).
+        self.input.setStyleSheet(
+            f"QPlainTextEdit#MultiLineInput {{"
+            f"  background-color: {ELEVATED};"
+            f"  color: {FG};"
+            f"  border: 1px solid {BORDER};"
+            f"  border-radius: 7px;"
+            f"  padding: 7px 10px;"
+            f"  font-family: {MONO_FONT};"
+            f"  font-size: 12px;"
+            f"}}"
+            f"QPlainTextEdit#MultiLineInput:focus {{"
+            f"  border-color: {PURPLE_PRIMARY};"
+            f"}}"
+        )
+        self.input.submit.connect(self._on_input_submit)
         self.send_btn = QPushButton("Send")
         self.send_btn.setObjectName("SendBtn")
         self.send_btn.clicked.connect(self._on_send)
         input_row.addWidget(self.input, stretch=1)
-        input_row.addWidget(self.send_btn)
+        input_row.addWidget(self.send_btn, alignment=Qt.AlignmentFlag.AlignBottom)
         root.addLayout(input_row)
 
         # Thinking indicator — visible only while waiting on `claude -p`.
@@ -527,7 +612,8 @@ class AgentCard(QFrame):
                 self._append_terminal("[/retry] no prior turn to retry\n")
                 return True
             self._append_terminal(f"[/retry] resending last operator message\n")
-            self.input.setText(last["user"])
+            # v1.6.9 — input is QPlainTextEdit now; setPlainText not setText.
+            self.input.setPlainText(last["user"])
             # Drop the previous (failed?) turn so /retry doesn't double-record
             try:
                 self.session.turns.pop()
@@ -602,8 +688,18 @@ class AgentCard(QFrame):
     # `--resume <uuid>` (subsequent turns). No history-replay; claude
     # tracks the conversation server-side.
 
+    def _on_input_submit(self, text: str) -> None:
+        """Bridge: _MultiLineInput.submit → _on_send. The signal carries
+        the already-trimmed text, so we just stage it back into the input
+        and call _on_send (which handles intercepts + spawn)."""
+        # We rely on _on_send pulling from self.input rather than the
+        # signal payload, so just delegate.
+        self._on_send()
+
     def _on_send(self) -> None:
-        text = self.input.text().strip()
+        # v1.6.9 — input is now a multi-line QPlainTextEdit; use toPlainText
+        # not text(). Trim whitespace + strip trailing newlines.
+        text = self.input.toPlainText().strip()
         if not text:
             return
         if self._maybe_intercept(text):
@@ -662,6 +758,11 @@ class AgentCard(QFrame):
         # Phase-1 memory bootstrap: pass SINISTER_* env vars so the child
         # learns its identity (slug / display / paths / persona).
         proc.setProcessEnvironment(_make_child_env(self.session))
+        # v1.6.10 — redirect child's stdin to the null device so claude
+        # doesn't wait 3s for stdin data + print:
+        #   "[stderr] Warning: no stdin data received in 3s, proceeding..."
+        # That warning was leaking into the terminal and looking like a bug.
+        proc.setStandardInputFile(QProcess.nullDevice())
         proc.readyReadStandardOutput.connect(self._on_stdout)
         proc.readyReadStandardError.connect(self._on_stderr)
         proc.finished.connect(self._on_finished)
@@ -679,7 +780,13 @@ class AgentCard(QFrame):
     def _on_stdout(self) -> None:
         if not self._proc:
             return
-        data = bytes(self._proc.readAllStandardOutput()).decode("utf-8", errors="replace")
+        raw = bytes(self._proc.readAllStandardOutput()).decode("utf-8", errors="replace")
+        if not raw:
+            return
+        # v1.6.9 — strip ANSI escape codes claude sometimes emits when its
+        # stdout piper thinks the destination is a TTY. Without this they
+        # show up as `\x1b[32m...\x1b[0m` garbage in the terminal.
+        data = _strip_ansi(raw)
         if not data:
             return
         # First chunk of EVE's reply — stop the thinking spinner and prefix.
@@ -691,12 +798,28 @@ class AgentCard(QFrame):
         if self.session.turns:
             self.session.turns[-1]["assistant"] += data
 
+    # v1.6.10 — benign stderr lines from claude that look like bugs in the
+    # terminal but are info-level / harmless. Suppressed silently; real
+    # errors still surface.
+    _BENIGN_STDERR_RE = re.compile(
+        r"(?:no stdin data received|redirect stdin explicitly|"
+        r"piping from a slow command|wait longer)",
+        re.IGNORECASE,
+    )
+
     def _on_stderr(self) -> None:
         if not self._proc:
             return
         data = bytes(self._proc.readAllStandardError()).decode("utf-8", errors="replace")
-        if data.strip():
-            self._append_terminal(f"\n[stderr] {data}")
+        data = _strip_ansi(data)
+        if not data.strip():
+            return
+        # Filter out benign info-level stderr noise so the terminal stays
+        # clean. Anything that doesn't match the benign regex is shown
+        # as a real error.
+        if self._BENIGN_STDERR_RE.search(data):
+            return
+        self._append_terminal(f"\n[stderr] {data}")
 
     def _on_finished(self, exit_code: int, exit_status: QProcess.ExitStatus) -> None:
         if not self._reply_started:
@@ -711,6 +834,13 @@ class AgentCard(QFrame):
         if exit_code != 0:
             self._append_terminal(f"  (exit {exit_code})\n")
         self._set_status("online")
+        # v1.6.9 — bump the turn-count pill in the card header so operator
+        # sees the conversation length at a glance.
+        try:
+            n = len([t for t in self.session.turns if t.get("user")])
+            self._turn_pill.setText(f"{n} turn{'s' if n != 1 else ''}")
+        except Exception:
+            pass
         self._proc = None
 
     def _on_error(self, err: QProcess.ProcessError) -> None:
@@ -822,11 +952,76 @@ class AgentsView(QWidget):
         self.grid = NiriScrollGrid(self)
         root.addWidget(self.grid, stretch=1)
 
-        # Empty state label (replaces grid when zero cards)
-        self.empty_label = QLabel("No agents yet — click Create Agent to spawn EVE.")
-        self.empty_label.setObjectName("AgentMeta")
-        self.empty_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        root.addWidget(self.empty_label)
+        # Empty state — Panel-styled hero card centered when zero agents.
+        # v1.6.9 — replaces the prior plain "No agents yet" label.
+        self.empty_panel = QFrame(self)
+        self.empty_panel.setObjectName("EmptyHero")
+        self.empty_panel.setStyleSheet(
+            f"QFrame#EmptyHero {{"
+            f"  background: transparent;"
+            f"}}"
+        )
+        empty_layout = QVBoxLayout(self.empty_panel)
+        empty_layout.setContentsMargins(40, 40, 40, 40)
+        empty_layout.setSpacing(14)
+        empty_layout.addStretch(1)
+
+        hero_title = QLabel("No agents yet")
+        hero_title.setStyleSheet(
+            f"color: {PURPLE_PRIMARY}; background: transparent; "
+            f"font-size: 28px; font-weight: 800; letter-spacing: -0.5px;"
+        )
+        hero_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        empty_layout.addWidget(hero_title)
+
+        hero_sub = QLabel(
+            "Click  + Create Agent  in the header to spawn EVE on any project,\n"
+            "or open the Sessions tab in the sidebar to resume a saved session."
+        )
+        hero_sub.setStyleSheet(
+            f"color: {MUTED_FG}; background: transparent; "
+            f"font-size: 13px; line-height: 1.6;"
+        )
+        hero_sub.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        empty_layout.addWidget(hero_sub)
+
+        # Three tips below the hero — small reminders of what this surface does.
+        tips_row = QHBoxLayout()
+        tips_row.setSpacing(20)
+        tips_row.setContentsMargins(0, 16, 0, 0)
+        for emoji, label in [
+            ("●", "Per-agent session memory (claude --resume)"),
+            ("●", "Folder tabs auto-group cards by project"),
+            ("●", "/help inside any card lists slash commands"),
+        ]:
+            tip_box = QFrame()
+            tip_box.setStyleSheet(
+                f"QFrame {{ background-color: {ELEVATED}; border: 1px solid {BORDER}; "
+                f"border-radius: 10px; padding: 14px; }}"
+            )
+            tb = QHBoxLayout(tip_box)
+            tb.setContentsMargins(12, 10, 12, 10)
+            tb.setSpacing(8)
+            dot = QLabel(emoji)
+            dot.setStyleSheet(
+                f"color: {PURPLE_PRIMARY}; background: transparent; "
+                f"font-size: 14px; font-weight: 700;"
+            )
+            tb.addWidget(dot)
+            l = QLabel(label)
+            l.setStyleSheet(
+                f"color: {MUTED_FG}; background: transparent; font-size: 11px;"
+            )
+            l.setWordWrap(True)
+            tb.addWidget(l, stretch=1)
+            tips_row.addWidget(tip_box, stretch=1)
+        empty_layout.addLayout(tips_row)
+
+        empty_layout.addStretch(2)
+        root.addWidget(self.empty_panel)
+
+        # Backward-compat alias — _rebuild_grid toggles visibility on this.
+        self.empty_label = self.empty_panel
 
     # ── Folder tab management ─────────────────────────────────────────
     def _active_project_keys(self) -> list[str]:
