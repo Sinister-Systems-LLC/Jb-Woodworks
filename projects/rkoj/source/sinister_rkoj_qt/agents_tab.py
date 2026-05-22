@@ -105,6 +105,7 @@ SLASH_COMMANDS: list[tuple[str, str]] = [
     ("/devices",  "list connected ADB devices inline"),
     ("/diff",     "unified diff between two assistant replies (/diff A B)"),
     ("/export",   "export conversation to a markdown file"),
+    ("/export-all","write every live card's transcript to a bundle dir"),
     ("/focus",    "focus the input box"),
     ("/expand-all", "expand every collapsed card in the grid"),
     ("/find",     "scroll the grid to a card matching <text> (project/agent)"),
@@ -566,6 +567,9 @@ class AgentCard(QFrame):
     # v1.6.51 — /tags emits invoker pane_id; AgentsView replies with
     # a fleet-wide tag census echoed into the invoker's terminal.
     tags_census_requested = pyqtSignal(str)
+    # v1.6.55 — /export-all emits invoker pane_id; AgentsView writes
+    # every card's transcript to a bundle dir + echoes summary back.
+    export_all_requested = pyqtSignal(str)
 
     # Braille spinner for the "thinking" indicator (jcode-style).
     _SPINNER = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
@@ -1724,45 +1728,18 @@ class AgentCard(QFrame):
         if head == "/export":
             # v1.6.18 — write the full transcript to a markdown file under
             # the agent's resume_dir so operator can share or grep it.
+            # v1.6.55 — body extracted to _export_to_markdown so AgentsView
+            # /export-all can call it on every card.
             try:
-                exp_dir = Path(self.session.resume_dir or
-                              (state.SHARED_MEMORY / "exports"))
-                exp_dir.mkdir(parents=True, exist_ok=True)
-                ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H%M%SZ")
-                fp = exp_dir / f"{ts}-export.md"
-                lines: list[str] = [
-                    f"# {self.session.display_name}",
-                    f"",
-                    f"- pane_id: `{self.session.pane_id}`",
-                    f"- session_uuid: `{self.session.session_uuid}`",
-                    f"- project_key: `{self.session.project_key}`",
-                    f"- mode: `{self.session.mode}`",
-                    f"- exported_at: {datetime.now(timezone.utc).isoformat()}",
-                    f"- turns: {len(self.session.turns)}",
-                    f"- total_cost: ${self._total_cost_usd:.4f}",
-                    f"",
-                    "---",
-                    "",
-                ]
-                for i, t in enumerate(self.session.turns, 1):
-                    lines += [
-                        f"## Turn {i}",
-                        "",
-                        "### Operator",
-                        "",
-                        "```",
-                        (t.get("user") or "").rstrip(),
-                        "```",
-                        "",
-                        "### EVE",
-                        "",
-                        (t.get("assistant") or "").rstrip(),
-                        "",
-                    ]
-                fp.write_text("\n".join(lines), encoding="utf-8")
+                fp = self._export_to_markdown()
                 self._append_terminal(f"[/export] wrote {fp}\n")
             except Exception as exc:
                 self._append_terminal(f"[/export] failed: {exc}\n")
+            return True
+        if head == "/export-all":
+            # v1.6.55 — fan-out to AgentsView which exports every card
+            # into one timestamped bundle dir + echoes a summary back.
+            self.export_all_requested.emit(self.session.pane_id)
             return True
         if head == "/history":
             n = len(self.session.turns)
@@ -2630,6 +2607,59 @@ class AgentCard(QFrame):
     # v1.6.21 — single resume-point writer shared by /save, autoclose,
     # and app-shutdown paths. Skips if no turns happened yet (don't
     # litter the picker with empty sessions).
+    def _export_to_markdown(self, target_dir: Path | None = None) -> Path:
+        """v1.6.55 — write this card's full transcript to a markdown file.
+        Extracted from /export so /export-all (fleet-wide) can call it
+        on every card with a uniform output shape. Returns the file path.
+        Raises on I/O failure (callers should catch + report)."""
+        exp_dir = target_dir or Path(
+            self.session.resume_dir or (state.SHARED_MEMORY / "exports")
+        )
+        exp_dir.mkdir(parents=True, exist_ok=True)
+        ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H%M%SZ")
+        # Include pane_id in filename so /export-all bundles don't collide
+        # when multiple cards share a project resume_dir.
+        fp = exp_dir / f"{ts}-{self.session.pane_id}-export.md"
+        lines: list[str] = [
+            f"# {self.session.display_name or self.session.agent_name}",
+            "",
+            f"- pane_id: `{self.session.pane_id}`",
+            f"- session_uuid: `{self.session.session_uuid}`",
+            f"- project_key: `{self.session.project_key}`",
+            f"- mode: `{self.session.mode}`",
+            f"- exported_at: {datetime.now(timezone.utc).isoformat()}",
+            f"- turns: {len(self.session.turns)}",
+            f"- total_cost: ${self._total_cost_usd:.4f}",
+            "",
+            "---",
+            "",
+        ]
+        for i, t in enumerate(self.session.turns, 1):
+            if t.get("kind") == "note":
+                lines += [
+                    f"## Note {i}",
+                    "",
+                    f"> {t.get('text', '')}",
+                    "",
+                ]
+                continue
+            lines += [
+                f"## Turn {i}",
+                "",
+                "### Operator",
+                "",
+                "```",
+                (t.get("user") or "").rstrip(),
+                "```",
+                "",
+                "### EVE",
+                "",
+                (t.get("assistant") or "").rstrip(),
+                "",
+            ]
+        fp.write_text("\n".join(lines), encoding="utf-8")
+        return fp
+
     def _write_resume_point(self, save_reason: str = "manual") -> Path | None:
         if not any(t.get("user") for t in self.session.turns):
             return None  # skip empty cards
@@ -3403,6 +3433,8 @@ class AgentsView(QWidget):
         card.find_requested.connect(self._focus_find)
         # v1.6.51 — /tags fans to AgentsView fleet-wide census.
         card.tags_census_requested.connect(self._print_tags_census)
+        # v1.6.55 — /export-all fans to AgentsView bundle writer.
+        card.export_all_requested.connect(self._export_all_transcripts)
         self._cards[sess.pane_id] = card
         self._rebuild_folder_chips()
         self._rebuild_grid()
@@ -3507,6 +3539,39 @@ class AgentsView(QWidget):
             f"{match.session.project_display} :: {match.session.agent_name} "
             f"(pane_id={match.session.pane_id})\n"
         )
+
+    # v1.6.55 — fleet-wide /export. Writes every card's transcript into
+    # a single timestamped bundle dir + echoes summary to invoker. Skips
+    # cards with no user turns (empty-state guard).
+    def _export_all_transcripts(self, invoker_id: str) -> None:
+        invoker = self._cards.get(invoker_id)
+        if invoker is None:
+            return
+        ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H%M%SZ")
+        bundle_dir = state.SHARED_MEMORY / "rkoj-qt" / "exports" / f"{ts}-bundle"
+        bundle_dir.mkdir(parents=True, exist_ok=True)
+        written: list[str] = []
+        skipped = 0
+        failed: list[str] = []
+        for c in self._cards.values():
+            if not any(t.get("user") for t in c.session.turns):
+                skipped += 1
+                continue
+            try:
+                fp = c._export_to_markdown(target_dir=bundle_dir)
+                written.append(fp.name)
+            except Exception as exc:
+                failed.append(f"{c.session.agent_name}: {exc}")
+        invoker._append_terminal(
+            f"[/export-all] wrote {len(written)} transcript(s) to:\n"
+            f"  {bundle_dir}\n"
+        )
+        for name in written:
+            invoker._append_terminal(f"  - {name}\n")
+        if skipped:
+            invoker._append_terminal(f"  (skipped {skipped} card(s) with no turns)\n")
+        for err in failed:
+            invoker._append_terminal(f"  [FAILED] {err}\n")
 
     # v1.6.51 — fleet-wide tag census. Echoes back into the invoker's
     # terminal so operator stays in their typing context.

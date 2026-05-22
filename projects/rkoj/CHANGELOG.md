@@ -4,6 +4,31 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not command-versions (each lane has its own).
 
+## v1.6.55 — 2026-05-22
+
+**`/export-all` — write every live card's transcript to one timestamped
+bundle dir. Genuinely new fleet-ops capability — /broadcast can't fire
+slash intercepts so this is the first way to batch-export.**
+
+- Refactored `/export`'s inline body into `_export_to_markdown(target_dir)`
+  method on AgentCard so AgentsView can call it on every card. Same
+  output shape as /export, plus pane_id baked into the filename so
+  multiple cards sharing a project resume_dir don't collide.
+- Notes (kind=note entries) now render as blockquote sections in the
+  exported markdown:
+  ```
+  ## Note 3
+  > tried bumping retries to 5 — still flaky
+  ```
+- AgentsView slot `_export_all_transcripts(invoker_id)` writes all
+  transcripts to `_shared-memory/rkoj-qt/exports/<timestamp>-bundle/`,
+  skips empty cards, catches per-card failures without aborting the
+  rest, echoes summary to invoker.
+- New `export_all_requested(invoker_id)` signal on AgentCard.
+- 49 slash commands now (added /export-all).
+- MANIFEST.json 1.6.54 → 1.6.55.
+- `__init__.py __version__ = "1.6.55"`.
+
 ## v1.6.54 — 2026-05-22
 
 **`/uptime` — card lifetime + turn count + last activity + live state.**
