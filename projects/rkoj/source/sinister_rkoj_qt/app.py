@@ -44,7 +44,7 @@ from . import state
 from .agent_window import AgentWindow
 from .agents_tab import AgentsView
 from .devices_tab import DevicesView
-from .dialogs import NewAgentDialog
+from .dialogs import NewAgentDialog, SavedSessionsPicker
 from .header import Header
 from .sidebar import Sidebar
 from .theme import (
@@ -255,9 +255,29 @@ class SinisterWindow(QMainWindow):
             self.stack.setCurrentWidget(self.devices_view)
 
     def _on_nav(self, key: str) -> None:
-        # Sidebar nav mirrors chip-tab switching so either affordance works.
+        # Sidebar nav: agents / devices mirror chip-tabs. "sessions" pops
+        # the saved-sessions picker directly (one-click resume flow).
+        if key == "sessions":
+            self._open_sessions_picker()
+            return
         self.header.set_active_chip(key)
         self._on_chip(key)
+
+    def _open_sessions_picker(self) -> None:
+        """Open the saved-sessions picker without going through New Agent.
+
+        Picked session opens as its own AgentWindow with --resume wiring.
+        """
+        picker = SavedSessionsPicker(self)
+        if picker.exec() != SavedSessionsPicker.DialogCode.Accepted:
+            return
+        data = picker.result_data or {}
+        self._open_agent_window(
+            project_key=data.get("project_key", "sanctum"),
+            agent_name=data.get("agent_name"),
+            mode=data.get("mode", "claude"),
+            session_uuid=data.get("session_uuid"),
+        )
 
     def _on_create_agent(self) -> None:
         """Pop the picker; spawn the agent in a NEW top-level window.

@@ -49,10 +49,11 @@ from .theme import (
 # Panel-style sections. Each section = (label, [(key, label, svg-icon-name)]).
 SECTIONS: list[tuple[str, list[tuple[str, str, str]]]] = [
     ("WORKSPACE", [
-        ("agents",  "Agents",  "nav-eve-ai"),
+        ("agents",   "Agents",   "nav-eve-ai"),
+        ("sessions", "Sessions", "nav-database"),
     ]),
     ("OPERATIONS", [
-        ("devices", "Devices", "nav-phones"),
+        ("devices",  "Devices",  "nav-phones"),
     ]),
 ]
 

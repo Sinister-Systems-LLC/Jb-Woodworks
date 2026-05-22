@@ -243,11 +243,59 @@ class AgentWindow(QMainWindow):
         self.setMask(region)
         super().resizeEvent(event)
 
-    # ── Clean shutdown (kills child claude + flushes heartbeat) ────────
+    # ── Clean shutdown (auto-save resume-point + kill child) ──────────
     def closeEvent(self, event) -> None:
+        # v1.6.7 — auto-save the session to a resume-point JSON so the
+        # operator never loses a conversation just because they closed the
+        # window. Always writes (even if no turns happened) so the slot
+        # exists for /resume later.
+        try:
+            self._auto_save_resume_point()
+        except Exception:
+            pass
         try:
             self.card.shutdown()
         except Exception:
             pass
         event.accept()
         super().closeEvent(event)
+
+    def _auto_save_resume_point(self) -> None:
+        """Write a final resume-point JSON to sess.resume_dir on close.
+
+        Same shape as the /save slash command writes — so the picker
+        treats both identically. Filename format: `<ts>.json` (UTC).
+        """
+        import json
+        from pathlib import Path
+        sess = self.session
+        if not sess.resume_dir:
+            return
+        try:
+            d = Path(sess.resume_dir)
+            d.mkdir(parents=True, exist_ok=True)
+            ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H%M%SZ")
+            fp = d / f"{ts}-autoclose.json"
+            payload = {
+                "schema_version": "sinister.resume-point.v1",
+                "agent_identity": "EVE",
+                "agent_display": sess.display_name,
+                "slug": sess.slug,
+                "pane_id": sess.pane_id,
+                "session_uuid": sess.session_uuid,
+                "project_key": sess.project_key,
+                "project_display": sess.project_display,
+                "agent_name": sess.agent_name,
+                "mode": sess.mode,
+                "turns": sess.turns,
+                "saved_at": datetime.now(timezone.utc).isoformat(),
+                "save_reason": "autoclose",
+                "resume_cmd": (
+                    f"claude --dangerously-skip-permissions "
+                    f"-r {sess.session_uuid} -p 'your message'"
+                ),
+            }
+            with open(fp, "w", encoding="utf-8") as fh:
+                json.dump(payload, fh, indent=2)
+        except Exception:
+            pass
