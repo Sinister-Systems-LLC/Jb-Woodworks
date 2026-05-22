@@ -4,6 +4,32 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not component versions (each lane has its own).
 
+## v1.6.45 — 2026-05-22
+
+**`/tag <label>` + `/untag <label>` (or `/untag *`) — operator-defined
+label chips in the card header. Also matched by `/find` so you can
+search the fleet by tag.**
+
+- New `AgentSession.tags: list[str]` dataclass field
+  (`default_factory=list`). Stored on the session so resume-point JSON
+  picks them up via the existing `dataclass_asdict` path.
+- New header container `_tags_host` (hidden when empty), rebuilt by
+  `_rebuild_tags()` which clears and re-adds purple-tinted chips
+  (`color=PURPLE_PRIMARY, bg=rgba(191,90,242,30)`).
+- `_focus_find` haystack now includes `" ".join(c.session.tags)` so
+  `/find wip` jumps to any card tagged `wip`.
+- `/tag` truncates to 24 chars; `/untag *` clears all; both call
+  `_write_resume_point(save_reason="tag"|"untag")` immediately so
+  the change survives a crash (same pattern as /rename).
+- 41 slash commands now (added /tag + /untag).
+- MANIFEST.json 1.6.44 → 1.6.45.
+- `__init__.py __version__ = "1.6.45"`.
+
+Also: shipped consolidated brain entry
+`_shared-memory/knowledge/rkoj-runtime-ergonomics-cluster-v1.6.37-44-2026-05-22.md`
+codifying 6 reusable patterns + 6 anti-patterns from the v1.6.37-44
+mini-arc. _INDEX.md row added.
+
 ## v1.6.44 — 2026-05-22
 
 **`/rename <new-name>` — change the agent display name on this card.

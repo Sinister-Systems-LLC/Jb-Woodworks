@@ -130,7 +130,9 @@ SLASH_COMMANDS: list[tuple[str, str]] = [
     ("/skill",    "load + send a saved skill .md as a turn"),
     ("/skills",   "list Sanctum skills (.md files)"),
     ("/stats",    "RKOJ fleet snapshot (agents / inbox / brain / devices)"),
+    ("/tag",      "add a label chip to this card (also matched by /find)"),
     ("/timer",    "show elapsed time of the in-flight turn (or last duration)"),
+    ("/untag",    "remove a label chip from this card"),
     ("/usage",    "cross-card RKOJ spend totals (from disk)"),
     ("/vault",    "Sinister Vault disk usage + daemon port"),
 ]
@@ -396,6 +398,10 @@ class AgentSession:
     # v1.6.28 — pin state (toggled via star button or /pin); pinned cards
     # render at the top of the niri-scroll grid regardless of project order.
     pinned: bool = False
+    # v1.6.45 — operator-defined tags for this card (e.g. "wip", "blocked",
+    # "research"). Rendered as small chips in the header; /find matches
+    # against them too. Stored as a flat list — no per-tag color logic.
+    tags: list[str] = field(default_factory=list)
 
 
 def _find_claude_executable() -> Optional[str]:
@@ -582,6 +588,8 @@ class AgentCard(QFrame):
         self._turn_started_ts: float | None = None
         self._last_turn_seconds: float | None = None
         self._build()
+        # v1.6.45 — render any restored tags after build.
+        self._rebuild_tags()
         # Phase-1 memory: heartbeat refresh every 30s while card alive
         self._hb_timer = QTimer(self)
         self._hb_timer.setInterval(30_000)
@@ -692,6 +700,16 @@ class AgentCard(QFrame):
         self._elapsed_timer.setInterval(1000)
         self._elapsed_timer.timeout.connect(self._refresh_elapsed_pill)
 
+        # v1.6.45 — tag chips container. Hidden when no tags. /tag adds,
+        # /untag removes. Rebuilt entirely on every mutation (cheap; chips
+        # are stateless QLabels).
+        self._tags_host = QWidget()
+        _th = QHBoxLayout(self._tags_host)
+        _th.setContentsMargins(0, 0, 0, 0)
+        _th.setSpacing(4)
+        self._tags_layout = _th
+        self._tags_host.hide()
+
         # v1.6.28 — pin star (left of chevron). Toggles session.pinned;
         # AgentsView listens for pin_changed and re-sorts the grid so
         # pinned cards render at the top.
@@ -739,6 +757,7 @@ class AgentCard(QFrame):
         hdr.addWidget(self._turn_pill)
         hdr.addWidget(self._cost_pill)
         hdr.addWidget(self._elapsed_pill)
+        hdr.addWidget(self._tags_host)
         hdr.addStretch(1)
         hdr.addWidget(self._pin_btn)
         hdr.addWidget(self._collapse_btn)
@@ -881,6 +900,30 @@ class AgentCard(QFrame):
 
     def _remove_glow(self) -> None:
         self.setGraphicsEffect(None)
+
+    def _rebuild_tags(self) -> None:
+        """v1.6.45 — render tag chips in the header. Called after /tag,
+        /untag, or on construction if resume-point restored tags."""
+        # Wipe existing chips
+        while self._tags_layout.count():
+            item = self._tags_layout.takeAt(0)
+            w = item.widget() if item else None
+            if w is not None:
+                w.setParent(None)
+                w.deleteLater()
+        tags = self.session.tags or []
+        if not tags:
+            self._tags_host.hide()
+            return
+        for t in tags:
+            chip = QLabel(t)
+            chip.setStyleSheet(
+                f"color: {PURPLE_PRIMARY}; background-color: rgba(191,90,242,30); "
+                f"border: 1px solid rgba(191,90,242,120); border-radius: 10px; "
+                f"padding: 2px 9px; font-size: 10px; font-weight: 600;"
+            )
+            self._tags_layout.addWidget(chip)
+        self._tags_host.show()
 
     def _flash_for_find(self, ms: int = 1500) -> None:
         """v1.6.43 — temporary bright purple drop-shadow so operator can
@@ -1620,6 +1663,57 @@ class AgentCard(QFrame):
                 u = (t.get("user") or "").strip().replace("\n", " ")[:60]
                 a = (t.get("assistant") or "").strip().replace("\n", " ")[:60]
                 self._append_terminal(f"  {i:2d}. >> {u}\n      << {a}\n")
+            return True
+        if head == "/tag":
+            # v1.6.45 — add a label chip to this card. Chips are also
+            # included in /find's haystack so operators can search by tag.
+            parts = cmd.split(None, 1)
+            if len(parts) < 2 or not parts[1].strip():
+                current = ", ".join(self.session.tags) if self.session.tags else "(none)"
+                self._append_terminal(
+                    f"[/tag] usage: /tag <label>\n  current tags: {current}\n"
+                )
+                return True
+            label = parts[1].strip().lower()[:24]  # bound chip width
+            if label in self.session.tags:
+                self._append_terminal(f"[/tag] '{label}' already present\n")
+                return True
+            self.session.tags.append(label)
+            self._rebuild_tags()
+            try:
+                self._write_resume_point(save_reason="tag")
+            except Exception:
+                pass
+            self._append_terminal(f"[/tag] +{label}\n")
+            return True
+        if head == "/untag":
+            parts = cmd.split(None, 1)
+            if len(parts) < 2 or not parts[1].strip():
+                self._append_terminal(
+                    "[/untag] usage: /untag <label>  (or /untag * to clear all)\n"
+                )
+                return True
+            arg = parts[1].strip().lower()
+            if arg == "*":
+                n = len(self.session.tags)
+                self.session.tags.clear()
+                self._rebuild_tags()
+                try:
+                    self._write_resume_point(save_reason="untag")
+                except Exception:
+                    pass
+                self._append_terminal(f"[/untag] cleared {n} tag(s)\n")
+                return True
+            if arg not in self.session.tags:
+                self._append_terminal(f"[/untag] '{arg}' not present\n")
+                return True
+            self.session.tags.remove(arg)
+            self._rebuild_tags()
+            try:
+                self._write_resume_point(save_reason="untag")
+            except Exception:
+                pass
+            self._append_terminal(f"[/untag] -{arg}\n")
             return True
         if head == "/rename":
             # v1.6.44 — change the agent display name. Updates the
@@ -3104,6 +3198,7 @@ class AgentsView(QWidget):
                 c.session.agent_name or "",
                 c.session.project_key or "",
                 c.session.pane_id or "",
+                " ".join(c.session.tags or ()),  # v1.6.45 — tags included
             )).lower()
             if q in hay:
                 matches.append(c)
