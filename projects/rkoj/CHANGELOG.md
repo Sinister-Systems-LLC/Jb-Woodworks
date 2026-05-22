@@ -4,6 +4,32 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not command-versions (each lane has its own).
 
+## v1.6.56 — 2026-05-22 — 50-slash milestone
+
+**`/forget-last` — drop the last user/assistant pair from local
+`session.turns`. Completes the history-manipulation trio:
+`/retry` resends last + `/replay` resends old + `/forget-last` deletes.**
+
+- Walks `session.turns` backwards skipping notes; pops the first
+  user-keyed dict found. Notes between turns are preserved.
+- Refreshes the turn-count pill immediately and writes a resume-point
+  JSON with `save_reason="forget-last"` so the change survives crash.
+- **Important caveat** echoed back to operator: claude --resume retains
+  this turn server-side. /forget-last only affects RKOJ's local UI
+  state — /history, /replay numbering, resume-point JSON. The model
+  still has full conversation context.
+- 50 slash commands now — milestone count matching v1.6.50 milestone
+  version. Operator vocabulary fully filled in for: send / cancel /
+  retry / replay / forget-last / clone / find / find-next / rename /
+  tag / untag / tags / pin / save / show / diff / summarize / export /
+  export-all / cost / usage / timer / uptime / stats / vault / memory
+  / mcp / devices / persona / session / shortcuts / open / help /
+  history / note / notes / model / needs / focus / clear / copy /
+  grep / grep-clear / grep-next / grep-prev / broadcast / ping /
+  skill / skills.
+- MANIFEST.json 1.6.55 → 1.6.56.
+- `__init__.py __version__ = "1.6.56"`.
+
 ## v1.6.55 — 2026-05-22
 
 **`/export-all` — write every live card's transcript to one timestamped

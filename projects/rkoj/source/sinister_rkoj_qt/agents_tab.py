@@ -107,6 +107,7 @@ SLASH_COMMANDS: list[tuple[str, str]] = [
     ("/export",   "export conversation to a markdown file"),
     ("/export-all","write every live card's transcript to a bundle dir"),
     ("/focus",    "focus the input box"),
+    ("/forget-last","drop last user+reply locally (claude server-side still remembers)"),
     ("/expand-all", "expand every collapsed card in the grid"),
     ("/find",     "scroll the grid to a card matching <text> (project/agent)"),
     ("/find-next","cycle to the next /find match (uses last query)"),
@@ -1509,6 +1510,44 @@ class AgentCard(QFrame):
             # into the terminal scrollback to copy text + lost typing focus.
             self.input.setFocus()
             self._append_terminal("[/focus] input refocused\n")
+            return True
+        if head == "/forget-last":
+            # v1.6.56 — drop the last user/assistant pair from local
+            # session.turns. CAVEAT: claude --resume retains the turn
+            # server-side; this only affects RKOJ's local UI state +
+            # /history + /replay numbering + resume-point JSON.
+            # Notes (kind=note) are skipped — we want to remove the
+            # last real turn, not the last annotation.
+            last_idx = None
+            for i in range(len(self.session.turns) - 1, -1, -1):
+                t = self.session.turns[i]
+                if t.get("kind") == "note":
+                    continue
+                if t.get("user"):
+                    last_idx = i
+                    break
+            if last_idx is None:
+                self._append_terminal(
+                    "[/forget-last] no prior user turn to forget\n"
+                )
+                return True
+            removed = self.session.turns.pop(last_idx)
+            preview = (removed.get("user") or "").rstrip().replace("\n", " ")[:60]
+            # Refresh the turn pill since the user-turn count decreased.
+            try:
+                n_now = len([t for t in self.session.turns if t.get("user")])
+                self._turn_pill.setText(f"{n_now} turn{'s' if n_now != 1 else ''}")
+            except Exception:
+                pass
+            try:
+                self._write_resume_point(save_reason="forget-last")
+            except Exception:
+                pass
+            self._append_terminal(
+                f"[/forget-last] dropped locally: '{preview}{'…' if len(preview) >= 60 else ''}'\n"
+                f"  NOTE: claude --resume still has this turn server-side.\n"
+                f"  This only affects /history + /replay numbering + resume-point JSON.\n"
+            )
             return True
         if head == "/grep":
             # v1.6.34 — highlight matching text via QTextEdit.ExtraSelection
