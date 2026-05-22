@@ -63,7 +63,7 @@ def _strip_ansi(text: str) -> str:
 SLASH_COMMANDS: list[tuple[str, str]] = [
     ("/help",     "show all slash commands"),
     ("/clear",    "clear terminal scrollback (Ctrl+L)"),
-    ("/cost",     "cumulative spend breakdown"),
+    ("/cost",     "cumulative spend breakdown for THIS card"),
     ("/devices",  "list connected ADB devices inline"),
     ("/export",   "export conversation to a markdown file"),
     ("/focus",    "focus the input box"),
@@ -79,6 +79,7 @@ SLASH_COMMANDS: list[tuple[str, str]] = [
     ("/session",  "print just the session uuid"),
     ("/skill",    "load + send a saved skill .md as a turn"),
     ("/skills",   "list Sanctum skills (.md files)"),
+    ("/usage",    "cross-card RKOJ spend totals (from disk)"),
     ("/vault",    "Sinister Vault disk usage + daemon port"),
 ]
 
@@ -1161,38 +1162,20 @@ class AgentCard(QFrame):
             )
             return True
         if head == "/save":
-            # Write to the canonical resume-point dir (per agent display name).
             try:
-                if self.session.resume_dir:
-                    resume_dir = Path(self.session.resume_dir)
-                else:
-                    resume_dir = state.SHARED_MEMORY / "rkoj-qt" / "resume-points"
-                resume_dir.mkdir(parents=True, exist_ok=True)
-                ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H%M%SZ")
-                fp = resume_dir / f"{ts}.json"
-                payload = {
-                    "schema_version": "sinister.resume-point.v1",
-                    "agent_identity": "EVE",
-                    "agent_display": self.session.display_name,
-                    "slug": self.session.slug,
-                    "pane_id": self.session.pane_id,
-                    "session_uuid": self.session.session_uuid,
-                    "project_key": self.session.project_key,
-                    "project_display": self.session.project_display,
-                    "agent_name": self.session.agent_name,
-                    "mode": self.session.mode,
-                    "turns": self.session.turns,
-                    "saved_at": datetime.now(timezone.utc).isoformat(),
-                    "resume_cmd": (
-                        f"claude --dangerously-skip-permissions "
-                        f"-r {self.session.session_uuid} -p 'your message'"
-                    ),
-                }
-                with open(fp, "w", encoding="utf-8") as fh:
-                    json.dump(payload, fh, indent=2)
+                fp = self._write_resume_point(save_reason="manual")
                 self._append_terminal(f"[/save] wrote {fp}\n")
             except Exception as exc:
                 self._append_terminal(f"[/save] failed: {exc}\n")
+            return True
+        if head == "/usage":
+            # v1.6.21 — aggregate spend + tokens across ALL saved
+            # resume-points in `_shared-memory/resume-points/EVE on */*.json`.
+            # Operator's RKOJ-wide spend at a glance.
+            try:
+                self._render_usage_totals()
+            except Exception as exc:
+                self._append_terminal(f"[/usage] failed: {exc}\n")
             return True
         if head == "/needs":
             new_state = "awaiting-input" if self.session.status != "awaiting-input" else "online"
@@ -1564,6 +1547,13 @@ class AgentCard(QFrame):
         if self._proc is not None and self._proc.state() != QProcess.ProcessState.NotRunning:
             self._proc.kill()
             self._proc.waitForFinished(2000)
+        # v1.6.21 — auto-save resume-point on card close so the session
+        # never silently vanishes. Operator can re-open via the empty-state
+        # recent-sessions list (v1.6.15) or sidebar Sessions picker.
+        try:
+            self._write_resume_point(save_reason="autoclose")
+        except Exception:
+            pass
         try:
             self._hb_timer.stop()
             _refresh_heartbeat(self.session, "ended")
@@ -1572,15 +1562,156 @@ class AgentCard(QFrame):
         self.closed.emit(self.session.pane_id)
 
     def shutdown(self) -> None:
-        """Called from main window closeEvent — kill child cleanly."""
+        """Called from main window closeEvent — kill child cleanly + autosave."""
         if self._proc is not None and self._proc.state() != QProcess.ProcessState.NotRunning:
             self._proc.kill()
             self._proc.waitForFinished(1500)
+        # v1.6.21 — also auto-save on full-app shutdown (main RKOJ window
+        # closing while cards are alive).
+        try:
+            self._write_resume_point(save_reason="app-shutdown")
+        except Exception:
+            pass
         try:
             self._hb_timer.stop()
             _refresh_heartbeat(self.session, "ended")
         except Exception:
             pass
+
+    # v1.6.21 — single resume-point writer shared by /save, autoclose,
+    # and app-shutdown paths. Skips if no turns happened yet (don't
+    # litter the picker with empty sessions).
+    def _write_resume_point(self, save_reason: str = "manual") -> Path | None:
+        if not any(t.get("user") for t in self.session.turns):
+            return None  # skip empty cards
+        if self.session.resume_dir:
+            resume_dir = Path(self.session.resume_dir)
+        else:
+            resume_dir = state.SHARED_MEMORY / "rkoj-qt" / "resume-points"
+        resume_dir.mkdir(parents=True, exist_ok=True)
+        ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H%M%SZ")
+        suffix = f"-{save_reason}" if save_reason != "manual" else ""
+        fp = resume_dir / f"{ts}{suffix}.json"
+        payload = {
+            "schema_version": "sinister.resume-point.v1",
+            "agent_identity": "EVE",
+            "agent_display": self.session.display_name,
+            "slug": self.session.slug,
+            "pane_id": self.session.pane_id,
+            "session_uuid": self.session.session_uuid,
+            "project_key": self.session.project_key,
+            "project_display": self.session.project_display,
+            "agent_name": self.session.agent_name,
+            "mode": self.session.mode,
+            "turns": self.session.turns,
+            "saved_at": datetime.now(timezone.utc).isoformat(),
+            "save_reason": save_reason,
+            # v1.6.21 — include cost telemetry so /usage can aggregate
+            # without re-running each conversation.
+            "total_cost_usd": self._total_cost_usd,
+            "total_in_tokens": self._total_in_tokens,
+            "total_out_tokens": self._total_out_tokens,
+            "resume_cmd": (
+                f"claude --dangerously-skip-permissions "
+                f"-r {self.session.session_uuid} -p 'your message'"
+            ),
+        }
+        with open(fp, "w", encoding="utf-8") as fh:
+            json.dump(payload, fh, indent=2)
+        return fp
+
+    def _render_usage_totals(self) -> None:
+        """Walk _shared-memory/resume-points/EVE on */*.json and print
+        per-project + grand totals. Newer saves overwrite older counts
+        from the same session_uuid so multiple autosaves don't double-
+        count (we keep the highest cost per uuid)."""
+        rp_root = state.SHARED_MEMORY / "resume-points"
+        if not rp_root.exists():
+            self._append_terminal("[/usage] no resume-points dir yet\n")
+            return
+        # By session_uuid → keep the highest cost / token counts seen
+        # (later saves typically have ≥ earlier counts since cost is
+        # cumulative within a card's lifetime).
+        per_uuid: dict[str, dict] = {}
+        for proj_dir in rp_root.iterdir():
+            if not proj_dir.is_dir():
+                continue
+            for fp in proj_dir.glob("*.json"):
+                try:
+                    with open(fp, "r", encoding="utf-8") as fh:
+                        d = json.load(fh)
+                except Exception:
+                    continue
+                uid = d.get("session_uuid") or ""
+                if not uid:
+                    continue
+                cost = float(d.get("total_cost_usd", 0) or 0)
+                in_tok = int(d.get("total_in_tokens", 0) or 0)
+                out_tok = int(d.get("total_out_tokens", 0) or 0)
+                prev = per_uuid.get(uid)
+                if prev is None or cost > prev["cost"]:
+                    per_uuid[uid] = {
+                        "project": d.get("project_display") or proj_dir.name.replace("EVE on ", ""),
+                        "cost": cost,
+                        "in_tok": in_tok,
+                        "out_tok": out_tok,
+                        "turns": len(d.get("turns", [])),
+                    }
+        if not per_uuid:
+            self._append_terminal(
+                "[/usage] no saved sessions with cost data yet.\n"
+                "  Cost telemetry was added in v1.6.21 — older saves\n"
+                "  may not have it. Spawn + chat + close some cards to\n"
+                "  populate.\n"
+            )
+            return
+        # Group by project
+        per_proj: dict[str, dict] = {}
+        for v in per_uuid.values():
+            p = per_proj.setdefault(v["project"], {
+                "sessions": 0, "cost": 0.0, "in_tok": 0, "out_tok": 0, "turns": 0
+            })
+            p["sessions"] += 1
+            p["cost"] += v["cost"]
+            p["in_tok"] += v["in_tok"]
+            p["out_tok"] += v["out_tok"]
+            p["turns"] += v["turns"]
+        # Render
+        self._append_terminal("[/usage] RKOJ session totals (from disk):\n\n")
+        tot_cost = 0.0
+        tot_in = 0
+        tot_out = 0
+        tot_sess = 0
+        tot_turns = 0
+        for proj in sorted(per_proj.keys(), key=lambda p: -per_proj[p]["cost"]):
+            p = per_proj[proj]
+            self._append_terminal(
+                f"  {proj:<22s} "
+                f"· {p['sessions']:>2d} sess "
+                f"· {p['turns']:>3d} turns "
+                f"· ${p['cost']:>7.4f} "
+                f"· {p['in_tok']:>7,} in "
+                f"· {p['out_tok']:>5,} out\n"
+            )
+            tot_cost += p["cost"]
+            tot_in += p["in_tok"]
+            tot_out += p["out_tok"]
+            tot_sess += p["sessions"]
+            tot_turns += p["turns"]
+        self._append_terminal(
+            f"  {'─' * 22} "
+            f"{'─' * 9} "
+            f"{'─' * 10} "
+            f"{'─' * 10} "
+            f"{'─' * 11} "
+            f"{'─' * 8}\n"
+            f"  {'TOTAL':<22s} "
+            f"· {tot_sess:>2d} sess "
+            f"· {tot_turns:>3d} turns "
+            f"· ${tot_cost:>7.4f} "
+            f"· {tot_in:>7,} in "
+            f"· {tot_out:>5,} out\n"
+        )
 
 
 # ── Agents view (folder-tab row + niri-scroll grid) ────────────────────

@@ -4,6 +4,40 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not component versions (each lane has its own).
 
+## v1.6.21 — 2026-05-22
+
+**Auto-save resume-point on card close + cross-card `/usage` aggregator.**
+
+Until now `/save` was the only path that wrote a resume-point — closing
+a card silently dropped the session. Plus the cost telemetry only lived
+in memory, so there was no way to see RKOJ-wide spend.
+
+- **AgentCard auto-save on close**: `_on_close` (operator clicks X) and
+  `shutdown` (whole app closing) both write a resume-point with
+  `save_reason=autoclose` / `app-shutdown` before killing the
+  subprocess. Skips empty cards (no operator messages sent).
+- **`_write_resume_point()` extracted** as a single writer shared by
+  `/save`, `_on_close`, and `shutdown`. Payload now includes
+  `total_cost_usd` / `total_in_tokens` / `total_out_tokens` so
+  `/usage` can aggregate from disk without re-running anything.
+- **`/usage` slash command** — walks
+  `_shared-memory/resume-points/EVE on */*.json`, dedupes by
+  `session_uuid` (keeps highest cost — cumulative within a card's
+  lifetime), groups by project, prints per-project + grand totals:
+
+  ```
+  [/usage] RKOJ session totals (from disk):
+  
+    Sanctum                ·  5 sess ·  42 turns · $ 0.4218 ·  84,209 in · 1,300 out
+    Kernel APK             ·  2 sess ·  18 turns · $ 0.1840 ·  31,420 in ·   540 out
+    ───────────────────────  ─────────  ──────────  ──────────  ───────────  ────────
+    TOTAL                  ·  7 sess ·  60 turns · $ 0.6058 · 115,629 in · 1,840 out
+  ```
+
+  Registered in SLASH_COMMANDS → discoverable via autocomplete (18 total).
+- MANIFEST.json 1.6.20 → 1.6.21.
+- `__init__.py __version__ = "1.6.21"`.
+
 ## v1.6.20 — 2026-05-22
 
 **rate_limit_event surface + popup position safety + /skill loader.**
