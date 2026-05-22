@@ -4,6 +4,37 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not component versions (each lane has its own).
 
+## v1.6.17 — 2026-05-22
+
+**Slash-command autocomplete popup** (jcode keybind parity). Operator
+types `/` → a list of matching commands appears above the input.
+Up/Down navigates, Enter completes, Esc dismisses.
+
+- Module-level `SLASH_COMMANDS` registry — 14 commands (/help, /clear,
+  /cost, /history, /memory, /mcp, /needs, /open, /persona, /retry,
+  /save, /session, /skills, /vault). Tuple format: `(cmd, description)`.
+- New `_SlashPopup` class — frameless `QFrame` containing a `QListWidget`
+  styled to match the SavedSessionsPicker. Uses `Qt.WindowType.Popup |
+  Qt.WindowType.FramelessWindowHint` + `WA_ShowWithoutActivating` so it
+  appears above the input without grabbing focus. Filter is prefix-match
+  on the typed token; popup auto-hides on zero matches or focus-out.
+- `_MultiLineInput` gains a `slash_popup` attribute. AgentCard wires
+  the popup in `_build` after creating the input + connects
+  `completed` → `_on_slash_completed`.
+- `_MultiLineInput.keyPressEvent` — when popup is visible:
+  - Down  → `popup.select_next()`
+  - Up    → `popup.select_prev()`
+  - Esc   → `popup.hide()`
+  - Enter / Tab → complete the selected command (replace input with
+    `<cmd> ` + cursor at end + hide popup)
+- `_MultiLineInput._maybe_update_popup` — runs after every keystroke:
+  shows + filters the popup when text starts with `/` and there's no
+  newline yet; hides otherwise.
+- `_MultiLineInput.focusOutEvent` hides the popup when input loses focus
+  (clicking elsewhere shouldn't leave the popup floating).
+- MANIFEST.json 1.6.16 → 1.6.17.
+- `__init__.py __version__ = "1.6.17"`.
+
 ## v1.6.16 — 2026-05-22
 
 **Markdown post-stream formatting in the terminal** — code fences, inline

@@ -56,12 +56,127 @@ def _strip_ansi(text: str) -> str:
     return _ANSI_RE.sub("", text)
 
 
+# v1.6.17 — slash command autocomplete registry. Each tuple is
+# (command, one-line description). The autocomplete popup filters this
+# list as operator types after `/`. New /commands added to _maybe_intercept
+# should be added here too so the popup discovers them.
+SLASH_COMMANDS: list[tuple[str, str]] = [
+    ("/help",     "show all slash commands"),
+    ("/clear",    "clear terminal scrollback (Ctrl+L)"),
+    ("/cost",     "cumulative spend breakdown"),
+    ("/history",  "show recent turns with previews"),
+    ("/memory",   "forge-memory-bridge BM25 recall"),
+    ("/mcp",      "list MCP servers from ~/.claude/.mcp.json"),
+    ("/needs",    "toggle awaiting-input glow (visual test)"),
+    ("/open",     "print shell commands to open agent paths"),
+    ("/persona",  "print identity (slug / uuid / paths)"),
+    ("/retry",    "resend the most recent operator message"),
+    ("/save",     "write resume-point JSON to disk"),
+    ("/session",  "print just the session uuid"),
+    ("/skills",   "list Sanctum skills (.md files)"),
+    ("/vault",    "Sinister Vault disk usage + daemon port"),
+]
+
+
+class _SlashPopup(QFrame):
+    """jcode-style autocomplete popup — appears above the input when
+    operator types `/`. Listens for filter() calls + Up/Down navigation
+    forwarded from the input's keyPressEvent."""
+
+    completed = pyqtSignal(str)   # full command name (incl. leading /)
+
+    def __init__(self, parent: QWidget | None = None) -> None:
+        # Tooltip flag makes it auto-dismiss on focus-out + render above
+        # without grabbing input focus from the operator.
+        super().__init__(
+            parent,
+            Qt.WindowType.Popup | Qt.WindowType.FramelessWindowHint,
+        )
+        self.setAttribute(Qt.WidgetAttribute.WA_ShowWithoutActivating, True)
+        self.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        from .theme import BORDER as _B, ELEVATED as _E, MUTED_FG as _M
+        self.setStyleSheet(
+            f"QFrame {{ background-color: {_E}; border: 1px solid {_B}; "
+            f"border-radius: 8px; padding: 4px; }}"
+            f"QListWidget {{ background-color: transparent; color: white; "
+            f"border: none; outline: none; font-family: 'JetBrains Mono', "
+            f"monospace; font-size: 12px; }}"
+            f"QListWidget::item {{ background-color: transparent; "
+            f"border-radius: 5px; padding: 6px 10px; }}"
+            f"QListWidget::item:hover {{ background-color: rgba(191,90,242,30); }}"
+            f"QListWidget::item:selected {{ background-color: rgba(191,90,242,90); "
+            f"color: white; }}"
+        )
+        # QListWidget inside a frame
+        from PyQt6.QtWidgets import QListWidget, QListWidgetItem, QVBoxLayout as _V
+        self._list = QListWidget(self)
+        self._list.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self._list.itemClicked.connect(self._on_item_clicked)
+        v = _V(self)
+        v.setContentsMargins(0, 0, 0, 0)
+        v.addWidget(self._list)
+        self.setMinimumWidth(360)
+        # Track full SLASH_COMMANDS so filter() can rebuild
+        self._all = list(SLASH_COMMANDS)
+        self._populate(self._all)
+
+    def _populate(self, items: list[tuple[str, str]]) -> None:
+        from PyQt6.QtWidgets import QListWidgetItem
+        self._list.clear()
+        for cmd, desc in items:
+            li = QListWidgetItem(f"{cmd:<10}  {desc}")
+            li.setData(Qt.ItemDataRole.UserRole, cmd)
+            self._list.addItem(li)
+        if self._list.count() > 0:
+            self._list.setCurrentRow(0)
+
+    def filter(self, query: str) -> int:
+        """Filter visible commands by prefix match. Returns count of matches."""
+        q = (query or "").lower().strip()
+        matches = [(c, d) for c, d in self._all if c.lower().startswith(q)]
+        self._populate(matches)
+        # Auto-size to roughly 5 rows visible
+        n = min(len(matches), 7)
+        self._list.setFixedHeight(max(36, 32 * n + 8))
+        return len(matches)
+
+    def select_next(self) -> None:
+        row = self._list.currentRow()
+        self._list.setCurrentRow((row + 1) % max(1, self._list.count()))
+
+    def select_prev(self) -> None:
+        row = self._list.currentRow()
+        n = max(1, self._list.count())
+        self._list.setCurrentRow((row - 1) % n)
+
+    def selected_command(self) -> str | None:
+        it = self._list.currentItem()
+        if it is None:
+            return None
+        return it.data(Qt.ItemDataRole.UserRole)
+
+    def _on_item_clicked(self, item) -> None:
+        cmd = item.data(Qt.ItemDataRole.UserRole)
+        if cmd:
+            self.completed.emit(cmd)
+
+    def show_above(self, anchor: QWidget) -> None:
+        """Position the popup directly above the anchor widget."""
+        global_pos = anchor.mapToGlobal(anchor.rect().topLeft())
+        h = self.sizeHint().height()
+        self.move(global_pos.x(), global_pos.y() - h - 4)
+        self.show()
+
+
 class _MultiLineInput(QPlainTextEdit):
     """jcode-style input: Enter sends, Shift+Enter inserts newline.
 
     Auto-resizes vertically up to a 5-line cap so a long prompt doesn't
     blow up the card. Emits `submit` (pyqtSignal[str]) when the operator
     presses Enter without Shift held.
+
+    v1.6.17 — slash_popup attribute (optional): when set, typing `/` at
+    cursor-start shows it; Up/Down/Enter/Esc are intercepted to drive it.
     """
 
     submit = pyqtSignal(str)
@@ -79,6 +194,8 @@ class _MultiLineInput(QPlainTextEdit):
         self._min_h = 36
         self._max_h = 132
         self.setFixedHeight(self._min_h)
+        # v1.6.17 popup (set by AgentCard after construction)
+        self.slash_popup: _SlashPopup | None = None
 
     def _fit_height(self, *_args) -> None:
         h = int(self.document().size().height()) + 12
@@ -90,7 +207,34 @@ class _MultiLineInput(QPlainTextEdit):
                 else Qt.ScrollBarPolicy.ScrollBarAlwaysOff
             )
 
+    def _popup_visible(self) -> bool:
+        return self.slash_popup is not None and self.slash_popup.isVisible()
+
     def keyPressEvent(self, event: QKeyEvent) -> None:
+        # v1.6.17 — when the slash popup is visible, hijack arrow/enter/esc.
+        if self._popup_visible():
+            k = event.key()
+            if k == Qt.Key.Key_Down:
+                self.slash_popup.select_next(); event.accept(); return
+            if k == Qt.Key.Key_Up:
+                self.slash_popup.select_prev(); event.accept(); return
+            if k == Qt.Key.Key_Escape:
+                self.slash_popup.hide(); event.accept(); return
+            if k in (Qt.Key.Key_Return, Qt.Key.Key_Enter, Qt.Key.Key_Tab):
+                # Complete the highlighted command — replace the entire
+                # input text with the command (operator can then keep
+                # typing args after it).
+                cmd = self.slash_popup.selected_command()
+                if cmd:
+                    self.setPlainText(cmd + " ")
+                    # Move cursor to end
+                    cur = self.textCursor()
+                    cur.movePosition(QTextCursor.MoveOperation.End)
+                    self.setTextCursor(cur)
+                    self.slash_popup.hide()
+                    event.accept()
+                    return
+
         if event.key() in (Qt.Key.Key_Return, Qt.Key.Key_Enter):
             if event.modifiers() & Qt.KeyboardModifier.ShiftModifier:
                 # Shift+Enter → newline (default QPlainTextEdit behavior)
@@ -101,6 +245,34 @@ class _MultiLineInput(QPlainTextEdit):
             self.submit.emit(text)
             return
         super().keyPressEvent(event)
+        # v1.6.17 — after any normal keystroke, refresh popup visibility
+        # based on current text.
+        self._maybe_update_popup()
+
+    def _maybe_update_popup(self) -> None:
+        if self.slash_popup is None:
+            return
+        text = self.toPlainText()
+        # Only show when text starts with `/` and there's no newline yet
+        # (multi-line composition shouldn't trigger autocomplete).
+        if text.startswith("/") and "\n" not in text:
+            # Filter by the slash-token (up to first space)
+            token = text.split(None, 1)[0]
+            n_matches = self.slash_popup.filter(token)
+            if n_matches > 0:
+                self.slash_popup.show_above(self)
+            else:
+                self.slash_popup.hide()
+        else:
+            if self.slash_popup.isVisible():
+                self.slash_popup.hide()
+
+    def focusOutEvent(self, event) -> None:
+        # Hide popup when input loses focus (clicking elsewhere shouldn't
+        # leave it floating).
+        if self._popup_visible():
+            self.slash_popup.hide()
+        super().focusOutEvent(event)
 
 try:
     from PyQt6.QtSvgWidgets import QSvgWidget  # type: ignore
@@ -406,6 +578,11 @@ class AgentCard(QFrame):
             f"}}"
         )
         self.input.submit.connect(self._on_input_submit)
+        # v1.6.17 — attach slash-command autocomplete popup. Owned by the
+        # card so Qt can clean it up; positioned above the input on demand.
+        self._slash_popup = _SlashPopup(self)
+        self._slash_popup.completed.connect(self._on_slash_completed)
+        self.input.slash_popup = self._slash_popup
         self.send_btn = QPushButton("Send")
         self.send_btn.setObjectName("SendBtn")
         self.send_btn.clicked.connect(self._on_send)
@@ -504,6 +681,16 @@ class AgentCard(QFrame):
         """Ctrl+L → mirror /clear (jcode keybinding parity)."""
         self.terminal.clear()
         self._append_terminal("[cleared via Ctrl+L]\n")
+
+    def _on_slash_completed(self, cmd: str) -> None:
+        """Operator picked a slash command from the autocomplete popup.
+        Replace the input text with the command + trailing space so the
+        operator can immediately type any args."""
+        self.input.setPlainText(cmd + " ")
+        cur = self.input.textCursor()
+        cur.movePosition(QTextCursor.MoveOperation.End)
+        self.input.setTextCursor(cur)
+        self.input.setFocus()
 
     # ── v1.6.16 markdown post-stream formatting ───────────────────────
     # Applied once per turn after _on_finished. We don't try to format
