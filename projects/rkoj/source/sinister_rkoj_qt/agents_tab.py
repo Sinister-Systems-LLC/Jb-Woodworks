@@ -1242,26 +1242,25 @@ class AgentCard(QFrame):
             return False
         head = cmd.split(None, 1)[0].lower()
         if head == "/help":
+            # v1.6.57 — auto-generate from SLASH_COMMANDS so /help can't
+            # rot out of sync with the registry as new commands ship.
+            # Sorted alphabetically; aligned at the widest command name.
             self._append_terminal(
-                "[/help]  Slash commands (RKOJ-side intercepts):\n"
-                "  /help        show this list\n"
-                "  /clear       clear terminal scrollback\n"
-                "  /save        write resume-point JSON (incl. session uuid) to disk\n"
-                "  /history     show all prior turns (count + truncated previews)\n"
-                "  /retry       resend the most recent operator message\n"
-                "  /persona     print identity (display, slug, session uuid, paths)\n"
-                "  /session     print just the session uuid (for `claude -r <uuid>` later)\n"
-                "  /skills      list available Sanctum skills (~/.sinister/skills + repo)\n"
-                "  /mcp         list MCP servers configured in ~/.claude/.mcp.json\n"
-                "  /vault       Sinister Vault status (disk usage + daemon port :5078)\n"
-                "  /memory      forge-memory-bridge BM25 recall (if available)\n"
-                "  /open        print path commands to open agent PROGRESS / resume-points\n"
-                "  /needs       toggle awaiting-input glow (visual test)\n"
+                f"[/help]  {len(SLASH_COMMANDS)} slash commands "
+                "(RKOJ-side intercepts):\n"
+            )
+            width = max(len(cmd) for cmd, _ in SLASH_COMMANDS)
+            for cmd_name, desc in sorted(SLASH_COMMANDS):
+                self._append_terminal(
+                    f"  {cmd_name:<{width}}  {desc}\n"
+                )
+            self._append_terminal(
                 "\n"
-                "  Any other text is forwarded to claude as a turn in this session.\n"
-                "  v1.6.3 uses real session continuity (claude --session-id then\n"
-                "  --resume <uuid>) — claude tracks the conversation server-side,\n"
-                "  so each turn only sends your latest message (no history replay).\n"
+                "  Any other text is forwarded to EVE as a turn in this session.\n"
+                "  Session continuity: `claude --session-id <uuid>` on first turn +\n"
+                "  `--resume <uuid>` on every subsequent turn (claude tracks the\n"
+                "  conversation server-side; each turn only sends the latest message).\n"
+                "  See also: /shortcuts for keyboard bindings + click affordances.\n"
             )
             return True
         if head == "/skill":

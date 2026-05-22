@@ -4,6 +4,27 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not command-versions (each lane has its own).
 
+## v1.6.57 — 2026-05-22
+
+**/help auto-generates from `SLASH_COMMANDS` registry — kills doc rot.
+Plus consolidating brain entry for the v1.6.45-56 introspection cluster.**
+
+- `/help` previously hardcoded 14 of the now-50 commands. New body:
+  ```python
+  width = max(len(cmd) for cmd, _ in SLASH_COMMANDS)
+  for cmd_name, desc in sorted(SLASH_COMMANDS):
+      self._append_terminal(f"  {cmd_name:<{width}}  {desc}\n")
+  ```
+  Width-aligned, sorted alphabetically. Adding a SLASH_COMMANDS row
+  is now the only step to ship a new slash command.
+- Brain entry `_shared-memory/knowledge/rkoj-introspection-cluster-v1.6.45-56-2026-05-22.md`
+  codifies 7 reusable patterns (signal fan-out, 1-indexed user-turn
+  numbering, additive JSON schema, click-to-jump QLabel subclass,
+  shared `_fmt_duration`, body-extract methods, autogen /help) +
+  7 anti-patterns. _INDEX.md row added.
+- MANIFEST.json 1.6.56 → 1.6.57.
+- `__init__.py __version__ = "1.6.57"`.
+
 ## v1.6.56 — 2026-05-22 — 50-slash milestone
 
 **`/forget-last` — drop the last user/assistant pair from local
