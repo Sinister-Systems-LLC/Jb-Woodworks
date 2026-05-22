@@ -1232,7 +1232,10 @@ class AgentCard(QFrame):
             self._append_terminal("[busy] previous turn still running; waiting…\n")
             return
 
-        self._append_terminal(f"\n>> {text}\n")
+        # v1.6.24 — timestamp gutter so the operator can scan the
+        # conversation chronologically and time-bound debug.
+        ts = datetime.now().strftime("%H:%M:%S")
+        self._append_terminal(f"\n[{ts}] >> {text}\n")
         self.input.clear()
         self.session.turns.append({"user": text, "assistant": ""})
         self._reply_started = False
@@ -1351,7 +1354,8 @@ class AgentCard(QFrame):
         """Fallback when output isn't JSON (e.g., pre-stream init text)."""
         if not self._stream_text_started:
             self._stop_thinking()
-            self._append_terminal("<< ")
+            ts = datetime.now().strftime("%H:%M:%S")
+            self._append_terminal(f"[{ts}] << ")
             self._stream_text_started = True
             self._reply_started = True
         self._append_terminal(text)
@@ -1371,7 +1375,9 @@ class AgentCard(QFrame):
                     if text:
                         if not self._stream_text_started:
                             self._stop_thinking()
-                            self._append_terminal("<< ")
+                            # v1.6.24 — timestamp gutter on EVE's reply too.
+                            ts = datetime.now().strftime("%H:%M:%S")
+                            self._append_terminal(f"[{ts}] << ")
                             # v1.6.16 — record position AFTER "<< " prefix
                             # so markdown formatting only touches EVE's
                             # reply, not our own prefix.

@@ -4,6 +4,28 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not component versions (each lane has its own).
 
+## v1.6.24 — 2026-05-22
+
+**Terminal timestamp gutter.** Each operator turn and EVE reply now
+opens with a `[HH:MM:SS]` prefix so the operator can scan the
+conversation chronologically + time-bound debugging:
+
+```
+[14:32:01] >> spawn a sub-agent to audit the resume-points
+[14:32:14] << I'll spawn a sub-agent…
+…
+[14:32:47] >> /cost
+```
+
+- `_on_send`: prepends `[HH:MM:SS]` to the `>> {text}` line.
+- `_handle_stream_event` (text_delta first chunk): prepends `[HH:MM:SS]`
+  to the `<< ` reply prefix.
+- `_render_plain_chunk` (non-JSON fallback path): same.
+- `_reply_start_pos` still records the position AFTER the `<< ` prefix
+  so v1.6.16 markdown formatting only touches EVE's reply text.
+- MANIFEST.json 1.6.23 → 1.6.24.
+- `__init__.py __version__ = "1.6.24"`.
+
 ## v1.6.23 — 2026-05-22
 
 **Live Agents badge + Sessions badge auto-refresh on card close + /stats.**
