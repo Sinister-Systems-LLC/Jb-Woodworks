@@ -4,6 +4,25 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not component versions (each lane has its own).
 
+## v1.6.42 — 2026-05-22
+
+**`/find <text>` — scroll the grid to a card matching project / agent /
+pane_id substring. Friction-reducer for multi-card fleets.**
+
+- New `find_requested(invoker_pane_id, query)` signal on AgentCard.
+- AgentsView slot `_focus_find` searches every card's
+  `project_display | agent_name | project_key | pane_id` haystack
+  (case-insensitive substring) and calls
+  `grid.ensureWidgetVisible(matched_card)` to scroll.
+- Auto-expands the matched card if it was collapsed (no point
+  scrolling to a 40-px-tall header strip).
+- Feedback is echoed back to the *invoker*'s terminal, not the
+  matched card — keeps operator in their typing context:
+  `[/find] focused → Sinister Panel :: panel (pane_id=ab12cd34ef56)`
+- 37 slash commands now (added /find).
+- MANIFEST.json 1.6.41 → 1.6.42.
+- `__init__.py __version__ = "1.6.42"`.
+
 ## v1.6.41 — 2026-05-22
 
 **`/clone` (alias `/dup`) — spawn a sibling card with the same project

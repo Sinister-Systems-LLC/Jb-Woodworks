@@ -105,6 +105,7 @@ SLASH_COMMANDS: list[tuple[str, str]] = [
     ("/export",   "export conversation to a markdown file"),
     ("/focus",    "focus the input box"),
     ("/expand-all", "expand every collapsed card in the grid"),
+    ("/find",     "scroll the grid to a card matching <text> (project/agent)"),
     ("/grep",     "highlight matching text in the terminal (yellow bg)"),
     ("/grep-clear", "remove /grep highlights"),
     ("/grep-next", "scroll to the next /grep match (F3)"),
@@ -519,6 +520,9 @@ class AgentCard(QFrame):
     # v1.6.41 — /clone emits (project_key, mode) so AgentsView spawns a
     # sibling card with the same setup but a fresh session UUID.
     clone_requested = pyqtSignal(str, str)
+    # v1.6.42 — /find emits (pane_id_of_invoker, query) so AgentsView
+    # can scroll the grid to a matching card + echo feedback back.
+    find_requested = pyqtSignal(str, str)
 
     # Braille spinner for the "thinking" indicator (jcode-style).
     _SPINNER = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
@@ -1466,6 +1470,20 @@ class AgentCard(QFrame):
         if head == "/expand-all":
             self._append_terminal("[/expand-all] expanding all cards…\n")
             self.expand_all_requested.emit()
+            return True
+        if head == "/find":
+            # v1.6.42 — fan to AgentsView, which scrolls the grid to a
+            # card whose project_display / agent_name / pane_id prefix
+            # matches <text>. Echoes feedback via this card's terminal.
+            parts = cmd.split(None, 1)
+            if len(parts) < 2 or not parts[1].strip():
+                self._append_terminal(
+                    "[/find] usage: /find <text>\n"
+                    "  Scrolls the grid to the first card matching <text>\n"
+                    "  (case-insensitive substring of project / agent / id).\n"
+                )
+                return True
+            self.find_requested.emit(self.session.pane_id, parts[1].strip())
             return True
         if head == "/model":
             # v1.6.19 — show or change the model alias for subsequent turns.
@@ -2940,6 +2958,8 @@ class AgentsView(QWidget):
         card.clone_requested.connect(
             lambda pk, m: self.spawn_agent(project_key=pk, mode=m)
         )
+        # v1.6.42 — /find fans to AgentsView focus helper.
+        card.find_requested.connect(self._focus_find)
         self._cards[sess.pane_id] = card
         self._rebuild_folder_chips()
         self._rebuild_grid()
@@ -2991,6 +3011,41 @@ class AgentsView(QWidget):
                 c._toggle_collapsed()
                 n += 1
         return n
+
+    # v1.6.42 — /find handler. Caller emits (invoker_pane_id, query);
+    # we scroll grid to first match + echo feedback in the caller's
+    # terminal so operator stays in their typing card.
+    def _focus_find(self, invoker_id: str, query: str) -> None:
+        q = query.strip().lower()
+        invoker = self._cards.get(invoker_id)
+        if not q:
+            return
+        match: AgentCard | None = None
+        for c in self._cards.values():
+            hay = " ".join((
+                c.session.project_display or "",
+                c.session.agent_name or "",
+                c.session.project_key or "",
+                c.session.pane_id or "",
+            )).lower()
+            if q in hay:
+                match = c
+                break
+        if invoker is None:
+            return
+        if match is None:
+            invoker._append_terminal(
+                f"[/find] no card matches '{query}' (searched project / agent / id)\n"
+            )
+            return
+        # Expand if collapsed so operator can actually read it after scroll.
+        if match._collapsed:
+            match._toggle_collapsed()
+        self.grid.ensureWidgetVisible(match)
+        invoker._append_terminal(
+            f"[/find] focused → {match.session.project_display} :: "
+            f"{match.session.agent_name} (pane_id={match.session.pane_id})\n"
+        )
 
     # v1.6.31 — restore card state (pin + cumulative cost) from the most
     # recent saved resume-point matching session_uuid. Called from
