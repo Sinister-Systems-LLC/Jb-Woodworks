@@ -401,12 +401,112 @@ class AgentCard(QFrame):
                 "  /retry       resend the most recent operator message\n"
                 "  /persona     print identity (display, slug, session uuid, paths)\n"
                 "  /session     print just the session uuid (for `claude -r <uuid>` later)\n"
+                "  /skills      list available Sanctum skills (~/.sinister/skills + repo)\n"
+                "  /mcp         list MCP servers configured in ~/.claude/.mcp.json\n"
+                "  /vault       Sinister Vault status (disk usage + daemon port :5078)\n"
+                "  /memory      forge-memory-bridge BM25 recall (if available)\n"
+                "  /open        print path commands to open agent PROGRESS / resume-points\n"
                 "  /needs       toggle awaiting-input glow (visual test)\n"
                 "\n"
                 "  Any other text is forwarded to claude as a turn in this session.\n"
                 "  v1.6.3 uses real session continuity (claude --session-id then\n"
                 "  --resume <uuid>) — claude tracks the conversation server-side,\n"
                 "  so each turn only sends your latest message (no history replay).\n"
+            )
+            return True
+        if head == "/skills":
+            from pathlib import Path
+            roots = [
+                Path(r"D:\Sinister Sanctum\skills"),
+                Path.home() / ".sinister" / "skills",
+                Path.home() / ".claude" / "skills",
+            ]
+            found = []
+            for r in roots:
+                if not r.exists():
+                    continue
+                for p in r.glob("*.md"):
+                    found.append((str(r), p.name))
+                for p in r.glob("*/SKILL.md"):
+                    found.append((str(r), p.parent.name + "/SKILL.md"))
+            if not found:
+                self._append_terminal(
+                    "[/skills] no .md skills found in:\n"
+                    + "\n".join(f"  - {r}" for r in roots) + "\n"
+                )
+            else:
+                self._append_terminal(f"[/skills] {len(found)} skill(s):\n")
+                for root, name in found[:30]:
+                    self._append_terminal(f"  {root}\\{name}\n")
+                if len(found) > 30:
+                    self._append_terminal(f"  ... ({len(found) - 30} more)\n")
+            return True
+        if head == "/mcp":
+            from pathlib import Path
+            mcp_paths = [
+                Path.home() / ".claude" / ".mcp.json",
+                Path.home() / ".claude.json",
+            ]
+            mp = next((p for p in mcp_paths if p.exists()), None)
+            if not mp:
+                self._append_terminal(
+                    "[/mcp] no MCP config found at ~/.claude/.mcp.json or ~/.claude.json\n"
+                )
+                return True
+            try:
+                with open(mp, "r", encoding="utf-8") as fh:
+                    data = json.load(fh)
+                servers = data.get("mcpServers", {}) if isinstance(data, dict) else {}
+                self._append_terminal(
+                    f"[/mcp] {len(servers)} server(s) from {mp.name}:\n"
+                )
+                for name in sorted(servers.keys()):
+                    cfg = servers.get(name, {})
+                    cmd = cfg.get("command") or cfg.get("url") or "(no command/url)"
+                    self._append_terminal(f"  - {name}: {str(cmd)[:80]}\n")
+            except Exception as exc:
+                self._append_terminal(f"[/mcp] parse failed: {exc}\n")
+            return True
+        if head == "/vault":
+            from pathlib import Path
+            vault_dir = Path(r"D:\sinister-vault")
+            if not vault_dir.exists():
+                self._append_terminal(
+                    "[/vault] vault dir not found at D:\\sinister-vault\n"
+                    "  Install: see tools/sinister-vault/INSTALL-MCP.md\n"
+                )
+                return True
+            try:
+                import shutil as _sh
+                usage = _sh.disk_usage(str(vault_dir))
+                used_pct = (1 - usage.free / usage.total) * 100 if usage.total else 0
+                self._append_terminal(
+                    f"[/vault] D:\\sinister-vault\n"
+                    f"  total : {usage.total / (1024**3):.1f} GB\n"
+                    f"  used  : {(usage.total - usage.free) / (1024**3):.1f} GB ({used_pct:.1f}%)\n"
+                    f"  free  : {usage.free / (1024**3):.1f} GB\n"
+                    f"  daemon: expected at http://127.0.0.1:5078 (use `sinister vault status`)\n"
+                )
+            except Exception as exc:
+                self._append_terminal(f"[/vault] disk usage failed: {exc}\n")
+            return True
+        if head == "/memory":
+            self._append_terminal(
+                "[/memory] forge-memory-bridge BM25 recall is shipped at\n"
+                "  D:\\Sinister Sanctum\\tools\\forge-memory-bridge\\\n"
+                "  Use the bundled API: from forge_memory_bridge import api; api.recall('...')\n"
+                "  Phase-2: this slash will invoke the bridge in-process from RKOJ.\n"
+            )
+            return True
+        if head == "/open":
+            self._append_terminal(
+                f"[/open]\n"
+                f"  PROGRESS log    : start \"\" \"{self.session.progress_path}\"\n"
+                f"  resume-points   : explorer \"{self.session.resume_dir}\"\n"
+                f"  heartbeat       : start \"\" \"{self.session.heartbeat_path}\"\n"
+                f"  inbox           : explorer \"{self.session.inbox_dir}\"\n"
+                f"  brain index     : start \"\" \"D:\\Sinister Sanctum\\_shared-memory\\knowledge\\_INDEX.md\"\n"
+                f"  master plan     : start \"\" \"D:\\Sinister Sanctum\\_shared-memory\\MASTER-PLAN.md\"\n"
             )
             return True
         if head == "/clear":

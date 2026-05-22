@@ -27,26 +27,132 @@ Outer chrome reflects Panel `layout.tsx`:
 from __future__ import annotations
 
 import sys
+import time
 from pathlib import Path
 from typing import Optional
 
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtGui import (
     QGuiApplication, QIcon, QKeySequence, QPainterPath, QRegion, QShortcut,
 )
 from PyQt6.QtWidgets import (
-    QApplication, QHBoxLayout, QMainWindow, QMessageBox, QStackedWidget,
-    QVBoxLayout, QWidget,
+    QApplication, QFrame, QHBoxLayout, QLabel, QMainWindow, QMessageBox,
+    QSizePolicy, QStackedWidget, QVBoxLayout, QWidget,
 )
 
+from . import state
 from .agents_tab import AgentsView
 from .devices_tab import DevicesView
 from .dialogs import NewAgentDialog
 from .header import Header
 from .sidebar import Sidebar
 from .theme import (
-    CARD_RADIUS, OUTER_GAP, OUTER_PADDING, WINDOW_RADIUS, build_qss,
+    BORDER, CARD_RADIUS, MUTED_FG, OUTER_GAP, OUTER_PADDING, PANEL_BG,
+    PURPLE_PRIMARY, SUCCESS, WINDOW_RADIUS, build_qss,
 )
+
+
+class _StatusBar(QFrame):
+    """Bottom status strip — fleet snapshot at a glance.
+
+    Refreshes every 5s. Reads `state.snapshot()` (heartbeats + inbox count
+    + brain count + ADB devices) and renders a single horizontal row:
+
+      ●  3 agents · 5 inbox · 96 brain · 2 phones · uptime 04:21
+    """
+
+    def __init__(self, parent: QWidget | None = None) -> None:
+        super().__init__(parent)
+        self.setObjectName("StatusBar")
+        self.setFixedHeight(28)
+        self.setStyleSheet(
+            f"QFrame#StatusBar {{"
+            f"  background-color: {PANEL_BG};"
+            f"  border-top: 1px solid {BORDER};"
+            f"}}"
+        )
+        self._t0 = time.time()
+        self._build()
+        self._timer = QTimer(self)
+        self._timer.setInterval(5_000)
+        self._timer.timeout.connect(self._refresh)
+        self._timer.start()
+        self._refresh()
+
+    def _build(self) -> None:
+        row = QHBoxLayout(self)
+        row.setContentsMargins(16, 0, 16, 0)
+        row.setSpacing(14)
+
+        # Online dot
+        self._dot = QLabel()
+        self._dot.setFixedSize(8, 8)
+        self._dot.setStyleSheet(
+            f"background-color: {SUCCESS}; border-radius: 4px;"
+        )
+        row.addWidget(self._dot)
+
+        # The label cluster
+        self._agents_lbl = self._make_label("0 agents")
+        self._inbox_lbl  = self._make_label("0 inbox")
+        self._brain_lbl  = self._make_label("0 brain")
+        self._phones_lbl = self._make_label("0 phones")
+        self._uptime_lbl = self._make_label("uptime 0s")
+        for lbl in (self._agents_lbl, self._inbox_lbl, self._brain_lbl,
+                    self._phones_lbl):
+            row.addWidget(lbl)
+            row.addWidget(self._make_sep())
+        row.addWidget(self._uptime_lbl)
+        row.addStretch(1)
+
+        # Right side: branch label
+        self._branch_lbl = QLabel("EVE on Sanctum · v1.6.5")
+        self._branch_lbl.setStyleSheet(
+            f"color: {PURPLE_PRIMARY}; background: transparent; "
+            f"font-size: 11px; font-weight: 600;"
+        )
+        row.addWidget(self._branch_lbl)
+
+    def _make_label(self, text: str) -> QLabel:
+        lbl = QLabel(text)
+        lbl.setStyleSheet(
+            f"color: {MUTED_FG}; background: transparent; "
+            f"font-size: 11px; font-weight: 500;"
+        )
+        return lbl
+
+    def _make_sep(self) -> QLabel:
+        sep = QLabel("·")
+        sep.setStyleSheet(
+            f"color: {BORDER}; background: transparent; font-size: 11px;"
+        )
+        return sep
+
+    def _refresh(self) -> None:
+        try:
+            snap = state.snapshot()
+            self._agents_lbl.setText(
+                f"{snap.agents_online}/{snap.agents_total} agents"
+            )
+            self._inbox_lbl.setText(f"{snap.inbox_count} inbox")
+            self._brain_lbl.setText(f"{snap.brain_count} brain")
+            self._phones_lbl.setText(
+                f"{snap.phones_online + snap.phones_offline + snap.phones_needs_auth} phones"
+            )
+            elapsed = int(time.time() - self._t0)
+            mm, ss = divmod(elapsed, 60)
+            hh, mm = divmod(mm, 60)
+            self._uptime_lbl.setText(
+                f"uptime {hh:02d}:{mm:02d}:{ss:02d}" if hh else f"uptime {mm:02d}:{ss:02d}"
+            )
+            # If no live agents, dim the dot.
+            color = SUCCESS if snap.agents_online > 0 else MUTED_FG
+            self._dot.setStyleSheet(
+                f"background-color: {color}; border-radius: 4px;"
+            )
+        except Exception:
+            # Status bar must never crash the app.
+            pass
 
 
 # Sinister logo for window icon (optional)
@@ -114,6 +220,10 @@ class SinisterWindow(QMainWindow):
         self.stack.addWidget(self.agents_view)
         self.stack.addWidget(self.devices_view)
         main_layout.addWidget(self.stack, stretch=1)
+
+        # Bottom status bar — fleet snapshot
+        self.status_bar = _StatusBar(main_card)
+        main_layout.addWidget(self.status_bar)
 
         outer.addWidget(main_card, stretch=1)
 
