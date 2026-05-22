@@ -4,6 +4,29 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not command-versions (each lane has its own).
 
+## v1.6.51 — 2026-05-22
+
+**`/tags` — fleet-wide tag census. Lists every tag in use + which
+cards carry it. Cross-card insight for the workstation.**
+
+- New `tags_census_requested(invoker_id)` signal on AgentCard.
+- AgentsView slot `_print_tags_census` walks `self._cards.values()`,
+  builds `dict[tag] -> [project_display:agent_name, ...]` via
+  `collections.defaultdict(list)`, prints sorted-alphabetical census
+  to the invoker's terminal:
+  ```
+  [/tags] 3 tag(s) across 5 card(s):
+    'blocked' x 1 :: Sinister Panel:panel
+    'wip'     x 2 :: Sinister Snap:snap-1, Sinister Snap:snap-2
+    'review'  x 1 :: Sinister TikTok:tt-emu
+  ```
+- Empty-state message when no card has tags yet.
+- Feedback echoes to invoker — same "stay in typing context" pattern
+  as /find / /find-next.
+- 46 slash commands now (added /tags).
+- MANIFEST.json 1.6.50 → 1.6.51.
+- `__init__.py __version__ = "1.6.51"`.
+
 ## v1.6.50 — 2026-05-22 — milestone
 
 **`/diff <A> <B>` — unified diff between two assistant replies. Pairs

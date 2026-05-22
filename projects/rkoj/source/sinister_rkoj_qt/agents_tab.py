@@ -136,6 +136,7 @@ SLASH_COMMANDS: list[tuple[str, str]] = [
     ("/skills",   "list Sanctum skills (.md files)"),
     ("/stats",    "RKOJ fleet snapshot (agents / inbox / brain / devices)"),
     ("/tag",      "add a label chip to this card (also matched by /find)"),
+    ("/tags",     "fleet-wide tag census (which tags + which cards carry them)"),
     ("/timer",    "show elapsed time of the in-flight turn (or last duration)"),
     ("/untag",    "remove a label chip from this card"),
     ("/usage",    "cross-card RKOJ spend totals (from disk)"),
@@ -536,6 +537,9 @@ class AgentCard(QFrame):
     # v1.6.42 — /find emits (pane_id_of_invoker, query) so AgentsView
     # can scroll the grid to a matching card + echo feedback back.
     find_requested = pyqtSignal(str, str)
+    # v1.6.51 — /tags emits invoker pane_id; AgentsView replies with
+    # a fleet-wide tag census echoed into the invoker's terminal.
+    tags_census_requested = pyqtSignal(str)
 
     # Braille spinner for the "thinking" indicator (jcode-style).
     _SPINNER = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
@@ -1801,6 +1805,11 @@ class AgentCard(QFrame):
             except Exception:
                 pass
             self._append_terminal(f"[/untag] -{arg}\n")
+            return True
+        if head == "/tags":
+            # v1.6.51 — fan to AgentsView, which walks every card +
+            # builds a tag census echoed back to this card's terminal.
+            self.tags_census_requested.emit(self.session.pane_id)
             return True
         if head == "/rename":
             # v1.6.44 — change the agent display name. Updates the
@@ -3309,6 +3318,8 @@ class AgentsView(QWidget):
         )
         # v1.6.42 — /find fans to AgentsView focus helper.
         card.find_requested.connect(self._focus_find)
+        # v1.6.51 — /tags fans to AgentsView fleet-wide census.
+        card.tags_census_requested.connect(self._print_tags_census)
         self._cards[sess.pane_id] = card
         self._rebuild_folder_chips()
         self._rebuild_grid()
@@ -3413,6 +3424,36 @@ class AgentsView(QWidget):
             f"{match.session.project_display} :: {match.session.agent_name} "
             f"(pane_id={match.session.pane_id})\n"
         )
+
+    # v1.6.51 — fleet-wide tag census. Echoes back into the invoker's
+    # terminal so operator stays in their typing context.
+    def _print_tags_census(self, invoker_id: str) -> None:
+        invoker = self._cards.get(invoker_id)
+        if invoker is None:
+            return
+        # tag -> list of agent_name|project_display references
+        from collections import defaultdict
+        census: dict[str, list[str]] = defaultdict(list)
+        total_cards = 0
+        for c in self._cards.values():
+            total_cards += 1
+            for t in (c.session.tags or ()):
+                label = c.session.agent_name or c.session.pane_id[:8]
+                census[t].append(f"{c.session.project_display}:{label}")
+        if not census:
+            invoker._append_terminal(
+                f"[/tags] no tags across {total_cards} card(s) — try `/tag <label>` first\n"
+            )
+            return
+        invoker._append_terminal(
+            f"[/tags] {len(census)} tag(s) across {total_cards} card(s):\n"
+        )
+        # Sort tags alphabetically; longest-first within (operator scans top-down)
+        for tag in sorted(census.keys()):
+            members = census[tag]
+            invoker._append_terminal(
+                f"  '{tag}' x{len(members):2d} :: " + ", ".join(members) + "\n"
+            )
 
     # v1.6.31 — restore card state (pin + cumulative cost) from the most
     # recent saved resume-point matching session_uuid. Called from
