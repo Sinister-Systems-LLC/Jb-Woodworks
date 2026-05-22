@@ -41,6 +41,7 @@ from PyQt6.QtWidgets import (
 )
 
 from . import state
+from .agent_window import AgentWindow
 from .agents_tab import AgentsView
 from .devices_tab import DevicesView
 from .dialogs import NewAgentDialog
@@ -175,6 +176,10 @@ class SinisterWindow(QMainWindow):
         self.setMinimumSize(1100, 720)
         self.resize(1440, 920)
         self._center_on_screen()
+        # Track every spawned agent window so they don't get garbage-collected
+        # the moment the dialog returns. Keyed by pane_id; auto-cleaned on
+        # window close via destroyed-signal hook.
+        self._agent_windows: dict[str, AgentWindow] = {}
         self._build()
         self._wire()
 
@@ -255,18 +260,42 @@ class SinisterWindow(QMainWindow):
         self._on_chip(key)
 
     def _on_create_agent(self) -> None:
-        # Pop the picker; operator chooses project + name + mode.
+        """Pop the picker; spawn the agent in a NEW top-level window.
+
+        Operator (verbatim, 2026-05-21): *"When i click new agent it will be
+        like we click the jcode exe and openeed a window."* Each agent
+        opens as its own frameless rounded floating window, cascade-
+        offset. Closing the window kills its subprocess + flushes
+        heartbeat. The main RKOJ window is the hub.
+        """
         dlg = NewAgentDialog(self, default_project_key="sanctum")
         if dlg.exec() != NewAgentDialog.DialogCode.Accepted:
             return
         choice = dlg.result_dict or {}
-        self.header.set_active_chip("agents")
-        self.stack.setCurrentWidget(self.agents_view)
-        self.agents_view.spawn_agent(
+        self._open_agent_window(
             project_key=choice.get("project_key", "sanctum"),
             agent_name=choice.get("agent_name"),
             mode=choice.get("mode", "claude"),
+            session_uuid=choice.get("session_uuid"),
         )
+
+    def _open_agent_window(self, *, project_key: str,
+                           agent_name: Optional[str],
+                           mode: str,
+                           session_uuid: Optional[str]) -> AgentWindow:
+        win = AgentWindow(
+            project_key=project_key,
+            agent_name=agent_name,
+            mode=mode,
+            session_uuid=session_uuid,
+        )
+        pane_id = win.session.pane_id
+        self._agent_windows[pane_id] = win
+        win.destroyed.connect(lambda *_: self._agent_windows.pop(pane_id, None))
+        win.show()
+        win.raise_()
+        win.activateWindow()
+        return win
 
     def _on_header_icon(self, key: str) -> None:
         # Stubs — wired in a follow-up. Operator brief: basic for now.
@@ -283,6 +312,17 @@ class SinisterWindow(QMainWindow):
 
     # ── Clean shutdown (kills spawned claude children) ────────────────
     def closeEvent(self, event) -> None:
+        # Close every spawned AgentWindow first — each fires its own
+        # closeEvent which kills its subprocess.
+        try:
+            for win in list(self._agent_windows.values()):
+                try:
+                    win.close()
+                except Exception:
+                    pass
+            self._agent_windows.clear()
+        except Exception:
+            pass
         try:
             self.agents_view.shutdown_all()
         except Exception:

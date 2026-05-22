@@ -7,13 +7,16 @@ on accept, None on cancel. Wired to header's `+ Create Agent` button.
 
 from __future__ import annotations
 
+import json
+from pathlib import Path
 from typing import Optional
 
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QKeySequence, QShortcut
 from PyQt6.QtWidgets import (
     QComboBox, QDialog, QDialogButtonBox, QFormLayout, QFrame,
-    QHBoxLayout, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget,
+    QHBoxLayout, QLabel, QLineEdit, QListWidget, QListWidgetItem,
+    QPushButton, QVBoxLayout, QWidget,
 )
 
 from . import state
@@ -98,6 +101,28 @@ QPushButton#DialogSecondary {{
 QPushButton#DialogSecondary:hover {{
     color: {FG};
     border-color: {PURPLE_PRIMARY};
+}}
+QListWidget#SavedSessionsList {{
+    background-color: {ELEVATED};
+    color: {FG};
+    border: 1px solid {BORDER};
+    border-radius: 8px;
+    padding: 4px;
+    font-size: 12px;
+    outline: none;
+}}
+QListWidget#SavedSessionsList::item {{
+    background-color: transparent;
+    color: {FG};
+    border-radius: 6px;
+    padding: 9px 10px;
+}}
+QListWidget#SavedSessionsList::item:hover {{
+    background-color: rgba(191,90,242,30);
+}}
+QListWidget#SavedSessionsList::item:selected {{
+    background-color: rgba(191,90,242,71);
+    color: white;
 }}
 """
 
@@ -207,6 +232,13 @@ class NewAgentDialog(QDialog):
         # ── Buttons ────────────────────────────────────────────────────
         btn_row = QHBoxLayout()
         btn_row.setSpacing(10)
+        # Resume-saved button on the left so it's visually distinct from
+        # the Cancel/Spawn cluster on the right.
+        self.resume_btn = QPushButton("Resume saved session…")
+        self.resume_btn.setObjectName("DialogSecondary")
+        self.resume_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.resume_btn.clicked.connect(self._on_resume_clicked)
+        btn_row.addWidget(self.resume_btn)
         btn_row.addStretch(1)
         self.cancel_btn = QPushButton("Cancel")
         self.cancel_btn.setObjectName("DialogSecondary")
@@ -220,6 +252,20 @@ class NewAgentDialog(QDialog):
         self.spawn_btn.clicked.connect(self._on_accept)
         btn_row.addWidget(self.spawn_btn)
         root.addLayout(btn_row)
+
+    def _on_resume_clicked(self) -> None:
+        """Pop the SavedSessionsPicker. If operator picks one, set our
+        result_dict so the caller can open an AgentWindow in resume mode."""
+        picker = SavedSessionsPicker(self)
+        if picker.exec() == QDialog.DialogCode.Accepted and picker.result_data:
+            self.result_dict = {
+                "project_key": picker.result_data.get("project_key", "sanctum"),
+                "agent_name": picker.result_data.get("agent_name"),
+                "mode": picker.result_data.get("mode", "claude"),
+                "session_uuid": picker.result_data.get("session_uuid"),
+                "resume": True,
+            }
+            self.accept()
 
     def _on_project_changed(self, _index: int) -> None:
         # No-op for now — name input is intentionally left as the operator
@@ -235,5 +281,149 @@ class NewAgentDialog(QDialog):
             "project_key": project_key,
             "agent_name": agent_name,
             "mode": mode,
+            "session_uuid": None,
+            "resume": False,
         }
+        self.accept()
+
+
+class SavedSessionsPicker(QDialog):
+    """List saved resume-points and let operator pick one to resume.
+
+    Scans `_shared-memory/resume-points/EVE on <project>/*.json` written by
+    the agent's `/save` slash command. Each entry shows the project, turn
+    count, saved timestamp, and short session_uuid. Double-click or Open
+    button accepts.
+
+    Result on accept (`result_data` attribute):
+      dict with keys: project_key, project_display, agent_name, mode,
+                      session_uuid, saved_at, turns
+    """
+
+    def __init__(self, parent: Optional[QWidget] = None) -> None:
+        super().__init__(parent)
+        self.setObjectName("NewAgentDialog")  # reuse the dialog styling
+        self.setModal(True)
+        self.setWindowTitle("Resume Saved Session")
+        self.setMinimumWidth(620)
+        self.setMinimumHeight(480)
+        self.setStyleSheet(_DIALOG_QSS)
+        self.result_data: Optional[dict] = None
+        self._sessions = self._scan_sessions()
+        self._build()
+        QShortcut(QKeySequence("Escape"), self, activated=self.reject)
+
+    def _scan_sessions(self) -> list[dict]:
+        """Walk `_shared-memory/resume-points/<display>/*.json` and parse
+        each into a flat dict. Newest first."""
+        sessions: list[dict] = []
+        rp_root = state.SHARED_MEMORY / "resume-points"
+        if not rp_root.exists():
+            return sessions
+        try:
+            for proj_dir in rp_root.iterdir():
+                if not proj_dir.is_dir():
+                    continue
+                for fp in proj_dir.glob("*.json"):
+                    try:
+                        with open(fp, "r", encoding="utf-8") as fh:
+                            data = json.load(fh)
+                    except Exception:
+                        continue
+                    suid = data.get("session_uuid") or ""
+                    if not suid:
+                        continue  # pre-v1.6.3 saves without session_uuid
+                    sessions.append({
+                        "project_display": (
+                            data.get("agent_display", "").replace("EVE on ", "")
+                            or proj_dir.name.replace("EVE on ", "")
+                        ),
+                        "project_key": data.get("project_key", "sanctum"),
+                        "agent_name": data.get("agent_name", ""),
+                        "mode": data.get("mode", "claude"),
+                        "session_uuid": suid,
+                        "saved_at": data.get("saved_at", ""),
+                        "turns": len(data.get("turns", [])),
+                        "_fp": str(fp),
+                    })
+        except Exception:
+            pass
+        sessions.sort(key=lambda s: s.get("saved_at", ""), reverse=True)
+        return sessions
+
+    def _build(self) -> None:
+        root = QVBoxLayout(self)
+        root.setContentsMargins(22, 20, 22, 20)
+        root.setSpacing(14)
+
+        title = QLabel("Resume saved session")
+        title.setObjectName("DialogTitle")
+        root.addWidget(title)
+
+        if not self._sessions:
+            empty = QLabel(
+                "No saved sessions found.\n\n"
+                "Inside any agent window, type /save to write a resume-point.\n"
+                "Saved sessions appear under _shared-memory/resume-points/."
+            )
+            empty.setObjectName("DialogSubtitle")
+            empty.setWordWrap(True)
+            root.addWidget(empty)
+        else:
+            subtitle = QLabel(
+                f"{len(self._sessions)} saved session(s)   ·   "
+                f"double-click or pick + Open to resume in a new window:"
+            )
+            subtitle.setObjectName("DialogSubtitle")
+            subtitle.setWordWrap(True)
+            root.addWidget(subtitle)
+
+            self._list = QListWidget()
+            self._list.setObjectName("SavedSessionsList")
+            for s in self._sessions:
+                ts = (s.get("saved_at") or "")[:19].replace("T", " ")
+                label = (
+                    f"{s['project_display']}    ·    "
+                    f"{s['turns']} turn(s)    ·    {ts or '(no timestamp)'}\n"
+                    f"   uuid {s['session_uuid'][:36]}   ·   mode {s.get('mode', 'claude')}"
+                )
+                item = QListWidgetItem(label)
+                item.setData(Qt.ItemDataRole.UserRole, s)
+                self._list.addItem(item)
+            self._list.itemDoubleClicked.connect(self._on_double_click)
+            if self._list.count() > 0:
+                self._list.setCurrentRow(0)
+            root.addWidget(self._list, stretch=1)
+
+        # Buttons
+        btn_row = QHBoxLayout()
+        btn_row.setSpacing(10)
+        btn_row.addStretch(1)
+        cancel = QPushButton("Cancel")
+        cancel.setObjectName("DialogSecondary")
+        cancel.setCursor(Qt.CursorShape.PointingHandCursor)
+        cancel.clicked.connect(self.reject)
+        btn_row.addWidget(cancel)
+        if self._sessions:
+            self.open_btn = QPushButton("Open in new window")
+            self.open_btn.setObjectName("DialogPrimary")
+            self.open_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+            self.open_btn.setDefault(True)
+            self.open_btn.clicked.connect(self._on_accept)
+            btn_row.addWidget(self.open_btn)
+        root.addLayout(btn_row)
+
+    def _on_double_click(self, item: QListWidgetItem) -> None:
+        self.result_data = item.data(Qt.ItemDataRole.UserRole)
+        self.accept()
+
+    def _on_accept(self) -> None:
+        if not getattr(self, "_list", None):
+            self.reject()
+            return
+        item = self._list.currentItem()
+        if not item:
+            self.reject()
+            return
+        self.result_data = item.data(Qt.ItemDataRole.UserRole)
         self.accept()
