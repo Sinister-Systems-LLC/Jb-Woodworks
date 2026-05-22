@@ -4,6 +4,26 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not component versions (each lane has its own).
 
+## v1.6.22 — 2026-05-22
+
+**Sidebar Sessions count badge.** Small purple pill on the "Sessions" nav
+row showing how many distinct sessions are saved on disk (deduplicated
+by `session_uuid`). Operator sees at-a-glance "do I have a session
+worth resuming?" without opening the picker.
+
+- `_NavRow` gains a `_badge` QLabel + `set_badge(text)` API. Hidden
+  by default; shows as a `rgba(191,90,242,180)` rounded pill on the
+  right side of the nav row.
+- `Sidebar` adds a 30-second QTimer that calls
+  `refresh_sessions_badge()` which scans
+  `_shared-memory/resume-points/EVE on */*.json`, collects unique
+  `session_uuid` values, and pushes the count into the Sessions row's
+  badge. Empty → badge hidden.
+- Initial refresh fires at construction, so the badge is correct
+  the moment RKOJ launches.
+- MANIFEST.json 1.6.21 → 1.6.22.
+- `__init__.py __version__ = "1.6.22"`.
+
 ## v1.6.21 — 2026-05-22
 
 **Auto-save resume-point on card close + cross-card `/usage` aggregator.**

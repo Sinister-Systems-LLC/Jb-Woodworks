@@ -91,7 +91,29 @@ class _NavRow(QPushButton):
             "font-size: 14px; font-weight: 500;"
         )
         row.addWidget(self._label_widget, stretch=1)
+        # v1.6.22 — optional count badge (hidden by default). Set via
+        # set_badge(text) to show e.g. "5" next to "Sessions".
+        self._badge = QLabel("")
+        self._badge.setVisible(False)
+        self._badge.setStyleSheet(
+            "color: white; background-color: rgba(191,90,242,180); "
+            "border-radius: 9px; padding: 1px 7px; "
+            "font-size: 10px; font-weight: 700; "
+            "min-width: 14px; "
+        )
+        self._badge.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        row.addWidget(self._badge)
         self.setText("")
+
+    def set_badge(self, text: str | None) -> None:
+        """Show/hide the small count pill at the right of the nav row.
+        Pass None or empty string to hide."""
+        if not text:
+            self._badge.setVisible(False)
+            self._badge.setText("")
+        else:
+            self._badge.setText(str(text))
+            self._badge.setVisible(True)
 
     @property
     def nav_key(self) -> str:
@@ -113,6 +135,13 @@ class Sidebar(QWidget):
         self._nav_rows: dict[str, _NavRow] = {}
         self._build()
         self._update_active(self._active_nav)
+        # v1.6.22 — refresh Sessions count badge every 30s + at startup
+        from PyQt6.QtCore import QTimer
+        self._badge_timer = QTimer(self)
+        self._badge_timer.setInterval(30_000)
+        self._badge_timer.timeout.connect(self.refresh_sessions_badge)
+        self._badge_timer.start()
+        self.refresh_sessions_badge()
 
     def _build(self) -> None:
         root = QHBoxLayout(self)
@@ -211,3 +240,35 @@ class Sidebar(QWidget):
             row.setProperty("active", is_active)
             row.style().unpolish(row)
             row.style().polish(row)
+
+    # v1.6.22 — count saved sessions on disk and update the Sessions
+    # nav row's badge. Skips entries without a session_uuid (pre-v1.6.3).
+    def refresh_sessions_badge(self) -> None:
+        sessions_row = self._nav_rows.get("sessions")
+        if sessions_row is None:
+            return
+        try:
+            import json
+            from pathlib import Path
+            from . import state
+            rp_root = state.SHARED_MEMORY / "resume-points"
+            if not rp_root.exists():
+                sessions_row.set_badge(None)
+                return
+            uuids: set[str] = set()
+            for proj_dir in rp_root.iterdir():
+                if not proj_dir.is_dir():
+                    continue
+                for fp in proj_dir.glob("*.json"):
+                    try:
+                        with open(fp, "r", encoding="utf-8") as fh:
+                            d = json.load(fh)
+                        suid = d.get("session_uuid") or ""
+                        if suid:
+                            uuids.add(suid)
+                    except Exception:
+                        continue
+            n = len(uuids)
+            sessions_row.set_badge(str(n) if n > 0 else None)
+        except Exception:
+            sessions_row.set_badge(None)
