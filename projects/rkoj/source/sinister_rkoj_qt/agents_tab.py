@@ -106,6 +106,7 @@ SLASH_COMMANDS: list[tuple[str, str]] = [
     ("/focus",    "focus the input box"),
     ("/expand-all", "expand every collapsed card in the grid"),
     ("/find",     "scroll the grid to a card matching <text> (project/agent)"),
+    ("/find-next","cycle to the next /find match (uses last query)"),
     ("/grep",     "highlight matching text in the terminal (yellow bg)"),
     ("/grep-clear", "remove /grep highlights"),
     ("/grep-next", "scroll to the next /grep match (F3)"),
@@ -878,6 +879,26 @@ class AgentCard(QFrame):
     def _remove_glow(self) -> None:
         self.setGraphicsEffect(None)
 
+    def _flash_for_find(self, ms: int = 1500) -> None:
+        """v1.6.43 — temporary bright purple drop-shadow so operator can
+        see which card /find landed on. Restores the previous effect
+        (awaiting-input glow or None) after `ms`. Does not interfere
+        with the persistent status-glow because it uses a fresh effect
+        instance and reads `session.status` at restore time."""
+        eff = QGraphicsDropShadowEffect(self)
+        eff.setBlurRadius(32)
+        color = QColor(PURPLE_ACCENT)
+        color.setAlpha(220)
+        eff.setColor(color)
+        eff.setOffset(0, 0)
+        self.setGraphicsEffect(eff)
+        def _restore() -> None:
+            if self.session.status == "awaiting-input":
+                self._apply_glow()
+            else:
+                self._remove_glow()
+        QTimer.singleShot(ms, _restore)
+
     # ── Thinking spinner (jcode-style busy indicator) ─────────────────
     def _start_thinking(self) -> None:
         import time as _t
@@ -1481,9 +1502,15 @@ class AgentCard(QFrame):
                     "[/find] usage: /find <text>\n"
                     "  Scrolls the grid to the first card matching <text>\n"
                     "  (case-insensitive substring of project / agent / id).\n"
+                    "  v1.6.43: use /find-next to cycle further matches.\n"
                 )
                 return True
             self.find_requested.emit(self.session.pane_id, parts[1].strip())
+            return True
+        if head == "/find-next":
+            # v1.6.43 — empty query reuses AgentsView's _last_find_query
+            # and advances idx by 1 (wraps). Bright flash on the new match.
+            self.find_requested.emit(self.session.pane_id, "")
             return True
         if head == "/model":
             # v1.6.19 — show or change the model alias for subsequent turns.
@@ -2411,6 +2438,10 @@ class AgentsView(QWidget):
         self._cards: dict[str, AgentCard] = {}
         self._project_filter: Optional[str] = None  # None = "All"
         self._folder_chips: dict[str, QPushButton] = {}
+        # v1.6.43 — /find state. _last_find_query is reused by /find-next
+        # (empty query on the signal advances idx instead of resetting).
+        self._last_find_query: str = ""
+        self._last_find_idx: int = -1
         self._build()
         self._rebuild_folder_chips()
         self._rebuild_grid()
@@ -3013,14 +3044,27 @@ class AgentsView(QWidget):
         return n
 
     # v1.6.42 — /find handler. Caller emits (invoker_pane_id, query);
-    # we scroll grid to first match + echo feedback in the caller's
+    # we scroll grid to a matching card + echo feedback in the caller's
     # terminal so operator stays in their typing card.
+    # v1.6.43 — empty query reuses _last_find_query and advances idx
+    # (so /find-next can cycle). Bright flash on the focused match.
     def _focus_find(self, invoker_id: str, query: str) -> None:
-        q = query.strip().lower()
         invoker = self._cards.get(invoker_id)
-        if not q:
+        if invoker is None:
             return
-        match: AgentCard | None = None
+        is_advance = (query.strip() == "")
+        if is_advance:
+            q = self._last_find_query
+            if not q:
+                invoker._append_terminal(
+                    "[/find-next] no previous /find — run `/find <text>` first\n"
+                )
+                return
+        else:
+            q = query.strip().lower()
+            self._last_find_query = q
+            self._last_find_idx = -1
+        matches: list[AgentCard] = []
         for c in self._cards.values():
             hay = " ".join((
                 c.session.project_display or "",
@@ -3029,22 +3073,26 @@ class AgentsView(QWidget):
                 c.session.pane_id or "",
             )).lower()
             if q in hay:
-                match = c
-                break
-        if invoker is None:
-            return
-        if match is None:
+                matches.append(c)
+        if not matches:
             invoker._append_terminal(
-                f"[/find] no card matches '{query}' (searched project / agent / id)\n"
+                f"[/find] no card matches '{q}' (searched project / agent / id)\n"
             )
             return
-        # Expand if collapsed so operator can actually read it after scroll.
+        if is_advance:
+            self._last_find_idx = (self._last_find_idx + 1) % len(matches)
+        else:
+            self._last_find_idx = 0
+        match = matches[self._last_find_idx]
         if match._collapsed:
             match._toggle_collapsed()
         self.grid.ensureWidgetVisible(match)
+        match._flash_for_find()
+        label = "/find-next" if is_advance else "/find"
         invoker._append_terminal(
-            f"[/find] focused → {match.session.project_display} :: "
-            f"{match.session.agent_name} (pane_id={match.session.pane_id})\n"
+            f"[{label}] match {self._last_find_idx + 1}/{len(matches)} → "
+            f"{match.session.project_display} :: {match.session.agent_name} "
+            f"(pane_id={match.session.pane_id})\n"
         )
 
     # v1.6.31 — restore card state (pin + cumulative cost) from the most

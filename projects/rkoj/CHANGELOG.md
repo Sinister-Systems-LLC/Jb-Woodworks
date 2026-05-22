@@ -4,6 +4,25 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not component versions (each lane has its own).
 
+## v1.6.43 — 2026-05-22
+
+**`/find-next` cycles through matches + bright purple flash on the
+focused card so operator can see which one was selected.**
+
+- **Flash**: new `AgentCard._flash_for_find(ms=1500)` applies a bright
+  purple `QGraphicsDropShadowEffect` (blur=32, alpha=220) for 1.5s,
+  then restores either the awaiting-input glow or no effect based
+  on current `session.status`. Doesn't interfere with the persistent
+  awaiting-input glow because it reads status at restore time.
+- **/find-next**: re-runs the last `/find` query and advances to the
+  next match (wraps). Prints `[/find-next] match 3/5 → …` so operator
+  knows where they are.
+- AgentsView now tracks `_last_find_query` + `_last_find_idx`.
+- /find prints `match 1/N` too (uniform format with /find-next).
+- 38 slash commands now (added /find-next).
+- MANIFEST.json 1.6.42 → 1.6.43.
+- `__init__.py __version__ = "1.6.43"`.
+
 ## v1.6.42 — 2026-05-22
 
 **`/find <text>` — scroll the grid to a card matching project / agent /
