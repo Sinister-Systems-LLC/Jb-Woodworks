@@ -1208,11 +1208,133 @@ class AgentsView(QWidget):
             tips_row.addWidget(tip_box, stretch=1)
         empty_layout.addLayout(tips_row)
 
+        # v1.6.15 — recent saved sessions list inside the empty state, so
+        # operator gets one-click resume without the sidebar→Sessions
+        # detour. Rebuilt every time the empty state is shown.
+        self._recent_sessions_host = QFrame()
+        self._recent_sessions_layout = QVBoxLayout(self._recent_sessions_host)
+        self._recent_sessions_layout.setContentsMargins(0, 24, 0, 0)
+        self._recent_sessions_layout.setSpacing(6)
+        empty_layout.addWidget(self._recent_sessions_host)
+
         empty_layout.addStretch(2)
         root.addWidget(self.empty_panel)
+        self._rebuild_recent_sessions()
 
         # Backward-compat alias — _rebuild_grid toggles visibility on this.
         self.empty_label = self.empty_panel
+
+    # ── Recent saved sessions block (inside empty state) ──────────────
+    def _rebuild_recent_sessions(self) -> None:
+        """Scan _shared-memory/resume-points/EVE on */*.json, render the
+        5 newest as one-click resume rows. No-op if the layout doesn't
+        exist yet (init order safety)."""
+        layout = getattr(self, "_recent_sessions_layout", None)
+        if layout is None:
+            return
+        # Clear prior rows
+        while layout.count():
+            it = layout.takeAt(0)
+            w = it.widget() if it else None
+            if w is not None:
+                w.setParent(None)
+                w.deleteLater()
+        sessions = self._scan_recent_sessions(limit=5)
+        if not sessions:
+            return
+        title = QLabel("Recent saved sessions")
+        title.setStyleSheet(
+            f"color: {MUTED_FG}; background: transparent; "
+            f"font-size: 11px; font-weight: 600; letter-spacing: 1px; "
+            f"text-transform: uppercase; padding: 0 4px 6px 4px;"
+        )
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(title)
+        for s in sessions:
+            row = self._build_recent_session_row(s)
+            layout.addWidget(row)
+
+    def _scan_recent_sessions(self, limit: int = 5) -> list[dict]:
+        sessions: list[dict] = []
+        rp_root = state.SHARED_MEMORY / "resume-points"
+        if not rp_root.exists():
+            return sessions
+        try:
+            for proj_dir in rp_root.iterdir():
+                if not proj_dir.is_dir():
+                    continue
+                for fp in proj_dir.glob("*.json"):
+                    try:
+                        with open(fp, "r", encoding="utf-8") as fh:
+                            data = json.load(fh)
+                    except Exception:
+                        continue
+                    suid = data.get("session_uuid") or ""
+                    if not suid:
+                        continue
+                    sessions.append({
+                        "project_display": proj_dir.name.replace("EVE on ", ""),
+                        "project_key": data.get("project_key", "sanctum"),
+                        "agent_name": data.get("agent_name", ""),
+                        "mode": data.get("mode", "claude"),
+                        "session_uuid": suid,
+                        "saved_at": data.get("saved_at", ""),
+                        "turns": len(data.get("turns", [])),
+                        "save_reason": data.get("save_reason", "manual"),
+                    })
+        except Exception:
+            pass
+        sessions.sort(key=lambda s: s.get("saved_at", ""), reverse=True)
+        return sessions[:limit]
+
+    def _build_recent_session_row(self, s: dict) -> QFrame:
+        row = QFrame()
+        row.setObjectName("RecentRow")
+        row.setStyleSheet(
+            f"QFrame#RecentRow {{ background-color: {ELEVATED}; "
+            f"border: 1px solid {BORDER}; border-radius: 8px; }}"
+            f"QFrame#RecentRow:hover {{ border-color: {PURPLE_PRIMARY}; }}"
+        )
+        hb = QHBoxLayout(row)
+        hb.setContentsMargins(12, 8, 12, 8)
+        hb.setSpacing(12)
+        # Project + meta
+        meta = QLabel(
+            f"<span style='color:{PURPLE_PRIMARY};font-weight:700'>"
+            f"{s['project_display']}</span>  "
+            f"<span style='color:{MUTED_FG}'>· "
+            f"{s['turns']} turn(s) · {s.get('save_reason', 'manual')}</span>"
+        )
+        meta.setStyleSheet("background: transparent; font-size: 12px;")
+        meta.setTextFormat(Qt.TextFormat.RichText)
+        hb.addWidget(meta)
+        # Saved-at preview
+        ts = (s.get("saved_at") or "")[:19].replace("T", " ")
+        when = QLabel(ts or "(no timestamp)")
+        when.setStyleSheet(
+            f"color: {MUTED_FG}; background: transparent; "
+            f"font-family: 'JetBrains Mono', monospace; font-size: 10px;"
+        )
+        hb.addWidget(when)
+        hb.addStretch(1)
+        # Resume button
+        btn = QPushButton("Resume")
+        btn.setObjectName("SendBtn")
+        btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        btn.setFixedHeight(28)
+        btn.clicked.connect(
+            lambda _checked=False, sess=s: self._on_resume_recent(sess)
+        )
+        hb.addWidget(btn)
+        return row
+
+    def _on_resume_recent(self, sess: dict) -> None:
+        self.spawn_agent(
+            project_key=sess.get("project_key", "sanctum"),
+            agent_name=sess.get("agent_name") or None,
+            mode=sess.get("mode", "claude"),
+            session_uuid=sess.get("session_uuid"),
+        )
 
     # ── Folder tab management ─────────────────────────────────────────
     def _active_project_keys(self) -> list[str]:
@@ -1285,8 +1407,16 @@ class AgentsView(QWidget):
             last_key = c.session.project_key
 
         # Empty state visibility
-        self.empty_label.setVisible(len(self._cards) == 0)
-        self.grid.setVisible(len(self._cards) > 0)
+        empty_now = (len(self._cards) == 0)
+        self.empty_label.setVisible(empty_now)
+        self.grid.setVisible(not empty_now)
+        # v1.6.15 — refresh recent-sessions list whenever empty state shows
+        # (e.g., after the last card closes), so it always reflects disk.
+        if empty_now:
+            try:
+                self._rebuild_recent_sessions()
+            except Exception:
+                pass
 
     # ── Public API ────────────────────────────────────────────────────
     def spawn_agent(self, project_key: str = "sanctum",

@@ -4,6 +4,30 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not component versions (each lane has its own).
 
+## v1.6.15 — 2026-05-22
+
+**Recent saved sessions inline in the Agents empty-state.** Operator's
+fresh-launch experience: previously they had to click sidebar → Sessions
+→ picker → double-click to resume yesterday's conversation. Now the
+empty state shows up to 5 most-recent saved resume-points right under
+the hero, with a one-click Resume button per row.
+
+- `AgentsView._rebuild_recent_sessions()` — scans
+  `_shared-memory/resume-points/EVE on */*.json`, filters out pre-v1.6.3
+  saves without a `session_uuid`, sorts newest-first, takes top 5.
+- `AgentsView._build_recent_session_row(s)` — Panel-style row: project
+  display (purple bold) · turn count · save_reason chip · saved_at ts
+  (mono) · Resume button (purple primary).
+- Click Resume → directly calls `self.spawn_agent(session_uuid=…)` so the
+  card lands inline in the same view (no dialog detour).
+- Auto-refresh in `_rebuild_grid` when the empty state appears (last
+  card closed) → list always reflects current disk state, including
+  the autoclose-save the just-closed card wrote.
+- `_scan_recent_sessions` extracted as a helper (mirrors the picker's
+  scanning logic; will dedupe to state.py later).
+- MANIFEST.json 1.6.14 → 1.6.15.
+- `__init__.py __version__ = "1.6.15"`.
+
 ## v1.6.14 — 2026-05-22
 
 **Sticky-scroll terminal.** Operator UX: when reading earlier output
