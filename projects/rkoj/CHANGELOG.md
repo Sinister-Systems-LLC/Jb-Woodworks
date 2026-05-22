@@ -4,6 +4,27 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not component versions (each lane has its own).
 
+## v1.6.23 — 2026-05-22
+
+**Live Agents badge + Sessions badge auto-refresh on card close + /stats.**
+
+- **Live Agents count badge** on the sidebar "Agents" nav row, mirroring
+  the v1.6.22 Sessions badge. AgentsView emits `cards_changed(int)`
+  whenever a card spawns or closes; app.py wires it to
+  `Sidebar.set_agents_count`. No polling — signal-driven.
+- **Sessions badge auto-refresh** when a card closes — since v1.6.21
+  closes write an auto-save resume-point, the Sessions count may have
+  just incremented. app.py connects `cards_changed` to
+  `Sidebar.refresh_sessions_badge` so it updates immediately rather
+  than waiting up to 30s for the next QTimer tick.
+- **/stats slash command**: prints a 6-line RKOJ fleet snapshot —
+  heartbeats (N online / M total), inbox messages, brain entries,
+  devices (online/offline/unauth), vault disk-used %, pending ops.
+  Reuses `state.snapshot()` which already drives the bottom status bar.
+  Registered in SLASH_COMMANDS → 19 commands now.
+- MANIFEST.json 1.6.22 → 1.6.23.
+- `__init__.py __version__ = "1.6.23"`.
+
 ## v1.6.22 — 2026-05-22
 
 **Sidebar Sessions count badge.** Small purple pill on the "Sessions" nav

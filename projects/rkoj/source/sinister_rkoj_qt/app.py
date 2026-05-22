@@ -243,6 +243,14 @@ class SinisterWindow(QMainWindow):
         self.header.close_clicked.connect(self.close)
         # Sidebar nav → swap stack
         self.sidebar.nav_clicked.connect(self._on_nav)
+        # v1.6.23 — wire live agent count from AgentsView → sidebar Agents
+        # badge + refresh Sessions badge whenever cards close (a card close
+        # auto-saves a resume-point in v1.6.21, so the Sessions count
+        # may have just incremented).
+        self.agents_view.cards_changed.connect(self.sidebar.set_agents_count)
+        self.agents_view.cards_changed.connect(
+            lambda _n: self.sidebar.refresh_sessions_badge()
+        )
         # Ctrl+K palette stub → header search
         QShortcut(QKeySequence("Ctrl+K"), self,
                   activated=lambda: self._on_header_icon("search"))

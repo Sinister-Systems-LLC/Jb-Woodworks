@@ -241,6 +241,14 @@ class Sidebar(QWidget):
             row.style().unpolish(row)
             row.style().polish(row)
 
+    # v1.6.23 — external setter for the Agents nav row badge. Called from
+    # app.py when AgentsView's card count changes (spawn / close).
+    def set_agents_count(self, n: int) -> None:
+        agents_row = self._nav_rows.get("agents")
+        if agents_row is None:
+            return
+        agents_row.set_badge(str(n) if n > 0 else None)
+
     # v1.6.22 — count saved sessions on disk and update the Sessions
     # nav row's badge. Skips entries without a session_uuid (pre-v1.6.3).
     def refresh_sessions_badge(self) -> None:

@@ -79,6 +79,7 @@ SLASH_COMMANDS: list[tuple[str, str]] = [
     ("/session",  "print just the session uuid"),
     ("/skill",    "load + send a saved skill .md as a turn"),
     ("/skills",   "list Sanctum skills (.md files)"),
+    ("/stats",    "RKOJ fleet snapshot (agents / inbox / brain / devices)"),
     ("/usage",    "cross-card RKOJ spend totals (from disk)"),
     ("/vault",    "Sinister Vault disk usage + daemon port"),
 ]
@@ -1177,6 +1178,26 @@ class AgentCard(QFrame):
             except Exception as exc:
                 self._append_terminal(f"[/usage] failed: {exc}\n")
             return True
+        if head == "/stats":
+            # v1.6.23 — RKOJ fleet snapshot. Reuses state.snapshot() which
+            # already drives the bottom status bar.
+            try:
+                snap = state.snapshot()
+                self._append_terminal(
+                    f"[/stats] RKOJ fleet snapshot:\n"
+                    f"  heartbeats  : {snap.agents_online} online / "
+                    f"{snap.agents_total} total\n"
+                    f"  inbox       : {snap.inbox_count} unread messages\n"
+                    f"  brain       : {snap.brain_count} doctrine entries\n"
+                    f"  devices     : {snap.phones_online} online · "
+                    f"{snap.phones_offline} offline · "
+                    f"{snap.phones_needs_auth} unauth\n"
+                    f"  vault used  : {snap.vault_used_pct:.1f}%\n"
+                    f"  pending ops : {snap.pending_requests} in inbox/sanctum/\n"
+                )
+            except Exception as exc:
+                self._append_terminal(f"[/stats] failed: {exc}\n")
+            return True
         if head == "/needs":
             new_state = "awaiting-input" if self.session.status != "awaiting-input" else "online"
             self._set_status(new_state)
@@ -1755,6 +1776,10 @@ class NiriScrollGrid(QScrollArea):
 class AgentsView(QWidget):
     """Folder-tab row + NiriScrollGrid + empty-state hint."""
 
+    # v1.6.23 — emitted whenever the live card count changes. app.py
+    # connects this to Sidebar.set_agents_count for the nav-row badge.
+    cards_changed = pyqtSignal(int)
+
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self._cards: dict[str, AgentCard] = {}
@@ -2112,6 +2137,9 @@ class AgentsView(QWidget):
             QTimer.singleShot(0, card.input.setFocus)
         except Exception:
             pass
+        # v1.6.23 — emit the new card count so the sidebar Agents-row
+        # badge stays in sync without polling.
+        self.cards_changed.emit(len(self._cards))
         return sess.pane_id
 
     def _remove_card(self, pane_id: str) -> None:
@@ -2126,6 +2154,8 @@ class AgentsView(QWidget):
             self._project_filter = None
         self._rebuild_folder_chips()
         self._rebuild_grid()
+        # v1.6.23 — emit updated count after removal
+        self.cards_changed.emit(len(self._cards))
 
     def shutdown_all(self) -> None:
         for card in list(self._cards.values()):
