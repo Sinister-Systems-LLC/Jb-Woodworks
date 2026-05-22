@@ -4,6 +4,24 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not command-versions (each lane has its own).
 
+## v1.6.52 — 2026-05-22
+
+**Clickable tag chips — clicking a chip in any card header behaves
+like `/find <tag>` from that card. Every tag becomes a navigation
+hot-spot.**
+
+- New `_TagChip(QLabel)` class with `PointingHandCursor`, tooltip
+  `Click to /find cards tagged 'wip'`, and overridden
+  `mousePressEvent` that emits `find_requested(pane_id, tag_text)`.
+- `_rebuild_tags` now constructs `_TagChip` instances instead of
+  plain QLabels — keeps the visual styling identical.
+- Wraps the standard /find / /find-next cycle so consecutive clicks
+  on the same chip walk through every match in the fleet.
+- Pairs with v1.6.51 `/tags` census: census tells you what tags
+  exist; click jumps you there.
+- MANIFEST.json 1.6.51 → 1.6.52.
+- `__init__.py __version__ = "1.6.52"`.
+
 ## v1.6.51 — 2026-05-22
 
 **`/tags` — fleet-wide tag census. Lists every tag in use + which

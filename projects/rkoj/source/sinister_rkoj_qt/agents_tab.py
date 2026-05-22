@@ -516,6 +516,30 @@ def _make_child_env(sess: AgentSession) -> QProcessEnvironment:
     return qenv
 
 
+# ── Clickable tag chip ──────────────────────────────────────────────────
+class _TagChip(QLabel):
+    """v1.6.52 — clickable tag chip in the card header. Clicking emits
+    `find_requested` on the parent AgentCard with this chip's text, so
+    the grid scrolls to the next card carrying the same tag (the
+    standard /find-next cycle wraps if there are multiple matches)."""
+
+    def __init__(self, text: str, card: "AgentCard") -> None:
+        super().__init__(text)
+        self._card = card
+        self.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.setToolTip(f"Click to /find cards tagged '{text}'")
+
+    def mousePressEvent(self, ev) -> None:  # type: ignore[override]
+        if ev.button() == Qt.MouseButton.LeftButton:
+            try:
+                self._card.find_requested.emit(
+                    self._card.session.pane_id, self.text()
+                )
+            except Exception:
+                pass
+        super().mousePressEvent(ev)
+
+
 # ── Agent card ──────────────────────────────────────────────────────────
 class AgentCard(QFrame):
     """Single agent card with embedded terminal + input line + QProcess."""
@@ -912,7 +936,10 @@ class AgentCard(QFrame):
 
     def _rebuild_tags(self) -> None:
         """v1.6.45 — render tag chips in the header. Called after /tag,
-        /untag, or on construction if resume-point restored tags."""
+        /untag, or on construction if resume-point restored tags.
+        v1.6.52 — chips are clickable: clicking emits find_requested
+        with the chip text so the grid scrolls to the next match (same
+        wrap-around cycle as /find-next)."""
         # Wipe existing chips
         while self._tags_layout.count():
             item = self._tags_layout.takeAt(0)
@@ -925,7 +952,7 @@ class AgentCard(QFrame):
             self._tags_host.hide()
             return
         for t in tags:
-            chip = QLabel(t)
+            chip = _TagChip(t, self)
             chip.setStyleSheet(
                 f"color: {PURPLE_PRIMARY}; background-color: rgba(191,90,242,30); "
                 f"border: 1px solid rgba(191,90,242,120); border-radius: 10px; "
