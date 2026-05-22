@@ -4,6 +4,21 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not component versions (each lane has its own).
 
+## v1.6.44 — 2026-05-22
+
+**`/rename <new-name>` — change the agent display name on this card.
+Pairs with v1.6.41 `/clone` so sibling cards become distinguishable.**
+
+- Promoted the previously-local `title` QLabel to
+  `self._title_label` so the intercept can call `setText` on it.
+- Updates `session.agent_name`, refreshes the header title via
+  `eve_label(new_name, "")`, and immediately writes a resume-point
+  JSON with `save_reason="rename"` so the rename survives a crash.
+- Truncates names longer than 60 chars to avoid pathological inputs.
+- 39 slash commands now (added /rename).
+- MANIFEST.json 1.6.43 → 1.6.44.
+- `__init__.py __version__ = "1.6.44"`.
+
 ## v1.6.43 — 2026-05-22
 
 **`/find-next` cycles through matches + bright purple flash on the

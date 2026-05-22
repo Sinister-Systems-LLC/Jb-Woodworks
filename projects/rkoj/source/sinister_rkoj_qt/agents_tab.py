@@ -123,6 +123,7 @@ SLASH_COMMANDS: list[tuple[str, str]] = [
     ("/persona",  "print identity (slug / uuid / paths)"),
     ("/pin",      "pin (or unpin) this card to top of grid"),
     ("/ping",     "fan a canned status-check to all (or filtered) cards"),
+    ("/rename",   "change the agent display name on this card"),
     ("/retry",    "resend the most recent operator message"),
     ("/save",     "write resume-point JSON to disk"),
     ("/session",  "print just the session uuid"),
@@ -639,8 +640,10 @@ class AgentCard(QFrame):
         project_label = QLabel(self.session.project_display.upper())
         project_label.setObjectName("AgentProject")
 
-        title = QLabel(eve_label(self.session.agent_name, ""))
-        title.setObjectName("AgentTitle")
+        # v1.6.44 — kept as self._title_label so /rename can update it.
+        self._title_label = QLabel(eve_label(self.session.agent_name, ""))
+        self._title_label.setObjectName("AgentTitle")
+        title = self._title_label  # local alias to keep existing hdr.addWidget refs working
 
         mode_pill = QLabel(self.session.mode)
         mode_pill.setObjectName("ModePill")
@@ -1617,6 +1620,36 @@ class AgentCard(QFrame):
                 u = (t.get("user") or "").strip().replace("\n", " ")[:60]
                 a = (t.get("assistant") or "").strip().replace("\n", " ")[:60]
                 self._append_terminal(f"  {i:2d}. >> {u}\n      << {a}\n")
+            return True
+        if head == "/rename":
+            # v1.6.44 — change the agent display name. Updates the
+            # header title label + session.agent_name. Persists on
+            # next _write_resume_point (autosave on close / shutdown).
+            parts = cmd.split(None, 1)
+            if len(parts) < 2 or not parts[1].strip():
+                self._append_terminal(
+                    "[/rename] usage: /rename <new-name>\n"
+                    "  Current name: " + (self.session.agent_name or "(none)") + "\n"
+                )
+                return True
+            new_name = parts[1].strip()
+            # Sanity bound — avoid pathological 1000-char header inputs.
+            if len(new_name) > 60:
+                new_name = new_name[:60]
+            old_name = self.session.agent_name
+            self.session.agent_name = new_name
+            try:
+                self._title_label.setText(eve_label(new_name, ""))
+            except Exception:
+                pass
+            # Write to disk immediately so the rename survives crashes.
+            try:
+                self._write_resume_point(save_reason="rename")
+            except Exception:
+                pass
+            self._append_terminal(
+                f"[/rename] {old_name!r} -> {new_name!r}\n"
+            )
             return True
         if head == "/retry":
             last = next((t for t in reversed(self.session.turns) if t.get("user")), None)
