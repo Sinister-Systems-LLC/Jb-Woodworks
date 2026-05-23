@@ -42,6 +42,7 @@ from forge.art import BOOT_FRAMES, BOOT_DURATION_SEC
 from forge.theme import THEME_CSS, PURPLE_BRIGHT, PROJECT_BORDER_PALETTE
 from forge.panes.chrome import ChromeBar, ProjectChip, StatusFooter
 from forge.panes.memory_panel import MemoryPanel
+from forge.panes.mermaid_panel import MermaidPanel
 from forge.panes.command_palette import CommandPalette
 from forge.panes.tabs import TabbedMultiPane
 from forge.panes.niri_workspace import NiriWorkspaceGrid
@@ -150,6 +151,7 @@ class ForgeApp(App):
         Binding("ctrl+l", "clear_log", "Clear"),
         Binding("ctrl+s", "write_resume_point", "Resume"),
         Binding("ctrl+m", "toggle_memory", "Memory"),
+        Binding("ctrl+d", "toggle_mermaid", "Diagrams"),
         Binding("ctrl+p", "command_palette", "Palette"),
         # PH18 niri navigation
         Binding("ctrl+right", "scroll_right", "Col→", show=False),
@@ -166,6 +168,7 @@ class ForgeApp(App):
         super().__init__()
         self._booted = False
         self._memory_visible = False
+        self._mermaid_visible = False
         # Sinister Panel sidebar state — tracks which right-side view is mounted.
         # Operator 2026-05-21 (image 28): two tabs only — "agents" + "phones".
         # "workstation" kept as a possible value for back-compat with /workstation
@@ -189,6 +192,13 @@ class ForgeApp(App):
     async def on_mount(self) -> None:
         await self._boot.animate()
         await self._swap_to_main()
+        # jcode-parity row 18: file-watcher auto-reloads skills on disk edit.
+        # Lazy import + try/except so a missing watchdog dep never breaks boot.
+        try:
+            from forge.skills import start_watcher
+            start_watcher()
+        except Exception:
+            pass
 
     async def _swap_to_main(self) -> None:
         """Remove boot screen, mount the real workspace.
@@ -547,6 +557,20 @@ class ForgeApp(App):
             self._memory_visible = False
             self.notify("memory panel closed", timeout=2)
 
+    async def action_toggle_mermaid(self) -> None:
+        """jcode-parity row 15: in-TUI diagrams panel listing cached renders."""
+        if not self._booted:
+            return
+        if not self._mermaid_visible:
+            self._mermaid = MermaidPanel()
+            await self._workspace.mount(self._mermaid)
+            self._mermaid_visible = True
+            self.notify("diagrams panel open (Ctrl+D)", timeout=2)
+        else:
+            self._mermaid.remove()
+            self._mermaid_visible = False
+            self.notify("diagrams panel closed", timeout=2)
+
     @work(exit_on_error=False)
     async def action_command_palette(self) -> None:
         # Textual 8.x: push_screen_wait requires a worker context.
@@ -560,6 +584,7 @@ class ForgeApp(App):
             "close_agent":    self.action_close_agent,
             "clear_log":      self.action_clear_log,
             "toggle_memory":  self.action_toggle_memory,
+            "toggle_mermaid": self.action_toggle_mermaid,
             "toggle_rkoj":    self.action_toggle_rkoj,
             "open_mind":      self.action_open_mind,
             "write_resume":   self.action_write_resume_point,

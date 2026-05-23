@@ -255,4 +255,103 @@ _SHARED_INSTANCE: Optional[SkillRegistry] = None
 _SHARED_LOCK = threading.Lock()
 
 
-__all__ = ["Skill", "SkillRegistry"]
+# ---------------------------------------------------------------------------
+# File-system watcher — flips jcode-parity matrix row 18 from 🚧 → ✅
+# ---------------------------------------------------------------------------
+#
+# Calls SkillRegistry.reload_shared() whenever a *.md under one of the scan
+# roots is created/modified/deleted. Uses the `watchdog` package when
+# available; degrades to a no-op + one-shot log warning when it isn't, so
+# bundled EXEs without the dep still launch cleanly.
+#
+# Idempotent — second call returns the existing observer. Polling-style
+# fallback NOT included; if watchdog is missing the operator can still use
+# /skill reload manually.
+
+_WATCHER_OBSERVER = None  # set to a watchdog Observer when started; else None
+_WATCHER_LOCK = threading.Lock()
+
+
+def start_watcher(callback=None, recursive: bool = False):
+    """Watch skill roots for changes; call ``callback`` (default
+    ``SkillRegistry.reload_shared``) whenever a *.md file changes.
+
+    Returns the Observer instance on success, or None when ``watchdog`` is
+    missing / the observer is already running / the roots don't exist.
+    """
+    global _WATCHER_OBSERVER
+    with _WATCHER_LOCK:
+        if _WATCHER_OBSERVER is not None:
+            return _WATCHER_OBSERVER
+
+        try:
+            from watchdog.observers import Observer
+            from watchdog.events import FileSystemEventHandler
+        except ImportError:
+            log.warning(
+                "skills: watchdog package missing; auto-reload disabled "
+                "(use /skill reload manually, or `pip install watchdog`)"
+            )
+            return None
+
+        cb = callback or SkillRegistry.reload_shared
+
+        class _SkillEventHandler(FileSystemEventHandler):
+            def _maybe_reload(self, event) -> None:
+                # Only react to *.md (and skip directory events outright).
+                if event.is_directory:
+                    return
+                path = getattr(event, "dest_path", None) or event.src_path
+                if not isinstance(path, str) or not path.lower().endswith(".md"):
+                    return
+                try:
+                    cb()
+                    log.debug("skills: auto-reloaded after %s on %s",
+                              event.event_type, path)
+                except Exception as exc:
+                    log.warning("skills: auto-reload failed: %s", exc)
+
+            on_created = _maybe_reload
+            on_modified = _maybe_reload
+            on_deleted = _maybe_reload
+            on_moved = _maybe_reload
+
+        observer = Observer()
+        handler = _SkillEventHandler()
+        roots = SkillRegistry()._default_roots()
+        watched = 0
+        for root in roots:
+            try:
+                if root.exists():
+                    observer.schedule(handler, str(root), recursive=recursive)
+                    watched += 1
+            except OSError as exc:
+                log.warning("skills: cannot schedule watch on %s: %s", root, exc)
+
+        if watched == 0:
+            log.debug("skills: no roots to watch; observer not started")
+            return None
+
+        observer.daemon = True
+        observer.start()
+        _WATCHER_OBSERVER = observer
+        log.debug("skills: watchdog observing %d root(s); auto-reload on", watched)
+        return observer
+
+
+def stop_watcher() -> None:
+    """Stop the file-system watcher started by :func:`start_watcher`. No-op
+    when no watcher is running."""
+    global _WATCHER_OBSERVER
+    with _WATCHER_LOCK:
+        obs = _WATCHER_OBSERVER
+        _WATCHER_OBSERVER = None
+    if obs is not None:
+        try:
+            obs.stop()
+            obs.join(timeout=2.0)
+        except Exception as exc:
+            log.warning("skills: stop_watcher: %s", exc)
+
+
+__all__ = ["Skill", "SkillRegistry", "start_watcher", "stop_watcher"]
