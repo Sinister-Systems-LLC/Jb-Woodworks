@@ -23,6 +23,67 @@ INBOX_DIR = SHARED_MEMORY / "inbox"
 KNOWLEDGE_DIR = SHARED_MEMORY / "knowledge"
 PROJECTS_JSON = SANCTUM_ROOT / "automations" / "session-templates" / "projects.json"
 
+# v1.6.79 — per-phone agent claim registry. Disk-backed JSON map of
+# serial → claim record so multi-agent runs can't accidentally double-
+# control the same phone (Frida injection on phone A wouldn't leak to
+# phone B, for example). All Devices-tab + agent actions consult this.
+PHONE_CLAIMS_FP = SHARED_MEMORY / "phone-claims.json"
+
+
+def _load_phone_claims() -> dict:
+    try:
+        if PHONE_CLAIMS_FP.exists():
+            return json.loads(PHONE_CLAIMS_FP.read_text(encoding="utf-8"))
+    except Exception:
+        pass
+    return {}
+
+
+def _save_phone_claims(claims: dict) -> None:
+    try:
+        PHONE_CLAIMS_FP.parent.mkdir(parents=True, exist_ok=True)
+        PHONE_CLAIMS_FP.write_text(
+            json.dumps(claims, indent=2, sort_keys=True), encoding="utf-8"
+        )
+    except Exception:
+        pass
+
+
+def claim_phone(serial: str, agent_id: str, agent_display: str = "") -> bool:
+    """v1.6.79 — claim exclusive control of <serial> for <agent_id>.
+    Returns True if claim granted, False if already claimed by another agent."""
+    claims = _load_phone_claims()
+    cur = claims.get(serial)
+    if cur and cur.get("agent_id") != agent_id:
+        return False
+    claims[serial] = {
+        "agent_id": agent_id,
+        "agent_display": agent_display or agent_id,
+        "claimed_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+    }
+    _save_phone_claims(claims)
+    return True
+
+
+def release_phone(serial: str, agent_id: str | None = None) -> None:
+    """Release a phone claim. If agent_id is provided, only releases if
+    that agent currently owns the claim (idempotent / safe)."""
+    claims = _load_phone_claims()
+    cur = claims.get(serial)
+    if cur and (agent_id is None or cur.get("agent_id") == agent_id):
+        claims.pop(serial, None)
+        _save_phone_claims(claims)
+
+
+def who_owns(serial: str) -> dict | None:
+    """Return the claim record for <serial> or None if free."""
+    return _load_phone_claims().get(serial)
+
+
+def all_claims() -> dict:
+    """Snapshot of the full claim map (serial → record)."""
+    return _load_phone_claims()
+
 
 @dataclass
 class Project:

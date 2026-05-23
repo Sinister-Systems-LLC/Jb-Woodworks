@@ -365,6 +365,46 @@ class TestPlanModeV176(unittest.TestCase):
         self.assertTrue(hasattr(devices_tab.DevicesView, "_auto_mirror_all_retry"))
 
 
+class TestPhoneClaimsV180(unittest.TestCase):
+    """v1.6.80 — per-phone agent claim system (no cross-phone leaks)."""
+
+    def setUp(self) -> None:
+        from sinister_rkoj_qt import state
+        # Clear any test residue
+        try:
+            if state.PHONE_CLAIMS_FP.exists():
+                state.PHONE_CLAIMS_FP.unlink()
+        except Exception:
+            pass
+
+    def test_claim_release_cycle(self) -> None:
+        from sinister_rkoj_qt import state
+        # Free phone → claim grants
+        self.assertTrue(state.claim_phone("TEST-SERIAL-001", "agent-a", "AgentA"))
+        rec = state.who_owns("TEST-SERIAL-001")
+        self.assertIsNotNone(rec)
+        self.assertEqual(rec["agent_id"], "agent-a")
+        # Second agent can't claim
+        self.assertFalse(state.claim_phone("TEST-SERIAL-001", "agent-b"))
+        # Same agent re-claiming is idempotent True
+        self.assertTrue(state.claim_phone("TEST-SERIAL-001", "agent-a"))
+        # Release frees it
+        state.release_phone("TEST-SERIAL-001", "agent-a")
+        self.assertIsNone(state.who_owns("TEST-SERIAL-001"))
+        # Now agent-b can claim
+        self.assertTrue(state.claim_phone("TEST-SERIAL-001", "agent-b"))
+        state.release_phone("TEST-SERIAL-001")
+
+    def test_all_claims_snapshot(self) -> None:
+        from sinister_rkoj_qt import state
+        state.claim_phone("A", "ag1")
+        state.claim_phone("B", "ag2")
+        snap = state.all_claims()
+        self.assertIn("A", snap)
+        self.assertIn("B", snap)
+        state.release_phone("A"); state.release_phone("B")
+
+
 class TestNoEmojisV174(unittest.TestCase):
     """v1.6.74 — dashboard-skeleton rule: no emojis in UI chrome."""
 
@@ -407,7 +447,7 @@ class TestTokenBudget(unittest.TestCase):
 
 class TestModuleSurface(unittest.TestCase):
     def test_version_matches(self) -> None:
-        self.assertEqual(sinister_rkoj_qt.__version__, "1.6.78")
+        self.assertEqual(sinister_rkoj_qt.__version__, "1.6.80")
 
     def test_classes_present(self) -> None:
         for name in (

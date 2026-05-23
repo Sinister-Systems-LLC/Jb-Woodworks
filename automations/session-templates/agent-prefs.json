@@ -1,34 +1,58 @@
 ﻿{
-    "version":  1,
+    "version":  2,
     "default":  {
                     "agent_name":  "",
                     "accent_color":  "purple"
                 },
     "per_project":  {
-                        "snap-emu":  {
-                                         "agent_name":  "snap-emu",
-                                         "accent_color":  "purple"
-                                     },
                         "sanctum":  {
                                         "agent_name":  "sanctum",
                                         "accent_color":  "purple"
                                     },
-                        "tiktok-emu":  {
-                                           "agent_name":  "tiktok-emu",
-                                           "accent_color":  "purple"
-                                       },
-                        "kernel-apk":  {
-                                           "agent_name":  "kernel-apk",
-                                           "accent_color":  "purple"
-                                       },
                         "sinister-panel":  {
                                                "agent_name":  "sinister-panel",
                                                "accent_color":  "purple"
                                            },
-                        "__operator_private_letstext__":  {
-                                                              "agent_name":  "__operator_private_letstext__",
-                                                              "accent_color":  "purple"
-                                                          },
+                        "kernel-apk":  {
+                                           "agent_name":  "kernel-apk",
+                                           "accent_color":  "purple"
+                                       },
+                        "sinister-emulator":  {
+                                                  "agent_name":  "sinister-emulator",
+                                                  "accent_color":  "purple"
+                                              },
+                        "rkoj":  {
+                                     "agent_name":  "rkoj",
+                                     "accent_color":  "purple"
+                                 },
+                        "snap-emulator-api":  {
+                                                  "agent_name":  "snap-emu",
+                                                  "accent_color":  "purple"
+                                              },
+                        "tiktok-emulator-api":  {
+                                                    "agent_name":  "tiktok-emu",
+                                                    "accent_color":  "purple"
+                                                },
+                        "bumble-emulator-api":  {
+                                                    "agent_name":  "bumble-emu",
+                                                    "accent_color":  "purple"
+                                                },
+                        "sinister-freeze":  {
+                                                "agent_name":  "sinister-freeze",
+                                                "accent_color":  "purple"
+                                            },
+                        "jb-woodworks":  {
+                                             "agent_name":  "jb-woodworks",
+                                             "accent_color":  "purple"
+                                         },
+                        "showmasters":  {
+                                            "agent_name":  "showmasters",
+                                            "accent_color":  "purple"
+                                        },
+                        "general":  {
+                                        "agent_name":  "general",
+                                        "accent_color":  "purple"
+                                    },
                         "sinister-forge":  {
                                                "agent_name":  "sinister-forge",
                                                "accent_color":  "purple"
@@ -45,10 +69,10 @@
                                               "agent_name":  "sinister-claw",
                                               "accent_color":  "purple"
                                           },
-                        "tiktok-emulator-api":  {
-                                                    "agent_name":  "tiktok-emulator-api",
-                                                    "accent_color":  "purple"
-                                                }
+                        "sinister-mind":  {
+                                              "agent_name":  "sinister-mind",
+                                              "accent_color":  "purple"
+                                          }
                     },
     "available_colors":  [
                              "purple",

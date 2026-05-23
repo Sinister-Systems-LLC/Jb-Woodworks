@@ -91,8 +91,8 @@ class _MirrorCard(QFrame):
 
     # Operator wants the embed under ~480px so 2 phones fit side-by-side.
     MIRROR_SIZE = 360
-    EMBED_RETRY_MS = 250
-    EMBED_TIMEOUT_MS = 8000
+    EMBED_RETRY_MS = 300
+    EMBED_TIMEOUT_MS = 20000   # v1.6.79 — was 8s, sometimes too short
 
     def __init__(self, dev: state.Device, parent: QWidget | None = None) -> None:
         super().__init__(parent)
@@ -165,11 +165,15 @@ class _MirrorCard(QFrame):
         # Body — placeholder until scrcpy embeds; then SetParent'd into.
         # v1.6.74 — must be a NATIVE Qt widget (WA_NativeWindow) so it
         # has a real Win32 HWND for SetParent to attach scrcpy to.
-        # Without this attribute, winId() returns a placeholder that
-        # SetParent silently rejects → black box.
+        # v1.6.79 — also opaque-paint + no system-bg so adjacent widgets
+        # don't bleed through the embed (operator screenshot showed the
+        # agents-tab "no saved sessions" text leaking through).
         self._body_host = QFrame()
         self._body_host.setAttribute(Qt.WidgetAttribute.WA_NativeWindow, True)
         self._body_host.setAttribute(Qt.WidgetAttribute.WA_DontCreateNativeAncestors, True)
+        self._body_host.setAttribute(Qt.WidgetAttribute.WA_OpaquePaintEvent, True)
+        self._body_host.setAttribute(Qt.WidgetAttribute.WA_NoSystemBackground, False)
+        self._body_host.setAutoFillBackground(True)
         self._body_host.setMinimumSize(self.MIRROR_SIZE, self.MIRROR_SIZE)
         self._body_host.setStyleSheet(
             f"QFrame {{ background-color: #000; border-radius: 10px; }}"
@@ -189,10 +193,12 @@ class _MirrorCard(QFrame):
         root.addWidget(self._body_host, stretch=1)
 
         # Footer — text-only action row (no cmd popups per operator)
+        # v1.6.79 — added Advanced + owner badge on this card.
         ftr = QHBoxLayout()
         ftr.setSpacing(6)
         for label, slot in (
-            ("Shot",  self._take_screenshot),
+            ("Shot",     self._take_screenshot),
+            ("Advanced", self._toggle_advanced),
         ):
             b = QPushButton(label)
             b.setFixedHeight(22)
@@ -206,8 +212,79 @@ class _MirrorCard(QFrame):
             )
             b.clicked.connect(slot)
             ftr.addWidget(b)
+        # Owner badge on this card
+        owner = state.who_owns(self.dev.serial)
+        if owner:
+            ob = QLabel(f"agent: {owner.get('agent_display') or owner.get('agent_id', '?')}")
+            ob.setStyleSheet(
+                f"color: {SUCCESS}; background-color: rgba(48,209,88,30); "
+                f"border: 1px solid rgba(48,209,88,120); border-radius: 11px; "
+                f"padding: 1px 8px; font-size: 9px; font-weight: 700;"
+            )
+            ftr.addWidget(ob)
         ftr.addStretch(1)
         root.addLayout(ftr)
+
+        # v1.6.79 — Advanced log panel (hidden by default). Toggled by
+        # the Advanced button. Shows live scrcpy stdout/stderr + the
+        # last 10 adb commands fired against this serial.
+        self._advanced_panel = QFrame()
+        self._advanced_panel.setStyleSheet(
+            f"QFrame {{ background-color: #0a0a0c; border: 1px solid {BORDER}; "
+            f"border-radius: 8px; padding: 6px; }}"
+        )
+        ap_layout = QVBoxLayout(self._advanced_panel)
+        ap_layout.setContentsMargins(6, 6, 6, 6)
+        ap_layout.setSpacing(4)
+        from PyQt6.QtWidgets import QPlainTextEdit
+        self._log_view = QPlainTextEdit()
+        self._log_view.setReadOnly(True)
+        self._log_view.setMaximumHeight(120)
+        self._log_view.setStyleSheet(
+            f"QPlainTextEdit {{ background: transparent; color: {MUTED_FG}; "
+            f"border: none; font-family: 'JetBrains Mono', monospace; "
+            f"font-size: 10px; }}"
+        )
+        self._log_view.setPlaceholderText("live scrcpy log — opens on Advanced click")
+        ap_layout.addWidget(self._log_view)
+        self._advanced_panel.hide()
+        root.addWidget(self._advanced_panel)
+
+        # v1.6.79 — drain scrcpy stderr into the log view every 500ms.
+        self._log_timer = QTimer(self)
+        self._log_timer.setInterval(500)
+        self._log_timer.timeout.connect(self._drain_proc_log)
+        self._log_timer.start()
+
+    def _toggle_advanced(self) -> None:
+        if self._advanced_panel.isVisible():
+            self._advanced_panel.hide()
+        else:
+            self._advanced_panel.show()
+
+    def _drain_proc_log(self) -> None:
+        if self._proc is None or self._proc.stderr is None:
+            return
+        try:
+            import select
+            # Non-blocking read of whatever's pending. On Windows we use
+            # the simpler poll-the-fd approach via readable bytes count.
+            # If reading blocks (Windows has no select on pipes), bail.
+            import msvcrt  # type: ignore
+            # Try a simple non-blocking peek via PeekNamedPipe
+            import ctypes
+            handle = msvcrt.get_osfhandle(self._proc.stderr.fileno())
+            avail = ctypes.c_ulong(0)
+            ok = ctypes.windll.kernel32.PeekNamedPipe(
+                ctypes.c_void_p(handle), None, 0, None, ctypes.byref(avail), None
+            )
+            if ok and avail.value > 0:
+                chunk = self._proc.stderr.read(avail.value)
+                if chunk:
+                    self._log_view.appendPlainText(chunk.rstrip())
+        except Exception:
+            # If anything goes sideways, just stop draining (don't crash).
+            self._log_timer.stop()
 
     def _spawn_scrcpy(self) -> None:
         if not _SCRCPY:
@@ -220,6 +297,7 @@ class _MirrorCard(QFrame):
         except Exception:
             pass
         try:
+            # v1.6.79 — software renderer + capture stderr for diagnostics
             self._proc = subprocess.Popen(
                 [
                     _SCRCPY,
@@ -228,12 +306,15 @@ class _MirrorCard(QFrame):
                     "--window-borderless",
                     "--max-size", str(self.MIRROR_SIZE),
                     "--no-audio",
-                    "--render-driver", "opengl",
+                    "--render-driver", "software",
                 ],
                 stdin=subprocess.DEVNULL,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
                 creationflags=_DETACHED | _CREATE_NO_WINDOW,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
             )
             self._status_label.setText("Connecting to phone…")
             QTimer.singleShot(self.EMBED_RETRY_MS, self._try_embed)
@@ -440,6 +521,17 @@ class _DeviceRow(QFrame):
 
         row.addStretch(1)
 
+        # v1.6.79 — owner badge if this phone is claimed by an agent
+        owner = state.who_owns(dev.serial)
+        if owner:
+            ob = QLabel(f"owned by {owner.get('agent_display') or owner.get('agent_id', '?')}")
+            ob.setStyleSheet(
+                f"color: {PURPLE_PRIMARY}; background-color: rgba(191,90,242,30); "
+                f"border: 1px solid rgba(191,90,242,120); border-radius: 8px; "
+                f"padding: 2px 8px; font-size: 10px; font-weight: 600;"
+            )
+            row.addWidget(ob)
+
         if dev.state == "device":
             self._add_action_button(row, "Mirror", "Embed scrcpy mirror inline",
                                     lambda: self.mirror_requested.emit(self.dev.serial))
@@ -614,20 +706,19 @@ class DevicesView(QWidget):
         self._mirrors_scroll.setWidget(self._mirrors_host)
         root.addWidget(self._mirrors_scroll, stretch=1)
 
-        # Compact device list strip BELOW the mirrors (no big blank area).
-        # Capped at ~150px so it doesn't dominate; mirrors get all the space.
-        self._scroll = QScrollArea(self)
-        self._scroll.setWidgetResizable(True)
-        self._scroll.setFrameShape(QFrame.Shape.NoFrame)
-        self._scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self._scroll.setMaximumHeight(160)
+        # v1.6.79 — operator removed the redundant bottom device-list strip.
+        # All actions live on the mirror cards themselves now; the strip
+        # was just visual noise. Keep _host/_list_layout/_scroll for
+        # internal device-row tracking (Mirror All button needs them) but
+        # never add to the visible layout.
         self._host = QWidget()
         self._list_layout = QVBoxLayout(self._host)
         self._list_layout.setContentsMargins(0, 0, 0, 0)
         self._list_layout.setSpacing(6)
         self._list_layout.addStretch(1)
+        self._scroll = QScrollArea()
         self._scroll.setWidget(self._host)
-        root.addWidget(self._scroll)
+        self._scroll.hide()
 
         # Empty state
         self._empty_hero = QLabel("No ADB devices connected")

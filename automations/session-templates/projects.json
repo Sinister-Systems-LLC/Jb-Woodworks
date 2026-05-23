@@ -1,151 +1,196 @@
-{
-    "_comment": "Persistent project registry for Start-Sinister-Session. Operator-canonical 2026-05-21. Forge + Term COMBINED per operator (verbatim): 'in sessions start combine sinister forge and sinister term. they should be the same thing'. Picker shows 'Sinister Forge + Term (workbench)' as option 9 (defaults to forge root); sinister-term entry preserved as standalone shell option for shell-only cold-starts. Mind and Claw stay separate. Freeze (project 13) is the first EXTERNAL-USER lane — Joe @ Ferrari of Winter Park (RKOJ-ELENO).",
-    "version": 5,
-    "default": "sanctum",
-    "projects": [
-        {
-            "key": "sanctum",
-            "display": "Sanctum",
-            "tag": "orchestration / hub / all Sinister projects connect here",
-            "root": "D:\\Sinister Sanctum",
-            "session_start": "D:\\Sinister Sanctum\\SESSION-START\\README.md",
-            "claude_md": "D:\\Sinister Sanctum\\CLAUDE.md",
-            "github": "Sinister-Systems-LLC/Sinister-Sanctum"
-        },
-        {
-            "key": "sinister-panel",
-            "display": "Sinister Panel",
-            "tag": "Sinister Control Center @ snap.sinijkr.com",
-            "root": "D:\\Sinister Sanctum\\projects\\sinister-panel\\source",
-            "session_start": "",
-            "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-panel\\source\\CLAUDE.md",
-            "github": "Sinister-Systems-LLC/Sinister-Panel"
-        },
-        {
-            "key": "kernel-apk",
-            "display": "Kernel APK",
-            "tag": "Sinister Kernel APK / KernelSU / DETECTOR",
-            "root": "D:\\Sinister Sanctum\\projects\\sinister-kernel-apk\\source",
-            "session_start": "",
-            "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-kernel-apk\\source\\CLAUDE.md",
-            "github": "Sinister-Systems-LLC/Sinister-Kernel-APK"
-        },
-        {
-            "key": "sinister-emulator",
-            "display": "Sinister Emulator",
-            "tag": "Shared emulator core - Snap/TikTok/Bumble all draw from here",
-            "root": "D:\\Sinister Sanctum\\projects\\sinister-emulator-bundle",
-            "session_start": "",
-            "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-emulator-bundle\\CLAUDE.md",
-            "github": "Sinister-Systems-LLC/Sinister-Emulator"
-        },
-        {
-            "key": "rkoj-workstation",
-            "display": "RKOJ Workstation",
-            "tag": "Operator workbench EXE (pywebview + FastAPI :5077)",
-            "root": "D:\\Sinister Sanctum\\automations\\window-manager",
-            "session_start": "",
-            "claude_md": "D:\\Sinister Sanctum\\automations\\window-manager\\CLAUDE.md",
-            "github": "Sinister-Systems-LLC/Sinister-Sanctum"
-        },
-        {
-            "key": "snap-emulator-api",
-            "display": "Snap Emulator API",
-            "tag": "Sinister Snap API EMU (pulls shared emu core from sinister-emulator/)",
-            "root": "D:\\Sinister Sanctum\\projects\\sinister-snap-emu\\source",
-            "session_start": "D:\\Sinister Sanctum\\projects\\sinister-snap-emu\\source\\SESSION-START.md",
-            "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-snap-emu\\source\\CLAUDE.md",
-            "github": "Sinister-Systems-LLC/Sinister-Snap-API-EMU"
-        },
-        {
-            "key": "tiktok-emulator-api",
-            "display": "TikTok Emulator API",
-            "tag": "Sinister TikTok API EMU (pulls shared emu core from sinister-emulator/)",
-            "root": "D:\\Sinister Sanctum\\projects\\sinister-tiktok-emu\\source",
-            "session_start": "D:\\Sinister Sanctum\\projects\\sinister-tiktok-emu\\source\\SESSION-START.md",
-            "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-tiktok-emu\\source\\CLAUDE.md",
-            "github": "Sinister-Systems-LLC/Sinister-TikTok-API-EMU"
-        },
-        {
-            "key": "bumble-emulator-api",
-            "display": "Bumble Emulator API",
-            "tag": "Sinister Bumble API EMU (pulls shared emu core from sinister-emulator/)",
-            "root": "D:\\Sinister Sanctum\\projects\\sinister-bumble-emu",
-            "session_start": "",
-            "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-bumble-emu\\CLAUDE.md",
-            "github": "Sinister-Systems-LLC/Sinister-Bumble-Emu"
-        },
-        {
-            "key": "sinister-forge",
-            "display": "Sinister Forge + Term (workbench)",
-            "tag": "COMBINED per operator 2026-05-21. Forge TUI (multi-pane Claude/Codex harness, bridge :5078) + Term shell (sterm / sinister term) - operator's developer workbench. Root defaults to forge; Term subsumed.",
-            "root": "D:\\Sinister Sanctum\\projects\\sinister-forge\\source",
-            "session_start": "",
-            "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-forge\\CLAUDE.md",
-            "github": "Sinister-Systems-LLC/Sinister-Forge",
-            "linked_lanes": [
-                {
-                    "key": "sinister-term",
-                    "root": "D:\\Sinister Sanctum\\projects\\sinister-term\\source",
-                    "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-term\\CLAUDE.md",
-                    "github": "Sinister-Systems-LLC/Sinister-Term",
-                    "_note": "Both repos remain on disk + GitHub. Combined picker entry spawns into forge root; Term tools accessible via 'sinister term <op>' subcommand once tools/sinister-cli/ installed."
-                }
-            ]
-        },
-        {
-            "key": "sinister-mind",
-            "display": "Sinister Mind",
-            "tag": "Brain-graph visualiser (Flask + D3 :5079) - more powerful than Obsidian mind-map",
-            "root": "D:\\Sinister Sanctum\\projects\\sinister-mind\\source",
-            "session_start": "",
-            "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-mind\\CLAUDE.md",
-            "github": "Sinister-Systems-LLC/Sinister-Mind"
-        },
-        {
-            "key": "sinister-term",
-            "display": "Sinister Term (standalone shell — combined w/ Forge in option 9)",
-            "tag": "Direct shell-only access. Operator 2026-05-21 combined Forge + Term in picker option 9; this entry remains for shell-only cold-starts when the full Forge TUI isn't wanted.",
-            "root": "D:\\Sinister Sanctum\\projects\\sinister-term\\source",
-            "session_start": "",
-            "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-term\\CLAUDE.md",
-            "github": "Sinister-Systems-LLC/Sinister-Term",
-            "_subsumed_by": "sinister-forge"
-        },
-        {
-            "key": "sinister-claw",
-            "display": "Sinister Claw",
-            "tag": "iOS + Android companion app (Expo + RN) - drives fleet via Forge bridge over Tailscale",
-            "root": "D:\\Sinister Sanctum\\projects\\sinister-claw\\source",
-            "session_start": "",
-            "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-claw\\CLAUDE.md",
-            "github": "Sinister-Systems-LLC/Sinister-Claw"
-        },
-        {
-            "key": "rkoj",
-            "display": "RKOJ",
-            "tag": "the unified RKOJ project — jcode-form umbrella binding Forge + Term + Workstation + skills + bots + sinister-* tools into one RKOJ.exe",
-            "root": "D:\\Sinister Sanctum\\projects\\rkoj",
-            "session_start": "",
-            "claude_md": "",
-            "github": "Sinister-Systems-LLC/Sinister-Sanctum",
-            "branch_prefix": "agent/rkoj/",
-            "focus": "the unified RKOJ project",
-            "umbrella": true,
-            "components": [
-                "sinister-forge",
-                "sinister-term",
-                "rkoj-workstation"
-            ]
-        },
-        {
-            "key": "sinister-freeze",
-            "display": "Sinister Freeze",
-            "tag": "Full-stack car-sales suite for Joe @ Ferrari of Winter Park (first EXTERNAL-USER lane)",
-            "root": "D:\\Sinister Sanctum\\projects\\sinister-freeze",
-            "session_start": "",
-            "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-freeze\\CLAUDE.md",
-            "github": "Sinister-Systems-LLC/Sinister-Freeze"
-        }
-    ]
+﻿{
+    "_comment":  "Persistent project registry. v6 (2026-05-23): added `picker` block driving the launcher\u0027s concise 12-entry visible list + ordering. Non-launcher consumers (RKOJ Qt agents_tab, sinister-eve, forge picker) continue to iterate the full `projects` array.",
+    "version":  6,
+    "default":  "sanctum",
+    "picker":  {
+                   "visible_keys":  [
+                                        "sanctum",
+                                        "sinister-panel",
+                                        "kernel-apk",
+                                        "sinister-emulator",
+                                        "rkoj",
+                                        "snap-emulator-api",
+                                        "tiktok-emulator-api",
+                                        "bumble-emulator-api",
+                                        "sinister-freeze",
+                                        "jb-woodworks",
+                                        "showmasters"
+                                    ],
+                   "special_keys":  [
+                                        "general",
+                                        "__autoresume__",
+                                        "__newproject__"
+                                    ]
+               },
+    "projects":  [
+                     {
+                         "key":  "sanctum",
+                         "display":  "Sanctum",
+                         "tag":  "orchestration hub",
+                         "root":  "D:\\Sinister Sanctum",
+                         "session_start":  "D:\\Sinister Sanctum\\SESSION-START\\README.md",
+                         "claude_md":  "D:\\Sinister Sanctum\\CLAUDE.md",
+                         "github":  "Sinister-Systems-LLC/Sinister-Sanctum"
+                     },
+                     {
+                         "key":  "sinister-panel",
+                         "display":  "Sinister Panel",
+                         "tag":  "Control Center @ snap.sinijkr.com",
+                         "root":  "D:\\Sinister Sanctum\\projects\\sinister-panel\\source",
+                         "session_start":  "",
+                         "claude_md":  "D:\\Sinister Sanctum\\projects\\sinister-panel\\source\\CLAUDE.md",
+                         "github":  "Sinister-Systems-LLC/Sinister-Panel"
+                     },
+                     {
+                         "key":  "kernel-apk",
+                         "display":  "Kernel APK",
+                         "tag":  "KernelSU / DETECTOR",
+                         "root":  "D:\\Sinister Sanctum\\projects\\sinister-kernel-apk\\source",
+                         "session_start":  "",
+                         "claude_md":  "D:\\Sinister Sanctum\\projects\\sinister-kernel-apk\\source\\CLAUDE.md",
+                         "github":  "Sinister-Systems-LLC/Sinister-Kernel-APK"
+                     },
+                     {
+                         "key":  "sinister-emulator",
+                         "display":  "Sinister Emulator",
+                         "tag":  "Shared emulator core",
+                         "root":  "D:\\Sinister Sanctum\\projects\\sinister-emulator-bundle",
+                         "session_start":  "",
+                         "claude_md":  "D:\\Sinister Sanctum\\projects\\sinister-emulator-bundle\\CLAUDE.md",
+                         "github":  "Sinister-Systems-LLC/Sinister-Emulator"
+                     },
+                     {
+                         "key":  "rkoj",
+                         "display":  "RKOJ",
+                         "tag":  "Forge + Term + Workstation + Mind + Claw + tools (unified)",
+                         "root":  "D:\\Sinister Sanctum\\projects\\rkoj",
+                         "session_start":  "",
+                         "claude_md":  "",
+                         "github":  "Sinister-Systems-LLC/Sinister-Sanctum",
+                         "branch_prefix":  "agent/rkoj/",
+                         "focus":  "the unified RKOJ project",
+                         "umbrella":  true,
+                         "components":  [
+                                            "sinister-forge",
+                                            "sinister-term",
+                                            "rkoj-workstation",
+                                            "sinister-mind",
+                                            "sinister-claw"
+                                        ]
+                     },
+                     {
+                         "key":  "snap-emulator-api",
+                         "display":  "Snap Emulator API",
+                         "tag":  "Snap API EMU",
+                         "root":  "D:\\Sinister Sanctum\\projects\\sinister-snap-emu\\source",
+                         "session_start":  "D:\\Sinister Sanctum\\projects\\sinister-snap-emu\\source\\SESSION-START.md",
+                         "claude_md":  "D:\\Sinister Sanctum\\projects\\sinister-snap-emu\\source\\CLAUDE.md",
+                         "github":  "Sinister-Systems-LLC/Sinister-Snap-API-EMU"
+                     },
+                     {
+                         "key":  "tiktok-emulator-api",
+                         "display":  "TikTok Emulator API",
+                         "tag":  "TikTok API EMU",
+                         "root":  "D:\\Sinister Sanctum\\projects\\sinister-tiktok-emu\\source",
+                         "session_start":  "D:\\Sinister Sanctum\\projects\\sinister-tiktok-emu\\source\\SESSION-START.md",
+                         "claude_md":  "D:\\Sinister Sanctum\\projects\\sinister-tiktok-emu\\source\\CLAUDE.md",
+                         "github":  "Sinister-Systems-LLC/Sinister-TikTok-API-EMU"
+                     },
+                     {
+                         "key":  "bumble-emulator-api",
+                         "display":  "Bumble Emulator API",
+                         "tag":  "Bumble API EMU",
+                         "root":  "D:\\Sinister Sanctum\\projects\\sinister-bumble-emu",
+                         "session_start":  "",
+                         "claude_md":  "D:\\Sinister Sanctum\\projects\\sinister-bumble-emu\\CLAUDE.md",
+                         "github":  "Sinister-Systems-LLC/Sinister-Bumble-Emu"
+                     },
+                     {
+                         "key":  "sinister-freeze",
+                         "display":  "Sinister Freeze",
+                         "tag":  "Car-sales suite (Ferrari of Winter Park)",
+                         "root":  "D:\\Sinister Sanctum\\projects\\sinister-freeze",
+                         "session_start":  "",
+                         "claude_md":  "D:\\Sinister Sanctum\\projects\\sinister-freeze\\CLAUDE.md",
+                         "github":  "Sinister-Systems-LLC/Sinister-Freeze"
+                     },
+                     {
+                         "key":  "jb-woodworks",
+                         "display":  "JB Woodworks",
+                         "tag":  "Custom woodworking marketing site",
+                         "root":  "D:\\Sinister Sanctum\\projects\\jb-woodworks",
+                         "session_start":  "",
+                         "claude_md":  "D:\\Sinister Sanctum\\projects\\jb-woodworks\\CLAUDE.md",
+                         "github":  "Sinister-Systems-LLC/Jb-Woodworks"
+                     },
+                     {
+                         "key":  "showmasters",
+                         "display":  "Showmasters",
+                         "tag":  "Show Masters Production Logistics marketing site",
+                         "root":  "C:\\Users\\Zonia\\Desktop\\Showmasters Site",
+                         "session_start":  "",
+                         "claude_md":  "C:\\Users\\Zonia\\Desktop\\Showmasters Site\\CLAUDE.md",
+                         "github":  "Sinister-Systems-LLC/Showmasters"
+                     },
+                     {
+                         "key":  "general",
+                         "display":  "General",
+                         "tag":  "No fixed scope; full memory; ad-hoc operator queries",
+                         "root":  "D:\\Sinister Sanctum",
+                         "session_start":  "",
+                         "claude_md":  "D:\\Sinister Sanctum\\CLAUDE.md",
+                         "github":  "",
+                         "general":  true
+                     },
+                     {
+                         "key":  "sinister-forge",
+                         "display":  "Sinister Forge",
+                         "tag":  "Forge TUI (subsumed under RKOJ in picker)",
+                         "root":  "D:\\Sinister Sanctum\\projects\\sinister-forge\\source",
+                         "session_start":  "",
+                         "claude_md":  "D:\\Sinister Sanctum\\projects\\sinister-forge\\CLAUDE.md",
+                         "github":  "Sinister-Systems-LLC/Sinister-Forge",
+                         "_subsumed_by":  "rkoj"
+                     },
+                     {
+                         "key":  "sinister-term",
+                         "display":  "Sinister Term",
+                         "tag":  "Term shell (subsumed under RKOJ in picker)",
+                         "root":  "D:\\Sinister Sanctum\\projects\\sinister-term\\source",
+                         "session_start":  "",
+                         "claude_md":  "D:\\Sinister Sanctum\\projects\\sinister-term\\CLAUDE.md",
+                         "github":  "Sinister-Systems-LLC/Sinister-Term",
+                         "_subsumed_by":  "rkoj"
+                     },
+                     {
+                         "key":  "sinister-mind",
+                         "display":  "Sinister Mind",
+                         "tag":  "Brain-graph visualiser (subsumed under RKOJ in picker)",
+                         "root":  "D:\\Sinister Sanctum\\projects\\sinister-mind\\source",
+                         "session_start":  "",
+                         "claude_md":  "D:\\Sinister Sanctum\\projects\\sinister-mind\\CLAUDE.md",
+                         "github":  "Sinister-Systems-LLC/Sinister-Mind",
+                         "_subsumed_by":  "rkoj"
+                     },
+                     {
+                         "key":  "sinister-claw",
+                         "display":  "Sinister Claw",
+                         "tag":  "iOS + Android companion (subsumed under RKOJ in picker)",
+                         "root":  "D:\\Sinister Sanctum\\projects\\sinister-claw\\source",
+                         "session_start":  "",
+                         "claude_md":  "D:\\Sinister Sanctum\\projects\\sinister-claw\\CLAUDE.md",
+                         "github":  "Sinister-Systems-LLC/Sinister-Claw",
+                         "_subsumed_by":  "rkoj"
+                     },
+                     {
+                         "key":  "rkoj-workstation",
+                         "display":  "RKOJ Workstation",
+                         "tag":  "Operator workbench EXE (subsumed under RKOJ in picker)",
+                         "root":  "D:\\Sinister Sanctum\\automations\\window-manager",
+                         "session_start":  "",
+                         "claude_md":  "D:\\Sinister Sanctum\\automations\\window-manager\\CLAUDE.md",
+                         "github":  "Sinister-Systems-LLC/Sinister-Sanctum",
+                         "_subsumed_by":  "rkoj"
+                     }
+                 ]
 }

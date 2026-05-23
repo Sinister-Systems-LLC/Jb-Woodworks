@@ -349,6 +349,26 @@ class _MultiLineInput(QPlainTextEdit):
     def _popup_visible(self) -> bool:
         return self.slash_popup is not None and self.slash_popup.isVisible()
 
+    def insertFromMimeData(self, source) -> None:  # type: ignore[override]
+        """v1.6.79 — jcode parity: paste an image from clipboard. We
+        save it to %TEMP%\\eve-paste-<ts>.png and reference the path in
+        the input so claude's Read tool can pick it up. Falls back to
+        default text paste when no image is present."""
+        if source.hasImage():
+            try:
+                from PyQt6.QtGui import QImage
+                img = QImage(source.imageData())
+                if not img.isNull():
+                    ts = time.strftime("%Y%m%dT%H%M%S")
+                    out = Path(os.environ.get("TEMP", ".")) / f"eve-paste-{ts}.png"
+                    img.save(str(out), "PNG")
+                    cur = self.textCursor()
+                    cur.insertText(f"[image saved: {out}] ")
+                    return
+            except Exception:
+                pass
+        super().insertFromMimeData(source)
+
     def keyPressEvent(self, event: QKeyEvent) -> None:
         # v1.6.17 — when the slash popup is visible, hijack arrow/enter/esc.
         if self._popup_visible():

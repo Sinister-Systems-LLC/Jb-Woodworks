@@ -4,6 +4,83 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-23 02:30 — shipped: Start-Sinister-Session launcher rewrite (v5 → v6, concise) + Showmasters scaffold-half wrap
+
+EVE on Sanctum, branch `agent/showmasters/scaffold-and-launch`. Operator dropped two stacked directives this session — a Showmasters resume pickup (privacy/terms stub gap), then mid-flight a hard pivot to *"clean up the entire UI"* of the session launcher per a jcode-reference screenshot. Auto Mode active throughout. Both shipped in one continuous walk.
+
+### Launcher v6 rewrite (`automations/start-sinister-session.ps1`)
+
+**Old (v5)**: 2,373 lines. Matrix-rain boot animation, glitch-reveal text, 8-step wizard (focus prompt + speed picker + token-mode picker + host picker + agent-name picker + accent-color picker + multi-count picker + account picker), cron-scheduling tail, Sanctum-SectionHeader/Sanctum-KeyValue rendering all the way through. Five distinct Read-Host prompts in the project picker alone.
+
+**New (v6)**: 467 lines. One screen. Banner header + numbered project list, full stop.
+
+| Piece | Old | New |
+|---|---|---|
+| Boot animation | Matrix rain + glitch reveal + Pause-Beat throughout | None. `Clear-Host` → banner → picker |
+| Color/accent prompt | Read-Host, palette display, 30s timeout | Auto-set `purple` (operator standing order) |
+| Agent-name prompt | Read-Host, 30s timeout | Auto-resolved from `agent-prefs.json` per project |
+| Host prompt (claude/codex) | Read-Host picker | Auto-set `claude` |
+| Today's focus prompt | Read-Host | Removed entirely |
+| Multi-count parallel spawn | Read-Host 1-5 | Auto-set 1 |
+| Token mode / Speed pickers | Two Read-Host | Auto-set `compact` + `turbo` |
+| Account picker | Read-Host across N accounts | Removed (default account only) |
+| Cron-scheduling tail | 90 lines of Read-HostTimeout | Removed |
+| Notepad briefing open | Pre-launch open of CLAUDE.md | Removed (was -NoNotepad default anyway) |
+| New-project wizard | 6 questions (slug + display + desc + lang + files + github) | 2 questions (name + desc). Slug auto-derived via `Slugify`. |
+| Cold-start phrase | 9 long mode-specific templates inlined | One `Build-Phrase` helper, 3 shapes (scaffold / general / resume), delegates to `automations/session-contracts.md` |
+
+**Project list collapsed to 11 visible entries** in operator-canonical order: Sanctum, Sinister Panel, Kernel APK, Sinister Emulator, RKOJ (unified — operator confirmed the other agent owns RKOJ work), Snap Emulator API, TikTok Emulator API, Bumble Emulator API, Sinister Freeze, JB Woodworks, Showmasters. RKOJ entry has `umbrella: true` + `components: [sinister-forge, sinister-term, rkoj-workstation, sinister-mind, sinister-claw]` so consumers can still expand the lane internally. The 5 component lanes stay in `projects[]` with `_subsumed_by: "rkoj"` so the RKOJ Qt agents_tab + sinister-eve + forge picker don't break.
+
+**New `General` option** — `key: general`, root = Sanctum root, `general: true` flag. The cold-start phrase for General mode tells the agent "no fixed project scope; full memory access; ad-hoc operator queries; route lane-specific work to the right agent via cross-agent inbox". Operator's catch-all for one-off questions that don't fit a lane.
+
+**Auto-Resume preserved** — scans `_shared-memory/resume-points/**/*.json` by mtime, shows last 10 with project/mode/time-ago, picks default=1. Resolves either `project_key` or `project_display` field shape against `projects.json`.
+
+**`projects.json` schema bumped v5 → v6** — added top-level `picker.visible_keys[]` + `picker.special_keys[]` blocks. Non-launcher consumers continue to iterate `projects[]`; the launcher filters through `Get-VisibleProjects` which honors `picker.visible_keys` when present (fallback: every entry without `_subsumed_by`).
+
+**`agent-prefs.json` v1 → v2** — collapsed all 17 per-project blocks to one-line JSON each + added `general` lane + removed `__operator_private_letstext__` stub + the now-unused `snap-emu`/`tiktok-emu`/`kernel-apk` shorter aliases preserved as `agent_name` mapped to the new project keys.
+
+**Tests passed (5 paths)**:
+- `-Project sanctum -NoLaunch` (headless flag) → exit 0, runlog written with `kind: headless`
+- `-Project general -NoLaunch` → exit 0, runlog `general`
+- `-Project rkoj -NoLaunch` → exit 0, runlog `rkoj`
+- `-Project nonexistent-key -NoLaunch` → exit 2, error message
+- Interactive `"5\n"` → rkoj; `"G\n"` → general; `"11\n"` → showmasters; `"\n"` (default) → sanctum; `"99\n"` (out-of-range) → sanctum (default fallback); `"A\n1\n"` (auto-resume + pick #1) → sanctum (correctly mapped from display)
+- New-project flow `"N\nTest Launcher Audit\na throwaway test project\n"` → slug auto-derived to `test-launcher-audit`, folder created, brief written, registered in both `projects[]` + `picker.visible_keys`. Cleaned up afterward.
+
+**Backup**: old v5 → `automations/start-sinister-session-v5.ps1.bak` (137 KB → preserved for cross-ref).
+
+**Unchanged** (still functional): `.claude.json` pre-trust before spawn, `_shared-memory/spawned-windows.jsonl` tracking for the Console's Close-All button, background `resume-point-write.ps1` snapshot at spawn, mintty → git-bash → bash.exe fallback chain, accent color → mintty `-o ForegroundColour/BackgroundColour/CursorColour` mapping.
+
+### Showmasters scaffold-and-launch wrap
+
+Footer of all 7 original HTML pages references `/privacy.html` + `/terms.html` — those two pages did NOT exist. Audited via `grep -oE '(href|src)="[^"]*"' *.html` against on-disk files. Stubbed both at `C:\Users\Zonia\Desktop\Showmasters Site\` matching the site's nav/footer pattern. Both have `<meta name="robots" content="noindex,follow">` + a yellow "Scaffold note" panel telling counsel + operator to replace with reviewed language pre-launch. Appended acceptance summary paragraph to `projects/showmasters/_SCAFFOLD-BRIEF.md`. New `PROGRESS/Showmasters.md` capturing scaffold + this turn.
+
+### Carry-forward (operator-gated)
+
+- Showmasters Site folder is NOT yet a git repo + NOT pushed to `Sinister-Systems-LLC/Showmasters` — operator gate.
+- jb-woodworks scaffold (sibling work from prior session) is also unflipped + uncommitted.
+- The legacy v5 backup `.bak` will accumulate — operator can rm when v6 confidence is high.
+
+---
+
+## 2026-05-22 ~02:10 — note: cold-start complete (new session opened on cli-dispatcher branch)
+
+EVE on Sanctum. Operator dropped *"test"* then *"session start"*. Ran the 6-step cold-start protocol — SESSION-START/ 00→06, PARALLEL-AGENT-COORDINATION, WORKSTATION + DIRECTIVES + WORK-TOWARD, knowledge `_INDEX` (top 100 rows), OPERATOR-ACTION-QUEUE. Heartbeat refreshed at `_shared-memory/heartbeats/sanctum.json` (mode=`session-start`, ts=2026-05-22T02:10Z).
+
+**Inbox poll** — 2 items unarchived, neither requires action:
+- `sanctum/2026-05-21T1525Z-ack-from-kernel-apk-schemas-confirmed-tail-to-disk-acked.json` — kernel-apk ACK, `reply_required: false`; can be archived on operator nod.
+- `sanctum/peer/2026-05-21T212931Z-pane-note.json` — smoke-test artifact.
+
+**Carry-forward state at handoff:**
+- Branch `agent/sinister-sanctum/cli-dispatcher-2026-05-21` is **9 commits ahead of origin** per the OPERATOR-ACTION-QUEUE GitHub-linkage audit (2026-05-21). Push is gated on operator OK.
+- Working tree has STAGED-uncommitted edits on `projects/rkoj/source/sinister_rkoj_qt/agents_tab.py` + `projects/rkoj/CHANGELOG.md` — left by prior turn (not yet shipped as a version bump). Untouched.
+- Untracked operator/sibling artifacts in `_shared-memory/`: `PROGRESS/EVE on Sanctum.md`, cross-agent ACK to kernel-apk re cellular block, knowledge entry `proc-maps-hook-breaks-ksu-su-2026-05-21.md`, full-panel-walk plan, TikTok-emu resume-point. Read-only respect.
+- Anchored standing rules confirmed: identity=EVE, authorship=RKOJ-ELENO :: 2026-05-21 on new files, purple accent, per-agent branch (already on one), lane discipline (RKOJ edits in prior turn are an active deviation — flagging for operator awareness).
+
+Standing by for next directive.
+
+---
+
 ## 2026-05-22 ~01:50 — shipped: RKOJ v1.6.9 — Saved Sessions picker UX overhaul (`Resume inline` + Delete + autoclose chip + relative time)
 
 EVE on Sanctum, branch `agent/sinister-sanctum/cli-dispatcher-2026-05-21`. Picked up after operator's bare *"get to work"* directive following the v1.6.0→v1.6.8 rapid walk. v1.6.8's inline-spawn revert had left the SavedSessionsPicker UI lying — button still labeled "Open in new window" — and operator's v1.6.7 autoclose saves had started piling up under `_shared-memory/resume-points/` with no in-UI cleanup. This ship makes the picker truthful + housekeepable in one tight diff.
