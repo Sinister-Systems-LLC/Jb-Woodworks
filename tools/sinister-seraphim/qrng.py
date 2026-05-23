@@ -95,10 +95,25 @@ def quantum_random(
         )
 
     if backend == 'cloud-wukong-180':
+        # Operator hard-canonical 2026-05-23: "we only have 120 seconds on the
+        # license key". The cloud path is BUDGET-GATED — even with pyqpanda3
+        # installed, every cloud submission must call budget.check_budget()
+        # FIRST with an estimated_seconds value, then budget.record_usage()
+        # AFTER measuring the actual wall time. This NotImplementedError
+        # stays until the budget gate is wired into the cloud call site.
+        try:
+            from .budget import remaining_seconds
+        except ImportError:
+            from budget import remaining_seconds  # type: ignore
+        rem = remaining_seconds()
         raise NotImplementedError(
-            'cloud-wukong-180 backend not yet wired. Cost-gated; needs '
-            'operator approval per-call. Implementation requires pyqpanda3 '
-            'installed + cloud-submission credentials wired via license.py.'
+            f'cloud-wukong-180 backend BUDGET-GATED (operator hard-canonical: '
+            f'120s total, {rem:.2f}s remaining). Wire path requires: '
+            f'(1) budget.check_budget(estimated_seconds) pre-call, '
+            f'(2) pyqpanda3 cloud submission, '
+            f'(3) budget.record_usage(actual_seconds, purpose=...) post-call. '
+            f'Use sim-local for testing; use sim-pilotos for real local quantum '
+            f'sim (no budget cost) once operator extracts python_simulator.tar.gz.'
         )
 
     raise ValueError(f'quantum_random: unknown backend {backend!r}')

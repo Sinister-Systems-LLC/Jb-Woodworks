@@ -77,6 +77,40 @@ def _license_check_cmd(args) -> int:
         return 2
 
 
+def _dashboard_cmd(args) -> int:
+    try:
+        from .dashboard import write_dashboard
+    except ImportError:
+        from dashboard import write_dashboard  # type: ignore
+    from pathlib import Path
+    out = Path(args.out) if args.out else None
+    p = write_dashboard(out)
+    if args.json:
+        print(json.dumps({'path': str(p), 'url': f'file:///{str(p).replace(chr(92), "/")}'}))
+    else:
+        print(f'[seraphim dashboard] wrote {p}')
+        print(f'[seraphim dashboard] open in browser: file:///{str(p).replace(chr(92), "/")}')
+    return 0
+
+
+def _budget_cmd(args) -> int:
+    try:
+        from .budget import status, remaining_seconds
+    except ImportError:
+        from budget import status, remaining_seconds  # type: ignore
+    s = status()
+    if args.json:
+        print(json.dumps(s))
+    else:
+        print('[seraphim budget] cloud-Wukong-180 license budget (operator hard-canonical: 120s total):')
+        for k, v in s.items():
+            print(f'  {k:>22} = {v}')
+        if remaining_seconds() <= 0:
+            print('  [WARN] budget exhausted — cloud calls will refuse.')
+            return 1
+    return 0
+
+
 def _version_cmd(args) -> int:
     try:
         from . import __version__
@@ -115,6 +149,13 @@ def main(argv: list[str] | None = None) -> int:
 
     p_lc = sub.add_parser('license-check', help='Verify license loads + print sha256[0:12] fingerprint')
     p_lc.set_defaults(fn=_license_check_cmd)
+
+    p_bg = sub.add_parser('budget', help='Show cloud-Wukong-180 license-budget status (120s operator cap)')
+    p_bg.set_defaults(fn=_budget_cmd)
+
+    p_db = sub.add_parser('dashboard', help='Regenerate the static HTML dashboard (_shared-memory/dashboards/seraphim.html)')
+    p_db.add_argument('--out', default=None, help='Optional output path (defaults to _shared-memory/dashboards/seraphim.html)')
+    p_db.set_defaults(fn=_dashboard_cmd)
 
     p_ver = sub.add_parser('version', help='Print package version')
     p_ver.set_defaults(fn=_version_cmd)

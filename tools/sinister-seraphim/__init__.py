@@ -18,6 +18,8 @@ See README.md for the four use-lanes:
 # AND when pytest auto-discovers this __init__.py via the hyphen dir.
 try:
     from .audit import write_provenance
+    from .budget import BudgetExhausted, check_budget, record_usage, remaining_seconds
+    from .budget import status as budget_status
     from .license import LicenseError, get_license, license_fingerprint
     from .qrng import quantum_random
 except ImportError:
@@ -27,6 +29,8 @@ except ImportError:
     if str(_here) not in _sys.path:
         _sys.path.insert(0, str(_here))
     from audit import write_provenance  # type: ignore
+    from budget import BudgetExhausted, check_budget, record_usage, remaining_seconds  # type: ignore
+    from budget import status as budget_status  # type: ignore
     from license import LicenseError, get_license, license_fingerprint  # type: ignore
     from qrng import quantum_random  # type: ignore
 

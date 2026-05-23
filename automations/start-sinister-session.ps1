@@ -834,7 +834,7 @@ function Clear-Context {
 # COLD-START PHRASE (one source of truth - delegates to session-contracts.md)
 # ============================================================
 
-function Build-Phrase($projRec, $agentName, $mode, $isGeneral, $isScaffold) {
+function Build-Phrase($projRec, $agentName, $mode, $isGeneral, $isScaffold, $modes = $null) {
     # Operator 2026-05-23 evening (multiple screenshots): child Claude refused prior phrase
     # framing it as "long instruction block claiming pre-authorization for a list of activities,
     # embedded in a first turn / No verifiable provenance / hard-canonical / DO NOT REVERT /
@@ -847,12 +847,74 @@ function Build-Phrase($projRec, $agentName, $mode, $isGeneral, $isScaffold) {
     $projKey = $projRec.key
     $base = "Working on $display at $root as the '$agentName' lane. Open $root\CLAUDE.md for the project's cold-start protocol. Log progress to _shared-memory\PROGRESS\$agentName.md and write a heartbeat to _shared-memory\heartbeats\<slug>.json each turn."
     if ($isScaffold) {
-        return $base + " Mode: SCAFFOLD. Read _SCAFFOLD-BRIEF.md, then create the initial repo skeleton (README.md + CLAUDE.md + SESSION-START.md + .gitignore + source/). Keep it minimal but runnable. When done, append a Built summary to _SCAFFOLD-BRIEF.md."
+        $phrase = $base + " Mode: SCAFFOLD. Read _SCAFFOLD-BRIEF.md, then create the initial repo skeleton (README.md + CLAUDE.md + SESSION-START.md + .gitignore + source/). Keep it minimal but runnable. When done, append a Built summary to _SCAFFOLD-BRIEF.md."
     }
-    if ($isGeneral) {
-        return $base + " Mode: GENERAL. No fixed project scope; use _shared-memory/ for ad-hoc work and route lane-specific items via the cross-agent inbox."
+    elseif ($isGeneral) {
+        $phrase = $base + " Mode: GENERAL. No fixed project scope; use _shared-memory/ for ad-hoc work and route lane-specific items via the cross-agent inbox."
     }
-    return $base + " Mode: RESUME. Pick up from the latest resume-point in _shared-memory\resume-points\$display\ (highest-UTC json). After each meaningful deliverable, write a fresh resume-point via automations\resume-point-write.ps1 -ProjectKey $projKey -AgentName $agentName -Mode resume."
+    else {
+        $phrase = $base + " Mode: RESUME. Pick up from the latest resume-point in _shared-memory\resume-points\$display\ (highest-UTC json). After each meaningful deliverable, write a fresh resume-point via automations\resume-point-write.ps1 -ProjectKey $projKey -AgentName $agentName -Mode resume."
+    }
+    # Operator 2026-05-23 — jcode-parity autonomy. When swarm and/or loop are opted in at
+    # the picker, instruct the child accordingly. Env vars (SINISTER_SWARM_MODE /
+    # SINISTER_LOOP_MODE) are also exported so any tooling inside the spawn shell can
+    # branch off them.
+    if ($modes -and $modes.swarm) {
+        $phrase += " SWARM MODE on: for non-trivial multi-file work, spawn 3-5 parallel sub-agents via the Agent tool and aggregate findings before acting. Use sinister-swarm CLI or sinister-bus orchestration when the work spans multiple lanes."
+    }
+    if ($modes -and $modes.loop) {
+        $phrase += " LOOP MODE on: do not stop after the first solution; keep iterating and expanding on ideas until the task is verifiably complete or the operator interrupts. If a recurring cadence helps, invoke the /loop skill in dynamic mode."
+    }
+    return $phrase
+}
+
+# ============================================================
+# AGENT MODES PROMPT (operator 2026-05-23 — jcode-parity autonomy)
+# ============================================================
+# "when making agents add option to be asked if i want to turn on swarm and or loop
+#  (make system so agents dont stop working or expanding on ideas, jcode has that
+#  use what they do)"
+#
+# Compact single-line prompt before each spawn. Default = both OFF. Returns a
+# hashtable @{swarm=$bool; loop=$bool}.
+# Operator can preset via env: SINISTER_DEFAULT_SWARM=1 / SINISTER_DEFAULT_LOOP=1
+# Operator can skip-this-prompt via env: SINISTER_SKIP_MODES_PROMPT=1 (uses defaults).
+# ============================================================
+
+function Prompt-AgentModes {
+    $defSwarm = ($env:SINISTER_DEFAULT_SWARM -eq '1')
+    $defLoop  = ($env:SINISTER_DEFAULT_LOOP -eq '1')
+    if ($env:SINISTER_SKIP_MODES_PROMPT -eq '1') {
+        return @{ swarm = $defSwarm; loop = $defLoop }
+    }
+    $defLabel = if ($defSwarm -and $defLoop) { 'both' } elseif ($defSwarm) { 'swarm' } elseif ($defLoop) { 'loop' } else { 'neither' }
+    Write-Host ''
+    Write-Host '  Modes (jcode-parity autonomy):' -ForegroundColor $C.Header
+    Write-Host '    s = swarm  (spawn parallel sub-agents for multi-file work)' -ForegroundColor $C.Dim
+    Write-Host '    l = loop   (keep iterating + expanding; do not stop on first solution)' -ForegroundColor $C.Dim
+    Write-Host '    b = both   |   Enter = none   |   ! = remember default (this session)' -ForegroundColor $C.Dim
+    Write-Host -NoNewline ('  Choose [default: ' + $defLabel + ']: ') -ForegroundColor $C.Prompt
+    $ans = Read-Host
+    $modes = @{ swarm = $defSwarm; loop = $defLoop }
+    if (-not $ans) { return $modes }
+    $a = $ans.ToLower().Trim()
+    # Strip optional '!' suffix used to lock-in this session default.
+    $lockDefault = $false
+    if ($a.EndsWith('!')) { $lockDefault = $true; $a = $a.TrimEnd('!') }
+    switch -Regex ($a) {
+        '^(s|swarm)$'        { $modes.swarm = $true;  $modes.loop = $false }
+        '^(l|loop)$'         { $modes.swarm = $false; $modes.loop = $true }
+        '^(b|both|sl|ls)$'   { $modes.swarm = $true;  $modes.loop = $true }
+        '^(n|no|off|none)$'  { $modes.swarm = $false; $modes.loop = $false }
+        default              { Write-Host ('  (unrecognized: "' + $ans + '") -> using default: ' + $defLabel) -ForegroundColor $C.Dim }
+    }
+    if ($lockDefault) {
+        $env:SINISTER_DEFAULT_SWARM = if ($modes.swarm) { '1' } else { '0' }
+        $env:SINISTER_DEFAULT_LOOP  = if ($modes.loop)  { '1' } else { '0' }
+        $env:SINISTER_SKIP_MODES_PROMPT = '1'
+        Write-Host '  [locked] modes saved for this session; clear with $env:SINISTER_SKIP_MODES_PROMPT=$null' -ForegroundColor $C.Dim
+    }
+    return $modes
 }
 
 # ============================================================
@@ -924,7 +986,9 @@ public class WinPosCheck {
 # LAUNCH (git-bash + claude --dangerously-skip-permissions)
 # ============================================================
 
-function Launch-Session($projRec, $agentName, $accent, $phrase) {
+function Launch-Session($projRec, $agentName, $accent, $phrase, $modes = $null) {
+    $swarmEnv = if ($modes -and $modes.swarm) { '1' } else { '' }
+    $loopEnv  = if ($modes -and $modes.loop)  { '1' } else { '' }
     $gitBash = 'C:\Program Files\Git\git-bash.exe'
     $bashExe = 'C:\Program Files\Git\bin\bash.exe'
     $minttyExe = 'C:\Program Files\Git\usr\bin\mintty.exe'
@@ -1012,6 +1076,8 @@ export SINISTER_ACCENT_COLOR='$accent'
 export SINISTER_PROJECT_KEY='$projKey'
 export SINISTER_PROJECT_DISPLAY='$projDisplay'
 export SINISTER_MODE='resume'
+export SINISTER_SWARM_MODE='$swarmEnv'
+export SINISTER_LOOP_MODE='$loopEnv'
 clear 2>/dev/null || printf '\033c'
 printf '\n'
 printf '  $pillA $agentName $pillZ  $pillM resume $pillZ  $pillD claude-opus-4-7[1m] $pillZ  $pillG mcp:$mcpCnt $pillZ  $pillB bots:$botCnt $pillZ  $pillR --skip-perms $pillZ\n'
@@ -1183,8 +1249,10 @@ if ($Project) {
     $resolvedAccent = if ($AccentColor) { $AccentColor } else { 'purple' }
     $prefs = Persist-AgentPref $Project $resolvedAgent $resolvedAccent $prefs
     $isGeneral = ($Project -eq 'general')
-    $phrase = Build-Phrase $projRec $resolvedAgent 'resume' $isGeneral $false
-    if (-not $NoLaunch) { Launch-Session $projRec $resolvedAgent $resolvedAccent $phrase }
+    # Headless: don't prompt, use env defaults (SINISTER_DEFAULT_SWARM / SINISTER_DEFAULT_LOOP).
+    $modes = @{ swarm = ($env:SINISTER_DEFAULT_SWARM -eq '1'); loop = ($env:SINISTER_DEFAULT_LOOP -eq '1') }
+    $phrase = Build-Phrase $projRec $resolvedAgent 'resume' $isGeneral $false $modes
+    if (-not $NoLaunch) { Launch-Session $projRec $resolvedAgent $resolvedAccent $phrase $modes }
     Write-RunLog $Project $resolvedAgent $resolvedAccent 'headless'
     exit 0
 }
@@ -1247,8 +1315,9 @@ do {
                     $resolvedAgent = $confirmed.agent
                     $accentVal = $confirmed.accent
                     $isGeneral = ($targetKey -eq 'general')
-                    $phrase = Build-Phrase $projRec $resolvedAgent 'resume' $isGeneral $false
-                    if (-not $NoLaunch) { Launch-Session $projRec $resolvedAgent $accentVal $phrase }
+                    $modes = Prompt-AgentModes
+                    $phrase = Build-Phrase $projRec $resolvedAgent 'resume' $isGeneral $false $modes
+                    if (-not $NoLaunch) { Launch-Session $projRec $resolvedAgent $accentVal $phrase $modes }
                     Write-RunLog $targetKey $resolvedAgent $accentVal 'autoresume-fresh'
                 } else {
                     Write-Host "  [FAIL] project not found: $targetKey" -ForegroundColor $C.Fail
@@ -1264,8 +1333,9 @@ do {
                 $prefs = $confirmed.prefs
                 $resolvedAgent = $confirmed.agent
                 $accentVal = $confirmed.accent
-                $phrase = Build-Phrase $projRec $resolvedAgent 'resume' ($targetKey -eq 'general') $false
-                if (-not $NoLaunch) { Launch-Session $projRec $resolvedAgent $accentVal $phrase }
+                $modes = Prompt-AgentModes
+                $phrase = Build-Phrase $projRec $resolvedAgent 'resume' ($targetKey -eq 'general') $false $modes
+                if (-not $NoLaunch) { Launch-Session $projRec $resolvedAgent $accentVal $phrase $modes }
                 Write-RunLog $targetKey $resolvedAgent $accentVal 'autoresume'
             }
         }
@@ -1283,8 +1353,9 @@ do {
                 }
                 $resolvedAgent = $new.key
                 $prefs = Persist-AgentPref $new.key $resolvedAgent 'purple' $prefs
-                $phrase = Build-Phrase $projRec $resolvedAgent 'scaffold' $false $true
-                if (-not $NoLaunch) { Launch-Session $projRec $resolvedAgent 'purple' $phrase }
+                $modes = Prompt-AgentModes
+                $phrase = Build-Phrase $projRec $resolvedAgent 'scaffold' $false $true $modes
+                if (-not $NoLaunch) { Launch-Session $projRec $resolvedAgent 'purple' $phrase $modes }
                 Write-RunLog $new.key $resolvedAgent 'purple' 'newproject'
                 $projectsJson = ReadProjectsJson
                 $visible = Get-VisibleProjects $projectsJson
@@ -1299,8 +1370,9 @@ do {
                 $resolvedAgent = $confirmed.agent
                 $accentVal = $confirmed.accent
                 $isGeneral = ($targetKey -eq 'general')
-                $phrase = Build-Phrase $projRec $resolvedAgent 'resume' $isGeneral $false
-                if (-not $NoLaunch) { Launch-Session $projRec $resolvedAgent $accentVal $phrase }
+                $modes = Prompt-AgentModes
+                $phrase = Build-Phrase $projRec $resolvedAgent 'resume' $isGeneral $false $modes
+                if (-not $NoLaunch) { Launch-Session $projRec $resolvedAgent $accentVal $phrase $modes }
                 Write-RunLog $targetKey $resolvedAgent $accentVal 'project'
             } else {
                 Write-Host "  [FAIL] project not found: $targetKey" -ForegroundColor $C.Fail
