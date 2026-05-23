@@ -48,12 +48,11 @@ from .theme import (
 
 
 # Panel-style sections. Each section = (label, [(key, label, svg-icon-name)]).
+# v1.6.72 — operator wants ONLY two sidebar entries; Sessions chip
+# moves into the Agents view as a top tab instead.
 SECTIONS: list[tuple[str, list[tuple[str, str, str]]]] = [
     ("WORKSPACE", [
         ("agents",   "Agents",   "nav-eve-ai"),
-        ("sessions", "Sessions", "nav-database"),
-    ]),
-    ("OPERATIONS", [
         ("devices",  "Devices",  "nav-phones"),
     ]),
 ]

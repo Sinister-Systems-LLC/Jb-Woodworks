@@ -106,7 +106,8 @@ BLACK = "#000000"
 SIDEBAR_WIDTH = 240        # Panel `SIDEBAR_WIDTH = 240`
 HEADER_HEIGHT = 96         # Panel `HEADER_HEIGHT = 96`
 OUTER_PADDING = 8          # Panel layout.tsx `p-2`
-OUTER_GAP = 8              # Panel layout.tsx `gap-2`
+# v1.6.72 — operator wants sidebar + main connected (no gap of disconnect).
+OUTER_GAP = 0
 CARD_RADIUS = 16           # Panel `rounded-2xl` = 16px (Tailwind v4)
 WINDOW_RADIUS = 18         # outer window mask radius (slightly bigger so the
                             # 8px black gap reads cleanly between cards)

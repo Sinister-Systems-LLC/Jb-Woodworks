@@ -260,8 +260,10 @@ class SinisterWindow(QMainWindow):
         self.header.create_agent_clicked.connect(self._on_create_agent)
         # Header icon cluster (placeholder dispatch)
         self.header.icon_clicked.connect(self._on_header_icon)
-        # Window controls (single X — frameless)
+        # Window controls (X + minimize — frameless)
         self.header.close_clicked.connect(self.close)
+        # v1.6.72 — minimize button shipped in header
+        self.header.minimize_clicked.connect(self.showMinimized)
         # Sidebar nav → swap stack
         self.sidebar.nav_clicked.connect(self._on_nav)
         # v1.6.23 — wire live agent count from AgentsView → sidebar Agents
@@ -283,19 +285,25 @@ class SinisterWindow(QMainWindow):
 
     # ── Routing ───────────────────────────────────────────────────────
     def _on_chip(self, key: str) -> None:
+        # v1.6.72 — chip set is now {Agents, Resume} under sidebar=agents
+        # and {Devices} under sidebar=devices. Resume pops the picker.
         if key == "agents":
             self.stack.setCurrentWidget(self.agents_view)
+        elif key == "resume":
+            self._open_sessions_picker()
         elif key == "devices":
             self.stack.setCurrentWidget(self.devices_view)
 
     def _on_nav(self, key: str) -> None:
-        # Sidebar nav: agents / devices mirror chip-tabs. "sessions" pops
-        # the saved-sessions picker directly (one-click resume flow).
-        if key == "sessions":
-            self._open_sessions_picker()
-            return
-        self.header.set_active_chip(key)
-        self._on_chip(key)
+        # v1.6.72 — Sessions row removed from sidebar; nav is just
+        # agents / devices. Swap the header's chip set + stack page.
+        self.header.set_chip_set(key)
+        if key == "agents":
+            self.stack.setCurrentWidget(self.agents_view)
+            self.header.set_active_chip("agents")
+        elif key == "devices":
+            self.stack.setCurrentWidget(self.devices_view)
+            self.header.set_active_chip("devices")
 
     def _open_sessions_picker(self) -> None:
         """Open the saved-sessions picker without going through New Agent.

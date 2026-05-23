@@ -39,19 +39,20 @@ except Exception:  # pragma: no cover
 from .theme import HEADER_HEIGHT, PURPLE_PRIMARY, nav_icon
 
 
-# Chip tabs — operator-canonical 2026-05-21: ONLY Agents + Devices.
-CHIPS: list[tuple[str, str]] = [
-    ("agents",  "Agents"),
-    ("devices", "Devices"),
-]
+# v1.6.72 — operator-canonical: per-section chip sets. Sidebar nav drives
+# which set is shown. "agents" view → Agents + Resume chips; "devices"
+# view → no chips (Devices header is enough).
+CHIP_SETS: dict[str, list[tuple[str, str]]] = {
+    "agents":  [("agents", "Agents"), ("resume", "Resume")],
+    "devices": [],
+}
+# Legacy alias kept so older callers don't break during the transition.
+CHIPS: list[tuple[str, str]] = CHIP_SETS["agents"]
 
-# Round action icons in the header — (key, icon-name, tooltip)
-HEADER_ACTIONS: list[tuple[str, str, str]] = [
-    ("alerts",   "header-alert",    "Alerts"),
-    ("inbox",    "header-clock",    "Inbox"),
-    ("search",   "header-search",   "Search (Ctrl+K)"),
-    ("settings", "header-settings", "Settings"),
-]
+# v1.6.72 — operator removed the 4 header action icons (alerts, clock,
+# search, settings). Only the Create button + health pill + clock +
+# minimize + close remain.
+HEADER_ACTIONS: list[tuple[str, str, str]] = []
 
 
 class _ChipTabButton(QPushButton):
@@ -161,16 +162,15 @@ class Header(QWidget):
         self.page_title.setGraphicsEffect(glow)
         left_cluster.addWidget(self.page_title)
 
-        chips_row = QHBoxLayout()
-        chips_row.setSpacing(4)
-        for key, label in CHIPS:
-            btn = _ChipTabButton(key, label)
-            btn.setProperty("active", key == self._active_chip)
-            btn.clicked.connect(lambda _checked=False, k=key: self._on_chip(k))
-            self._chip_buttons[key] = btn
-            chips_row.addWidget(btn)
-        left_cluster.addLayout(chips_row)
+        # v1.6.72 — chip row is rebuilt by set_chip_set() when sidebar
+        # nav changes. Default is the "agents" set (Agents + Resume).
+        self._chips_host = QFrame()
+        self._chips_row = QHBoxLayout(self._chips_host)
+        self._chips_row.setContentsMargins(0, 0, 0, 0)
+        self._chips_row.setSpacing(4)
+        left_cluster.addWidget(self._chips_host)
         root.addLayout(left_cluster)
+        self.set_chip_set("agents")
 
         # ── Stretch eats the middle ──────────────────────────────────
         root.addItem(QSpacerItem(40, 0, QSizePolicy.Policy.Expanding,
@@ -207,6 +207,25 @@ class Header(QWidget):
         self.clock_label.setObjectName("Clock")
         right.addWidget(self.clock_label)
 
+        # v1.6.72 — operator wants minimize button beside the X.
+        # We don't have a "win-minimize" SVG glyph in the asset pack;
+        # fall back to a unicode underscore character on a styled button.
+        self.btn_minimize = QPushButton("─")
+        self.btn_minimize.setObjectName("WinCtlMin")
+        self.btn_minimize.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.btn_minimize.setFixedSize(32, 32)
+        self.btn_minimize.setToolTip("Minimize")
+        self.btn_minimize.setStyleSheet(
+            "QPushButton#WinCtlMin {"
+            "  color: #8e8e93; background: transparent; border: none;"
+            "  font-size: 18px; font-weight: 700;"
+            "}"
+            "QPushButton#WinCtlMin:hover { color: white; "
+            "background-color: rgba(255,255,255,0.06); border-radius: 6px; }"
+        )
+        self.btn_minimize.clicked.connect(self.minimize_clicked.emit)
+        right.addWidget(self.btn_minimize)
+
         # Frameless X button (Panel is a browser app; we need our own)
         self.btn_close = _IconButton("close", "win-close", "Close")
         self.btn_close.setObjectName("WinCtlClose")
@@ -215,17 +234,43 @@ class Header(QWidget):
 
         root.addLayout(right)
 
+    def set_chip_set(self, section: str) -> None:
+        """v1.6.72 — rebuild chip-tabs row based on sidebar section.
+        section ∈ {agents, devices}. Empty chip set hides the row."""
+        # Clear existing
+        while self._chips_row.count():
+            item = self._chips_row.takeAt(0)
+            w = item.widget() if item else None
+            if w is not None:
+                w.setParent(None)
+                w.deleteLater()
+        self._chip_buttons.clear()
+        chips = CHIP_SETS.get(section, [])
+        if not chips:
+            self._chips_host.hide()
+            return
+        self._chips_host.show()
+        # Reset active if it's not in the new set
+        new_keys = [k for k, _ in chips]
+        if self._active_chip not in new_keys:
+            self._active_chip = new_keys[0]
+        for key, label in chips:
+            btn = _ChipTabButton(key, label)
+            btn.setProperty("active", key == self._active_chip)
+            btn.clicked.connect(lambda _checked=False, k=key: self._on_chip(k))
+            self._chip_buttons[key] = btn
+            self._chips_row.addWidget(btn)
+
     def set_active_chip(self, key: str) -> None:
         self._active_chip = key
         for k, btn in self._chip_buttons.items():
             btn.setProperty("active", k == key)
             btn.style().unpolish(btn)
             btn.style().polish(btn)
-        self.page_title.setText(
-            "Agents" if key == "agents"
-            else "Devices" if key == "devices"
-            else key.capitalize()
-        )
+        # v1.6.72 — page title swap covers new "resume" key too
+        titles = {"agents": "Agents", "devices": "Devices",
+                  "resume": "Resume — saved sessions"}
+        self.page_title.setText(titles.get(key, key.capitalize()))
 
     def _on_chip(self, key: str) -> None:
         self.set_active_chip(key)
