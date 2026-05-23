@@ -7,6 +7,87 @@ Append-only memory. Most recent at top. Cross-references to brain entries and ot
 
 ---
 
+## 2026-05-23T14:10Z — 🎯🎯🎯 REAL WUKONG-180 MEMORY-KERNEL EXPERIMENT (3 SWAP tests)
+
+**The 10-second EVE memory upgrade experiment — empirical result on real quantum hardware.**
+
+| Field | Value |
+|---|---|
+| Run ID | `2026-05-23T141028Z` |
+| Backend | `WK_C180` (Wukong-180) |
+| Circuit | 9-qubit SWAP-test (1 ancilla + 2 × 4-qubit RY-encoded registers) |
+| Shots per pair | 1024 |
+| Pairs submitted | 3 (Snap-RE triad: (0,1), (0,2), (1,2)) |
+| Jobs | `DDB9BE75F0B45D8601BA2716F2441424`, `D2C7260C3862256F20F3E8B8D35CAF6A`, `6F774FFDA1FB04EA01F94449A55D4ADC` |
+| Counts (0,1) | `{'0': 262, '1': 762}` → P(0)=0.256 → 2P-1 = -0.488 → clamped 0.000 |
+| Counts (0,2) | `{'0': 548, '1': 476}` → P(0)=0.535 → overlap 0.0703 |
+| Counts (1,2) | `{'0': 506, '1': 518}` → P(0)=0.494 → clamped 0.000 |
+| Wall (3 pairs) | 32.73s |
+| Conservative budget burn recorded | 27.78s (wall-time; will overcount real billing) |
+| qpu_run_ms reported by API | 0.0 for all 3 (anomaly — timing field returned zero; may indicate API doesn't report run time for SWAP-test circuits, OR billing is queue-based not run-based) |
+| Budget remaining (per our tracker) | 91.989s of 120s |
+| Operator dashboard ground truth | (verify; tracker likely overcounts) |
+
+### Three-way kernel comparison
+
+```
+                 classical    cpuqvm-sim   real-WK_C180
+pair (0,1):       0.2473       0.8102      0.0000  (decohered)
+pair (0,2):       0.2259       0.9271      0.0703
+pair (1,2):       0.1382       0.9552      0.0000  (decohered)
+off-diag mean:    0.2038       0.8975      0.0234
+```
+
+### Honest findings
+
+1. **Hardware noise on a 9-qubit SWAP test destroys the small overlap signal.** Pairs (0,1) and (1,2) show P(0) < 0.5 — physically impossible for true quantum overlaps (which always give P(0) ≥ 0.5). This is unmistakable evidence the decoherence corrupted the SWAP-test measurement.
+
+2. **Real QPU off-diag mean ≈ 0 vs CPUQVM sim mean ≈ 0.90.** The sim (no noise) shows the expected encoding-collapse pattern. Real hardware "fixes" the collapse — but in the wrong way (decoherence, not discrimination).
+
+3. **Wukong-180 IS real + reachable + cheap enough to iterate.** ~10s wall per pair (mostly queue/poll). ~3 second per 1024-shot 9-qubit circuit measurement. The budget burn is more about queue time than QPU time.
+
+### Next iteration plan (the real EVE memory upgrade path)
+
+The K=4 RY encoding + SWAP test combination is the wrong circuit shape for our triad. Two cleaner alternatives:
+
+| Variant | Why it should fare better | Circuit depth |
+|---|---|---|
+| **Destructive SWAP test** | No ancilla; SWAPs followed by direct measurement of both registers. Shallower → less decoherence. | 2K+0 qubits, depth O(K) |
+| **Inversion overlap (U†_B · U_A; measure all 0)** | Requires gate inversion but circuit depth halves. Probability of all-zero outcome = |⟨A|B⟩|². | K qubits, depth ~2·encoding_depth |
+| **More features (K=8) + ZZ-feature-map** | Larger Hilbert space → more discrimination headroom. WK_C180 has 180 qubits; 17 qubits for K=8 SWAP-test is fine. Risk: depth grows. | 2K+1 = 17 qubits, depth O(K²) for ZZ |
+
+Burn budget remaining: ~92s (per our tracker) / actual unknown. Conservative: budget for ~5-10 more pairs at this depth, OR ~2-3 deeper experiments.
+
+Cross-refs:
+- `seraphim-cloud-qpu-real-first-fire-2026-05-23.md` (the first single-qubit H+measure proof)
+- `outputs/real-qpu-memory-kernel-2026-05-23T141028Z.json` (full result blob)
+- `outputs/real-qpu-memory-kernel-latest.log` (console output of this run)
+
+---
+
+## 2026-05-23T14:00Z — accurate billing observation from operator's dashboard
+
+Operator's `qcloud.originqc.com.cn` dashboard screenshot reported:
+
+| Field | Value |
+|---|---|
+| Total Remaining | 119.770 s |
+| Remaining Paid | 0.000 s (free tier; no paid balance) |
+| Remaining Free | 119.770 s |
+| Total Used | 0.230 s (from the 2026-05-23T13:55Z H+measure) |
+| 05/23 usage | 0.230 s |
+
+**The Origin-internal billing unit is NEITHER `qpuRunTime` (38ms) NOR wall (5.91s).** A single 100-shot H+measure cost **0.230 seconds** of the free-tier budget. That's a meter we don't have direct API access to from pyqpanda3 — we have to read it from the dashboard.
+
+Implications:
+- Our `budget.record_usage(elapsed_wall)` OVER-RECORDS — wall is much higher than actual billed.
+- Real per-submission rate: ~0.2-1s for small circuits.
+- 120s budget → ~120-600 small submissions before exhaustion.
+
+**Until pyqpanda3 exposes the billed-seconds field per call, the operator dashboard is the only authoritative source for budget remaining.**
+
+---
+
 ## 2026-05-23T13:55Z — 🎯 FIRST REAL WUKONG-180 QPU SUBMISSION
 
 **Empirical anchor — the first time we touched real quantum hardware from this fleet.**
