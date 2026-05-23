@@ -1,0 +1,46 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-23T12:30:52.7359344Z",
+    "project":  "sinister-freeze",
+    "agent_name":  "sinister-freeze",
+    "mode":  "resume",
+    "focus_intent":  "Day 10 (test-drive prep) + Day 16 (anniversary nudge) shipped. 4-job scheduler. 56/56 tests. Next: Ferrari-spec chatbot (Day 18) + voice corpus + Gmail OAuth + Telegram inbound approve/skip",
+    "git":  {
+                "branch":  "agent/sinister-sanctum/grant-autonomy-followup-2026-05-23",
+                "head":  "1bf857f1bdc8aa5d2ec9f10be1bc16ce9c73198c",
+                "head_msg":  "sanctum: P9 hook-path check + Sinister Generator fleet-wide policy + master plan",
+                "recent_commits":  [
+                                       "1bf857f sanctum: P9 hook-path check + Sinister Generator fleet-wide policy + master plan",
+                                       "d17772e ship(seraphim): cross-lane offer to kernel-apk + brain entry status update",
+                                       "a02a164 ship(seraphim+launcher): Lane 1+2 tested + EVE-style banner rename",
+                                       "960ca8c ph1(sinister-freeze): MVP Day 3 scaffold ΓÇö FastAPI + Frost + Daily brief generator",
+                                       "21eba79 brain(multi-agent): git-index contention storm empirical anchor (2026-05-23 storm)",
+                                       "6008056 progress(rkoj): iteration-5 entry reapply (v1.6.89 scrcpy-no-stray + BOM fix + test pass)",
+                                       "8c57e8c ship(sinister-seraphim): quantum-compute application-layer rename + provenance audit",
+                                       "ab16d16 ship(rkoj): v1.6.89 ΓÇö no stray scrcpy windows + projects.json BOM fix + full test pass",
+                                       "59667b7 ship(rkoj): v1.6.89 ΓÇö no stray scrcpy windows + projects.json BOM fix + full test pass",
+                                       "a4b71cf ship(rkoj+browser): jcode matrix row 12 Γ£à + Layer A probe + resume-point script fix"
+                                   ]
+            },
+    "progress_top3":  [
+                          "2026-05-23T12:35Z â€” PH1-MVP Day 10 + Day 16 shipped (test-drive prep brief + anniversary nudge)",
+                          "2026-05-23T11:50Z â€” PH1-MVP Day 3 scaffold shipped (backend skeleton + Daily brief generator)"
+                      ],
+    "latest_plan":  {
+                        "dir":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\sinister-freeze-2026-05-21",
+                        "artifact":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\sinister-freeze-2026-05-21\\deep-research.md"
+                    },
+    "inbox_unread_count":  0,
+    "last_5_files_touched_24h":  [
+                                     "_shared-memory\\dashboards\\seraphim.html",
+                                     "_shared-memory\\inbox\\sinister-panel\\2026-05-23T1235Z-info-from-kernel-apk-step11-cluster-4-5x-success-uplift.json",
+                                     "_shared-memory\\heartbeats\\sinister-freeze.json",
+                                     "_shared-memory\\knowledge\\seraphim-for-emu-re-2026-05-23.md",
+                                     "_shared-memory\\PROGRESS\\sinister-freeze.md"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\sinister-freeze.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\plans\\sinister-freeze-2026-05-21\\deep-research.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}

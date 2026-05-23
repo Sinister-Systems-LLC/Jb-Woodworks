@@ -2,6 +2,79 @@
 
 > Append-only log; most-recent at top. Author: RKOJ-ELENO.
 
+## 2026-05-23T12:35Z — PH1-MVP Day 10 + Day 16 shipped (test-drive prep brief + anniversary nudge)
+
+**Branch:** `agent/sinister-freeze/ph1-mvp-day3-brief`
+**Operator clearance:** "keep going with test-drive prep brief and anniversary nudge" (2026-05-23).
+**Carried forward from prior turn (commit df29fb1):** full MVP spine — Telegram bridge + APScheduler 7am/7pm + DM-triage + end-of-day wrap + Ferrari brand-control redflag + CLI + `Joe's Freeze.bat` + 40 tests passing.
+
+**What shipped this turn:**
+
+- `freeze/schema.py` — added two tables:
+  - `purchase` (contact_id, vehicle, body_style, vin, msrp_at_purchase, purchased_at, notes) — past-purchase history for trade-up nudges
+  - `conversation_note` (contact_id, happened_at, channel, summary, sentiment) — last-conversation summaries for test-drive briefs
+  - Indexes: `idx_purchase_contact`, `idx_purchase_anniversary`, `idx_conv_note_contact`
+- `freeze/modules/test_drive.py` — PH1-MVP **Day 10 deliverable**:
+  - `upcoming_drives(low_h=22, high_h=26)` scans `calendar_event WHERE kind='test_drive'` in the configurable T-24h window
+  - Joins contact + lead + last 3 conversation notes + every prior purchase
+  - `render_local_prep()` emits a concierge one-pager: Who / Their Story / Talking Points / Gift-bag Suggestion
+  - `generate_prep_for_event(event_id)` for single-event lookups
+  - `render_upcoming_digest()` for the Telegram-friendly multi-event message
+- `freeze/modules/anniversary.py` — PH1-MVP **Day 16 deliverable**:
+  - Scans all purchases; computes 1y / 3y / 5y anniversaries within `lookahead_days` (default 14)
+  - Feb-29 edge handled (slides to Feb-28 in target year)
+  - `draft_for(candidate)` produces (subject, body) concierge email — no discount language, no urgency, no Ferrari corporate IP
+  - **Every draft runs through `voice.redflag.scan_draft()`** before being queueable; clean drafts go into the `draft` table, dirty drafts get held + surfaced
+  - `summary_for_telegram()` formats a Joe-friendly digest with held-reason summaries
+- `freeze/scheduler.py` — two new jobs on the existing APScheduler:
+  - `freeze.test_drive_scan` — every hour at :05 (so newly-added calendar events get caught even if added mid-day)
+  - `freeze.anniversary_scan` — daily at 10:00 ET (after the 07:00 brief)
+  - Live verified: all 4 jobs (`morning_brief`, `evening_wrap`, `test_drive_scan`, `anniversary_scan`) show correct next-run UTC times via `/scheduler/jobs`
+- `freeze/app.py` — two new endpoints:
+  - `GET  /test-drive/upcoming?low_h=22&high_h=26` — digest + structured drive list
+  - `POST /anniversary/scan?lookahead_days=14&queue=false` — clean drafts + held drafts + queue ids
+- `freeze/cli.py` — two new commands:
+  - `sinister-freeze test-drive [--low-h N] [--high-h N]`
+  - `sinister-freeze anniversary [--lookahead-days N] [--queue] [--verbose]`
+- Tests added: `test_test_drive.py` (8), `test_anniversary.py` (8), updated `test_scheduler.py` (3) for 4-job topology — **all 56 tests pass on Python 3.12.10**.
+
+**End-to-end live verification (this turn):**
+
+```
+$ curl /scheduler/jobs       # all 4 jobs registered with correct next-run UTCs
+$ curl /test-drive/upcoming  # zero-state digest: "No test drives in the next 22-26h."
+$ curl -X POST /anniversary/scan?lookahead_days=14
+                             # zero-state: count=0, queued_draft_ids=[]
+```
+
+**Cumulative source tree:**
+
+```
+source/freeze/
+  __init__.py  app.py  cli.py  config.py  db.py  scheduler.py  schema.py
+  comms/      __init__.py  telegram.py
+  modules/    __init__.py  brief.py  triage.py  wrap.py  test_drive.py  anniversary.py
+  voice/      __init__.py  frost.py  redflag.py
+source/tests/  (10 modules, 56 tests, all green)
+source/Joe's Freeze.bat
+source/pyproject.toml  .gitignore  README.md
+```
+
+**What's next (resume-point will pre-warm these):**
+
+1. **Ferrari-spec lookup chatbot** — Day 18 deliverable (feature #45). Loads brochure text into a retrieval table; Telegram `/ferrari <model>` shortcut returns specs + comparable in-inventory.
+2. **Voice corpus + LLM upgrade path** — once `ANTHROPIC_API_KEY` lands in env, the brief / wrap / triage / test_drive / anniversary modules auto-upgrade to LLM-driven without code changes. Voice training: pull Joe's last 30 IG captions + 50 sent emails into `forge-memory/freeze/voice-corpus.jsonl`; few-shot the Frost system prompt.
+3. **Gmail OAuth ingest** — `freeze/comms/gmail.py` populates `calendar_event` + flags inbound threads. Operator: Google Cloud OAuth client. Joe: one-time consent.
+4. **Telegram bot inbound** — let Joe reply "approve" / "skip" to a queued draft via Telegram. Bridge layer enforces JOE-SAFETY: inbound from configured chat only.
+5. **PWA scaffold** — React + Vite + Tailwind, Sanctum purple. Pull layout + section primitives from `projects/sinister-dashboard-skeleton/`, `projects/showmasters/`, `projects/jb-woodworks/` per operator directive.
+6. **`Sinister Freeze.bat`** (operator-side, distinct from Joe-side) — opens an EVE dev session at `projects/sinister-freeze/source/`.
+
+**Lane discipline:**
+
+- Touched only `projects/sinister-freeze/source/` + `_shared-memory/{heartbeats,PROGRESS,resume-points}/sinister-freeze*`.
+- Did NOT touch sibling lanes, `~/.claude/.mcp.json`, `_vault/`.
+- All new files carry `Author: RKOJ-ELENO :: 2026-05-23`.
+
 ## 2026-05-23T11:50Z — PH1-MVP Day 3 scaffold shipped (backend skeleton + Daily brief generator)
 
 **Branch:** `agent/sinister-freeze/ph1-mvp-day3-brief`
