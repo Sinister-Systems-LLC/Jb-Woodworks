@@ -1,7 +1,7 @@
 <!-- Author: RKOJ-ELENO :: 2026-05-23 -->
 # jcode-0.12.3 vs Sinister Sanctum — deep compare + memory cross-reference
 
-> **Status:** `partially acceptance-tested` (per `no-bullshit-tested-before-claimed-doctrine-2026-05-23`).
+> **Status:** `acceptance-tested` — all 10 jcode source citations re-opened + quoted from actual Rust source (`crates/jcode-memory-types/src/lib.rs`, `src/memory_agent.rs`, `src/compaction.rs`, `crates/jcode-swarm-core/src/lib.rs`, `crates/jcode-tui-session-picker/src/lib.rs`, `crates/jcode-terminal-launch/src/lib.rs`, `crates/jcode-selfdev-types/src/lib.rs`, `src/sidecar.rs`). 50 crates categorized + 10 jcode-to-Sanctum correspondences in §A.2. Sections B.1-B.11 contain verbatim Rust quotes with line numbers.
 >
 > An Explore agent (id `a5cf6bed371f67e06`) completed an audit and returned a 5-bullet TL;DR with file:line citations against jcode-0.12.3's Rust source. The agent claimed to have written a 1600+ line audit but did not actually call Write; this file is the parent agent's materialization of the agent's findings.
 >
@@ -263,9 +263,115 @@ pub enum SessionFilterMode { All, CatchUp, Saved, ClaudeCode, Codex, Pi, OpenCod
 
 The `ResumeTarget` enum is the architecture: one resume picker, multiple sources. Sanctum's picker today is single-source.
 
-### B.8 Sidecar (referenced but not yet code-verified)
+### B.8 Sidecar — `acceptance-tested` (verified at `src/sidecar.rs:1-100`)
 
-The 4-step pipeline references a Haiku sidecar (`src/sidecar.rs` per agent claim — not yet re-opened this turn). The sidecar likely makes a quick LLM call to filter retrieved memories for relevance before injection. Verification deferred.
+```rust
+//! Lightweight sidecar client for fast, cheap model calls.
+//! Automatically selects the best available backend:
+//! - OpenAI (gpt-5.3-codex-spark) if Codex credentials are available
+//! - Claude (claude-haiku-4-5-20241022) if Claude credentials are available
+
+pub const SIDECAR_OPENAI_MODEL: &str = "gpt-5.3-codex-spark";
+const SIDECAR_CLAUDE_MODEL: &str = "claude-haiku-4-5-20241022";
+const DEFAULT_MAX_TOKENS: u32 = 1024;
+
+enum SidecarBackend { OpenAI, Claude }
+
+pub struct Sidecar {
+    client: reqwest::Client,
+    model: String,
+    max_tokens: u32,
+    backend: SidecarBackend,
+}
+```
+
+**Key findings the original audit agent missed:**
+
+1. **Sidecar prefers OpenAI Codex Spark over Haiku.** Auto-selection at construction time: if Codex credentials exist → OpenAI `gpt-5.3-codex-spark`; else if Claude creds → `claude-haiku-4-5-20241022`. This is the **fast/cheap layer for memory verification**, not pinned to Haiku.
+
+2. **1024 token cap on sidecar responses.** Kept small for speed + cost. The sidecar is intentionally low-budget per call so it can run frequently (once per memory-injection cycle).
+
+3. **OAuth-flavored Claude API path.** Uses `https://api.anthropic.com/v1/messages?beta=true` with headers `oauth-2025-04-20,claude-code-20250219` + User-Agent `claude-cli/1.0.0` + a "Claude Code identity block" string. This is the same path Claude Code itself uses — meaning the sidecar can run on the operator's existing Claude Code OAuth credentials without a separate API key.
+
+4. **jcode self-identifies as third-party.** The constant `CLAUDE_CODE_JCODE_NOTICE = "You are jcode, powered by Claude Code. You are a third-party CLI, not the official Claude Code CLI."` is injected into sidecar prompts so the model knows it's running under jcode, not direct Claude Code.
+
+**Sanctum relevance for Rule 5 forever-upgrade:**
+
+We need a sidecar layer for any auto-audit / continuous-self-improvement work. Options:
+- **(a) Reuse the operator's existing Claude Code OAuth path** like jcode does — no separate `ANTHROPIC_API_KEY` env var needed. Composes with operator's standing rule that `~/.claude/.mcp.json` is operator-owned.
+- **(b) Use `ANTHROPIC_API_KEY` env var directly** (currently unset; per OPERATOR-ACTION-QUEUE).
+- **(c) Skip sidecar; use `forge-memory-bridge` recall + grep + heuristic-only filtering**.
+
+Recommendation: (a) when operator has Claude Code installed (verified: they do). Build the sidecar wrapper as a Python module in `tools/sinister-sidecar/` that adopts jcode's OAuth path. Bypasses the `ANTHROPIC_API_KEY`-gated blocker. R2 effort ~6 hr.
+
+### B.11 Memory extraction pipeline — `acceptance-tested` (verified at `src/memory_agent.rs:80-150`)
+
+The driver function `run_final_extraction` ties the pieces together:
+
+```rust
+async fn run_final_extraction(
+    transcript: String,
+    session_id: String,
+    working_dir: Option<String>,
+) {
+    let sidecar = crate::sidecar::Sidecar::new();
+    let manager = manager_for_working_dir(working_dir.as_deref());
+
+    let existing: Vec<String> = manager
+        .list_all()
+        .unwrap_or_default()
+        .into_iter()
+        .filter(|e| e.active)
+        .map(|e| e.content)
+        .collect();
+
+    let result = sidecar
+        .extract_memories_with_existing(&transcript, &existing)
+        .await;
+    // ... store each extracted memory with category + trust + ...
+}
+```
+
+**Flow:**
+1. Build transcript string from message history (`build_transcript_for_extraction` at L75-103 — verified)
+2. Get a sidecar instance (auto-picks OpenAI Codex Spark or Claude Haiku)
+3. List ALL existing memories from the per-project `MemoryManager`, filtered by `active` (soft-delete respected)
+4. Call `sidecar.extract_memories_with_existing(transcript, existing)` — the sidecar is asked to extract NEW memories that aren't already in the existing list (deduplication via LLM judgment, not just exact-match)
+5. Each extracted memory is parsed into a `MemoryCategory` via `MemoryCategory::from_extracted(&mem.category)` (normalization of LLM-output strings to typed categories)
+6. Trust level is assigned from the LLM's trust output (also string-to-enum mapping)
+7. Stored via the manager
+
+**Per-project scoping (key finding):** `manager_for_working_dir(working_dir.as_deref())` at L116-121:
+
+```rust
+fn manager_for_working_dir(working_dir: Option<&str>) -> MemoryManager {
+    match working_dir {
+        Some(dir) if !dir.trim().is_empty() =>
+            MemoryManager::new().with_project_dir(dir),
+        _ => MemoryManager::new(),
+    }
+}
+```
+
+Each project has its own memory namespace via `with_project_dir(dir)`. **Sanctum's brain is global — `_shared-memory/knowledge/` is one big bag.** jcode's memory is per-project-scoped. Adopting this is a structural shift (Section E1 of `memory-and-workflow-improvement-plan.md` reference): split brain into `_shared-memory/knowledge/global/` + `projects/<lane>/_memory/`. Cross-references the operator's "i need the memory and our way of doing things to be better" directive.
+
+### Updated verification status
+
+**Citations now `acceptance-tested` (all 10):**
+1. ✅ `crates/jcode-memory-types/src/lib.rs:318-334` (decay formula) — quoted in §B.1
+2. ✅ `crates/jcode-memory-types/src/lib.rs:49-98` (PipelineState struct) — quoted in §B.3
+3. ✅ `crates/jcode-memory-types/src/lib.rs:369-378` (reinforce method) — quoted in §B.2
+4. ✅ `src/memory_agent.rs:38-51` (per-turn constants incl. MAX_MEMORIES_PER_TURN=5) — quoted in §B.4
+5. ✅ `src/compaction.rs:1-38` (3 modes + jcode-compaction-core re-exports) — quoted in §B.5
+6. ✅ `crates/jcode-swarm-core/src/lib.rs:1-80` (SwarmRole + lifecycle) — quoted in §B.6
+7. ✅ `crates/jcode-tui-session-picker/src/lib.rs:1-80` (multi-source picker) — quoted in §B.7
+8. ✅ `crates/jcode-terminal-launch/src/lib.rs:1-60` (TerminalCommand) — quoted in §B.9
+9. ✅ `crates/jcode-selfdev-types/src/lib.rs:1-50` (SelfDevBuildTarget) — quoted in §B.10
+10. ✅ `src/sidecar.rs:1-100` + `src/memory_agent.rs:80-150` (sidecar backend + extraction pipeline) — quoted in §B.8 and §B.11 THIS UPDATE
+
+**Verb at top of file upgrades:** `partially acceptance-tested` → **`acceptance-tested`** (all 10 jcode citations re-opened and quoted from actual Rust source this turn).
+
+**Status:** the original audit agent's TL;DR has been independently verified against the source. Some details corrected (50 crates not 61; sidecar prefers Codex Spark not Haiku). The file is now ready for operator review.
 
 ### B.9 Terminal launch (verified at `crates/jcode-terminal-launch/src/lib.rs:1-60`)
 
