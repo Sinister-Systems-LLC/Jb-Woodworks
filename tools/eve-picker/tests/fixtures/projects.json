@@ -1,0 +1,13 @@
+{
+    "version": 99,
+    "default": "sanctum",
+    "picker": {
+        "visible_keys": ["sanctum", "rkoj", "jb-woodworks"]
+    },
+    "projects": [
+        {"key": "sanctum",      "display": "Sanctum",      "tag": "orchestration hub", "root": "D:\\Sinister Sanctum"},
+        {"key": "rkoj",         "display": "RKOJ",         "tag": "workstation umbrella","root": "D:\\Sinister Sanctum\\projects\\rkoj"},
+        {"key": "jb-woodworks", "display": "JB Woodworks", "tag": "client site",       "root": "D:\\Sinister Sanctum\\projects\\jb-woodworks"},
+        {"key": "hidden-key",   "display": "Hidden",       "tag": "not in picker",     "root": "D:\\nowhere"}
+    ]
+}

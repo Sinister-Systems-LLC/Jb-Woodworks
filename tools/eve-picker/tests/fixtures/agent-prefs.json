@@ -1,0 +1,7 @@
+{
+    "version": 2,
+    "per_project": {
+        "rkoj": {"agent_name": "rkoj", "accent_color": "cyan"},
+        "sanctum": {"agent_name": "Sinister Sanctum", "accent_color": "purple"}
+    }
+}

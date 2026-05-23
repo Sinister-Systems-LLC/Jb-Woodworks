@@ -1,0 +1,46 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-23T15:27:37.3554341Z",
+    "project":  "sinister-generator",
+    "agent_name":  "sinister-generator",
+    "mode":  "resume",
+    "focus_intent":  "",
+    "git":  {
+                "branch":  "agent/sinister-sanctum/grant-autonomy-followup-2026-05-23",
+                "head":  "106f94af6c63bc91f6b0bbfd7c39880df3ceb383",
+                "head_msg":  "sanctum: ship B.6 bot-fleet-quick-reference.md (Phase-2 highest-leverage)",
+                "recent_commits":  [
+                                       "106f94a sanctum: ship B.6 bot-fleet-quick-reference.md (Phase-2 highest-leverage)",
+                                       "0fafe63 sanctum: launcher hardening ΓÇö silent plugin auto-install + closeable windows + jcode ASCII C banner",
+                                       "d587bcc fix(launcher): harden Sinister Start.bat spawn + ship EVE.exe build + diagnose flag",
+                                       "eece014 ship(seraphim): real Wukong-180 memory-kernel experiment + accurate billing sync",
+                                       "a1801c3 ship(seraphim): FIRST REAL Wukong-180 QPU submission + full project memory",
+                                       "53bfdbc sanctum: upgrade memory-deep-audit with verified counts (Rule 7.5 brain-row signal approaching)",
+                                       "98dbefe sanctum: upgrade github-skill-review to acceptance-tested (claims verified or corrected)",
+                                       "319e754 sanctum: upgrade jcode-vs-sanctum-comparison to acceptance-tested (all 10 citations verified)",
+                                       "4c713bd ship(seraphim+quantum-test): memory-kernel A/B/C variants + side-by-side runner + picker register",
+                                       "a29a2e0 ph1(sinister-freeze): voice corpus + Gmail OAuth + ingest + Frost few-shot wire"
+                                   ]
+            },
+    "progress_top3":  [
+                          "2026-05-23T15:26Z â€” sorter-folder self-heal shipped (operator drag-drop unblocker)",
+                          "2026-05-23T14:46Z â€” 20/20 JKOR pack variants shipped (5 banner + 5 PFP + 5 card + 5 wordmark)",
+                          "2026-05-23T21:35Z â€” 5 PFP + 5 banner variants, character-locked, dual-aspect"
+                      ],
+    "latest_plan":  {
+                        "dir":  null,
+                        "artifact":  null
+                    },
+    "inbox_unread_count":  0,
+    "last_5_files_touched_24h":  [
+                                     "_shared-memory\\knowledge\\per-project-bot-adoption-playbook-2026-05-23.md",
+                                     "_shared-memory\\heartbeats\\sinister-generator.json",
+                                     "projects\\sinister-panel\\source\\leo_dev\\dashboard\\app\\admin\\page.tsx",
+                                     "projects\\sinister-panel\\source\\leo_dev\\dashboard\\app\\signin\\page.tsx",
+                                     "projects\\sinister-panel\\source\\leo_dev\\dashboard\\components\\video-orbit-map.tsx"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Sinister Generator.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}

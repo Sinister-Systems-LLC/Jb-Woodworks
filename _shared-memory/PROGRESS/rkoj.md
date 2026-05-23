@@ -6,6 +6,103 @@ Append-only progress log for the `rkoj` umbrella lane (Forge + Term + Workstatio
 
 ---
 
+## 2026-05-23 12:00 EDT — RESUME tick — P1 of eve-into-rkoj-integration shipped (smoke-tested) — `tools/eve-picker/` shared library + 34/34 tests PASS
+
+Resume picked from `resume-points/RKOJ/2026-05-23T103728Z.json`. Plan `eve-into-rkoj-integration-2026-05-23T1330Z` Section 7 P1 (4hr R1) executed in one turn. P1 unblocks P2 (EVE.exe lift-shift) + P3 (RKOJ overlay).
+
+### Ships this turn (smoke-tested per no-bullshit doctrine verbs)
+
+| Surface | Effect |
+|---|---|
+| `tools/eve-picker/eve_picker_lib.py` (new, ~250 LOC) | Single-module library. Stdlib-only (acceptance L5 PASS via AST scan). API: `read_projects` / `read_prefs` / `visible_projects` / `get_agent_name` / `get_accent` / `project_color` (curated palette + HSV-from-hash fallback) / `count_mcp` / `count_bots` / `build_picker_state(boot_ms, projects_json, prefs)` / `parse_multi` / `resolve_pick` / `banner_text` / `picker_text_rows` / `prompt_agent_modes_from_env`. Dataclasses: `PickerRow` / `PickerState` / `PickResult` / `AgentModes`. Render-agnostic — returns plain text rows; callers wrap with ANSI or QLabel. |
+| `tools/eve-picker/tests/test_parse_multi.py` (12 tests) | L2 canonical + edge cases (clamp, dedupe, malformed, whitespace, reversed-range). |
+| `tools/eve-picker/tests/test_resolve_pick.py` (19 tests) | L1 visible-only + L3 numeric=sanctum + L4 quit + every verb (G/A/N/R/K/S/F/Q + multi + numeric + unknown + default + out-of-range). |
+| `tools/eve-picker/tests/test_acceptance.py` (3 tests) | L5 AST-scanned imports (zero non-stdlib) + L6 import-time measured (subprocess.python -c) + live `build_picker_state()` round-trip against repo `projects.json`. |
+| `tools/eve-picker/tests/fixtures/{projects.json,agent-prefs.json}` | Hermetic fixtures for L1/L3/L4 — visible-keys filter + per-project accent override. |
+| `tools/eve-picker/README.md` + `.gitignore` | Tool-card. Status `smoke-tested`. |
+
+### Test pass (evidence)
+
+```
+python -m unittest discover -s tests -v
+... 34 ok, 0 fail
+Ran 34 tests in 0.117s
+OK
+[live-build-state] 15 rows assembled in 1.04 ms
+[import-time]      eve_picker_lib loaded in 17.90 ms
+```
+
+| Acceptance | Target | Measured | Verdict |
+|---|---|---|---|
+| L1 visible-keys filter | matches `projects.json` v7 | 3-row fixture round-trip + 15 rows live | PASS |
+| L2 `parse_multi('1,3-5,7', 14)` | `[1,3,4,5,7]` | `[1,3,4,5,7]` | PASS |
+| L3 `resolve_pick('1')` | `numeric` / `['sanctum']` | `numeric` / `['sanctum']` | PASS |
+| L4 `resolve_pick('Q')` | `quit` | `quit` | PASS |
+| L5 zero non-stdlib imports | AST scan | 0 offenders | PASS |
+| L6 import time < 20 ms | warm 20 ms / ceiling 50 ms | 17.90 ms cold-subprocess | PASS |
+| L7 EVE.exe < 300 ms after lift-shift | — | DEFERRED to P2 | — |
+| L8 RKOJ overlay < 60 ms | — | DEFERRED to P3 | — |
+
+### What did NOT change this turn (precise verbs)
+
+- `automations/eve-launcher/eve.py` — **untouched**. Lift-shift refactor is P2, not P1. P1 is just the lib + tests.
+- RKOJ source — **untouched**. Picker overlay is P3.
+- `jcode-feature-matrix.md` — **untouched**. Row add is P6 gate.
+- Brain `_INDEX.md` — **untouched**. Doctrine entry is P6 gate.
+
+### Why P1 first (architectural justification)
+
+P2 (eve.py lift-shift) and P3 (RKOJ overlay) BOTH depend on the lib existing. Shipping P1 standalone with comprehensive smoke tests means future agents can refactor eve.py against a verified contract — the 34 tests are the regression net for P2.
+
+### Open in-lane (carried)
+
+- P2: refactor `eve.py` to import lib; rebuild EVE.exe; verify `--profile` < 300 ms (acceptance L7) — 2 hr, R2
+- P3: add `picker_overlay.py` to RKOJ; Ctrl+P shortcut; verbs 1, 2, 8, 9, 11 — 8 hr, R2
+- P4/P5/P6 per plan Section 7
+- Sinister-browser Layer C: Forge `/browser` slash + Term `/jcode-browser` alias — ~30 min when operator wants live firefox-bridge
+- Mind.server `load_projects` BOM defense audit — ~5 min
+
+### 5-check gate
+
+✅ inbox is just the 15:45Z autonomy broadcast (no reply required); TaskList #1/#2 completed, #3 closing; PROGRESS appended; smoke-tested only — no fairy-tale `shipped` verb until P6 gate; resume-point write next.
+
+---
+
+## 2026-05-23 08:00 EDT — /loop iteration 6 — sinister-browser Layer B + BOM brain entry + +31 tests
+
+Operator (verbatim 2026-05-23T07:48 EDT via /loop): *"complete everything you ened to do and keep expanding in all ways we can. do not deminish quality and keep working and tresting everything"*. Self-paced dynamic /loop tick. Quality over quantity — shipping one solid full Layer B with comprehensive test coverage rather than three rushed half-features.
+
+### Ships this iteration
+
+| Surface | Effect |
+|---|---|
+| `tools/sinister-browser/sinister_browser/api.py` (new, ~310 LOC) | Layer B pythonic action surface. stdlib-only RFC 6455 §4-§5 client framing (masked text frames, handshake, response decode, ping-pong, close). `Browser` class exposes 18 wrapped actions: ping / list_tabs / new_session / set_active_tab / get_active_tab / navigate / get_content / get_interactables / screenshot / reload / click / type / fill_form / scroll / wait_for / evaluate / upload_file / drop_file. Four exception classes (BrowserError / BrowserConnectError / BrowserProtocolError / BrowserActionError). Env-configurable defaults (`SINISTER_BROWSER_HOST` / `SINISTER_BROWSER_PORT` / `SINISTER_BROWSER_TIMEOUT`). Connection model: one socket per call (sync, simple) — v0.3.0 may add a persistent context manager if per-call handshake is measurable. |
+| `tools/sinister-browser/tests/test_api.py` (new, 31 tests) | **31/31 tests PASS.** In-process fake WebSocket bridge that performs the handshake + decodes client frames + sends canonical responses. Covers: connect errors (nothing-listening + plain-HTTP-on-port) + ping round-trip + all 5 session-management actions + all 7 navigation actions + all 6 interaction actions + both file ops + 3 error paths (server-error → BrowserActionError / non-dict response → `_raw` wrap / non-JSON → BrowserProtocolError). |
+| `tools/sinister-browser/sinister_browser/__init__.py` | Re-exports `Browser` + exception classes + defaults. `__version__ = "0.2.0"`. |
+| `tools/sinister-browser/pyproject.toml` | `version = "0.2.0"`. Description updated to reflect Layer B shipped. |
+| `_shared-memory/knowledge/powershell-out-file-bom-bites-python-readers-2026-05-23.md` (new, ~120 lines) | Brain entry capturing the BOM bug caught last iteration. Consumer-side fix (`utf-8-sig`) + producer-side fix (`UTF8Encoding(false)` because PS 5.1's `-Encoding utf8` STILL writes a BOM, common surprise). Fleet-wide audit list of 5 producer/consumer pairs. `load_json_tolerant(path)` helper recipe for shared utils. 5 anti-patterns. Indexed in `_INDEX.md`. |
+
+### Test pass overall
+
+| Package | Tests | Pass |
+|---|---|---|
+| sinister-browser Layer A (probe) | 4 | 4 |
+| sinister-browser Layer B (api) | 31 | 31 |
+| **Total** | **35** | **35** ✅ |
+
+### What's still open in-lane (post-iteration-6)
+
+- Layer C: Forge `/browser` slash + Term `/jcode-browser` alias. Composes with the now-shipped `Browser` API directly via `from sinister_browser import Browser`. ~30 min when operator wants live firefox-bridge.
+- Layer D: `skills/sinister-browser/SKILL.md` mirror. ~10 min after Layer C.
+- Audit + patch `mind.server::load_projects` for the same BOM defense as `state.py::load_projects`. ~5 min, deferred to next iteration.
+- `load_json_tolerant` helper in shared utils. ~15 min, deferred.
+
+### 5-check gate
+
+✅ inbox empty; TaskList #15/16/17 completed, #18 closing this turn; PROGRESS appended; matrix ready to flip row 26 Notes to "Layer A + B shipped" (next iteration); resume-point write next.
+
+---
+
 ## 2026-05-23 07:30 EDT — /loop iteration 5 — RKOJ v1.6.89 scrcpy-no-stray + BOM bug caught + full test pass
 
 Operator (verbatim 2026-05-23T06:48 EDT): *"dont have scrpoy windows show up outside of the ui itself. create a plan to test everything and review everything you need to do and complete it all"*. Two real bugs caught + fixed; comprehensive test plan written; 29 of ~41 tests executed in-sandbox.
