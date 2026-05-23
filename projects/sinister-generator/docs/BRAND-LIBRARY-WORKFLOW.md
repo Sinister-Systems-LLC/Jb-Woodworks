@@ -187,6 +187,25 @@ When operator says "I want X aesthetic not Y" (e.g. JKOR 17:55Z: *"i want psyche
 
 The DESIGN_DNA constant is the leverage point — keep it as a single block so style pivots are one-edit.
 
+### Style-pivot history — JKOR 2026-05-23
+
+| Time | Operator directive | Pivot |
+|---|---|---|
+| 17:55Z | "i want psycheldilic art not shitt crown king backgrounds" | Drop royal/cosmic/library/casino scenes; embrace psychedelic mandalas/swirls |
+| 18:24Z | "dont make background so bright" | Darken the psychedelic palette; restrained accents |
+| 18:25Z | "make everything around selling snapchat accounts with sinister panel snap all that" | Pivot content theme from generic JKOR to Snapchat-account-sales focus |
+| 18:26Z | "not so bright background more suttle professional sleek approach" | Drop loud psychedelia entirely; subtle + professional + sleek |
+| 18:28Z | "but we are called jokr" | Brand remains JOKR (selling Snap accounts SOLD BY JOKR, not generic 'Snap accounts') |
+| 18:29Z | "no words and all that shit way less bright and not as psychedilic a clean professional sleek approach" | **NO BAKED TEXT in imagery** — pivot to imagery-only pack; text overlays added later as SVG/CSS |
+
+The 18:29Z directive triggered a full rewrite of the fire script content (HERO_TITLES / FEATURE_BUNDLES / PRICING_TIERS lists removed entirely). Replaced with imagery-only variant briefs that explicitly anti-pattern baked text. See `_fire_jkor_100_pack_clean.py` for the canonical imagery-only template.
+
+### Key style-pivot lesson: imagery-only > text-baked
+
+Once an operator wants production-grade selling-pack visuals, the imagery should be **text-free**. Text overlays add as SVG/CSS at the page layer — far easier to A/B test, localize, and edit than re-generating a $0.04 image to change a price. The 6 fire-script families (hero / feature / pricing / platform / lockup / thread / product) in iter3-snap baked text in, which got rejected; the 7 families in `_fire_jkor_100_pack_clean.py` (portrait / banner / phone / product / emblem / backdrop / interaction) are all text-free, with deliberate negative space for later text-overlay-in-CSS workflows.
+
+**Banner composition rule**: when generating wide banners meant for headline text overlay, the prompt MUST specify "deliberate negative space on the right two-thirds / left two-thirds / center" so the layout designer has somewhere to place text. The clean-imagery banner briefs encode 20 different mascot-positioning + negative-space patterns.
+
 ## Phase 9 — chain-iter (auto-pipeline)
 
 When operator wants multiple consecutive iters ("do another 100 then 100 more"), chain via shell:
@@ -241,15 +260,16 @@ The chain script:
 
 ## Reusable templates in the repo
 
-- `source/_fire_jkor_100_pack.py` — 100-pack fire script template (5 families)
-- `source/_fire_jkor_100_pack_iter2.py` — second-iter template with different axes
-- `source/_fire_jkor_100_pack_iter3_snap.py` — selling-pack family template (hero / feature / pricing / etc)
-- `source/_fire_jkor_100_pack_iter4_social.py` — social-commerce family template (IG post / story / ad / email / sticker / tarot / apparel)
+- **`source/_fire_jkor_100_pack_clean.py`** — **CANONICAL imagery-only template** (post-18:29Z lesson). 7 families: portraits / banners (with deliberate negative-space) / phone-mockups / product-mockups / emblems / backdrops / interactions. NO baked text. **Start every new brand from this template.**
+- `source/_fire_jkor_100_pack.py` — first-pass template with mixed text-baked content (kept for reference but DO NOT copy directly)
+- `source/_fire_jkor_100_pack_iter2.py` — second-iter template with pose × scene axes
+- `source/_fire_jkor_100_pack_iter3_snap.py` — selling-pack with text-baked families (DEPRECATED — superseded by `_clean.py`)
+- `source/_fire_jkor_100_pack_iter4_social.py` — social-commerce with text-baked families (DEPRECATED — superseded by `_clean.py`)
 - `source/_fire_jkor_pfp_iter1.py` — tight 5-variant iteration template (when you don't need a full 100)
 - `source/sinister_generator/library/` — registry + feedback + generator API
 - `source/sinister_generator/sorter_web/` — 9-button sort UI
 
-When starting a new brand: `cp _fire_jkor_100_pack.py _fire_NEW_100_pack.py`, find-replace `jkor` → `new_slug`, swap variant lists, run.
+When starting a new brand: `cp _fire_jkor_100_pack_clean.py _fire_NEW_100_pack.py`, find-replace `jkor` / `JOKR` → `new_slug` / `NEW_BRAND`, swap CANONICAL_REF + the variant brief lists, run. The DESIGN_DNA + CHARACTER_LOCK + REJECTION_ANTI_PATTERNS structure stays — only the content swaps.
 
 ## What to update when this workflow evolves
 
