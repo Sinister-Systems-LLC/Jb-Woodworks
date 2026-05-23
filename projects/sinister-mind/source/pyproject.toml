@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sinister-mind"
-version = "0.1.0"
-description = "Sinister-branded visual mind-graph for the Sanctum brain. Flask + D3.js."
+version = "0.3.0"
+description = "Sinister-branded visual mind-graph for the Sanctum brain. Flask + D3.js. Plus /diagrams memory-graph viewer consuming forge-memory/mermaid-renders/."
 readme = "README.md"
 license = { text = "AGPL-3.0-or-later" }
 authors = [{ name = "RKOJ-ELENO", email = "andrew.viperrr@gmail.com" }]

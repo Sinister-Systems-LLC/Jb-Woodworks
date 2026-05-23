@@ -24,8 +24,23 @@ PROGRESS_DIR = SANCTUM_ROOT / "_shared-memory" / "PROGRESS"
 CROSS_AGENT_DIR = SANCTUM_ROOT / "_shared-memory" / "cross-agent"
 RESUME_POINTS_DIR = SANCTUM_ROOT / "_shared-memory" / "resume-points"
 HEARTBEATS_DIR = SANCTUM_ROOT / "_shared-memory" / "heartbeats"
+MERMAID_RENDERS_DIR = SANCTUM_ROOT / "_shared-memory" / "forge-memory" / "mermaid-renders"
 
 STATIC_DIR = Path(__file__).parent / "static"
+
+# Mirrors the producer at projects/rkoj/source/sinister_rkoj_qt/api_server.py
+# so RKOJ.exe :5077 and Mind :5079 expose the same diagram inventory off the
+# same on-disk cache.
+DIAGRAM_EXT_PRIORITY = (".png", ".svg", ".html", ".mmd")
+# Flask appends charset=utf-8 to text/* mimetypes automatically, so we keep
+# these bare. Don't add `; charset=utf-8` here or we get duplicate-charset
+# headers in the response.
+DIAGRAM_CONTENT_TYPES = {
+    ".png":  "image/png",
+    ".svg":  "image/svg+xml",
+    ".html": "text/html",
+    ".mmd":  "text/plain",
+}
 
 NODE_COLORS = {
     "brain":       "#A06EFF",
@@ -216,6 +231,64 @@ def build_graph() -> dict:
     }}
 
 
+# ---------------- Memory-graph diagram cache ----------------
+
+def _diagram_groups() -> list[dict]:
+    """Walk the mermaid-renders dir; group siblings by stem; newest-first.
+
+    Same shape as RKOJ.exe ``/api/diagrams`` so any consumer can target
+    either :5077 or :5079.
+    """
+    if not MERMAID_RENDERS_DIR.exists():
+        return []
+    groups: dict[str, list[Path]] = {}
+    try:
+        for fp in MERMAID_RENDERS_DIR.iterdir():
+            if not fp.is_file():
+                continue
+            if fp.suffix.lower() not in DIAGRAM_EXT_PRIORITY:
+                continue
+            groups.setdefault(fp.stem, []).append(fp)
+    except OSError:
+        return []
+    now = time.time()
+    out: list[dict] = []
+    for stem, files in groups.items():
+        primary = next(
+            (f for ext in DIAGRAM_EXT_PRIORITY
+             for f in files if f.suffix.lower() == ext),
+            files[0],
+        )
+        mtime = max(f.stat().st_mtime for f in files)
+        out.append({
+            "stem": stem,
+            "ext": primary.suffix.lstrip("."),
+            "mtime": mtime,
+            "age_s": int(now - mtime),
+            "primary_path": str(primary),
+            "siblings": sorted(f.suffix.lstrip(".") for f in files),
+        })
+    out.sort(key=lambda d: d["mtime"], reverse=True)
+    return out
+
+
+def _resolve_diagram_primary(stem: str) -> Path | None:
+    """Path-traversal-guarded resolve of the primary render for ``stem``."""
+    if not stem or "/" in stem or "\\" in stem or stem in (".", ".."):
+        return None
+    for ext in DIAGRAM_EXT_PRIORITY:
+        cand = MERMAID_RENDERS_DIR / f"{stem}{ext}"
+        if cand.is_file():
+            try:
+                primary = cand.resolve(strict=True)
+                base = MERMAID_RENDERS_DIR.resolve(strict=True)
+                primary.relative_to(base)
+                return primary
+            except (OSError, ValueError):
+                return None
+    return None
+
+
 # ---------------- SSE machinery ----------------
 
 def _broadcast_change():
@@ -350,6 +423,37 @@ def api_stream():
     })
 
 
+@app.route("/diagrams")
+def diagrams_page():
+    return send_from_directory(STATIC_DIR, "diagrams.html")
+
+
+@app.route("/api/diagrams")
+def api_diagrams():
+    groups = _diagram_groups()
+    return jsonify({
+        "diagrams": groups,
+        "count": len(groups),
+        "renders_dir": str(MERMAID_RENDERS_DIR),
+        "renders_dir_exists": MERMAID_RENDERS_DIR.exists(),
+    })
+
+
+@app.route("/api/diagrams/<stem>")
+def api_diagram_bytes(stem: str):
+    primary = _resolve_diagram_primary(stem)
+    if primary is None:
+        return jsonify({"error": "not found", "stem": stem}), 404
+    ext = primary.suffix.lower()
+    mime = DIAGRAM_CONTENT_TYPES.get(ext, "application/octet-stream")
+    try:
+        return Response(primary.read_bytes(), mimetype=mime, headers={
+            "Cache-Control": "no-cache",
+        })
+    except OSError:
+        return jsonify({"error": "read failed", "stem": stem}), 500
+
+
 @app.route("/api/health")
 def api_health():
-    return jsonify({"ok": True, "name": "Sinister Mind", "version": "0.2.0"})
+    return jsonify({"ok": True, "name": "Sinister Mind", "version": "0.3.0"})

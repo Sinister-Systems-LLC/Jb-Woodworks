@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<!-- Sinister Mind :: diagrams.html
+     Author: RKOJ-ELENO :: 2026-05-23
+     License: AGPL-3.0-or-later
+     Memory-graph diagram viewer. Consumes /api/diagrams on :5079.
+     Mirrors the producer at projects/rkoj/source/sinister_rkoj_qt/api_server.py
+     so the same disk cache (forge-memory/mermaid-renders/) is visible from
+     both RKOJ.exe (:5077) and Mind (:5079). jcode-feature-matrix.md row 12.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Sinister Mind :: Diagrams</title>
+<link rel="stylesheet" href="/static/mind.css">
+<style>
+  /* Page-local extensions on top of mind.css. Mind's main page assumes a
+     full-screen SVG; the diagrams page wants a scrollable grid. */
+  main.diagrams-main {
+    flex: 1;
+    margin: 14px 14px 14px 0;
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  .topbar {
+    flex: 0 0 auto;
+    margin: 0 0 14px 0;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+  }
+  .topbar a.brand-link {
+    color: var(--purple-bright);
+    text-decoration: none;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+  .topbar a.brand-link:hover { text-shadow: 0 0 8px var(--purple-glow); }
+  .toolbar {
+    flex: 0 0 auto;
+    padding: 10px 16px;
+    margin: 0 0 14px 0;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+    font-size: 12px;
+  }
+  .toolbar .badge {
+    padding: 3px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--border-glass);
+    background: var(--purple-soft);
+    color: var(--light-purple);
+  }
+  .toolbar select, .toolbar button {
+    background: rgba(14, 10, 20, 0.6);
+    color: var(--white);
+    border: 1px solid var(--border-glass);
+    border-radius: 8px;
+    padding: 4px 10px;
+    font-family: inherit;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .toolbar button:hover {
+    border-color: var(--border-glass-strong);
+    box-shadow: 0 0 12px var(--purple-glow);
+  }
+  .toolbar .dim { color: var(--dim); }
+  .grid {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding: 4px 16px 16px 16px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+    align-content: start;
+  }
+  .tile {
+    padding: 12px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  }
+  .tile:hover {
+    transform: translateY(-2px);
+    border-color: var(--border-glass-strong);
+    box-shadow: var(--outer-shadow), 0 0 16px var(--purple-glow);
+  }
+  .tile .thumb {
+    width: 100%;
+    height: 160px;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid var(--border-glass);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .tile .thumb img,
+  .tile .thumb object {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    background: white;
+  }
+  .tile .thumb .placeholder {
+    color: var(--dim);
+    font-size: 11px;
+    text-align: center;
+    padding: 12px;
+  }
+  .tile .stem {
+    font-weight: 600;
+    color: var(--purple-bright);
+    word-break: break-word;
+    font-size: 13px;
+    line-height: 1.35;
+  }
+  .tile .meta {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    color: var(--dim);
+    font-size: 11px;
+    flex-wrap: wrap;
+  }
+  .tile .ext-pill {
+    padding: 1px 7px;
+    border-radius: 999px;
+    border: 1px solid var(--border-glass);
+    background: var(--purple-soft);
+    color: var(--light-purple);
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .empty-state {
+    grid-column: 1 / -1;
+    padding: 60px 20px;
+    text-align: center;
+    color: var(--dim);
+    font-size: 13px;
+  }
+  .empty-state .hint {
+    margin-top: 12px;
+    font-size: 11px;
+    color: var(--dim);
+    opacity: 0.7;
+  }
+
+  /* Modal overlay for full-size preview */
+  .modal-back {
+    position: fixed;
+    inset: 0;
+    background: rgba(7, 7, 11, 0.78);
+    backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 30px;
+  }
+  .modal-back.open { display: flex; }
+  .modal-card {
+    width: min(1200px, 95vw);
+    height: min(85vh, 900px);
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .modal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--white);
+    font-size: 14px;
+  }
+  .modal-head .stem {
+    color: var(--purple-bright);
+    font-weight: 600;
+    word-break: break-word;
+    margin-right: 14px;
+  }
+  .modal-head .close-btn {
+    background: transparent;
+    border: 1px solid var(--border-glass);
+    color: var(--white);
+    border-radius: 8px;
+    padding: 4px 12px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .modal-head .close-btn:hover { border-color: var(--border-glass-strong); }
+  .modal-body {
+    flex: 1;
+    background: rgba(0, 0, 0, 0.35);
+    border-radius: 12px;
+    border: 1px solid var(--border-glass);
+    overflow: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+  }
+  .modal-body img,
+  .modal-body object,
+  .modal-body iframe {
+    max-width: 100%;
+    max-height: 100%;
+    background: white;
+    border-radius: 6px;
+  }
+  .modal-body pre {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 16px;
+    overflow: auto;
+    background: rgba(14, 10, 20, 0.85);
+    color: var(--light-purple);
+    border-radius: 8px;
+    font-size: 12px;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .modal-foot {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    color: var(--dim);
+    font-size: 11px;
+  }
+  .modal-foot a {
+    color: var(--purple-bright);
+    text-decoration: none;
+    padding: 2px 8px;
+    border-radius: 6px;
+    border: 1px solid var(--border-glass);
+  }
+  .modal-foot a:hover { border-color: var(--border-glass-strong); }
+</style>
+</head>
+<body>
+  <div class="bg-gradient"></div>
+  <div class="bg-noise"></div>
+
+  <main class="diagrams-main">
+    <div class="topbar glass-panel-thin">
+      <div>
+        <a href="/" class="brand-link">◈ SINISTER MIND</a>
+        <span class="topbar-sep">::</span>
+        <span>memory-graph diagrams</span>
+      </div>
+      <div id="title-counts">loading...</div>
+    </div>
+
+    <div class="toolbar glass-panel-thin">
+      <span class="badge" id="badge-count">— diagrams</span>
+      <span class="dim">filter:</span>
+      <select id="ext-filter">
+        <option value="">all</option>
+        <option value="png">.png</option>
+        <option value="svg">.svg</option>
+        <option value="html">.html</option>
+        <option value="mmd">.mmd</option>
+      </select>
+      <button id="refresh-btn">↻ refresh</button>
+      <span class="dim" id="src-path"></span>
+    </div>
+
+    <div class="grid" id="grid">
+      <div class="empty-state">loading…</div>
+    </div>
+  </main>
+
+  <div class="modal-back" id="modal-back">
+    <div class="modal-card glass-panel">
+      <div class="modal-head">
+        <span class="stem" id="modal-stem">—</span>
+        <button class="close-btn" id="modal-close">✕ close</button>
+      </div>
+      <div class="modal-body" id="modal-body"></div>
+      <div class="modal-foot" id="modal-foot"></div>
+    </div>
+  </div>
+
+<script>
+// Sinister Mind :: diagrams.js (inline — small enough not to need a file)
+// Author: RKOJ-ELENO :: 2026-05-23
+// License: AGPL-3.0-or-later
+
+const API_LIST = "/api/diagrams";
+const API_BYTES = (stem) => `/api/diagrams/${encodeURIComponent(stem)}`;
+const REFRESH_MS = 15000;
+
+const $ = (id) => document.getElementById(id);
+const grid = $("grid");
+const badgeCount = $("badge-count");
+const titleCounts = $("title-counts");
+const srcPath = $("src-path");
+const extFilter = $("ext-filter");
+const refreshBtn = $("refresh-btn");
+const modalBack = $("modal-back");
+const modalStem = $("modal-stem");
+const modalBody = $("modal-body");
+const modalFoot = $("modal-foot");
+const modalClose = $("modal-close");
+
+let currentData = { diagrams: [], renders_dir: "", renders_dir_exists: true };
+
+function humanAge(seconds) {
+  if (seconds < 60) return `${seconds}s ago`;
+  const m = Math.floor(seconds / 60);
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  const d = Math.floor(h / 24);
+  return `${d}d ago`;
+}
+
+function render() {
+  const wantExt = extFilter.value;
+  const all = currentData.diagrams || [];
+  const filtered = wantExt
+    ? all.filter(d => (d.siblings || []).includes(wantExt) || d.ext === wantExt)
+    : all;
+
+  badgeCount.textContent = `${filtered.length} diagram${filtered.length === 1 ? "" : "s"}`;
+  titleCounts.textContent = `${all.length} total · viewing ${filtered.length}`;
+  srcPath.textContent = currentData.renders_dir
+    ? `src: ${currentData.renders_dir}`
+    : "";
+
+  if (filtered.length === 0) {
+    if (!currentData.renders_dir_exists) {
+      grid.innerHTML = `
+        <div class="empty-state">
+          mermaid-renders directory does not exist yet.
+          <div class="hint">It is created the first time Forge renders a diagram via <code>/mermaid render</code>.</div>
+        </div>`;
+    } else if (all.length === 0) {
+      grid.innerHTML = `
+        <div class="empty-state">
+          no diagrams cached yet.
+          <div class="hint">Run Forge <code>/mermaid render &lt;file.mmd&gt;</code> or
+          memory-graph-render to populate the cache at
+          <code>_shared-memory/forge-memory/mermaid-renders/</code>.</div>
+        </div>`;
+    } else {
+      grid.innerHTML = `
+        <div class="empty-state">
+          no diagrams match filter <code>.${wantExt}</code>.
+          <div class="hint">${all.length} cached overall.</div>
+        </div>`;
+    }
+    return;
+  }
+
+  // Build tiles
+  const html = filtered.map(d => {
+    const stemEsc = escapeHtml(d.stem);
+    const age = humanAge(d.age_s);
+    const thumb = thumbFor(d);
+    const siblings = (d.siblings || []).map(s =>
+      `<span class="ext-pill">${escapeHtml(s)}</span>`
+    ).join("");
+    return `
+      <div class="tile glass-panel-thin" data-stem="${stemEsc}">
+        <div class="thumb">${thumb}</div>
+        <div class="stem">${stemEsc}</div>
+        <div class="meta">
+          ${siblings}
+          <span>${age}</span>
+        </div>
+      </div>`;
+  }).join("");
+  grid.innerHTML = html;
+
+  // Wire tile clicks
+  for (const tile of grid.querySelectorAll(".tile")) {
+    tile.addEventListener("click", () => openModal(tile.dataset.stem));
+  }
+}
+
+function thumbFor(d) {
+  const url = API_BYTES(d.stem);
+  if (d.ext === "png" || d.ext === "svg") {
+    return `<img src="${url}" loading="lazy" alt="${escapeHtml(d.stem)}">`;
+  }
+  if (d.ext === "html") {
+    return `<div class="placeholder">html diagram<br>click to open</div>`;
+  }
+  return `<div class="placeholder">.${escapeHtml(d.ext)} render<br>click to view</div>`;
+}
+
+function openModal(stem) {
+  const d = (currentData.diagrams || []).find(x => x.stem === stem);
+  if (!d) return;
+  modalStem.textContent = stem;
+  modalBody.innerHTML = "";
+
+  const url = API_BYTES(stem);
+  if (d.ext === "png" || d.ext === "svg") {
+    const img = document.createElement("img");
+    img.src = url;
+    img.alt = stem;
+    modalBody.appendChild(img);
+  } else if (d.ext === "html") {
+    const iframe = document.createElement("iframe");
+    iframe.src = url;
+    iframe.style.width = "100%";
+    iframe.style.height = "100%";
+    iframe.style.border = "none";
+    iframe.style.background = "white";
+    iframe.style.borderRadius = "6px";
+    modalBody.appendChild(iframe);
+  } else {
+    // .mmd or unknown — fetch text + show
+    const pre = document.createElement("pre");
+    pre.textContent = "loading...";
+    modalBody.appendChild(pre);
+    fetch(url)
+      .then(r => r.text())
+      .then(t => { pre.textContent = t; })
+      .catch(e => { pre.textContent = `[error fetching diagram] ${e}`; });
+  }
+
+  // Foot: links to siblings
+  modalFoot.innerHTML = "";
+  for (const sib of d.siblings || []) {
+    const a = document.createElement("a");
+    // direct-bytes URL works for any sibling extension on this stem since
+    // _resolve_diagram_primary picks the first extension found; but we want
+    // explicit sibling access — encode the requested ext as a fragment so the
+    // browser opens the raw bytes endpoint (server returns primary). For now
+    // just show as info chips.
+    a.textContent = `.${sib}`;
+    a.href = url;
+    a.target = "_blank";
+    a.rel = "noopener";
+    modalFoot.appendChild(a);
+  }
+  const ageSpan = document.createElement("span");
+  ageSpan.textContent = `mtime: ${new Date(d.mtime * 1000).toLocaleString()}`;
+  modalFoot.appendChild(ageSpan);
+
+  modalBack.classList.add("open");
+}
+
+function closeModal() {
+  modalBack.classList.remove("open");
+  modalBody.innerHTML = "";
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  }[c]));
+}
+
+async function refresh() {
+  try {
+    refreshBtn.disabled = true;
+    refreshBtn.textContent = "↻ loading…";
+    const r = await fetch(API_LIST, { cache: "no-store" });
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    currentData = await r.json();
+    render();
+  } catch (e) {
+    grid.innerHTML = `<div class="empty-state">error loading diagrams: ${escapeHtml(String(e))}</div>`;
+  } finally {
+    refreshBtn.disabled = false;
+    refreshBtn.textContent = "↻ refresh";
+  }
+}
+
+// Wire UI
+extFilter.addEventListener("change", render);
+refreshBtn.addEventListener("click", refresh);
+modalClose.addEventListener("click", closeModal);
+modalBack.addEventListener("click", (e) => {
+  if (e.target === modalBack) closeModal();
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeModal();
+});
+
+// Boot
+refresh();
+setInterval(refresh, REFRESH_MS);
+</script>
+</body>
+</html>
