@@ -151,6 +151,9 @@ SLASH_COMMANDS: list[tuple[str, str]] = [
     ("/needs",    "toggle awaiting-input glow (visual test)"),
     ("/note",     "drop a dim contextual annotation (not sent to EVE)"),
     ("/notes",    "list all notes accumulated in this card"),
+    ("/todo",     "add a TODO item to this card's task list (jcode parity)"),
+    ("/todos",    "show the TODO list (pending + done)"),
+    ("/done",     "mark TODO #N as done — `/done <N>`"),
     ("/open",     "print shell commands to open agent paths"),
     ("/persona",  "print identity (slug / uuid / paths)"),
     ("/pin",      "pin (or unpin) this card to top of grid"),
@@ -595,8 +598,13 @@ def _refresh_heartbeat(sess: AgentSession, session_status: str = "online") -> No
 def _make_child_env(sess: AgentSession) -> QProcessEnvironment:
     """Build a QProcessEnvironment with SINISTER_* identity env vars so the
     spawned claude child knows its slug/display/paths.
+
+    v1.6.75 — mirrors Sinister Start.bat's env-export block exactly so
+    spawned agents see the same identity surface whether they're booted
+    from RKOJ or the .bat. Added AGENT_NAME, ACCENT_COLOR, MODE.
     """
     qenv = QProcessEnvironment.systemEnvironment()
+    qenv.insert("SINISTER_AGENT_NAME", sess.agent_name or "")           # v1.6.75 (.bat parity)
     qenv.insert("SINISTER_AGENT_DISPLAY", sess.display_name or sess.agent_name)
     qenv.insert("SINISTER_AGENT_SLUG", sess.slug or sess.project_key)
     qenv.insert("SINISTER_PANE_ID", sess.pane_id)
@@ -607,7 +615,74 @@ def _make_child_env(sess: AgentSession) -> QProcessEnvironment:
     qenv.insert("SINISTER_INBOX_DIR", sess.inbox_dir)
     qenv.insert("SINISTER_AGENT_IDENTITY", "EVE")
     qenv.insert("SINISTER_AUTHORSHIP", "RKOJ-ELENO")
+    qenv.insert("SINISTER_ACCENT_COLOR", sess.accent or "purple")        # v1.6.75 (.bat parity)
+    qenv.insert("SINISTER_MODE", sess.mode or "claude")                  # v1.6.75 (.bat parity)
     return qenv
+
+
+def _project_root(project_key: str) -> str:
+    """v1.6.75 — resolve a project_key to its on-disk root via
+    automations/session-templates/projects.json. Returns repo root if
+    not found so QProcess.setWorkingDirectory always has a valid path."""
+    try:
+        from . import state as _state
+        for p in _state.load_projects():
+            if (getattr(p, "key", None) == project_key
+                    or p.get("key") == project_key if isinstance(p, dict) else False):
+                root = (p.root if hasattr(p, "root") else p.get("root", ""))
+                if root and Path(root).exists():
+                    return root
+    except Exception:
+        pass
+    return str(state.SHARED_MEMORY.parent) if hasattr(state, "SHARED_MEMORY") else r"D:\Sinister Sanctum"
+
+
+def _pretrust_project(project_root: str) -> None:
+    """v1.6.75 — Sinister Start.bat parity: ensure the project root is
+    pre-trusted in ~/.claude.json so claude doesn't pop the first-run
+    'do you trust this folder' dialog on every fresh agent spawn."""
+    try:
+        cfg_fp = Path.home() / ".claude.json"
+        if not cfg_fp.exists():
+            return
+        import json as _json
+        cfg = _json.loads(cfg_fp.read_text(encoding="utf-8"))
+        root_key = project_root.replace("\\", "/")
+        cfg.setdefault("projects", {})
+        proj = cfg["projects"].setdefault(root_key, {
+            "allowedTools": [],
+            "mcpContextUris": [],
+            "mcpServers": {},
+            "enabledMcpjsonServers": [],
+            "disabledMcpjsonServers": [],
+        })
+        proj["hasTrustDialogAccepted"] = True
+        proj["hasClaudeMdExternalIncludesApproved"] = True
+        proj["hasClaudeMdExternalIncludesWarningShown"] = True
+        proj["hasCompletedProjectOnboarding"] = True
+        proj.setdefault("projectOnboardingSeenCount", 1)
+        cfg_fp.write_text(_json.dumps(cfg, indent=2), encoding="utf-8")
+    except Exception:
+        # Non-fatal — claude will just prompt once if pretrust fails.
+        pass
+
+
+def _agent_prefs_model(agent_name: str) -> str | None:
+    """v1.6.75 — Sinister Start.bat parity: read
+    _shared-memory/agent-prefs.json and return the per-agent model
+    override (if any). Operator can set intelligence-level chip in
+    Sanctum Console which writes here; we honor it on spawn."""
+    try:
+        prefs_fp = state.SHARED_MEMORY / "agent-prefs.json"
+        if not prefs_fp.exists():
+            return None
+        import json as _json
+        prefs = _json.loads(prefs_fp.read_text(encoding="utf-8"))
+        entry = prefs.get(agent_name) or {}
+        m = entry.get("model")
+        return m if isinstance(m, str) and m else None
+    except Exception:
+        return None
 
 
 # ── Clickable tag chip ──────────────────────────────────────────────────
@@ -2683,6 +2758,87 @@ class AgentCard(QFrame):
                 ts = (n.get("ts") or "")[:19].replace("T", " ")
                 self._append_terminal(f"  {i:2d}. [{ts}] {n.get('text', '')}\n")
             return True
+        if head == "/todo":
+            # v1.6.75 — jcode parity: TODO tracking. Stored as a
+            # `kind="todo"` entry on session.turns with done:bool flag.
+            # Persisted via the same resume-point JSON path as notes.
+            parts = cmd.split(None, 1)
+            if len(parts) < 2 or not parts[1].strip():
+                self._append_terminal(
+                    "[/todo] usage: /todo <text>\n"
+                    "  Adds a pending TODO. /todos lists; /done N marks done.\n"
+                )
+                return True
+            text = parts[1].strip()
+            iso = datetime.now().isoformat()
+            self.session.turns.append({
+                "kind": "todo",
+                "ts": iso,
+                "text": text,
+                "done": False,
+            })
+            try:
+                self._write_resume_point(save_reason="todo-add")
+            except Exception:
+                pass
+            self._append_dim(f"[+todo] {text}\n")
+            return True
+        if head == "/todos":
+            todos = [t for t in self.session.turns if t.get("kind") == "todo"]
+            if not todos:
+                self._append_terminal(
+                    "[/todos] empty — add one with `/todo <text>`\n"
+                )
+                return True
+            pending = [t for t in todos if not t.get("done")]
+            done = [t for t in todos if t.get("done")]
+            self._append_terminal(
+                f"[/todos] {len(pending)} pending · {len(done)} done\n"
+            )
+            for i, t in enumerate(todos, start=1):
+                mark = "[x]" if t.get("done") else "[ ]"
+                ts = (t.get("ts") or "")[:19].replace("T", " ")
+                self._append_terminal(
+                    f"  {i:2d}. {mark} {t.get('text', '')}    ({ts})\n"
+                )
+            return True
+        if head == "/done":
+            parts = cmd.split(None, 1)
+            todos = [t for t in self.session.turns if t.get("kind") == "todo"]
+            if not todos:
+                self._append_terminal(
+                    "[/done] no TODOs — add one with `/todo <text>`\n"
+                )
+                return True
+            if len(parts) < 2:
+                self._append_terminal(
+                    f"[/done] usage: /done <N>  (1..{len(todos)})\n"
+                )
+                return True
+            try:
+                n = int(parts[1].strip())
+            except ValueError:
+                self._append_terminal("[/done] N must be an integer\n")
+                return True
+            if n < 1 or n > len(todos):
+                self._append_terminal(
+                    f"[/done] N={n} out of range (1..{len(todos)})\n"
+                )
+                return True
+            todo = todos[n - 1]
+            if todo.get("done"):
+                self._append_terminal(
+                    f"[/done] #{n} already marked done: {todo.get('text', '')}\n"
+                )
+                return True
+            todo["done"] = True
+            todo["done_ts"] = datetime.now().isoformat()
+            try:
+                self._write_resume_point(save_reason="todo-done")
+            except Exception:
+                pass
+            self._append_dim(f"[done] #{n} {todo.get('text', '')}\n")
+            return True
         return False
 
     # ── Send / process I/O ────────────────────────────────────────────
@@ -2746,7 +2902,13 @@ class AgentCard(QFrame):
             "--include-partial-messages",
             "--verbose",
         ]
-        if self.session.mode == "claude-haiku":
+        # v1.6.75 — Sinister Start.bat parity: agent-prefs.json model
+        # override wins over the mode picker (operator sets intelligence
+        # level per agent; this honors it on every spawn).
+        prefs_model = _agent_prefs_model(self.session.agent_name)
+        if prefs_model:
+            args += ["--model", prefs_model]
+        elif self.session.mode == "claude-haiku":
             args += ["--model", "haiku"]
         elif self.session.mode == "claude-opus":
             args += ["--model", "opus"]
@@ -2780,6 +2942,13 @@ class AgentCard(QFrame):
         # Phase-1 memory bootstrap: pass SINISTER_* env vars so the child
         # learns its identity (slug / display / paths / persona).
         proc.setProcessEnvironment(_make_child_env(self.session))
+        # v1.6.75 — Sinister Start.bat parity: cd to the project root
+        # before claude spawns + pre-trust it in ~/.claude.json so no
+        # first-run dialog blocks the first turn.
+        proj_root = _project_root(self.session.project_key)
+        if proj_root and Path(proj_root).exists():
+            proc.setWorkingDirectory(proj_root)
+        _pretrust_project(proj_root)
         # v1.6.10 — redirect child's stdin to the null device so claude
         # doesn't wait 3s for stdin data + print:
         #   "[stderr] Warning: no stdin data received in 3s, proceeding..."

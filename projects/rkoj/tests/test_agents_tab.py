@@ -302,6 +302,56 @@ class TestDevicesV172(unittest.TestCase):
         self.assertIn("WS_CHILD", src)
 
 
+class TestSinisterStartParityV175(unittest.TestCase):
+    """v1.6.75 — spawn flow must match Sinister Start.bat (cwd, pretrust,
+    agent-prefs.json model, AGENT_NAME/ACCENT/MODE env vars)."""
+
+    def test_env_has_bat_parity_vars(self) -> None:
+        from sinister_rkoj_qt import agents_tab
+        sess = agents_tab.AgentSession(
+            pane_id="x", project_key="sanctum",
+            project_display="Sanctum", agent_name="Test",
+            mode="claude-opus", accent="purple",
+        )
+        env = agents_tab._make_child_env(sess)
+        for k in ("SINISTER_AGENT_NAME", "SINISTER_ACCENT_COLOR",
+                  "SINISTER_MODE", "SINISTER_AGENT_IDENTITY"):
+            self.assertTrue(env.contains(k), f"_make_child_env missing {k}")
+        self.assertEqual(env.value("SINISTER_AGENT_NAME"), "Test")
+        self.assertEqual(env.value("SINISTER_ACCENT_COLOR"), "purple")
+        self.assertEqual(env.value("SINISTER_MODE"), "claude-opus")
+        self.assertEqual(env.value("SINISTER_AGENT_IDENTITY"), "EVE")
+
+    def test_helpers_exist(self) -> None:
+        from sinister_rkoj_qt import agents_tab
+        for fn in ("_project_root", "_pretrust_project",
+                   "_agent_prefs_model"):
+            self.assertTrue(hasattr(agents_tab, fn),
+                            f"agents_tab missing {fn}")
+
+    def test_pretrust_silent_on_missing_config(self) -> None:
+        from sinister_rkoj_qt import agents_tab
+        # Should not raise even if path doesn't exist
+        agents_tab._pretrust_project(r"D:\nonexistent\path")
+
+    def test_prefs_model_returns_none_when_absent(self) -> None:
+        from sinister_rkoj_qt import agents_tab
+        # Random agent name → no prefs entry → None
+        self.assertIsNone(agents_tab._agent_prefs_model(
+            "definitely-not-a-real-agent-name-xyzzy"
+        ))
+
+
+class TestTodoV175(unittest.TestCase):
+    """v1.6.75 — /todo + /todos + /done jcode-parity task tracking."""
+
+    def test_slash_registry_has_todo_trio(self) -> None:
+        from sinister_rkoj_qt import agents_tab
+        names = {c for c, _ in agents_tab.SLASH_COMMANDS}
+        for slash in ("/todo", "/todos", "/done"):
+            self.assertIn(slash, names, f"SLASH_COMMANDS missing {slash}")
+
+
 class TestNoEmojisV174(unittest.TestCase):
     """v1.6.74 — dashboard-skeleton rule: no emojis in UI chrome."""
 
@@ -344,7 +394,7 @@ class TestTokenBudget(unittest.TestCase):
 
 class TestModuleSurface(unittest.TestCase):
     def test_version_matches(self) -> None:
-        self.assertEqual(sinister_rkoj_qt.__version__, "1.6.74")
+        self.assertEqual(sinister_rkoj_qt.__version__, "1.6.75")
 
     def test_classes_present(self) -> None:
         for name in (

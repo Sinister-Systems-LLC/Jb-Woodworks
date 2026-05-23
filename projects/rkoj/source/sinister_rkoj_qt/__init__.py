@@ -13,7 +13,7 @@ styles/globals.css}`.
 Persona = EVE (operator hard-canonical 2026-05-21). Author = RKOJ-ELENO.
 """
 
-__version__ = "1.6.74"
+__version__ = "1.6.75"
 
 
 # Trigger import-time errors here (not at first feature use) so the
