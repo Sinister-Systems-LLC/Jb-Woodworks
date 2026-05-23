@@ -39,7 +39,12 @@ param(
     [switch]$DryRun
 )
 
-$ErrorActionPreference = 'Stop'
+# RKOJ-ELENO :: 2026-05-23 — was 'Stop'; that turned every native-cmd stderr line
+# (like `From https://github.com/...` from git fetch) into a terminating exception
+# on PS5.1, making auto-push log show "exception: From https://..." instead of
+# the actual git operation result. 'Continue' lets Invoke-Git capture and inspect
+# its own $LASTEXITCODE without PS pre-empting.
+$ErrorActionPreference = 'Continue'
 
 # ---- Paths ----
 $logDir    = Join-Path $RepoRoot '_shared-memory'
