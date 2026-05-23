@@ -4,6 +4,27 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not command-versions (each lane has its own).
 
+## v1.6.60 — 2026-05-22
+
+**`/summarize-all` — fleet-wide /summarize. Stages the canned TL;DR
+ask into every non-empty card + fires _on_send so parallel recaps
+stream simultaneously across the workstation.**
+
+- Extracted the 6-line canned prompt to module constant
+  `_SUMMARIZE_PROMPT` so /summarize + /summarize-all share identical
+  formatting (deduped between the two commands).
+- New `summarize_all_requested(invoker_id)` signal on AgentCard;
+  AgentsView slot `_summarize_all` iterates `_cards.values()`:
+  - skips cards with no prior turns (`skipped {N} empty card(s)`)
+  - skips cards mid-turn (`skipped {N} card(s) mid-turn`) — same
+    no-clobber guard as /broadcast
+  - stages `_SUMMARIZE_PROMPT` into each card's input + fires
+    `QTimer.singleShot(0, c._on_send)` so spinner/streaming/cost
+    runs uniformly per card
+- 51 slash commands now (added /summarize-all).
+- MANIFEST.json 1.6.59 → 1.6.60.
+- `__init__.py __version__ = "1.6.60"`.
+
 ## v1.6.59 — 2026-05-22
 
 **Persistent input drafts across resume — operator types something,

@@ -94,6 +94,18 @@ def _project_color(project_key: str) -> str:
 # (command, one-line description). The autocomplete popup filters this
 # list as operator types after `/`. New /commands added to _maybe_intercept
 # should be added here too so the popup discovers them.
+# v1.6.60 — canned TL;DR ask shared by /summarize + /summarize-all so
+# both produce identically-formatted recaps across the fleet.
+_SUMMARIZE_PROMPT = (
+    "Give me a TL;DR of our conversation so far. Format:\n"
+    "1) goal: what are we trying to do? (1 sentence)\n"
+    "2) working: what's confirmed working? (2-3 bullets)\n"
+    "3) blocked: what's stuck or unclear? (2-3 bullets)\n"
+    "4) next: what should we try next? (1-3 bullets)\n"
+    "Be concrete — reference specific files / errors / decisions."
+)
+
+
 SLASH_COMMANDS: list[tuple[str, str]] = [
     ("/help",     "show all slash commands"),
     ("/broadcast","send the same message to all live cards"),
@@ -138,6 +150,7 @@ SLASH_COMMANDS: list[tuple[str, str]] = [
     ("/skills",   "list Sanctum skills (.md files)"),
     ("/stats",    "RKOJ fleet snapshot (agents / inbox / brain / devices)"),
     ("/summarize","ask EVE for a TL;DR of this card's conversation"),
+    ("/summarize-all","fan /summarize to every card with prior turns"),
     ("/tag",      "add a label chip to this card (also matched by /find)"),
     ("/tags",     "fleet-wide tag census (which tags + which cards carry them)"),
     ("/timer",    "show elapsed time of the in-flight turn (or last duration)"),
@@ -612,6 +625,9 @@ class AgentCard(QFrame):
     # v1.6.55 — /export-all emits invoker pane_id; AgentsView writes
     # every card's transcript to a bundle dir + echoes summary back.
     export_all_requested = pyqtSignal(str)
+    # v1.6.60 — /summarize-all emits invoker pane_id; AgentsView stages
+    # the canned TL;DR prompt into every non-empty card + fires _on_send.
+    summarize_all_requested = pyqtSignal(str)
 
     # Braille spinner for the "thinking" indicator (jcode-style).
     _SPINNER = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
@@ -2025,15 +2041,12 @@ class AgentCard(QFrame):
             self._append_terminal(
                 "[/summarize] asking EVE for a TL;DR…\n"
             )
-            self.input.setPlainText(
-                "Give me a TL;DR of our conversation so far. Format:\n"
-                "1) goal: what are we trying to do? (1 sentence)\n"
-                "2) working: what's confirmed working? (2-3 bullets)\n"
-                "3) blocked: what's stuck or unclear? (2-3 bullets)\n"
-                "4) next: what should we try next? (1-3 bullets)\n"
-                "Be concrete — reference specific files / errors / decisions."
-            )
+            self.input.setPlainText(_SUMMARIZE_PROMPT)
             self._on_send()
+            return True
+        if head == "/summarize-all":
+            # v1.6.60 — fan /summarize to every card with prior turns.
+            self.summarize_all_requested.emit(self.session.pane_id)
             return True
         if head == "/retry":
             last = next((t for t in reversed(self.session.turns) if t.get("user")), None)
@@ -3532,6 +3545,8 @@ class AgentsView(QWidget):
         card.tags_census_requested.connect(self._print_tags_census)
         # v1.6.55 — /export-all fans to AgentsView bundle writer.
         card.export_all_requested.connect(self._export_all_transcripts)
+        # v1.6.60 — /summarize-all fans the canned TL;DR ask to every card.
+        card.summarize_all_requested.connect(self._summarize_all)
         self._cards[sess.pane_id] = card
         self._rebuild_folder_chips()
         self._rebuild_grid()
@@ -3636,6 +3651,40 @@ class AgentsView(QWidget):
             f"{match.session.project_display} :: {match.session.agent_name} "
             f"(pane_id={match.session.pane_id})\n"
         )
+
+    # v1.6.60 — fleet-wide /summarize. Stages the canned TL;DR ask into
+    # every card with prior turns + fires _on_send via singleShot so each
+    # card's spinner/streaming/cost path runs uniformly (same pattern as
+    # /broadcast). Skips cards mid-turn to avoid clobbering an in-flight
+    # EVE response.
+    def _summarize_all(self, invoker_id: str) -> None:
+        invoker = self._cards.get(invoker_id)
+        if invoker is None:
+            return
+        fanned = 0
+        skipped_empty = 0
+        skipped_busy = 0
+        for c in self._cards.values():
+            if not any(t.get("user") for t in c.session.turns):
+                skipped_empty += 1
+                continue
+            if c._proc is not None and c._proc.state() != QProcess.ProcessState.NotRunning:
+                skipped_busy += 1
+                continue
+            c.input.setPlainText(_SUMMARIZE_PROMPT)
+            QTimer.singleShot(0, c._on_send)
+            fanned += 1
+        invoker._append_terminal(
+            f"[/summarize-all] fanned to {fanned} card(s)\n"
+        )
+        if skipped_empty:
+            invoker._append_terminal(
+                f"  (skipped {skipped_empty} empty card(s))\n"
+            )
+        if skipped_busy:
+            invoker._append_terminal(
+                f"  (skipped {skipped_busy} card(s) mid-turn)\n"
+            )
 
     # v1.6.55 — fleet-wide /export. Writes every card's transcript into
     # a single timestamped bundle dir + echoes summary to invoker. Skips
