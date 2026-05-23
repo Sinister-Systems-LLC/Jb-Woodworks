@@ -303,6 +303,15 @@ class _MultiLineInput(QPlainTextEdit):
         self.setFixedHeight(self._min_h)
         # v1.6.17 popup (set by AgentCard after construction)
         self.slash_popup: _SlashPopup | None = None
+        # v1.6.62 — Up/Down history recall. AgentCard sets
+        # _history_callback to return a fresh list of prior user-turn
+        # strings each time we cycle. _history_idx tracks position
+        # in the most-recent-first cycle; _history_pending_text
+        # buffers whatever the operator was typing when they started
+        # navigating so Down past the end restores it.
+        self._history_callback = None  # type: ignore[assignment]
+        self._history_idx: int = -1
+        self._history_pending_text: str = ""
 
     def _fit_height(self, *_args) -> None:
         h = int(self.document().size().height()) + 12
@@ -350,11 +359,60 @@ class _MultiLineInput(QPlainTextEdit):
             # Plain Enter (and Ctrl+Enter) → submit
             text = self.toPlainText().rstrip()
             self.submit.emit(text)
+            # v1.6.62 — reset history cursor after dispatch.
+            self._history_idx = -1
+            self._history_pending_text = ""
             return
+        # v1.6.62 — Up/Down history recall when slash popup not active.
+        # Only kicks in if input is single-line (no newlines yet) — that
+        # keeps multi-line edits using Up/Down for cursor navigation.
+        if (event.key() in (Qt.Key.Key_Up, Qt.Key.Key_Down)
+                and not (event.modifiers() & Qt.KeyboardModifier.ShiftModifier)
+                and "\n" not in self.toPlainText()
+                and self._history_callback is not None):
+            if self._handle_history_arrow(event.key() == Qt.Key.Key_Up):
+                event.accept()
+                return
         super().keyPressEvent(event)
         # v1.6.17 — after any normal keystroke, refresh popup visibility
         # based on current text.
         self._maybe_update_popup()
+
+    def _handle_history_arrow(self, going_up: bool) -> bool:
+        """v1.6.62 — return True if we consumed the arrow press.
+        Walks history most-recent-first (Up = older). On entry
+        (idx == -1) saves whatever's typed as pending_text. Down past
+        the most-recent entry restores pending_text + resets idx."""
+        history = self._history_callback() if self._history_callback else []
+        if not history:
+            return False
+        if going_up:
+            if self._history_idx == -1:
+                # First Up: stash current draft + load most-recent entry.
+                self._history_pending_text = self.toPlainText()
+                self._history_idx = 0
+            elif self._history_idx < len(history) - 1:
+                self._history_idx += 1
+            else:
+                # Already at the oldest entry — stop.
+                return True
+            self.setPlainText(history[-1 - self._history_idx])
+        else:
+            if self._history_idx <= 0:
+                # At most-recent or not navigating — restore pending.
+                self._history_idx = -1
+                self.setPlainText(self._history_pending_text)
+                self._history_pending_text = ""
+                cur = self.textCursor()
+                cur.movePosition(QTextCursor.MoveOperation.End)
+                self.setTextCursor(cur)
+                return True
+            self._history_idx -= 1
+            self.setPlainText(history[-1 - self._history_idx])
+        cur = self.textCursor()
+        cur.movePosition(QTextCursor.MoveOperation.End)
+        self.setTextCursor(cur)
+        return True
 
     def _maybe_update_popup(self) -> None:
         if self.slash_popup is None:
@@ -920,6 +978,14 @@ class AgentCard(QFrame):
         # tracking is cheap (small string assignment per keystroke); we
         # only pay disk on /save or auto-save on close.
         self.input.textChanged.connect(self._sync_input_draft)
+        # v1.6.62 — Up/Down arrow history recall. Provider returns a
+        # fresh list each time so notes / forget-last / replay don't
+        # leave stale entries.
+        self.input._history_callback = lambda: [
+            (t.get("user") or "")
+            for t in self.session.turns
+            if t.get("user") and t.get("kind") != "note"
+        ]
         self.input.setPlaceholderText(
             f"Talk to {eve_label(self.session.agent_name, self.session.project_key)} — "
             f"Enter to send · Shift+Enter for newline · /help"

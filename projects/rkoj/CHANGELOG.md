@@ -4,6 +4,28 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not command-versions (each lane has its own).
 
+## v1.6.62 — 2026-05-22
+
+**Up/Down arrow history recall in input — standard bash/zsh terminal
+UX. Up cycles backwards through prior user turns, Down advances.**
+
+- New `_history_callback`, `_history_idx`, `_history_pending_text`
+  fields on `_MultiLineInput`. AgentCard sets the callback to a
+  lambda returning the live user-turn list (skipping notes) so
+  /forget-last + /note interleaved entries don't pollute recall.
+- Up at idx=-1 stashes whatever's typed into `_history_pending_text`
+  and loads the most-recent entry. Subsequent Up walks older.
+- Down past the most-recent restores the pending draft so operator
+  doesn't lose what they were typing when they started navigating.
+- Slash-popup-visible state wins over history (existing Up/Down
+  bindings drive the popup unchanged).
+- Multi-line composition (newline in input) disables history recall
+  so Up/Down stays cursor-navigation in that mode.
+- Submit clears `_history_idx` + `_history_pending_text` so the
+  next session of recall starts fresh.
+- MANIFEST.json 1.6.61 → 1.6.62.
+- `__init__.py __version__ = "1.6.62"`.
+
 ## v1.6.61 — 2026-05-22
 
 **Right-click tag chip → context menu with Find + Untag actions. Tags
