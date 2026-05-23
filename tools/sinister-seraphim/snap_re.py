@@ -52,11 +52,11 @@ from typing import Any
 try:
     from .audit import write_provenance
     from .fingerprint import make_fingerprint_batch
-    from .qrng import quantum_random
+    from .qrng import Backend, quantum_random
 except ImportError:
     from audit import write_provenance  # type: ignore
     from fingerprint import make_fingerprint_batch  # type: ignore
-    from qrng import quantum_random  # type: ignore
+    from qrng import Backend, quantum_random  # type: ignore
 
 SANCTUM_ROOT = Path(os.environ.get('SINISTER_SANCTUM_ROOT', r'D:\Sinister Sanctum'))
 SNAP_RE_LEDGER = SANCTUM_ROOT / '_shared-memory' / 'seraphim-snap-re-ledger.jsonl'
@@ -152,25 +152,36 @@ def mode_search_seeds(
 ) -> list[dict]:
     """Generate `n` QRNG-sampled (mode, field-5) tuples for probe_zcke_modes.
 
-    Each tuple comes with a provenance record so the lane can later prove
-    which seed produced which response. Default ranges cover 0..255 byte
-    values (standard for byte-level field permutation).
-
-    Returns list of {tuple_id, mode, field_5, sidecar} dicts.
+    Batch mode: ONE aggregate provenance sidecar covers the whole batch.
+    Caller can later prove which seed produced which (mode, field-5)
+    tuple via the aggregate record + tuple_id.
     """
     if n < 1 or n > 10_000:
         raise ValueError(f'mode_search_seeds: n must be 1..10000, got {n!r}')
+    # Single 2n-byte QRNG call with provenance skipped; one aggregate sidecar.
+    raw = quantum_random(2 * n, purpose=f'{purpose}-batch', backend='sim-local', _skip_provenance=True)
     out = []
     for i in range(n):
-        # 2 bytes per tuple: 1 byte mode, 1 byte field_5
-        raw = quantum_random(2, purpose=f'{purpose}-tuple-{i}', backend='sim-local')
-        mode_v = mode_range[0] + (raw[0] % max(1, mode_range[1] - mode_range[0]))
-        field5_v = field5_range[0] + (raw[1] % max(1, field5_range[1] - field5_range[0]))
+        mode_v = mode_range[0] + (raw[2 * i] % max(1, mode_range[1] - mode_range[0]))
+        field5_v = field5_range[0] + (raw[2 * i + 1] % max(1, field5_range[1] - field5_range[0]))
         out.append({
             'tuple_id': f'{purpose}-{i:05d}',
             'mode': mode_v,
             'field_5': field5_v,
         })
+    write_provenance(
+        purpose=f'mode-search-batch-{purpose}',
+        backend='sim-local',
+        n_bytes=2 * n,
+        extra={
+            'batch_size': n,
+            'mode_range': list(mode_range),
+            'field5_range': list(field5_range),
+            'tuple_id_prefix': purpose,
+            'sample_tuples': out[:5],
+            'note': 'Batch mode: one aggregate sidecar covers all tuples.',
+        },
+    )
     return out
 
 

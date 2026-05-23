@@ -48,6 +48,7 @@ def quantum_random(
     *,
     purpose: str,
     backend: Backend = 'sim-local',
+    _skip_provenance: bool = False,
 ) -> bytes:
     """Return `n_bytes` of entropy with a provenance sidecar written.
 
@@ -59,6 +60,10 @@ def quantum_random(
         Operator-readable purpose; logged in provenance.
     backend : str
         See module docstring.
+    _skip_provenance : bool
+        Internal-use only. Skip per-call sidecar write (for batch operations
+        that write one aggregate sidecar at the end). NEVER pass True from
+        single-call use sites — audit-trail loss is silent.
     """
     if not isinstance(n_bytes, int) or n_bytes < 1 or n_bytes > 4096:
         raise ValueError(f'quantum_random: n_bytes must be 1..4096, got {n_bytes!r}')
@@ -75,15 +80,16 @@ def quantum_random(
 
     if backend == 'sim-local':
         data = os.urandom(n_bytes)
-        write_provenance(
-            purpose=purpose,
-            backend='sim-local',
-            n_bytes=n_bytes,
-            extra={
-                'note': 'sim-local backend; entropy from os.urandom. '
-                        'Audit trail only — flip to sim-pilotos once SDK wired.',
-            },
-        )
+        if not _skip_provenance:
+            write_provenance(
+                purpose=purpose,
+                backend='sim-local',
+                n_bytes=n_bytes,
+                extra={
+                    'note': 'sim-local backend; entropy from os.urandom. '
+                            'Audit trail only — flip to sim-pilotos once SDK wired.',
+                },
+            )
         return data
 
     if backend == 'sim-pilotos':
