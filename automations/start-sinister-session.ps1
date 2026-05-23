@@ -1034,8 +1034,11 @@ function Launch-Session($projRec, $agentName, $accent, $phrase, $modes = $null) 
     }
 
     # Pre-trust the folder in .claude.json so Claude doesn't show first-run dialog
+    # RKOJ-ELENO :: 2026-05-23 :: env-gated full skip for power users (skip ~80ms serialize)
+    if ($env:SINISTER_SKIP_TRUST_BLOCK -ne '1') {
     $claudeCfg = Join-Path $env:USERPROFILE '.claude.json'
     if (Test-Path $claudeCfg) {
+        # RKOJ-ELENO :: 2026-05-23 :: silent-catch intentional — .claude.json corruption must not block claude launch (claude rebuilds it on next run)
         try {
             $cfg = Get-Content $claudeCfg -Raw | ConvertFrom-Json
             $rootKey = $projRec.root -replace '\\', '/'
@@ -1053,14 +1056,22 @@ function Launch-Session($projRec, $agentName, $accent, $phrase, $modes = $null) 
                     hasClaudeMdExternalIncludesWarningShown = $true
                     hasCompletedProjectOnboarding = $true
                 }) -Force
+                [System.IO.File]::WriteAllText($claudeCfg, ($cfg | ConvertTo-Json -Depth 12), [System.Text.UTF8Encoding]::new($false))
             } else {
-                $cfg.projects.$rootKey.hasTrustDialogAccepted = $true
-                $cfg.projects.$rootKey.hasClaudeMdExternalIncludesApproved = $true
-                $cfg.projects.$rootKey.hasClaudeMdExternalIncludesWarningShown = $true
-                $cfg.projects.$rootKey.hasCompletedProjectOnboarding = $true
+                # RKOJ-ELENO :: 2026-05-23 :: skip-if-already-set short-circuit — avoid 49 KB JSON rewrite when all 4 trust flags already $true (most spawns)
+                $p = $cfg.projects.$rootKey
+                if ($p.hasTrustDialogAccepted -eq $true -and $p.hasClaudeMdExternalIncludesApproved -eq $true -and $p.hasClaudeMdExternalIncludesWarningShown -eq $true -and $p.hasCompletedProjectOnboarding -eq $true) {
+                    # already trusted — no-op
+                } else {
+                    $p.hasTrustDialogAccepted = $true
+                    $p.hasClaudeMdExternalIncludesApproved = $true
+                    $p.hasClaudeMdExternalIncludesWarningShown = $true
+                    $p.hasCompletedProjectOnboarding = $true
+                    [System.IO.File]::WriteAllText($claudeCfg, ($cfg | ConvertTo-Json -Depth 12), [System.Text.UTF8Encoding]::new($false))
+                }
             }
-            [System.IO.File]::WriteAllText($claudeCfg, ($cfg | ConvertTo-Json -Depth 12), [System.Text.UTF8Encoding]::new($false))
         } catch {}
+    }
     }
 
     # Color map for terminal (always purple unless overridden)

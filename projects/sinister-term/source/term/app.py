@@ -104,6 +104,8 @@ def _set_window_title() -> None:
         # OSC 0 ; <title> BEL
         import sys as _sys
         _sys.stdout.write(f"\033]0;{title}\007")
+        # RKOJ-ELENO :: 2026-05-23 :: OSC-12 purple cursor matches Sanctum theme
+        _sys.stdout.write("\033]12;#A06EFF\007")
         _sys.stdout.flush()
     except Exception:
         pass
@@ -189,6 +191,8 @@ def run() -> None:
             console.print("[dim](^C — type /exit to quit)[/dim]")
             continue
         except EOFError:
+            # RKOJ-ELENO :: 2026-05-23 :: friendly Ctrl+D farewell (themed purple)
+            console.print("[#A06EFF]> sterm out[/#A06EFF]")
             break
 
         line = line.strip()
