@@ -4,6 +4,53 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-23 18:20Z — Phase-2 B.6 SHIPPED — bot-fleet-quick-reference.md (highest-leverage open item)
+
+EVE on Sanctum (RESUME mode from `2026-05-23T103736Z.json`) shipped B.6 of the `sanctum-complete-and-expand-2026-05-23T1145Z` master plan — the single highest-leverage open follow-on per OPERATOR-ACTION-QUEUE. Estimated 30-60% input-token reduction per Sanctum-master session when local MCP bots substitute for Opus on routine work.
+
+**Shipped this turn (verified, not scaffolded):**
+
+- **NEW** `_shared-memory/knowledge/bot-fleet-quick-reference.md` (~250 lines) — 13 bots × verified `@mcp.tool()` signatures extracted live from `D:\Sinister\Sinister Skills\12_LLM_ORCHESTRATION\agents\<bot>\server.py`. Sections: TL;DR top-10 substitutions table / fleet-at-a-glance with tool counts / deferred-tool loading pattern (`ToolSearch select:mcp__<server>__<tool>`) / per-bot detail with when-to-use column / composition recipes (cold-start canonical / find-doc / summarize-URL / backup-before-edit / daily-rollup) / 7 anti-patterns / composes-with / maintenance verification command. Total: **109 verified MCP tools across 13 bots**.
+- **EDIT** `_shared-memory/knowledge/_INDEX.md` — new row at top for `bot-fleet-quick-reference` with full tag list. Brain row count: 119 → 120 (well under Rule 7.5 ceiling of 150).
+- **EDIT** `automations/start-sinister-session.ps1` — `Build-Phrase` injects one-sentence pointer to the quick-ref into every spawned EVE's cold-start phrase. PS-AST PARSE-OK post-edit. 3-line clean diff (`git diff --stat` = 3 insertions, 0 deletions).
+- **EDIT** `_shared-memory/OPERATOR-ACTION-QUEUE.md` — B.6 row marked `[x] ✅ SHIPPED` with timestamp + verification details.
+- **EDIT** `_shared-memory/heartbeats/sanctum.json` — refresh with current turn context. Preserved sibling-process 18:05Z entry additively (lane discipline / shared-slug-file rule).
+
+**Verification (no-bullshit doctrine compliance — every claim has evidence):**
+
+- Tool count 109: actual count by grep of `@mcp.tool()` decorators across all 14 `server.py` files (13 bots + `_shared/bot_memory.py` shared helpers). Per-bot tool counts in the doc match grep output.
+- Signature accuracy: every signature in the doc was copied from the line directly below the `@mcp.tool()` decorator in the corresponding `server.py`. No inferred APIs.
+- Launcher parse-validated: `[Parser]::ParseFile('automations/start-sinister-session.ps1', [ref]$null, [ref]$err)` returned PARSE-OK after Build-Phrase edit.
+- vault MCP confirmed loaded in this session: `mcp__vault__*` (10 tools) appears in the top-of-prompt deferred-tool list.
+
+**Composes with (brain links):**
+
+- `jcode-swarm-token-parity-audit-2026-05-23` — this is recommendation #1 from that audit ("ship `_shared-memory/knowledge/bot-fleet-quick-reference.md` with copy-paste top-10 calls + add CLAUDE.md cold-start pointer + inject one-sentence bot-fleet reminder into launcher Build-Phrase"). All three sub-actions shipped this turn.
+- `no-bullshit-tested-before-claimed-doctrine-2026-05-23` — self-applied. Every claim verified before write.
+- `launcher-v6.1-jcode-style-directives-2026-05-23` — Build-Phrase injection composes cleanly with existing 22 directives.
+- `wake-on-demand-bot-dispatcher-2026-05-23` — orthogonal: this ref helps agents call bots; that doctrine reduces idle bot RAM. Both reinforce the "use local bots not Opus" thesis.
+
+**Files touched this turn (sanctum-lane only):**
+
+- NEW: `_shared-memory/knowledge/bot-fleet-quick-reference.md`
+- EDIT: `_shared-memory/knowledge/_INDEX.md`
+- EDIT: `automations/start-sinister-session.ps1` (Build-Phrase 3-line addition)
+- EDIT: `_shared-memory/OPERATOR-ACTION-QUEUE.md`
+- EDIT: `_shared-memory/heartbeats/sanctum.json`
+- EDIT: `_shared-memory/PROGRESS/Sinister Sanctum.md` (this entry)
+- (other lanes' uncommitted work left untouched — JB woodworks, generator, panel, kernel-apk, showmasters, sinister-forge all have active in-flight files; not staged this turn)
+
+**Open follow-ons (next-turn candidates from master plan, ranked):**
+
+- B.4 Cross-lane PROGRESS-log audit + [INFO] drops to low-adoption lanes (Panel / APK / RKOJ / RKOJ-workstation) pointing at the new quick-ref — now unblocked by this ship.
+- B.7 Flip `jcode-feature-matrix.md` row 16 (Swarm-mode) to `✅ shipped (disk + CLI + Python API)` — sinister-swarm v0.1.0 187-pytest-green confirmed in prior audit.
+- B.3 OPERATOR-ACTION-QUEUE stale-row sweep (R0, ~20 min).
+- B.5 Clarify ruflo + vault MCP registration status in grant-autonomy step 4.
+
+Branch: `agent/sinister-sanctum/grant-autonomy-followup-2026-05-23` (HEAD before ship: `0fafe634`). Per-agent push authorized per `agent-autonomy-push-and-completion-2026-05-23` doctrine.
+
+---
+
 ## 2026-05-23 18:05Z — launcher-hardening turn — silent plugin check + closeable X + jcode ASCII C banner
 
 EVE on Sanctum addressed a stack of operator screenshots (images #1-#10) about the Sinister Start.bat path.

@@ -888,6 +888,9 @@ function Build-Phrase($projRec, $agentName, $mode, $isGeneral, $isScaffold, $mod
     if ($modes -and $modes.loop) {
         $phrase += " LOOP MODE on: do not stop after the first solution; keep iterating and expanding on ideas until the task is verifiably complete or the operator interrupts. If a recurring cadence helps, invoke the /loop skill in dynamic mode."
     }
+    # Operator 2026-05-23 — fleet-wide bot quick-ref pointer (B.6 ship). 30-60% input-token
+    # reduction per session when local bots substitute for Opus on routine work.
+    $phrase += " Before reaching for Opus on routine work (file search / classify / scrape / digest / heartbeat / inbox), check _shared-memory/knowledge/bot-fleet-quick-reference.md — 13 free local MCP bots cover most of it."
     return $phrase
 }
 

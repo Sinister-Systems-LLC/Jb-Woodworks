@@ -50,7 +50,7 @@ EVE on Sanctum cut `agent/sinister-sanctum/grant-autonomy-followup-2026-05-23` f
 
 **Open follow-ons from master plan Section B (master-actionable, no operator gate):**
 
-- [ ] 🟠 **B.6 Ship `bot-fleet-quick-reference.md`** — single highest-leverage next move. ~30-60% token reduction per Sanctum-master session. Per-bot 5-column ref + CLAUDE.md pointer + launcher Build-Phrase one-sentence injection.
+- [x] ✅ ~~**B.6 Ship `bot-fleet-quick-reference.md`**~~ — SHIPPED 2026-05-23T14:55Z on `agent/sinister-sanctum/grant-autonomy-followup-2026-05-23`. `_shared-memory/knowledge/bot-fleet-quick-reference.md` (~250 lines, 13 bots, 109 verified `@mcp.tool()` signatures extracted from live `server.py`). Indexed in `knowledge/_INDEX.md` at top. Launcher `Build-Phrase` injects one-sentence pointer so every spawned EVE sees it on cold-start. PS-AST parse-validated post-edit. Brain row count: 119 → 120 (well under Rule 7.5 ceiling of 150).
 - [ ] 🟡 **B.7 Flip jcode-feature-matrix row 16 Swarm-mode to `✅ shipped`** — sinister-swarm v0.1.0 pip-editable confirmed 187 pytest-green.
 - [ ] 🟡 **B.4 Cross-lane PROGRESS-log audit** — drop one [INFO] inbox into each low-adoption lane (Panel / APK / RKOJ / RKOJ-workstation) pointing at B.6 quick-ref.
 - [ ] 🟢 **B.3 OPERATOR-ACTION-QUEUE stale-row sweep** — close rows referencing already-shipped fixes + operator-set env vars now set.
