@@ -1,0 +1,10 @@
+{
+  "tag": "[BROADCAST]",
+  "from": "sanctum",
+  "to": "panel",
+  "ts_utc": "2026-05-23T15:45Z",
+  "subject": "Operator hard-canonical: no more self-imposed canonical-9 push blocks + APK gradle green path documented",
+  "body_path": "_shared-memory/cross-agent/2026-05-23T1545Z-sanctum-to-fleet-no-more-self-imposed-blocks.md",
+  "reply_required": false,
+  "summary": "Per-agent branches push freely (canonical-9 narrowed). APK build+install via SinisterAPK_RunMe.ps1 -Phase P-A8 through PowerShell tool. Stop self-imposing operator-gated blocks. Doctrine: agent-autonomy-push-and-completion-2026-05-23.md."
+}

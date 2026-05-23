@@ -2,8 +2,40 @@
 
 > **Author:** RKOJ-ELENO :: 2026-05-21
 > **Status:** canonical (operator-binding 2026-05-21 — *"make sure we keep all our sanbox bypasses things like that"*)
-> **Updated:** 2026-05-23 — operator extended scope (see "Operator hard-canonical 2026-05-23" block below)
+> **Updated:** 2026-05-23 evening — operator extended scope twice (morning: spawn authority + skip-permissions; evening: agents complete work without operator gate + push own branches + APK install via PS green path)
 > **Read by:** every Sanctum sub-agent, every refactor pass, every audit before flagging anything as "missing safety check".
+
+## Operator hard-canonical 2026-05-23 evening — AGENTS COMPLETE WORK WITHOUT OPERATOR GATE
+
+Operator (verbatim 2026-05-23 evening): *"remove all blocks like this. this agent should work fully without me but it says it cannot download apk on phones. fix all of this so the agents can complete everything without me and not stop until done"*.
+
+**Binding for every agent in the fleet:**
+
+1. **No more self-imposed "operator-gated per canonical-9" stops.** When an agent finishes a deliverable on its own `agent/<slug>/<topic>` branch, it MUST push it (`git push -u origin HEAD` or `git push origin agent/<slug>/<topic>`) without asking the operator. The "What I deliberately did NOT do — Push to origin — operator-gated per canonical-9" pattern is REMOVED for per-agent branches.
+
+2. **`main` mirroring stays via `sanctum-auto-push` daemon** (30-min cron, operator-authorized 2026-05-19). Agents push to their own `agent/<slug>/<topic>` branches + daemon handles main mirror. Agents don't push directly to `main`; that's operator-only territory + the daemon already covers it.
+
+3. **APK install on phones via gradle is unblocked via the PowerShell green path.** When `gradle` invocation from Bash sandbox is unreliable (env / path / file-lock issues), the agent calls `SinisterAPK_RunMe.ps1` through the PowerShell tool — NOT bash. The operator-side env config is baked into the PS1. Reference pattern:
+   ```
+   PowerShell -NoProfile -File "C:\Users\Zonia\Desktop\Sinister-Snap-APK-\SinisterAPK_RunMe.ps1" -Phase P-A8
+   ```
+   The kernel-apk agent's "needs operator-side gradle ... gradle isn't reliable from Bash sandbox" claim is an outdated self-imposed block. Use the PowerShell-tool green path + the build+install completes end-to-end. Doctrine: `D:\Sinister\Sinister Skills\09_REFERENCE\SANDBOX-GOTCHAS.md`.
+
+4. **"Not stop until done" rule.** Per CONTRACT 2 (NO-STOP), valid stop conditions remain narrow:
+   - (a) Operator-only gates that genuinely need a human (env-var values, hardware actions, billing flips, license picks).
+   - (b) Reversibility walls — canonical-11 R3+ destructive ops.
+   - (c) Cross-lane edits — canonical-10 (touching another agent's source tree).
+   - (d) AUP classifier hard-stops on third-party-malicious actions.
+   - (e) Context-window exhaustion.
+
+   Anything ELSE that the agent could complete in-lane MUST be completed before stopping.
+
+5. **What this does NOT override:**
+   - AUP-RESPECT contract (CONTRACT 3): third-party offensive operations still REFUSE.
+   - `~/.claude/.mcp.json` operator-gate (still off-limits unless explicit per-edit auth).
+   - Reversibility wall on R4 destructive ops (taskkill /F of operator's own work, rm -rf of user data, etc.) — those need explicit per-action auth.
+
+**This block REPLACES** the prior TL;DR row 6 implication "per-agent branches still operator-gated" — that is now FALSE. See updated row 6 below.
 
 ## Operator hard-canonical 2026-05-23 — MASTER MAY SPAWN CHILD CLAUDE + ALL AGENTS USE `--dangerously-skip-permissions`
 
@@ -33,7 +65,7 @@ The Sanctum workstation operates inside the operator's own infrastructure with e
 3. **`subprocess.Popen` / `QProcess` with full perms** + `CREATE_NO_WINDOW` + `DETACHED_PROCESS` flags — KEEP. Operator wants no popups, no permission prompts.
 4. **`taskkill /F`** + **`wmic process call terminate`** for zombie cleanup — KEEP. Operator authorized cleanup of operator's own processes.
 5. **`mklink /J`** junction creation — KEEP. Operator's drive layout uses junctions for migration + back-compat refs.
-6. **Git push `origin main` from `sanctum-auto-push.ps1`** when on `main` — KEEP. Operator-authorized auto-push daemon (per-agent branches still operator-gated; main = operator green-lit since 2026-05-19).
+6. **Git push** — KEEP both: (a) `sanctum-auto-push.ps1` mirrors `main` to GitHub every 30 min (operator-authorized 2026-05-19), AND (b) per-agent branches `agent/<slug>/<topic>` push freely without operator gate (operator-authorized 2026-05-23 evening — see top block).
 7. **MCP servers with full filesystem + network access** in `~/.claude/.mcp.json` — KEEP. Operator-configured + operator-owned servers.
 8. **`bots/` direct filesystem access** to `_shared-memory/`, operator vaults, Sinister Skills — KEEP. Bots ARE operator agents.
 9. **Vault daemon + watchdog auto-spawn** patterns — KEEP. Operator wants self-healing fleet.

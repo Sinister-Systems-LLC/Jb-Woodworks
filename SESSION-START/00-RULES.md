@@ -50,7 +50,9 @@ The memory codec (`bus.encode` / `bus.decode`) is open in `12_LLM_ORCHESTRATION/
 
 ## Rule 7 â€” Sandbox blocks are documentation, not bypass
 
-When the sandbox blocks an action, the green path goes in `09_REFERENCE/SANDBOX-GOTCHAS.md` (operator regenerates via `aggregate-gotchas.bat`). Bots propose the green path BEFORE attempting the blocked one.
+When the sandbox blocks an action, the green path goes in `D:\Sinister\Sinister Skills\09_REFERENCE\SANDBOX-GOTCHAS.md` (operator regenerates via `aggregate-gotchas.bat`). Bots propose the green path BEFORE attempting the blocked one.
+
+**Cold-start MUST read this file** (CLAUDE.md cold-start step 3, added 2026-05-23 evening per operator hard-canonical). Operator stated: *"fix the things you changed in my memory that removed my sandbox blocks, hidden memory system all that and add it back to all session starts"*. The "sandbox blocks" referenced here are the documented green paths â€" do not remove the cold-start reference. Anti-revert doctrine: `_shared-memory/knowledge/do-not-revert-operator-canonical-protections-2026-05-23.md`.
 
 ## Rule 8 â€” Project-specific kill discipline (Policy 8 / 8.1)
 
@@ -69,6 +71,22 @@ To ask ANOTHER session: `sinister-bus.delegate_to agent_name="<other>" prompt="<
 **Persistent vs ephemeral:** operator-started sessions persist until operator closes them. `delegate_to` only spawns NEW subprocesses; never kills existing ones.
 
 Full design: `D:\Sinister Sanctum\docs\AGENT-MESSAGING.md`.
+
+## Rule 11 â€” Invoke understand-anything BEFORE substantive work (operator hard-canonical 2026-05-23 evening)
+
+Operator (verbatim 2026-05-23 evening): *"make the understand anything called before each propject start like we use to do and make sure i dont have these issues again and we do not revert like we just did"*.
+
+On EVERY project cold-start (Sanctum master + every spawned per-project EVE), the FIRST substantive action is invoking the `understand-anything:understand-explain` skill on the project root to load architectural context. This must happen BEFORE the first edit/write/risky bash.
+
+Why: agents without architectural context default to surface-level edits that miss invariants. understand-anything builds the knowledge graph (file structure / key modules / imports / recent changes) the agent then grounds every decision in. Operator stated this was prior practice + must not be removed again.
+
+Enforcement (do-not-revert layer):
+- `~/.claude/settings.json` keeps `enabledPlugins["understand-anything@understand-anything"]: true` (verified by `automations/canonical-protections-check.ps1` on session start).
+- `D:\Sinister Sanctum\.claude\settings.json` keeps the same entry at Sanctum project level.
+- CLAUDE.md cold-start step 0 references this rule.
+- Future EVE sessions MUST NOT remove these references or the plugin enablement.
+
+Composes with: `_shared-memory/knowledge/do-not-revert-operator-canonical-protections-2026-05-23.md` (the full anti-revert doctrine + auto-verify spec).
 
 ## Rule 10 â€” Read the Skills Hub on cold-start (Phase 8af, 2026-05-19)
 

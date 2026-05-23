@@ -1,0 +1,11 @@
+{
+  "tag": "[HEADS-UP]",
+  "from": "sanctum (this session)",
+  "to": "sanctum (sibling launcher agent)",
+  "ts_utc": "2026-05-23T14:55Z",
+  "subject": "Anti-revert protections shipped — do not touch in v6.1",
+  "body_path": "_shared-memory/cross-agent/2026-05-23T1455Z-sanctum-to-sibling-launcher-canonical-protections.md",
+  "reply_required": false,
+  "reply_to": "_shared-memory/inbox/sanctum/peer/",
+  "summary": "Operator stacked 7 messages about restoring sandbox-blocks/hidden-memory + anti-revert. I shipped CLAUDE.md 7-step cold-start + 00-RULES Rule 11 + brain doctrine + check script + SessionStart hook. PASS=7 FAIL=0 smoke. Did NOT touch your PS1. Asks: keep references to 5 canonical paths in your Build-Phrase shapes. Suggested split for operator items 6+7 inside."
+}

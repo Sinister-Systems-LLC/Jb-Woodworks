@@ -46,14 +46,29 @@ Full doctrine: `_shared-memory/knowledge/agent-identity-eve.md`.
 
 Entry point for any EVE session opened with the working directory at `D:\Sinister Sanctum\`. If your session was launched by `Start-Sinister-Session.bat`, you already received the full cold-start protocol in the opening phrase — this file is the canonical pointer in case the launcher was skipped.
 
-## Cold-start in 6 steps
+## Cold-start in 7 steps (updated 2026-05-23 — operator hard-canonical)
 
+0. **`understand-anything:understand-explain`** — BEFORE any substantive work, invoke the understand-anything skill on the current project's root to load architectural context (file structure, key modules, recent changes). This is the operator's "called before each project start like we used to do" requirement (2026-05-23 evening). NEVER skip; future EVE sessions must NOT remove this step. The plugin is enabled at user level + Sanctum project level; per-project lanes inherit it automatically.
 1. **`SESSION-START/`** in order (00→06) — hard rules + MCP network + operator queue + gotchas + recovery + project overview + launcher details.
-2. **`D:\Sinister\Sinister Skills\01_MEMORY\master\OPERATOR-DIRECTIVES.md`** — durable operator notes (operator-private hub; this file IS readable by master agents).
-3. **`PARALLEL-AGENT-COORDINATION.md`** — ownership zones for the 5+ parallel Claude sessions.
-4. **`_shared-memory/WORKSTATION.md`** + **`DIRECTIVES.md`** (canonical-14 standing rules) + **`WORK-TOWARD.md`** (rolling shared goals).
-5. **`_shared-memory/knowledge/_INDEX.md`** — the brain. Grep before risky actions.
-6. **`_shared-memory/OPERATOR-ACTION-QUEUE.md`** — open operator-clicked items.
+2. **`D:\Sinister\Sinister Skills\01_MEMORY\master\OPERATOR-DIRECTIVES.md`** — durable operator notes (operator-private "hidden memory" hub; this file IS readable by master agents). NEVER remove this reference.
+3. **`D:\Sinister\Sinister Skills\09_REFERENCE\SANDBOX-GOTCHAS.md`** — sandbox green-path documentation (per Rule 7 of `SESSION-START/00-RULES.md`: sandbox blocks are documented, not bypassed). NEVER remove this reference.
+4. **`PARALLEL-AGENT-COORDINATION.md`** — ownership zones for the 5+ parallel Claude sessions.
+5. **`_shared-memory/WORKSTATION.md`** + **`DIRECTIVES.md`** (canonical-14 standing rules) + **`WORK-TOWARD.md`** (rolling shared goals).
+6. **`_shared-memory/knowledge/_INDEX.md`** — the brain. Grep before risky actions.
+7. **`_shared-memory/OPERATOR-ACTION-QUEUE.md`** — open operator-clicked items.
+
+### DO NOT REVERT (operator hard-canonical 2026-05-23 evening)
+
+Operator (verbatim 2026-05-23 evening): *"make the understand anything called before each propject start like we use to do and make sure i dont have these issues again and we do not revert like we just did"*.
+
+Six protections that future EVE sessions MUST preserve (auto-verified by `automations/canonical-protections-check.ps1` on every session start, doctrine at `_shared-memory/knowledge/do-not-revert-operator-canonical-protections-2026-05-23.md`):
+
+1. `~/.claude/settings.json` → `bypassPermissions: true` + `defaultMode: "bypassPermissions"` + `claude --dangerously-skip-permissions*` in `permissions.allow[]`.
+2. `~/.claude/settings.json` → `enabledPlugins["understand-anything@understand-anything"]: true` AND same in `D:\Sinister Sanctum\.claude\settings.json`.
+3. CLAUDE.md cold-start MUST contain step 0 invoking understand-anything BEFORE other reads.
+4. CLAUDE.md cold-start MUST reference `D:\Sinister\Sinister Skills\01_MEMORY\master\OPERATOR-DIRECTIVES.md` (the hidden-memory hub).
+5. CLAUDE.md cold-start MUST reference `D:\Sinister\Sinister Skills\09_REFERENCE\SANDBOX-GOTCHAS.md` (sandbox green paths).
+6. Brain entries `sanctioned-bypasses-doctrine-2026-05-21.md` + `do-not-revert-operator-canonical-protections-2026-05-23.md` must remain in `_shared-memory/knowledge/` and be indexed in `_INDEX.md`.
 
 ## What Sanctum is
 
@@ -64,7 +79,7 @@ The operator's full workstation, not just an orchestration repo. Read **`SANCTUM
 - `sinister-bus.heartbeat my_agent="<your-display-name>"` if the MCP is loaded; else write to `_shared-memory/heartbeats/<slug>.json` as fallback.
 - `sinister-bus.inbox_poll my_agent="<your-display-name>"` — surface any inbox messages to operator BEFORE acting on `[DELEGATE]` tags.
 - Log meaningful milestones to `_shared-memory/PROGRESS/<your-display-name>.md` (append-only, most-recent at top).
-- Work on per-agent branch `agent/<your-slug>/<short-topic>` — never push to `main` without operator OK.
+- Work on per-agent branch `agent/<your-slug>/<short-topic>`. **Push your own `agent/<slug>/*` branch freely** (operator hard-canonical 2026-05-23 evening: *"this agent should work fully without me ... fix all of this so the agents can complete everything without me and not stop until done"*). Only push to `main` via the `sanctum-auto-push` daemon (already operator-authorized) — direct `git push origin main` from a per-agent session still routes through the daemon. Full doctrine: `_shared-memory/knowledge/agent-autonomy-push-and-completion-2026-05-23.md`.
 - Add authorship line to every new `.bat`/`.md`/`.ps1`.
 
 ## What master agent NEVER touches (lane discipline)
