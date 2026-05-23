@@ -1,7 +1,8 @@
 # Sinister Sanctum :: Session Contracts (token-efficient reference)
 
 > **Author:** Sinister Sanctum master agent (test, Claude) :: 2026-05-21
-> **Purpose:** Single source of truth for the 5 binding contracts every spawned session must honor. The launcher PS1 references THIS file (compact mode) instead of inlining ~3500 chars of suffix text. Saves ~3000 tokens per cold-start.
+> **Updated:** EVE on Sanctum 2026-05-23 (count fix: 6 contracts, not 5)
+> **Purpose:** Single source of truth for the 6 binding contracts every spawned session must honor. The launcher PS1 references THIS file (compact mode) instead of inlining ~3500 chars of suffix text. Saves ~3000 tokens per cold-start.
 
 Read once on cold-start. Each contract binding for entire session.
 
