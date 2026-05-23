@@ -4,6 +4,159 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-23 06:30 — launcher live-bugfix turn — 5 surgical edits land Auto-Resume + Rename/Color + multi-spawn parity
+
+EVE on Sanctum (anti-revert-doctrine-2026-05-23 branch but live tree showed peer had switched to `agent/rkoj/next-slate-2026-05-23` — coordinated via inbox/sanctum/peer/, kept editing on the current tree). Operator dropped 4 live messages this turn:
+1. screenshot of Auto-Resume freeze at picker after selecting `a`
+2. "rename and color setting still doesnt work"
+3. "make sure the bat file has all jcode features and the sinister term as well. everything"
+4. "make sure all token saving options are on without loosing efficency etc. all jcode features in our teminals all that. audit and fix the entire thing"
+
+Triaged + shipped surgical edits to `automations/start-sinister-session.ps1` (all PS-AST parse-validated post-edit):
+
+| # | Bug | Root cause | Fix |
+|---|---|---|---|
+| 1 | Auto-Resume freeze | `Find-AllResumePoints` walked 200 JSONs synchronously; "Auto-Resume" header printed AFTER the scan → operator saw stale picker + no progress | Moved header + "scanning… done (N found)" line BEFORE the scan; cap 200 → 80 files; added `[Console]::Out.Flush()` |
+| 2 | Rename + Color not visible | Picker only showed `display + tag` — the customized agent_name + accent_color never surfaced; operator thought save failed (save was actually working — confirmed `agent-prefs.json` correctly persists per-project entries) | `Render-Picker` now takes `$prefs` param and prints `[<agent> / <accent>]` next to each project that differs from defaults; MAIN passes `$prefs` in |
+| 3 | Multi-spawn silently dropped | Peer added `Parse-MultiSelection` + `multi-project` resolve kind but never wired the MAIN switch dispatcher → typing `1,3,5` returned a kind no branch handled → silent no-op | Added `'multi-project'` switch arm that loops over `$resolved.keys`, spawning each sequentially with 400ms stagger + numbered batch progress |
+
+Auditor verified jcode + sterm parity already in launcher (no new wiring needed):
+- ✅ jcode-style banner: random art (8 pool) + centered info block + 6 status pills (agent/mode/model/mcp/bots/skip-perms)
+- ✅ Token-saving: "compact phrase" mode (cold-start delegates to `session-contracts.md` instead of inlining)
+- ✅ Sinister-term post-claude handoff: `if command -v sterm; then exec sterm; elif sinister-term; else bash` graceful chain
+- ✅ Picker options: G/A/N/R/K/S/Q + multi-select 1,3,5 / 1-3
+- ✅ Free-text resume search (Pick-ResumeRow with Score-Row TF-IDF-ish)
+- ✅ Customize-Project (Rename + Color persists to agent-prefs.json)
+- ✅ Clear-Context delegates to context-pruner.ps1
+- ✅ Autonomy Setup delegates to grant-claude-autonomy.ps1
+- ✅ Trust-pre-acceptance writes hasTrustDialogAccepted=true so spawn doesn't show first-run dialog
+- ✅ Resume-point auto-write on Claude-exit inside spawn shell
+
+Coordination: dropped `inbox/sanctum/peer/2026-05-23T0625Z-from-sanctum-anti-revert-lane-claiming-launcher-bugfix.json` to peer at turn-start; offered them 4 alternative surfaces (forward-plan, context-pruner audit, jcode-matrix verification, inbox sweep). Heartbeat refreshed at `_shared-memory/heartbeats/sanctum.json`.
+
+Files touched this turn:
+- EDIT: `automations/start-sinister-session.ps1` (4 surgical edits: Render-Picker signature + body / MAIN passes $prefs / Pick-ResumeRow header-first / Find-AllResumePoints 80-cap; plus 5th: multi-project switch arm)
+- EDIT: `_shared-memory/heartbeats/sanctum.json` (refresh)
+- NEW: `_shared-memory/inbox/sanctum/peer/2026-05-23T0625Z-from-sanctum-anti-revert-lane-claiming-launcher-bugfix.json`
+
+Open: write resume-point, commit on current branch (`agent/rkoj/next-slate-2026-05-23` — peer-switched tree; co-commit with peer's multi-select parser since we touched the same file).
+
+CLAUDE.md note: file was edited (linter or operator) mid-turn — cold-start rolled back from 7 steps to 6 steps + the "DO NOT REVERT" block removed. Per system reminder ("This change was intentional ... don't revert it unless the user asks") I am NOT re-adding step 0 or the protection block. Recording the regression here for operator visibility — if this was unintentional, the doctrine at `_shared-memory/knowledge/do-not-revert-operator-canonical-protections-2026-05-23.md` still says it should be restored.
+
+---
+
+
+## 2026-05-23 09:47 — launcher v6.1 continuation — M+N+O closed + peer-coord protections inline + handterm clarification
+
+EVE on Sanctum. Operator continued the launcher session with 3 more screenshots + 1 clarification: M (handterm → wired up sterm-as-post-claude-shell with bash fallback), N (mermaid-rs-renderer audit — source exists, binary not built, operator-gated Rust toolchain), O (5 jcode-planned rows delegated to Forge + Term lanes), plus clarification *"by handterm i mean sinister term"*. Also coordinated with peer sanctum-protections lane: their canonical-protections doctrine references now inline in Build-Phrase coldStart + READ-PROTECTIONS pointer + S) Autonomy Setup picker option.
+
+**Launcher PS1 net delta this turn:**
+
+- coldStart phrase rewritten from 8-step legacy to 7-step canonical (step 0 = understand-anything pre-call, step 3 = SANDBOX-GOTCHAS.md, explicit "DO NOT REVERT" annotation inline)
+- contracts extended with READ-PROTECTIONS pointer to peer's doctrine
+- S) Autonomy Setup picker option added (shells to grant-claude-autonomy.ps1, graceful warn if missing)
+- Post-claude shell switched from `exec bash` to `if sterm: exec sterm; else exec bash` — operator drops into our purple-themed shell after every spawn
+- All edits PS-AST-parse-validated
+
+**Brain entries shipped:**
+
+- `handterm-vs-sinister-term-clarification-2026-05-23.md` — codifies the naming trap, 2-layer terminal architecture, "full control" checklist, 4 anti-patterns (don't clone upstream / don't conflate shell-with-emulator-window / don't spawn-claude-from-sterm / don't remove-bash-fallback)
+- (earlier this turn) `launcher-v6.1-jcode-style-directives-2026-05-23.md` + `forge-memory-usage-2026-05-23.md` (closes L's documented gap from parallel audit)
+
+**_INDEX rows added (top of file, most-recent first):** handterm-vs-sinister-term + launcher-v6.1 + forge-memory-usage + wake-on-demand-bot-dispatcher (was on-disk but un-indexed)
+
+**Cross-agent messages dropped:**
+
+- `inbox/sanctum/peer/<ts>-from-sanctum-launcher-coordination.json` — FYI to peer sanctum on launcher in-flight
+- `cross-agent/<ts>-sanctum-launcher-to-sanctum-protections-ack.md` — ack to peer sanctum-protections; honored all 5 asks
+- `inbox/sinister-forge/<ts>-from-sanctum-jcode-planned-rows-forge-lane.json` — [DELEGATE] 4 jcode-planned rows (provider routing UI / Cascadia typography / tool-use hooks / sinister-mermaid-render fork)
+- `inbox/sinister-term/<ts>-from-sanctum-jcode-planned-ctrl-f.json` — [DELEGATE] Ctrl+F Forge shortcut + launcher v6.1 sterm handoff env-vars
+- `inbox/sinister-term/<ts>-from-sanctum-handterm-migration-fyi.json` — FYI on handterm/sinister-term clarification
+
+**OPERATOR-ACTION-QUEUE updates:** new section "2026-05-23 evening — Launcher v6.1 ready for test-drive + jcode/handterm directives in-flight" with 8 open rows (3 test-drive items, Ruflo MCP gap, optional review install, M/N/O statuses).
+
+**Files touched this turn (continuation):**
+- EDIT: `automations/start-sinister-session.ps1` (4 edits — coldStart 7-step / contracts READ-PROTECTIONS / S menu option + handler / exec-sterm-with-fallback)
+- NEW: `_shared-memory/knowledge/handterm-vs-sinister-term-clarification-2026-05-23.md`
+- EDIT: `_shared-memory/knowledge/_INDEX.md` (+1 row at top: handterm-vs-sinister-term)
+- EDIT: `_shared-memory/OPERATOR-ACTION-QUEUE.md` (new section + M/N/O in-flight status)
+- NEW: `_shared-memory/cross-agent/<ts>-sanctum-launcher-to-sanctum-protections-ack.md`
+- NEW: 3 inbox messages (forge, term×2)
+
+---
+
+## 2026-05-23 09:28 — anti-revert protection system + Sinister Freeze restore + P8 disk-integrity + forward-plan
+
+EVE on Sanctum (second-parallel; sibling owns launcher v6.1 A-L per their 05:21 entry below). Eight operator messages stacked this evening; my lane = SESSION-START/, CLAUDE.md, brain entries, check script, hook, Grant-Claude-Autonomy PS1, Sinister Start.bat wrapper. Sibling lane = `start-sinister-session.ps1` + projects.json picker UX. Coordinated via `cross-agent/2026-05-23T1455Z-sanctum-to-sibling-launcher-canonical-protections.md`.
+
+### Shipped (8 deliverables, all uncommitted pending operator OK)
+
+| # | Deliverable | Path |
+|---|---|---|
+| 1 | CLAUDE.md cold-start 6 → 7 steps + top-of-file "DO NOT REVERT" block | `CLAUDE.md` |
+| 2 | 00-RULES.md Rule 7 patched (explicit SANDBOX-GOTCHAS path) + Rule 11 added (understand-anything pre-call mandatory) | `SESSION-START/00-RULES.md` |
+| 3 | Anti-revert brain doctrine: 4-layer enforcement + 6 protections + opt-in auto-restore + 4 anti-patterns | `_shared-memory/knowledge/do-not-revert-operator-canonical-protections-2026-05-23.md` |
+| 4 | `canonical-protections-check.ps1` (8 protections P1-P8 — bypassPermissions + understand-anything plugin + CLAUDE.md refs + brain entries + Rule 11 + project-root integrity) | `automations/canonical-protections-check.ps1` |
+| 5 | SessionStart hook registered → runs the check on every spawn | `.claude/settings.json` |
+| 6 | Sinister Freeze restored from archive (operator launch fix) | `projects/sinister-freeze/` |
+| 7 | Project-root disk-integrity brain doctrine + P8 enforcement | `_shared-memory/knowledge/project-root-disk-integrity-2026-05-23.md` |
+| 8 | Forward-plan synthesis (Sections A-G + TL;DR) | `_shared-memory/plans/sanctum-complete-2026-05-23T0455Z/forward-plan.md` |
+
+Plus: 2 `_INDEX.md` rows (one per brain entry) + cross-agent broadcast to sibling re. v6.1 phrase preserving the 6 canonical references + heartbeat refresh + resume-point.
+
+### Smoke test
+
+```
+canonical-protections-check :: PASS=8 FAIL=0
+  [OK] P1-P8 all green
+```
+
+Operator-gated unblock: 🔴 **Restart Claude Code** loads the hook + 12 junctioned MCPs + 14 plugins. Same row as prior session, but the hook is the new addition.
+
+### Open + master-actionable next turn
+
+- Commit the 8 deliverables (R2 / 5 min)
+- Expand `grant-claude-autonomy.ps1` from 1 step → full 7-step header + P-check installer (R2 / 30-45 min)
+- Sinister Start.bat first-run marker-file → auto-invoke Grant-Claude-Autonomy on new PCs (R2 / 10 min)
+- Review forge-memory-bridge integration with SessionStart hook for jcode memory parity (R0 audit → R2 patch)
+- Context-cleaner spec — coordinate with sibling on launcher UX side (R0 draft → R1 ship)
+
+---
+
+## 2026-05-23 05:21 — launcher v6.1 — operator directives A-K shipped + bat restored
+
+EVE on Sanctum. Operator dropped 12 directives (A-L) on `start-sinister-session.ps1` in rapid sequence (evening 2026-05-23). One in-flight edit cascade broke PS1 parse mid-flight (em-dash + apostrophe-heavy doctrine string in a here-string caused tokenizer drift). Recovered cleanly: `git checkout HEAD -- automations/start-sinister-session.ps1` to baseline, then re-applied in 6 parse-validated phases.
+
+**Shipped this turn (all parse-clean per PS AST Parser):**
+
+| # | Letter | Surface | Notes |
+|---|---|---|---|
+| 1 | C+D | `session-art/` + Draw-Banner | 8 ASCII art pieces (skull, raven, spider, octopus, dragon, eye, sigil, wolf), random pick on each launch. Centered jcode-style info block: server/client/model/version/cwd/mcp+bot counts. |
+| 2 | A+G | Build-Phrase | A: each spawn FIRST writes a "complete-without-operator" plan for the project, THEN BEGINs. Token-substitution via `__DISPLAY__`/`__PROJKEY__`/`__STAMP__` over a single-quoted here-string. G: sandbox doctrine injected inline so spawned child has OPERATOR-OWN scope authorization BEFORE first action (lists Yurikey50/51/52, libpipo, JOKR, LetsText, etc.). Single-quoted here-string keeps escape gymnastics out. |
+| 3 | F | Pick-ResumeRow | Free-text search: operator types what they were working on, scorer ranks 200 resume-points by focus_intent + last_ship + current_focus + progress_top3 + latest_plan.artifact. Falls back to recent-10 if no query / no matches. |
+| 4 | H+K | Customize-Project + Clear-Context | R) Rename + Color lets operator pick a project and edit agent_name + accent (palette of 7 + random), persists to agent-prefs.json. K) Clear context shells out to context-pruner.ps1. |
+| 5 | E+I+J | Launch-Session shell content | E: mintty `Transparency=medium` + `OpaqueWhenFocused=no` for the see-through look. I: 6 jcode-style status pills (purple agent, cyan resume, amber model, green mcp:N, blue bots:M, red --skip-perms) printed at session start. J: close-hook fires `resume-point-write.ps1` when claude exits inside the spawned shell, so context saves across closures. |
+| 6 | B | MAIN loop | Wrapped in `do { ... } until ($quit)` so the picker re-opens after every spawn. Operator can launch multiple agents in one bat run; Q ends. |
+
+**Robustness improvements:**
+
+- Parse-validated each phase via `[Parser]::ParseFile` before next edit. No more cascaded breakage.
+- Working baseline backed up at `automations/start-sinister-session-v6-baseline.ps1.bak` before phase edits.
+- Get-MCPCount now reads canonical `~/.claude/.mcp.json` (was reading `~/.claude.json` which had only 2 server entries).
+
+**Helpers verified live:** Pick-RandomArt picks one of 8 pieces (`07-sigil` last sample), Get-MCPCount returns count from `.mcp.json`, Get-BotCount returns 14 (D:\Sinister\Sinister Skills\12_LLM_ORCHESTRATION\agents).
+
+**Coordination drop:** `_shared-memory/inbox/sanctum/peer/2026-05-23T0909Z-from-sanctum-launcher-coordination.json` lets the other sanctum agent see what's in-flight on the launcher so they don't race the file.
+
+**L (jcode memory verify):** dispatched to a parallel general-purpose agent (read-only audit of forge-memory-bridge, memory-graph-render, Ruflo MCP).
+
+**Files touched this turn:**
+- NEW: `automations/session-art/{01-skull,02-raven,03-spider,04-octopus,05-dragon,06-eye,07-sigil,08-wolf}.txt` + `README.md`
+- EDIT: `automations/start-sinister-session.ps1` (6 phases of edits, ~+360 LOC net)
+- NEW: `automations/start-sinister-session-v6-baseline.ps1.bak` (safety net)
+- NEW: `_shared-memory/inbox/sanctum/peer/2026-05-23T0909Z-from-sanctum-launcher-coordination.json`
+
+---
 ## 2026-05-23 08:15 — resume pickup: cleared 3 stale operator-queue rows via pip-install audit
 
 EVE on Sanctum, cold-resume from `2026-05-23T033549Z` resume-point. Branch `agent/showmasters/scaffold-and-launch` (carried over from prior session — operator can rebase to `agent/sinister-sanctum/*` if desired). Stale heartbeat (2026-05-22T02:10Z) refreshed to `2026-05-23T08:15Z`. 1 stale inbox ACK (kernel-apk 2026-05-21T1525Z, `reply_required: false`) archived to `inbox/sanctum/_archive/` per CONTRACT 7.
@@ -33,6 +186,13 @@ Updated `OPERATOR-ACTION-QUEUE.md` to mark all three `[x]` with explanation. Net
 ### Dirty tree state (informational, not mine to touch)
 
 22 modified + 18 untracked files in repo. Sanctum-lane: `OPERATOR-ACTION-QUEUE.md` (this turn's edit), `heartbeats/sanctum.json`, two new untracked PROGRESS files (`EVE on Sanctum.md`, `general.md`, `jb-woodworks.md`). Cross-lane modifications (rkoj source, panel inbox, kernel-apk inbox, forge-memory index) are NOT mine to commit per canonical-10 cross-lane discipline. Operator or the owning lane decides.
+
+### Additional ships this turn (after the initial audit)
+
+- **Brain entry shipped:** `_shared-memory/knowledge/pip-editable-hides-mcp-cwd-emptiness-2026-05-23.md` codifying the audit anti-trap; brain `_INDEX.md` row added. Composes with the existing `mcp-junction-fix-pattern-2026-05-23` entry (cwd-side fix) as the import-side complement.
+- **Resume-point dir consolidated:** moved all 23 sanctum-lane files from `_shared-memory/resume-points/Sanctum/` (slug) into `Sinister Sanctum/` (display-name) per the `resume-point-dir-name-convention` doctrine. Slug dir removed.
+- **`resume-point-write.ps1` v1.3 shipped:** new `Resolve-ResumePointDirName` lookup at top of script maps 15 known slugs (sanctum/forge/panel/kernel-apk/term/snap-api/tiktok-api/rkoj/claw/jb-woodworks/showmasters/eve-on-sanctum/+aliases) to canonical display-name dirs. Unknown keys pass through unchanged. Smoke-tested live: `-ProjectKey sanctum` wrote to `Sinister Sanctum/2026-05-23T041058Z.json`; no `Sanctum/` dir regenerated.
+- **Operator queue net delta this turn:** 4 rows closed (`sinister_apk_mcp` / `sinister-term` / `sinister-review` / `Mixed-case resume-point dir`). Sanctum-readiness operator-action surface from prior session = 0.
 
 ---
 
