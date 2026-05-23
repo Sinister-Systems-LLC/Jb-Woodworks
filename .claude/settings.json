@@ -1,3 +1,21 @@
 {
-  "enabledPlugins": {}
+  "enabledPlugins": {
+    "claude-code-setup@claude-plugins-official": true,
+    "claude-md-management@claude-plugins-official": true,
+    "code-review@claude-plugins-official": true,
+    "code-simplifier@claude-plugins-official": true,
+    "commit-commands@claude-plugins-official": true,
+    "frontend-design@claude-plugins-official": true,
+    "github@claude-plugins-official": true,
+    "hookify@claude-plugins-official": true,
+    "pr-review-toolkit@claude-plugins-official": true,
+    "session-report@claude-plugins-official": true,
+    "cwc-makers@claude-plugins-official": true,
+    "desktop-commander@claude-plugins-official": true,
+    "exa@claude-plugins-official": true,
+    "coderabbit@claude-plugins-official": true,
+    "understand-anything@understand-anything": true,
+    "ui-ux-pro-max@ui-ux-pro-max-skill": true
+  },
+  "_note_disabled_plugins": "External-service plugins require API tokens; enable via /plugin enable <name> after configuring auth: airtable, apollo, asana, atlassian, box, circleback, discord, gitlab, imessage, intercom, legalzoom, linear, notion, pigment, slack, spotify-ads-api, telegram, windsor-ai, youdotcom-agent-skills, zapier"
 }
