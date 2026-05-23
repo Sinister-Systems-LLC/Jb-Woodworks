@@ -143,6 +143,15 @@ projects/rkoj/source/**/__pycache__/
 projects/rkoj/source/**/*.tmp
 projects/rkoj/source/**/pyinstaller-*.log
 
+# v17 (RKOJ-ELENO 2026-05-23): Sinister Generator source is REAL code (the
+# application layer on top of tools/nano-banana/) — not a junction. Track it.
+# Per CLAUDE.md "The repo is the Sanctum monorepo — no separate GitHub remote
+# (the project lives under Sanctum's tree)". __pycache__ still ignored.
+!projects/sinister-generator/source/
+!projects/sinister-generator/source/**
+projects/sinister-generator/source/**/__pycache__/
+projects/sinister-generator/source/**/*.pyc
+
 # Sinister TikTok EMU project root holds its own .git (sister product repo, lane-owned
 # by tiktok-emu agent). Excluding the whole tree from Sanctum.
 projects/sinister-tiktok-emu/

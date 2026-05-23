@@ -56,6 +56,7 @@ function Resolve-ResumePointDirName {
         'jb-woodworks'     = 'Jb Woodworks'
         'showmasters'      = 'Showmasters'
         'eve-on-sanctum'   = 'EVE on Sanctum'
+        'sinister-generator' = 'Sinister Generator'
     }
     $k = $Key.ToLower()
     if ($known.ContainsKey($k)) { return $known[$k] }
@@ -110,6 +111,7 @@ function Resolve-ProgressPath {
         # step 7 + the v6 umbrella entry); legacy sub-lane keeps its own.
         'rkoj'            = 'rkoj.md'
         'rkoj-workstation'= 'rkoj-workstation.md'
+        'sinister-generator' = 'Sinister Generator.md'
     }
     $key = $Name.ToLower()
     if ($known.ContainsKey($key)) {
