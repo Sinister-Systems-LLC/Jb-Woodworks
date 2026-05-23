@@ -17,6 +17,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable
 
+# RKOJ-ELENO :: 2026-05-23 :: alias builtin
+from term.aliases import load_aliases, save_aliases
+
 
 SANCTUM_ROOT = Path(os.environ.get("SANCTUM_ROOT") or "D:/Sinister Sanctum")
 PROJECTS_JSON = SANCTUM_ROOT / "automations" / "session-templates" / "projects.json"
@@ -66,6 +69,7 @@ Sinister Term commands:
   /cross-agent [n]          List recent cross-agent messages or read one (alias /ca)
   /ask <agent> <message>    Drop an [ASK] in another agent's inbox
   /progress [add <msg>]     Show top 5 PROGRESS entries (or add a new one)
+  /alias [name=val|remove n] List aliases, define one, or remove one
   /clear                    Clear the screen
   /help                     This message
   /exit                     Exit Sinister Term
@@ -137,23 +141,34 @@ def cmd_forge(_args: list[str]) -> CommandResult:
         return CommandResult(True, f"forge launch failed: {e}")
 
 
-def cmd_mind(_args: list[str]) -> CommandResult:
-    """Open Sinister Mind in default browser. If not running, start it first."""
-    mind_src = SANCTUM_ROOT / "projects" / "sinister-mind" / "source"
-    import webbrowser
-    url = "http://localhost:5079/"
-    # Best-effort start (background); ignore failure if already running
+def _probe_port(host: str, port: int, timeout: float = 1.0) -> bool:
+    """RKOJ-ELENO :: 2026-05-23 :: 1s TCP probe — True iff something's listening."""
+    import socket
     try:
-        if mind_src.exists():
-            subprocess.Popen(
-                [sys.executable, "-m", "mind"],
-                cwd=str(mind_src),
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-                creationflags=getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0),
-            )
+        with socket.create_connection((host, port), timeout=timeout):
+            return True
     except Exception:
-        pass
+        return False
+
+
+def cmd_mind(_args: list[str]) -> CommandResult:
+    """Open Sinister Mind in browser — but only if the mind server answers a
+    1-second probe first. RKOJ-ELENO :: 2026-05-23 :: avoids the silent
+    chrome-with-broken-page UX when the server isn't running."""
+    import webbrowser
+    host = os.environ.get("SINISTER_MIND_HOST", "localhost")
+    try:
+        port = int(os.environ.get("SINISTER_MIND_PORT", "5079"))
+    except ValueError:
+        port = 5079
+    url = f"http://{host}:{port}/"
+    if not _probe_port(host, port, timeout=1.0):
+        return CommandResult(
+            True,
+            f"mind server not reachable at {host}:{port} — start with "
+            f"`sinister-mind serve` or set SINISTER_MIND_HOST=... / "
+            f"SINISTER_MIND_PORT=...",
+        )
     webbrowser.open(url)
     return CommandResult(True, f"opened {url}")
 
@@ -371,6 +386,46 @@ def cmd_progress(args: list[str]) -> CommandResult:
     return CommandResult(True, "Recent progress:\n\n" + "\n\n".join(blocks[:5]))
 
 
+# RKOJ-ELENO :: 2026-05-23 :: alias builtin — list / define / remove
+def cmd_alias(args: list[str]) -> CommandResult:
+    """List aliases, define one (name=value), or remove one (remove <name>).
+
+    Examples:
+      /alias                 -> list
+      /alias ll=ls -la       -> define
+      /alias remove ll       -> delete
+    """
+    aliases = load_aliases()
+    if not args:
+        if not aliases:
+            return CommandResult(True, "(no aliases — try /alias ll=ls -la)")
+        rows = ["Aliases:"]
+        for name in sorted(aliases):
+            rows.append(f"  {name:<16} = {aliases[name]}")
+        return CommandResult(True, "\n".join(rows))
+    if args[0] == "remove":
+        if len(args) < 2:
+            return CommandResult(True, "usage: /alias remove <name>")
+        name = args[1]
+        if name not in aliases:
+            return CommandResult(True, f"no such alias '{name}'")
+        del aliases[name]
+        save_aliases(aliases)
+        return CommandResult(True, f"removed alias '{name}'")
+    # define: rejoin args, then split on first '='
+    raw = " ".join(args)
+    if "=" not in raw:
+        return CommandResult(True, "usage: /alias <name>=<expansion>  or  /alias remove <name>")
+    name, _, value = raw.partition("=")
+    name = name.strip()
+    value = value.strip()
+    if not name or not value:
+        return CommandResult(True, "usage: /alias <name>=<expansion>")
+    aliases[name] = value
+    save_aliases(aliases)
+    return CommandResult(True, f"alias {name} = {value}")
+
+
 COMMANDS: dict[str, Callable[[list[str]], CommandResult]] = {
     "help": cmd_help,
     "?": cmd_help,
@@ -394,6 +449,7 @@ COMMANDS: dict[str, Callable[[list[str]], CommandResult]] = {
     "ca": cmd_cross_agent,
     "ask": cmd_ask,
     "progress": cmd_progress,
+    "alias": cmd_alias,
 }
 
 

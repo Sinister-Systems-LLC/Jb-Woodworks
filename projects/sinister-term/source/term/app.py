@@ -28,6 +28,7 @@ except ImportError as e:
 
 from rich.console import Console
 
+from term.aliases import expand_line, load_aliases
 from term.commands import dispatch, SANCTUM_ROOT
 from term.completer import SinisterCompleter
 from term.keybindings import build_keybindings
@@ -200,6 +201,10 @@ def run() -> None:
             continue
 
         _write_heartbeat()
+
+        # RKOJ-ELENO :: 2026-05-23 :: alias substitution on first token. Re-load
+        # every prompt so /alias edits take effect without restart.
+        line = expand_line(line, load_aliases())
 
         result = dispatch(line)
         if result.handled:

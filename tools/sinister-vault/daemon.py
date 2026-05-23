@@ -50,6 +50,18 @@ import uvicorn
 # ----------------------------------------------------------------- constants ---
 VERSION = "1.0.0"
 VAULT_ROOT = Path(r"D:\sinister-vault")
+# /loop iter 4 of eve-into-rkoj-integration follow-ups: VAULT_ROOT on this
+# operator workstation is an NTFS junction (mklink /J) that resolves to a
+# different physical path. os.scandir + Path.resolve() walk through the
+# junction, so entry.path is the resolved variant while VAULT_ROOT itself
+# stays unresolved. Cache the resolved form once at module-init so
+# Path.relative_to() lines up. (See OPERATOR-ACTION-QUEUE.md vault row.)
+try:
+    VAULT_ROOT_RESOLVED = VAULT_ROOT.resolve()
+except (OSError, RuntimeError):
+    # Junction broken / unreadable — fall back to unresolved so the daemon
+    # still boots; /list will surface the error via the existing 404 path.
+    VAULT_ROOT_RESOLVED = VAULT_ROOT
 SUBTREES = ["repos", "sync", "snapshots", "audit", "accounts"]
 QUOTA_FILE = VAULT_ROOT / "_quota.json"
 AUDIT_DIR = VAULT_ROOT / "audit"
@@ -504,7 +516,17 @@ def list_dir(path: str = "", depth: int = Query(1, ge=1, le=4)) -> Dict[str, Any
                         st = entry.stat(follow_symlinks=False)
                     except OSError:
                         continue
-                    rel = str(Path(entry.path).relative_to(VAULT_ROOT)).replace("\\", "/")
+                    # /loop iter 4: use VAULT_ROOT_RESOLVED because base
+                    # came from _safe_subpath which calls .resolve() — so
+                    # entry.path is junction-resolved while VAULT_ROOT
+                    # itself isn't. Without this, relative_to() raised
+                    # ValueError on every list (pre-existing 500).
+                    try:
+                        rel = str(Path(entry.path).relative_to(VAULT_ROOT_RESOLVED)).replace("\\", "/")
+                    except ValueError:
+                        # Defensive: if neither root form lines up (shouldn't
+                        # happen post-fix), fall back to the entry name.
+                        rel = entry.name
                     entries.append({
                         "name": entry.name,
                         "path": rel,

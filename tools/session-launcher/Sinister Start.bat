@@ -150,11 +150,15 @@ exit /b 1
 
 :probe_eve
 REM Args: %~1 = path to EVE.exe candidate.
-REM Sets EVE_EXE if the file is >0 bytes (basic sanity). Doesn't run --version
-REM in v6.0 since a slow --version would block the spawn flow for 3s every time
-REM the operator launches; the >0-byte check catches the stale/empty-stub case
-REM operator hit when they unzipped a partial build.
+REM Sets EVE_EXE if the file is >0 bytes AND not in the blocklist (.broken / .bak).
+REM v6.4 (operator 2026-05-23: "bat file keeps opening and closing itself" —
+REM root cause was EVE.exe hung on --version after PyInstaller --onefile build
+REM corruption; bat spawned EVE.exe which never showed a window, bat exited).
+REM Mitigation A: rename the broken EVE.exe to EVE.exe.broken-<date> so this
+REM probe skips it and PS1 fallback fires.
+REM Mitigation B: this probe now also skips files ending in .broken / .bak.
 if not exist "%~1" exit /b 0
+echo %~1| findstr /I "\.broken \.bak" >nul && exit /b 0
 for %%I in ("%~1") do if %%~zI GTR 0 set "EVE_EXE=%~1"
 exit /b 0
 

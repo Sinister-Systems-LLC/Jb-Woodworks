@@ -10,6 +10,37 @@ The Sanctum-side mirror of `SESSION-START/02-OPERATOR-QUEUE.md`, with checkboxes
 
 ---
 
+## 2026-05-23 — 🟠 Merge Sinister Vault MCP entry into `~/.claude/.mcp.json` + restart Claude Code
+
+> Author: RKOJ-ELENO :: 2026-05-23
+
+EVE brought up the Sinister Vault daemon (port 5078, listening on 127.0.0.1, health PASS). Wire-everything staged the MCP server proposal — operator must merge it into `~/.claude/.mcp.json` by hand (lane discipline: master agent never edits that file).
+
+**Status snapshot (2026-05-23 14:00 local):**
+- Vault daemon: LIVE on http://127.0.0.1:5078 (manually launched via venv python; SinisterVault scheduled task `vault-daemon.bat` is fast-crashing due to `wmic` stamp parsing — needs a fix in a follow-up turn)
+- `/health`, `/quota`, `/audit` (GET + POST): PASS
+- `/list`: ✅ FIXED 2026-05-23T14:18Z by rkoj-lane (/loop iter 4). Added module-level `VAULT_ROOT_RESOLVED = VAULT_ROOT.resolve()` constant; line 507 now uses it instead of the unresolved `VAULT_ROOT`. Live verify: 10 entries returned, paths vault-rooted relative (`'accounts'` etc., not absolute). Junction confirmed `D:\sinister-vault → D:\Sinister Sanctum\_vault`. Restart daemon to pick up the patch.
+- MCP proposal: valid JSON, both `command` (`.venv/Scripts/python.exe`) and `args[0]` (`bots/agents/vault/server.py`) resolve
+
+**Merge steps:**
+
+1. Open `~/.claude/.mcp.json` (`C:\Users\Zonia\.claude\.mcp.json`)
+2. Copy the `vault` block from `D:\Sinister Sanctum\_vault\mcp-vault-entry-PROPOSED.json` into the existing `"mcpServers": { ... }` object — keys: `command`, `args`, `env` (with `SINISTER_HUB_ROOT` + `VAULT_DAEMON_URL`)
+3. Save (UTF-8, no BOM)
+4. **Restart Claude Code** so the vault MCP server loads. All EVE sessions will then have `mcp__vault__*` tools (health, list, audit, search, commit, push, pull, snapshot, sync_status, accounts) available.
+
+**Verify after restart from any agent:**
+```
+curl http://127.0.0.1:5078/api/vault/health   # daemon HTTP path
+# from EVE: mcp__vault__health                # MCP path
+```
+
+**Follow-ups for EVE (not operator):**
+- [x] ✅ Fix `vault-daemon.bat` `wmic`-based stamp parsing — DONE 2026-05-23 evening (RKOJ-ELENO): both wmic blocks replaced with `powershell -NoProfile -Command "Get-Date -Format ..."` calls. SinisterVault scheduled task should now bring up the daemon cleanly on next logon / `Start-ScheduledTask SinisterVault`.
+- [x] Fix daemon.py `/list` 500 by computing `VAULT_ROOT.resolve()` once at module-init — DONE 2026-05-23T14:18Z by rkoj-lane (/loop iter 4). Live-verified against junction (`D:\sinister-vault → D:\Sinister Sanctum\_vault`). Restart vault daemon to load the patch.
+
+---
+
 ## 2026-05-23 — 🟠 Set third-party CLI tokens (unblocks `railway` / `gh` / `vercel` / etc. for the fleet)
 
 EVE on Sanctum surfaced the `Cannot login in non-interactive mode` class-of-error

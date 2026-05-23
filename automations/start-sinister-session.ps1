@@ -1022,6 +1022,45 @@ public class WinPosCheck {
 # LAUNCH (git-bash + claude --dangerously-skip-permissions)
 # ============================================================
 
+# RKOJ-ELENO :: 2026-05-23 :: auto-clone the upstream GitHub repo into
+# $projRec.root on first-spawn-if-missing. Operator's local Sanctum stores
+# four project sources as NTFS junctions to D:\Sinister\... that don't exist
+# on Leo's machine. This function makes a fresh-clone Sanctum self-bootstrapping
+# for any public Sinister-Systems-LLC repo. Idempotent: only clones if the
+# target is missing or empty. Private repos rely on pre-existing gh auth or
+# GH_TOKEN env (HTTPS clone surface).
+function Ensure-ProjectSource($projRec) {
+    if (-not $projRec) { return }
+    $github = [string]$projRec.github
+    if ([string]::IsNullOrWhiteSpace($github)) { return }
+    $root = [string]$projRec.root
+    if ([string]::IsNullOrWhiteSpace($root)) { return }
+    $needsClone = $false
+    if (-not (Test-Path $root)) {
+        $needsClone = $true
+    } else {
+        try {
+            $hasAny = @(Get-ChildItem -LiteralPath $root -Force -ErrorAction Stop | Select-Object -First 1).Count -gt 0
+            if (-not $hasAny) { $needsClone = $true }
+        } catch { $needsClone = $true }
+    }
+    if (-not $needsClone) { return }
+    $repo = "https://github.com/$github.git"
+    $key = $projRec.key
+    Write-Host "  > cloning $repo into projects/$key/source/..." -ForegroundColor $C.Accent
+    try {
+        $parent = Split-Path -Parent $root
+        if ($parent -and -not (Test-Path $parent)) { New-Item -ItemType Directory -Path $parent -Force | Out-Null }
+        if (Test-Path $root) { Remove-Item -LiteralPath $root -Recurse -Force -ErrorAction SilentlyContinue }
+        & git clone $repo $root 2>&1 | ForEach-Object { Write-Host "    $_" -ForegroundColor $C.Dim }
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "  [WARN] git clone exited $LASTEXITCODE for $repo (private repo? auth issue?) — spawn will likely fail" -ForegroundColor $C.Warn
+        }
+    } catch {
+        Write-Host "  [WARN] clone error: $_" -ForegroundColor $C.Warn
+    }
+}
+
 function Launch-Session($projRec, $agentName, $accent, $phrase, $modes = $null) {
     $swarmEnv = if ($modes -and $modes.swarm) { '1' } else { '' }
     $loopEnv  = if ($modes -and $modes.loop)  { '1' } else { '' }
@@ -1073,6 +1112,10 @@ function Launch-Session($projRec, $agentName, $accent, $phrase, $modes = $null) 
         } catch {}
     }
     }
+
+    # RKOJ-ELENO :: 2026-05-23 :: auto-clone the upstream repo into $projRec.root
+    # if the source dir is missing/empty (fresh-clone Sanctum bootstrap).
+    Ensure-ProjectSource $projRec
 
     # Color map for terminal (always purple unless overridden)
     $colorMap = @{

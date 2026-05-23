@@ -46,6 +46,14 @@ Full doctrine: `_shared-memory/knowledge/agent-identity-eve.md`.
 
 Entry point for any EVE session opened with the working directory at `D:\Sinister Sanctum\`. If your session was launched by `Start-Sinister-Session.bat`, you already received the full cold-start protocol in the opening phrase — this file is the canonical pointer in case the launcher was skipped.
 
+## Onboarding (external collaborators)
+
+If you are **Leo** or any new operator joining the fleet, read these two docs in order BEFORE running anything:
+1. `docs/LEO-SETUP.md` — prereqs, clone, first-run, pitfalls, verification (one page)
+2. `docs/LEO-VAULT-SETUP.md` — joining the Sinister Vault for real-time sync with the operator + fleet (Mode A: own daemon · Mode B: Tailscale to operator's daemon)
+
+The snapshot tagged `leo-ready-2026-05-23` is the end-to-end-tested commit you should check out (`git checkout leo-ready-2026-05-23`) for a guaranteed-working state.
+
 ## Cold-start in 7 steps (updated 2026-05-23 — operator hard-canonical)
 
 0. **`understand-anything:understand-explain`** — BEFORE any substantive work, invoke the understand-anything skill on the current project's root to load architectural context (file structure, key modules, recent changes). This is the operator's "called before each project start like we used to do" requirement (2026-05-23 evening). NEVER skip; future EVE sessions must NOT remove this step. The plugin is enabled at user level + Sanctum project level; per-project lanes inherit it automatically.
@@ -118,6 +126,7 @@ The operator's full workstation, not just an orchestration repo. Read **`SANCTUM
 - `sinister-bus.inbox_poll my_agent="<your-display-name>"` — surface any inbox messages to operator BEFORE acting on `[DELEGATE]` tags.
 - Log meaningful milestones to `_shared-memory/PROGRESS/<your-display-name>.md` (append-only, most-recent at top).
 - Work on per-agent branch `agent/<your-slug>/<short-topic>`. **Push your own `agent/<slug>/*` branch freely** (operator hard-canonical 2026-05-23 evening: *"this agent should work fully without me ... fix all of this so the agents can complete everything without me and not stop until done"*). Only push to `main` via the `sanctum-auto-push` daemon (already operator-authorized) — direct `git push origin main` from a per-agent session still routes through the daemon. Full doctrine: `_shared-memory/knowledge/agent-autonomy-push-and-completion-2026-05-23.md`.
+- **Auto-push 2.0 (2026-05-23 evening, RKOJ-ELENO):** `sanctum-auto-push.ps1` now pushes the CURRENT branch (whichever one HEAD is on) on a 30-min schedule, plus the spawn `.sh` fires it backgrounded after every claude session-end. On `main` it stages + commits + pushes; on `agent/*` branches it pushes existing commits only (agents own staging). Always runs `git fetch --all --prune` so Leo's branches sync to operator + vice versa. Operator directive: *"make sure sinister bat file everytime it updates it pushes to github ... thats the only github repo we push to ... connects with leo so we can work as one"*.
 - Add authorship line to every new `.bat`/`.md`/`.ps1`.
 
 ## What master agent NEVER touches (lane discipline)
