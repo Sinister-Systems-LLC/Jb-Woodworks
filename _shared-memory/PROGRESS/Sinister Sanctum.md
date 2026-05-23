@@ -4,6 +4,38 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-23 08:15 — resume pickup: cleared 3 stale operator-queue rows via pip-install audit
+
+EVE on Sanctum, cold-resume from `2026-05-23T033549Z` resume-point. Branch `agent/showmasters/scaffold-and-launch` (carried over from prior session — operator can rebase to `agent/sinister-sanctum/*` if desired). Stale heartbeat (2026-05-22T02:10Z) refreshed to `2026-05-23T08:15Z`. 1 stale inbox ACK (kernel-apk 2026-05-21T1525Z, `reply_required: false`) archived to `inbox/sanctum/_archive/` per CONTRACT 7.
+
+### What the audit found
+
+Three "operator-gated" rows in `OPERATOR-ACTION-QUEUE.md` were actually already-resolved or based on incomplete inspections. `pip show` ground truth from `pip list | grep -i sinister`:
+
+| Row | Prior claim | Ground truth |
+|---|---|---|
+| `sinister_apk_mcp` empty folder | "MCP entry dead; restore source OR remove .mcp.json entry" | Editable-installed from `C:\Users\Zonia\Desktop\Sinister-Snap-APK-\mcp-server` (v0.1.0). `python -m sinister_apk_mcp` resolves via sys.path, not cwd. MCP works. |
+| `sinister-term` worktree bind | "resolves to D:\Sinister-Term-WT — re-pip-install from canonical" | Already at canonical `D:\Sinister Sanctum\projects\sinister-term\source` (v0.1.0). |
+| `sinister-review` install | "harness blocked auto-install; 1 of 15 tools" | Already at canonical `D:\Sinister Sanctum\tools\sinister-review` (v0.1.0). 15-of-15 confirmed. |
+
+Updated `OPERATOR-ACTION-QUEUE.md` to mark all three `[x]` with explanation. Net: operator-action surface reduced from 3 rows to 0 in the Sanctum-readiness block.
+
+### Inventory captured (sticks to brain for next audit)
+
+`pip list | grep -i sinister` enumerates 18 Sinister/EVE packages installed editable: eve_mcp, forge-memory-bridge, memory-graph-render, nano-banana, sanctum-backup, sinister-cli, sinister-diagnose, sinister-forge, sinister-jcode-shim, sinister-login, sinister_mcp, sinister-mind, sinister-model, sinister-review, sinister-swarm, sinister-term, sinister_tiktok_mcp, sinister-usage, sinister_apk_mcp. Three of these (`eve_mcp`, `sinister_apk_mcp`, `sinister_mcp`, `sinister_tiktok_mcp`) install from Desktop locations rather than the canonical tree — pre-monorepo install state that's harmless but worth knowing.
+
+### Operator-gated residue still open
+
+- 🔴 Restart Claude Code → activates 12 newly-resolvable MCPs + 14 newly-enabled plugins (same row as prior session).
+- 🟡 Enable 20 external-service plugins per-need via `/plugin enable <name>` (token-gated; operator-decision).
+- Ruflo MCP disconnected mid-session (deferred tool list dropped 28+ entries). Non-blocking — Ruflo is supplementary semantic-memory delegation. Will resurface on next Claude Code restart along with the other 11 stalled MCPs.
+
+### Dirty tree state (informational, not mine to touch)
+
+22 modified + 18 untracked files in repo. Sanctum-lane: `OPERATOR-ACTION-QUEUE.md` (this turn's edit), `heartbeats/sanctum.json`, two new untracked PROGRESS files (`EVE on Sanctum.md`, `general.md`, `jb-woodworks.md`). Cross-lane modifications (rkoj source, panel inbox, kernel-apk inbox, forge-memory index) are NOT mine to commit per canonical-10 cross-lane discipline. Operator or the owning lane decides.
+
+---
+
 ## 2026-05-23 03:15 — jcode-parity audit + cross-agent [ASK] to RKOJ for matrix flips
 
 EVE on Sanctum, branch `agent/showmasters/scaffold-and-launch`. Operator directive: *"make sure everything works like our jcode functions, bot network local agents, memory like jcode ALL of it"*. Auto Mode active; /loop self-paced.
