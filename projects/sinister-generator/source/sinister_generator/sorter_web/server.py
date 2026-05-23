@@ -115,14 +115,14 @@ class _State:
             }
             note_path = dest.with_suffix(dest.suffix + ext_for_verdict[verdict])
             tier_label = {
-                "great": "GREAT (would use as-is)",
+                "great": "GREAT (strong positive — high quality, but not necessarily production-ready)",
                 "good": "GOOD (on theme, needs work)",
                 "size_off": "SIZE OFF (good idea, wrong size/aspect/framing — reshape candidate)",
                 "wrong_guy": "WRONG GUY (good concept, character drift — needs stronger char refs)",
                 "wrong_style": "WRONG STYLE (good composition, wrong vibe/lighting/palette)",
                 "skip_concept": "SKIP CONCEPT (drop this prompt direction in future iter)",
                 "bad": "BAD (rejected)",
-                "promote_ref": "PROMOTED TO REFS (operator endorses as canonical for future gens)",
+                "promote_ref": "USE AS REF (operator would actually use this — production-ready canonical)",
             }[verdict]
             try:
                 note_path.write_text(f"operator {tier_label} via web sorter at {utc}\n", encoding="utf-8")
