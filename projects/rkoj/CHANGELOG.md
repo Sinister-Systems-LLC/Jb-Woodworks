@@ -4,6 +4,24 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not command-versions (each lane has its own).
 
+## v1.6.61 — 2026-05-22
+
+**Right-click tag chip → context menu with Find + Untag actions. Tags
+become fully mouse-driven (no /untag typing needed).**
+
+- `_TagChip.contextMenuEvent` opens a QMenu styled to match the
+  ELEVATED/BORDER theme with the same purple hover used by the
+  /slash autocomplete popup.
+- Two actions:
+  - "Find cards tagged 'X'" — emits `find_requested` (same as
+    left-click)
+  - "Remove tag 'X' from this card" — reuses the existing /untag
+    intercept via `self._card._maybe_intercept(f"/untag {tag}")`
+    so persistence + chip rebuild + feedback all run uniformly.
+- Tooltip updated: `Left-click: /find … · Right-click: menu`.
+- MANIFEST.json 1.6.60 → 1.6.61.
+- `__init__.py __version__ = "1.6.61"`.
+
 ## v1.6.60 — 2026-05-22
 
 **`/summarize-all` — fleet-wide /summarize. Stages the canned TL;DR

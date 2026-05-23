@@ -579,13 +579,18 @@ class _TagChip(QLabel):
     """v1.6.52 — clickable tag chip in the card header. Clicking emits
     `find_requested` on the parent AgentCard with this chip's text, so
     the grid scrolls to the next card carrying the same tag (the
-    standard /find-next cycle wraps if there are multiple matches)."""
+    standard /find-next cycle wraps if there are multiple matches).
+    v1.6.61 — right-click opens a context menu with Untag + Find
+    actions so operators can remove tags without typing /untag."""
 
     def __init__(self, text: str, card: "AgentCard") -> None:
         super().__init__(text)
         self._card = card
         self.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.setToolTip(f"Click to /find cards tagged '{text}'")
+        self.setToolTip(
+            f"Left-click: /find cards tagged '{text}' · "
+            f"Right-click: menu"
+        )
 
     def mousePressEvent(self, ev) -> None:  # type: ignore[override]
         if ev.button() == Qt.MouseButton.LeftButton:
@@ -596,6 +601,34 @@ class _TagChip(QLabel):
             except Exception:
                 pass
         super().mousePressEvent(ev)
+
+    def contextMenuEvent(self, ev) -> None:  # type: ignore[override]
+        from PyQt6.QtWidgets import QMenu
+        from .theme import BORDER as _B, ELEVATED as _E, PURPLE_PRIMARY as _P
+        menu = QMenu(self)
+        menu.setStyleSheet(
+            f"QMenu {{ background-color: {_E}; color: white; "
+            f"border: 1px solid {_B}; border-radius: 6px; padding: 4px; }}"
+            f"QMenu::item {{ padding: 5px 14px; border-radius: 4px; }}"
+            f"QMenu::item:selected {{ background-color: rgba(191,90,242,80); }}"
+        )
+        find_action = menu.addAction(f"Find cards tagged '{self.text()}'")
+        untag_action = menu.addAction(f"Remove tag '{self.text()}' from this card")
+        chosen = menu.exec(ev.globalPos())
+        if chosen is find_action:
+            try:
+                self._card.find_requested.emit(
+                    self._card.session.pane_id, self.text()
+                )
+            except Exception:
+                pass
+        elif chosen is untag_action:
+            try:
+                # Reuses the existing /untag intercept which handles
+                # session.tags mutation + _rebuild_tags + persist.
+                self._card._maybe_intercept(f"/untag {self.text()}")
+            except Exception:
+                pass
 
 
 # ── Agent card ──────────────────────────────────────────────────────────
