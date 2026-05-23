@@ -1,15 +1,17 @@
-# Author: RKOJ-ELENO :: 2026-05-21
-"""Devices tab — live ADB device list with per-device action buttons.
+# Author: RKOJ-ELENO :: 2026-05-23
+"""Devices tab — live ADB device list with embedded scrcpy mirrors.
 
-v1.6.4 — read-only inventory.
-v1.6.72 — operator escalation: ADB viewer must actually work for viewing
-phones. Per-device row now has Mirror / Screenshot / Shell / Logcat
-buttons that shell out to scrcpy + adb respectively. scrcpy auto-detected
-via winget install path or PATH lookup.
+v1.6.4  — read-only inventory.
+v1.6.72 — per-device action buttons (Mirror / Screenshot / Shell / Logcat).
+v1.6.73 — embedded scrcpy in a rounded MirrorCard inside the tab itself
+          (Win32 SetParent reparenting via QWindow.fromWinId). Per-device
+          group-select checkbox + group action row (Mirror Selected,
+          Screenshot Selected, Mirror All).
 """
 
 from __future__ import annotations
 
+import ctypes
 import os
 import shutil
 import subprocess
@@ -17,10 +19,11 @@ import time
 from pathlib import Path
 from typing import Optional
 
-from PyQt6.QtCore import Qt, QTimer
+from PyQt6.QtCore import Qt, QTimer, pyqtSignal
+from PyQt6.QtGui import QWindow
 from PyQt6.QtWidgets import (
-    QFrame, QHBoxLayout, QLabel, QMessageBox, QPushButton, QScrollArea,
-    QSizePolicy, QVBoxLayout, QWidget,
+    QCheckBox, QFrame, QHBoxLayout, QLabel, QMessageBox, QPushButton,
+    QScrollArea, QSizePolicy, QVBoxLayout, QWidget,
 )
 
 from . import state
@@ -49,7 +52,6 @@ def _find_adb() -> str | None:
     on_path = shutil.which("adb") or shutil.which("adb.exe")
     if on_path:
         return on_path
-    # scrcpy ships adb in its folder
     sc = _find_scrcpy()
     if sc:
         cand = Path(sc).parent / "adb.exe"
@@ -69,8 +71,254 @@ _STATE_COLOR: dict[str, str] = {
 }
 
 
+# ── Embedded scrcpy mirror card ────────────────────────────────────────
+class _MirrorCard(QFrame):
+    """v1.6.73 — rounded card that hosts a reparented scrcpy window.
+
+    Spawns `scrcpy --serial <s> --window-title <unique> --window-borderless
+    --max-size 480` in detached mode, then after ~2s scans for that
+    window-title via Win32 FindWindowW, takes the HWND, wraps it with
+    `QWindow.fromWinId()` + `QWidget.createWindowContainer()`, and
+    embeds the result into this card's body slot.
+    """
+
+    closed = pyqtSignal(str)  # serial — DevicesView catches to clean up state
+
+    # Operator wants the embed under ~480px so 2 phones fit side-by-side.
+    MIRROR_SIZE = 360
+    EMBED_RETRY_MS = 250
+    EMBED_TIMEOUT_MS = 8000
+
+    def __init__(self, dev: state.Device, parent: QWidget | None = None) -> None:
+        super().__init__(parent)
+        self.dev = dev
+        self._proc: subprocess.Popen | None = None
+        self._embed_container: QWidget | None = None
+        self._embed_window: QWindow | None = None
+        self._embed_attempts = 0
+        self._unique_title = f"EVE-MIRROR-{dev.serial}-{int(time.time() * 1000)}"
+        self.setObjectName("MirrorCard")
+        self.setStyleSheet(
+            f"QFrame#MirrorCard {{"
+            f"  background-color: {ELEVATED};"
+            f"  border: 1px solid {BORDER};"
+            f"  border-radius: 14px;"
+            f"}}"
+        )
+        self.setFixedWidth(self.MIRROR_SIZE + 16)
+        self.setMinimumHeight(self.MIRROR_SIZE + 110)
+        self._build()
+        # Start scrcpy now; embed-poller fires soon after.
+        QTimer.singleShot(0, self._spawn_scrcpy)
+
+    def _build(self) -> None:
+        root = QVBoxLayout(self)
+        root.setContentsMargins(8, 8, 8, 8)
+        root.setSpacing(6)
+
+        # Header strip: USB pill · serial · model · close X
+        hdr = QHBoxLayout()
+        hdr.setSpacing(6)
+        usb = QLabel("USB")
+        usb.setStyleSheet(
+            f"color: {SUCCESS}; background-color: rgba(48,209,88,30); "
+            f"border: 1px solid rgba(48,209,88,120); border-radius: 6px; "
+            f"padding: 1px 6px; font-size: 9px; font-weight: 700; "
+            f"font-family: 'JetBrains Mono', monospace;"
+        )
+        hdr.addWidget(usb)
+
+        serial = QLabel(self.dev.serial[-8:])
+        serial.setStyleSheet(
+            f"color: white; background: transparent; "
+            f"font-family: 'JetBrains Mono', monospace; "
+            f"font-size: 10px; font-weight: 700;"
+        )
+        hdr.addWidget(serial)
+
+        model = QLabel(self.dev.model or "?")
+        model.setStyleSheet(
+            f"color: {MUTED_FG}; background: transparent; font-size: 10px;"
+        )
+        hdr.addWidget(model)
+
+        hdr.addStretch(1)
+
+        close_btn = QPushButton("✕")
+        close_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        close_btn.setFixedSize(20, 20)
+        close_btn.setStyleSheet(
+            f"QPushButton {{ color: {MUTED_FG}; background: transparent; "
+            f"border: none; font-size: 12px; font-weight: 700; }}"
+            f"QPushButton:hover {{ color: white; "
+            f"background-color: rgba(255,255,255,0.08); border-radius: 4px; }}"
+        )
+        close_btn.clicked.connect(self._on_close)
+        hdr.addWidget(close_btn)
+        root.addLayout(hdr)
+
+        # Body — placeholder until scrcpy embeds; then swapped for the
+        # reparented QWindow container.
+        self._body_host = QFrame()
+        self._body_host.setMinimumSize(self.MIRROR_SIZE, self.MIRROR_SIZE)
+        self._body_host.setStyleSheet(
+            f"QFrame {{ background-color: #000; border-radius: 10px; }}"
+        )
+        self._body_layout = QVBoxLayout(self._body_host)
+        self._body_layout.setContentsMargins(0, 0, 0, 0)
+        self._body_layout.setSpacing(0)
+        self._body_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self._status_label = QLabel("Launching scrcpy…")
+        self._status_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self._status_label.setStyleSheet(
+            f"color: {MUTED_FG}; background: transparent; "
+            f"font-size: 11px; padding: 20px;"
+        )
+        self._body_layout.addWidget(self._status_label)
+        root.addWidget(self._body_host, stretch=1)
+
+        # Footer — quick action row (screenshot + shell)
+        ftr = QHBoxLayout()
+        ftr.setSpacing(6)
+        for label, slot in (
+            ("📸", self._take_screenshot),
+            ("⌨", self._open_shell),
+            ("📜", self._tail_logcat),
+        ):
+            b = QPushButton(label)
+            b.setFixedSize(28, 22)
+            b.setCursor(Qt.CursorShape.PointingHandCursor)
+            b.setStyleSheet(
+                f"QPushButton {{ color: {PURPLE_PRIMARY}; background-color: rgba(191,90,242,30); "
+                f"border: 1px solid rgba(191,90,242,120); border-radius: 6px; "
+                f"font-size: 12px; }}"
+                f"QPushButton:hover {{ background-color: rgba(191,90,242,60); }}"
+            )
+            b.clicked.connect(slot)
+            ftr.addWidget(b)
+        ftr.addStretch(1)
+        root.addLayout(ftr)
+
+    def _spawn_scrcpy(self) -> None:
+        if not _SCRCPY:
+            self._status_label.setText("scrcpy not found")
+            return
+        try:
+            self._proc = subprocess.Popen(
+                [
+                    _SCRCPY,
+                    "--serial", self.dev.serial,
+                    "--window-title", self._unique_title,
+                    "--window-borderless",
+                    "--max-size", str(self.MIRROR_SIZE),
+                    "--no-audio",
+                ],
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                creationflags=getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0),
+            )
+            self._status_label.setText("Connecting to phone…")
+            QTimer.singleShot(self.EMBED_RETRY_MS, self._try_embed)
+        except Exception as exc:
+            self._status_label.setText(f"scrcpy failed:\n{exc}")
+
+    def _try_embed(self) -> None:
+        """Poll for the scrcpy window by unique title, then reparent it."""
+        self._embed_attempts += 1
+        elapsed = self._embed_attempts * self.EMBED_RETRY_MS
+        try:
+            user32 = ctypes.windll.user32
+            user32.FindWindowW.restype = ctypes.c_void_p
+            user32.FindWindowW.argtypes = [ctypes.c_wchar_p, ctypes.c_wchar_p]
+            hwnd = user32.FindWindowW(None, self._unique_title)
+        except Exception as exc:
+            self._status_label.setText(f"reparent failed: {exc}")
+            return
+        if not hwnd:
+            if elapsed > self.EMBED_TIMEOUT_MS:
+                self._status_label.setText(
+                    f"scrcpy window not found after {self.EMBED_TIMEOUT_MS // 1000}s"
+                )
+                return
+            QTimer.singleShot(self.EMBED_RETRY_MS, self._try_embed)
+            return
+        try:
+            self._embed_window = QWindow.fromWinId(int(hwnd))
+            self._embed_container = QWidget.createWindowContainer(
+                self._embed_window, self._body_host
+            )
+            self._embed_container.setMinimumSize(
+                self.MIRROR_SIZE, self.MIRROR_SIZE
+            )
+            self._embed_container.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+            # Swap placeholder for the embed
+            self._body_layout.removeWidget(self._status_label)
+            self._status_label.hide()
+            self._body_layout.addWidget(self._embed_container)
+        except Exception as exc:
+            self._status_label.setText(f"embed failed: {exc}")
+
+    def _on_close(self) -> None:
+        # Kill scrcpy → its window vanishes → reparented container destroys
+        if self._proc is not None:
+            try:
+                self._proc.kill()
+                self._proc.wait(timeout=2)
+            except Exception:
+                pass
+            self._proc = None
+        self.closed.emit(self.dev.serial)
+        self.setParent(None)
+        self.deleteLater()
+
+    # ── Quick-action footer slots ──────────────────────────────────────
+    def _toast(self, msg: str, error: bool = False) -> None:
+        box = QMessageBox(self)
+        box.setWindowTitle("Mirror" if not error else "Mirror error")
+        box.setIcon(QMessageBox.Icon.Warning if error else QMessageBox.Icon.Information)
+        box.setText(msg)
+        box.exec()
+
+    def _take_screenshot(self) -> None:
+        if not _ADB:
+            return self._toast("adb not found", error=True)
+        ts = time.strftime("%Y%m%dT%H%M%S")
+        out = Path.home() / "Desktop" / f"eve-{self.dev.serial}-{ts}.png"
+        try:
+            with open(out, "wb") as fh:
+                subprocess.run([_ADB, "-s", self.dev.serial, "exec-out",
+                                "screencap", "-p"], stdout=fh, timeout=15)
+            self._toast(f"Saved: {out.name}")
+        except Exception as exc:
+            self._toast(f"screencap failed: {exc}", error=True)
+
+    def _open_shell(self) -> None:
+        if not _ADB:
+            return self._toast("adb not found", error=True)
+        subprocess.Popen(
+            ["cmd", "/c", "start", "cmd", "/k",
+             f'"{_ADB}" -s {self.dev.serial} shell'],
+            creationflags=getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0),
+        )
+
+    def _tail_logcat(self) -> None:
+        if not _ADB:
+            return self._toast("adb not found", error=True)
+        subprocess.Popen(
+            ["cmd", "/c", "start", "cmd", "/k",
+             f'"{_ADB}" -s {self.dev.serial} logcat -v threadtime'],
+            creationflags=getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0),
+        )
+
+
+# ── Device list row ────────────────────────────────────────────────────
 class _DeviceRow(QFrame):
-    """Single device row — status dot + serial + model + state + transport."""
+    """Single device row — checkbox + status dot + serial + model + actions."""
+
+    mirror_requested = pyqtSignal(str)        # serial
+    group_toggled = pyqtSignal(str, bool)     # serial, selected
 
     def __init__(self, dev: state.Device, parent: QWidget | None = None) -> None:
         super().__init__(parent)
@@ -89,14 +337,28 @@ class _DeviceRow(QFrame):
         row.setContentsMargins(14, 10, 14, 10)
         row.setSpacing(14)
 
-        # Status dot
+        # v1.6.73 — group-select checkbox
+        self.group_cb = QCheckBox()
+        self.group_cb.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.group_cb.setToolTip("Add to group selection")
+        self.group_cb.setStyleSheet(
+            f"QCheckBox::indicator {{ width: 14px; height: 14px; "
+            f"border: 1px solid {BORDER}; border-radius: 4px; "
+            f"background-color: transparent; }}"
+            f"QCheckBox::indicator:checked {{ background-color: {PURPLE_PRIMARY}; "
+            f"border-color: {PURPLE_PRIMARY}; }}"
+        )
+        self.group_cb.toggled.connect(
+            lambda checked: self.group_toggled.emit(self.dev.serial, checked)
+        )
+        row.addWidget(self.group_cb)
+
         dot = QLabel()
         dot.setFixedSize(10, 10)
         color = _STATE_COLOR.get(dev.state, MUTED_FG)
         dot.setStyleSheet(f"background-color: {color}; border-radius: 5px;")
         row.addWidget(dot)
 
-        # Serial (mono)
         serial = QLabel(dev.serial)
         serial.setStyleSheet(
             "color: white; background: transparent; "
@@ -105,7 +367,6 @@ class _DeviceRow(QFrame):
         )
         row.addWidget(serial)
 
-        # Model
         model = QLabel(dev.model or "(unknown)")
         model.setStyleSheet(
             f"color: {MUTED_FG}; background: transparent; font-size: 12px;"
@@ -114,10 +375,9 @@ class _DeviceRow(QFrame):
 
         row.addStretch(1)
 
-        # v1.6.72 — per-device action buttons (only when state == device)
         if dev.state == "device":
-            self._add_action_button(row, "Mirror", "Open scrcpy screen mirror",
-                                    self._launch_scrcpy)
+            self._add_action_button(row, "Mirror", "Embed scrcpy mirror inline",
+                                    lambda: self.mirror_requested.emit(self.dev.serial))
             self._add_action_button(row, "Screenshot",
                                     "Save adb screencap PNG to Desktop",
                                     self._take_screenshot)
@@ -127,7 +387,6 @@ class _DeviceRow(QFrame):
                                     "Tail logcat in a new terminal",
                                     self._tail_logcat)
 
-        # State pill
         state_pill = QLabel(dev.state)
         state_pill.setStyleSheet(
             f"color: {color}; background: transparent; "
@@ -136,7 +395,6 @@ class _DeviceRow(QFrame):
         )
         row.addWidget(state_pill)
 
-        # Transport tag
         transport = QLabel(dev.transport.upper())
         transport.setStyleSheet(
             f"color: {MUTED_FG}; background: transparent; "
@@ -145,8 +403,7 @@ class _DeviceRow(QFrame):
         )
         row.addWidget(transport)
 
-    def _add_action_button(self, row: QHBoxLayout, label: str,
-                           tip: str, slot) -> None:
+    def _add_action_button(self, row, label: str, tip: str, slot) -> None:
         btn = QPushButton(label)
         btn.setCursor(Qt.CursorShape.PointingHandCursor)
         btn.setToolTip(tip)
@@ -157,109 +414,59 @@ class _DeviceRow(QFrame):
             f"  padding: 4px 12px; font-size: 11px; font-weight: 600;"
             f"}}"
             f"QPushButton:hover {{ background-color: rgba(191,90,242,60); }}"
-            f"QPushButton:disabled {{ color: {MUTED_FG}; "
-            f"  background-color: transparent; border-color: {BORDER}; }}"
         )
         btn.clicked.connect(slot)
         row.addWidget(btn)
 
-    # ── Action handlers ────────────────────────────────────────────────
     def _toast(self, msg: str, error: bool = False) -> None:
-        # Lightweight inline feedback via QMessageBox.
         box = QMessageBox(self)
         box.setWindowTitle("ADB Viewer" if not error else "ADB Viewer error")
         box.setText(msg)
         box.setIcon(QMessageBox.Icon.Warning if error else QMessageBox.Icon.Information)
         box.exec()
 
-    def _launch_scrcpy(self) -> None:
-        if not _SCRCPY:
-            self._toast(
-                "scrcpy not found.\n\nInstall: winget install Genymobile.scrcpy",
-                error=True,
-            )
-            return
-        try:
-            # Spawn detached; scrcpy opens its own window with the mirror.
-            subprocess.Popen(
-                [_SCRCPY, "--serial", self.dev.serial,
-                 "--window-title", f"EVE/scrcpy · {self.dev.model or self.dev.serial}"],
-                stdin=subprocess.DEVNULL,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-                creationflags=getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0),
-            )
-        except Exception as exc:
-            self._toast(f"scrcpy launch failed: {exc}", error=True)
-
     def _take_screenshot(self) -> None:
         if not _ADB:
-            self._toast("adb not found on PATH (and not bundled with scrcpy).",
-                        error=True)
-            return
+            return self._toast("adb not found", error=True)
         ts = time.strftime("%Y%m%dT%H%M%S")
         out = Path.home() / "Desktop" / f"eve-{self.dev.serial}-{ts}.png"
         try:
             with open(out, "wb") as fh:
-                r = subprocess.run(
-                    [_ADB, "-s", self.dev.serial, "exec-out",
-                     "screencap", "-p"],
-                    stdout=fh,
-                    stderr=subprocess.PIPE,
-                    timeout=15,
-                )
-            if r.returncode != 0:
-                self._toast(f"screencap exit {r.returncode}\n"
-                            f"{r.stderr.decode('utf-8', 'replace')[:200]}",
-                            error=True)
-                return
+                subprocess.run([_ADB, "-s", self.dev.serial, "exec-out",
+                                "screencap", "-p"], stdout=fh, timeout=15)
             self._toast(f"Saved: {out}")
         except Exception as exc:
-            self._toast(f"screenshot failed: {exc}", error=True)
+            self._toast(f"screencap failed: {exc}", error=True)
 
     def _open_shell(self) -> None:
         if not _ADB:
-            self._toast("adb not found on PATH.", error=True)
-            return
-        try:
-            # Launch a NEW cmd window running `adb -s <serial> shell`.
-            subprocess.Popen(
-                ["cmd", "/c", "start", "cmd", "/k",
-                 f'"{_ADB}" -s {self.dev.serial} shell'],
-                shell=False,
-                creationflags=getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0),
-            )
-        except Exception as exc:
-            self._toast(f"shell launch failed: {exc}", error=True)
+            return self._toast("adb not found", error=True)
+        subprocess.Popen(
+            ["cmd", "/c", "start", "cmd", "/k",
+             f'"{_ADB}" -s {self.dev.serial} shell'],
+            creationflags=getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0),
+        )
 
     def _tail_logcat(self) -> None:
         if not _ADB:
-            self._toast("adb not found on PATH.", error=True)
-            return
-        try:
-            subprocess.Popen(
-                ["cmd", "/c", "start", "cmd", "/k",
-                 f'"{_ADB}" -s {self.dev.serial} logcat -v threadtime'],
-                shell=False,
-                creationflags=getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0),
-            )
-        except Exception as exc:
-            self._toast(f"logcat launch failed: {exc}", error=True)
+            return self._toast("adb not found", error=True)
+        subprocess.Popen(
+            ["cmd", "/c", "start", "cmd", "/k",
+             f'"{_ADB}" -s {self.dev.serial} logcat -v threadtime'],
+            creationflags=getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0),
+        )
 
 
+# ── Top-level Devices tab ──────────────────────────────────────────────
 class DevicesView(QWidget):
-    """ADB devices list + auto-refresh.
-
-    No actions yet — read-only inventory. Operator can SEE every connected
-    phone + its state at a glance. Actions (scrcpy / shell / logcat) land
-    in a follow-up milestone per `forward-plan.md § C.1`.
-    """
+    """ADB devices: live list + group select + embedded scrcpy mirrors."""
 
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self._device_rows: list[_DeviceRow] = []
+        self._mirror_cards: dict[str, _MirrorCard] = {}  # serial → card
+        self._group_selected: set[str] = set()
         self._build()
-        # Initial population + 4s refresh loop.
         self._refresh()
         self._refresh_timer = QTimer(self)
         self._refresh_timer.setInterval(4_000)
@@ -271,7 +478,7 @@ class DevicesView(QWidget):
         root.setContentsMargins(20, 16, 20, 16)
         root.setSpacing(12)
 
-        # Header strip — count + refresh button.
+        # Header strip — count + tooling + group actions + refresh
         header = QHBoxLayout()
         header.setSpacing(12)
         self._count_label = QLabel("Devices (—)")
@@ -282,7 +489,6 @@ class DevicesView(QWidget):
         header.addWidget(self._count_label)
         header.addStretch(1)
 
-        # v1.6.72 — tooling status pill (scrcpy + adb detect)
         tooling = []
         if _SCRCPY:
             tooling.append("scrcpy ✓")
@@ -303,14 +509,51 @@ class DevicesView(QWidget):
         header.addWidget(tool_label)
         header.addSpacing(12)
 
+        # v1.6.73 — Group actions
+        self._mirror_all_btn = QPushButton("Mirror All")
+        self._mirror_all_btn.setObjectName("SendBtn")
+        self._mirror_all_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self._mirror_all_btn.clicked.connect(self._mirror_all)
+        header.addWidget(self._mirror_all_btn)
+
+        self._mirror_sel_btn = QPushButton("Mirror Selected")
+        self._mirror_sel_btn.setObjectName("SendBtn")
+        self._mirror_sel_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self._mirror_sel_btn.clicked.connect(self._mirror_selected)
+        self._mirror_sel_btn.setEnabled(False)
+        header.addWidget(self._mirror_sel_btn)
+
+        self._shot_sel_btn = QPushButton("Screenshot Selected")
+        self._shot_sel_btn.setObjectName("SendBtn")
+        self._shot_sel_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self._shot_sel_btn.clicked.connect(self._screenshot_selected)
+        self._shot_sel_btn.setEnabled(False)
+        header.addWidget(self._shot_sel_btn)
+
         refresh_btn = QPushButton("Refresh")
-        refresh_btn.setObjectName("SendBtn")  # reuse the purple-primary button style
+        refresh_btn.setObjectName("SendBtn")
         refresh_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         refresh_btn.clicked.connect(self._refresh)
         header.addWidget(refresh_btn)
         root.addLayout(header)
 
-        # Scroll area — vertical list of device rows.
+        # v1.6.73 — Mirrors panel: horizontal scroll above the device list.
+        self._mirrors_scroll = QScrollArea(self)
+        self._mirrors_scroll.setWidgetResizable(True)
+        self._mirrors_scroll.setFrameShape(QFrame.Shape.NoFrame)
+        self._mirrors_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self._mirrors_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self._mirrors_scroll.setFixedHeight(_MirrorCard.MIRROR_SIZE + 130)
+        self._mirrors_host = QWidget()
+        self._mirrors_row = QHBoxLayout(self._mirrors_host)
+        self._mirrors_row.setContentsMargins(0, 0, 0, 0)
+        self._mirrors_row.setSpacing(10)
+        self._mirrors_row.addStretch(1)
+        self._mirrors_scroll.setWidget(self._mirrors_host)
+        self._mirrors_scroll.hide()  # hidden until first Mirror click
+        root.addWidget(self._mirrors_scroll)
+
+        # Device list scroll
         self._scroll = QScrollArea(self)
         self._scroll.setWidgetResizable(True)
         self._scroll.setFrameShape(QFrame.Shape.NoFrame)
@@ -323,9 +566,8 @@ class DevicesView(QWidget):
         self._scroll.setWidget(self._host)
         root.addWidget(self._scroll, stretch=1)
 
-        # Empty-state hero (visible only when no devices).
+        # Empty state
         self._empty_hero = QLabel("No ADB devices connected")
-        self._empty_hero.setObjectName("PlaceholderHero")
         self._empty_hero.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self._empty_hero.setStyleSheet(
             f"color: {MUTED_FG}; font-size: 18px; "
@@ -334,10 +576,9 @@ class DevicesView(QWidget):
         root.addWidget(self._empty_hero)
 
         self._empty_sub = QLabel(
-            "Plug a phone in (USB cable) or run `adb connect <ip>:5555` "
-            "to add a wireless device. Auto-refreshes every 4 seconds."
+            "Plug a phone in (USB cable) or run `adb connect <ip>:5555`. "
+            "Auto-refreshes every 4 seconds."
         )
-        self._empty_sub.setObjectName("PlaceholderSub")
         self._empty_sub.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self._empty_sub.setStyleSheet(
             f"color: {MUTED_FG}; font-size: 12px; "
@@ -345,30 +586,99 @@ class DevicesView(QWidget):
         )
         root.addWidget(self._empty_sub)
 
+    # ── Refresh device list ────────────────────────────────────────────
     def _clear_rows(self) -> None:
-        for row in self._device_rows:
-            row.setParent(None)
-            row.deleteLater()
+        for r in self._device_rows:
+            r.setParent(None)
+            r.deleteLater()
         self._device_rows.clear()
 
     def _refresh(self) -> None:
         devices = state.list_adb_devices()
         n = len(devices)
-        self._count_label.setText(
-            f"Devices ({n})" if n != 1 else "Devices (1)"
-        )
+        self._count_label.setText(f"Devices ({n})")
         self._clear_rows()
         for dev in devices:
             row = _DeviceRow(dev, parent=self._host)
-            # insertWidget at count-1 inserts before the trailing stretch
+            row.mirror_requested.connect(self._embed_mirror)
+            row.group_toggled.connect(self._on_group_toggled)
             self._list_layout.insertWidget(
                 self._list_layout.count() - 1, row
             )
             self._device_rows.append(row)
-        is_empty = (n == 0)
-        self._scroll.setVisible(not is_empty)
-        self._empty_hero.setVisible(is_empty)
-        self._empty_sub.setVisible(is_empty)
+        empty = (n == 0)
+        self._scroll.setVisible(not empty)
+        self._empty_hero.setVisible(empty)
+        self._empty_sub.setVisible(empty)
+        # Group action enable state
+        self._update_group_buttons()
+
+    # ── Mirror embed lifecycle ─────────────────────────────────────────
+    def _embed_mirror(self, serial: str) -> None:
+        if not _SCRCPY:
+            QMessageBox.warning(self, "Mirror",
+                                "scrcpy not found.\n\nInstall: winget install Genymobile.scrcpy")
+            return
+        if serial in self._mirror_cards:
+            return  # already embedded
+        dev = next((d for d in state.list_adb_devices() if d.serial == serial), None)
+        if dev is None:
+            return
+        card = _MirrorCard(dev, parent=self._mirrors_host)
+        card.closed.connect(self._on_mirror_closed)
+        # Insert before the trailing stretch
+        self._mirrors_row.insertWidget(self._mirrors_row.count() - 1, card)
+        self._mirror_cards[serial] = card
+        self._mirrors_scroll.show()
+
+    def _on_mirror_closed(self, serial: str) -> None:
+        self._mirror_cards.pop(serial, None)
+        if not self._mirror_cards:
+            self._mirrors_scroll.hide()
+
+    # ── Group select ───────────────────────────────────────────────────
+    def _on_group_toggled(self, serial: str, checked: bool) -> None:
+        if checked:
+            self._group_selected.add(serial)
+        else:
+            self._group_selected.discard(serial)
+        self._update_group_buttons()
+
+    def _update_group_buttons(self) -> None:
+        n = len(self._group_selected)
+        self._mirror_sel_btn.setEnabled(n > 0)
+        self._mirror_sel_btn.setText(f"Mirror Selected ({n})" if n else "Mirror Selected")
+        self._shot_sel_btn.setEnabled(n > 0)
+        self._shot_sel_btn.setText(f"Screenshot Selected ({n})" if n else "Screenshot Selected")
+
+    def _mirror_all(self) -> None:
+        for r in self._device_rows:
+            if r.dev.state == "device":
+                self._embed_mirror(r.dev.serial)
+
+    def _mirror_selected(self) -> None:
+        for s in list(self._group_selected):
+            self._embed_mirror(s)
+
+    def _screenshot_selected(self) -> None:
+        if not _ADB:
+            return
+        ts = time.strftime("%Y%m%dT%H%M%S")
+        success: list[str] = []
+        for s in list(self._group_selected):
+            out = Path.home() / "Desktop" / f"eve-{s}-{ts}.png"
+            try:
+                with open(out, "wb") as fh:
+                    subprocess.run([_ADB, "-s", s, "exec-out",
+                                    "screencap", "-p"], stdout=fh, timeout=15)
+                success.append(out.name)
+            except Exception:
+                pass
+        QMessageBox.information(
+            self, "Group Screenshot",
+            f"Saved {len(success)} screenshot(s) to Desktop:\n\n"
+            + "\n".join(success[:10])
+        )
 
 
 # Backward-compat alias — older modules import PhonesTab.

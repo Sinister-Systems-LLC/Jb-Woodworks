@@ -201,6 +201,101 @@ class TestSkillFrontmatter(unittest.TestCase):
         self.assertEqual(body, text)
 
 
+class TestSidebarV172(unittest.TestCase):
+    """v1.6.72 — sidebar reduced to Agents + Devices only."""
+
+    def test_sections(self) -> None:
+        from sinister_rkoj_qt import sidebar
+        self.assertEqual(len(sidebar.SECTIONS), 1)
+        sect_label, items = sidebar.SECTIONS[0]
+        self.assertEqual(sect_label, "WORKSPACE")
+        keys = [k for k, _, _ in items]
+        self.assertEqual(keys, ["agents", "devices"])
+        self.assertNotIn("sessions", keys)
+
+
+class TestHeaderV172(unittest.TestCase):
+    """v1.6.72 — chip sets are context-aware; HEADER_ACTIONS empty."""
+
+    def test_chip_sets(self) -> None:
+        from sinister_rkoj_qt import header
+        self.assertIn("agents", header.CHIP_SETS)
+        self.assertIn("devices", header.CHIP_SETS)
+        agents_keys = [k for k, _ in header.CHIP_SETS["agents"]]
+        self.assertEqual(agents_keys, ["agents", "resume"])
+        self.assertEqual(header.CHIP_SETS["devices"], [])
+
+    def test_header_actions_empty(self) -> None:
+        from sinister_rkoj_qt import header
+        # Operator removed the 4 junk icons (alerts/clock/search/settings)
+        self.assertEqual(header.HEADER_ACTIONS, [])
+
+    def test_minimize_signal_exists(self) -> None:
+        from sinister_rkoj_qt import header
+        self.assertTrue(hasattr(header.Header, "minimize_clicked"))
+        self.assertTrue(hasattr(header.Header, "close_clicked"))
+
+
+class TestThemeV172(unittest.TestCase):
+    """v1.6.72 — sidebar connected to main (no gap)."""
+
+    def test_outer_gap_is_zero(self) -> None:
+        from sinister_rkoj_qt import theme
+        self.assertEqual(theme.OUTER_GAP, 0)
+
+
+class TestDevicesV172(unittest.TestCase):
+    """v1.6.72 — Devices viewer has scrcpy / adb action wiring."""
+
+    def test_scrcpy_finder_works(self) -> None:
+        from sinister_rkoj_qt import devices_tab
+        # On the operator's machine scrcpy is installed via winget
+        sc = devices_tab._find_scrcpy()
+        self.assertIsNotNone(sc, "scrcpy not found — operator has it via winget")
+        from pathlib import Path
+        self.assertTrue(Path(sc).exists())
+
+    def test_adb_finder_works(self) -> None:
+        from sinister_rkoj_qt import devices_tab
+        adb = devices_tab._find_adb()
+        self.assertIsNotNone(adb, "adb not found via PATH or scrcpy bundle")
+
+    def test_device_row_has_action_methods(self) -> None:
+        from sinister_rkoj_qt import devices_tab
+        cls = devices_tab._DeviceRow
+        # v1.6.73 — _launch_scrcpy moved into _MirrorCard (embed flow);
+        # _DeviceRow now emits mirror_requested signal instead.
+        for m in ("_take_screenshot", "_open_shell", "_tail_logcat"):
+            self.assertTrue(hasattr(cls, m), f"_DeviceRow missing {m}")
+        self.assertTrue(hasattr(cls, "mirror_requested"))
+        self.assertTrue(hasattr(cls, "group_toggled"))
+
+    def test_mirror_card_class_exists(self) -> None:
+        """v1.6.73 — embedded scrcpy mirror card with reparented HWND."""
+        from sinister_rkoj_qt import devices_tab
+        cls = devices_tab._MirrorCard
+        for m in ("_spawn_scrcpy", "_try_embed", "_on_close",
+                  "_take_screenshot", "_open_shell", "_tail_logcat"):
+            self.assertTrue(hasattr(cls, m), f"_MirrorCard missing {m}")
+        self.assertTrue(hasattr(cls, "closed"))
+
+    def test_devices_view_has_group_features(self) -> None:
+        """v1.6.73 — group select + mirror-all/screenshot-selected."""
+        from sinister_rkoj_qt import devices_tab
+        cls = devices_tab.DevicesView
+        for m in ("_embed_mirror", "_on_mirror_closed", "_on_group_toggled",
+                  "_mirror_all", "_mirror_selected", "_screenshot_selected"):
+            self.assertTrue(hasattr(cls, m), f"DevicesView missing {m}")
+
+    def test_banner_png_present(self) -> None:
+        from pathlib import Path
+        bp = (Path(__file__).resolve().parents[1]
+              / "source" / "assets" / "banner.png")
+        self.assertTrue(bp.exists(), f"banner.png missing at {bp}")
+        # Sanity: should be > 100 KB (operator's banner is ~2.3 MB)
+        self.assertGreater(bp.stat().st_size, 100_000)
+
+
 class TestTokenBudget(unittest.TestCase):
     def test_threshold_constant_present(self) -> None:
         self.assertTrue(hasattr(agents_tab, "_TOKEN_WARN_THRESHOLD"))
@@ -215,7 +310,7 @@ class TestTokenBudget(unittest.TestCase):
 
 class TestModuleSurface(unittest.TestCase):
     def test_version_matches(self) -> None:
-        self.assertEqual(sinister_rkoj_qt.__version__, "1.6.71")
+        self.assertEqual(sinister_rkoj_qt.__version__, "1.6.73")
 
     def test_classes_present(self) -> None:
         for name in (
