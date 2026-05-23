@@ -1103,6 +1103,12 @@ export SINISTER_SWARM_MODE='$swarmEnv'
 export SINISTER_LOOP_MODE='$loopEnv'
 clear 2>/dev/null || printf '\033c'
 printf '\n'
+# Animated jcode-style ASCII C banner (operator 2026-05-23 image #3).
+# Background script handles color animation; ~0.6s total so it doesn't delay claude.
+if [ -f '/d/Sinister Sanctum/automations/sinister-banner.sh' ]; then
+    bash '/d/Sinister Sanctum/automations/sinister-banner.sh' 8 0.07 2>/dev/null || true
+fi
+printf '\n'
 printf '  $pillA $agentName $pillZ  $pillM resume $pillZ  $pillD claude-opus-4-7[1m] $pillZ  $pillG mcp:$mcpCnt $pillZ  $pillB bots:$botCnt $pillZ  $pillR --skip-perms $pillZ\n'
 printf '\n'
 printf '  project: $projDisplay\n'

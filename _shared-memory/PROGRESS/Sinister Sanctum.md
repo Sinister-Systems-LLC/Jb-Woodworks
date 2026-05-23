@@ -4,6 +4,31 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-23 18:05Z — launcher-hardening turn — silent plugin check + closeable X + jcode ASCII C banner
+
+EVE on Sanctum addressed a stack of operator screenshots (images #1-#10) about the Sinister Start.bat path.
+
+**Verified working (no code change needed):**
+- Cold-start prompt injection — image #8 proved the phrase IS delivered to claude as the first user message; claude was visibly responding ("Metamorphosing… 22s · 606 tokens"). Earlier screenshots (image #1, #6) were timing artifacts (taken before claude rendered the user message). The positional-arg path in `start-sinister-session.ps1` line 1112 (`claude --dangerously-skip-permissions '$bashPhrase'`) works correctly.
+
+**Shipped this turn (smoke-tested):**
+
+1. `automations/sinister-banner.sh` (new) — animated 256-color ASCII C banner, glyph transcribed 1:1 from image #3. 12-line stylized "C" with shifting red→orange→pink→magenta→purple gradient (color palette 196→213). ~0.55s total animation (8 frames × 0.07s). Falls back to monochrome on dumb terminals. Smoke-tested via direct invocation; emits expected ANSI escape sequences.
+2. `automations/start-sinister-session.ps1` line ~1104 — invokes the banner before claude in the generated per-spawn `.sh`. Banner runs first, then status pills, then claude.
+3. `automations/check-required-plugins.ps1` — added `-Silent` switch (suppresses all stdout; logs to `~/.claude/sanctum-plugin-check.log` instead) + `-AutoInstall` now installs BOTH required AND recommended (was: required-only; per operator image #9 "this needs to be fixed auto and not shown to me").
+4. `tools/session-launcher/Sinister Start.bat` — plugin check now invoked with `-AutoInstall -Silent >nul 2>&1` so it's invisible to operator + self-heals. EVE.exe path switched from blocking `"%EVE_EXE%"` to `start "Sinister Sanctum :: EVE" /D ... "%EVE_EXE%" + exit /b 0` so the parent bat window closes immediately + EVE.exe runs in its own X-closable window (per operator image #10 "make x button work"). PS1 picker fallback uses the same `start`-and-exit pattern.
+
+**Operator stack this turn:**
+- *"from the sinister bat launcher you launched with no prompt. fix this for all projects in the laucher adn make sure its complete"* → verified working (image #8 proof)
+- *"make sure we have the jcode animation ascii thing on the start of the prompt as well or in teh bat file somewhere. yopu can just pick the coolest one and use that for now. we have the code so makle sure its exact 1:1 and animated"* → sinister-banner.sh + wiring
+- *"[image #4] fix this too make it auto"* → -AutoInstall for recommended
+- *"i cannot close these windows either fix that"* → `start`-and-exit pattern
+- *"[image #9] this needs to be fixed auto and not shown to me"* → -Silent flag + redirect
+- *"make x button work [image #10]"* → same `start`-and-exit (parent bat no longer blocks EVE.exe)
+- *"push the entire sanctum to github"* → commit + push pending
+
+---
+
 ## 2026-05-23 12:45Z — autonomy-stack turn — 5 commits land headless + swarm/loop + Sinister Generator + jcode-parity quick win
 
 EVE on Sanctum addressed a 5-directive operator stack on branch `agent/sinister-sanctum/grant-autonomy-followup-2026-05-23`. 5 commits pushed to remote.

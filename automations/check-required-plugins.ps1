@@ -19,14 +19,31 @@
 param(
     [switch]$AutoInstall,
     [switch]$Quiet,
+    [switch]$Silent,
     [string]$ManifestPath = 'D:\Sinister Sanctum\automations\required-plugins.json',
-    [string]$UserSettings = "$env:USERPROFILE\.claude\settings.json"
+    [string]$UserSettings = "$env:USERPROFILE\.claude\settings.json",
+    [string]$LogPath = "$env:USERPROFILE\.claude\sanctum-plugin-check.log"
 )
 
+# Operator 2026-05-23 evening: "this needs to be fixed auto and not shown to me"
+# - $Silent suppresses ALL stdout/stderr; everything goes to $LogPath instead.
+# - $AutoInstall now installs BOTH required AND recommended (was: required-only).
 $ErrorActionPreference = 'Continue'
+$script:hadAnyAction = $false
+
+function _Log {
+    param([string]$Text)
+    try {
+        $logDir = Split-Path $LogPath
+        if ($logDir -and -not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir -Force | Out-Null }
+        Add-Content -LiteralPath $LogPath -Value ("[" + (Get-Date).ToString('s') + "] " + $Text) -Encoding UTF8
+    } catch {}
+}
 
 function Write-Themed {
     param([string]$Text, [string]$Color = 'Magenta')
+    _Log $Text
+    if ($Silent) { return }
     if ($Quiet) {
         Write-Host $Text
     } else {
@@ -36,6 +53,8 @@ function Write-Themed {
 
 function Write-Plain {
     param([string]$Text)
+    _Log $Text
+    if ($Silent) { return }
     Write-Host $Text
 }
 
@@ -119,7 +138,7 @@ if ($manifest.PSObject.Properties.Name -contains 'required' -and $manifest.requi
 }
 
 Write-Themed ""
-Write-Themed "  --- Recommended plugins (not auto-installed) ---" 'Magenta'
+Write-Themed "  --- Recommended plugins ---" 'Magenta'
 
 $recommendedTotal = 0
 $recommendedEnabled = 0
@@ -131,7 +150,19 @@ if ($manifest.PSObject.Properties.Name -contains 'recommended' -and $manifest.re
             $recommendedEnabled++
             Write-Themed ("  [ OK ] {0} - enabled" -f $plugin.name) 'Green'
         } else {
-            Write-Themed ("  [ -- ] {0} (recommended; not auto-installed)" -f $plugin.name) 'DarkGray'
+            if ($AutoInstall) {
+                $script:hadAnyAction = $true
+                Write-Themed ("  [INST] {0} - installing: {1}" -f $plugin.name, $plugin.install_cmd) 'Yellow'
+                $proc = Start-Process -FilePath 'cmd.exe' -ArgumentList @('/c', $plugin.install_cmd) -NoNewWindow -Wait -PassThru
+                if ($proc.ExitCode -eq 0) {
+                    Write-Themed ("         install OK (exit 0)") 'Green'
+                } else {
+                    Write-Themed ("         install FAILED (exit {0})" -f $proc.ExitCode) 'Red'
+                    $script:installFailed = $true
+                }
+            } else {
+                Write-Themed ("  [ -- ] {0} (recommended; not enabled - run with -AutoInstall)" -f $plugin.name) 'DarkGray'
+            }
         }
     }
 } else {

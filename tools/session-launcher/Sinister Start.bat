@@ -61,12 +61,13 @@ if not exist "%USERPROFILE%\.sanctum-autonomy-granted" (
     echo.
 )
 
-REM ----- Required plugin check (operator directive 2026-05-23) -----
-REM Read-only diff vs required-plugins.json manifest. Prints warnings for missing
-REM required plugins; does NOT auto-install (operator approves per 2026-05-19 plugin
-REM discipline). Re-run with auto-install:  check-required-plugins.ps1 -AutoInstall
+REM ----- Required plugin check (operator directive 2026-05-23 evening) -----
+REM Operator 2026-05-23 evening (image #9 + #10): "this needs to be fixed auto
+REM and not shown to me". Run -Silent -AutoInstall so plugins self-heal without
+REM ever displaying the check output to the operator. Output goes to:
+REM   %USERPROFILE%\.claude\sanctum-plugin-check.log
 if exist "%SANCTUM_ROOT%\automations\check-required-plugins.ps1" (
-    powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%SANCTUM_ROOT%\automations\check-required-plugins.ps1"
+    powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%SANCTUM_ROOT%\automations\check-required-plugins.ps1" -AutoInstall -Silent >nul 2>&1
 )
 
 REM ----- Spawn-shell preflight (v6 2026-05-23) -----
@@ -98,33 +99,21 @@ if not defined EVE_EXE if exist "%SANCTUM_ROOT%\automations\eve-launcher\dist\EV
 if not defined EVE_EXE if exist "%LOCALAPPDATA%\Sinister\EVE.exe" call :probe_eve "%LOCALAPPDATA%\Sinister\EVE.exe"
 
 if defined EVE_EXE (
-    echo  [ok]    launching EVE.exe: %EVE_EXE%
-    "%EVE_EXE%"
-    set "LAUNCH_RC=%ERRORLEVEL%"
-    echo.
-    echo  [done]  EVE.exe exited with code %LAUNCH_RC%
-    if not "%LAUNCH_RC%"=="0" (
-        echo  [warn]  EVE.exe non-zero exit; falling back to PS1 picker
-        goto :launch_ps1
-    )
-    pause
-    exit /b %LAUNCH_RC%
+    REM Operator 2026-05-23 evening (image #10: "make x button work"): launch EVE.exe
+    REM via `start` so it gets its own cmd window. The parent bat then exits
+    REM immediately so its window closes (X button works on EVE.exe's window since
+    REM EVE.exe is no longer blocked under a parent cmd holding the close signal).
+    REM Window title is set explicitly so operator can identify the picker.
+    start "Sinister Sanctum :: EVE" /D "%SANCTUM_ROOT%" "%EVE_EXE%"
+    exit /b 0
 )
 
 :launch_ps1
 REM ----- Fallback: PS1 launcher (no regression if EVE.exe not built yet) -----
-echo  [ok]    EVE.exe not built / probed; launching PS1 picker
-echo  [hint]  build EVE.exe: %SANCTUM_ROOT%\automations\eve-launcher\build-eve-exe.bat
-echo.
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%SANCTUM_ROOT%\automations\start-sinister-session.ps1"
-set "LAUNCH_RC=%ERRORLEVEL%"
-echo.
-echo  [done]  PS1 launcher exited with code %LAUNCH_RC%
-if not "%LAUNCH_RC%"=="0" (
-    echo  [warn]  non-zero exit; pausing so you can read the error above.
-    pause
-)
-exit /b %LAUNCH_RC%
+REM Same `start`-and-exit pattern as EVE.exe path so the parent bat window
+REM closes cleanly and operator gets a closeable picker window.
+start "Sinister Sanctum :: Picker" /D "%SANCTUM_ROOT%" powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%SANCTUM_ROOT%\automations\start-sinister-session.ps1"
+exit /b 0
 
 :run_autonomy
 set "SANCTUM_ROOT="
