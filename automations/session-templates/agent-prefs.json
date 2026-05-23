@@ -5,74 +5,34 @@
                     "accent_color":  "purple"
                 },
     "per_project":  {
-                        "sanctum":  {
-                                        "agent_name":  "sanctum",
-                                        "accent_color":  "purple"
-                                    },
-                        "sinister-panel":  {
-                                               "agent_name":  "sinister-panel",
-                                               "accent_color":  "purple"
-                                           },
                         "kernel-apk":  {
                                            "agent_name":  "kernel-apk",
                                            "accent_color":  "purple"
                                        },
-                        "sinister-emulator":  {
-                                                  "agent_name":  "sinister-emulator",
-                                                  "accent_color":  "purple"
-                                              },
                         "rkoj":  {
                                      "agent_name":  "rkoj",
                                      "accent_color":  "purple"
                                  },
-                        "snap-emulator-api":  {
-                                                  "agent_name":  "snap-emu",
-                                                  "accent_color":  "purple"
-                                              },
-                        "tiktok-emulator-api":  {
-                                                    "agent_name":  "tiktok-emu",
-                                                    "accent_color":  "purple"
-                                                },
-                        "bumble-emulator-api":  {
-                                                    "agent_name":  "bumble-emu",
-                                                    "accent_color":  "purple"
-                                                },
-                        "sinister-freeze":  {
-                                                "agent_name":  "sinister-freeze",
-                                                "accent_color":  "purple"
-                                            },
+                        "sinister-panel":  {
+                                               "agent_name":  "sinister-panel",
+                                               "accent_color":  "purple"
+                                           },
                         "jb-woodworks":  {
                                              "agent_name":  "jb-woodworks",
                                              "accent_color":  "purple"
                                          },
+                        "letstext":  {
+                                         "agent_name":  "letstext",
+                                         "accent_color":  "cyan"
+                                     },
                         "showmasters":  {
                                             "agent_name":  "showmasters",
                                             "accent_color":  "purple"
                                         },
-                        "general":  {
-                                        "agent_name":  "general",
+                        "sanctum":  {
+                                        "agent_name":  "sanctum",
                                         "accent_color":  "purple"
-                                    },
-                        "sinister-forge":  {
-                                               "agent_name":  "sinister-forge",
-                                               "accent_color":  "purple"
-                                           },
-                        "sinister-term":  {
-                                              "agent_name":  "sinister-term",
-                                              "accent_color":  "purple"
-                                          },
-                        "rkoj-workstation":  {
-                                                 "agent_name":  "rkoj-workstation",
-                                                 "accent_color":  "purple"
-                                             },
-                        "sinister-claw":  {
-                                              "agent_name":  "sinister-claw",
-                                              "accent_color":  "purple"
-                                          },
-                        "sinister-mind":  {
-                                              "agent_name":  "sinister-mind",
-                                              "accent_color":  "purple"
-                                          }
+                                    }
                     },
     "available_colors":  [
                              "purple",

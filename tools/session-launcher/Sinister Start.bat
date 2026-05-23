@@ -1,11 +1,15 @@
 @echo off
-REM Sinister Start :: direct Sanctum session boot (v3 :: 2026-05-23 evening — RKOJ-ELENO)
+REM Sinister Start :: direct Sanctum session boot (v4 :: 2026-05-23 — RKOJ-ELENO)
 REM
-REM v3 changes (operator 2026-05-23 evening):
-REM   - First-run detection: marker file ~/.sanctum-autonomy-granted gates auto-invoke
-REM     of Grant-Claude-Autonomy.ps1. New PCs auto-bootstrap; subsequent runs skip.
-REM   - --setup-autonomy flag forces re-run of Grant-Claude-Autonomy regardless of marker.
+REM v4 changes (operator 2026-05-23):
+REM   - Prefer EVE.exe (thin jcode-speed picker) if built. Falls back to PS1
+REM     automatically when EVE.exe is missing (no regression). Probes:
+REM       1) %~dp0EVE.exe                              (Desktop, easiest)
+REM       2) %SANCTUM_ROOT%\automations\eve-launcher\dist\EVE.exe (build output)
+REM       3) %LOCALAPPDATA%\Sinister\EVE.exe           (per-user install)
+REM     Build with: %SANCTUM_ROOT%\automations\eve-launcher\build-eve-exe.bat
 REM
+REM v3 (2026-05-23 evening): First-run autonomy bootstrap via marker file.
 REM v2 (2026-05-21): direct boot, no menu. SANCTUM CORE animation handled by PS1.
 REM v1 (pre-2026-05-21): 1/2/3/4/5 picker — removed per operator ask.
 
@@ -47,7 +51,26 @@ if not exist "%USERPROFILE%\.sanctum-autonomy-granted" (
     echo.
 )
 
-REM Direct boot — no menu.
+REM ----- Required plugin check (operator directive 2026-05-23) -----
+REM Read-only diff vs required-plugins.json manifest. Prints warnings for missing
+REM required plugins; does NOT auto-install (operator approves per 2026-05-19 plugin
+REM discipline). Re-run with auto-install:  check-required-plugins.ps1 -AutoInstall
+if exist "%SANCTUM_ROOT%\automations\check-required-plugins.ps1" (
+    powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%SANCTUM_ROOT%\automations\check-required-plugins.ps1"
+)
+
+REM ----- Prefer EVE.exe (thin jcode-speed picker) if available -----
+set "EVE_EXE="
+if exist "%~dp0EVE.exe" set "EVE_EXE=%~dp0EVE.exe"
+if not defined EVE_EXE if exist "%SANCTUM_ROOT%\automations\eve-launcher\dist\EVE.exe" set "EVE_EXE=%SANCTUM_ROOT%\automations\eve-launcher\dist\EVE.exe"
+if not defined EVE_EXE if exist "%LOCALAPPDATA%\Sinister\EVE.exe" set "EVE_EXE=%LOCALAPPDATA%\Sinister\EVE.exe"
+
+if defined EVE_EXE (
+    "%EVE_EXE%"
+    exit /b %ERRORLEVEL%
+)
+
+REM ----- Fallback: PS1 launcher (no regression if EVE.exe not built yet) -----
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%SANCTUM_ROOT%\automations\start-sinister-session.ps1"
 exit /b %ERRORLEVEL%
 

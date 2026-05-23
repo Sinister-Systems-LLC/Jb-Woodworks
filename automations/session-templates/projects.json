@@ -1,6 +1,6 @@
-{
-    "_comment":  "Persistent project registry. v6 (2026-05-23): added picker block driving the launcher\u0027s concise 11-entry visible list + ordering. Non-launcher consumers (RKOJ Qt agents_tab, sinister-eve, forge picker) continue to iterate the full projects array.",
-    "version":  6,
+﻿{
+    "_comment":  "Persistent project registry. v6 (2026-05-23): added picker block driving the launcher\u0027s concise 11-entry visible list + ordering. Non-launcher consumers (RKOJ Qt agents_tab, sinister-eve, forge picker) continue to iterate the full projects array. v7 (2026-05-23 evening): appended letstext lane (operator-private messaging-app venture at D:\\LetsText; cyan accent per agent-prefs).",
+    "version":  7,
     "default":  "sanctum",
     "picker":  {
                    "visible_keys":  [
@@ -14,7 +14,10 @@
                                         "bumble-emulator-api",
                                         "sinister-freeze",
                                         "jb-woodworks",
-                                        "showmasters"
+                                        "showmasters",
+                                        "letstext",
+                                        "sinister-generator",
+                                        "jkor"
                                     ],
                    "special_keys":  [
                                         "general",
@@ -131,6 +134,33 @@
                          "session_start":  "",
                          "claude_md":  "C:\\Users\\Zonia\\Desktop\\Showmasters Site\\CLAUDE.md",
                          "github":  "Sinister-Systems-LLC/Showmasters"
+                     },
+                     {
+                         "key":  "letstext",
+                         "display":  "LetsText",
+                         "tag":  "messaging UI / design system (operator-private venture)",
+                         "root":  "D:\\LetsText",
+                         "session_start":  "D:\\LetsText\\SESSION-START.md",
+                         "claude_md":  "D:\\LetsText\\CLAUDE.md",
+                         "github":  ""
+                     },
+                     {
+                         "key":  "sinister-generator",
+                         "display":  "Sinister Generator",
+                         "tag":  "Fleet-wide image generation (nano-banana app layer)",
+                         "root":  "D:\\Sinister Sanctum\\projects\\sinister-generator",
+                         "session_start":  "",
+                         "claude_md":  "D:\\Sinister Sanctum\\projects\\sinister-generator\\CLAUDE.md",
+                         "github":  ""
+                     },
+                     {
+                         "key":  "jkor",
+                         "display":  "JKOR",
+                         "tag":  "JKOR brand surface (image-gen lane)",
+                         "root":  "C:\\Users\\Zonia\\Desktop\\JKOR",
+                         "session_start":  "",
+                         "claude_md":  "C:\\Users\\Zonia\\Desktop\\JKOR\\CLAUDE.md",
+                         "github":  ""
                      },
                      {
                          "key":  "general",

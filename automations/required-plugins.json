@@ -1,0 +1,28 @@
+{
+    "_comment": "Plugins required for Sinister Sanctum to function. Operator-curated allowlist. Per OPERATOR-DIRECTIVES.md 2026-05-19 plugin-discipline doctrine: do not auto-install ANYTHING outside this allowlist. Author: RKOJ-ELENO :: 2026-05-23",
+    "version": 1,
+    "required": [
+        {
+            "id": "understand-anything@understand-anything",
+            "name": "understand-anything",
+            "purpose": "loads architectural context on cold-start (CLAUDE.md cold-start protocol)",
+            "marketplace": "understand-anything",
+            "install_cmd": "claude plugin install understand-anything@understand-anything"
+        }
+    ],
+    "recommended": [
+        {
+            "id": "code-review@code-review",
+            "name": "code-review",
+            "purpose": "PR review helper for shipping work",
+            "install_cmd": "claude plugin install code-review@code-review"
+        },
+        {
+            "id": "commit-commands@commit-commands",
+            "name": "commit-commands",
+            "purpose": "/commit and /commit-push-pr slash commands",
+            "install_cmd": "claude plugin install commit-commands@commit-commands"
+        }
+    ],
+    "notes": "Add to required[] only when a plugin is truly necessary for Sanctum cold-start to work. Recommended[] is operator-decision; check script lists but does not auto-install."
+}
