@@ -4,6 +4,63 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-23 12:45Z — autonomy-stack turn — 5 commits land headless + swarm/loop + Sinister Generator + jcode-parity quick win
+
+EVE on Sanctum addressed a 5-directive operator stack on branch `agent/sinister-sanctum/grant-autonomy-followup-2026-05-23`. 5 commits pushed to remote.
+
+**Operator stack (chronological):**
+
+1. *"switch to a sanctum branch and ship item 2. create a plan to complete and expand everything in the sanctum"*
+2. *"make things like this stop happening so agetnts can be full autoinmous"* (Stop hook error popup screenshot)
+3. *"add to the start that all agents can use sinister geneartor if needed. just be conservative on the balance"*
+4. *"review the jcode exe and exactly how they do things ... we need the most light efficient speedy terminals as possible"*
+5. *"when making agents add option to be asked if i want to turn on swarm and or loop (make system so agents dont stop working or expanding on ideas, jcode has that use what they do)"*
+6. *"all these cmd windows that keep coming up need to be headless and not seen by me. do this with out sinister term and add it as a feature"*
+7. *"the terminals keep getting held up and freeze make sure we are as efficent as we can be like how jcode works ... make a complete detailed plan to finish the eve.exe you were suppose to build"*
+
+**Shipped (5 commits):**
+
+- `1bf857f` — Master plan (`_shared-memory/plans/sanctum-complete-and-expand-2026-05-23T1145Z/master-plan.md` — 14-page complete + expand roadmap) + P9 hook-path check + Sinister Start.bat mirror sync (v4→v5) + Sinister Generator fleet-wide section in CLAUDE.md.
+- `57af0fe` (seraphim, picked up my staged launcher edits during contention storm) — Prompt-AgentModes + Build-Phrase swarm/loop suffix + Launch-Session env exports.
+- `121704b` (sibling freeze agent — present on shared branch).
+- `d39c931` — Headless cmd windows feature: `automations/hidden-spawn.ps1` (3-mode reusable helper) + Sanctum SessionStart hook migrated to `-WindowStyle Hidden` + brain doctrine `headless-spawn-pattern-2026-05-23.md` indexed + OPERATOR-ACTION-QUEUE refresh.
+- `2ffe44b` — jcode-parity quick win #1: TTL-cache Get-MCPCount + Get-BotCount (30s). Banner redraws within a single picker loop now zero-cost on the cache hit (was ~50-200ms each).
+
+**Smoke tests this turn:**
+
+- `canonical-protections-check.ps1` :: **PASS=9 FAIL=0** (P1-P9, including new P9 hook-path check)
+- `grant-claude-autonomy.ps1 -ReadOnly` :: 9 steps PASS
+- `start-sinister-session.ps1` :: PS-AST PARSE-OK after every edit phase
+- `hidden-spawn.ps1` :: PS-AST PARSE-OK + canonical-check round-trip via wrapper
+
+**Background work in flight:**
+
+- **EVE.exe completion plan** — Plan agent dispatched (operator: *"make a complete detailed plan to finish the eve.exe you were suppose to build. get to work and use all parralll agents you need"*); target output `_shared-memory/plans/eve-exe-completion-2026-05-23T1230Z/eve-exe-finish-plan.md`. Plan must cover capability list, architecture, picker UI, speed budget (<300ms cold boot), build pipeline, placement paths, fallback, smoke + acceptance, 8-phase shipping plan, anti-patterns, open questions.
+- **Terminal freeze audit** — Explore agent COMPLETED. Top 5 freeze culprits documented; full table in OPERATOR-ACTION-QUEUE 2026-05-23 12:30Z section. Top 3 quick wins (~15 min total, ~400-600ms per session): TTL-cache MCP/bot counts (✅ shipped this turn) / increase sterm status.py TTL to 5s / add SINISTER_SKIP_AGENT_PROMPT env var.
+
+**Multi-agent branch contention storm survived:**
+
+Working tree was switched to `agent/sinister-freeze/ph1-mvp-day3-brief` mid-turn by sibling freeze agent. My initial commit landed on freeze branch by mistake; recovered via `git branch -f` (move my branch ref) + `git checkout` + ref-only rewind of freeze branch. No data loss. Pattern matches `branch-checkout-silently-undoes-doctrine-2026-05-23` brain entry; further empirical anchor.
+
+**Files touched this turn (sanctum-lane only; other agents' files left untouched):**
+
+- EDIT: `CLAUDE.md` (Sinister Generator section)
+- EDIT: `.claude/settings.json` (SessionStart hook → `-WindowStyle Hidden`)
+- EDIT: `automations/canonical-protections-check.ps1` (P9 added)
+- EDIT: `automations/start-sinister-session.ps1` (Prompt-AgentModes + Build-Phrase modes + Launch-Session env vars + 5 call sites + MCP/Bot TTL cache)
+- EDIT: `projects/sinister-panel/source/.claude/settings.local.json` (Stop hook path fix; gitignored in panel repo, fix is on-disk only)
+- EDIT: `tools/session-launcher/Sinister Start.bat` (sync from Desktop v5 canonical)
+- EDIT: `_shared-memory/OPERATOR-ACTION-QUEUE.md` (mark items 2+3 shipped, add new top section)
+- EDIT: `_shared-memory/PROGRESS/Sinister Sanctum.md` (this entry)
+- EDIT: `_shared-memory/knowledge/_INDEX.md` (headless-spawn row)
+- EDIT: `_shared-memory/heartbeats/sanctum.json` (refresh)
+- NEW: `automations/hidden-spawn.ps1`
+- NEW: `_shared-memory/knowledge/headless-spawn-pattern-2026-05-23.md`
+- NEW: `_shared-memory/plans/sanctum-complete-and-expand-2026-05-23T1145Z/master-plan.md`
+- NEW: `_shared-memory/resume-points/Sinister Sanctum/2026-05-23T074439Z.json` (will get one more at turn close)
+
+---
+
 ## 2026-05-23 11:45 — RESUME audit turn — forward-plan section-C items 4 + 5 closed read-only
 
 EVE on Sanctum. Cold-start resume picked up from `_shared-memory/resume-points/Sinister Sanctum/2026-05-23T092837Z.json` (focus: anti-revert + freeze restore + forward-plan). Working tree was on `agent/sinister-generator/source-package-2026-05-23` (sibling generator agent's branch) — sanctum lane stayed read-only this turn to avoid cross-lane git contention.
