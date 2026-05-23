@@ -287,6 +287,40 @@ class TestDevicesV172(unittest.TestCase):
                   "_mirror_all", "_mirror_selected", "_screenshot_selected"):
             self.assertTrue(hasattr(cls, m), f"DevicesView missing {m}")
 
+    def test_devices_view_has_auto_mirror_v174(self) -> None:
+        """v1.6.74 — auto-mirror all phones on first tab build."""
+        from sinister_rkoj_qt import devices_tab
+        self.assertTrue(hasattr(devices_tab.DevicesView, "_auto_mirror_all"))
+
+    def test_mirror_card_uses_win32_setparent_v174(self) -> None:
+        """v1.6.74 — _try_embed must include Win32 SetParent call
+        (not QWindow.fromWinId, which previously rendered black)."""
+        import inspect
+        from sinister_rkoj_qt import devices_tab
+        src = inspect.getsource(devices_tab._MirrorCard._try_embed)
+        self.assertIn("SetParent", src)
+        self.assertIn("WS_CHILD", src)
+
+
+class TestNoEmojisV174(unittest.TestCase):
+    """v1.6.74 — dashboard-skeleton rule: no emojis in UI chrome."""
+
+    BANNED = ["⏱", "💭", "📸", "⌨", "📜", "⚠"]
+
+    def test_no_emojis_in_devices_tab(self) -> None:
+        from pathlib import Path
+        fp = Path(__file__).resolve().parents[1] / "source" / "sinister_rkoj_qt" / "devices_tab.py"
+        txt = fp.read_text(encoding="utf-8")
+        for ch in self.BANNED:
+            self.assertNotIn(ch, txt, f"devices_tab.py contains banned emoji {ch!r}")
+
+    def test_no_emojis_in_agents_tab(self) -> None:
+        from pathlib import Path
+        fp = Path(__file__).resolve().parents[1] / "source" / "sinister_rkoj_qt" / "agents_tab.py"
+        txt = fp.read_text(encoding="utf-8")
+        for ch in self.BANNED:
+            self.assertNotIn(ch, txt, f"agents_tab.py contains banned emoji {ch!r}")
+
     def test_banner_png_present(self) -> None:
         from pathlib import Path
         bp = (Path(__file__).resolve().parents[1]
@@ -310,7 +344,7 @@ class TestTokenBudget(unittest.TestCase):
 
 class TestModuleSurface(unittest.TestCase):
     def test_version_matches(self) -> None:
-        self.assertEqual(sinister_rkoj_qt.__version__, "1.6.73")
+        self.assertEqual(sinister_rkoj_qt.__version__, "1.6.74")
 
     def test_classes_present(self) -> None:
         for name in (

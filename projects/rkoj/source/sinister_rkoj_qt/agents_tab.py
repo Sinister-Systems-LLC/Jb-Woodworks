@@ -1308,12 +1308,12 @@ class AgentCard(QFrame):
         if self._turn_started_ts is None:
             return
         elapsed = time.monotonic() - self._turn_started_ts
-        self._elapsed_pill.setText(f"⏱ {self._fmt_duration(elapsed)}")
+        self._elapsed_pill.setText(f"{self._fmt_duration(elapsed)}")
 
     def _start_elapsed(self) -> None:
         """v1.6.39 — show the pill + tick the 1Hz timer. Called from
         _on_send right after _turn_started_ts is set."""
-        self._elapsed_pill.setText("⏱ 0.0s")
+        self._elapsed_pill.setText("0.0s")
         self._elapsed_pill.show()
         self._elapsed_timer.start()
 
@@ -1775,7 +1775,7 @@ class AgentCard(QFrame):
             )
             if combined >= _TOKEN_WARN_THRESHOLD:
                 self._append_terminal(
-                    "  ⚠ at/over warn threshold — consider /summarize or /clone\n"
+                    "  ! at/over warn threshold — consider /summarize or /clone\n"
                 )
             return True
         if head in ("/clone", "/dup"):
@@ -2514,7 +2514,7 @@ class AgentCard(QFrame):
                 "  mode pill   click → /model\n"
                 "  N turns     click → /history\n"
                 "  $X.XXXX     click → /cost\n"
-                "  ⏱ elapsed   click → /timer\n"
+                "  elapsed   click → /timer\n"
                 "  tag chip    L-click → /find <tag>, R-click → menu\n"
                 "\n"
                 "\n"
@@ -2887,7 +2887,7 @@ class AgentCard(QFrame):
                         preview = text.replace("\n", " ")[:60]
                         ch = self._SPINNER[self._spinner_idx % len(self._SPINNER)]
                         self._thinking_label.setText(
-                            f"{ch}  💭 {preview}"
+                            f"{ch}  > {preview}"
                         )
             elif et == "content_block_start":
                 cb = e.get("content_block", {})
@@ -2914,7 +2914,7 @@ class AgentCard(QFrame):
                     # change its prefix so the operator knows EVE is reasoning.
                     if self._spinner_timer.isActive():
                         ch = self._SPINNER[self._spinner_idx % len(self._SPINNER)]
-                        self._thinking_label.setText(f"{ch}  💭 thinking…")
+                        self._thinking_label.setText(f"{ch}  thinking…")
         elif t == "user":
             # tool_result emitted by claude after a tool runs.
             msg = event.get("message", {}) or {}
@@ -2973,7 +2973,7 @@ class AgentCard(QFrame):
                     and combined >= _TOKEN_WARN_THRESHOLD):
                 self._token_warning_shown = True
                 self._append_dim(
-                    f"\n  ⚠ token budget: {combined:,} cumulative tokens "
+                    f"\n  ! token budget: {combined:,} cumulative tokens "
                     f"(≥{_TOKEN_WARN_THRESHOLD:,}). Consider /summarize, "
                     f"/clone fresh, or /export-all + start a new card.\n"
                 )
@@ -3002,7 +3002,7 @@ class AgentCard(QFrame):
                     except Exception:
                         reset_str = ""
                 self._append_terminal(
-                    f"\n  ⚠ rate-limit {status} ({kind}){reset_str}\n"
+                    f"\n  ! rate-limit {status} ({kind}){reset_str}\n"
                 )
 
     # v1.6.10 — benign stderr lines from claude that look like bugs in the

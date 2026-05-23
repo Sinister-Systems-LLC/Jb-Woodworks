@@ -157,9 +157,14 @@ class _MirrorCard(QFrame):
         hdr.addWidget(close_btn)
         root.addLayout(hdr)
 
-        # Body — placeholder until scrcpy embeds; then swapped for the
-        # reparented QWindow container.
+        # Body — placeholder until scrcpy embeds; then SetParent'd into.
+        # v1.6.74 — must be a NATIVE Qt widget (WA_NativeWindow) so it
+        # has a real Win32 HWND for SetParent to attach scrcpy to.
+        # Without this attribute, winId() returns a placeholder that
+        # SetParent silently rejects → black box.
         self._body_host = QFrame()
+        self._body_host.setAttribute(Qt.WidgetAttribute.WA_NativeWindow, True)
+        self._body_host.setAttribute(Qt.WidgetAttribute.WA_DontCreateNativeAncestors, True)
         self._body_host.setMinimumSize(self.MIRROR_SIZE, self.MIRROR_SIZE)
         self._body_host.setStyleSheet(
             f"QFrame {{ background-color: #000; border-radius: 10px; }}"
@@ -178,21 +183,22 @@ class _MirrorCard(QFrame):
         self._body_layout.addWidget(self._status_label)
         root.addWidget(self._body_host, stretch=1)
 
-        # Footer — quick action row (screenshot + shell)
+        # Footer — text-only action row (dashboard-skeleton: no emojis)
         ftr = QHBoxLayout()
         ftr.setSpacing(6)
         for label, slot in (
-            ("📸", self._take_screenshot),
-            ("⌨", self._open_shell),
-            ("📜", self._tail_logcat),
+            ("Shot",  self._take_screenshot),
+            ("Shell", self._open_shell),
+            ("Log",   self._tail_logcat),
         ):
             b = QPushButton(label)
-            b.setFixedSize(28, 22)
+            b.setFixedHeight(22)
             b.setCursor(Qt.CursorShape.PointingHandCursor)
             b.setStyleSheet(
-                f"QPushButton {{ color: {PURPLE_PRIMARY}; background-color: rgba(191,90,242,30); "
-                f"border: 1px solid rgba(191,90,242,120); border-radius: 6px; "
-                f"font-size: 12px; }}"
+                f"QPushButton {{ color: {PURPLE_PRIMARY}; "
+                f"background-color: rgba(191,90,242,30); "
+                f"border: 1px solid rgba(191,90,242,120); border-radius: 11px; "
+                f"padding: 0 10px; font-size: 10px; font-weight: 600; }}"
                 f"QPushButton:hover {{ background-color: rgba(191,90,242,60); }}"
             )
             b.clicked.connect(slot)
@@ -204,6 +210,12 @@ class _MirrorCard(QFrame):
         if not _SCRCPY:
             self._status_label.setText("scrcpy not found")
             return
+        # v1.6.74 — force native HWND creation before scrcpy spawns so
+        # the parent window exists when _try_embed runs SetParent.
+        try:
+            _ = int(self._body_host.winId())
+        except Exception:
+            pass
         try:
             self._proc = subprocess.Popen(
                 [
@@ -213,6 +225,7 @@ class _MirrorCard(QFrame):
                     "--window-borderless",
                     "--max-size", str(self.MIRROR_SIZE),
                     "--no-audio",
+                    "--render-driver", "opengl",
                 ],
                 stdin=subprocess.DEVNULL,
                 stdout=subprocess.DEVNULL,
@@ -225,7 +238,10 @@ class _MirrorCard(QFrame):
             self._status_label.setText(f"scrcpy failed:\n{exc}")
 
     def _try_embed(self) -> None:
-        """Poll for the scrcpy window by unique title, then reparent it."""
+        """v1.6.74 — Win32 SetParent reparenting (more reliable than
+        QWindow.fromWinId, which previously rendered as a black box
+        because Qt didn't drive scrcpy's D3D backend through resize/
+        paint cycles correctly)."""
         self._embed_attempts += 1
         elapsed = self._embed_attempts * self.EMBED_RETRY_MS
         try:
@@ -245,20 +261,66 @@ class _MirrorCard(QFrame):
             QTimer.singleShot(self.EMBED_RETRY_MS, self._try_embed)
             return
         try:
-            self._embed_window = QWindow.fromWinId(int(hwnd))
-            self._embed_container = QWidget.createWindowContainer(
-                self._embed_window, self._body_host
+            # Win32 constants
+            GWL_STYLE = -16
+            WS_CHILD = 0x40000000
+            WS_POPUP = 0x80000000
+            WS_CAPTION = 0x00C00000
+            WS_THICKFRAME = 0x00040000
+            SWP_NOZORDER = 0x0004
+            SWP_NOACTIVATE = 0x0010
+            SWP_FRAMECHANGED = 0x0020
+
+            user32.GetWindowLongW.restype = ctypes.c_long
+            user32.GetWindowLongW.argtypes = [ctypes.c_void_p, ctypes.c_int]
+            user32.SetWindowLongW.restype = ctypes.c_long
+            user32.SetWindowLongW.argtypes = [ctypes.c_void_p, ctypes.c_int,
+                                              ctypes.c_long]
+            user32.SetParent.restype = ctypes.c_void_p
+            user32.SetParent.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
+            user32.SetWindowPos.restype = ctypes.c_int
+            user32.SetWindowPos.argtypes = [
+                ctypes.c_void_p, ctypes.c_void_p,
+                ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int,
+                ctypes.c_uint,
+            ]
+
+            # 1. Strip top-level decorations + add WS_CHILD
+            cur_style = user32.GetWindowLongW(hwnd, GWL_STYLE)
+            new_style = ((cur_style | WS_CHILD)
+                         & ~WS_POPUP & ~WS_CAPTION & ~WS_THICKFRAME)
+            user32.SetWindowLongW(hwnd, GWL_STYLE, new_style)
+
+            # 2. Reparent into our body host widget
+            parent_hwnd = int(self._body_host.winId())
+            user32.SetParent(hwnd, parent_hwnd)
+
+            # 3. Move to (0,0) inside parent + size to body
+            w = max(200, self._body_host.width() or self.MIRROR_SIZE)
+            h = max(200, self._body_host.height() or self.MIRROR_SIZE)
+            user32.SetWindowPos(
+                hwnd, None, 0, 0, w, h,
+                SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED,
             )
-            self._embed_container.setMinimumSize(
-                self.MIRROR_SIZE, self.MIRROR_SIZE
-            )
-            self._embed_container.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
-            # Swap placeholder for the embed
-            self._body_layout.removeWidget(self._status_label)
+            self._embedded_hwnd = hwnd
             self._status_label.hide()
-            self._body_layout.addWidget(self._embed_container)
         except Exception as exc:
             self._status_label.setText(f"embed failed: {exc}")
+
+    def resizeEvent(self, event) -> None:
+        """v1.6.74 — keep embedded HWND sized to body host on resize."""
+        super().resizeEvent(event)
+        hwnd = getattr(self, "_embedded_hwnd", None)
+        if hwnd:
+            try:
+                w = max(200, self._body_host.width())
+                h = max(200, self._body_host.height())
+                ctypes.windll.user32.SetWindowPos(
+                    ctypes.c_void_p(hwnd), None, 0, 0, w, h,
+                    0x0004 | 0x0010,  # NOZORDER | NOACTIVATE
+                )
+            except Exception:
+                pass
 
     def _on_close(self) -> None:
         # Kill scrcpy → its window vanishes → reparented container destroys
@@ -466,12 +528,18 @@ class DevicesView(QWidget):
         self._device_rows: list[_DeviceRow] = []
         self._mirror_cards: dict[str, _MirrorCard] = {}  # serial → card
         self._group_selected: set[str] = set()
+        self._auto_mirrored_once = False
         self._build()
         self._refresh()
         self._refresh_timer = QTimer(self)
         self._refresh_timer.setInterval(4_000)
         self._refresh_timer.timeout.connect(self._refresh)
         self._refresh_timer.start()
+        # v1.6.74 — auto-mirror every connected phone on first build.
+        # 1500ms delay so the widget tree is fully realized + native HWNDs
+        # exist before SetParent runs (without this scrcpy reparents to
+        # an unrealized parent and ends up as a black box).
+        QTimer.singleShot(1500, self._auto_mirror_all)
 
     def _build(self) -> None:
         root = QVBoxLayout(self)
@@ -489,15 +557,10 @@ class DevicesView(QWidget):
         header.addWidget(self._count_label)
         header.addStretch(1)
 
+        # Dashboard-skeleton: no emojis. Use "ok" / "missing" text instead.
         tooling = []
-        if _SCRCPY:
-            tooling.append("scrcpy ✓")
-        else:
-            tooling.append("scrcpy ✗ (winget install Genymobile.scrcpy)")
-        if _ADB:
-            tooling.append("adb ✓")
-        else:
-            tooling.append("adb ✗")
+        tooling.append(f"scrcpy {'ok' if _SCRCPY else 'missing'}")
+        tooling.append(f"adb {'ok' if _ADB else 'missing'}")
         tool_label = QLabel(" · ".join(tooling))
         tool_label.setStyleSheet(
             f"color: {MUTED_FG}; background: transparent; "
@@ -537,34 +600,36 @@ class DevicesView(QWidget):
         header.addWidget(refresh_btn)
         root.addLayout(header)
 
-        # v1.6.73 — Mirrors panel: horizontal scroll above the device list.
+        # v1.6.74 — Mirrors panel is the PRIMARY view (horizontal infinite
+        # scroll, fills vertical space). Auto-loads every connected phone
+        # on first build so the operator sees them all by default.
         self._mirrors_scroll = QScrollArea(self)
         self._mirrors_scroll.setWidgetResizable(True)
         self._mirrors_scroll.setFrameShape(QFrame.Shape.NoFrame)
         self._mirrors_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self._mirrors_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-        self._mirrors_scroll.setFixedHeight(_MirrorCard.MIRROR_SIZE + 130)
         self._mirrors_host = QWidget()
         self._mirrors_row = QHBoxLayout(self._mirrors_host)
         self._mirrors_row.setContentsMargins(0, 0, 0, 0)
         self._mirrors_row.setSpacing(10)
         self._mirrors_row.addStretch(1)
         self._mirrors_scroll.setWidget(self._mirrors_host)
-        self._mirrors_scroll.hide()  # hidden until first Mirror click
-        root.addWidget(self._mirrors_scroll)
+        root.addWidget(self._mirrors_scroll, stretch=1)
 
-        # Device list scroll
+        # Compact device list strip BELOW the mirrors (no big blank area).
+        # Capped at ~150px so it doesn't dominate; mirrors get all the space.
         self._scroll = QScrollArea(self)
         self._scroll.setWidgetResizable(True)
         self._scroll.setFrameShape(QFrame.Shape.NoFrame)
         self._scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self._scroll.setMaximumHeight(160)
         self._host = QWidget()
         self._list_layout = QVBoxLayout(self._host)
         self._list_layout.setContentsMargins(0, 0, 0, 0)
-        self._list_layout.setSpacing(8)
+        self._list_layout.setSpacing(6)
         self._list_layout.addStretch(1)
         self._scroll.setWidget(self._host)
-        root.addWidget(self._scroll, stretch=1)
+        root.addWidget(self._scroll)
 
         # Empty state
         self._empty_hero = QLabel("No ADB devices connected")
@@ -655,6 +720,15 @@ class DevicesView(QWidget):
         for r in self._device_rows:
             if r.dev.state == "device":
                 self._embed_mirror(r.dev.serial)
+
+    def _auto_mirror_all(self) -> None:
+        """v1.6.74 — one-shot auto-mirror on first tab build so operator
+        sees all phones embedded by default. Subsequent refreshes don't
+        re-fire this (operator can close cards + use Mirror All button)."""
+        if self._auto_mirrored_once:
+            return
+        self._auto_mirrored_once = True
+        self._mirror_all()
 
     def _mirror_selected(self) -> None:
         for s in list(self._group_selected):
