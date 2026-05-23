@@ -215,7 +215,7 @@ class TestTokenBudget(unittest.TestCase):
 
 class TestModuleSurface(unittest.TestCase):
     def test_version_matches(self) -> None:
-        self.assertEqual(sinister_rkoj_qt.__version__, "1.6.70")
+        self.assertEqual(sinister_rkoj_qt.__version__, "1.6.71")
 
     def test_classes_present(self) -> None:
         for name in (

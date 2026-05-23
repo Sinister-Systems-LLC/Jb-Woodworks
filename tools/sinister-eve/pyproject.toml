@@ -1,0 +1,15 @@
+# Author: RKOJ-ELENO :: 2026-05-23
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sinister-eve"
+version = "0.1.0"
+description = "jcode-style standalone EVE CLI REPL (RKOJ companion)"
+authors = [{ name = "RKOJ-ELENO" }]
+license = { text = "AGPL-3.0-or-later" }
+requires-python = ">=3.10"
+
+[project.scripts]
+sinister-eve = "sinister_eve.__main__:main"

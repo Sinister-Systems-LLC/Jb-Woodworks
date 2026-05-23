@@ -42,7 +42,8 @@ except Exception:  # pragma: no cover
     _HAS_SVG = False
 
 from .theme import (
-    HEADER_HEIGHT, LEFT_SPINE_WIDTH, SIDEBAR_WIDTH, asset_path, nav_icon,
+    FG, HEADER_HEIGHT, LEFT_SPINE_WIDTH, MUTED_FG, PURPLE_PRIMARY,
+    SIDEBAR_WIDTH, asset_path, nav_icon,
 )
 
 
@@ -86,9 +87,12 @@ class _NavRow(QPushButton):
         if _HAS_SVG:
             row.addWidget(nav_icon(icon_name, size=18))
         self._label_widget = QLabel(label)
+        # v1.6.71 — explicit MUTED_FG color (was `color: inherit` which
+        # Qt's QSS doesn't honor → labels rendered invisible against the
+        # dark sidebar background). Swapped on active state via set_active.
         self._label_widget.setStyleSheet(
-            "color: inherit; background: transparent; "
-            "font-size: 14px; font-weight: 500;"
+            f"color: {MUTED_FG}; background: transparent; "
+            f"font-size: 14px; font-weight: 500;"
         )
         row.addWidget(self._label_widget, stretch=1)
         # v1.6.22 — optional count badge (hidden by default). Set via
@@ -104,6 +108,20 @@ class _NavRow(QPushButton):
         self._badge.setAlignment(Qt.AlignmentFlag.AlignCenter)
         row.addWidget(self._badge)
         self.setText("")
+
+    def set_active(self, active: bool) -> None:
+        """v1.6.71 — swap label color so the row's text is visible in
+        both states. Inactive = muted gray; active = purple bold."""
+        if active:
+            self._label_widget.setStyleSheet(
+                f"color: {PURPLE_PRIMARY}; background: transparent; "
+                f"font-size: 14px; font-weight: 700;"
+            )
+        else:
+            self._label_widget.setStyleSheet(
+                f"color: {MUTED_FG}; background: transparent; "
+                f"font-size: 14px; font-weight: 500;"
+            )
 
     def set_badge(self, text: str | None) -> None:
         """Show/hide the small count pill at the right of the nav row.
@@ -266,6 +284,7 @@ class Sidebar(QWidget):
             row.setProperty("active", is_active)
             row.style().unpolish(row)
             row.style().polish(row)
+            row.set_active(is_active)  # v1.6.71 — also swap label color
 
     # v1.6.23 — external setter for the Agents nav row badge. Called from
     # app.py when AgentsView's card count changes (spawn / close).

@@ -4,6 +4,36 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not command-versions (each lane has its own).
 
+## v1.6.71 — 2026-05-23 — sidebar nav labels visible + sinister-eve.exe shipped
+
+**Bug fix:** Sidebar nav row labels were invisible (operator screenshot
+showed only badges floating with no text). Root cause: each `_NavRow`'s
+QLabel had `color: inherit;` which Qt's QSS doesn't honor → labels
+rendered with the default disabled-state color against the dark
+SidebarCard. Fix: explicit `MUTED_FG` on inactive, `PURPLE_PRIMARY`
+bold on active; new `_NavRow.set_active(bool)` method called from
+`_update_active`. Operator now sees `Agents · Sessions · Devices`
+rows clearly.
+
+**New tool:** `tools/sinister-eve/` — jcode-style standalone EVE CLI
+REPL. Built as 8.1 MB PyInstaller onefile `sinister-eve.exe`, shipped
+to Desktop alongside `RKOJ.exe`.
+
+- `sinister-eve` interactive REPL — spawns `claude --output-format
+  stream-json` per turn, parses NDJSON events, renders with ANSI
+  colors: purple `● EVE` reply header, cyan `💭` thinking previews,
+  gold-bold `● ToolName` tool calls, gray `✓` results, dim cost
+  footer. Same EVE persona prelude as RKOJ.
+- `-p "msg"` one-shot mode, `--resume <uuid>` continuation,
+  `--model <alias>` per-turn model pick.
+- 10 slash commands: /help, /clear, /cancel, /cost, /session,
+  /save, /persona, /summarize, /history, /quit.
+- Token budget warning at 100k (parity with RKOJ v1.6.70).
+- Windows VT-processing toggle so ANSI colors work in cmd.exe.
+- Built via own spec `tools/sinister-eve/sinister-eve.spec`.
+
+MANIFEST.json 1.6.70 → 1.6.71. `__init__.py __version__ = "1.6.71"`.
+
 ## v1.6.70 — 2026-05-23 — token-budget warning + /budget gauge
 
 **One-shot yellow warning when a card crosses 100k cumulative tokens
