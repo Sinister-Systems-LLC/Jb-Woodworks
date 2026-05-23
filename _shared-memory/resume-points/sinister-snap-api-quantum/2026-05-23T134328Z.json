@@ -1,0 +1,45 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-23T19:34:16.1151316Z",
+    "project":  "sinister-snap-api-quantum",
+    "agent_name":  "sinister-snap-api-quantum",
+    "mode":  "resume",
+    "focus_intent":  "BIG FINDING iteration 2: encoding-collapse plateau is TRIAD-LIMITED, not encoding-limited. Medium-doctrine triad real-QPU 0.5417 vs sim 0.5520 (Delta -0.010 — 1pp match, cleanest of entire 9-audit session). Reframes the 16:30Z hardware-limited verdict. Cache fix shipped in cloud_submit.py (cached service + backend handles + prewarm_backend) — fixes connect-per-pair perf bug discovered in v1 run. Budget exhausted at 0s (40s on pair 1,2). Next iteration 3 candidates: 5-doc set / K=8 on medium-doctrine / variance characterization / TF-IDF diversity heuristic. Operator standing authorization to reset budget based on dashboard math.",
+    "git":  {
+                "branch":  "agent/sinister-sanctum/grant-autonomy-followup-2026-05-23",
+                "head":  "84e7f9f6fd20d1c015f28b4d0cad1e7c7069ce44",
+                "head_msg":  "sanctum: Agent F speed audit — fix 4 freeze/slowdown bugs in spawn hot path",
+                "recent_commits":  [
+                                       "84e7f9f sanctum: Agent F speed audit — fix 4 freeze/slowdown bugs in spawn hot path",
+                                       "774aac9 sanctum: Leo-ready ship - 5 parallel agents land EVE.exe rebuild + LEO-SETUP doc + non-interactive auth doctrine + sinister-term polish + bat portability fixes",
+                                       "2d9baea sanctum: ship B.5 + B.10 + C.13 + B.9 (audit scripts + telemetry + context-cleaner spec)",
+                                       "80d4f7a sanctum: ship C.10 playbook + B.4 inbox drops + B.7 matrix flip + C.14 status dashboard",
+                                       "79067ef sanctum: sweep batch 1 - sibling lane work + sterm doctrine + eve-picker tests",
+                                       "106f94a sanctum: ship B.6 bot-fleet-quick-reference.md (Phase-2 highest-leverage)",
+                                       "0fafe63 sanctum: launcher hardening — silent plugin auto-install + closeable windows + jcode ASCII C banner",
+                                       "d587bcc fix(launcher): harden Sinister Start.bat spawn + ship EVE.exe build + diagnose flag",
+                                       "eece014 ship(seraphim): real Wukong-180 memory-kernel experiment + accurate billing sync",
+                                       "a1801c3 ship(seraphim): FIRST REAL Wukong-180 QPU submission + full project memory"
+                                   ]
+            },
+    "progress_top3":  [
+                          "2026-05-23T17:40Z â€” ðŸŽ¯ðŸŽ¯ðŸŽ¯ shipped: PLATEAU REFRAMED â€” triad choice matters (loop iteration 2)",
+                          "2026-05-23T17:15Z â€” shipped: deprecation + READMEs (loop iteration 1)"
+                      ],
+    "latest_plan":  {
+                        "dir":  null,
+                        "artifact":  null
+                    },
+    "inbox_unread_count":  0,
+    "last_5_files_touched_24h":  [
+                                     "_vault\\_quota.json",
+                                     "_vault\\audit\\2026-05-23.jsonl",
+                                     "_vault\\mcp-vault-entry-PROPOSED.json",
+                                     "_shared-memory\\resume-points\\Sinister Sanctum\\2026-05-23T175215Z.json",
+                                     "_shared-memory\\seraphim-cloud-ledger.jsonl"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\sinister-snap-api-quantum.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}

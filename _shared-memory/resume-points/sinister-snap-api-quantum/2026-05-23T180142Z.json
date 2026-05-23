@@ -1,0 +1,45 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-23T22:25:28.6475373Z",
+    "project":  "sinister-snap-api-quantum",
+    "agent_name":  "sinister-snap-api-quantum",
+    "mode":  "resume",
+    "focus_intent":  "Iteration 24: correction broadcast shipped at _shared-memory/cross-agent/2026-05-23T2230Z-sanctum-correction-cross-lane-triad-advice-superseded.md. Empirical correction supersedes the cross-lane triad advice from iter-11 + iter-19 broadcasts. 24-iteration investigation truly at definitive close. 5 real-QPU verifications + complete production CLI + 6 doctrine anchors + 3 cross-agent broadcasts + brain entry + README sync. The fleet has everything to use the quantum-memory-kernel recipe responsibly.",
+    "git":  {
+                "branch":  "agent/sinister-sanctum/grant-autonomy-followup-2026-05-23",
+                "head":  "468cf0daf133ce93accd211fb6e5936fd6bf11cb",
+                "head_msg":  "sanctum: add acct:\u003cname\u003e pill to spawn banner",
+                "recent_commits":  [
+                                       "468cf0d ﻿sanctum: add acct:\u003cname\u003e pill to spawn banner",
+                                       "023a354 sanctum: iter 5 - 3 bugs FOUND+FIXED + C.4 auto-restore shipped",
+                                       "36b7f54 ﻿sanctum: Sinister Start.bat --account / --account-status flags",
+                                       "b9e4c79 ﻿sanctum: LEO-SETUP.md - add multi-account rotation section",
+                                       "6acd513 ﻿sanctum: auto-push ErrorActionPreference fix + session-outcome doc",
+                                       "978d93b ﻿sanctum: multi-account rotation (M1+M2) + critical banner-escape regression fix",
+                                       "215b817 ship(sinister-generator): clean-imagery template (text-free, dark sleek pro) + style-pivot history in doctrine",
+                                       "d130ef0 sanctum: iter 4 PROGRESS entry - operator urgents + Leo fix + bat fix",
+                                       "4f3f8ee sanctum: fix Sinister Start.bat closing instantly + promote chatbot in picker",
+                                       "00f15b2 sanctum: Agent J+K2+L+rkoj-lane — vault bring-up + sinister-term v2 + auto-clone missing project sources + /list fix"
+                                   ]
+            },
+    "progress_top3":  [
+                          "2026-05-23T22:34Z â€” iteration 24: posted correction broadcast to fleet (closes the iter-23 correction loop)",
+                          "2026-05-23T22:30Z â€” iteration 23: CORRECTION â€” cross-lane recommendation was WRONG (lane is irrelevant)"
+                      ],
+    "latest_plan":  {
+                        "dir":  null,
+                        "artifact":  null
+                    },
+    "inbox_unread_count":  0,
+    "last_5_files_touched_24h":  [
+                                     "_vault\\_quota.json",
+                                     "_shared-memory\\heartbeats\\apk.json",
+                                     "_shared-memory\\heartbeats\\sinister-vault.beat",
+                                     "_shared-memory\\heartbeats\\sinister-panel.json",
+                                     "_shared-memory\\PROGRESS\\Sinister Panel.md"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\sinister-snap-api-quantum.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}

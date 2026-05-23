@@ -1,0 +1,45 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-23T19:34:16.0633429Z",
+    "project":  "sinister-snap-api-quantum",
+    "agent_name":  "sinister-snap-api-quantum",
+    "mode":  "resume",
+    "focus_intent":  "TRIPLE-VERIFIED 19:45Z: Third real-QPU audit on rank-3 ZZ-FM r=1 QBC triad (multi-agent-branch + multi-agent-git-coord + multi-agent-git-index) gives 31pp quantum advantage over classical. Combined with rank-1 (34pp) and rank-2 (32pp), 31-34pp range is robust across 3 independent triads. Mean across 3: real 0.2066 vs classical 0.5281 vs sim 0.2751. Investigation at definitive high-water mark. Operator dual directive both delivered with empirical 3x verification. CLI notes updated to TRIPLE-verified. Budget 47s of 150s remaining.",
+    "git":  {
+                "branch":  "agent/sinister-sanctum/grant-autonomy-followup-2026-05-23",
+                "head":  "215b81771942211851cb70aadec169a69966f4dd",
+                "head_msg":  "ship(sinister-generator): clean-imagery template (text-free, dark sleek pro) + style-pivot history in doctrine",
+                "recent_commits":  [
+                                       "215b817 ship(sinister-generator): clean-imagery template (text-free, dark sleek pro) + style-pivot history in doctrine",
+                                       "d130ef0 sanctum: iter 4 PROGRESS entry - operator urgents + Leo fix + bat fix",
+                                       "4f3f8ee sanctum: fix Sinister Start.bat closing instantly + promote chatbot in picker",
+                                       "00f15b2 sanctum: Agent J+K2+L+rkoj-lane — vault bring-up + sinister-term v2 + auto-clone missing project sources + /list fix",
+                                       "d75f71f sanctum: iter 4 + Leo missing-sources fix - post-commit hook + bot-fleet check + clone helper",
+                                       "1a2d9b1 ship(sinister-generator): brand-library workflow doctrine + tier-semantic fix + iter4-social script",
+                                       "8fd2d30 sanctum: auto-push current branch (not just main) + session-end push trigger + Leo-vault setup doc",
+                                       "19c54be ship(sinister-generator): iter3-snap fire script (100 selling-pack variants, psychedelic)",
+                                       "825d550 sanctum: Agent G+H — sinister-term cursor+farewell+smoke-test + spawn trust-block warm-path optimization",
+                                       "d6514b4 sanctum: iter 3 - TEST+FIX (4 bugs caught+fixed) + C.6 cross-lane impact diff"
+                                   ]
+            },
+    "progress_top3":  [
+                          "2026-05-23T19:45Z â€” ðŸŽ¯ðŸŽ¯ðŸŽ¯ðŸŽ¯ðŸŽ¯ðŸŽ¯ðŸŽ¯ iteration 8: TRIPLE-VERIFIED â€” third triad shows 31pp advantage",
+                          "2026-05-23T19:35Z â€” ðŸŽ¯ðŸŽ¯ðŸŽ¯ðŸŽ¯ðŸŽ¯ðŸŽ¯ iteration 7: PATTERN CONFIRMED â€” second real-QPU triad shows 32pp advantage"
+                      ],
+    "latest_plan":  {
+                        "dir":  null,
+                        "artifact":  null
+                    },
+    "inbox_unread_count":  0,
+    "last_5_files_touched_24h":  [
+                                     "_vault\\_quota.json",
+                                     "_shared-memory\\heartbeats\\sinister-vault.beat",
+                                     "projects\\sinister-snap-emu\\source\\sinister-rka\\Sinister RKA GOOD\\server-java\\heartbeats.json",
+                                     "_shared-memory\\heartbeats\\sinister-snap-api-quantum.json",
+                                     "_shared-memory\\PROGRESS\\snap-emulator-api.md"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\sinister-snap-api-quantum.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}

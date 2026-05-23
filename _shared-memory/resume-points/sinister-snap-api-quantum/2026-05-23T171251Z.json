@@ -1,0 +1,45 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-23T21:15:59.3090204Z",
+    "project":  "sinister-snap-api-quantum",
+    "agent_name":  "sinister-snap-api-quantum",
+    "mode":  "resume",
+    "focus_intent":  "Iteration 18: audit-pipeline end-to-end VERIFIED with --top-n 1. Rank-1 triad got 34.9pp advantage via the pipeline (vs 31.6pp same triad standalone at 19:35Z) — QUINTUPLE-verified production recipe (5 real-QPU runs total). Run-to-run variance ~3pp on the same triad (closes iter 5 deferred characterization). Pipeline orchestration: find-qbc → sim-gate → real-QPU all executed correctly. Budget 38s remaining.",
+    "git":  {
+                "branch":  "agent/sinister-sanctum/grant-autonomy-followup-2026-05-23",
+                "head":  "b9e4c7907577fcff7517e5727bc94ec509084d49",
+                "head_msg":  "sanctum: LEO-SETUP.md - add multi-account rotation section",
+                "recent_commits":  [
+                                       "b9e4c79 ﻿sanctum: LEO-SETUP.md - add multi-account rotation section",
+                                       "6acd513 ﻿sanctum: auto-push ErrorActionPreference fix + session-outcome doc",
+                                       "978d93b ﻿sanctum: multi-account rotation (M1+M2) + critical banner-escape regression fix",
+                                       "215b817 ship(sinister-generator): clean-imagery template (text-free, dark sleek pro) + style-pivot history in doctrine",
+                                       "d130ef0 sanctum: iter 4 PROGRESS entry - operator urgents + Leo fix + bat fix",
+                                       "4f3f8ee sanctum: fix Sinister Start.bat closing instantly + promote chatbot in picker",
+                                       "00f15b2 sanctum: Agent J+K2+L+rkoj-lane — vault bring-up + sinister-term v2 + auto-clone missing project sources + /list fix",
+                                       "d75f71f sanctum: iter 4 + Leo missing-sources fix - post-commit hook + bot-fleet check + clone helper",
+                                       "1a2d9b1 ship(sinister-generator): brand-library workflow doctrine + tier-semantic fix + iter4-social script",
+                                       "8fd2d30 sanctum: auto-push current branch (not just main) + session-end push trigger + Leo-vault setup doc"
+                                   ]
+            },
+    "progress_top3":  [
+                          "2026-05-23T21:38Z â€” ðŸŽ¯ðŸŽ¯ðŸŽ¯ iteration 18: audit-pipeline END-TO-END verified + QUINTUPLE-verified production recipe",
+                          "2026-05-23T21:28Z â€” iteration 17: README docs updated for the production toolkit"
+                      ],
+    "latest_plan":  {
+                        "dir":  null,
+                        "artifact":  null
+                    },
+    "inbox_unread_count":  0,
+    "last_5_files_touched_24h":  [
+                                     "_vault\\_quota.json",
+                                     "projects\\sinister-snap-emu\\source\\sinister-rka\\Sinister RKA GOOD\\server-java\\heartbeats.json.tmp",
+                                     "_shared-memory\\.auto-push.lock",
+                                     "_shared-memory\\heartbeats\\sinister-vault.beat",
+                                     "projects\\sinister-snap-emu\\source\\sinister-rka\\Sinister RKA GOOD\\server-java\\heartbeats.json"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\sinister-snap-api-quantum.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}

@@ -1,0 +1,45 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-23T19:34:16.0776326Z",
+    "project":  "sinister-snap-api-quantum",
+    "agent_name":  "sinister-snap-api-quantum",
+    "mode":  "resume",
+    "focus_intent":  "PRODUCTION-GRADE: rank-1 algorithmic triad (forge-memory/panel-wave/sibling-launch) on real WK_C180 with corpus-pool TF-IDF returns real off-diag 0.1406 vs sim 0.1356 (Δ=+0.005 — 0.5pp, best of entire 12-audit session). 3/3 pairs landed. Tech-debt fixed: ledger overlap, submit_circuit decoupled, run_kernel_audit corpus param, CLI --triad+--corpus flags. NEW BRAIN ENTRY: quantum-memory-kernel-fleet-action-items-2026-05-23.md (action items for Sanctum/Forge/Panel/APK/Snap-EMU/TT-EMU/Bumble-EMU/Freeze + Seraphim open items). Operator dual directive both delivered. Loop continues: iteration 4 candidates = variance characterization on rank-1 OR K=8 on rank-1 OR alternative encoding for sub-classical discrimination. Budget 36.453s of 75s remaining.",
+    "git":  {
+                "branch":  "agent/sinister-sanctum/grant-autonomy-followup-2026-05-23",
+                "head":  "1a2d9b1d8b7b655e5e0690cf14a00c575a70621d",
+                "head_msg":  "ship(sinister-generator): brand-library workflow doctrine + tier-semantic fix + iter4-social script",
+                "recent_commits":  [
+                                       "1a2d9b1 ship(sinister-generator): brand-library workflow doctrine + tier-semantic fix + iter4-social script",
+                                       "8fd2d30 sanctum: auto-push current branch (not just main) + session-end push trigger + Leo-vault setup doc",
+                                       "19c54be ship(sinister-generator): iter3-snap fire script (100 selling-pack variants, psychedelic)",
+                                       "825d550 sanctum: Agent G+H — sinister-term cursor+farewell+smoke-test + spawn trust-block warm-path optimization",
+                                       "d6514b4 sanctum: iter 3 - TEST+FIX (4 bugs caught+fixed) + C.6 cross-lane impact diff",
+                                       "84e7f9f sanctum: Agent F speed audit — fix 4 freeze/slowdown bugs in spawn hot path",
+                                       "774aac9 sanctum: Leo-ready ship - 5 parallel agents land EVE.exe rebuild + LEO-SETUP doc + non-interactive auth doctrine + sinister-term polish + bat portability fixes",
+                                       "2d9baea sanctum: ship B.5 + B.10 + C.13 + B.9 (audit scripts + telemetry + context-cleaner spec)",
+                                       "80d4f7a sanctum: ship C.10 playbook + B.4 inbox drops + B.7 matrix flip + C.14 status dashboard",
+                                       "79067ef sanctum: sweep batch 1 - sibling lane work + sterm doctrine + eve-picker tests"
+                                   ]
+            },
+    "progress_top3":  [
+                          "2026-05-23T18:05Z â€” ðŸŽ¯ðŸŽ¯ðŸŽ¯ðŸŽ¯ðŸŽ¯ shipped: PRODUCTION-GRADE memory kernel (loop iteration 3+)",
+                          "2026-05-23T17:40Z â€” ðŸŽ¯ðŸŽ¯ðŸŽ¯ shipped: PLATEAU REFRAMED â€” triad choice matters (loop iteration 2)"
+                      ],
+    "latest_plan":  {
+                        "dir":  null,
+                        "artifact":  null
+                    },
+    "inbox_unread_count":  0,
+    "last_5_files_touched_24h":  [
+                                     "_vault\\_quota.json",
+                                     "_vault\\audit\\2026-05-23.jsonl",
+                                     "tools\\sinister-vault\\vault-daemon.bat",
+                                     "projects\\sinister-term\\source\\term\\commands.py",
+                                     "projects\\sinister-generator\\memory\\learning\\jkor.json"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\sinister-snap-api-quantum.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}

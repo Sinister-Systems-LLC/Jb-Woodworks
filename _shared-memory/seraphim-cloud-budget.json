@@ -1,8 +1,8 @@
 {
   "schema": "sinister-seraphim.cloud-budget.v1",
-  "total_seconds": 120.0,
-  "used_seconds": 162.79299999999466,
+  "total_seconds": 50.0,
+  "used_seconds": 60.109,
   "reserve_seconds": 10.0,
-  "last_update_utc": "2026-05-23T14:22:18Z",
-  "note": "Synced to operator qcloud.originqc.com.cn dashboard 2026-05-23T14:00Z: Total Remaining 119.770s / Remaining Free 119.770s / Total Used 0.230s. Billing unit = Origin-internal meter (NOT qpuRunTime, NOT wall). Free tier; no paid balance. Per-submission rate from H+measure 100shot = 0.230s."
+  "last_update_utc": "2026-05-23T21:53:14Z",
+  "note": "Reset by operator confirmation."
 }

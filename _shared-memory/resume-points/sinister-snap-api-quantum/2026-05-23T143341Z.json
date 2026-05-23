@@ -1,0 +1,45 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-23T19:34:16.0446321Z",
+    "project":  "sinister-snap-api-quantum",
+    "agent_name":  "sinister-snap-api-quantum",
+    "mode":  "resume",
+    "focus_intent":  "Iteration 5: variance characterization deferred due to Origin queue degradation. Same rank-1 triad (forge/panel/sibling) that landed 10s/pair at 18:05Z stalled at 90s/pair at 18:50Z. 3 stalls in last 45min indicate non-stationary Origin queue. Fleet action items doc updated with reliability finding (need retry-with-backoff; --sim-only is deterministic path). Iteration 6 queued: sim-only ZZ-FM-r1 algorithmic search OR top-K sweep OR full-145-doc corpus — all immune to Origin degradation. Budget 0.0s; standing operator authorization to reset.",
+    "git":  {
+                "branch":  "agent/sinister-sanctum/grant-autonomy-followup-2026-05-23",
+                "head":  "d130ef0e508a2d6baf863c49c21d22b5c0ca1402",
+                "head_msg":  "sanctum: iter 4 PROGRESS entry - operator urgents + Leo fix + bat fix",
+                "recent_commits":  [
+                                       "d130ef0 sanctum: iter 4 PROGRESS entry - operator urgents + Leo fix + bat fix",
+                                       "4f3f8ee sanctum: fix Sinister Start.bat closing instantly + promote chatbot in picker",
+                                       "00f15b2 sanctum: Agent J+K2+L+rkoj-lane — vault bring-up + sinister-term v2 + auto-clone missing project sources + /list fix",
+                                       "d75f71f sanctum: iter 4 + Leo missing-sources fix - post-commit hook + bot-fleet check + clone helper",
+                                       "1a2d9b1 ship(sinister-generator): brand-library workflow doctrine + tier-semantic fix + iter4-social script",
+                                       "8fd2d30 sanctum: auto-push current branch (not just main) + session-end push trigger + Leo-vault setup doc",
+                                       "19c54be ship(sinister-generator): iter3-snap fire script (100 selling-pack variants, psychedelic)",
+                                       "825d550 sanctum: Agent G+H — sinister-term cursor+farewell+smoke-test + spawn trust-block warm-path optimization",
+                                       "d6514b4 sanctum: iter 3 - TEST+FIX (4 bugs caught+fixed) + C.6 cross-lane impact diff",
+                                       "84e7f9f sanctum: Agent F speed audit — fix 4 freeze/slowdown bugs in spawn hot path"
+                                   ]
+            },
+    "progress_top3":  [
+                          "2026-05-23T18:50Z â€” âš ï¸ iteration 5: variance characterization deferred â€” Origin reliability finding",
+                          "2026-05-23T18:30Z â€” ðŸŽ¯ shipped: quantum-vs-classical scope established (loop iteration 4)"
+                      ],
+    "latest_plan":  {
+                        "dir":  null,
+                        "artifact":  null
+                    },
+    "inbox_unread_count":  0,
+    "last_5_files_touched_24h":  [
+                                     "_vault\\_quota.json",
+                                     "projects\\sinister-snap-emu\\source\\sinister-rka\\Sinister RKA GOOD\\server-java\\heartbeats.json.tmp",
+                                     "_shared-memory\\heartbeats\\sinister-vault.beat",
+                                     "automations\\per-project-protections-check-debug.ps1",
+                                     "projects\\sinister-snap-emu\\source\\sinister-rka\\Sinister RKA GOOD\\server-java\\heartbeats.json"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\sinister-snap-api-quantum.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}

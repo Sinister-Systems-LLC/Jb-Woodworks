@@ -1,0 +1,45 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-23T20:47:39.9807718Z",
+    "project":  "sinister-snap-api-quantum",
+    "agent_name":  "sinister-snap-api-quantum",
+    "mode":  "resume",
+    "focus_intent":  "Iteration 16: --resume-from flag shipped — broadcast tech-debt #3 closed. ALL 4 broadcast tech-debt items now SHIPPED (find-qbc / audit-pipeline / resume-from / zzfm-r2 guard). 16-iteration investigation at definitive close. Production toolkit: seraphim find-qbc → seraphim audit → seraphim audit-pipeline. 5 real-QPU verifications (25-34pp advantage, mean 30pp). Bidirectional scope rule + encoding-vs-triad answer + refined noise model + cancellation theorem all documented. Budget 43.625s of 60s.",
+    "git":  {
+                "branch":  "agent/sinister-sanctum/grant-autonomy-followup-2026-05-23",
+                "head":  "b9e4c7907577fcff7517e5727bc94ec509084d49",
+                "head_msg":  "sanctum: LEO-SETUP.md - add multi-account rotation section",
+                "recent_commits":  [
+                                       "b9e4c79 ﻿sanctum: LEO-SETUP.md - add multi-account rotation section",
+                                       "6acd513 ﻿sanctum: auto-push ErrorActionPreference fix + session-outcome doc",
+                                       "978d93b ﻿sanctum: multi-account rotation (M1+M2) + critical banner-escape regression fix",
+                                       "215b817 ship(sinister-generator): clean-imagery template (text-free, dark sleek pro) + style-pivot history in doctrine",
+                                       "d130ef0 sanctum: iter 4 PROGRESS entry - operator urgents + Leo fix + bat fix",
+                                       "4f3f8ee sanctum: fix Sinister Start.bat closing instantly + promote chatbot in picker",
+                                       "00f15b2 sanctum: Agent J+K2+L+rkoj-lane — vault bring-up + sinister-term v2 + auto-clone missing project sources + /list fix",
+                                       "d75f71f sanctum: iter 4 + Leo missing-sources fix - post-commit hook + bot-fleet check + clone helper",
+                                       "1a2d9b1 ship(sinister-generator): brand-library workflow doctrine + tier-semantic fix + iter4-social script",
+                                       "8fd2d30 sanctum: auto-push current branch (not just main) + session-end push trigger + Leo-vault setup doc"
+                                   ]
+            },
+    "progress_top3":  [
+                          "2026-05-23T21:15Z â€” iteration 16: `--resume-from` flag shipped â€” ALL broadcast tech-debt CLOSED",
+                          "2026-05-23T21:05Z â€” iteration 15: `seraphim audit-pipeline` shipped (broadcast tech-debt #2 closed)"
+                      ],
+    "latest_plan":  {
+                        "dir":  null,
+                        "artifact":  null
+                    },
+    "inbox_unread_count":  0,
+    "last_5_files_touched_24h":  [
+                                     "projects\\sinister-snap-emu\\source\\sinister-rka\\Sinister RKA GOOD\\server-java\\heartbeats.json",
+                                     "projects\\sinister-tiktok-emu\\source\\scripts\\dlopen_intercept_libmetasec.js",
+                                     "_shared-memory\\heartbeats\\sinister-snap-api-quantum.json",
+                                     "_shared-memory\\heartbeats\\sinister-vault.beat",
+                                     "_vault\\_quota.json"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\sinister-snap-api-quantum.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}

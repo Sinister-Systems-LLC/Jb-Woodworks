@@ -1,0 +1,46 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-23T19:34:16.0561323Z",
+    "project":  "sinister-snap-api-quantum",
+    "agent_name":  "sinister-snap-api-quantum",
+    "mode":  "resume",
+    "focus_intent":  "QUADRUPLE-VERIFIED 19:55Z: Fourth real-QPU audit on rank-4 ZZ-FM r=1 QBC triad (branch-checkout-silently-undoes-doctrine + multi-agent-branch + multi-agent-git-index) gives 25pp quantum advantage. Pattern extends beyond pure multi-agent prefix to broader git-workflow cluster. Mean across 4 triads: real 0.2064 vs classical 0.5098 = 30pp mean advantage, range 25-34pp. 12/12 pairs landed. Origin queue stayed cooperative through full hour. CLI notes updated to QUADRUPLE-verified. Investigation at definitive high-water mark. Budget 33.19s of 150s remaining.",
+    "git":  {
+                "branch":  "agent/sinister-sanctum/grant-autonomy-followup-2026-05-23",
+                "head":  "978d93ba5fdf25126bb2fbc3af2b44bc57ad7814",
+                "head_msg":  "sanctum: multi-account rotation (M1+M2) + critical banner-escape regression fix",
+                "recent_commits":  [
+                                       "978d93b ﻿sanctum: multi-account rotation (M1+M2) + critical banner-escape regression fix",
+                                       "215b817 ship(sinister-generator): clean-imagery template (text-free, dark sleek pro) + style-pivot history in doctrine",
+                                       "d130ef0 sanctum: iter 4 PROGRESS entry - operator urgents + Leo fix + bat fix",
+                                       "4f3f8ee sanctum: fix Sinister Start.bat closing instantly + promote chatbot in picker",
+                                       "00f15b2 sanctum: Agent J+K2+L+rkoj-lane — vault bring-up + sinister-term v2 + auto-clone missing project sources + /list fix",
+                                       "d75f71f sanctum: iter 4 + Leo missing-sources fix - post-commit hook + bot-fleet check + clone helper",
+                                       "1a2d9b1 ship(sinister-generator): brand-library workflow doctrine + tier-semantic fix + iter4-social script",
+                                       "8fd2d30 sanctum: auto-push current branch (not just main) + session-end push trigger + Leo-vault setup doc",
+                                       "19c54be ship(sinister-generator): iter3-snap fire script (100 selling-pack variants, psychedelic)",
+                                       "825d550 sanctum: Agent G+H — sinister-term cursor+farewell+smoke-test + spawn trust-block warm-path optimization"
+                                   ]
+            },
+    "progress_top3":  [
+                          "2026-05-23T19:55Z â€” ðŸŽ¯ðŸŽ¯ðŸŽ¯ðŸŽ¯ðŸŽ¯ðŸŽ¯ðŸŽ¯ðŸŽ¯ iteration 9: QUADRUPLE-VERIFIED â€” pattern extends to branch-checkout doc",
+                          "2026-05-23T19:45Z â€” ðŸŽ¯ðŸŽ¯ðŸŽ¯ðŸŽ¯ðŸŽ¯ðŸŽ¯ðŸŽ¯ iteration 8: TRIPLE-VERIFIED â€” third triad shows 31pp advantage",
+                          "2026-05-23T19:35Z â€” ðŸŽ¯ðŸŽ¯ðŸŽ¯ðŸŽ¯ðŸŽ¯ðŸŽ¯ iteration 7: PATTERN CONFIRMED â€” second real-QPU triad shows 32pp advantage"
+                      ],
+    "latest_plan":  {
+                        "dir":  null,
+                        "artifact":  null
+                    },
+    "inbox_unread_count":  0,
+    "last_5_files_touched_24h":  [
+                                     "_vault\\_quota.json",
+                                     "projects\\sinister-snap-emu\\source\\sinister-rka\\Sinister RKA GOOD\\server-java\\heartbeats.json",
+                                     "_shared-memory\\heartbeats\\sinister-snap-api-quantum.json",
+                                     "_shared-memory\\heartbeats\\sinister-vault.beat",
+                                     "_shared-memory\\PROGRESS\\sinister-snap-api-quantum.md"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\sinister-snap-api-quantum.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}

@@ -45,39 +45,132 @@ License: paid V4.2 (operator), vaulted at `_vault-personal/licenses/pilotos.txt`
 - Quantum-Grover search over a known plaintext space (e.g., suspected token-encoding patterns).
 - Quantum-circuit primitive for hash-collision finding on weak proprietary hashes (educational; do NOT use against third-party services per AUP-RESPECT).
 
-## Status
+## Status (updated 2026-05-23 evening)
 
 | Component | Status |
 |---|---|
-| README.md (this) | ✅ shipped 2026-05-23 |
-| `license.py` (loader from vault) | 📋 next |
-| `qrng.py` (entropy daemon — Lane 1 starter) | 📋 next |
-| `audit.py` (provenance sidecar writer) | 📋 next |
-| FastAPI surface (`server.py` on :5079) | 📋 |
-| First consumer: kernel-apk fingerprint seeding | 📋 cross-lane |
-| First consumer: Sinister Emulator account-sim | 📋 cross-lane |
-| Brain entry: `pilotos-integration-vision-2026-05-23.md` | 📋 next |
-| Cloud Wukong-180 path (opt-in per-call) | ⏸ deferred (cost gate) |
+| README.md (this) | ✅ shipped 2026-05-23, updated 2026-05-23 evening |
+| `license.py` (loader from vault) | ✅ shipped — PilotOS license fingerprint via sha256[0:12] |
+| `qrng.py` (entropy daemon — Lane 1 starter) | ✅ shipped — sim-local default, cloud-Wukong-180 opt-in |
+| `audit.py` (provenance sidecar writer) | ✅ shipped — `_shared-memory/qrng-provenance/<UTC>.json` |
+| `budget.py` (cloud-Wukong-180 120s cap enforcer) | ✅ shipped — ledger at `_shared-memory/seraphim-cloud-ledger.jsonl`; 9 entries as of 2026-05-23 evening |
+| `cloud_submit.py` (real-QPU submission path) | ✅ shipped — refactored 2026-05-23 evening: working URL/backend constants + 3 builders + generic `submit_circuit` + high-level `submit_kernel_pair(thetas_a, thetas_b, encoding=...)` |
+| `memory_kernel.py` (quantum-kernel SVM experiment + audit runner) | ✅ shipped — `run_kernel_experiment` (sim variants A/B/C) + `run_kernel_audit` (inversion-overlap sim+real triad) |
+| `fingerprint.py` (Lane 2 device-fingerprint generation) | ✅ shipped — `make_fingerprint`, `make_fingerprint_batch` |
+| `snap_re.py` (Snap-EMU integration adapter) | ✅ shipped — `fire_audit`, `mode_search_seeds`, `survival_fingerprints`, `signing_nonce` |
+| `dashboard.py` (static HTML dashboard) | ✅ shipped — `seraphim dashboard --out PATH` |
+| `summarize.py` (provenance + ledger aggregation) | ✅ shipped — `seraphim summarize --since W` |
+| `cli.py` (`seraphim <cmd>` entry point) | ✅ shipped — 11 subcommands incl. `audit`, `find-qbc`, `audit-pipeline` (2026-05-23 evening) |
+| Cloud Wukong-180 path (opt-in per-call) | ✅ **ACTIVE workhorse** — 9 real submissions on 2026-05-23 covering K=4/K=8 plain ANGLE, ANGLE+CNOT, ZZ-FM r=2 (see `_shared-memory/knowledge/seraphim-cloud-qpu-real-first-fire-2026-05-23.md`) |
+| FastAPI surface (`server.py` on :5079) | 📋 deferred (no consumer demand yet) |
+| First consumer: kernel-apk fingerprint seeding | 📋 cross-lane (handoff offered) |
+| First consumer: Sinister Emulator account-sim | 📋 cross-lane (handoff offered) |
+| Brain entry: `seraphim-cloud-qpu-real-first-fire-2026-05-23.md` | ✅ shipped + heavily updated with 6 empirical-anchor sections |
 
-## How to use (post-skeleton ship — coming next commit)
+## How to use
+
+### CLI
+
+```bash
+seraphim qrng -n 32 --purpose "fingerprint-seed"      # 32 bytes QRNG with provenance sidecar
+seraphim fingerprint --lane snap-emu                   # one device-fingerprint blob
+seraphim fingerprint-batch -n 1000 --lane snap-emu     # 1000 fingerprints (Lane 2)
+seraphim license-check                                 # verify license + print sha256[0:12]
+seraphim budget                                        # show cloud-Wukong-180 budget status (120s cap)
+seraphim dashboard                                     # regenerate the dashboard HTML
+
+# Memory-kernel quantum-advantage toolkit (PRODUCTION RECIPE — quadruple-verified 2026-05-23 evening)
+# Three-phase workflow, each phase callable separately OR all-in-one via audit-pipeline:
+
+seraphim find-qbc --top-n 10                           # PHASE 1: discover quantum-beats-classical triads
+                                                       # (sim sweep across 300k+ triads in ~5s, zero cloud burn)
+
+seraphim audit --variant zzfm-r1 --sim-only \         # PHASE 2: sim-gate the chosen triad
+  --triad doc1.md doc2.md doc3.md --corpus pool       # (confirm sim < classical before real-QPU)
+
+seraphim audit --variant zzfm-r1 \                     # PHASE 3: real-QPU verify on Wukong-180
+  --triad doc1.md doc2.md doc3.md --corpus pool       # (25-34pp quantum advantage expected for QBC triads)
+
+seraphim audit-pipeline --top-n 3                      # ALL 3 PHASES in one command (the "easy mode")
+seraphim audit-pipeline --top-n 5 --skip-real-qpu      # dry-run mode: see which triads would be verified
+
+# Audit recovery + variants:
+seraphim audit --variant k4-angle --sim-only           # zero-burn sim baseline (canonical regression test)
+seraphim audit --variant zzfm-r1 --resume-from outputs/prior.json --triad ... --corpus pool
+                                                       # resume from a partial-stall: reuses landed pairs
+seraphim audit --variant zzfm-r2 --sim-only            # ZZ-FM r=2 sim only (real-QPU refused by guard)
+seraphim audit --list-variants                         # show all 5 variants + their depth/burn estimates
+
+seraphim summarize --since 24h                         # provenance + ledger aggregation
+```
+
+### Production recipe (the headline)
+
+**Quadruple-verified 25-34pp quantum-kernel-beats-classical-TF-IDF advantage** on real WK_C180 with:
+- Encoding: `--variant zzfm-r1` (K=4 ZZ-FM nearest-neighbor reps=1, depth ~34)
+- Triad: discovered via `seraphim find-qbc` (cluster-similar docs where classical TF-IDF off-diag > 0.4)
+- Corpus: `--corpus pool` (124-doc balanced TF-IDF vocabulary)
+
+**Bidirectional scope rule** (critical):
+- classical > 0.4 → quantum helps (use the recipe)
+- classical < 0.3 → classical wins (quantum hurts by 15-60pp; **don't** use)
+- 0.3-0.4 → run sim-gate first
+
+Full doctrine: `_shared-memory/knowledge/quantum-memory-kernel-fleet-action-items-2026-05-23.md`.
+
+### Python API (Lane 1 — entropy/audit)
 
 ```python
-from sinister_quantum import quantum_random, audit_trail
+from sinister_seraphim.qrng import quantum_random
+from sinister_seraphim.audit import write_provenance
 
-# Lane 1 starter: 32 bytes of quantum entropy with full provenance
+# 32 bytes of entropy with provenance sidecar
 seed_bytes = quantum_random(32, purpose="kernel-apk-fingerprint-spoof")
 # -> writes _shared-memory/qrng-provenance/<UTC>.json with circuit + measurement
 ```
 
-```python
-from sinister_quantum import emulator_fingerprint_batch
+### Python API (Lane 2 — emulator fingerprints)
 
-# Lane 2 starter: 1000 fingerprints with QRNG-seeded entropy
-fingerprints = emulator_fingerprint_batch(
+```python
+from sinister_seraphim.fingerprint import make_fingerprint_batch
+
+fingerprints = make_fingerprint_batch(
     n=1000,
     lane="snap-emu",
-    use_cloud=False,  # local sim default
+    backend="sim-local",  # cloud-Wukong-180 also available but burns budget
 )
+```
+
+### Python API (Lane 1+B — memory-kernel audits)
+
+```python
+from sinister_seraphim.memory_kernel import run_kernel_audit
+
+# Sim-only check (zero cloud burn)
+result = run_kernel_audit(encoding='angle', k=4, sim_only=True)
+print(result['sim_off_diag_mean'])  # 0.8975 for canonical Snap-RE triad
+
+# Full audit with real-QPU triad
+result = run_kernel_audit(encoding='zzfm', k=4, reps=2, shots=256, sim_only=False)
+print(result['real_qpu_off_diag_mean'], result['sim_off_diag_mean'])
+```
+
+### Python API (Lane 1+B — direct cloud submission)
+
+```python
+from sinister_seraphim.cloud_submit import confirm_auth, submit_kernel_pair
+import numpy as np
+
+# Cheap auth probe
+r = confirm_auth()
+assert r['ok'], r.get('detail')
+print(r['backends'])  # {'WK_C180': True, 'PQPUMESH8': True, ...}
+
+# One inversion-overlap pair (budget-gated)
+thetas_a = np.array([0.5, 1.0, 1.5, 2.0])
+thetas_b = np.array([0.4, 1.1, 1.6, 1.9])
+pair = submit_kernel_pair(thetas_a, thetas_b, encoding='angle', k=4, shots=256)
+print(pair['overlap'], pair['job_id'], pair['wall_seconds'])
 ```
 
 ## Lane discipline

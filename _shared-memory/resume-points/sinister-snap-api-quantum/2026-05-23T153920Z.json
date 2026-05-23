@@ -1,0 +1,45 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-23T19:39:32.7308317Z",
+    "project":  "sinister-snap-api-quantum",
+    "agent_name":  "sinister-snap-api-quantum",
+    "mode":  "resume",
+    "focus_intent":  "ITERATION 10 (sim-only): BIDIRECTIONAL scope rule established. Quantum kernel HELPS for cluster-similar docs (classical \u003e 0.4 → 25-34pp real-QPU advantage) but HURTS for already-distinct docs (classical \u003c 0.3 → classical wins by 15-60pp). Verified across 3 non-QBC triads (wide-unrelated / Snap-RE / medium-doctrine). Fleet action items doc updated with 3-phase production workflow including sim-only gate before real-QPU. Zero cloud burn this iteration. Investigation at definitive close after 10 iterations.",
+    "git":  {
+                "branch":  "agent/sinister-sanctum/grant-autonomy-followup-2026-05-23",
+                "head":  "978d93ba5fdf25126bb2fbc3af2b44bc57ad7814",
+                "head_msg":  "sanctum: multi-account rotation (M1+M2) + critical banner-escape regression fix",
+                "recent_commits":  [
+                                       "978d93b ﻿sanctum: multi-account rotation (M1+M2) + critical banner-escape regression fix",
+                                       "215b817 ship(sinister-generator): clean-imagery template (text-free, dark sleek pro) + style-pivot history in doctrine",
+                                       "d130ef0 sanctum: iter 4 PROGRESS entry - operator urgents + Leo fix + bat fix",
+                                       "4f3f8ee sanctum: fix Sinister Start.bat closing instantly + promote chatbot in picker",
+                                       "00f15b2 sanctum: Agent J+K2+L+rkoj-lane — vault bring-up + sinister-term v2 + auto-clone missing project sources + /list fix",
+                                       "d75f71f sanctum: iter 4 + Leo missing-sources fix - post-commit hook + bot-fleet check + clone helper",
+                                       "1a2d9b1 ship(sinister-generator): brand-library workflow doctrine + tier-semantic fix + iter4-social script",
+                                       "8fd2d30 sanctum: auto-push current branch (not just main) + session-end push trigger + Leo-vault setup doc",
+                                       "19c54be ship(sinister-generator): iter3-snap fire script (100 selling-pack variants, psychedelic)",
+                                       "825d550 sanctum: Agent G+H — sinister-term cursor+farewell+smoke-test + spawn trust-block warm-path optimization"
+                                   ]
+            },
+    "progress_top3":  [
+                          "2026-05-23T20:00Z â€” ðŸŽ¯ðŸŽ¯ðŸŽ¯ðŸŽ¯ðŸŽ¯ðŸŽ¯ðŸŽ¯ðŸŽ¯ðŸŽ¯ iteration 10: BIDIRECTIONAL SCOPE RULE (the critical \"WHEN NOT to use\" finding)",
+                          "2026-05-23T19:55Z â€” ðŸŽ¯ðŸŽ¯ðŸŽ¯ðŸŽ¯ðŸŽ¯ðŸŽ¯ðŸŽ¯ðŸŽ¯ iteration 9: QUADRUPLE-VERIFIED â€” pattern extends to branch-checkout doc"
+                      ],
+    "latest_plan":  {
+                        "dir":  null,
+                        "artifact":  null
+                    },
+    "inbox_unread_count":  0,
+    "last_5_files_touched_24h":  [
+                                     "_shared-memory\\heartbeats\\sinister-vault.beat",
+                                     "projects\\sinister-snap-emu\\source\\sinister-rka\\Sinister RKA GOOD\\server-java\\heartbeats.json",
+                                     "_vault\\_quota.json",
+                                     "_shared-memory\\heartbeats\\sinister-snap-api-quantum.json",
+                                     "_shared-memory\\PROGRESS\\sinister-snap-api-quantum.md"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\sinister-snap-api-quantum.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}
