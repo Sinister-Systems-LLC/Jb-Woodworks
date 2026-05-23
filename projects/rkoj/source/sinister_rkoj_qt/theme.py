@@ -62,14 +62,14 @@ def nav_icon(name: str, size: int = 19) -> QSvgWidget:
 # Body bg peeks through the 8px gap between the sidebar + main cards.
 BG = "#000000"
 # The two rounded outer cards (sidebar + main).
-PANEL_BG = "#0a0a0c"
+PANEL_BG = "#0f0f12"   # v1.6.85 — exact Sinister Panel surfaceDeep
 # Slightly elevated surface (cards, terminals, inputs).
 ELEVATED = "#1c1c1e"
 # Even more elevated (header round-icon hover, chip inactive).
 ELEVATED_HI = "#2c2c2e"
 # Hairline divider.
-BORDER = "#2c2c2e"
-BORDER_STRONG = "#38383a"
+BORDER = "#38383a"           # v1.6.85 — exact Sinister Panel border
+BORDER_STRONG = "#48484a"
 BORDER_SUBTLE = "rgba(255, 255, 255, 0.06)"
 # Text.
 FG = "#ffffff"
@@ -353,11 +353,12 @@ def build_qss() -> str:
         border: 1px solid {PURPLE_PRIMARY};
     }}
 
-    /* ── Agent cards — v1.6.84 transparent jcode-style (see dashboard
-       through them) + breathing glow handled per-card in Python ────── */
+    /* ── Agent cards — v1.6.85 reverted transparency (was bleeding
+       agents-tab content through to other views). Keep panel-canonical
+       opaque surface; breathing glow alone provides the subtle motion. */
     QFrame#AgentCard {{
-        background-color: rgba(28,28,30,0.78);
-        border: 1px solid rgba(191,90,242,0.35);
+        background-color: {ELEVATED};
+        border: 1px solid {BORDER};
         border-radius: 14px;
     }}
     QFrame#AgentCard[needs_input="true"] {{

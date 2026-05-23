@@ -231,15 +231,16 @@ class SinisterWindow(QMainWindow):
         # the moment the dialog returns. Keyed by pane_id; auto-cleaned on
         # window close via destroyed-signal hook.
         self._agent_windows: dict[str, AgentWindow] = {}
-        self._build()
-        # v1.6.82 — boot the workstation API server (127.0.0.1:5077) so
-        # spawned agents can claim phones / run adb commands / query
-        # status without going through brittle shell pipelines.
+        # v1.6.85 — start API server BEFORE _build so the status bar pill
+        # picks up the live URL on first paint (was showing "offline"
+        # because the build query ran before start).
         try:
             from . import api_server
             api_server.start_api_server()
-        except Exception:
-            pass
+        except Exception as exc:
+            import sys as _sys
+            print(f"[rkoj] api_server.start failed: {exc}", file=_sys.stderr)
+        self._build()
         self._wire()
 
     def _center_on_screen(self) -> None:
