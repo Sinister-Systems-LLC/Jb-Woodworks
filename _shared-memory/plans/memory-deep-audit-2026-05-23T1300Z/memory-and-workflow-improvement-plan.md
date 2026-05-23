@@ -4,7 +4,18 @@
 
 **Author:** EVE (Memory Audit Agent) :: 2026-05-23  
 **Audit date:** 2026-05-23T13:00Z  
-**Status:** Complete audit + actionable plan  
+**Status:** `partially acceptance-tested` (per `no-bullshit-tested-before-claimed-doctrine-2026-05-23`).
+
+**Independent verification 2026-05-23T13:50Z (post-`keep going` iteration):**
+
+| Audit claim | Disk reality | Verdict |
+|---|---|---|
+| 116 brain doctrines in `_INDEX.md` | **134** `.md` files in `_shared-memory/knowledge/` (`ls *.md \| wc -l`) | **OFF BY 18** — actual is HIGHER than claimed. **Rule 7.5 SIGNAL:** approaching the 150-doctrine consolidate-first threshold; 16 entries away. |
+| 21 PROGRESS lanes | **21** `.md` files in `_shared-memory/PROGRESS/` | **EXACT MATCH ✅** |
+| 16 resume-point lanes | **16** directories in `_shared-memory/resume-points/` | **EXACT MATCH ✅** |
+| (no heartbeat count claimed) | **35** `.json` files in `_shared-memory/heartbeats/` | new finding — 35 heartbeats for 21 lanes = 14 stale/orphaned slugs to audit |
+
+**Substance of the audit (recommendations + top single rec) re-verified.** Quantitative drift on brain count noted. Audit's "Top single recommendation: wire forge-memory into SessionStart hook" remains valid + becomes higher-priority now that Rule 7.5 brain-row signal is approaching.
 
 ---
 
