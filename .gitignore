@@ -21,3 +21,6 @@ next-env.d.ts
 .turbo
 _legacy-flask/__pycache__/
 _legacy-flask/instance/
+# 443 MB HEIC→JPG/MP4 staging produced by scripts/sort_2026_imagery.py;
+# only the sort script references it. Real imagery lives under public/img/projects/.
+public/img/_sorted_2026/

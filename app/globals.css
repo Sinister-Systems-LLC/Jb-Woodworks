@@ -215,3 +215,85 @@
   border-left: 2px solid #c9a84c;
   padding-left: 1.4rem;
 }
+
+/* Blog post body styles — applied to <div class="jbw-prose"> wrapping the
+ * HTML body. Keeps the article voice consistent with the rest of the site
+ * without pulling in @tailwindcss/typography. */
+.jbw-prose {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 1.04rem;
+  line-height: 1.85;
+}
+.jbw-prose .lead {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(1.2rem, 2vw, 1.5rem);
+  color: rgba(255, 255, 255, 0.92);
+  line-height: 1.5;
+  margin-bottom: 2rem;
+}
+.jbw-prose p { margin-bottom: 1.5rem; }
+.jbw-prose h2 { font-family: var(--font-display); font-weight: 400; color: #fff; }
+.jbw-prose h3 { font-family: var(--font-display); font-weight: 400; color: #fff; margin-top: 2rem; margin-bottom: 0.75rem; font-size: 1.4rem; }
+.jbw-prose ul, .jbw-prose ol {
+  list-style: none;
+  padding: 0;
+  margin: 1.4rem 0 1.8rem;
+  display: grid;
+  gap: 0.75rem;
+}
+.jbw-prose ul li, .jbw-prose ol li {
+  position: relative;
+  padding-left: 1.6rem;
+}
+.jbw-prose ul li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.85em;
+  width: 0.55rem;
+  height: 1px;
+  background: #c9a84c;
+}
+.jbw-prose ol { counter-reset: jbw-list; }
+.jbw-prose ol li::before {
+  counter-increment: jbw-list;
+  content: counter(jbw-list, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  color: #c9a84c;
+}
+.jbw-prose a {
+  color: #c9a84c;
+  text-decoration: underline;
+  text-decoration-color: rgba(201, 168, 76, 0.35);
+  text-underline-offset: 4px;
+  transition: text-decoration-color 250ms ease;
+}
+.jbw-prose a:hover { text-decoration-color: #c9a84c; }
+.jbw-prose strong { color: #fff; font-weight: 600; }
+.jbw-prose em { color: #c9a84c; font-style: italic; }
+.jbw-prose blockquote {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.2rem;
+  border-left: 2px solid #c9a84c;
+  padding-left: 1.2rem;
+  color: #fff;
+  margin: 1.8rem 0;
+}
+.jbw-prose code {
+  background: rgba(255, 255, 255, 0.06);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+.jbw-prose hr {
+  border: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201, 168, 76, 0.4), transparent);
+  margin: 2rem 0;
+}

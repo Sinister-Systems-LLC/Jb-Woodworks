@@ -26,7 +26,7 @@ const STEPS = [
   {
     n: "04",
     title: "Build.",
-    body: "Photos at major milestones. Licensed and insured on every site.",
+    body: "Photos at major milestones. On-site daily until walk-through.",
     icon: "wrench" as const
   },
   {

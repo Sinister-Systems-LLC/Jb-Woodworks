@@ -36,6 +36,10 @@ export const metadata: Metadata = {
     ],
     shortcut: ["/img/favicon.ico"],
     apple: [{ url: "/img/favicon-180.png", sizes: "180x180" }]
+  },
+  alternates: {
+    canonical: SITE.url,
+    types: { "application/rss+xml": "/rss.xml" }
   }
 };
 

@@ -39,6 +39,7 @@ export function Nav() {
         <nav className="hidden md:flex gap-9 ml-auto" aria-label="Primary">
           <NavLink href="/#services">Services</NavLink>
           <NavLink href="/portfolio">Portfolio</NavLink>
+          <NavLink href="/blog">Blog</NavLink>
           <NavLink href="/about#faq">FAQ</NavLink>
           <NavLink href="/contact">Contact</NavLink>
         </nav>
@@ -67,6 +68,7 @@ export function Nav() {
           {[
             { href: "/#services", label: "Services" },
             { href: "/portfolio", label: "Portfolio" },
+            { href: "/blog", label: "Blog" },
             { href: "/about#faq", label: "FAQ" },
             { href: SITE.socials.instagram, label: "Instagram", external: true },
             { href: SITE.socials.facebook, label: "Facebook", external: true },

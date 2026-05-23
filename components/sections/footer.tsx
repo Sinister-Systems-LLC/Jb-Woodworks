@@ -54,7 +54,7 @@ export function Footer() {
       </div>
 
       <div className="mt-10 pt-5 mx-auto max-w-site px-7 border-t border-line text-center text-[0.78rem] text-cream-30">
-        (C) {year} {SITE.name}. Licensed and insured. Built in Orlando, FL.
+        (C) {year} {SITE.name}. Built in Orlando, FL.
       </div>
     </footer>
   );

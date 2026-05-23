@@ -8,7 +8,7 @@ import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "About / FAQ",
-  description: "JB Woodworks is a custom woodworking shop in Orlando, Florida. Licensed and insured. Free quotes. Answers to common questions."
+  description: "JB Woodworks is a custom woodworking shop in Orlando, Florida. Decks, docks, pergolas, furniture, custom pool tables. Free quotes. Answers to common questions."
 };
 
 const blocks = [
@@ -20,7 +20,7 @@ const blocks = [
           ["Reach out.", "Phone, email, or the form. Tell us what you need. Free estimate."],
           ["Site visit + sketch.", "Measurements, photos, and a rough sketch so we are quoting the actual job."],
           ["Honest quote.", "Fixed-bid where possible, with a stated material spec."],
-          ["Build.", "Photos at major milestones. Licensed and insured on every site."],
+          ["Build.", "Photos at major milestones. On-site daily until walk-through."],
           ["Walk-through.", "We do not call it done until you do."]
         ].map(([k, v], i) => (
           <li key={i} className="text-cream-50">
@@ -38,10 +38,6 @@ const blocks = [
         <p>We do not cut corners on hardware or wood grade. You will see what we used on the invoice.</p>
       </>
     )
-  },
-  {
-    title: "Licensed and insured.",
-    body: <p>Every job is fully licensed and insured. We carry general liability and workers comp. We are happy to send certificates before we start work.</p>
   },
   {
     title: "Service area.",

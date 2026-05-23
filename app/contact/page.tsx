@@ -46,7 +46,7 @@ export default function ContactPage() {
             </div>
 
             <ul className="mt-9 space-y-2.5 list-none p-0">
-              {["Free estimates", "Custom design consultations", "Licensed and insured"].map((s, i) => (
+              {["Free estimates", "Custom design consultations", "Same-day response on weekdays"].map((s, i) => (
                 <li key={i} className="flex items-center gap-3 text-cream-80 text-[0.95rem]">
                   <span className="w-2 h-2 bg-gold rounded-full inline-block" />{s}
                 </li>
