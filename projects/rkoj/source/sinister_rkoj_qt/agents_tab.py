@@ -157,6 +157,7 @@ SLASH_COMMANDS: list[tuple[str, str]] = [
     ("/open",     "print shell commands to open agent paths"),
     ("/persona",  "print identity (slug / uuid / paths)"),
     ("/pin",      "pin (or unpin) this card to top of grid"),
+    ("/plan",     "toggle plan-only mode (EVE proposes, doesn't edit)"),
     ("/ping",     "fan a canned status-check to all (or filtered) cards"),
     ("/rename",   "change the agent display name on this card"),
     ("/replay",   "re-run user turn #N verbatim (1-indexed; see /history)"),
@@ -2717,6 +2718,18 @@ class AgentCard(QFrame):
                 f"({'★' if self.session.pinned else '☆'})\n"
             )
             return True
+        if head == "/plan":
+            # v1.6.76 — toggle plan-only mode (jcode parity). When on,
+            # the next turn's user message is prefixed with a PLAN-ONLY
+            # directive that asks EVE to propose changes without
+            # executing edits / writes / commands.
+            self._plan_mode = not getattr(self, "_plan_mode", False)
+            self._append_terminal(
+                f"[/plan] plan-only mode {'ON' if self._plan_mode else 'OFF'}\n"
+                f"  When ON, the next turn asks EVE to propose changes\n"
+                f"  without running edits/writes/commands. Toggle again to resume.\n"
+            )
+            return True
         if head == "/needs":
             new_state = "awaiting-input" if self.session.status != "awaiting-input" else "online"
             self._set_status(new_state)
@@ -2902,6 +2915,14 @@ class AgentCard(QFrame):
             "--include-partial-messages",
             "--verbose",
         ]
+        # v1.6.76 — /plan mode prefix
+        if getattr(self, "_plan_mode", False):
+            text = (
+                "[PLAN-ONLY MODE: do NOT run any edits, writes, bash, or "
+                "tool calls that mutate state. Propose the change as a "
+                "plan + diff preview only. Operator will toggle plan off "
+                "when ready to apply.]\n\n"
+            ) + text
         # v1.6.75 — Sinister Start.bat parity: agent-prefs.json model
         # override wins over the mode picker (operator sets intelligence
         # level per agent; this honors it on every spawn).

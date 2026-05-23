@@ -352,6 +352,19 @@ class TestTodoV175(unittest.TestCase):
             self.assertIn(slash, names, f"SLASH_COMMANDS missing {slash}")
 
 
+class TestPlanModeV176(unittest.TestCase):
+    """v1.6.76 — /plan jcode-parity toggle for plan-only mode."""
+
+    def test_slash_registry_has_plan(self) -> None:
+        from sinister_rkoj_qt import agents_tab
+        names = {c for c, _ in agents_tab.SLASH_COMMANDS}
+        self.assertIn("/plan", names)
+
+    def test_devices_view_auto_mirror_retry(self) -> None:
+        from sinister_rkoj_qt import devices_tab
+        self.assertTrue(hasattr(devices_tab.DevicesView, "_auto_mirror_all_retry"))
+
+
 class TestNoEmojisV174(unittest.TestCase):
     """v1.6.74 — dashboard-skeleton rule: no emojis in UI chrome."""
 
@@ -394,7 +407,7 @@ class TestTokenBudget(unittest.TestCase):
 
 class TestModuleSurface(unittest.TestCase):
     def test_version_matches(self) -> None:
-        self.assertEqual(sinister_rkoj_qt.__version__, "1.6.75")
+        self.assertEqual(sinister_rkoj_qt.__version__, "1.6.76")
 
     def test_classes_present(self) -> None:
         for name in (

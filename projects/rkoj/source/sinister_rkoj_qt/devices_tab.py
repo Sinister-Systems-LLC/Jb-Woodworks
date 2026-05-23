@@ -63,6 +63,11 @@ def _find_adb() -> str | None:
 _SCRCPY = _find_scrcpy()
 _ADB = _find_adb()
 
+# v1.6.76 — suppress any cmd-window flash from spawned subprocesses
+# (operator: no cmd popups when viewing phones).
+_CREATE_NO_WINDOW = 0x08000000
+_DETACHED = getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0)
+
 
 _STATE_COLOR: dict[str, str] = {
     "device": SUCCESS,
@@ -183,13 +188,11 @@ class _MirrorCard(QFrame):
         self._body_layout.addWidget(self._status_label)
         root.addWidget(self._body_host, stretch=1)
 
-        # Footer — text-only action row (dashboard-skeleton: no emojis)
+        # Footer — text-only action row (no cmd popups per operator)
         ftr = QHBoxLayout()
         ftr.setSpacing(6)
         for label, slot in (
             ("Shot",  self._take_screenshot),
-            ("Shell", self._open_shell),
-            ("Log",   self._tail_logcat),
         ):
             b = QPushButton(label)
             b.setFixedHeight(22)
@@ -230,7 +233,7 @@ class _MirrorCard(QFrame):
                 stdin=subprocess.DEVNULL,
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
-                creationflags=getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0),
+                creationflags=_DETACHED | _CREATE_NO_WINDOW,
             )
             self._status_label.setText("Connecting to phone…")
             QTimer.singleShot(self.EMBED_RETRY_MS, self._try_embed)
@@ -362,7 +365,7 @@ class _MirrorCard(QFrame):
         subprocess.Popen(
             ["cmd", "/c", "start", "cmd", "/k",
              f'"{_ADB}" -s {self.dev.serial} shell'],
-            creationflags=getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0),
+            creationflags=_DETACHED | _CREATE_NO_WINDOW,
         )
 
     def _tail_logcat(self) -> None:
@@ -371,7 +374,7 @@ class _MirrorCard(QFrame):
         subprocess.Popen(
             ["cmd", "/c", "start", "cmd", "/k",
              f'"{_ADB}" -s {self.dev.serial} logcat -v threadtime'],
-            creationflags=getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0),
+            creationflags=_DETACHED | _CREATE_NO_WINDOW,
         )
 
 
@@ -443,11 +446,6 @@ class _DeviceRow(QFrame):
             self._add_action_button(row, "Screenshot",
                                     "Save adb screencap PNG to Desktop",
                                     self._take_screenshot)
-            self._add_action_button(row, "Shell", "Open adb shell in a terminal",
-                                    self._open_shell)
-            self._add_action_button(row, "Logcat",
-                                    "Tail logcat in a new terminal",
-                                    self._tail_logcat)
 
         state_pill = QLabel(dev.state)
         state_pill.setStyleSheet(
@@ -506,7 +504,7 @@ class _DeviceRow(QFrame):
         subprocess.Popen(
             ["cmd", "/c", "start", "cmd", "/k",
              f'"{_ADB}" -s {self.dev.serial} shell'],
-            creationflags=getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0),
+            creationflags=_DETACHED | _CREATE_NO_WINDOW,
         )
 
     def _tail_logcat(self) -> None:
@@ -515,7 +513,7 @@ class _DeviceRow(QFrame):
         subprocess.Popen(
             ["cmd", "/c", "start", "cmd", "/k",
              f'"{_ADB}" -s {self.dev.serial} logcat -v threadtime'],
-            creationflags=getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0),
+            creationflags=_DETACHED | _CREATE_NO_WINDOW,
         )
 
 
@@ -724,10 +722,22 @@ class DevicesView(QWidget):
     def _auto_mirror_all(self) -> None:
         """v1.6.74 — one-shot auto-mirror on first tab build so operator
         sees all phones embedded by default. Subsequent refreshes don't
-        re-fire this (operator can close cards + use Mirror All button)."""
+        re-fire this (operator can close cards + use Mirror All button).
+        v1.6.76 — force a refresh first so device rows are populated
+        before iteration (adb daemon may not have answered the __init__
+        call yet)."""
         if self._auto_mirrored_once:
             return
         self._auto_mirrored_once = True
+        self._refresh()
+        if not self._device_rows:
+            # adb daemon may still be starting. Retry once after 1.5s.
+            QTimer.singleShot(1500, self._auto_mirror_all_retry)
+            return
+        self._mirror_all()
+
+    def _auto_mirror_all_retry(self) -> None:
+        self._refresh()
         self._mirror_all()
 
     def _mirror_selected(self) -> None:
