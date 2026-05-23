@@ -1,0 +1,40 @@
+<!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- Social S01 — Instagram profile picture. 1:1, 1024×1024. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="SMPL Instagram profile picture">
+  <defs>
+    <linearGradient id="igG" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%"  stop-color="#E8C078"/>
+      <stop offset="55%" stop-color="#D4A24A"/>
+      <stop offset="100%" stop-color="#9C7126"/>
+    </linearGradient>
+    <radialGradient id="igBg" cx="50%" cy="40%" r="72%">
+      <stop offset="0%"  stop-color="#1A1A22"/>
+      <stop offset="100%" stop-color="#08080C"/>
+    </radialGradient>
+    <clipPath id="igClip"><circle cx="512" cy="512" r="512"/></clipPath>
+  </defs>
+
+  <g clip-path="url(#igClip)">
+    <rect width="1024" height="1024" fill="url(#igBg)"/>
+    <!-- Spotlight bloom from top-right corner -->
+    <circle cx="900" cy="80" r="380" fill="#FFE8B8" opacity="0.2"/>
+    <!-- Gold corner triangle, full bleed -->
+    <path d="M768 0 L1024 0 L1024 256 Z" fill="url(#igG)"/>
+    <!-- Inset gold ring (sits inside the safe area) -->
+    <circle cx="512" cy="512" r="494" fill="none" stroke="url(#igG)" stroke-width="3" opacity="0.55"/>
+    <!-- SMPL -->
+    <g font-family="Inter, Arial, sans-serif" font-weight="900" fill="#FFFFFF" text-anchor="middle">
+      <text x="512" y="546" font-size="290" letter-spacing="-9">SMPL</text>
+    </g>
+    <!-- Tagline -->
+    <g font-family="Inter, Arial, sans-serif" fill="#FFFFFF" text-anchor="middle" letter-spacing="14">
+      <text x="512" y="650" font-size="46" font-weight="700">SHOW MASTERS</text>
+      <text x="512" y="700" font-size="28" font-weight="500" fill="#D7D7DD" letter-spacing="20">PRODUCTION LOGISTICS</text>
+    </g>
+    <!-- Footer hairline + caption -->
+    <rect x="200" y="850" width="624" height="2" fill="url(#igG)" opacity="0.5"/>
+    <text x="512" y="900" text-anchor="middle"
+          font-family="Inter, Arial, sans-serif" font-size="22" font-weight="600"
+          letter-spacing="8" fill="#9D9DA8">ORLANDO · DALLAS · SINCE 2002</text>
+  </g>
+</svg>

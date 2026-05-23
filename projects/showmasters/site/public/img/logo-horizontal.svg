@@ -1,0 +1,27 @@
+<!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 120" role="img" aria-label="SMPL — Show Masters Production Logistics">
+  <defs>
+    <linearGradient id="gold" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%"  stop-color="#E8C078"/>
+      <stop offset="55%" stop-color="#D4A24A"/>
+      <stop offset="100%" stop-color="#B88736"/>
+    </linearGradient>
+  </defs>
+
+  <!-- SMPL wordmark (clean geometric sans, weight ~900) -->
+  <g font-family="Inter, 'Helvetica Neue', Arial, sans-serif" font-weight="900" fill="#FFFFFF">
+    <text x="0"   y="60" font-size="62" letter-spacing="-2">S</text>
+    <text x="46"  y="60" font-size="62" letter-spacing="-2">M</text>
+    <text x="106" y="60" font-size="62" letter-spacing="-2">P</text>
+    <text x="156" y="60" font-size="62" letter-spacing="-2">L</text>
+  </g>
+
+  <!-- Gold corner accent — upper-right of the L -->
+  <path d="M198 16 L210 16 L210 28 Z" fill="url(#gold)"/>
+
+  <!-- Tagline -->
+  <g font-family="Inter, 'Helvetica Neue', Arial, sans-serif" fill="#FFFFFF" letter-spacing="3.2">
+    <text x="1" y="90" font-size="15" font-weight="700">SHOW MASTERS</text>
+    <text x="1" y="108" font-size="11" font-weight="500" fill="#E8E8EE" letter-spacing="4.8">PRODUCTION LOGISTICS</text>
+  </g>
+</svg>

@@ -1,0 +1,33 @@
+{
+  "name": "Show Masters Production Logistics",
+  "short_name": "SMPL",
+  "description": "Live event stagehands, riggers, technicians and crew leads. Orlando, FL and Dallas, TX. Since 2002.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0A0A0F",
+  "theme_color": "#0A0A0F",
+  "lang": "en-US",
+  "categories": ["business", "productivity"],
+  "icons": [
+    {
+      "src": "/public/img/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any"
+    },
+    {
+      "src": "/public/img/pfp-square.svg",
+      "type": "image/svg+xml",
+      "sizes": "1024x1024",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/public/img/pfp-circle.svg",
+      "type": "image/svg+xml",
+      "sizes": "1024x1024",
+      "purpose": "any"
+    }
+  ]
+}

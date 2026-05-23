@@ -1,0 +1,175 @@
+// Author: RKOJ-ELENO :: 2026-05-23
+// Postgres schema for Show Masters Production Logistics.
+// 4 tables: Inquiry (estimate requests), Application (careers), NewsletterSub,
+// Show (CMS-like catalog feeding the shows portfolio page).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// Inquiry — public estimate-request form on /contact + home hero
+// ============================================================
+model Inquiry {
+  id          String        @id @default(cuid())
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  // Contact details
+  name        String
+  email       String
+  phone       String?
+  company     String?
+
+  // Event details
+  location    String?      // "Orlando, FL"
+  dates       String?      // free text — "Sep 12-15, load-in Sep 11"
+  brief       String       @db.Text
+
+  // Pipeline
+  status      InquiryStatus @default(NEW)
+  source      String?      // referral source from the form's "how heard"
+  internalNotes String?    @db.Text
+
+  // Anti-spam metadata
+  ipHash      String?
+  userAgent   String?      @db.Text
+  turnstileOk Boolean      @default(true)
+
+  @@index([createdAt])
+  @@index([status])
+  @@index([email])
+}
+
+enum InquiryStatus {
+  NEW          // just landed
+  CONTACTED    // first reply sent
+  ESTIMATED    // estimate delivered
+  WON          // booked
+  LOST         // closed without booking
+  ARCHIVED
+}
+
+// ============================================================
+// Application — careers form on /careers
+// ============================================================
+model Application {
+  id          String       @id @default(cuid())
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  // Identity
+  name        String
+  email       String
+  phone       String?
+  city        String?
+  state       String?
+
+  // Role + experience
+  role        ApplicationRole
+  yearsExp    Int?
+  skills      String[]
+  resumeUrl   String?       // S3/R2 link when we add upload
+  notes       String?       @db.Text
+
+  // Pipeline
+  status      ApplicationStatus @default(NEW)
+  internalNotes String?     @db.Text
+
+  // Anti-spam
+  ipHash      String?
+  userAgent   String?       @db.Text
+  turnstileOk Boolean       @default(true)
+
+  @@index([createdAt])
+  @@index([role])
+  @@index([status])
+}
+
+enum ApplicationRole {
+  STAGEHAND
+  RIGGER
+  TECHNICIAN
+  CAMERA_OP
+  LIFT_OPERATOR
+  CREW_LEAD
+  SHOW_MANAGEMENT
+  WAREHOUSE
+  DISPATCH
+  SALES
+  OTHER
+}
+
+enum ApplicationStatus {
+  NEW
+  REVIEWING
+  INTERVIEW
+  HIRED
+  PASSED
+  ARCHIVED
+}
+
+// ============================================================
+// NewsletterSub — email capture for the monthly newsletter
+// ============================================================
+model NewsletterSub {
+  id          String      @id @default(cuid())
+  createdAt   DateTime    @default(now())
+  email       String      @unique
+  confirmedAt DateTime?
+  unsubAt     DateTime?
+  source      String?     // 'footer', 'shows-page', 'estimate-thanks', etc.
+
+  @@index([createdAt])
+}
+
+// ============================================================
+// Show — CMS for the /shows portfolio. Replace the hard-coded
+// cards in shows.html with a database-backed list editable via
+// /admin/shows.
+// ============================================================
+model Show {
+  id            String     @id @default(cuid())
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  // Display
+  title         String
+  category      ShowCategory
+  venue         String
+  city          String
+  state         String     // "FL", "TX", etc.
+  year          Int
+
+  // Crewing detail
+  crewSize      Int?
+  durationDays  Int?
+  roleSummary   String?    @db.Text   // "38 crew · 4 days · GS + 6 breakouts"
+
+  // Display order + featured
+  sortOrder     Int        @default(0)
+  isFeatured    Boolean    @default(false)
+  isPublished   Boolean    @default(true)
+
+  // Optional asset
+  heroImageUrl  String?    // generated via nano banana or uploaded photo
+
+  @@index([category])
+  @@index([isPublished, sortOrder])
+}
+
+enum ShowCategory {
+  CORPORATE
+  CONCERT
+  FESTIVAL
+  TRADESHOW
+  SPORTS
+  THEATER
+  WORSHIP
+  PRIVATE
+}

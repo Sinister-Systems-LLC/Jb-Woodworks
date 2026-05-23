@@ -1,4 +1,4 @@
-# start-sinister-session.ps1 :: Sinister Sanctum session launcher (v6 :: concise)
+﻿# start-sinister-session.ps1 :: Sinister Sanctum session launcher (v6 :: concise)
 # Author: RKOJ-ELENO :: 2026-05-23
 #
 # v6 rewrite (operator directive 2026-05-23):
@@ -211,7 +211,9 @@ function Confirm-AgentPrefs($projectKey, $projDisplay, $prefs) {
     Write-Host $currentAgent -NoNewline -ForegroundColor $C.LightP
     Write-Host ('"  accent=') -NoNewline -ForegroundColor $C.Soft
     Write-Host $currentAccent -ForegroundColor $C.LightP
-    Write-Host ('  [Enter to launch as-is | r to customize name+color | type new agent name to override]') -ForegroundColor $C.Dim
+    # 2026-05-23 operator: "the sinsiter start bat file isnt working." — clearer
+    # call-to-action so the operator knows pressing Enter is the next step.
+    Write-Host ('  Press [Enter] to launch now -or- r to rename/recolor -or- type a new agent name') -ForegroundColor $C.Dim
     Write-Host '  > ' -NoNewline -ForegroundColor $C.LightP
     $resp = Read-Host
     if (-not $resp -or -not $resp.Trim()) {
@@ -1161,6 +1163,7 @@ fi
 
     $spawned = $false
     $spawnedProcess = $null
+    $spawnAttemptLog = @()
     try {
         if (Test-Path $minttyExe) {
             # E) operator directive 2026-05-23: transparent look on the spawn window.
@@ -1173,17 +1176,35 @@ fi
                 '-o', 'Transparency=medium',
                 '-o', 'OpaqueWhenFocused=no'
             ) + $minttyExtraArgs + @('--', '/bin/bash', $launchShBash)
+            $spawnAttemptLog += "mintty.exe : $minttyExe"
             $spawnedProcess = Start-Process -FilePath $minttyExe -ArgumentList $minttyArgs -PassThru -ErrorAction Stop
             $spawned = $true
         } elseif (Test-Path $gitBash) {
+            $spawnAttemptLog += "git-bash.exe (no mintty) : $gitBash"
             $spawnedProcess = Start-Process -FilePath $gitBash -ArgumentList @($launchShBash) -PassThru -ErrorAction Stop
             $spawned = $true
         } elseif (Test-Path $bashExe) {
+            $spawnAttemptLog += "bash.exe (no mintty + no git-bash) : $bashExe"
             $spawnedProcess = Start-Process -FilePath $bashExe -ArgumentList @('-l', '-i', $launchShBash) -PassThru -ErrorAction Stop
             $spawned = $true
+        } else {
+            # 2026-05-23: per operator "the sinister start bat file isnt working" — none of
+            # the three shells found means we cannot spawn. Surface FAIL loudly instead of
+            # silently falling through to a misleading "[OK] window up".
+            Write-Host "  [FAIL] no spawn-capable shell found." -ForegroundColor $C.Fail
+            Write-Host "         tried mintty.exe   : $minttyExe" -ForegroundColor $C.Dim
+            Write-Host "         tried git-bash.exe : $gitBash" -ForegroundColor $C.Dim
+            Write-Host "         tried bash.exe     : $bashExe" -ForegroundColor $C.Dim
+            Write-Host "         install Git for Windows from https://gitforwindows.org" -ForegroundColor $C.Dim
+            Write-Host '  [press Enter to return to picker]' -ForegroundColor $C.Warn
+            Read-Host | Out-Null
+            return
         }
     } catch {
         Write-Host "  [FAIL] could not spawn bash: $($_.Exception.Message)" -ForegroundColor $C.Fail
+        Write-Host ('         attempted: ' + ($spawnAttemptLog -join ' ; ')) -ForegroundColor $C.Dim
+        Write-Host '  [press Enter to return to picker]' -ForegroundColor $C.Warn
+        Read-Host | Out-Null
         return
     }
 
@@ -1225,7 +1246,19 @@ fi
         }
     }
 
-    Write-Host "  [OK] window up. Close this launcher when ready." -ForegroundColor $C.OK
+    # Operator 2026-05-23: prior message printed unconditionally even when
+    # $spawned was false — misleading "OK" with no window. Gate on actual
+    # spawn outcome + surface the spawned PID so the operator can find the
+    # window in tasklist if it's offscreen.
+    if ($spawned -and $spawnedProcess) {
+        Write-Host ("  [OK] window up. PID=" + $spawnedProcess.Id + " (spawned via " +
+                    ($spawnAttemptLog[-1]) + ")") -ForegroundColor $C.OK
+        Write-Host '       if the window is offscreen: tasklist | findstr mintty  -or-  Get-Process mintty' -ForegroundColor $C.Dim
+    } elseif ($spawned) {
+        Write-Host "  [OK] spawn attempt returned without process handle (mintty quirk?)." -ForegroundColor $C.Warn
+    } else {
+        Write-Host "  [WARN] spawn did not complete — see [FAIL] message above." -ForegroundColor $C.Warn
+    }
     Write-Host ''
 }
 

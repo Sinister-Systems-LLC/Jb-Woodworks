@@ -1,0 +1,8 @@
+<!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="6" fill="#0B0B0F"/>
+  <text x="16" y="23" text-anchor="middle"
+        font-family="Inter, Arial, sans-serif" font-weight="900"
+        font-size="20" fill="#FFFFFF">S</text>
+  <path d="M22 4 L28 4 L28 10 Z" fill="#D4A24A"/>
+</svg>

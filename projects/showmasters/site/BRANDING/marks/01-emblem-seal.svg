@@ -1,0 +1,53 @@
+<!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- M01 — Emblem seal. Circular stamp with arc text. Premium feel, tour-case applications. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-label="SMPL seal emblem">
+  <defs>
+    <linearGradient id="emG" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%"  stop-color="#E8C078"/>
+      <stop offset="100%" stop-color="#9C7126"/>
+    </linearGradient>
+    <radialGradient id="emBg" cx="50%" cy="42%" r="60%">
+      <stop offset="0%"  stop-color="#1A1A22"/>
+      <stop offset="100%" stop-color="#08080C"/>
+    </radialGradient>
+    <path id="topArc"    d="M 60,200 A 140,140 0 0 1 340,200" fill="none"/>
+    <path id="bottomArc" d="M 80,210 A 120,120 0 0 0 320,210" fill="none"/>
+  </defs>
+
+  <!-- Outer dark disc -->
+  <circle cx="200" cy="200" r="194" fill="url(#emBg)"/>
+  <!-- Outer gold ring -->
+  <circle cx="200" cy="200" r="190" fill="none" stroke="url(#emG)" stroke-width="3"/>
+  <!-- Inner thin ring -->
+  <circle cx="200" cy="200" r="172" fill="none" stroke="url(#emG)" stroke-width="0.8" opacity="0.7"/>
+  <!-- Hairline ring -->
+  <circle cx="200" cy="200" r="160" fill="none" stroke="#FFFFFF" stroke-width="0.5" opacity="0.2"/>
+
+  <!-- Top arc text -->
+  <text font-family="Inter, Arial, sans-serif" font-size="20" font-weight="700" letter-spacing="6" fill="#FFFFFF">
+    <textPath href="#topArc" startOffset="50%" text-anchor="middle">SHOW MASTERS PRODUCTION LOGISTICS</textPath>
+  </text>
+
+  <!-- Bottom arc text -->
+  <text font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600" letter-spacing="8" fill="#D4A24A">
+    <textPath href="#bottomArc" startOffset="50%" text-anchor="middle">EST · 2002 · ORLANDO · DALLAS</textPath>
+  </text>
+
+  <!-- Center SMPL -->
+  <g font-family="Inter, Arial, sans-serif" font-weight="900" fill="#FFFFFF" text-anchor="middle">
+    <text x="200" y="218" font-size="92" letter-spacing="-3">SMPL</text>
+  </g>
+
+  <!-- Crossed laterals (decorative chevrons left/right of wordmark) -->
+  <g stroke="url(#emG)" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.85">
+    <path d="M70 200 L100 196 M100 196 L96 188 M100 196 L96 204"/>
+    <path d="M330 200 L300 196 M300 196 L304 188 M300 196 L304 204"/>
+  </g>
+
+  <!-- Lower star + 3 micro dots (sigil) -->
+  <g fill="url(#emG)">
+    <circle cx="200" cy="270" r="3"/>
+    <circle cx="184" cy="262" r="2"/>
+    <circle cx="216" cy="262" r="2"/>
+  </g>
+</svg>

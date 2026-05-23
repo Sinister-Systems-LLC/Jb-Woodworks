@@ -1,0 +1,45 @@
+<!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- P02 — Business card BACK. Contact details panel. Replace {{NAME}}/{{ROLE}}/{{EMAIL}}/{{CELL}} per person. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1050 600" role="img" aria-label="SMPL business card back">
+  <defs>
+    <linearGradient id="bbG" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0%"  stop-color="#E8C078"/>
+      <stop offset="100%" stop-color="#9C7126"/>
+    </linearGradient>
+  </defs>
+  <rect width="1050" height="600" fill="#FAF6EE"/>
+  <!-- Gold band top -->
+  <rect width="1050" height="14" fill="url(#bbG)"/>
+
+  <g font-family="Inter, Arial, sans-serif" fill="#0B0B0F">
+    <text x="60" y="120" font-size="42" font-weight="900">{{NAME}}</text>
+    <text x="60" y="160" font-size="22" font-weight="600" fill="#5C5C66" letter-spacing="3">{{ROLE}}</text>
+  </g>
+
+  <!-- Divider -->
+  <rect x="60" y="200" width="180" height="2" fill="url(#bbG)"/>
+
+  <g font-family="Inter, Arial, sans-serif" font-size="22" font-weight="500" fill="#0B0B0F">
+    <text x="60"  y="260">Mobile</text><text x="240" y="260" font-weight="700">{{CELL}}</text>
+    <text x="60"  y="300">Email</text><text x="240" y="300" font-weight="700">{{EMAIL}}</text>
+    <text x="60"  y="340">Office</text><text x="240" y="340" font-weight="700">(877) 765-2267</text>
+    <text x="60"  y="380">Web</text><text x="240" y="380" font-weight="700">www.showmasters.com</text>
+  </g>
+
+  <!-- Two-hub address strip -->
+  <g font-family="Inter, Arial, sans-serif" fill="#5C5C66" font-size="16" font-weight="500" letter-spacing="2">
+    <text x="60"  y="470">FLORIDA HQ</text>
+    <text x="60"  y="494" fill="#0B0B0F" font-weight="600">4906 Patch Road · Orlando, FL 32822</text>
+    <text x="60"  y="530">TEXAS HUB</text>
+    <text x="60"  y="554" fill="#0B0B0F" font-weight="600">6340 Lake Worth Boulevard · Dallas, TX 76135</text>
+  </g>
+
+  <!-- Tiny stacked monogram in lower right corner -->
+  <g transform="translate(900,460)">
+    <rect x="0" y="0" width="120" height="120" rx="14" fill="#0B0B0F"/>
+    <text x="60" y="80" text-anchor="middle"
+          font-family="Inter, Arial, sans-serif" font-weight="900"
+          font-size="52" letter-spacing="-2" fill="#FFFFFF">SMPL</text>
+    <path d="M82 14 L102 14 L102 34 Z" fill="url(#bbG)"/>
+  </g>
+</svg>

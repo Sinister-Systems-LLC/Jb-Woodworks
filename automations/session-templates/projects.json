@@ -131,9 +131,9 @@
                          "key":  "showmasters",
                          "display":  "Showmasters",
                          "tag":  "Show Masters Production Logistics marketing site",
-                         "root":  "C:\\Users\\Zonia\\Desktop\\Showmasters Site",
+                         "root":  "D:\\Sinister Sanctum\\projects\\showmasters\\site",
                          "session_start":  "",
-                         "claude_md":  "C:\\Users\\Zonia\\Desktop\\Showmasters Site\\CLAUDE.md",
+                         "claude_md":  "D:\\Sinister Sanctum\\projects\\showmasters\\site\\CLAUDE.md",
                          "github":  "Sinister-Systems-LLC/Showmasters"
                      },
                      {
@@ -158,9 +158,9 @@
                          "key":  "jkor",
                          "display":  "JKOR",
                          "tag":  "JKOR brand surface (image-gen lane)",
-                         "root":  "C:\\Users\\Zonia\\Desktop\\JKOR",
+                         "root":  "D:\\Sinister Sanctum\\projects\\jkor",
                          "session_start":  "",
-                         "claude_md":  "C:\\Users\\Zonia\\Desktop\\JKOR\\CLAUDE.md",
+                         "claude_md":  "D:\\Sinister Sanctum\\projects\\jkor\\CLAUDE.md",
                          "github":  ""
                      },
                      {

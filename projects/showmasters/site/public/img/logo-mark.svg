@@ -1,0 +1,16 @@
+<!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- Compact mark — the gold triangle + a single "S" — useful for tiny placements -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="SMPL mark">
+  <defs>
+    <linearGradient id="goldX" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%"  stop-color="#E8C078"/>
+      <stop offset="55%" stop-color="#D4A24A"/>
+      <stop offset="100%" stop-color="#B88736"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="#0B0B0F"/>
+  <text x="32" y="46" text-anchor="middle"
+        font-family="Inter, Arial, sans-serif" font-weight="900"
+        font-size="44" letter-spacing="-1.5" fill="#FFFFFF">S</text>
+  <path d="M44 12 L56 12 L56 24 Z" fill="url(#goldX)"/>
+</svg>

@@ -1,0 +1,30 @@
+<!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- M02 — Rounded-square mark. Refined "S + triangle". App icon at 1024. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="SMPL mark rounded square">
+  <defs>
+    <linearGradient id="rsG" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%"  stop-color="#E8C078"/>
+      <stop offset="55%" stop-color="#D4A24A"/>
+      <stop offset="100%" stop-color="#9C7126"/>
+    </linearGradient>
+    <linearGradient id="rsBg" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%"  stop-color="#13131A"/>
+      <stop offset="100%" stop-color="#08080C"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1024" height="1024" rx="220" fill="url(#rsBg)"/>
+  <!-- Soft inset highlight -->
+  <rect x="2" y="2" width="1020" height="1020" rx="218" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0.06"/>
+
+  <!-- Gold corner triangle -->
+  <path d="M720 80 L944 80 L944 304 Z" fill="url(#rsG)"/>
+
+  <!-- Big "S" -->
+  <text x="512" y="730" text-anchor="middle"
+        font-family="Inter, Arial, sans-serif" font-weight="900"
+        font-size="720" letter-spacing="-30" fill="#FFFFFF">S</text>
+
+  <!-- Bottom gold rule -->
+  <rect x="120" y="940" width="784" height="3" fill="url(#rsG)" opacity="0.7"/>
+</svg>

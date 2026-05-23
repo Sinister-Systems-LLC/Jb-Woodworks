@@ -1,0 +1,70 @@
+<!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- IG alternative pinned banner — THE PROMISE. Standalone single-card. 1080x1080. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080" role="img" aria-label="SMPL the promise">
+  <defs>
+    <linearGradient id="bgP" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%"  stop-color="#0A0A0F"/>
+      <stop offset="100%" stop-color="#1A1A22"/>
+    </linearGradient>
+    <linearGradient id="gldP" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0%"  stop-color="#E8C078"/>
+      <stop offset="100%" stop-color="#9C7126"/>
+    </linearGradient>
+    <radialGradient id="bloomP" cx="90%" cy="5%" r="65%">
+      <stop offset="0%"   stop-color="#FFE8B8" stop-opacity="0.32"/>
+      <stop offset="100%" stop-color="#FFE8B8" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1080" height="1080" fill="url(#bgP)"/>
+  <circle cx="980" cy="60" r="460" fill="url(#bloomP)"/>
+  <path d="M860 0 L1080 0 L1080 220 Z" fill="url(#gldP)"/>
+
+  <!-- SMPL mark -->
+  <g font-family="Inter, Arial, sans-serif" font-weight="900" fill="#FFFFFF">
+    <text x="80" y="138" font-size="58" letter-spacing="-2">SMPL</text>
+  </g>
+  <path d="M232 78 L256 78 L256 102 Z" fill="url(#gldP)"/>
+  <text x="80" y="170" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600" letter-spacing="4" fill="#D7D7DD">SHOW MASTERS · PRODUCTION LOGISTICS</text>
+
+  <!-- Title -->
+  <g font-family="Inter, Arial, sans-serif" font-weight="900" fill="#FFFFFF">
+    <text x="80" y="300" font-size="72" letter-spacing="-3">Our promise.</text>
+  </g>
+  <rect x="80" y="320" width="190" height="3" fill="url(#gldP)"/>
+
+  <!-- Three promise rows with check icons -->
+  <g font-family="Inter, Arial, sans-serif" fill="#FFFFFF">
+    <!-- Row 1 -->
+    <g transform="translate(80 420)">
+      <g transform="translate(0 -22)" stroke="#D4A24A" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="22" cy="22" r="22"/>
+        <path d="M12 22l8 8 14-16"/>
+      </g>
+      <text x="80" y="0" font-size="32" font-weight="800">W-4 employees, never 1099.</text>
+      <text x="80" y="40" font-size="20" font-weight="500" fill="#8E8E98">Your liability stays clean. Your insurance stays valid.</text>
+    </g>
+    <!-- Row 2 -->
+    <g transform="translate(80 580)">
+      <g transform="translate(0 -22)" stroke="#D4A24A" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="22" cy="22" r="22"/>
+        <path d="M12 22l8 8 14-16"/>
+      </g>
+      <text x="80" y="0" font-size="32" font-weight="800">Workers' comp + GL baked in.</text>
+      <text x="80" y="40" font-size="20" font-weight="500" fill="#8E8E98">No surprise insurance riders. No admin percentages.</text>
+    </g>
+    <!-- Row 3 -->
+    <g transform="translate(80 740)">
+      <g transform="translate(0 -22)" stroke="#D4A24A" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="22" cy="22" r="22"/>
+        <path d="M12 22l8 8 14-16"/>
+      </g>
+      <text x="80" y="0" font-size="32" font-weight="800">Same Crew Lead every show.</text>
+      <text x="80" y="40" font-size="20" font-weight="500" fill="#8E8E98">They learn your patterns. The next load-in is faster.</text>
+    </g>
+  </g>
+
+  <!-- Bottom CTA -->
+  <rect x="80" y="940" width="920" height="2" fill="url(#gldP)" opacity="0.55"/>
+  <text x="80" y="1000" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="700" letter-spacing="2" fill="#FFFFFF">showmasters.com  ·  (877) 765-2267</text>
+</svg>

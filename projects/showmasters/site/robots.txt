@@ -1,0 +1,12 @@
+# Author: RKOJ-ELENO :: 2026-05-23
+User-agent: *
+Allow: /
+Disallow: /BRANDING/
+Disallow: /MARKETING/
+Disallow: /app-v2/
+Disallow: /STACK.md
+Disallow: /HOSTING.md
+Disallow: /privacy.html
+Disallow: /terms.html
+
+Sitemap: https://www.showmasters.com/sitemap.xml

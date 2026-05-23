@@ -1,0 +1,15 @@
+<!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- 06 — Watermark. Low-contrast version for invoice headers, paperwork backgrounds. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 120" role="img" aria-label="SMPL watermark">
+  <g font-family="Inter, Arial, sans-serif" font-weight="900" fill="#0B0B0F" opacity="0.07">
+    <text x="0"   y="68" font-size="70" letter-spacing="-2">S</text>
+    <text x="52"  y="68" font-size="70" letter-spacing="-2">M</text>
+    <text x="118" y="68" font-size="70" letter-spacing="-2">P</text>
+    <text x="174" y="68" font-size="70" letter-spacing="-2">L</text>
+  </g>
+  <path d="M218 18 L232 18 L232 32 Z" fill="#0B0B0F" opacity="0.07"/>
+  <g font-family="Inter, Arial, sans-serif" fill="#0B0B0F" opacity="0.07" letter-spacing="3.2">
+    <text x="0" y="96"  font-size="14" font-weight="700">SHOW MASTERS</text>
+    <text x="0" y="112" font-size="10" font-weight="500" letter-spacing="5">PRODUCTION LOGISTICS</text>
+  </g>
+</svg>

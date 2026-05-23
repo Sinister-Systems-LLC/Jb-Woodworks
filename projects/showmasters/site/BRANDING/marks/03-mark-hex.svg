@@ -1,0 +1,36 @@
+<!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- M03 — Hex mark. Engineering / spec-sheet feel. Hard cases, dispatch tags. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 460" role="img" aria-label="SMPL hex mark">
+  <defs>
+    <linearGradient id="hxG" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%"  stop-color="#E8C078"/>
+      <stop offset="100%" stop-color="#9C7126"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Hex outline (pointy-top) -->
+  <polygon points="200,20 380,120 380,340 200,440 20,340 20,120"
+           fill="#0B0B0F" stroke="url(#hxG)" stroke-width="4"/>
+  <!-- Inner hex hairline -->
+  <polygon points="200,42 360,132 360,328 200,418 40,328 40,132"
+           fill="none" stroke="url(#hxG)" stroke-width="1" opacity="0.55"/>
+
+  <!-- Gold corner triangle inside -->
+  <path d="M310 70 L356 96 L356 142 Z" fill="url(#hxG)"/>
+
+  <!-- SMPL stacked -->
+  <g font-family="Inter, Arial, sans-serif" font-weight="900" fill="#FFFFFF" text-anchor="middle">
+    <text x="200" y="270" font-size="92" letter-spacing="-3">SMPL</text>
+  </g>
+
+  <g font-family="Inter, Arial, sans-serif" fill="#D7D7DD" text-anchor="middle" letter-spacing="5">
+    <text x="200" y="310" font-size="13" font-weight="600">SHOW MASTERS</text>
+    <text x="200" y="334" font-size="10" font-weight="500" letter-spacing="7" fill="#9D9DA8">PRODUCTION LOGISTICS</text>
+  </g>
+
+  <!-- Bottom tag strip -->
+  <rect x="60" y="370" width="280" height="22" fill="url(#hxG)" rx="2"/>
+  <text x="200" y="386" text-anchor="middle"
+        font-family="Inter, Arial, sans-serif" font-size="13" font-weight="800"
+        letter-spacing="5" fill="#0B0B0F">EST · 2002</text>
+</svg>

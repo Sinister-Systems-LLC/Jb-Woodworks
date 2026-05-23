@@ -1,0 +1,19 @@
+<!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- Stacked / centered — for footer + business-card corners -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" role="img" aria-label="SMPL stacked">
+  <defs>
+    <linearGradient id="goldS" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%"  stop-color="#E8C078"/>
+      <stop offset="100%" stop-color="#B88736"/>
+    </linearGradient>
+  </defs>
+  <g font-family="Inter, Arial, sans-serif" font-weight="900" fill="#FFFFFF" text-anchor="middle">
+    <text x="120" y="86" font-size="70" letter-spacing="-2">SMPL</text>
+  </g>
+  <path d="M163 22 L177 22 L177 36 Z" fill="url(#goldS)"/>
+  <g font-family="Inter, Arial, sans-serif" fill="#FFFFFF" text-anchor="middle" letter-spacing="4">
+    <text x="120" y="124" font-size="16" font-weight="700">SHOW MASTERS</text>
+    <text x="120" y="146" font-size="11" font-weight="500" fill="#D7D7DD" letter-spacing="6">PRODUCTION LOGISTICS</text>
+  </g>
+  <line x1="60" y1="160" x2="180" y2="160" stroke="url(#goldS)" stroke-width="1" opacity="0.55"/>
+</svg>

@@ -1,0 +1,48 @@
+<!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- 03 — Truss. Wordmark resting on a stylized box-truss element. Industry-native. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 168" role="img" aria-label="SMPL on truss">
+  <defs>
+    <linearGradient id="g03" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%"  stop-color="#E8C078"/>
+      <stop offset="55%" stop-color="#D4A24A"/>
+      <stop offset="100%" stop-color="#9C7126"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Wordmark -->
+  <g font-family="Inter, Arial, sans-serif" font-weight="900" fill="#FFFFFF">
+    <text x="20"  y="74" font-size="78" letter-spacing="-2.5">S</text>
+    <text x="76"  y="74" font-size="78" letter-spacing="-2.5">M</text>
+    <text x="148" y="74" font-size="78" letter-spacing="-2.5">P</text>
+    <text x="208" y="74" font-size="78" letter-spacing="-2.5">L</text>
+  </g>
+  <path d="M254 18 L270 18 L270 34 Z" fill="url(#g03)"/>
+
+  <!-- Tagline -->
+  <g font-family="Inter, Arial, sans-serif" fill="#FFFFFF" letter-spacing="3.4">
+    <text x="20" y="100" font-size="15" font-weight="700">SHOW MASTERS</text>
+    <text x="20" y="118" font-size="11" font-weight="500" fill="#D7D7DD" letter-spacing="5.4">PRODUCTION LOGISTICS</text>
+  </g>
+
+  <!-- Box-truss element underneath. Two horizontal chords + X bracing. -->
+  <g stroke="url(#g03)" stroke-width="2.4" fill="none" stroke-linecap="round">
+    <line x1="20"  y1="138" x2="460" y2="138"/>
+    <line x1="20"  y1="156" x2="460" y2="156"/>
+    <!-- X bracing -->
+    <line x1="40"  y1="138" x2="60"  y2="156"/><line x1="60"  y1="138" x2="40"  y2="156"/>
+    <line x1="80"  y1="138" x2="100" y2="156"/><line x1="100" y1="138" x2="80"  y2="156"/>
+    <line x1="120" y1="138" x2="140" y2="156"/><line x1="140" y1="138" x2="120" y2="156"/>
+    <line x1="160" y1="138" x2="180" y2="156"/><line x1="180" y1="138" x2="160" y2="156"/>
+    <line x1="200" y1="138" x2="220" y2="156"/><line x1="220" y1="138" x2="200" y2="156"/>
+    <line x1="240" y1="138" x2="260" y2="156"/><line x1="260" y1="138" x2="240" y2="156"/>
+    <line x1="280" y1="138" x2="300" y2="156"/><line x1="300" y1="138" x2="280" y2="156"/>
+    <line x1="320" y1="138" x2="340" y2="156"/><line x1="340" y1="138" x2="320" y2="156"/>
+    <line x1="360" y1="138" x2="380" y2="156"/><line x1="380" y1="138" x2="360" y2="156"/>
+    <line x1="400" y1="138" x2="420" y2="156"/><line x1="420" y1="138" x2="400" y2="156"/>
+  </g>
+  <!-- Truss end caps (rivets) -->
+  <circle cx="20"  cy="138" r="3.2" fill="url(#g03)"/>
+  <circle cx="20"  cy="156" r="3.2" fill="url(#g03)"/>
+  <circle cx="460" cy="138" r="3.2" fill="url(#g03)"/>
+  <circle cx="460" cy="156" r="3.2" fill="url(#g03)"/>
+</svg>

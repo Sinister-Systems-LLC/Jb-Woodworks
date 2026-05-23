@@ -1,0 +1,359 @@
+<!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- US coverage map for where.html. Stylized silhouette + brand-color shading +
+     hub stars (offices Orlando + Fort Worth) + operational-hub stars (other states
+     with regular work) + city-served dots + legend. Designed at 1200x740 viewBox. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 740" role="img" aria-label="Show Masters US coverage map">
+  <defs>
+    <linearGradient id="usG" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%"  stop-color="#E8C078"/>
+      <stop offset="55%" stop-color="#D4A24A"/>
+      <stop offset="100%" stop-color="#9C7126"/>
+    </linearGradient>
+    <linearGradient id="usGsoft" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%"  stop-color="#D4A24A" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#9C7126" stop-opacity="0.7"/>
+    </linearGradient>
+    <radialGradient id="bloomMap" cx="50%" cy="0%" r="70%">
+      <stop offset="0%"   stop-color="#FFE8B8" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#FFE8B8" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background bloom from top center -->
+  <rect width="1200" height="740" fill="#0A0A0F"/>
+  <ellipse cx="600" cy="60" rx="700" ry="200" fill="url(#bloomMap)"/>
+
+  <!-- Title -->
+  <text x="600" y="56" text-anchor="middle"
+        font-family="Inter, Arial, sans-serif" font-size="34" font-weight="900"
+        letter-spacing="-1" fill="#FFFFFF">Where We Work</text>
+  <text x="600" y="90" text-anchor="middle"
+        font-family="Inter, Arial, sans-serif" font-size="15" font-weight="600"
+        letter-spacing="6" fill="#D4A24A">TWO OFFICES · EIGHT OPERATIONAL HUBS · 33 STATES</text>
+
+  <!-- ============================== -->
+  <!--  US silhouette (stylized 48-state contiguous outline) -->
+  <!--  Centered roughly within x:120-1080, y:130-580 -->
+  <!-- ============================== -->
+  <g transform="translate(0 20)">
+    <!-- Contiguous US outline path (simplified) -->
+    <path d="
+      M 152 200
+      L 178 174
+      L 235 161
+      L 268 168
+      L 285 156
+      L 326 152
+      L 396 148
+      L 448 144
+      L 506 142
+      L 568 142
+      L 632 144
+      L 696 148
+      L 754 154
+      L 800 162
+      L 836 174
+      L 874 182
+      L 905 200
+      L 920 220
+      L 935 230
+      L 944 248
+      L 958 264
+      L 956 282
+      L 950 300
+      L 960 310
+      L 985 314
+      L 1010 320
+      L 1030 318
+      L 1042 332
+      L 1040 350
+      L 1045 366
+      L 1058 372
+      L 1054 388
+      L 1041 396
+      L 1015 402
+      L 994 408
+      L 974 418
+      L 962 432
+      L 962 448
+      L 952 458
+      L 936 458
+      L 920 452
+      L 900 462
+      L 882 470
+      L 862 470
+      L 844 462
+      L 820 462
+      L 796 466
+      L 770 458
+      L 752 460
+      L 740 472
+      L 738 488
+      L 728 502
+      L 716 506
+      L 690 506
+      L 672 514
+      L 660 528
+      L 640 530
+      L 624 528
+      L 606 522
+      L 580 522
+      L 558 526
+      L 532 528
+      L 522 520
+      L 498 510
+      L 478 496
+      L 464 472
+      L 452 458
+      L 432 446
+      L 408 432
+      L 386 416
+      L 364 408
+      L 342 402
+      L 318 388
+      L 298 374
+      L 280 366
+      L 264 352
+      L 250 336
+      L 246 318
+      L 254 304
+      L 248 290
+      L 232 286
+      L 220 280
+      L 200 270
+      L 184 258
+      L 168 246
+      L 156 230
+      L 150 214 Z
+      "
+      fill="url(#usGsoft)" stroke="#0A0A0F" stroke-width="1.5" stroke-linejoin="round"/>
+
+    <!-- Florida peninsula extension (separate path for sharper hook) -->
+    <path d="M 736 488 L 756 510 L 782 542 L 800 570 L 814 590 L 820 606 L 814 612 L 802 604 L 788 588 L 770 562 L 754 540 L 740 520 L 732 506 Z"
+          fill="url(#usGsoft)" stroke="#0A0A0F" stroke-width="1.5" stroke-linejoin="round"/>
+
+    <!-- Texas bottom-extension hook -->
+    <path d="M 506 510 L 522 528 L 538 552 L 554 568 L 568 568 L 580 560 L 596 552 L 614 548 L 624 540 L 624 528 L 606 522 L 580 522 L 558 526 L 532 528 L 522 520 Z"
+          fill="url(#usGsoft)" stroke="#0A0A0F" stroke-width="1.5" stroke-linejoin="round"/>
+
+    <!-- State divider hairlines (decorative — implies state borders) -->
+    <g stroke="#7A5818" stroke-width="0.7" opacity="0.55" fill="none">
+      <!-- E/W column lines -->
+      <line x1="220" y1="160" x2="240" y2="450"/>
+      <line x1="290" y1="158" x2="305" y2="420"/>
+      <line x1="370" y1="152" x2="380" y2="425"/>
+      <line x1="450" y1="148" x2="455" y2="450"/>
+      <line x1="530" y1="146" x2="525" y2="495"/>
+      <line x1="610" y1="146" x2="615" y2="500"/>
+      <line x1="690" y1="148" x2="690" y2="500"/>
+      <line x1="770" y1="156" x2="760" y2="480"/>
+      <line x1="850" y1="180" x2="850" y2="450"/>
+      <!-- N/S row lines -->
+      <line x1="155" y1="240" x2="950" y2="265"/>
+      <line x1="180" y1="320" x2="980" y2="340"/>
+      <line x1="220" y1="395" x2="970" y2="415"/>
+    </g>
+  </g>
+
+  <!-- ============================== -->
+  <!--  City-served dots (white) — ~70 dots across served cities -->
+  <!-- ============================== -->
+  <g fill="#FFFFFF" stroke="#0A0A0F" stroke-width="0.8">
+    <!-- West Coast cluster (CA + OR + WA) -->
+    <circle cx="180" cy="218" r="4"/>  <!-- Seattle -->
+    <circle cx="178" cy="252" r="4"/>  <!-- Portland -->
+    <circle cx="178" cy="318" r="4"/>  <!-- SF Bay -->
+    <circle cx="182" cy="356" r="4"/>  <!-- LA -->
+    <circle cx="188" cy="378" r="4"/>  <!-- San Diego -->
+    <circle cx="186" cy="338" r="4"/>  <!-- Fresno -->
+    <circle cx="178" cy="296" r="4"/>  <!-- Sacramento -->
+    <!-- Nevada / Arizona -->
+    <circle cx="232" cy="328" r="4"/>  <!-- Las Vegas -->
+    <circle cx="256" cy="376" r="4"/>  <!-- Phoenix -->
+    <circle cx="282" cy="394" r="4"/>  <!-- Tucson -->
+    <!-- Colorado -->
+    <circle cx="346" cy="298" r="4"/>  <!-- Denver -->
+    <circle cx="348" cy="320" r="4"/>  <!-- Colorado Springs -->
+    <circle cx="332" cy="278" r="4"/>  <!-- Fort Collins -->
+    <!-- Utah -->
+    <circle cx="296" cy="270" r="4"/>  <!-- Salt Lake City -->
+    <!-- New Mexico -->
+    <circle cx="346" cy="376" r="4"/>  <!-- Albuquerque -->
+    <!-- Texas cluster -->
+    <circle cx="486" cy="466" r="4"/>  <!-- El Paso -->
+    <circle cx="556" cy="528" r="4"/>  <!-- San Antonio -->
+    <circle cx="580" cy="552" r="4"/>  <!-- Corpus Christi -->
+    <circle cx="552" cy="488" r="4"/>  <!-- Austin -->
+    <circle cx="586" cy="478" r="4"/>  <!-- Houston -->
+    <circle cx="612" cy="498" r="4"/>  <!-- Galveston -->
+    <circle cx="540" cy="450" r="4"/>  <!-- Arlington -->
+    <circle cx="550" cy="448" r="4"/>  <!-- Plano -->
+    <!-- Louisiana -->
+    <circle cx="620" cy="500" r="4"/>  <!-- New Orleans -->
+    <circle cx="608" cy="478" r="4"/>  <!-- Baton Rouge -->
+    <!-- Oklahoma -->
+    <circle cx="486" cy="394" r="4"/>  <!-- Oklahoma City -->
+    <circle cx="510" cy="402" r="4"/>  <!-- Tulsa -->
+    <!-- Kansas / Missouri -->
+    <circle cx="524" cy="362" r="4"/>  <!-- Kansas City -->
+    <circle cx="570" cy="368" r="4"/>  <!-- St Louis -->
+    <!-- Arkansas -->
+    <circle cx="558" cy="408" r="4"/>  <!-- Little Rock -->
+    <!-- Tennessee -->
+    <circle cx="650" cy="386" r="4"/>  <!-- Nashville -->
+    <circle cx="694" cy="394" r="4"/>  <!-- Knoxville -->
+    <circle cx="620" cy="394" r="4"/>  <!-- Memphis -->
+    <!-- Mississippi / Alabama -->
+    <circle cx="610" cy="438" r="4"/>  <!-- Jackson -->
+    <circle cx="640" cy="446" r="4"/>  <!-- Birmingham -->
+    <circle cx="646" cy="468" r="4"/>  <!-- Mobile -->
+    <!-- Georgia -->
+    <circle cx="688" cy="438" r="4"/>  <!-- Atlanta -->
+    <circle cx="700" cy="468" r="4"/>  <!-- Savannah -->
+    <!-- Carolinas -->
+    <circle cx="724" cy="422" r="4"/>  <!-- Charlotte -->
+    <circle cx="754" cy="416" r="4"/>  <!-- Raleigh -->
+    <circle cx="744" cy="448" r="4"/>  <!-- Columbia, SC -->
+    <circle cx="762" cy="436" r="4"/>  <!-- Wilmington -->
+    <!-- Virginia / DC -->
+    <circle cx="788" cy="380" r="4"/>  <!-- Richmond -->
+    <circle cx="800" cy="362" r="4"/>  <!-- DC -->
+    <circle cx="808" cy="362" r="4"/>  <!-- Baltimore -->
+    <!-- Mid Atlantic / Northeast -->
+    <circle cx="828" cy="346" r="4"/>  <!-- Philadelphia -->
+    <circle cx="846" cy="328" r="4"/>  <!-- NYC -->
+    <circle cx="860" cy="322" r="4"/>  <!-- Hartford / Stamford -->
+    <circle cx="876" cy="310" r="4"/>  <!-- Boston -->
+    <circle cx="864" cy="294" r="4"/>  <!-- Providence -->
+    <!-- New England -->
+    <circle cx="888" cy="270" r="4"/>  <!-- Portland, ME -->
+    <!-- Florida (heavy concentration - HQ state) -->
+    <circle cx="744" cy="510" r="4"/>  <!-- Jacksonville -->
+    <circle cx="754" cy="528" r="4"/>  <!-- Daytona Beach -->
+    <circle cx="752" cy="548" r="4"/>  <!-- Orlando area secondary -->
+    <circle cx="740" cy="554" r="4"/>  <!-- Tampa -->
+    <circle cx="734" cy="568" r="4"/>  <!-- St Petersburg -->
+    <circle cx="746" cy="568" r="4"/>  <!-- Sarasota -->
+    <circle cx="752" cy="582" r="4"/>  <!-- Fort Myers -->
+    <circle cx="758" cy="592" r="4"/>  <!-- Naples -->
+    <circle cx="780" cy="582" r="4"/>  <!-- Fort Lauderdale -->
+    <circle cx="784" cy="596" r="4"/>  <!-- Miami -->
+    <circle cx="790" cy="610" r="4"/>  <!-- Key West/Lower Keys -->
+    <circle cx="706" cy="488" r="4"/>  <!-- Tallahassee -->
+    <!-- Midwest -->
+    <circle cx="638" cy="306" r="4"/>  <!-- Chicago -->
+    <circle cx="672" cy="290" r="4"/>  <!-- Milwaukee -->
+    <circle cx="698" cy="282" r="4"/>  <!-- Detroit -->
+    <circle cx="676" cy="328" r="4"/>  <!-- Indianapolis -->
+    <circle cx="700" cy="348" r="4"/>  <!-- Cincinnati -->
+    <circle cx="720" cy="332" r="4"/>  <!-- Columbus -->
+    <circle cx="722" cy="316" r="4"/>  <!-- Cleveland -->
+    <circle cx="752" cy="350" r="4"/>  <!-- Pittsburgh -->
+    <!-- Minnesota / Iowa -->
+    <circle cx="578" cy="262" r="4"/>  <!-- Minneapolis -->
+    <circle cx="586" cy="296" r="4"/>  <!-- Des Moines -->
+  </g>
+
+  <!-- ============================== -->
+  <!--  Operational hub stars (medium) — states with regular work concentration -->
+  <!-- ============================== -->
+  <g fill="url(#usG)" stroke="#0A0A0F" stroke-width="1">
+    <!-- CA hub -->
+    <polygon points="180,326 184,338 196,340 187,348 190,360 180,353 170,360 173,348 164,340 176,338" />
+    <text x="180" y="305" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="800" letter-spacing="2" fill="#FFFFFF">CA</text>
+    <!-- NV hub -->
+    <polygon points="232,330 235,340 246,342 238,350 240,361 232,355 224,361 226,350 218,342 229,340" />
+    <text x="232" y="320" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="800" letter-spacing="2" fill="#FFFFFF">NV</text>
+    <!-- CO hub -->
+    <polygon points="346,298 349,308 360,310 352,318 354,330 346,323 338,330 340,318 332,310 343,308" />
+    <text x="346" y="288" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="800" letter-spacing="2" fill="#FFFFFF">CO</text>
+    <!-- TN hub -->
+    <polygon points="650,386 653,396 664,398 656,406 658,418 650,411 642,418 644,406 636,398 647,396" />
+    <text x="650" y="376" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="800" letter-spacing="2" fill="#FFFFFF">TN</text>
+    <!-- GA hub -->
+    <polygon points="688,438 691,448 702,450 694,458 696,470 688,463 680,470 682,458 674,450 685,448" />
+    <text x="688" y="428" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="800" letter-spacing="2" fill="#FFFFFF">GA</text>
+    <!-- LA hub -->
+    <polygon points="612,486 615,496 626,498 618,506 620,518 612,511 604,518 606,506 598,498 609,496" />
+    <text x="612" y="476" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="800" letter-spacing="2" fill="#FFFFFF">LA</text>
+  </g>
+
+  <!-- ============================== -->
+  <!--  PRIMARY OFFICES — larger gold stars + labels (Orlando + Fort Worth) -->
+  <!-- ============================== -->
+  <g>
+    <!-- Orlando, FL (HQ) -->
+    <g transform="translate(752 548)">
+      <circle r="22" fill="#0A0A0F" stroke="url(#usG)" stroke-width="2"/>
+      <polygon points="0,-15 4.5,-4.5 16,-4.5 7,3 10,14 0,7.5 -10,14 -7,3 -16,-4.5 -4.5,-4.5"
+               fill="url(#usG)" stroke="#0A0A0F" stroke-width="0.6"/>
+    </g>
+    <text x="800" y="546" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="900" letter-spacing="2" fill="#FFFFFF">ORLANDO, FL</text>
+    <text x="800" y="564" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="600" letter-spacing="3" fill="#D4A24A">FLORIDA HEADQUARTERS</text>
+
+    <!-- Fort Worth, TX -->
+    <g transform="translate(536 462)">
+      <circle r="22" fill="#0A0A0F" stroke="url(#usG)" stroke-width="2"/>
+      <polygon points="0,-15 4.5,-4.5 16,-4.5 7,3 10,14 0,7.5 -10,14 -7,3 -16,-4.5 -4.5,-4.5"
+               fill="url(#usG)" stroke="#0A0A0F" stroke-width="0.6"/>
+    </g>
+    <text x="478" y="455" text-anchor="end" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="900" letter-spacing="2" fill="#FFFFFF">FORT WORTH, TX</text>
+    <text x="478" y="473" text-anchor="end" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="600" letter-spacing="3" fill="#D4A24A">TEXAS HUB</text>
+  </g>
+
+  <!-- ============================== -->
+  <!--  Legend -->
+  <!-- ============================== -->
+  <g transform="translate(80 640)">
+    <rect x="0" y="0" width="320" height="84" rx="10" fill="#13131A" stroke="rgba(212,162,74,0.35)" stroke-width="1"/>
+    <text x="20" y="26" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="800" letter-spacing="4" fill="#D4A24A">LEGEND</text>
+    <!-- HQ -->
+    <g transform="translate(20 42)">
+      <circle r="10" fill="#0A0A0F" stroke="url(#usG)" stroke-width="1.6"/>
+      <polygon points="0,-7 2,-2 7,-2 3.2,1.4 4.6,6.4 0,3.5 -4.6,6.4 -3.2,1.4 -7,-2 -2,-2"
+               fill="url(#usG)" stroke="#0A0A0F" stroke-width="0.4"/>
+      <text x="20" y="4" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="600" fill="#FFFFFF">Primary office</text>
+    </g>
+    <!-- Hub -->
+    <g transform="translate(20 64)">
+      <polygon points="0,-7 2,-2 7,-2 3.2,1.4 4.6,6.4 0,3.5 -4.6,6.4 -3.2,1.4 -7,-2 -2,-2"
+               fill="url(#usG)" stroke="#0A0A0F" stroke-width="0.4"/>
+      <text x="20" y="4" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="600" fill="#FFFFFF">Operational hub</text>
+    </g>
+    <!-- City dot -->
+    <g transform="translate(180 42)">
+      <circle r="5" fill="#FFFFFF" stroke="#0A0A0F" stroke-width="0.8"/>
+      <text x="14" y="4" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="600" fill="#FFFFFF">City crewed</text>
+    </g>
+    <!-- Service area -->
+    <g transform="translate(180 64)">
+      <rect x="-6" y="-6" width="12" height="12" rx="2" fill="url(#usG)" opacity="0.85"/>
+      <text x="14" y="4" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="600" fill="#FFFFFF">Service area</text>
+    </g>
+  </g>
+
+  <!-- ============================== -->
+  <!--  Stat panel on the right of legend -->
+  <!-- ============================== -->
+  <g transform="translate(440 640)">
+    <rect x="0" y="0" width="680" height="84" rx="10" fill="#13131A" stroke="rgba(212,162,74,0.35)" stroke-width="1"/>
+    <g font-family="Inter, Arial, sans-serif">
+      <g transform="translate(40 28)">
+        <text x="0" y="20" font-size="32" font-weight="900" letter-spacing="-1" fill="#D4A24A">2</text>
+        <text x="0" y="46" font-size="11" font-weight="700" letter-spacing="3" fill="#D7D7DD">OFFICES</text>
+      </g>
+      <g transform="translate(170 28)">
+        <text x="0" y="20" font-size="32" font-weight="900" letter-spacing="-1" fill="#D4A24A">8</text>
+        <text x="0" y="46" font-size="11" font-weight="700" letter-spacing="3" fill="#D7D7DD">OPERATIONAL HUBS</text>
+      </g>
+      <g transform="translate(320 28)">
+        <text x="0" y="20" font-size="32" font-weight="900" letter-spacing="-1" fill="#D4A24A">33</text>
+        <text x="0" y="46" font-size="11" font-weight="700" letter-spacing="3" fill="#D7D7DD">STATES CREWED</text>
+      </g>
+      <g transform="translate(470 28)">
+        <text x="0" y="20" font-size="32" font-weight="900" letter-spacing="-1" fill="#D4A24A">1,700+</text>
+        <text x="0" y="46" font-size="11" font-weight="700" letter-spacing="3" fill="#D7D7DD">CLIENTS SERVED</text>
+      </g>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,30 @@
+<!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- 11 — Vertical tower. Tall narrow lockup. Sidebars, app splash, vertical banner. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 480" role="img" aria-label="SMPL vertical">
+  <defs>
+    <linearGradient id="g11" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%"  stop-color="#E8C078"/>
+      <stop offset="55%" stop-color="#D4A24A"/>
+      <stop offset="100%" stop-color="#9C7126"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Top accent triangle -->
+  <path d="M120 0 L200 0 L200 80 Z" fill="url(#g11)"/>
+
+  <!-- Big vertical SMPL stacked letters -->
+  <g font-family="Inter, Arial, sans-serif" font-weight="900" fill="#FFFFFF" text-anchor="middle">
+    <text x="100" y="170" font-size="98" letter-spacing="-2">S</text>
+    <text x="100" y="252" font-size="98" letter-spacing="-2">M</text>
+    <text x="100" y="334" font-size="98" letter-spacing="-2">P</text>
+    <text x="100" y="416" font-size="98" letter-spacing="-2">L</text>
+  </g>
+
+  <!-- Sidebar tagline -->
+  <g transform="translate(180,460) rotate(-90)" font-family="Inter, Arial, sans-serif" fill="#D7D7DD" letter-spacing="6">
+    <text x="0" y="0" font-size="12" font-weight="600">SHOW MASTERS · PRODUCTION LOGISTICS · SINCE 2002</text>
+  </g>
+
+  <!-- Bottom gold rule -->
+  <rect x="20" y="460" width="100" height="2" fill="url(#g11)" opacity="0.7"/>
+</svg>

@@ -1,0 +1,32 @@
+<!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- P01 — Business card FRONT. 3.5"×2" at 300dpi = 1050×600. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1050 600" role="img" aria-label="SMPL business card front">
+  <defs>
+    <linearGradient id="bcBg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%"  stop-color="#0A0A0F"/>
+      <stop offset="100%" stop-color="#1A1A22"/>
+    </linearGradient>
+    <linearGradient id="bcG" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0%"  stop-color="#E8C078"/>
+      <stop offset="100%" stop-color="#9C7126"/>
+    </linearGradient>
+  </defs>
+  <rect width="1050" height="600" fill="url(#bcBg)"/>
+
+  <!-- Gold corner -->
+  <path d="M870 0 L1050 0 L1050 180 Z" fill="url(#bcG)"/>
+  <!-- Hairline -->
+  <rect x="60" y="540" width="930" height="2" fill="url(#bcG)" opacity="0.55"/>
+
+  <!-- Big SMPL -->
+  <g font-family="Inter, Arial, sans-serif" font-weight="900" fill="#FFFFFF">
+    <text x="60" y="320" font-size="220" letter-spacing="-6">SMPL</text>
+  </g>
+  <g font-family="Inter, Arial, sans-serif" fill="#FFFFFF" letter-spacing="8">
+    <text x="60" y="380" font-size="26" font-weight="700">SHOW MASTERS PRODUCTION LOGISTICS</text>
+  </g>
+  <text x="60" y="495" font-family="Inter, Arial, sans-serif"
+        font-size="20" font-weight="600" letter-spacing="5" fill="#D7D7DD">CREWING LIVE EVENTS SINCE 2002</text>
+  <text x="60" y="570" font-family="Inter, Arial, sans-serif"
+        font-size="16" font-weight="600" letter-spacing="6" fill="#9D9DA8">SHOWMASTERS.COM</text>
+</svg>

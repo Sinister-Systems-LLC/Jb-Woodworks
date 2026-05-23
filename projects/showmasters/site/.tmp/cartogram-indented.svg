@@ -1,0 +1,279 @@
+          <svg class="smpl-cartogram" viewBox="0 0 802 674" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="US coverage map showing Show Masters service area">
+            <title>Show Masters US service area</title>
+            <style>
+              .smpl-cartogram .cartogram-tile rect { transition: fill 240ms ease, stroke 240ms ease; }
+              .smpl-cartogram .tile-other rect    { fill: #18181F; stroke: rgba(255,255,255,0.05); stroke-width: 1; }
+              .smpl-cartogram .tile-served rect   { fill: #2A2519; stroke: rgba(212,162,74,0.32); stroke-width: 1; }
+              .smpl-cartogram .tile-hub rect      { fill: #3A2E18; stroke: rgba(212,162,74,0.85); stroke-width: 1.5; }
+              .smpl-cartogram .tile-hq rect       { fill: url(#hqGrad); stroke: #FFE8B8; stroke-width: 2; filter: drop-shadow(0 0 14px rgba(212,162,74,0.55)); }
+              .smpl-cartogram .cartogram-abbr     { font: 700 14px 'Inter', system-ui, sans-serif; fill: #6E6E78; letter-spacing: 1px; pointer-events: none; }
+              .smpl-cartogram .tile-served .cartogram-abbr { fill: #B59A6F; }
+              .smpl-cartogram .tile-hub .cartogram-abbr    { fill: #FFE8B8; }
+              .smpl-cartogram .tile-hq .cartogram-abbr     { font-size: 18px; font-weight: 900; fill: #0A0A0F; letter-spacing: 2px; }
+              .smpl-cartogram .cartogram-city              { font: 700 9px 'Inter', system-ui, sans-serif; fill: #0A0A0F; letter-spacing: 2.5px; pointer-events: none; }
+              .smpl-cartogram .tile-hub:hover rect         { fill: #4D3B1F; }
+            </style>
+            <defs>
+              <linearGradient id="hqGrad" x1="0" x2="1" y1="0" y2="1">
+                <stop offset="0%"  stop-color="#FFE8B8"/>
+                <stop offset="100%" stop-color="#D4A24A"/>
+              </linearGradient>
+            </defs>
+            <g class="cartogram-tile tile-other" data-state="me" data-status="other">
+              <title>Maine</title>
+              <rect x="660" y="20" width="58" height="58" rx="8" />
+              <text x="689.0" y="53.0" class="cartogram-abbr" text-anchor="middle">ME</text>
+            </g>
+            <g class="cartogram-tile tile-other" data-state="vt" data-status="other">
+              <title>Vermont</title>
+              <rect x="596" y="84" width="58" height="58" rx="8" />
+              <text x="625.0" y="117.0" class="cartogram-abbr" text-anchor="middle">VT</text>
+            </g>
+            <g class="cartogram-tile tile-other" data-state="nh" data-status="other">
+              <title>New Hampshire</title>
+              <rect x="660" y="84" width="58" height="58" rx="8" />
+              <text x="689.0" y="117.0" class="cartogram-abbr" text-anchor="middle">NH</text>
+            </g>
+            <g class="cartogram-tile tile-other" data-state="id" data-status="other">
+              <title>Idaho</title>
+              <rect x="84" y="212" width="58" height="58" rx="8" />
+              <text x="113.0" y="245.0" class="cartogram-abbr" text-anchor="middle">ID</text>
+            </g>
+            <g class="cartogram-tile tile-other" data-state="mt" data-status="other">
+              <title>Montana</title>
+              <rect x="148" y="212" width="58" height="58" rx="8" />
+              <text x="177.0" y="245.0" class="cartogram-abbr" text-anchor="middle">MT</text>
+            </g>
+            <g class="cartogram-tile tile-other" data-state="nd" data-status="other">
+              <title>North Dakota</title>
+              <rect x="212" y="212" width="58" height="58" rx="8" />
+              <text x="241.0" y="245.0" class="cartogram-abbr" text-anchor="middle">ND</text>
+            </g>
+            <g class="cartogram-tile tile-other" data-state="ct" data-status="other">
+              <title>Connecticut</title>
+              <rect x="660" y="212" width="58" height="58" rx="8" />
+              <text x="689.0" y="245.0" class="cartogram-abbr" text-anchor="middle">CT</text>
+            </g>
+            <g class="cartogram-tile tile-other" data-state="ri" data-status="other">
+              <title>Rhode Island</title>
+              <rect x="724" y="212" width="58" height="58" rx="8" />
+              <text x="753.0" y="245.0" class="cartogram-abbr" text-anchor="middle">RI</text>
+            </g>
+            <g class="cartogram-tile tile-other" data-state="wy" data-status="other">
+              <title>Wyoming</title>
+              <rect x="148" y="276" width="58" height="58" rx="8" />
+              <text x="177.0" y="309.0" class="cartogram-abbr" text-anchor="middle">WY</text>
+            </g>
+            <g class="cartogram-tile tile-other" data-state="sd" data-status="other">
+              <title>South Dakota</title>
+              <rect x="212" y="276" width="58" height="58" rx="8" />
+              <text x="241.0" y="309.0" class="cartogram-abbr" text-anchor="middle">SD</text>
+            </g>
+            <g class="cartogram-tile tile-other" data-state="ia" data-status="other">
+              <title>Iowa</title>
+              <rect x="276" y="276" width="58" height="58" rx="8" />
+              <text x="305.0" y="309.0" class="cartogram-abbr" text-anchor="middle">IA</text>
+            </g>
+            <g class="cartogram-tile tile-other" data-state="ut" data-status="other">
+              <title>Utah</title>
+              <rect x="84" y="340" width="58" height="58" rx="8" />
+              <text x="113.0" y="373.0" class="cartogram-abbr" text-anchor="middle">UT</text>
+            </g>
+            <g class="cartogram-tile tile-other" data-state="ne" data-status="other">
+              <title>Nebraska</title>
+              <rect x="212" y="340" width="58" height="58" rx="8" />
+              <text x="241.0" y="373.0" class="cartogram-abbr" text-anchor="middle">NE</text>
+            </g>
+            <g class="cartogram-tile tile-other" data-state="ky" data-status="other">
+              <title>Kentucky</title>
+              <rect x="340" y="340" width="58" height="58" rx="8" />
+              <text x="369.0" y="373.0" class="cartogram-abbr" text-anchor="middle">KY</text>
+            </g>
+            <g class="cartogram-tile tile-other" data-state="wv" data-status="other">
+              <title>West Virginia</title>
+              <rect x="404" y="340" width="58" height="58" rx="8" />
+              <text x="433.0" y="373.0" class="cartogram-abbr" text-anchor="middle">WV</text>
+            </g>
+            <g class="cartogram-tile tile-other" data-state="de" data-status="other">
+              <title>Delaware</title>
+              <rect x="596" y="340" width="58" height="58" rx="8" />
+              <text x="625.0" y="373.0" class="cartogram-abbr" text-anchor="middle">DE</text>
+            </g>
+            <g class="cartogram-tile tile-other" data-state="ak" data-status="other">
+              <title>Alaska</title>
+              <rect x="20" y="596" width="58" height="58" rx="8" />
+              <text x="49.0" y="629.0" class="cartogram-abbr" text-anchor="middle">AK</text>
+            </g>
+            <g class="cartogram-tile tile-other" data-state="hi" data-status="other">
+              <title>Hawaii</title>
+              <rect x="724" y="596" width="58" height="58" rx="8" />
+              <text x="753.0" y="629.0" class="cartogram-abbr" text-anchor="middle">HI</text>
+            </g>
+            <g class="cartogram-tile tile-served" data-state="ma" data-status="served">
+              <title>Massachusetts</title>
+              <rect x="660" y="148" width="58" height="58" rx="8" />
+              <text x="689.0" y="181.0" class="cartogram-abbr" text-anchor="middle">MA</text>
+            </g>
+            <g class="cartogram-tile tile-served" data-state="wa" data-status="served">
+              <title>Washington</title>
+              <rect x="20" y="212" width="58" height="58" rx="8" />
+              <text x="49.0" y="245.0" class="cartogram-abbr" text-anchor="middle">WA</text>
+            </g>
+            <g class="cartogram-tile tile-served" data-state="mn" data-status="served">
+              <title>Minnesota</title>
+              <rect x="276" y="212" width="58" height="58" rx="8" />
+              <text x="305.0" y="245.0" class="cartogram-abbr" text-anchor="middle">MN</text>
+            </g>
+            <g class="cartogram-tile tile-served" data-state="wi" data-status="served">
+              <title>Wisconsin</title>
+              <rect x="404" y="212" width="58" height="58" rx="8" />
+              <text x="433.0" y="245.0" class="cartogram-abbr" text-anchor="middle">WI</text>
+            </g>
+            <g class="cartogram-tile tile-served" data-state="mi" data-status="served">
+              <title>Michigan</title>
+              <rect x="468" y="212" width="58" height="58" rx="8" />
+              <text x="497.0" y="245.0" class="cartogram-abbr" text-anchor="middle">MI</text>
+            </g>
+            <g class="cartogram-tile tile-served" data-state="ny" data-status="served">
+              <title>New York</title>
+              <rect x="596" y="212" width="58" height="58" rx="8" />
+              <text x="625.0" y="245.0" class="cartogram-abbr" text-anchor="middle">NY</text>
+            </g>
+            <g class="cartogram-tile tile-served" data-state="or" data-status="served">
+              <title>Oregon</title>
+              <rect x="20" y="276" width="58" height="58" rx="8" />
+              <text x="49.0" y="309.0" class="cartogram-abbr" text-anchor="middle">OR</text>
+            </g>
+            <g class="cartogram-tile tile-served" data-state="il" data-status="served">
+              <title>Illinois</title>
+              <rect x="340" y="276" width="58" height="58" rx="8" />
+              <text x="369.0" y="309.0" class="cartogram-abbr" text-anchor="middle">IL</text>
+            </g>
+            <g class="cartogram-tile tile-served" data-state="in" data-status="served">
+              <title>Indiana</title>
+              <rect x="404" y="276" width="58" height="58" rx="8" />
+              <text x="433.0" y="309.0" class="cartogram-abbr" text-anchor="middle">IN</text>
+            </g>
+            <g class="cartogram-tile tile-served" data-state="oh" data-status="served">
+              <title>Ohio</title>
+              <rect x="468" y="276" width="58" height="58" rx="8" />
+              <text x="497.0" y="309.0" class="cartogram-abbr" text-anchor="middle">OH</text>
+            </g>
+            <g class="cartogram-tile tile-served" data-state="pa" data-status="served">
+              <title>Pennsylvania</title>
+              <rect x="532" y="276" width="58" height="58" rx="8" />
+              <text x="561.0" y="309.0" class="cartogram-abbr" text-anchor="middle">PA</text>
+            </g>
+            <g class="cartogram-tile tile-served" data-state="nj" data-status="served">
+              <title>New Jersey</title>
+              <rect x="596" y="276" width="58" height="58" rx="8" />
+              <text x="625.0" y="309.0" class="cartogram-abbr" text-anchor="middle">NJ</text>
+            </g>
+            <g class="cartogram-tile tile-served" data-state="mo" data-status="served">
+              <title>Missouri</title>
+              <rect x="276" y="340" width="58" height="58" rx="8" />
+              <text x="305.0" y="373.0" class="cartogram-abbr" text-anchor="middle">MO</text>
+            </g>
+            <g class="cartogram-tile tile-served" data-state="va" data-status="served">
+              <title>Virginia</title>
+              <rect x="468" y="340" width="58" height="58" rx="8" />
+              <text x="497.0" y="373.0" class="cartogram-abbr" text-anchor="middle">VA</text>
+            </g>
+            <g class="cartogram-tile tile-served" data-state="md" data-status="served">
+              <title>Maryland</title>
+              <rect x="532" y="340" width="58" height="58" rx="8" />
+              <text x="561.0" y="373.0" class="cartogram-abbr" text-anchor="middle">MD</text>
+            </g>
+            <g class="cartogram-tile tile-served" data-state="az" data-status="served">
+              <title>Arizona</title>
+              <rect x="84" y="404" width="58" height="58" rx="8" />
+              <text x="113.0" y="437.0" class="cartogram-abbr" text-anchor="middle">AZ</text>
+            </g>
+            <g class="cartogram-tile tile-served" data-state="nm" data-status="served">
+              <title>New Mexico</title>
+              <rect x="148" y="404" width="58" height="58" rx="8" />
+              <text x="177.0" y="437.0" class="cartogram-abbr" text-anchor="middle">NM</text>
+            </g>
+            <g class="cartogram-tile tile-served" data-state="ks" data-status="served">
+              <title>Kansas</title>
+              <rect x="212" y="404" width="58" height="58" rx="8" />
+              <text x="241.0" y="437.0" class="cartogram-abbr" text-anchor="middle">KS</text>
+            </g>
+            <g class="cartogram-tile tile-served" data-state="ar" data-status="served">
+              <title>Arkansas</title>
+              <rect x="276" y="404" width="58" height="58" rx="8" />
+              <text x="305.0" y="437.0" class="cartogram-abbr" text-anchor="middle">AR</text>
+            </g>
+            <g class="cartogram-tile tile-served" data-state="nc" data-status="served">
+              <title>North Carolina</title>
+              <rect x="404" y="404" width="58" height="58" rx="8" />
+              <text x="433.0" y="437.0" class="cartogram-abbr" text-anchor="middle">NC</text>
+            </g>
+            <g class="cartogram-tile tile-served" data-state="sc" data-status="served">
+              <title>South Carolina</title>
+              <rect x="468" y="404" width="58" height="58" rx="8" />
+              <text x="497.0" y="437.0" class="cartogram-abbr" text-anchor="middle">SC</text>
+            </g>
+            <g class="cartogram-tile tile-served" data-state="dc" data-status="served">
+              <title>D.C.</title>
+              <rect x="532" y="404" width="58" height="58" rx="8" />
+              <text x="561.0" y="437.0" class="cartogram-abbr" text-anchor="middle">DC</text>
+            </g>
+            <g class="cartogram-tile tile-served" data-state="ok" data-status="served">
+              <title>Oklahoma</title>
+              <rect x="148" y="468" width="58" height="58" rx="8" />
+              <text x="177.0" y="501.0" class="cartogram-abbr" text-anchor="middle">OK</text>
+            </g>
+            <g class="cartogram-tile tile-served" data-state="ms" data-status="served">
+              <title>Mississippi</title>
+              <rect x="276" y="468" width="58" height="58" rx="8" />
+              <text x="305.0" y="501.0" class="cartogram-abbr" text-anchor="middle">MS</text>
+            </g>
+            <g class="cartogram-tile tile-served" data-state="al" data-status="served">
+              <title>Alabama</title>
+              <rect x="340" y="468" width="58" height="58" rx="8" />
+              <text x="369.0" y="501.0" class="cartogram-abbr" text-anchor="middle">AL</text>
+            </g>
+            <g class="cartogram-tile tile-hub" data-state="nv" data-status="hub">
+              <title>Nevada</title>
+              <rect x="84" y="276" width="58" height="58" rx="8" />
+              <text x="113.0" y="309.0" class="cartogram-abbr" text-anchor="middle">NV</text>
+            </g>
+            <g class="cartogram-tile tile-hub" data-state="ca" data-status="hub">
+              <title>California</title>
+              <rect x="20" y="340" width="58" height="58" rx="8" />
+              <text x="49.0" y="373.0" class="cartogram-abbr" text-anchor="middle">CA</text>
+            </g>
+            <g class="cartogram-tile tile-hub" data-state="co" data-status="hub">
+              <title>Colorado</title>
+              <rect x="148" y="340" width="58" height="58" rx="8" />
+              <text x="177.0" y="373.0" class="cartogram-abbr" text-anchor="middle">CO</text>
+            </g>
+            <g class="cartogram-tile tile-hub" data-state="tn" data-status="hub">
+              <title>Tennessee</title>
+              <rect x="340" y="404" width="58" height="58" rx="8" />
+              <text x="369.0" y="437.0" class="cartogram-abbr" text-anchor="middle">TN</text>
+            </g>
+            <g class="cartogram-tile tile-hub" data-state="la" data-status="hub">
+              <title>Louisiana</title>
+              <rect x="212" y="468" width="58" height="58" rx="8" />
+              <text x="241.0" y="501.0" class="cartogram-abbr" text-anchor="middle">LA</text>
+            </g>
+            <g class="cartogram-tile tile-hub" data-state="ga" data-status="hub">
+              <title>Georgia</title>
+              <rect x="404" y="468" width="58" height="58" rx="8" />
+              <text x="433.0" y="501.0" class="cartogram-abbr" text-anchor="middle">GA</text>
+            </g>
+            <g class="cartogram-tile tile-hq" data-state="tx" data-status="hq" data-hub="dallas">
+              <title>Texas - Dallas Hub</title>
+              <rect x="212" y="532" width="58" height="58" rx="8" />
+              <text x="241.0" y="556" class="cartogram-abbr" text-anchor="middle">TX</text>
+              <text x="241.0" y="576" class="cartogram-city" text-anchor="middle">DALLAS</text>
+            </g>
+            <g class="cartogram-tile tile-hq" data-state="fl" data-status="hq" data-hub="orlando">
+              <title>Florida - Orlando HQ</title>
+              <rect x="468" y="532" width="58" height="58" rx="8" />
+              <text x="497.0" y="556" class="cartogram-abbr" text-anchor="middle">FL</text>
+              <text x="497.0" y="576" class="cartogram-city" text-anchor="middle">ORLANDO</text>
+            </g>
+          </svg>

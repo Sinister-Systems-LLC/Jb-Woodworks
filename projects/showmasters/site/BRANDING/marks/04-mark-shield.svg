@@ -1,0 +1,51 @@
+<!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- M04 — Shield. Crew patch / sleeve embroidery feel. Heritage, uniform asset. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 440" role="img" aria-label="SMPL shield">
+  <defs>
+    <linearGradient id="shG" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%"  stop-color="#E8C078"/>
+      <stop offset="100%" stop-color="#9C7126"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Shield shape -->
+  <path d="M180 10
+           L340 60
+           L340 230
+           Q340 340 180 430
+           Q20 340 20 230
+           L20 60 Z"
+        fill="#0B0B0F" stroke="url(#shG)" stroke-width="4"/>
+
+  <!-- Inner thin shield hairline -->
+  <path d="M180 30
+           L322 74
+           L322 230
+           Q322 326 180 408
+           Q38 326 38 230
+           L38 74 Z"
+        fill="none" stroke="url(#shG)" stroke-width="1" opacity="0.55"/>
+
+  <!-- Top banner strip -->
+  <rect x="60" y="68" width="240" height="32" fill="url(#shG)" rx="2"/>
+  <text x="180" y="89" text-anchor="middle"
+        font-family="Inter, Arial, sans-serif" font-size="16" font-weight="800"
+        letter-spacing="7" fill="#0B0B0F">SHOW MASTERS</text>
+
+  <!-- Big SMPL -->
+  <g font-family="Inter, Arial, sans-serif" font-weight="900" fill="#FFFFFF" text-anchor="middle">
+    <text x="180" y="220" font-size="92" letter-spacing="-3">SMPL</text>
+  </g>
+
+  <!-- Crossed truss/wrench motif under -->
+  <g stroke="url(#shG)" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.95">
+    <line x1="110" y1="252" x2="250" y2="290"/>
+    <line x1="110" y1="290" x2="250" y2="252"/>
+  </g>
+
+  <!-- Year banner at bottom -->
+  <path d="M70 330 L290 330 L290 360 L290 380 L180 360 L70 380 L70 360 Z" fill="url(#shG)"/>
+  <text x="180" y="356" text-anchor="middle"
+        font-family="Inter, Arial, sans-serif" font-size="16" font-weight="900"
+        letter-spacing="9" fill="#0B0B0F">EST 2002</text>
+</svg>

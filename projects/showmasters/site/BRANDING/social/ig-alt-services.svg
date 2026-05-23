@@ -1,0 +1,123 @@
+<!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- IG alternative pinned banner — SERVICES OVERVIEW. Standalone single-card. 1080x1080. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080" role="img" aria-label="SMPL services">
+  <defs>
+    <linearGradient id="bgV" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%"  stop-color="#0A0A0F"/>
+      <stop offset="100%" stop-color="#1A1A22"/>
+    </linearGradient>
+    <linearGradient id="gldV" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0%"  stop-color="#E8C078"/>
+      <stop offset="100%" stop-color="#9C7126"/>
+    </linearGradient>
+    <radialGradient id="bloomV" cx="90%" cy="5%" r="65%">
+      <stop offset="0%"   stop-color="#FFE8B8" stop-opacity="0.32"/>
+      <stop offset="100%" stop-color="#FFE8B8" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1080" height="1080" fill="url(#bgV)"/>
+  <circle cx="980" cy="60" r="460" fill="url(#bloomV)"/>
+  <path d="M860 0 L1080 0 L1080 220 Z" fill="url(#gldV)"/>
+
+  <!-- SMPL mark -->
+  <g font-family="Inter, Arial, sans-serif" font-weight="900" fill="#FFFFFF">
+    <text x="80" y="138" font-size="58" letter-spacing="-2">SMPL</text>
+  </g>
+  <path d="M232 78 L256 78 L256 102 Z" fill="url(#gldV)"/>
+  <text x="80" y="170" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600" letter-spacing="4" fill="#D7D7DD">SHOW MASTERS · PRODUCTION LOGISTICS</text>
+
+  <!-- Title -->
+  <g font-family="Inter, Arial, sans-serif" font-weight="900" fill="#FFFFFF">
+    <text x="80" y="290" font-size="72" letter-spacing="-3">What we do.</text>
+  </g>
+  <rect x="80" y="310" width="180" height="3" fill="url(#gldV)"/>
+
+  <!-- 6 service tiles in 2x3 grid -->
+  <g>
+    <!-- Tile 1: Stagehands -->
+    <g transform="translate(80 380)">
+      <rect x="0" y="0" width="290" height="160" rx="14" fill="#13131A" stroke="rgba(212,162,74,0.25)" stroke-width="1"/>
+      <g transform="translate(20 22)" stroke="#D4A24A" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="10" cy="6" r="3"/>
+        <path d="M10 9v8l-3 9"/>
+        <path d="M10 18l5 4"/>
+        <rect x="16" y="20" width="16" height="12" rx="1.5"/>
+      </g>
+      <text x="20" y="106" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="800" fill="#FFFFFF">Stagehands</text>
+      <text x="20" y="132" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="500" fill="#8E8E98">Audio · Lighting · Video · Scenic</text>
+    </g>
+    <!-- Tile 2: Riggers -->
+    <g transform="translate(395 380)">
+      <rect x="0" y="0" width="290" height="160" rx="14" fill="#13131A" stroke="rgba(212,162,74,0.25)" stroke-width="1"/>
+      <g transform="translate(20 22)" stroke="#D4A24A" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 4h9a7 7 0 0 1 7 7v14a7 7 0 0 1-7 7H14z"/>
+        <path d="M14 4v34"/>
+        <path d="M14 11c-3 0-5 2.5-5 5"/>
+        <path d="M9 16v6"/>
+        <path d="M9 22c0 3 2 5 5 5"/>
+      </g>
+      <text x="20" y="106" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="800" fill="#FFFFFF">Riggers</text>
+      <text x="20" y="132" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="500" fill="#8E8E98">Lead · Beam · Up &amp; Ground</text>
+    </g>
+    <!-- Tile 3: Technicians -->
+    <g transform="translate(710 380)">
+      <rect x="0" y="0" width="290" height="160" rx="14" fill="#13131A" stroke="rgba(212,162,74,0.25)" stroke-width="1"/>
+      <g transform="translate(20 22)" stroke="#D4A24A" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="2" width="36" height="36" rx="3"/>
+        <line x1="12" y1="8" x2="12" y2="32"/>
+        <line x1="20" y1="8" x2="20" y2="32"/>
+        <line x1="28" y1="8" x2="28" y2="32"/>
+        <rect x="9" y="14" width="6" height="4" rx="1" fill="#D4A24A"/>
+        <rect x="17" y="22" width="6" height="4" rx="1" fill="#D4A24A"/>
+        <rect x="25" y="18" width="6" height="4" rx="1" fill="#D4A24A"/>
+      </g>
+      <text x="20" y="106" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="800" fill="#FFFFFF">Technicians</text>
+      <text x="20" y="132" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="500" fill="#8E8E98">Systems · Show-readiness</text>
+    </g>
+    <!-- Tile 4: Lift Operators -->
+    <g transform="translate(80 560)">
+      <rect x="0" y="0" width="290" height="160" rx="14" fill="#13131A" stroke="rgba(212,162,74,0.25)" stroke-width="1"/>
+      <g transform="translate(20 22)" stroke="#D4A24A" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="5" y="30" width="30" height="4" rx="0.5"/>
+        <circle cx="11" cy="36" r="2"/>
+        <circle cx="29" cy="36" r="2"/>
+        <path d="M12 30 L28 14 M28 30 L12 14 M16 26 L24 18 M24 26 L16 18"/>
+        <rect x="7" y="6" width="26" height="4" rx="0.5"/>
+      </g>
+      <text x="20" y="106" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="800" fill="#FFFFFF">Lift Ops</text>
+      <text x="20" y="132" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="500" fill="#8E8E98">Forklift · Scissor · Boom</text>
+    </g>
+    <!-- Tile 5: Crew Leads -->
+    <g transform="translate(395 560)">
+      <rect x="0" y="0" width="290" height="160" rx="14" fill="#13131A" stroke="rgba(212,162,74,0.25)" stroke-width="1"/>
+      <g transform="translate(20 22)" stroke="#D4A24A" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 22a14 14 0 0 1 28 0"/>
+        <rect x="4" y="22" width="7" height="10" rx="1.5"/>
+        <rect x="29" y="22" width="7" height="10" rx="1.5"/>
+        <path d="M33 32l-2 5"/>
+        <circle cx="30.5" cy="37" r="1.4"/>
+      </g>
+      <text x="20" y="106" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="800" fill="#FFFFFF">Crew Leads</text>
+      <text x="20" y="132" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="500" fill="#8E8E98">Stage mgmt · Show management</text>
+    </g>
+    <!-- Tile 6: Logistics -->
+    <g transform="translate(710 560)">
+      <rect x="0" y="0" width="290" height="160" rx="14" fill="#13131A" stroke="rgba(212,162,74,0.25)" stroke-width="1"/>
+      <g transform="translate(20 22)" stroke="#D4A24A" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="8" y="6" width="24" height="32" rx="2"/>
+        <rect x="14" y="3" width="12" height="6" rx="1"/>
+        <line x1="13" y1="17" x2="27" y2="17"/>
+        <line x1="13" y1="23" x2="27" y2="23"/>
+        <line x1="13" y1="29" x2="23" y2="29"/>
+        <path d="M26 29l2 2 3-4"/>
+      </g>
+      <text x="20" y="106" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="800" fill="#FFFFFF">Logistics</text>
+      <text x="20" y="132" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="500" fill="#8E8E98">Pre-show · Cost · Post-eval</text>
+    </g>
+  </g>
+
+  <!-- Bottom CTA -->
+  <rect x="80" y="940" width="920" height="2" fill="url(#gldV)" opacity="0.55"/>
+  <text x="80" y="1000" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="700" letter-spacing="2" fill="#FFFFFF">showmasters.com  ·  (877) 765-2267</text>
+</svg>

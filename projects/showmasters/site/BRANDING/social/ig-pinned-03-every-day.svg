@@ -1,0 +1,55 @@
+<!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- IG pinned banner 3 of 3. Closes the headline: "Every Day."
+     Includes CTA + handle. 1080x1080. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080" role="img" aria-label="SMPL — Every Day">
+  <defs>
+    <linearGradient id="bg3" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%"  stop-color="#0A0A0F"/>
+      <stop offset="100%" stop-color="#1A1A22"/>
+    </linearGradient>
+    <linearGradient id="gld3" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0%"  stop-color="#E8C078"/>
+      <stop offset="100%" stop-color="#9C7126"/>
+    </linearGradient>
+    <radialGradient id="bloom3" cx="10%" cy="100%" r="70%">
+      <stop offset="0%"   stop-color="#FFE8B8" stop-opacity="0.32"/>
+      <stop offset="100%" stop-color="#FFE8B8" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1080" height="1080" fill="url(#bg3)"/>
+  <!-- Bottom-left bloom (mirrors card 1's top-right) -->
+  <circle cx="60" cy="1040" r="540" fill="url(#bloom3)"/>
+  <!-- Gold corner triangle (mirrored — bottom-left this time, closes the visual loop) -->
+  <path d="M0 820 L0 1080 L260 1080 Z" fill="url(#gld3)" opacity="0.18"/>
+
+  <!-- Gold rule (continues across the 3-card set) -->
+  <rect x="80" y="220" width="920" height="2" fill="url(#gld3)" opacity="0.55"/>
+
+  <!-- Hero phrase -->
+  <g font-family="Inter, Arial, sans-serif" font-weight="900" fill="#FFFFFF">
+    <text x="80" y="500" font-size="120" letter-spacing="-4">Every</text>
+    <text x="80" y="640" font-size="120" letter-spacing="-4" fill="#D4A24A">Day.</text>
+  </g>
+
+  <!-- Subhead -->
+  <text x="80" y="730" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="500" fill="#C7C7CF">From load-in to load-out, no surprises.</text>
+
+  <!-- "What's baked in" trust block -->
+  <g font-family="Inter, Arial, sans-serif" fill="#FFFFFF">
+    <text x="80" y="820" font-size="16" font-weight="700" letter-spacing="4" fill="#D4A24A">WHAT'S BAKED INTO THE RATE</text>
+    <text x="80" y="855" font-size="18" font-weight="500">W-4 employees, never 1099 contractors</text>
+    <text x="80" y="885" font-size="18" font-weight="500">Workers' comp + GL insurance included</text>
+    <text x="80" y="915" font-size="18" font-weight="500">Same Crew Lead, every show you book</text>
+  </g>
+
+  <!-- Bottom rule -->
+  <rect x="80" y="940" width="920" height="2" fill="url(#gld3)" opacity="0.55"/>
+
+  <!-- CTA + handle -->
+  <g font-family="Inter, Arial, sans-serif" fill="#D7D7DD">
+    <text x="80" y="1000" font-size="22" font-weight="700" letter-spacing="2">showmasters.com  ·  (877) 765-2267</text>
+  </g>
+  <!-- Card index 3/3 -->
+  <text x="940" y="1000" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="700" fill="#D4A24A" letter-spacing="4" text-anchor="end">3 / 3</text>
+</svg>

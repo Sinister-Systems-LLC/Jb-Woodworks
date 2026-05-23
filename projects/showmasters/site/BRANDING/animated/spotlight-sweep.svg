@@ -1,0 +1,48 @@
+<!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- A01 — Animated spotlight sweep. SMIL — spotlight cone sweeps from right to left,
+     gold rule pulses underneath. Renders in any modern browser as <img> or <object>. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 200" role="img" aria-label="SMPL spotlight sweep animated">
+  <defs>
+    <linearGradient id="aCone" x1="1" x2="0" y1="0" y2="1">
+      <stop offset="0%"   stop-color="#FFE8B8" stop-opacity="0.85"/>
+      <stop offset="40%"  stop-color="#D4A24A" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#D4A24A" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="aGold" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0%"  stop-color="#E8C078"/>
+      <stop offset="100%" stop-color="#9C7126"/>
+    </linearGradient>
+    <clipPath id="aBounds"><rect width="480" height="200"/></clipPath>
+  </defs>
+
+  <!-- Dark backdrop -->
+  <rect width="480" height="200" fill="#0A0A0F"/>
+
+  <g clip-path="url(#aBounds)">
+    <!-- Sweeping cone — translates from x = 200 down to -180 over 6s -->
+    <g>
+      <path d="M340 0 L480 0 L432 200 L292 200 Z" fill="url(#aCone)"/>
+      <animateTransform attributeName="transform" type="translate"
+                       values="200,0; -180,0; 200,0" dur="6s" repeatCount="indefinite"/>
+    </g>
+  </g>
+
+  <!-- Wordmark -->
+  <g font-family="Inter, Arial, sans-serif" font-weight="900" fill="#FFFFFF">
+    <text x="16"  y="104" font-size="82" letter-spacing="-2.6">S</text>
+    <text x="76"  y="104" font-size="82" letter-spacing="-2.6">M</text>
+    <text x="154" y="104" font-size="82" letter-spacing="-2.6">P</text>
+    <text x="220" y="104" font-size="82" letter-spacing="-2.6">L</text>
+  </g>
+  <path d="M268 16 L288 16 L288 36 Z" fill="url(#aGold)"/>
+
+  <g font-family="Inter, Arial, sans-serif" fill="#FFFFFF" letter-spacing="3.4">
+    <text x="16" y="142" font-size="17" font-weight="700">SHOW MASTERS</text>
+    <text x="16" y="162" font-size="12" font-weight="500" fill="#D7D7DD" letter-spacing="5.6">PRODUCTION LOGISTICS</text>
+  </g>
+
+  <!-- Pulsing gold rule -->
+  <rect x="16" y="176" width="200" height="2" fill="url(#aGold)">
+    <animate attributeName="opacity" values="0.3;0.9;0.3" dur="3s" repeatCount="indefinite"/>
+  </rect>
+</svg>
