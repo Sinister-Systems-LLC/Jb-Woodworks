@@ -16,6 +16,11 @@ Endpoints:
     POST /api/phones/<serial>/shell        — body { cmd } — runs adb shell cmd
     GET  /api/agents                       — list claim-owners + counts
     GET  /api/version                      — sinister_rkoj_qt + manifest
+    GET  /api/diagrams                     — list cached mermaid renders
+                                              (newest first; stem/ext/mtime/age)
+    GET  /api/diagrams/<stem>              — serve the primary render bytes
+                                              for the diagram with that stem
+                                              (Content-Type by extension)
 """
 
 from __future__ import annotations
@@ -35,6 +40,88 @@ from . import state
 API_HOST = "127.0.0.1"
 API_PORT = 5077      # operator-reserved port per CLAUDE.md (RKOJ workbench)
 _CREATE_NO_WINDOW = 0x08000000
+
+# /api/diagrams — read-only view of the Forge mermaid-render cache. Enables
+# future RKOJ desktop_app.py + Sinister Mind web view to embed memory-graph
+# PNGs without spawning a subprocess. Cache layout matches
+# `forge/commands.py:_mermaid_renders_dir`.
+_MERMAID_RENDERS_DIR = (
+    Path(r"D:\Sinister Sanctum") / "_shared-memory" / "forge-memory"
+    / "mermaid-renders"
+)
+_DIAGRAM_EXT_PRIORITY = (".png", ".svg", ".html", ".mmd")
+_DIAGRAM_CONTENT_TYPES = {
+    ".png":  "image/png",
+    ".svg":  "image/svg+xml",
+    ".html": "text/html; charset=utf-8",
+    ".mmd":  "text/plain; charset=utf-8",
+}
+
+
+def _diagram_groups() -> list[dict]:
+    """Walk the mermaid-renders dir and group siblings by stem.
+
+    Returns newest-first; each entry has stem/ext/mtime/age_s/primary_path.
+    Empty list when the dir is missing or unreadable — never raises.
+    """
+    if not _MERMAID_RENDERS_DIR.exists():
+        return []
+    groups: dict[str, list[Path]] = {}
+    try:
+        for fp in _MERMAID_RENDERS_DIR.iterdir():
+            if not fp.is_file():
+                continue
+            if fp.suffix.lower() not in _DIAGRAM_EXT_PRIORITY:
+                continue
+            groups.setdefault(fp.stem, []).append(fp)
+    except OSError:
+        return []
+    now = time.time()
+    out: list[dict] = []
+    for stem, files in groups.items():
+        primary = next(
+            (f for ext in _DIAGRAM_EXT_PRIORITY
+             for f in files if f.suffix.lower() == ext),
+            files[0],
+        )
+        mtime = max(f.stat().st_mtime for f in files)
+        out.append({
+            "stem": stem,
+            "ext": primary.suffix.lstrip("."),
+            "mtime": mtime,
+            "age_s": int(now - mtime),
+            "primary_path": str(primary),
+            "siblings": sorted(f.suffix.lstrip(".") for f in files),
+        })
+    out.sort(key=lambda d: d["mtime"], reverse=True)
+    return out
+
+
+def _resolve_diagram_primary(stem: str) -> Path | None:
+    """Return the primary render file for ``stem``, or None when missing.
+
+    Guards against directory traversal: ``stem`` must not contain path
+    separators or `..` segments. Final resolved path is verified to live
+    under _MERMAID_RENDERS_DIR.
+    """
+    if not stem or "/" in stem or "\\" in stem or stem in (".", ".."):
+        return None
+    candidates: list[Path] = []
+    for ext in _DIAGRAM_EXT_PRIORITY:
+        cand = _MERMAID_RENDERS_DIR / f"{stem}{ext}"
+        if cand.is_file():
+            candidates.append(cand)
+    if not candidates:
+        return None
+    # Final containment check (defense in depth — stem guard already strips
+    # the obvious vectors, but cheap to be paranoid here).
+    try:
+        primary = candidates[0].resolve(strict=True)
+        base = _MERMAID_RENDERS_DIR.resolve(strict=True)
+        primary.relative_to(base)
+    except (OSError, ValueError):
+        return None
+    return primary
 
 
 def _find_adb() -> str | None:
@@ -126,6 +213,34 @@ class _Handler(BaseHTTPRequestHandler):
                 ],
                 "total_claimed_phones": len(claims),
             })
+        if p == "/api/diagrams":
+            groups = _diagram_groups()
+            return self._send_json(200, {
+                "diagrams": groups,
+                "count": len(groups),
+                "renders_dir": str(_MERMAID_RENDERS_DIR),
+            })
+        if p.startswith("/api/diagrams/"):
+            stem = p[len("/api/diagrams/"):]
+            target = _resolve_diagram_primary(stem)
+            if target is None:
+                return self._send_json(404, {
+                    "error": f"diagram not found: {stem}",
+                })
+            try:
+                data = target.read_bytes()
+            except OSError as exc:
+                return self._send_json(500, {"error": str(exc)})
+            ctype = _DIAGRAM_CONTENT_TYPES.get(
+                target.suffix.lower(), "application/octet-stream"
+            )
+            self.send_response(200)
+            self.send_header("Content-Type", ctype)
+            self.send_header("Content-Length", str(len(data)))
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(data)
+            return
         return self._send_json(404, {"error": f"unknown route: {p}"})
 
     def do_POST(self) -> None:
