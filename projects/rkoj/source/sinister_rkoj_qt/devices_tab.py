@@ -245,46 +245,41 @@ class _MirrorCard(QFrame):
             f"border: none; font-family: 'JetBrains Mono', monospace; "
             f"font-size: 10px; }}"
         )
-        self._log_view.setPlaceholderText("live scrcpy log — opens on Advanced click")
+        self._log_view.setPlaceholderText(
+            "scrcpy log live-drain disabled in v1.6.81 (was freezing the GUI).\n"
+            "Click Advanced again for a one-shot snapshot of state."
+        )
         ap_layout.addWidget(self._log_view)
         self._advanced_panel.hide()
         root.addWidget(self._advanced_panel)
 
-        # v1.6.79 — drain scrcpy stderr into the log view every 500ms.
-        self._log_timer = QTimer(self)
-        self._log_timer.setInterval(500)
-        self._log_timer.timeout.connect(self._drain_proc_log)
-        self._log_timer.start()
-
     def _toggle_advanced(self) -> None:
+        """v1.6.81 — show static snapshot (proc pid, status, claim owner)
+        instead of live-draining stderr (the live drain blocked the
+        GUI thread per operator screenshot)."""
         if self._advanced_panel.isVisible():
             self._advanced_panel.hide()
-        else:
-            self._advanced_panel.show()
-
-    def _drain_proc_log(self) -> None:
-        if self._proc is None or self._proc.stderr is None:
             return
-        try:
-            import select
-            # Non-blocking read of whatever's pending. On Windows we use
-            # the simpler poll-the-fd approach via readable bytes count.
-            # If reading blocks (Windows has no select on pipes), bail.
-            import msvcrt  # type: ignore
-            # Try a simple non-blocking peek via PeekNamedPipe
-            import ctypes
-            handle = msvcrt.get_osfhandle(self._proc.stderr.fileno())
-            avail = ctypes.c_ulong(0)
-            ok = ctypes.windll.kernel32.PeekNamedPipe(
-                ctypes.c_void_p(handle), None, 0, None, ctypes.byref(avail), None
-            )
-            if ok and avail.value > 0:
-                chunk = self._proc.stderr.read(avail.value)
-                if chunk:
-                    self._log_view.appendPlainText(chunk.rstrip())
-        except Exception:
-            # If anything goes sideways, just stop draining (don't crash).
-            self._log_timer.stop()
+        # Refresh the snapshot each open
+        lines = []
+        lines.append(f"serial      : {self.dev.serial}")
+        lines.append(f"model       : {self.dev.model or '?'}")
+        lines.append(f"state       : {self.dev.state}")
+        lines.append(f"transport   : {self.dev.transport}")
+        pid = self._proc.pid if self._proc else "(no scrcpy)"
+        lines.append(f"scrcpy pid  : {pid}")
+        lines.append(f"embed title : {self._unique_title}")
+        lines.append(f"embed attempts: {self._embed_attempts}")
+        embedded = getattr(self, "_embedded_hwnd", None)
+        lines.append(f"embedded hwnd: {hex(embedded) if embedded else '(not yet)'}")
+        owner = state.who_owns(self.dev.serial)
+        if owner:
+            lines.append(f"claimed by  : {owner.get('agent_display') or owner.get('agent_id')}")
+            lines.append(f"claimed at  : {owner.get('claimed_at')}")
+        else:
+            lines.append("claimed by  : (free)")
+        self._log_view.setPlainText("\n".join(lines))
+        self._advanced_panel.show()
 
     def _spawn_scrcpy(self) -> None:
         if not _SCRCPY:
@@ -297,7 +292,10 @@ class _MirrorCard(QFrame):
         except Exception:
             pass
         try:
-            # v1.6.79 — software renderer + capture stderr for diagnostics
+            # v1.6.81 — REVERT stderr to DEVNULL. v1.6.80's PeekNamedPipe
+            # drain timer froze the GUI thread (operator screenshot:
+            # "RKOJ.exe is not responding"). The pipe-read on text-mode
+            # stderr in the GUI event loop blocks under load.
             self._proc = subprocess.Popen(
                 [
                     _SCRCPY,
@@ -309,12 +307,9 @@ class _MirrorCard(QFrame):
                     "--render-driver", "software",
                 ],
                 stdin=subprocess.DEVNULL,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
                 creationflags=_DETACHED | _CREATE_NO_WINDOW,
-                text=True,
-                encoding="utf-8",
-                errors="replace",
             )
             self._status_label.setText("Connecting to phone…")
             QTimer.singleShot(self.EMBED_RETRY_MS, self._try_embed)
