@@ -70,6 +70,27 @@ Six protections that future EVE sessions MUST preserve (auto-verified by `automa
 5. CLAUDE.md cold-start MUST reference `D:\Sinister\Sinister Skills\09_REFERENCE\SANDBOX-GOTCHAS.md` (sandbox green paths).
 6. Brain entries `sanctioned-bypasses-doctrine-2026-05-21.md` + `do-not-revert-operator-canonical-protections-2026-05-23.md` must remain in `_shared-memory/knowledge/` and be indexed in `_INDEX.md`.
 
+## Operator hard-canonical 2026-05-23 — NO-BULLSHIT / TESTED-BEFORE-CLAIMED / FOREVER-AUDIT (with quality-degradation limits)
+
+Operator (verbatim 2026-05-23, two messages stacked):
+1. *"do not add any fairty tail bullshit to the projects and run wild. i want to lazer focus on areas and systematically move through things in a concise manner and only things are brought to my attention after they are tested, confirmed working adn then added to things so everything is real and not bullshit. also i want to have this same method for forever expadning our systems and having you audit your work, look for flaws and auto fix and forever upgrade everything wer do."*
+2. *"ADD TO ALL AGENTS THAT when forever expandingf there needs to be limits when quality start to deminsh."*
+
+**Binding for every spawned EVE session AND every per-project agent.** Full doctrine: `_shared-memory/knowledge/no-bullshit-tested-before-claimed-doctrine-2026-05-23.md`.
+
+Short version (8 rules):
+
+1. **Precise verbs.** `scaffolded` / `parse-clean` / `smoke-tested` / `acceptance-tested` / `shipped` / `in-flight` / `claimed-but-unverified`. Never call a scaffold "shipped". Never call a parse-clean "PASS".
+2. **Test before claiming.** Every `smoke-tested+` claim requires evidence in the same turn (command + exit code; or measurable criterion + measurement).
+3. **Surface only verified work.** End-of-turn separates `Shipped (verified)` from `In-flight (unverified)` from `Open (queued)`. Don't pad the verified table with scaffolds.
+4. **Continuous self-audit.** After every meaningful unit of work: re-read the file (Read tool, not memory), run smoke test, compare to acceptance criterion, flag drift. R0-R1 drift → auto-fix this turn; R2+ → queue row `claimed-but-unverified — under audit`.
+5. **Forever-upgrade.** Date stamp + version every doctrine/script/plan. Old version moves to `_archive/`. Brain `_INDEX.md` row gets `Updated` bump on every meaningful refactor.
+6. **Laser focus.** One area per turn. State done-criteria at turn-open; report verified results at turn-close. Tangential work → queue row, not sneak-edit.
+7. **Concise summaries.** Past-tense verified events only. No "I plan to..." / "I'll also...".
+8. **Expansion has quality-degradation limits.** 10 signals (brain >150 rows, PROGRESS >300 KB, resume-points >20/lane, queue >25 rows, plans >12 active, doctrine with >5 "composes with" links, script >1500 lines, cold-start >10 steps, same bug fixed 3+ times, end-of-turn >40 lines). When ANY fires: STOP expanding, consolidate first.
+
+Self-application: this lane (Sanctum / EVE) applies the doctrine FIRST. Per-project lanes inherit via CLAUDE.md cold-start step 0 (understand-anything) + per-lane CLAUDE.md acknowledging the doctrine.
+
 ## Operator hard-canonical 2026-05-23 — SINISTER GENERATOR AVAILABLE FLEET-WIDE (conservative balance)
 
 Operator (verbatim 2026-05-23): *"add to the start that all agents can use sinister geneartor if needed. just be conservative on the balance"*.
