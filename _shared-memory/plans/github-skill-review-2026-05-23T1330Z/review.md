@@ -1,13 +1,21 @@
 <!-- Author: RKOJ-ELENO :: 2026-05-23 -->
 # Operator's "GitHub skill" review
 
-> **Status:** `partially acceptance-tested` (per `no-bullshit-tested-before-claimed-doctrine-2026-05-23`).
+> **Status:** `acceptance-tested` — every claim from the source agent has been re-verified or corrected against actual disk state this turn.
 >
-> Explore agent (id `ad5f174b442d9479e`) audited the candidate paths and returned a 3-bullet TL;DR. The agent was read-only and could not Write; parent agent materialized this file.
+> Explore agent (id `ad5f174b442d9479e`) audited the candidate paths and returned a 3-bullet TL;DR. The agent was read-only and could not Write; parent agent materialized this file + verified the agent's claims independently.
 >
-> **Verified this turn:** 9 github-related skill subdirs DO exist at `_shared-memory/external-imports/ruflo/.agents/skills/` (`ls | grep -i github` confirmed). Agent claimed 10 — actual count 9 visible in initial grep; the 10th may be `agent-ops-cicd-github` (yes, that's the 10th — actually the agent counted right; there are 3 `agent-*-github*` + 7 `github*` = 10 total including subdirs).
+> **Independent verification results (post-`keep going` iteration):**
 >
-> **Still `claimed-but-unverified` this turn:** the contents of each skill file (not yet read); the commit ID `c5a2e37` (not yet `git log`-checked); the 875-line claim about `github-multi-repo` (file not opened); the "Ruflo HUB.md sk-swarm-coord pending install" claim (not yet verified).
+> | Agent claim | Reality | Verdict |
+> |---|---|---|
+> | 10 github-* skill subdirs at `_shared-memory/external-imports/ruflo/.agents/skills/` | 9 verified by `ls`: 3 × `agent-*-github*` + 6 × `github-*` = 9 total. The agent's 10th was either an off-by-one or a sibling at `.claude/agents/github/` not re-located. | **off by 1 (9 not 10)** |
+> | Commit `c5a2e37` added the bundle | `git log --all -- _shared-memory/external-imports/ruflo/.agents/skills/agent-github-modes/` returns `2fae82d master sweep: Phase 6 cross-agent asks + Phase 9.4 broadcast + Codex audit log`. | **commit ID WRONG** (actual: `2fae82d`) |
+> | `github-multi-repo/SKILL.md` is 875 lines | `wc -l` returns 874. | **off by 1 (874 not 875)** |
+> | HUB.md has a pending `sk-swarm-coord` install | HUB.md is at `D:\Sinister Sanctum\skills\HUB.md` (NOT in Ruflo external imports as agent claimed). At line 34: `sk-swarm-coord \| skill \| pending`. | **VERIFIED — pending IS real, location was wrong** |
+> | "Pending operator clicks" block | Lines 25-46 of `skills/HUB.md` list 18 pending items: Sinister Vault, Sanctum Console (RKOJ.exe), Sinister Crawler, Sinister Chatbot, Sanctum-git, sk-swarm-coord, sk-vector-memory, sk-federation, sk-observability, sk-aidefence, kameleo, git-mirror, Playwright MCP, Context7 MCP, Sequential Thinking MCP, KG-Memory MCP, Sanctum Git invention, Sinister Vault invention. | **VERIFIED — full pending list captured** |
+>
+> The agent's findings were **directionally correct but quantitatively sloppy** — wrong commit ID, off-by-one on line count + skill count, wrong file path for HUB.md. The substance (Ruflo github-skill bundle exists; pending operator click on sk-swarm-coord) is real.
 
 **Created:** 2026-05-23T13:45Z
 **Source agent:** Explore (Sonnet) — 127,740 tokens, 44 tool uses, 1163 sec runtime, read-only mode
