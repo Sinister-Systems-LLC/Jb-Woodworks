@@ -425,6 +425,39 @@ class TestPhoneClaimsV180(unittest.TestCase):
         state.release_phone("A"); state.release_phone("B")
 
 
+class TestNoStrayTopLevelV188(unittest.TestCase):
+    """v1.6.88 — operator screenshot showed "Sini..." stray top-level
+    window appearing on Devices tab. Root cause: QWidget/QFrame/QScrollArea
+    created with no parent → Qt eagerly assigns HWND for the brief moment
+    before reparenting via setLayout/addWidget, surfacing the truncated
+    QApplication.applicationName() as the window title.
+
+    Regression rule: every widget construction in devices_tab.py that
+    later receives .hide() or sits behind a layout MUST be parented at
+    construction time."""
+
+    def test_devices_tab_widgets_parented(self) -> None:
+        from pathlib import Path
+        import re
+        fp = Path(__file__).resolve().parents[1] / "source" / "sinister_rkoj_qt" / "devices_tab.py"
+        txt = fp.read_text(encoding="utf-8")
+        # Disallow patterns we've actually had bugs on. Layout classes
+        # don't take a parent until setLayout/setWidget so we skip those.
+        BANNED_PATTERNS = [
+            r"\bself\._advanced_panel\s*=\s*QFrame\(\s*\)",
+            r"\bself\._mirrors_host\s*=\s*QWidget\(\s*\)",
+            r"\bself\._host\s*=\s*QWidget\(\s*\)",
+            r"\bself\._scroll\s*=\s*QScrollArea\(\s*\)",
+            r"\bself\._body_host\s*=\s*QFrame\(\s*\)",
+        ]
+        for pat in BANNED_PATTERNS:
+            self.assertFalse(
+                re.search(pat, txt),
+                f"devices_tab.py: unparented widget construction matches /{pat}/ "
+                "— must be parented (parent=self) to prevent 'Sini...' stray window leak"
+            )
+
+
 class TestNoEmojisV174(unittest.TestCase):
     """v1.6.74 — dashboard-skeleton rule: no emojis in UI chrome."""
 
@@ -465,9 +498,49 @@ class TestTokenBudget(unittest.TestCase):
         self.assertLessEqual(agents_tab._TOKEN_WARN_THRESHOLD, 200_000)
 
 
+class TestResumePickerV187(unittest.TestCase):
+    """v1.6.87 — SavedSessionsPicker._scan_sessions merges projects.json
+    (the Sinister Start.bat fleet roster) with saved resume-points.
+    Every project must appear with kind='project'; saved sessions appear
+    with kind='saved'. Lets operator start a fresh agent for any project
+    OR resume an existing save — single picker, no dead-end empty state."""
+
+    def test_scan_returns_projects_and_saves(self) -> None:
+        from sinister_rkoj_qt.dialogs import SavedSessionsPicker
+        from sinister_rkoj_qt import state
+
+        # The real on-disk projects.json should yield at least 1 project
+        # (sanctum). If it doesn't exist in CI we accept >=0 and assert
+        # the scan never crashes — the picker still has to render.
+        picker = SavedSessionsPicker.__new__(SavedSessionsPicker)
+        entries = picker._scan_sessions()
+        self.assertIsInstance(entries, list)
+        kinds = {e.get("kind") for e in entries}
+        # On a real workstation projects.json has 14+ projects so we
+        # always get kind='project' rows; in a sterile sandbox we just
+        # verify the dispatcher path didn't raise.
+        if state.PROJECTS_JSON.exists():
+            self.assertIn("project", kinds,
+                "every projects.json project should appear as a kind='project' row")
+
+    def test_entries_have_required_keys(self) -> None:
+        from sinister_rkoj_qt.dialogs import SavedSessionsPicker
+
+        picker = SavedSessionsPicker.__new__(SavedSessionsPicker)
+        for e in picker._scan_sessions():
+            self.assertIn("kind", e)
+            self.assertIn("project_key", e)
+            self.assertIn("project_display", e)
+            if e["kind"] == "project":
+                self.assertIn("saved_count", e)
+            else:
+                self.assertIn("session_uuid", e)
+                self.assertIn("turns", e)
+
+
 class TestModuleSurface(unittest.TestCase):
     def test_version_matches(self) -> None:
-        self.assertEqual(sinister_rkoj_qt.__version__, "1.6.86")
+        self.assertEqual(sinister_rkoj_qt.__version__, "1.6.88")
 
     def test_classes_present(self) -> None:
         for name in (

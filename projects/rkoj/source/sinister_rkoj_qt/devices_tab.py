@@ -238,7 +238,11 @@ class _MirrorCard(QFrame):
         # v1.6.79 — Advanced log panel (hidden by default). Toggled by
         # the Advanced button. Shows live scrcpy stdout/stderr + the
         # last 10 adb commands fired against this serial.
-        self._advanced_panel = QFrame()
+        # v1.6.87 — pass parent=self so the panel is never a top-level
+        # widget (was leaking as the "Sini..." stray window even though
+        # we hide() / add to layout — Qt assigns HWND eagerly when the
+        # widget has any native-window attribute set ancestor-wise).
+        self._advanced_panel = QFrame(self)
         self._advanced_panel.setStyleSheet(
             f"QFrame {{ background-color: #0a0a0c; border: 1px solid {BORDER}; "
             f"border-radius: 8px; padding: 6px; }}"
@@ -264,13 +268,19 @@ class _MirrorCard(QFrame):
         root.addWidget(self._advanced_panel)
 
     def _toggle_advanced(self) -> None:
-        """v1.6.81 — show static snapshot (proc pid, status, claim owner)
-        instead of live-draining stderr (the live drain blocked the
-        GUI thread per operator screenshot)."""
+        """v1.6.87 — Advanced panel toggle. When showing:
+          1. Print one-shot snapshot (proc pid, embed hwnd, claim owner)
+          2. Start a QTimer that polls the scrcpy stderr log file every
+             1s and appends any new bytes (pure file IO, never blocks
+             GUI thread — unlike v1.6.80's PeekNamedPipe approach)
+        When hiding: stop the poll timer.
+        """
         if self._advanced_panel.isVisible():
             self._advanced_panel.hide()
+            if hasattr(self, "_logtail_timer") and self._logtail_timer:
+                self._logtail_timer.stop()
             return
-        # Refresh the snapshot each open
+        # Snapshot header
         lines = []
         lines.append(f"serial      : {self.dev.serial}")
         lines.append(f"model       : {self.dev.model or '?'}")
@@ -288,8 +298,39 @@ class _MirrorCard(QFrame):
             lines.append(f"claimed at  : {owner.get('claimed_at')}")
         else:
             lines.append("claimed by  : (free)")
+        log_p = getattr(self, "_log_path", None)
+        if log_p:
+            lines.append(f"log file    : {log_p}")
+        lines.append("── live stderr ──")
         self._log_view.setPlainText("\n".join(lines))
         self._advanced_panel.show()
+        # Start file-tail timer
+        if not hasattr(self, "_logtail_timer") or self._logtail_timer is None:
+            self._logtail_timer = QTimer(self)
+            self._logtail_timer.setInterval(1000)
+            self._logtail_timer.timeout.connect(self._tail_log_file)
+        self._logtail_timer.start()
+
+    def _tail_log_file(self) -> None:
+        """v1.6.87 — read new bytes from the scrcpy stderr log file
+        and append to the Advanced panel. File IO never blocks."""
+        log_p = getattr(self, "_log_path", None)
+        if not log_p or not log_p.exists():
+            return
+        try:
+            size = log_p.stat().st_size
+            if size <= self._log_read_pos:
+                return
+            with open(log_p, "rb") as fh:
+                fh.seek(self._log_read_pos)
+                chunk = fh.read(size - self._log_read_pos)
+            self._log_read_pos = size
+            if chunk:
+                txt = chunk.decode("utf-8", errors="replace").rstrip()
+                if txt:
+                    self._log_view.appendPlainText(txt)
+        except Exception:
+            pass
 
     def _spawn_scrcpy(self) -> None:
         if not _SCRCPY:
@@ -302,10 +343,14 @@ class _MirrorCard(QFrame):
         except Exception:
             pass
         try:
-            # v1.6.81 — REVERT stderr to DEVNULL. v1.6.80's PeekNamedPipe
-            # drain timer froze the GUI thread (operator screenshot:
-            # "RKOJ.exe is not responding"). The pipe-read on text-mode
-            # stderr in the GUI event loop blocks under load.
+            # v1.6.87 — scrcpy stderr → log file (pure file IO, never
+            # blocks GUI). Advanced panel polls file size via QTimer
+            # and reads new bytes. Safe replacement for v1.6.80's
+            # PeekNamedPipe approach that froze the event loop.
+            ts = time.strftime("%Y%m%dT%H%M%S")
+            self._log_path = _LOG_DIR / f"{self.dev.serial}-{ts}.log"
+            self._log_fh = open(self._log_path, "wb", buffering=0)
+            self._log_read_pos = 0
             self._proc = subprocess.Popen(
                 [
                     _SCRCPY,
@@ -318,13 +363,14 @@ class _MirrorCard(QFrame):
                 ],
                 stdin=subprocess.DEVNULL,
                 stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
+                stderr=self._log_fh,           # ← file, not pipe = no deadlock
                 creationflags=_DETACHED | _CREATE_NO_WINDOW,
             )
             self._status_label.setText("Connecting to phone…")
             QTimer.singleShot(self.EMBED_RETRY_MS, self._try_embed)
         except Exception as exc:
             self._status_label.setText(f"scrcpy failed:\n{exc}")
+            self._log_path = None
 
     def _try_embed(self) -> None:
         """v1.6.74 — Win32 SetParent reparenting (more reliable than
@@ -732,7 +778,8 @@ class DevicesView(QWidget):
         self._mirrors_scroll.setFrameShape(QFrame.Shape.NoFrame)
         self._mirrors_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self._mirrors_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-        self._mirrors_host = QWidget()
+        # v1.6.88 — parent=self to prevent brief top-level "Sini…" leak.
+        self._mirrors_host = QWidget(self)
         self._mirrors_row = QHBoxLayout(self._mirrors_host)
         self._mirrors_row.setContentsMargins(0, 0, 0, 0)
         self._mirrors_row.setSpacing(10)
@@ -745,12 +792,16 @@ class DevicesView(QWidget):
         # was just visual noise. Keep _host/_list_layout/_scroll for
         # internal device-row tracking (Mirror All button needs them) but
         # never add to the visible layout.
-        self._host = QWidget()
+        # v1.6.88 — parent=self everywhere. Especially _scroll which
+        # gets .hide() called — Qt was eagerly assigning an HWND to
+        # the unparented hidden top-level briefly at startup, surfacing
+        # as the "Sini..." stray window the operator screenshotted.
+        self._host = QWidget(self)
         self._list_layout = QVBoxLayout(self._host)
         self._list_layout.setContentsMargins(0, 0, 0, 0)
         self._list_layout.setSpacing(6)
         self._list_layout.addStretch(1)
-        self._scroll = QScrollArea()
+        self._scroll = QScrollArea(self)
         self._scroll.setWidget(self._host)
         self._scroll.hide()
 

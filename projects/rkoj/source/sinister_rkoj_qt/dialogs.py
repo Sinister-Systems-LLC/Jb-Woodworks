@@ -364,43 +364,86 @@ class SavedSessionsPicker(QDialog):
         QShortcut(QKeySequence("Delete"), self, activated=self._on_delete)
 
     def _scan_sessions(self) -> list[dict]:
-        """Walk `_shared-memory/resume-points/<display>/*.json` and parse
-        each into a flat dict. Newest first."""
-        sessions: list[dict] = []
+        """v1.6.87 — combined list: every project from projects.json
+        (the Sinister Start.bat fleet roster) + every saved resume-point.
+        Each entry is either kind='project' (start fresh) or
+        kind='saved' (resume existing session). Sorted: projects with
+        saves first (most-recent-save first), then projects with no
+        saves alphabetically. Within a project the saved sessions
+        appear newest-first."""
+        # 1. Load saved sessions
+        saved: list[dict] = []
         rp_root = state.SHARED_MEMORY / "resume-points"
-        if not rp_root.exists():
-            return sessions
-        try:
-            for proj_dir in rp_root.iterdir():
-                if not proj_dir.is_dir():
-                    continue
-                for fp in proj_dir.glob("*.json"):
-                    try:
-                        with open(fp, "r", encoding="utf-8") as fh:
-                            data = json.load(fh)
-                    except Exception:
+        if rp_root.exists():
+            try:
+                for proj_dir in rp_root.iterdir():
+                    if not proj_dir.is_dir():
                         continue
-                    suid = data.get("session_uuid") or ""
-                    if not suid:
-                        continue  # pre-v1.6.3 saves without session_uuid
-                    sessions.append({
-                        "project_display": (
-                            data.get("agent_display", "").replace("EVE on ", "")
-                            or proj_dir.name.replace("EVE on ", "")
-                        ),
-                        "project_key": data.get("project_key", "sanctum"),
-                        "agent_name": data.get("agent_name", ""),
-                        "mode": data.get("mode", "claude"),
-                        "session_uuid": suid,
-                        "saved_at": data.get("saved_at", ""),
-                        "turns": len(data.get("turns", [])),
-                        "save_reason": data.get("save_reason", "manual"),
-                        "_fp": str(fp),
-                    })
+                    for fp in proj_dir.glob("*.json"):
+                        try:
+                            with open(fp, "r", encoding="utf-8") as fh:
+                                data = json.load(fh)
+                        except Exception:
+                            continue
+                        suid = data.get("session_uuid") or ""
+                        if not suid:
+                            continue
+                        saved.append({
+                            "kind": "saved",
+                            "project_display": (
+                                data.get("agent_display", "").replace("EVE on ", "")
+                                or proj_dir.name.replace("EVE on ", "")
+                            ),
+                            "project_key": data.get("project_key", "sanctum"),
+                            "agent_name": data.get("agent_name", ""),
+                            "mode": data.get("mode", "claude"),
+                            "session_uuid": suid,
+                            "saved_at": data.get("saved_at", ""),
+                            "turns": len(data.get("turns", [])),
+                            "save_reason": data.get("save_reason", "manual"),
+                            "_fp": str(fp),
+                        })
+            except Exception:
+                pass
+        # 2. Load all projects from projects.json (Sinister Start.bat roster)
+        projects: list[dict] = []
+        try:
+            for p in state.load_projects():
+                projects.append({
+                    "kind": "project",
+                    "project_key": p.key,
+                    "project_display": p.display,
+                    "mode": "claude",
+                    "saved_count": 0,
+                    "newest_save_ts": "",
+                })
         except Exception:
             pass
-        sessions.sort(key=lambda s: s.get("saved_at", ""), reverse=True)
-        return sessions
+        # 3. Annotate each project with its saved-count + newest-save ts
+        by_key: dict[str, dict] = {p["project_key"]: p for p in projects}
+        for s in saved:
+            pk = s["project_key"]
+            if pk in by_key:
+                by_key[pk]["saved_count"] += 1
+                ts = s.get("saved_at", "")
+                if ts > by_key[pk]["newest_save_ts"]:
+                    by_key[pk]["newest_save_ts"] = ts
+        # 4. Merge: each project header followed by its saves
+        projects.sort(key=lambda p: (
+            p["newest_save_ts"] == "",   # projects with saves first
+            -1 if p["newest_save_ts"] else 0,
+            p["project_display"].lower(),
+        ))
+        out: list[dict] = []
+        saved_by_key: dict[str, list[dict]] = {}
+        for s in saved:
+            saved_by_key.setdefault(s["project_key"], []).append(s)
+        for proj in projects:
+            out.append(proj)
+            proj_saves = saved_by_key.get(proj["project_key"], [])
+            proj_saves.sort(key=lambda s: s.get("saved_at", ""), reverse=True)
+            out.extend(proj_saves)
+        return out
 
     def _build(self) -> None:
         root = QVBoxLayout(self)
@@ -468,32 +511,46 @@ class SavedSessionsPicker(QDialog):
         root.addLayout(btn_row)
 
     def _populate_list(self) -> None:
-        """(Re)build the list-widget rows from self._sessions."""
+        """v1.6.87 — render two kinds:
+          kind='project'  ► [+] Project Name        N saved · Start fresh
+          kind='saved'    ►    └─ <turns> · <ts> · uuid <8> · [reason]
+        """
         self._list.clear()
         for s in self._sessions:
-            ts = _humanize_age(s.get("saved_at", ""))
-            reason = (s.get("save_reason") or "manual").lower()
-            reason_chip = "[autoclose]" if reason == "autoclose" else "[manual]"
-            label = (
-                f"{s['project_display']}    ·    "
-                f"{s['turns']} turn(s)    ·    {ts}    {reason_chip}\n"
-                f"   mode {s.get('mode', 'claude')}   ·   "
-                f"uuid {s['session_uuid'][:8]}…"
-            )
+            if s.get("kind") == "project":
+                n = s.get("saved_count", 0)
+                save_str = (
+                    f"{n} saved · click to resume newest" if n
+                    else "no saves yet · click to start fresh"
+                )
+                label = (
+                    f"[+] {s['project_display']:30s}    {save_str}"
+                )
+            else:
+                ts = _humanize_age(s.get("saved_at", ""))
+                reason = (s.get("save_reason") or "manual").lower()
+                reason_chip = (
+                    "[autoclose]" if reason == "autoclose" else f"[{reason}]"
+                )
+                label = (
+                    f"    └─ {s['turns']:2d} turn(s) · {ts:10s} · "
+                    f"uuid {s['session_uuid'][:8]} {reason_chip}"
+                )
             item = QListWidgetItem(label)
             item.setData(Qt.ItemDataRole.UserRole, s)
             self._list.addItem(item)
 
     def _refresh_subtitle(self) -> None:
-        n = len(self._sessions)
+        n_proj = sum(1 for s in self._sessions if s.get("kind") == "project")
+        n_saved = sum(1 for s in self._sessions if s.get("kind") == "saved")
         self.subtitle_label.setText(
-            f"{n} saved session(s)   ·   double-click or pick + Resume "
-            f"inline. Del key (or button) removes a save."
+            f"{n_proj} project(s) · {n_saved} saved session(s) — "
+            f"click a project to start fresh, or click a saved session "
+            f"to resume. Del key removes a save."
         )
 
     def _on_double_click(self, item: QListWidgetItem) -> None:
-        self.result_data = item.data(Qt.ItemDataRole.UserRole)
-        self.accept()
+        self._accept_item(item)
 
     def _on_accept(self) -> None:
         if not getattr(self, "_list", None):
@@ -503,7 +560,22 @@ class SavedSessionsPicker(QDialog):
         if not item:
             self.reject()
             return
-        self.result_data = item.data(Qt.ItemDataRole.UserRole)
+        self._accept_item(item)
+
+    def _accept_item(self, item: QListWidgetItem) -> None:
+        """v1.6.87 — when project row picked: emit fresh-spawn payload
+        (no session_uuid). When saved row picked: emit resume payload."""
+        data = item.data(Qt.ItemDataRole.UserRole)
+        if data.get("kind") == "project":
+            self.result_data = {
+                "project_key": data["project_key"],
+                "project_display": data["project_display"],
+                "agent_name": data["project_display"],
+                "mode": data.get("mode", "claude"),
+                "session_uuid": None,   # fresh spawn — no resume
+            }
+        else:
+            self.result_data = data
         self.accept()
 
     def _on_delete(self) -> None:
