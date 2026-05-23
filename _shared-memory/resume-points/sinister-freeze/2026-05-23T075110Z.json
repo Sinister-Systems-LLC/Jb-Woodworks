@@ -1,0 +1,45 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-23T11:51:32.8581754Z",
+    "project":  "sinister-freeze",
+    "agent_name":  "sinister-freeze",
+    "mode":  "resume",
+    "focus_intent":  "PH1-MVP Day 3: Daily 7am brief scaffold shipped — next: Telegram delivery + APScheduler cron + Gmail OAuth ingest",
+    "git":  {
+                "branch":  "agent/sinister-generator/source-package-2026-05-23",
+                "head":  "60080561c419e62bad3de066ccc6e1f543f38993",
+                "head_msg":  "progress(rkoj): iteration-5 entry reapply (v1.6.89 scrcpy-no-stray + BOM fix + test pass)",
+                "recent_commits":  [
+                                       "6008056 progress(rkoj): iteration-5 entry reapply (v1.6.89 scrcpy-no-stray + BOM fix + test pass)",
+                                       "8c57e8c ship(sinister-seraphim): quantum-compute application-layer rename + provenance audit",
+                                       "ab16d16 ship(rkoj): v1.6.89 ΓÇö no stray scrcpy windows + projects.json BOM fix + full test pass",
+                                       "59667b7 ship(rkoj): v1.6.89 ΓÇö no stray scrcpy windows + projects.json BOM fix + full test pass",
+                                       "a4b71cf ship(rkoj+browser): jcode matrix row 12 Γ£à + Layer A probe + resume-point script fix",
+                                       "3c1df84 launcher(refusal+menu+letstext+plugins+pos-restore): operator-stack 2026-05-23 evening",
+                                       "c430e4a launcher(eve.exe): jcode-speed picker wrapper + sterm jcode-memory ask",
+                                       "b199dae ship(rkoj+mind): Mind /diagrams web view + 2 brain entries (matrix row 12 complete)",
+                                       "3eec73f launcher(live-bugfix): Auto-Resume freeze + Rename/Color visibility + multi-spawn dispatcher",
+                                       "73c628b doctrine+freeze+autonomy: anti-revert protection system + Sinister Freeze restore + agent autonomy override"
+                                   ]
+            },
+    "progress_top3":  [
+                          "2026-05-23T11:50Z â€” PH1-MVP Day 3 scaffold shipped (backend skeleton + Daily brief generator)"
+                      ],
+    "latest_plan":  {
+                        "dir":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\sinister-freeze-2026-05-21",
+                        "artifact":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\sinister-freeze-2026-05-21\\deep-research.md"
+                    },
+    "inbox_unread_count":  0,
+    "last_5_files_touched_24h":  [
+                                     "tools\\sinister-seraphim\\audit.py.tmp.30792.1779537075386",
+                                     "tools\\sinister-browser\\sinister_browser\\__pycache__\\api.cpython-312.pyc",
+                                     "tools\\sinister-browser\\sinister_browser\\__pycache__\\probe.cpython-312.pyc",
+                                     "tools\\sinister-browser\\sinister_browser\\__pycache__\\__init__.cpython-312.pyc",
+                                     "projects\\jb-woodworks\\.next\\static\\chunks\\app\\layout.js"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\sinister-freeze.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\plans\\sinister-freeze-2026-05-21\\deep-research.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}
