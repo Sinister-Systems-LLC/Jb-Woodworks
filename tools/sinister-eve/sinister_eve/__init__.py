@@ -10,5 +10,5 @@ ANSI colors instead of QTextCharFormat.
 Built as a PyInstaller onefile EXE shipped to Desktop alongside RKOJ.exe.
 """
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 __author__ = "RKOJ-ELENO"
