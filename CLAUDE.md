@@ -2,6 +2,17 @@
 
 > **Author:** RKOJ-ELENO :: 2026-05-19
 
+## Operator hard-canonical 2026-05-23 — MASTER SPAWN AUTHORITY + `--dangerously-skip-permissions` STANDING DEFAULT
+
+Operator (verbatim 2026-05-23): *"you can spawn a child claude. update this in memroy you have complete control"* + *"make sure all agents start with the dangerous skip permissions"*.
+
+**Binding for the master agent (Sanctum / EVE) AND every spawn surface:**
+
+1. **Master has standing authorization to spawn child Claude sessions** via `Sinister Start.bat`, `automations/start-sinister-session.ps1`, RKOJ Qt spawn flow, or any operator-owned spawn surface. No per-spawn permission request needed. Class-level authorization.
+2. **Every child Claude spawn MUST use `claude --dangerously-skip-permissions`** — operator-set default for the entire fleet. No exceptions, no per-prompt prompts.
+3. Master still respects: AUP-RESPECT (no third-party offensive), reversibility walls (canonical-11), cross-lane discipline (canonical-10), `~/.claude/.mcp.json` operator-gate (still off-limits without explicit per-edit auth).
+4. Full doctrine: `_shared-memory/knowledge/sanctioned-bypasses-doctrine-2026-05-21.md` (updated 2026-05-23 with this block).
+
 ## Operator hard-canonical 2026-05-21 — AUTHORSHIP = "RKOJ-ELENO"
 
 Operator (verbatim 2026-05-21): *"everything needs to be ours. our branding sinister. our authors: RKOJ-ELENO is our author name for everything we do on all projects. update memory on that"*.
