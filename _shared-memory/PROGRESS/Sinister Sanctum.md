@@ -4,6 +4,47 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-23 03:15 — jcode-parity audit + cross-agent [ASK] to RKOJ for matrix flips
+
+EVE on Sanctum, branch `agent/showmasters/scaffold-and-launch`. Operator directive: *"make sure everything works like our jcode functions, bot network local agents, memory like jcode ALL of it"*. Auto Mode active; /loop self-paced.
+
+### What's ready end-to-end (Sanctum-lane verified)
+
+| Surface | Status |
+|---|---|
+| Launcher v6 (jcode-style banner + 11 projects + G/A/N/Q) | ✅ shipped `bba4231` |
+| MCP servers (23 total) | ✅ 19 resolve via 2 junctions; 4 npx-only |
+| Bot network (13 specialist agents) | ✅ all on disk, deps installed (mcp/faiss/anthropic/numpy) |
+| forge-memory-bridge (jcode parity row 9 — auto-recall) | ✅ installed + importable |
+| memory-graph-render (jcode parity row 12) | ✅ installed |
+| sinister-cli + sinister-login + sinister-usage + sinister-swarm + sinister-model + sinister-diagnose + nano-banana + sanctum-backup + sinister-jcode-shim | ✅ 9 of 9 installed |
+| Forge + Term Python packages | ✅ both importable |
+| Plugins enabled | ✅ 16 total (2 user + 14 Sanctum project) |
+| Permissions | ✅ bypassPermissions + effortLevel xhigh + wildcarded |
+| Ruflo MCP (semantic memory delegation) | ✅ 28+ tool surface visible |
+| CLAUDE.md doctrine reference (OPERATOR-DIRECTIVES.md) | ✅ resolves via junction |
+| Resume-point chain | ✅ written 2026-05-23T023236Z |
+
+### Operator-gated residue (surface-only)
+
+- Restart Claude Code → loads the 12 newly-resolvable MCPs + 14 newly-enabled plugins
+- `pip install -e D:/Sinister Sanctum/tools/sinister-review/` (harness blocked auto-install; 1 of 15 tools)
+- `sinister_apk_mcp` source folder is empty (archived) — either restore source or remove .mcp.json entry
+- `term` Python package resolves to a worktree path (`D:\Sinister-Term-WT\...`) instead of main repo — re-run `pip install -e` from canonical repo to reconcile
+- 20 external-service plugins (slack/notion/asana/etc.) need API tokens — enable per-need via `/plugin enable <name>`
+
+### RKOJ-lane planned-not-shipped (cross-agent [ASK] dropped)
+
+11 jcode parity rows in `jcode-feature-matrix.md` remain 📋 planned and live in RKOJ's lane: animated boot art, mermaid in-TUI panels, plugin hot-reload, F2 RKOJ-workstation toggle, claude-hooks integration, skill discovery, agentgrep, browser-bridge, niri scrollable-tiling, Rust mermaid renderer fork. Some may have shipped since the matrix was last updated (RKOJ moved v1.5.0 → v1.6.84). Cross-agent ASK dropped at `_shared-memory/cross-agent/2026-05-23T0710Z-sanctum-to-rkoj-jcode-parity-verification.md` + mirrored to `_shared-memory/inbox/rkoj/`. RKOJ agent picks up on next inbox-poll; flips matrix in-place.
+
+### What "ready to go" actually means right now
+
+For Sanctum + spawned EVE agents on any project: **fully operational** — agent spawns, hits MCPs, uses bot network, calls memory bridge, walks brain, runs skills. Just restart Claude Code to activate the new junctions + plugins.
+
+For RKOJ.exe (v1.6.84) jcode parity: **substantially complete** — 50 slash commands, session continuity, EVE persona, memory bootstrap, stream-json telemetry, sticky-scroll, slash-autocomplete, fleet badges, cumulative cost pill, /tag /untag /replay /show /diff /summarize /uptime /export-all /forget-last all shipped per brain entries. Remaining 11 rows in matrix are next-iteration polish in RKOJ-lane (operator decides priority via the [ASK]).
+
+---
+
 ## 2026-05-23 03:05 — shipped: MCP path fixes via 2 junctions + 14 dev plugins enabled at Sanctum project level
 
 EVE on Sanctum, branch `agent/showmasters/scaffold-and-launch`. Operator directive (verbatim 2026-05-23): *"fix the mcp paths. fix everything. make sure all agents can use skills that we have anbd has access to all tools and everything works and laid out correctly all that shit"*. Auto Mode active.
