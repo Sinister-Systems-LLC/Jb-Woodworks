@@ -94,37 +94,43 @@ export function CommercialFeature() {
           className="container-site relative z-[2] py-20 sm:py-24"
         >
           <div className="max-w-[640px]">
-            {/* Slim badge with case-study reference */}
-            <div className="inline-flex items-center gap-3 px-4 py-2 bg-ink/55 backdrop-blur-md border border-gold/30 rounded-full mb-7 shadow-[0_2px_30px_-8px_rgba(0,0,0,0.7)]">
-              <span aria-hidden className="block w-1.5 h-1.5 rounded-full bg-gold animate-pulse" />
-              <span className="text-[0.65rem] tracking-[0.32em] uppercase font-bold text-gold">Latest build</span>
-              <span className="w-px h-3 bg-gold/30" aria-hidden />
-              <span className="text-[0.65rem] tracking-[0.18em] uppercase font-semibold text-cream-50">
-                New Balance × Foot Locker
-              </span>
-            </div>
+            {/* Headline with staggered word reveal */}
+            <motion.h2
+              initial={reduced ? false : "hidden"}
+              whileInView="show"
+              viewport={{ once: true, amount: 0.5 }}
+              transition={{ staggerChildren: 0.08 }}
+              className="m-0 mb-6"
+            >
+              <motion.span
+                variants={{ hidden: { opacity: 0, y: 22 }, show: { opacity: 1, y: 0 } }}
+                transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                className="block"
+              >
+                Built for brands.
+              </motion.span>
+              <motion.em
+                variants={{ hidden: { opacity: 0, y: 22 }, show: { opacity: 1, y: 0 } }}
+                transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                className="inline-block"
+              >
+                Same shop, same standard.
+              </motion.em>
+            </motion.h2>
 
-            <span className="section-tag">Commercial Builds</span>
-
-            <h2 className="m-0 mb-5">
-              Beyond the backyard.<br /><em>Brands trust us too.</em>
-            </h2>
-
-            <p className="text-cream-50 text-[1.05rem] leading-[1.8] max-w-[520px] mb-8">
-              Retail displays, branded reveal walls, pop-up environments, restaurant fit-outs.
-              When a brand needs custom wood that has to land on the first day of install — and
-              be photographable on the second — we are the shop on speed dial.
+            <p className="text-cream-50 text-[1.1rem] leading-[1.7] max-w-[440px] mb-9 font-display italic">
+              Retail reveals, pop-ups, brand activations — built to land photographable on day one.
             </p>
 
-            <div className="flex flex-wrap items-center gap-5">
+            <div className="flex flex-wrap items-center gap-6">
               <Link
                 href="/contact?service=commercial"
-                className="btn btn-primary btn-large"
+                className="btn btn-primary btn-large jbw-magnetic"
               >
                 Discuss your project
               </Link>
               <Link
-                href="/portfolio"
+                href="/portfolio?category=commercial-builds"
                 className="link-arrow"
               >
                 See more builds
@@ -133,22 +139,6 @@ export function CommercialFeature() {
                 </svg>
               </Link>
             </div>
-
-            {/* Stat strip - reads as editorial chrome, not bragging */}
-            <ul className="mt-12 grid grid-cols-3 gap-6 max-w-[460px] border-t border-line pt-6">
-              <li>
-                <p className="font-display text-[1.8rem] leading-none text-white tabular-nums">5</p>
-                <p className="text-[0.6rem] tracking-[0.28em] uppercase font-bold text-cream-30 mt-1.5">Cubbies built</p>
-              </li>
-              <li>
-                <p className="font-display text-[1.8rem] leading-none text-white tabular-nums">48h</p>
-                <p className="text-[0.6rem] tracking-[0.28em] uppercase font-bold text-cream-30 mt-1.5">On-site install</p>
-              </li>
-              <li>
-                <p className="font-display text-[1.8rem] leading-none text-white tabular-nums">1<span className="text-gold">/1</span></p>
-                <p className="text-[0.6rem] tracking-[0.28em] uppercase font-bold text-cream-30 mt-1.5">Brand approval</p>
-              </li>
-            </ul>
           </div>
         </motion.div>
       </div>

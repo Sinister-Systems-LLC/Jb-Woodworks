@@ -45,13 +45,21 @@ export function ProcessTimeline() {
 
   return (
     <section className="py-24 sm:py-32 bg-ink relative overflow-hidden">
-      {/* In-theme grain-texture accent (Nano Banana, 2026-05-23). Right-edge fade, very subtle. */}
+      {/* In-theme Nano Banana atmospheric — workshop bench at end-of-day. Subtle
+        right-edge backdrop with multi-stop fade so the timeline text reads clean. */}
       <div
         aria-hidden
-        className="absolute inset-y-0 right-0 w-[45%] pointer-events-none bg-cover bg-center mix-blend-screen"
-        style={{ backgroundImage: "url(/img/generated/grain-texture.png)", opacity: 0.10 }}
+        className="absolute inset-y-0 right-0 w-[55%] pointer-events-none bg-cover bg-center"
+        style={{ backgroundImage: "url(/img/generated/process-bench.png)", opacity: 0.55 }}
       />
-      <div aria-hidden className="absolute inset-y-0 right-0 w-[45%] pointer-events-none" style={{ background: "linear-gradient(90deg, #080808 0%, transparent 30%, transparent 100%)" }} />
+      <div aria-hidden className="absolute inset-y-0 right-0 w-[55%] pointer-events-none" style={{ background: "linear-gradient(90deg, #080808 0%, rgba(8,8,8,0.85) 20%, rgba(8,8,8,0.55) 50%, rgba(8,8,8,0.4) 80%, rgba(8,8,8,0.85) 100%)" }} />
+      <div aria-hidden className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse at 80% 50%, rgba(201,168,76,0.06), transparent 60%)" }} />
+      {/* Light grain texture overlay */}
+      <div
+        aria-hidden
+        className="absolute inset-0 pointer-events-none mix-blend-overlay"
+        style={{ backgroundImage: "url(/img/generated/grain-texture.png)", backgroundSize: "cover", opacity: 0.08 }}
+      />
       <div aria-hidden className="absolute top-10 right-10 w-px h-40 bg-gradient-to-b from-gold-dim to-transparent" />
       <div aria-hidden className="absolute bottom-10 left-10 w-px h-40 bg-gradient-to-t from-gold-dim to-transparent" />
       <div className="container-site relative">

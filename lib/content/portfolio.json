@@ -31,14 +31,14 @@
     "title": "Front Porches",
     "category": "Outdoor Living",
     "blurb": "Single-story and two-story front porch builds with custom column work, painted trim, balcony rails, and matched siding profiles.",
-    "cover": "Front Porch/IMG_1232.jpg",
+    "cover": "Front Porch/IMG_1236.jpg",
     "is_raw_cover": true,
     "media": [
-      {"type": "raw-image", "src": "Front Porch/IMG_1232.jpg"},
+      {"type": "raw-image", "src": "Front Porch/IMG_1236.jpg"},
       {"type": "raw-image", "src": "Front Porch/IMG_1234.jpg"},
+      {"type": "raw-image", "src": "Front Porch/IMG_1232.jpg"},
       {"type": "raw-image", "src": "Front Porch/IMG_1220.jpg"},
-      {"type": "raw-image", "src": "Front Porch/IMG_1230.jpg"},
-      {"type": "raw-image", "src": "Front Porch/IMG_1236.jpg"}
+      {"type": "raw-image", "src": "Front Porch/IMG_1230.jpg"}
     ]
   },
   {
@@ -46,7 +46,8 @@
     "title": "Pergola",
     "category": "Outdoor Living",
     "blurb": "Elegant pergolas providing the perfect balance of shade and outdoor comfort.",
-    "cover": "Pergola/IMG_0047.jpg",
+    "cover": "Pergola/IMG_0037.jpg",
+    "is_raw_cover": true,
     "media": [
       {"type": "video", "src": "Pergola/IMG_0047.mp4", "poster": "Pergola/IMG_0047.jpg"},
       {"type": "video", "src": "Pergola/IMG_0050.mp4", "poster": "Pergola/IMG_0050.jpg"},
@@ -62,13 +63,25 @@
     "title": "Boat Docks",
     "category": "Docks",
     "blurb": "Custom designed and built boat docks for durable waterfront living and easy access.",
-    "cover": "Boat Dock/IMG_1605.jpg",
+    "cover": "Boat Dock/IMG_1577.jpg",
+    "is_raw_cover": true,
     "media": [
       {"type": "video", "src": "Boat Dock/IMG_1605.mp4", "poster": "Boat Dock/IMG_1605.jpg"},
       {"type": "video", "src": "Boat Dock/IMG_1577.mp4", "poster": "Boat Dock/IMG_1577.jpg"},
       {"type": "raw-image", "src": "Boat Dock/IMG_1578_00.jpg"},
       {"type": "raw-image", "src": "Boat Dock/IMG_1586.jpg"},
       {"type": "raw-image", "src": "Boat Dock/IMG_1600.jpg"}
+    ]
+  },
+  {
+    "slug": "stained-mahogany-deck",
+    "title": "Stained Mahogany Deck",
+    "category": "Decks",
+    "blurb": "Low-platform stained deck with a clean radius corner — modern minimal design, hardwood finish, integrated step-down.",
+    "cover": "Deck/IMG_1649.jpg",
+    "is_raw_cover": true,
+    "media": [
+      {"type": "raw-image", "src": "Deck/IMG_1649.jpg"}
     ]
   },
   {
@@ -109,17 +122,6 @@
       {"type": "raw-image", "src": "Custom Furniture/IMG_1250_00.jpg"},
       {"type": "raw-image", "src": "Custom Furniture/IMG_1251_00.jpg"},
       {"type": "raw-image", "src": "Custom Furniture/IMG_1252_00.jpg"}
-    ]
-  },
-  {
-    "slug": "stained-mahogany-deck",
-    "title": "Stained Mahogany Deck",
-    "category": "Decks",
-    "blurb": "Low-platform stained deck with a clean radius corner — modern minimal design, hardwood finish, integrated step-down.",
-    "cover": "Deck/IMG_1649.jpg",
-    "is_raw_cover": true,
-    "media": [
-      {"type": "raw-image", "src": "Deck/IMG_1649.jpg"}
     ]
   },
   {

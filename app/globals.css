@@ -132,3 +132,86 @@
   100% { box-shadow: 0 0 0 16px rgba(201,168,76,0); }
 }
 .jbw-pulse-ring { animation: jbw-pulse-ring 2.2s ease-out infinite; }
+
+/* Site-wide film grain — anchored as a fixed-position overlay so it does not
+ * scroll. Very subtle (3-5% opacity). Adds an editorial print feel. */
+.jbw-grain-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  mix-blend-mode: overlay;
+  opacity: 0.05;
+  background-image: url(/img/generated/grain-texture.png);
+  background-size: 400px 400px;
+  background-repeat: repeat;
+}
+
+/* Section-level grain stamp (heavier than the site-wide overlay) */
+.jbw-grain-section {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  opacity: 0.12;
+  background-image: url(/img/generated/grain-texture.png);
+  background-size: cover;
+}
+
+/* Magnetic CTA wrapper — applies a subtle skew + pulse on hover for primary
+ * buttons. Pair with a JS magnetic-pointer wrapper for full effect. */
+.jbw-magnetic {
+  transition: transform 380ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+.jbw-magnetic:hover {
+  transform: translateY(-3px) scale(1.015);
+}
+
+/* Editorial gold rule with shimmer (reusable inline rail) */
+.jbw-rule-shimmer-inline {
+  position: relative;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201,168,76,0.55), transparent);
+  overflow: hidden;
+}
+.jbw-rule-shimmer-inline::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, #e2c47a, transparent);
+  width: 40%;
+  animation: jbw-rule-shimmer 3.4s ease-in-out infinite;
+}
+
+/* Scroll-down chevron hint */
+@keyframes jbw-scroll-bob {
+  0%, 100% { transform: translateY(0);     opacity: 0.55; }
+  50%      { transform: translateY(8px);   opacity: 1; }
+}
+.jbw-scroll-bob { animation: jbw-scroll-bob 2.4s ease-in-out infinite; }
+
+/* Drift up + fade-in for revealed elements (used by Reveal component) */
+@keyframes jbw-drift-up {
+  0%   { opacity: 0; transform: translateY(28px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Background hue cycle — used by atmospheric corners for living color */
+@keyframes jbw-bg-hue {
+  0%   { filter: hue-rotate(0deg);   }
+  50%  { filter: hue-rotate(-6deg);  }
+  100% { filter: hue-rotate(0deg);   }
+}
+.jbw-bg-hue { animation: jbw-bg-hue 22s ease-in-out infinite; }
+
+/* Editorial blockquote — used for testimonials when they land */
+.jbw-blockquote {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(1.4rem, 2.4vw, 2rem);
+  line-height: 1.4;
+  color: #fff;
+  border-left: 2px solid #c9a84c;
+  padding-left: 1.4rem;
+}

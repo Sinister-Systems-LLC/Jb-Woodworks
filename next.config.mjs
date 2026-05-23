@@ -14,7 +14,8 @@ const nextConfig = {
     root: __dirname
   },
   images: {
-    formats: ["image/avif", "image/webp"]
+    formats: ["image/avif", "image/webp"],
+    qualities: [60, 75, 85, 88, 90, 92]
   },
   async headers() {
     return [

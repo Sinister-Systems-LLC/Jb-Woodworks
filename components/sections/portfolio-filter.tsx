@@ -94,7 +94,7 @@ export function PortfolioFilter({
 
       <motion.div
         layout
-        className="grid gap-6 [grid-template-columns:repeat(auto-fit,minmax(320px,1fr))]"
+        className="grid gap-6 justify-center [grid-template-columns:repeat(auto-fill,minmax(320px,420px))]"
       >
         <AnimatePresence mode="popLayout">
           {visible.map((item, i) => (
