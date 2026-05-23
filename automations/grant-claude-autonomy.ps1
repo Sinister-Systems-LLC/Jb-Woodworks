@@ -182,7 +182,11 @@ $summary['Step3_Secrets'] = "$secretsSet/$($secrets.Count) set"
 # `claude mcp list`. Falls back to .mcp.json grep if `claude` CLI not on PATH.
 # ---------------------------------------------------------------------------
 Write-Step 4 'MCP servers (claude mcp list; never edit ~/.claude/.mcp.json)'
-$mcpKey = @('ruflo','vault','sinister-bus')
+# Extended 2026-05-23 iter 4: validate all 12 bot MCPs (sentinel/translator/watcher/auditor/
+# sinister-bus/custodian/stealth-browser/triage/librarian/researcher/scribe/curator) plus
+# ruflo + vault. Was 3 keys; now 14. Reports per-key Connected vs registered vs missing.
+$mcpKey = @('ruflo','vault','sinister-bus','sentinel','translator','watcher','auditor',
+            'custodian','stealth-browser','triage','librarian','researcher','scribe','curator')
 $mcpFound = @()
 $claudeCmd = Get-Command claude -ErrorAction SilentlyContinue
 if ($claudeCmd) {
