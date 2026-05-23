@@ -38,7 +38,7 @@ from typing import IO
 
 # v0.1.0 — inlined (was `from . import __version__`) so PyInstaller's
 # top-level-script entry works without a parent package.
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 
 # v0.2.0 — default to Opus 4.7 per operator directive. Can override with
 # --model or /model in the REPL. Aliases: opus / haiku / sonnet / haiku-fast.
@@ -55,6 +55,9 @@ _SANCTUM_ROOT = Path(os.environ.get("SINISTER_SANCTUM", r"D:\Sinister Sanctum"))
 try:
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    # v0.3.0 — also reconfigure stdin so piped UTF-16 / BOM input
+    # doesn't break slash command intercepts.
+    sys.stdin.reconfigure(encoding="utf-8", errors="replace")
 except Exception:
     pass
 _ENABLE_COLOR = sys.stdout.isatty() and os.environ.get("NO_COLOR") is None
@@ -86,6 +89,52 @@ GRAY = lambda s: _c("38;2;140;140;145", s)          # noqa: E731 — tool result
 RED = lambda s: _c("31", s)                         # noqa: E731 — errors
 YELLOW = lambda s: _c("33", s)                      # noqa: E731 — warnings
 GREEN = lambda s: _c("32", s)                       # noqa: E731 — providers
+BLUE = lambda s: _c("38;2;100;160;255", s)          # noqa: E731 — status lines
+
+
+# ── jcode-style spinner: 10-frame braille cycling at 10Hz ─────────────
+class Spinner:
+    """v0.3.0 — background thread spins a braille frame with a label
+    while a turn is in-flight. Cleared on first text_delta or stop()."""
+    FRAMES = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
+
+    def __init__(self) -> None:
+        self._stop = threading.Event()
+        self._t: threading.Thread | None = None
+        self._label = "thinking"
+
+    def start(self, label: str = "thinking") -> None:
+        if self._t is not None:
+            return
+        self._label = label
+        self._stop.clear()
+        self._t = threading.Thread(target=self._run, daemon=True)
+        self._t.start()
+
+    def set_label(self, label: str) -> None:
+        self._label = label
+
+    def _run(self) -> None:
+        i = 0
+        while not self._stop.is_set():
+            if _ENABLE_COLOR:
+                sys.stdout.write(
+                    "\r" + PURPLE_BOLD(self.FRAMES[i % len(self.FRAMES)])
+                    + "  " + DIM(self._label) + "    \x1b[K"
+                )
+                sys.stdout.flush()
+            i += 1
+            time.sleep(0.1)
+
+    def stop(self) -> None:
+        if self._t is None:
+            return
+        self._stop.set()
+        self._t.join(timeout=0.5)
+        if _ENABLE_COLOR:
+            sys.stdout.write("\r" + " " * 80 + "\r")
+            sys.stdout.flush()
+        self._t = None
 
 
 # ── EVE persona prelude ────────────────────────────────────────────────
@@ -111,19 +160,14 @@ _SANDBOX_FLAGS = [
     "D:/sinister-vault/              (1 TB collaborative auth store)",
 ]
 
-# v0.2.0 — EVE skull mascot (parity with RKOJ's mascot.svg, ASCII).
+# v0.3.0 — slimmer mascot (operator wanted "clean this up a little").
+# Half the height, tighter chrome.
 _EVE_MASCOT = r"""
-                    ╔══════╗
-                    ║ ◣◣◣◣ ║
-                    ║ ▓  ▓ ║
-                    ║▒▒▒▒▒▒║
-                    ║  ▽▽  ║
-                    ╚══════╝
-                       ║║
-                       ║║
-                   ╔═══╩╩═══╗
-                   ║  EVE   ║
-                   ╚════════╝
+     ◣◣◣◣
+    ║▓  ▓║
+    ║▒▒▒▒║
+    ║ ▽▽ ║  EVE
+     ════
 """
 
 
@@ -136,6 +180,7 @@ Slash commands (sinister-eve REPL):
   /model <alias>       switch model (opus / haiku / sonnet / claude-opus-4-7)
   /memory <query>      BM25 recall via forge-memory-bridge (if installed)
   /sandbox             show active permission-skip flags
+  /swarm <task>        fan one task across N parallel personas (research/code/test)
   /skills              list installed skills (parses YAML frontmatter)
   /skill <name>        load a skill file as the next turn
   /clear               clear terminal scrollback
@@ -222,7 +267,7 @@ def _scan_resume_points() -> list[dict]:
 
 # ── Stream renderer (NDJSON from claude --output-format stream-json) ───
 class StreamRenderer:
-    def __init__(self) -> None:
+    def __init__(self, spinner: Spinner | None = None) -> None:
         self._buf = ""
         self.total_cost = 0.0
         self.total_in = 0
@@ -231,6 +276,8 @@ class StreamRenderer:
         self.tools_run: list[str] = []
         self._reply_started = False
         self._token_warning_shown = False
+        # v0.3.0 — spinner reference so we can stop it on first text
+        self._spinner = spinner
 
     def feed(self, chunk: str) -> None:
         self._buf += chunk
@@ -245,28 +292,42 @@ class StreamRenderer:
                 continue
             self._handle(ev)
 
+    def _emit_text(self, text: str) -> None:
+        """v0.3.0 — single text-output path: stops the spinner, prints
+        the EVE header on first emission, appends to buf, flushes."""
+        if not text:
+            return
+        if self._spinner is not None:
+            self._spinner.stop()
+        if not self._reply_started:
+            sys.stdout.write("\n" + PURPLE_BOLD("● EVE  "))
+            self._reply_started = True
+        self.reply_text_buf.append(text)
+        sys.stdout.write(text)
+        sys.stdout.flush()
+
     def _handle(self, ev: dict) -> None:
         t = ev.get("type")
-        if t == "content_block_delta":
+        if t == "system":
+            # v0.3.0 — jcode-style status lines on init/status sub-events.
+            sub = ev.get("subtype") or ""
+            if self._spinner and sub:
+                self._spinner.set_label(f"system: {sub}")
+        elif t == "content_block_delta":
             delta = ev.get("delta", {})
             dt = delta.get("type")
             if dt == "text_delta":
-                if not self._reply_started:
-                    print(PURPLE_BOLD("\n● EVE  "), end="", flush=True)
-                    self._reply_started = True
-                text = delta.get("text", "")
-                self.reply_text_buf.append(text)
-                sys.stdout.write(text)
-                sys.stdout.flush()
+                self._emit_text(delta.get("text", ""))
             elif dt == "thinking_delta":
                 think = delta.get("thinking", "")
-                if think:
-                    head = think.replace("\n", " ")[:80]
-                    sys.stdout.write("\r" + CYAN(f"💭 {head}") + "\x1b[K")
-                    sys.stdout.flush()
+                if think and self._spinner is not None:
+                    head = think.replace("\n", " ")[:60]
+                    self._spinner.set_label(f"💭 {head}")
         elif t == "content_block_start":
             block = ev.get("content_block", {})
             if block.get("type") == "tool_use":
+                if self._spinner is not None:
+                    self._spinner.stop()
                 name = block.get("name", "?")
                 self.tools_run.append(name)
                 print(GOLD_BOLD(f"\n● {name}"), end="", flush=True)
@@ -276,6 +337,27 @@ class StreamRenderer:
                     print(GRAY(f"  {preview}"), flush=True)
                 else:
                     print(flush=True)
+            elif block.get("type") == "text":
+                # v0.3.0 fix — some claude responses emit full text inline
+                # without delta streaming. Render the seed text here.
+                seed = block.get("text", "")
+                if seed:
+                    self._emit_text(seed)
+        elif t == "assistant":
+            # v0.3.0 CRITICAL FIX — when text_delta events don't fire
+            # (or get coalesced), the full reply still arrives wrapped
+            # in an `assistant` event with content blocks. Render any
+            # text blocks that we haven't already streamed.
+            msg = ev.get("message", {})
+            for blk in msg.get("content", []) or []:
+                if blk.get("type") == "text":
+                    full = blk.get("text", "")
+                    streamed = "".join(self.reply_text_buf)
+                    # Print only the tail that hasn't been streamed yet.
+                    if full and full != streamed and not streamed:
+                        self._emit_text(full)
+                    elif full and full != streamed and streamed and full.startswith(streamed):
+                        self._emit_text(full[len(streamed):])
         elif t == "user":
             msg = ev.get("message", {})
             content = msg.get("content", [])
@@ -289,6 +371,8 @@ class StreamRenderer:
                         preview = raw_s.replace("\n", " ")[:80]
                         print(GRAY(f"  ✓ {preview}"))
         elif t == "result":
+            if self._spinner is not None:
+                self._spinner.stop()
             usage = ev.get("usage", {})
             in_tok = usage.get("input_tokens", 0) or 0
             out_tok = usage.get("output_tokens", 0) or 0
@@ -306,7 +390,16 @@ class StreamRenderer:
                 f"\n  ▸ {in_tok:,} in + {out_tok:,} out tokens "
                 f"(cache_read={cache_read:,}) · ${cost:.4f} · {dur:.1f}s{tools_note}"
             ))
+            # v0.3.0 — jcode-style inline context / usage popup
             combined = self.total_in + self.total_out
+            context_pct = (combined / 200_000) * 100
+            bar_w = 20
+            filled = min(bar_w, int(bar_w * combined / 200_000))
+            bar = "█" * filled + "░" * (bar_w - filled)
+            print(DIM(
+                f"  ▸ context: {bar} {combined:,} / 200,000 "
+                f"({context_pct:.1f}%) · session: ${self.total_cost:.4f}"
+            ))
             if not self._token_warning_shown and combined >= _TOKEN_WARN_THRESHOLD:
                 self._token_warning_shown = True
                 print(YELLOW(
@@ -324,8 +417,11 @@ class StreamRenderer:
 def _spawn_turn(claude: str, session_uuid: str, first_turn: bool,
                 text: str, model: str | None,
                 renderer: StreamRenderer,
-                persona_extra: str = "") -> int:
-    """Spawn one claude turn, stream stdout into renderer, return exit code."""
+                persona_extra: str = "",
+                spinner: Spinner | None = None) -> int:
+    """Spawn one claude turn, stream stdout into renderer, return exit code.
+    v0.3.0 — accepts optional Spinner; starts before claude, stops on
+    first text or completion."""
     args = [
         claude,
         "--dangerously-skip-permissions",  # sanctioned bypass
@@ -346,6 +442,8 @@ def _spawn_turn(claude: str, session_uuid: str, first_turn: bool,
         ]
     else:
         args += ["--resume", session_uuid, "-p", text]
+    if spinner is not None:
+        spinner.start("connecting to claude")
     proc = subprocess.Popen(
         args,
         stdin=subprocess.DEVNULL,
@@ -356,6 +454,8 @@ def _spawn_turn(claude: str, session_uuid: str, first_turn: bool,
         encoding="utf-8",
         errors="replace",
     )
+    if spinner is not None:
+        spinner.set_label("thinking")
     stderr_buf: list[str] = []
     def _drain_stderr(fh: IO[str]) -> None:
         for line in fh:
@@ -367,10 +467,14 @@ def _spawn_turn(claude: str, session_uuid: str, first_turn: bool,
         for line in proc.stdout:
             renderer.feed(line)
     except KeyboardInterrupt:
+        if spinner is not None:
+            spinner.stop()
         print(RED("\n[/cancel] killed by Ctrl+C"))
         proc.kill()
         proc.wait(timeout=2)
         return 130
+    if spinner is not None:
+        spinner.stop()
     proc.wait()
     t.join(timeout=1)
     benign = ("Warning: no stdin data received", "stream-json events emitted")
@@ -378,6 +482,62 @@ def _spawn_turn(claude: str, session_uuid: str, first_turn: bool,
         if line.strip() and not any(b in line for b in benign):
             print(RED(f"  [stderr] {line}"))
     return proc.returncode or 0
+
+
+# ── Memory always-on (jcode parity) ────────────────────────────────────
+def _load_brain_summary() -> str:
+    """v0.3.0 — read _shared-memory/knowledge/_INDEX.md and extract the
+    top doctrine slugs as a compact persona-prelude summary. Always-on
+    memory: every first turn gets the brain index injected, so EVE has
+    'has access to these doctrines:' context without per-turn cost."""
+    idx = _SANCTUM_ROOT / "_shared-memory" / "knowledge" / "_INDEX.md"
+    if not idx.exists():
+        return ""
+    try:
+        lines = idx.read_text(encoding="utf-8", errors="ignore").split("\n")
+    except Exception:
+        return ""
+    # Parse rows of the format `| slug | title | status | tags | dates |`
+    slugs: list[str] = []
+    for ln in lines:
+        if ln.startswith("| ") and "|" in ln[2:]:
+            parts = [p.strip() for p in ln.split("|") if p.strip()]
+            if parts and not parts[0].startswith("---") and parts[0] != "Slug":
+                slugs.append(parts[0])
+        if len(slugs) >= 30:
+            break
+    if not slugs:
+        return ""
+    return (
+        "Memory (always-on): you have access to these Sanctum brain "
+        "doctrines (use the Read tool to consult them when relevant):\n  - "
+        + "\n  - ".join(slugs[:30])
+    )
+
+
+# ── Auto-persistent session log ────────────────────────────────────────
+def _autosave_session(session_uuid: str, turns: list[dict],
+                       renderer: StreamRenderer, state: dict) -> None:
+    """v0.3.0 — write the session JSON to _shared-memory/eve-cli-sessions/
+    after every turn. Survives EXE close + crash. Resume via
+    `sinister-eve --resume <uuid>`."""
+    out_dir = _SANCTUM_ROOT / "_shared-memory" / "eve-cli-sessions"
+    try:
+        out_dir.mkdir(parents=True, exist_ok=True)
+        fp = out_dir / f"{session_uuid}.json"
+        fp.write_text(json.dumps({
+            "schema": "sinister-eve.cli-session.v1",
+            "session_uuid": session_uuid,
+            "model": state.get("model"),
+            "project": state.get("project"),
+            "turns": turns,
+            "total_cost_usd": renderer.total_cost,
+            "total_in_tokens": renderer.total_in,
+            "total_out_tokens": renderer.total_out,
+            "saved_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        }, indent=2), encoding="utf-8")
+    except Exception:
+        pass  # silent — operator can /save manually if needed
 
 
 # ── jcode-style centered startup banner ────────────────────────────────
@@ -427,13 +587,21 @@ def _print_banner(session_uuid: str, model: str, project: dict | None) -> None:
     else:
         mcp_str = "(none)"
     lines.append(("mcp:", PURPLE(mcp_str)))
+    # v0.3.0 — memory + persistence rows
+    brain_dir = _SANCTUM_ROOT / "_shared-memory" / "knowledge"
+    if brain_dir.exists():
+        n_brain = len(list(brain_dir.glob("*.md")))
+        lines.append(("memory:", GREEN(f"always-on · {n_brain} brain doctrines loaded")))
+    else:
+        lines.append(("memory:", DIM("brain dir not found")))
+    lines.append(("persist:", GREEN(f"_shared-memory/eve-cli-sessions/")))
     # Right-align labels (jcode uses colon-aligned columns)
     label_w = max(len(lbl) for lbl, _ in lines)
     for lbl, val in lines:
         composed = f"{lbl.rjust(label_w)} {val}"
         print(_center(composed, w))
     print()
-    print(_center(DIM("/help for slash commands · /quit or Ctrl+D to exit"), w))
+    print(_center(DIM("/help · /swarm · /memory · /create · /resume · /quit"), w))
     print()
 
 
@@ -669,6 +837,40 @@ def _handle_slash(cmd: str, renderer: StreamRenderer,
         for line in _SANDBOX_FLAGS:
             print(f"  {GREEN('●')} {line}")
         return True
+    if head == "/swarm":
+        # v0.3.0 — fan-out: spawn 3 parallel claude turns under different
+        # persona biases (research/code/test), print each in sequence.
+        # First tries `sinister-swarm` tool if installed; else local fan.
+        if not rest:
+            print("[/swarm] usage: /swarm <task description>")
+            return True
+        # Try the external sinister-swarm tool
+        for cmd in (["sinister-swarm", rest], ["python", "-m", "sinister_swarm", rest]):
+            if cmd[0] != "python" and not shutil.which(cmd[0]):
+                continue
+            try:
+                print(BLUE(f"[/swarm] dispatching to {cmd[0]}…"))
+                r = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
+                if r.stdout:
+                    print(r.stdout.rstrip())
+                if r.returncode == 0:
+                    return True
+                print(YELLOW(f"[/swarm] {cmd[0]} returned exit {r.returncode}"))
+                break
+            except Exception as exc:
+                print(YELLOW(f"[/swarm] {cmd[0]} failed: {exc}"))
+                continue
+        # Local fallback: forward to claude with a 3-persona meta-prompt.
+        return (
+            f"Run the following task three times in parallel personas. "
+            f"Show all three replies sequentially, each prefixed with its "
+            f"persona name.\n\nTask: {rest}\n\n"
+            f"Personas:\n"
+            f"  RESEARCH (gather facts, list options, no implementation)\n"
+            f"  CODE     (implement directly, minimal explanation)\n"
+            f"  TEST     (propose test cases + edge cases for the task)\n"
+            f"Format: `# RESEARCH`, `# CODE`, `# TEST` h1 sections."
+        )
     if head == "/skills":
         roots = [
             _SANCTUM_ROOT / "skills",
@@ -760,8 +962,12 @@ def main(argv: list[str] | None = None) -> int:
     # "Invalid session ID. Must be a valid UUID."
     session_uuid = args.resume or str(uuid.uuid4())
     first_turn = not args.resume
-    renderer = StreamRenderer()
+    # v0.3.0 — spinner + memory always-on + auto-persist
+    spinner = Spinner()
+    renderer = StreamRenderer(spinner=spinner)
     turns: list[dict] = []
+    # v0.3.0 — memory always-on: load brain index summary into persona
+    brain_summary = _load_brain_summary()
 
     # v0.2.0 — REPL state mutable by slash commands.
     project: dict | None = None
@@ -786,13 +992,17 @@ def main(argv: list[str] | None = None) -> int:
             f"Project resume_dir: {project.get('resume_dir', '?')}. "
             f"Project key for branches: {project.get('key', '?')}. "
         )
+    # v0.3.0 — append the always-on brain summary
+    if brain_summary:
+        persona_extra = (persona_extra + "\n\n" + brain_summary).strip()
 
     if args.prompt:
         # One-shot path
         turns.append({"user": args.prompt, "assistant": ""})
         rc = _spawn_turn(claude, session_uuid, first_turn, args.prompt,
-                         args.model, renderer, persona_extra)
+                         args.model, renderer, persona_extra, spinner=spinner)
         turns[-1]["assistant"] = "".join(renderer.reply_text_buf)
+        _autosave_session(session_uuid, turns, renderer, state)
         print()
         return rc
 
@@ -805,7 +1015,7 @@ def main(argv: list[str] | None = None) -> int:
             session_uuid = state.pop("new_session_uuid")
             first_turn = state.pop("new_first_turn", True)
             persona_extra = state.pop("new_persona_extra", persona_extra)
-            renderer = StreamRenderer()  # fresh cost / token totals
+            renderer = StreamRenderer(spinner=spinner)  # fresh totals
             turns = []
             turn_no = 0
             _print_banner(session_uuid, state.get("model"), state.get("project"))
@@ -816,7 +1026,10 @@ def main(argv: list[str] | None = None) -> int:
         except (EOFError, KeyboardInterrupt):
             print()
             break
-        text = text.strip()
+        # v0.3.0 — strip BOM + zero-width chars that PowerShell pipes can
+        # inject before the first byte, which previously broke slash
+        # intercepts (`/sandbox` getting dispatched to claude as a turn).
+        text = text.strip().lstrip("﻿​").strip()
         if not text:
             continue
 
@@ -833,9 +1046,12 @@ def main(argv: list[str] | None = None) -> int:
         turns.append({"user": text, "assistant": ""})
         renderer.reset_turn()
         _spawn_turn(claude, session_uuid, first_turn, text,
-                    state.get("model"), renderer, persona_extra)
+                    state.get("model"), renderer, persona_extra,
+                    spinner=spinner)
         turns[-1]["assistant"] = "".join(renderer.reply_text_buf)
         first_turn = False
+        # v0.3.0 — auto-save every turn so EXE close / crash doesn't lose work
+        _autosave_session(session_uuid, turns, renderer, state)
         print()
 
     print(DIM(
