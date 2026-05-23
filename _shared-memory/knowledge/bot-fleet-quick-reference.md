@@ -60,8 +60,39 @@ Naming convention: server prefix is the bot folder name with `-` → `_` (FastMC
 - `bots/stealth-browser/server.py` → tools surface as `mcp__stealth_browser__<tool>`
 - single-word slugs are unchanged: `mcp__librarian__search`, `mcp__vault__list`
 
-**Already-loaded in this session (no `ToolSearch` needed):** `mcp__vault__*` (10 tools — see top-of-prompt deferred list).
-**Need restart of Claude Code to fully load all 13:** per OPERATOR-ACTION-QUEUE 🟠 row, restart activates the 12 junction-resolved MCPs.
+### Loading-state reality check (verified 2026-05-23T19:30Z)
+
+This documents what's **actually loadable** in a typical Sanctum-master session vs what's **registered on disk**:
+
+| Bot | In `~/.claude/.mcp.json`? | In `claude mcp list` (Connected)? | `ToolSearch select` works? | Notes |
+|---|---|---|---|---|
+| `vault` | ✓ user-scope | ✓ Connected | ✓ (10 tools loaded) | Fully functional now |
+| `ruflo` | ✓ user-scope | ✓ Connected | ✓ (many tools loaded) | Fully functional now |
+| `sentinel` | ✓ registered | ✗ NOT active | ✗ schemas not in deferred list | Needs Claude restart |
+| `librarian` | ✓ registered | ✗ NOT active | ✗ schemas not in deferred list | Needs Claude restart |
+| `sinister-bus` | ✓ registered | ✗ NOT active | ✗ schemas not in deferred list | Needs Claude restart |
+| `translator` | ✓ registered | ✗ NOT active | ✗ schemas not in deferred list | Needs Claude restart |
+| `watcher` | ✓ registered | ✗ NOT active | ✗ schemas not in deferred list | Needs Claude restart |
+| `auditor` | ✓ registered | ✗ NOT active | ✗ schemas not in deferred list | Needs Claude restart |
+| `custodian` | ✓ registered | ✗ NOT active | ✗ schemas not in deferred list | Needs Claude restart |
+| `triage` | ✓ registered | ✗ NOT active | ✗ schemas not in deferred list | Needs Claude restart |
+| `researcher` | ✓ registered | ✗ NOT active | ✗ schemas not in deferred list | Needs Claude restart |
+| `scribe` | ✓ registered | ✗ NOT active | ✗ schemas not in deferred list | Needs Claude restart |
+| `curator` | ✓ registered | ✗ NOT active | ✗ schemas not in deferred list | Needs Claude restart |
+| `stealth-browser` | ✓ registered | ✗ NOT active | ✗ schemas not in deferred list | Needs Claude restart |
+
+**Action required to unlock the full fleet in a session:** Restart Claude Code (per OPERATOR-ACTION-QUEUE 🔴 row). The 12 bot MCPs are registered in `~/.claude/.mcp.json` but only load on cold-start.
+
+**Filesystem fallback (works in ANY session, no MCP needed):** every bot has a Python module. Direct-import path:
+
+```python
+# Example: librarian-equivalent without the MCP wrapper
+import sys; sys.path.insert(0, r"D:\Sinister\Sinister Skills\12_LLM_ORCHESTRATION\agents\librarian")
+import server  # the FastMCP server module
+result = server.search(query="forge memory", top_k=5)
+```
+
+Same for any other bot — the `@mcp.tool()` decorated functions are also normal Python callables.
 
 ---
 

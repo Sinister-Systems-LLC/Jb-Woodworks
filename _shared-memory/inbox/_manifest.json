@@ -1,11 +1,11 @@
-﻿{
+{
     "schema_version":  "sinister.inbox-manifest.v1",
-    "ts_utc":  "2026-05-23T16:16:54Z",
+    "ts_utc":  "2026-05-23T17:32:29Z",
     "per_lane":  {
                      "bumble-emu":  1,
                      "forge":  7,
                      "jb-woodworks":  3,
-                     "kernel-apk":  8,
+                     "kernel-apk":  10,
                      "panel":  1,
                      "rkoj":  2,
                      "rkoj-workstation":  1,
@@ -37,5 +37,5 @@
                      "snap-emu":  3,
                      "tiktok-emu":  1
                  },
-    "total_unread":  59
+    "total_unread":  61
 }

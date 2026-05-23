@@ -136,13 +136,16 @@ if (Test-Path $rpDir) {
 $rollup.resume_point_chain = $resumeStats
 
 # --- Write output ---
+# PowerShell 5.1's `Set-Content -Encoding UTF8` writes a BOM that breaks strict
+# JSON parsers (Python json.load, jq). Use .NET UTF8Encoding($false) for BOM-free.
 $date = (Get-Date).ToUniversalTime().ToString("yyyy-MM-dd")
 $outPath = Join-Path $telemetryDir "daily-$date.json"
-$rollup | ConvertTo-Json -Depth 6 | Set-Content -Path $outPath -Encoding UTF8
+$jsonText = $rollup | ConvertTo-Json -Depth 6
+[System.IO.File]::WriteAllText($outPath, $jsonText, [System.Text.UTF8Encoding]::new($false))
 
 # Also write/update _latest.json symlink-equivalent for dashboard
 $latestPath = Join-Path $telemetryDir "_latest.json"
-$rollup | ConvertTo-Json -Depth 6 | Set-Content -Path $latestPath -Encoding UTF8
+[System.IO.File]::WriteAllText($latestPath, $jsonText, [System.Text.UTF8Encoding]::new($false))
 
 Write-Host "[telemetry-rollup] wrote $outPath"
 Write-Host "[telemetry-rollup] also: $latestPath (for dashboard)"

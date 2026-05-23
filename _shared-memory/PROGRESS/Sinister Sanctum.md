@@ -4,6 +4,68 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-23 20:00Z — /loop iteration 3 — TEST + FIX + EXPAND (4 bugs found + fixed; C.6 shipped)
+
+EVE on Sanctum continued dynamic /loop with stronger test-first focus per operator directive *"keep working to complete everything. test everything and fix all findings"*. 4 real bugs found via smoke-testing prior turns' work; all 4 fixed end-to-end.
+
+**TEST findings (4 real bugs caught + fixed this iteration):**
+
+1. **`telemetry/_latest.json` had UTF-8 BOM** — Python's `json.load()` choked. `Set-Content -Encoding UTF8` in PowerShell 5.1 writes a BOM. Fix: switched to `[System.IO.File]::WriteAllText` with `[System.Text.UTF8Encoding]::new($false)` for BOM-free output. Verified: `python -m json.load` now parses cleanly.
+2. **`inbox/_manifest.json` had same BOM issue** — same root cause. Same fix applied. Verified: parses + top-3 lanes correct (`sinister-panel: 15, kernel-apk: 10, sinister-term: 9`).
+3. **Bot-fleet-quick-reference OVERSTATED loading state** — doc said "deferred via `ToolSearch select`" but verifying via `claude mcp list` showed only `ruflo + vault` Connected; the other 11 bot servers are registered in `~/.claude/.mcp.json` but NOT active in this session (require Claude Code restart). Fix: added 14-row "Loading-state reality check" table to the doc + filesystem fallback example (`sys.path.insert + import server`).
+4. **PowerShell 5.1 + UTF-8 no-BOM + em-dash (`—`)/arrow (`→`) = parser fail** — confirmed twice this iteration. Encountered in `brain-index-orphan-check.ps1` + `cross-lane-impact-diff.ps1`. Workaround: ASCII-only in `.ps1` files unless explicitly saved with BOM.
+
+**FIX deliverables shipped:**
+
+- **EDIT** `automations/inbox-manifest-build.ps1` — BOM-free JSON write
+- **EDIT** `automations/telemetry-rollup.ps1` — BOM-free JSON write (both daily-<UTC>.json + _latest.json)
+- **EDIT** `automations/grant-claude-autonomy.ps1` Step 4 — switched from grepping `~/.claude/.mcp.json` to calling `claude mcp list` (the authoritative source). Smoke-tested: now reports `2/3` (ruflo Connected + vault Connected + sinister-bus NOT registered) instead of buggy `1/3`. Falls back to `.mcp.json` grep when `claude` CLI is unavailable.
+- **EDIT** `_shared-memory/knowledge/bot-fleet-quick-reference.md` — 14-row loading-state reality check table + filesystem fallback example
+- **EDIT** `_shared-memory/knowledge/_INDEX.md` — removed 9 missing-file rows (adb-containerization, panel-autonomy-daemon-15min, panel-bat14-findstr-crlf-gotcha, panel-doctrine-audit-5-counter, panel-heartbeat-500-schema-drift, panel-master-self-execute-ssh-deploy, panel-one-click-deploy-bat, rka-panel-integration-2026-05-19, screenshot-batch-triage-pattern). Verified: brain-index-orphan-check now reports `missing_file_count: 0`.
+
+**EXPAND deliverable shipped:**
+
+- **NEW** `automations/cross-lane-impact-diff.ps1` (C.6 of master plan) — when commits touch shared/canonical files (15 paths: `projects.json`, `CLAUDE.md`, `.claude/settings*.json`, `.gitignore`, `_INDEX.md`, `OPERATOR-ACTION-QUEUE.md`, `DIRECTIVES.md`, `WORK-TOWARD.md`, `WORKSTATION.md`, `00-RULES.md`, `canonical-protections-check.ps1`, `start-sinister-session.ps1`, `grant-claude-autonomy.ps1`, `agent-prefs.json`), emit a broadcast to `_shared-memory/cross-agent/<UTC>-<from>-canonical-impact.md` so sibling lanes see the change before `git pull`. Three trigger modes: manual (`-Range HEAD~1..HEAD`) / post-commit hook (`-Hook`) / dry-run (`-DryRun`). Smoke-tested: dry-run on HEAD~1..HEAD produced clean broadcast covering 3 impacted canonical files (OPERATOR-ACTION-QUEUE + _INDEX.md + start-sinister-session.ps1) with full diff preview + recommended-action checklist.
+
+**Smoke test results (no-bullshit doctrine compliance — every claim has evidence):**
+
+- Python JSON parse PASS on `_latest.json` (`brain.orphans=28 lanes=37`) + `_manifest.json` (`total=61`)
+- `grant-autonomy -ReadOnly` Step 4 output captured: `[OK] ruflo Connected / [OK] vault Connected / [WARN] sinister-bus NOT registered in claude mcp list`
+- `brain-index-orphan-check.ps1` reports `missing_file_count: 0` after cleanup (was 9)
+- `cross-lane-impact-diff.ps1 -DryRun` produces well-formed markdown with diff block (verified by inspection)
+
+**Composes with:**
+
+- `bot-fleet-quick-reference-2026-05-23` (now accurate about loading state)
+- `pip-editable-hides-mcp-cwd-emptiness-2026-05-23` (sibling doctrine on MCP audit traps)
+- `no-bullshit-tested-before-claimed-doctrine-2026-05-23` (this iteration is the doctrine in action — test, find bugs, fix)
+- `multi-agent-branch-contention-isolation-pattern` (cross-lane-impact-diff helps siblings react to canonical changes before pull)
+- `do-not-revert-operator-canonical-protections-2026-05-23` (cross-lane-impact-diff watches the same canonical files this doctrine protects)
+
+**Files touched this iteration (sanctum-lane only):**
+
+- EDIT: `automations/inbox-manifest-build.ps1`
+- EDIT: `automations/telemetry-rollup.ps1`
+- EDIT: `automations/grant-claude-autonomy.ps1`
+- NEW: `automations/cross-lane-impact-diff.ps1`
+- EDIT: `_shared-memory/knowledge/_INDEX.md` (9 stale rows removed)
+- EDIT: `_shared-memory/knowledge/bot-fleet-quick-reference.md` (loading-state table added)
+- REGENERATED: `_shared-memory/telemetry/_latest.json` + `daily-2026-05-23.json` (BOM-free)
+- REGENERATED: `_shared-memory/inbox/_manifest.json` (BOM-free)
+- EDIT: `_shared-memory/PROGRESS/Sinister Sanctum.md` (this entry)
+
+**Brain doctrine count after this iteration:** 143 on-disk / 115 indexed (after removing 9 stale rows) / 28 orphans / status APPROACHING (143/150 ceiling). Per Rule 7.5: NOT adding new doctrine entries this iteration (still under ceiling but rising).
+
+**Next iteration plan (master-actionable):**
+
+- Wire `cross-lane-impact-diff.ps1` into the auto-push daemon as a post-commit hook (so it fires automatically when canonical changes land)
+- C.2 Per-project canonical-protections P-set (per-lane mini canonical-protections-check)
+- C.4 Auto-restore via reference snapshot
+- Patch grant-autonomy step 4 to ALSO call the 12 bot MCPs check (currently only validates 3 keys: ruflo/vault/sinister-bus)
+- Voice prompting POC once operator picks A/B (still waiting)
+
+---
+
 ## 2026-05-23 19:45Z — Leo-ready ship + tag — 5 parallel agents land launcher hardening for external operator
 
 EVE on Sanctum landed commit `774aac9` and annotated tag `leo-ready-2026-05-23` on `agent/sinister-sanctum/grant-autonomy-followup-2026-05-23` — the snapshot Leo can clone and run `Sinister Start.bat` against without manual fixes.

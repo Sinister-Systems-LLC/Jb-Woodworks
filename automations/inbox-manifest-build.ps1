@@ -45,5 +45,10 @@ $manifest = [ordered]@{
 }
 
 $outPath = Join-Path $inboxRoot "_manifest.json"
-$manifest | ConvertTo-Json -Depth 5 | Set-Content -Path $outPath -Encoding UTF8
+# PowerShell 5.1's `Set-Content -Encoding UTF8` writes a BOM that breaks strict
+# JSON parsers (Python json.load, jq, etc.). Use .NET UTF8Encoding($false) for
+# BOM-free output. Cross-checked: browsers strip BOM in fetch() so dashboard works
+# either way, but CLI tools require no-BOM.
+$jsonText = $manifest | ConvertTo-Json -Depth 5
+[System.IO.File]::WriteAllText($outPath, $jsonText, [System.Text.UTF8Encoding]::new($false))
 Write-Host "[inbox-manifest-build] wrote $outPath (total unread = $total across $($perLane.Count) lanes)"

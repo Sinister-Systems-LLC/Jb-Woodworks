@@ -1,6 +1,6 @@
-﻿{
+{
     "schema_version":  "sinister.telemetry-daily.v1",
-    "ts_utc":  "2026-05-23T17:14:41Z",
+    "ts_utc":  "2026-05-23T17:32:29Z",
     "sanctum_root":  "D:\\Sinister Sanctum",
     "canonical_protections":  {
                                   "source":  "D:\\Sinister Sanctum\\_shared-memory\\canonical-protections-violations.log",
@@ -16,12 +16,12 @@
                                     },
                             "general":  {
                                             "ts_utc":  "2026-05-23T06:58:00Z",
-                                            "age_sec":  37001,
+                                            "age_sec":  38071,
                                             "display":  "General"
                                         },
                             "inventions":  {
                                                "ts_utc":  "2026-05-20T15:00:00Z",
-                                               "age_sec":  267281,
+                                               "age_sec":  268351,
                                                "display":  null
                                            },
                             "jb-woodworks":  {
@@ -30,8 +30,8 @@
                                                  "display":  "Jb Woodworks"
                                              },
                             "kernel-apk":  {
-                                               "ts_utc":  "2026-05-23T17:10:00Z",
-                                               "age_sec":  281,
+                                               "ts_utc":  "2026-05-23T17:25:00Z",
+                                               "age_sec":  451,
                                                "display":  "Sinister Kernel APK"
                                            },
                             "letstext":  {
@@ -46,72 +46,72 @@
                                       },
                             "rkoj-workstation":  {
                                                      "ts_utc":  "2026-05-21T11:09:00Z",
-                                                     "age_sec":  194741,
+                                                     "age_sec":  195812,
                                                      "display":  null
                                                  },
                             "rkoj":  {
                                          "ts_utc":  "2026-05-23T16:37Z",
-                                         "age_sec":  2261,
+                                         "age_sec":  3332,
                                          "display":  "rkoj"
                                      },
                             "sanctum-08a827":  {
                                                    "ts_utc":  "2026-05-22T01:54:37Z",
-                                                   "age_sec":  141604,
+                                                   "age_sec":  142675,
                                                    "display":  "EVE on Sanctum"
                                                },
                             "sanctum-32cd35":  {
                                                    "ts_utc":  "2026-05-23T08:10:12Z",
-                                                   "age_sec":  32669,
+                                                   "age_sec":  33740,
                                                    "display":  "EVE on Sanctum"
                                                },
                             "sanctum-4a9ea7":  {
                                                    "ts_utc":  "2026-05-23T03:07:42Z",
-                                                   "age_sec":  50819,
+                                                   "age_sec":  51890,
                                                    "display":  "EVE on Sanctum"
                                                },
                             "sanctum-6bbeab":  {
                                                    "ts_utc":  "2026-05-22T00:18:01Z",
-                                                   "age_sec":  147400,
+                                                   "age_sec":  148471,
                                                    "display":  "EVE on Sanctum"
                                                },
                             "sanctum-86199a":  {
                                                    "ts_utc":  "2026-05-23T06:59:53Z",
-                                                   "age_sec":  36888,
+                                                   "age_sec":  37959,
                                                    "display":  "EVE on Sanctum"
                                                },
                             "sanctum-b47bc2":  {
                                                    "ts_utc":  "2026-05-23T05:58:17Z",
-                                                   "age_sec":  40584,
+                                                   "age_sec":  41655,
                                                    "display":  "EVE on sanctum"
                                                },
                             "sanctum-bcd819":  {
                                                    "ts_utc":  "2026-05-22T01:41:31Z",
-                                                   "age_sec":  142390,
+                                                   "age_sec":  143461,
                                                    "display":  "EVE on Sanctum"
                                                },
                             "sanctum-cda58a":  {
                                                    "ts_utc":  "2026-05-22T01:44:55Z",
-                                                   "age_sec":  142186,
+                                                   "age_sec":  143257,
                                                    "display":  "EVE on Sanctum"
                                                },
                             "sanctum-d4e3fb":  {
                                                    "ts_utc":  "2026-05-23T05:16:43Z",
-                                                   "age_sec":  43078,
+                                                   "age_sec":  44149,
                                                    "display":  "EVE on Sanctum"
                                                },
                             "sanctum-ec0aee":  {
                                                    "ts_utc":  "2026-05-23T07:47:51Z",
-                                                   "age_sec":  34010,
+                                                   "age_sec":  35081,
                                                    "display":  "EVE on Sanctum"
                                                },
                             "sanctum":  {
                                             "ts_utc":  "2026-05-23T18:15Z",
-                                            "age_sec":  -3619,
+                                            "age_sec":  -2548,
                                             "display":  "Sinister Sanctum"
                                         },
                             "showmasters":  {
-                                                "ts_utc":  "2026-05-23T16:30:00Z",
-                                                "age_sec":  2681,
+                                                "ts_utc":  "2026-05-23T17:15:00Z",
+                                                "age_sec":  1052,
                                                 "display":  "Showmasters"
                                             },
                             "sinister-bumble":  {
@@ -126,7 +126,7 @@
                                               },
                             "sinister-emulator":  {
                                                       "ts_utc":  "2026-05-20T14:38:00Z",
-                                                      "age_sec":  268601,
+                                                      "age_sec":  269672,
                                                       "display":  null
                                                   },
                             "sinister-forge":  {
@@ -136,7 +136,7 @@
                                                },
                             "sinister-freeze":  {
                                                     "ts_utc":  "2026-05-23T13:30:00Z",
-                                                    "age_sec":  13481,
+                                                    "age_sec":  14552,
                                                     "display":  "Sinister Freeze"
                                                 },
                             "sinister-generator":  {
@@ -146,7 +146,7 @@
                                                    },
                             "sinister-panel":  {
                                                    "ts_utc":  "2026-05-23T17:00Z",
-                                                   "age_sec":  881,
+                                                   "age_sec":  1952,
                                                    "display":  "Sinister Panel"
                                                },
                             "sinister-snap-api-quantum":  {
@@ -156,12 +156,12 @@
                                                           },
                             "sinister-term-coaudit":  {
                                                           "ts_utc":  "2026-05-21T12:40:00Z",
-                                                          "age_sec":  189281,
+                                                          "age_sec":  190353,
                                                           "display":  null
                                                       },
                             "sinister-term":  {
                                                   "ts_utc":  "2026-05-23T15:37:35Z",
-                                                  "age_sec":  5826,
+                                                  "age_sec":  6898,
                                                   "display":  null
                                               },
                             "snap-emu":  {
@@ -176,7 +176,7 @@
                                                   },
                             "test":  {
                                          "ts_utc":  "2026-05-20T17:35:00Z",
-                                         "age_sec":  257981,
+                                         "age_sec":  259053,
                                          "display":  null
                                      },
                             "tiktok-emu":  {
@@ -196,27 +196,27 @@
                                        }
                         },
     "operator_queue":  {
-                           "open":  71,
-                           "closed":  40,
+                           "open":  82,
+                           "closed":  44,
                            "critical":  8,
-                           "high":  11,
-                           "medium":  15,
-                           "low":  19
+                           "high":  12,
+                           "medium":  16,
+                           "low":  22
                        },
     "brain_doctrine":  {
-                           "on_disk":  141,
-                           "indexed":  122,
+                           "on_disk":  142,
+                           "indexed":  123,
                            "orphans":  28,
                            "rule_7_5_ceiling":  150,
                            "status":  "APPROACHING"
                        },
     "inbox_unread":  {
-                         "total":  59,
+                         "total":  61,
                          "per_lane":  {
                                           "sinister-tg":  0,
                                           "sinister-rka":  0,
                                           "sinister-tiktok-emu":  0,
-                                          "kernel-apk":  8,
+                                          "kernel-apk":  10,
                                           "rkoj":  2,
                                           "jb-woodworks":  3,
                                           "sinister-forge":  1,
@@ -275,6 +275,7 @@
                          "_TEMPLATE":  0
                      },
     "recent_commits":  [
+                           "2d9baea sanctum: ship B.5 + B.10 + C.13 + B.9 (audit scripts + telemetry + context-cleaner spec)",
                            "80d4f7a sanctum: ship C.10 playbook + B.4 inbox drops + B.7 matrix flip + C.14 status dashboard",
                            "79067ef sanctum: sweep batch 1 - sibling lane work + sterm doctrine + eve-picker tests",
                            "106f94a sanctum: ship B.6 bot-fleet-quick-reference.md (Phase-2 highest-leverage)",
@@ -283,20 +284,19 @@
                            "eece014 ship(seraphim): real Wukong-180 memory-kernel experiment + accurate billing sync",
                            "a1801c3 ship(seraphim): FIRST REAL Wukong-180 QPU submission + full project memory",
                            "53bfdbc sanctum: upgrade memory-deep-audit with verified counts (Rule 7.5 brain-row signal approaching)",
-                           "98dbefe sanctum: upgrade github-skill-review to acceptance-tested (claims verified or corrected)",
-                           "319e754 sanctum: upgrade jcode-vs-sanctum-comparison to acceptance-tested (all 10 citations verified)"
+                           "98dbefe sanctum: upgrade github-skill-review to acceptance-tested (claims verified or corrected)"
                        ],
     "resume_point_chain":  {
                                "EVE on Sanctum":  1,
                                "Jb Woodworks":  10,
                                "Kernel APK":  6,
-                               "RKOJ":  16,
+                               "RKOJ":  17,
                                "RKOJ Workstation":  4,
-                               "Showmasters":  11,
+                               "Showmasters":  12,
                                "Sinister Claw":  0,
                                "Sinister Forge":  4,
                                "Sinister Generator":  4,
-                               "Sinister Kernel APK":  18,
+                               "Sinister Kernel APK":  19,
                                "Sinister Panel":  14,
                                "Sinister Sanctum":  20,
                                "Sinister Term":  4,

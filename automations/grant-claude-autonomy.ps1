@@ -176,29 +176,51 @@ Write-Status "    NOTE: set via [Environment]::SetEnvironmentVariable('NAME','VA
 $summary['Step3_Secrets'] = "$secretsSet/$($secrets.Count) set"
 
 # ---------------------------------------------------------------------------
-# Step 4 -- MCP verify (READ-ONLY; ~/.claude/.mcp.json is operator-owned)
+# Step 4 -- MCP verify (READ-ONLY)
+# Patched 2026-05-23: was grepping `~/.claude/.mcp.json` only, missing user-scope
+# servers added via `claude mcp add -s user`. The authoritative source is
+# `claude mcp list`. Falls back to .mcp.json grep if `claude` CLI not on PATH.
 # ---------------------------------------------------------------------------
-Write-Step 4 'MCP servers registered (read-only; never edit ~/.claude/.mcp.json)'
+Write-Step 4 'MCP servers (claude mcp list; never edit ~/.claude/.mcp.json)'
 $mcpKey = @('ruflo','vault','sinister-bus')
 $mcpFound = @()
-if (Test-Path $UserMcp) {
+$claudeCmd = Get-Command claude -ErrorAction SilentlyContinue
+if ($claudeCmd) {
+    try {
+        $listOutput = & claude mcp list 2>&1 | Out-String
+        Write-Status "    [INFO] claude mcp list returned $((($listOutput -split [Environment]::NewLine).Count)) lines" Cyan
+        foreach ($k in $mcpKey) {
+            if ($listOutput -match "(?im)^$([regex]::Escape($k)):.*Connected") {
+                Write-Status "    [OK]   $k Connected" Green
+                $mcpFound += $k
+            } elseif ($listOutput -match "(?im)^$([regex]::Escape($k)):") {
+                Write-Status "    [WARN] $k registered but NOT Connected" Yellow
+            } else {
+                Write-Status "    [WARN] $k NOT registered in claude mcp list" Yellow
+            }
+        }
+    } catch {
+        Write-Status "    [ERR] claude mcp list failed: $($_.Exception.Message)" Red
+    }
+} elseif (Test-Path $UserMcp) {
+    Write-Status "    [INFO] claude CLI not on PATH; falling back to ~/.claude/.mcp.json grep" Cyan
     try {
         $mcp = Get-Content $UserMcp -Raw -Encoding UTF8 | ConvertFrom-Json
         $registered = @($mcp.mcpServers.PSObject.Properties.Name)
-        Write-Status "    [INFO] $($registered.Count) MCP server(s) registered" Cyan
+        Write-Status "    [INFO] $($registered.Count) MCP server(s) registered in .mcp.json" Cyan
         foreach ($k in $mcpKey) {
             if ($registered -contains $k) {
-                Write-Status "    [OK]   $k present" Green
+                Write-Status "    [OK]   $k present (registration only; Connect status unknown)" Green
                 $mcpFound += $k
             } else {
-                Write-Status "    [WARN] $k NOT registered" Yellow
+                Write-Status "    [WARN] $k NOT in .mcp.json" Yellow
             }
         }
     } catch {
         Write-Status "    [ERR] could not parse ~/.claude/.mcp.json: $($_.Exception.Message)" Red
     }
 } else {
-    Write-Status "    [WARN] ~/.claude/.mcp.json missing" Yellow
+    Write-Status "    [WARN] neither claude CLI nor ~/.claude/.mcp.json available" Yellow
 }
 $summary['Step4_MCP'] = "$($mcpFound.Count)/$($mcpKey.Count) key MCPs"
 
