@@ -155,9 +155,12 @@ SLASH_COMMANDS: list[tuple[str, str]] = [
     ("/todos",    "show the TODO list (pending + done)"),
     ("/done",     "mark TODO #N as done — `/done <N>`"),
     ("/open",     "print shell commands to open agent paths"),
+    ("/open-folder","open this agent's project root in Explorer (no cmd)"),
+    ("/open-resume","open this agent's resume-points folder in Explorer"),
     ("/persona",  "print identity (slug / uuid / paths)"),
     ("/pin",      "pin (or unpin) this card to top of grid"),
     ("/plan",     "toggle plan-only mode (EVE proposes, doesn't edit)"),
+    ("/reset-budget","clear cumulative cost + token tally for this card"),
     ("/ping",     "fan a canned status-check to all (or filtered) cards"),
     ("/rename",   "change the agent display name on this card"),
     ("/replay",   "re-run user turn #N verbatim (1-indexed; see /history)"),
@@ -1793,6 +1796,34 @@ class AgentCard(QFrame):
                 f"  master plan     : start \"\" \"D:\\Sinister Sanctum\\_shared-memory\\MASTER-PLAN.md\"\n"
             )
             return True
+        if head == "/open-folder":
+            # v1.6.77 — silent Explorer popup at project root (no cmd flash).
+            try:
+                from . import state as _state
+                proj_root = None
+                for p in _state.load_projects():
+                    if p.key == self.session.project_key:
+                        proj_root = p.root
+                        break
+                if not proj_root or not Path(proj_root).exists():
+                    proj_root = str(state.SHARED_MEMORY.parent)
+                import os as _os
+                _os.startfile(proj_root)
+                self._append_terminal(f"[/open-folder] opened {proj_root}\n")
+            except Exception as exc:
+                self._append_terminal(f"[/open-folder] failed: {exc}\n")
+            return True
+        if head == "/open-resume":
+            try:
+                target = self.session.resume_dir
+                if not target or not Path(target).exists():
+                    target = str(state.SHARED_MEMORY / "resume-points")
+                import os as _os
+                _os.startfile(target)
+                self._append_terminal(f"[/open-resume] opened {target}\n")
+            except Exception as exc:
+                self._append_terminal(f"[/open-resume] failed: {exc}\n")
+            return True
         if head == "/cancel":
             # v1.6.37 — kill the in-flight turn cleanly without taking down
             # the card. Keeps session_uuid intact so the next message just
@@ -2194,10 +2225,34 @@ class AgentCard(QFrame):
                 )
                 return True
             self.session.mode = alias
+            # v1.6.77 — persist to agent-prefs.json so the operator's
+            # pick survives close → reopen (Sinister Start.bat reads
+            # this file on spawn; we now write to it on /model).
+            try:
+                import json as _json
+                prefs_fp = state.SHARED_MEMORY / "agent-prefs.json"
+                prefs_fp.parent.mkdir(parents=True, exist_ok=True)
+                prefs = {}
+                if prefs_fp.exists():
+                    try:
+                        prefs = _json.loads(prefs_fp.read_text(encoding="utf-8"))
+                    except Exception:
+                        prefs = {}
+                entry = prefs.setdefault(self.session.agent_name, {})
+                # Map mode alias → claude --model arg
+                model_arg = {"claude-haiku": "haiku",
+                             "claude-opus": "opus"}.get(alias)
+                if model_arg:
+                    entry["model"] = model_arg
+                else:
+                    entry.pop("model", None)
+                prefs_fp.write_text(_json.dumps(prefs, indent=2), encoding="utf-8")
+            except Exception:
+                pass
             self._append_terminal(
-                f"[/model] mode → {alias}\n"
-                f"  Will take effect on the NEXT session you spawn "
-                f"(open + Create Agent in the header).\n"
+                f"[/model] mode -> {alias} (persisted to agent-prefs.json)\n"
+                f"  Will take effect on the NEXT session you spawn for this agent\n"
+                f"  (claude --resume locks the model to the session's original).\n"
             )
             return True
         if head == "/devices":
@@ -2716,6 +2771,24 @@ class AgentCard(QFrame):
             self._append_terminal(
                 f"[/pin] {'pinned' if self.session.pinned else 'unpinned'} this card "
                 f"({'★' if self.session.pinned else '☆'})\n"
+            )
+            return True
+        if head == "/reset-budget":
+            old_cost = self._total_cost_usd
+            old_in = self._total_in_tokens
+            old_out = self._total_out_tokens
+            self._total_cost_usd = 0.0
+            self._total_in_tokens = 0
+            self._total_out_tokens = 0
+            self._token_warning_shown = False
+            try:
+                self._cost_pill.setText("$0.0000")
+            except Exception:
+                pass
+            self._append_terminal(
+                f"[/reset-budget] cleared cumulative tally\n"
+                f"  was: ${old_cost:.4f} · {old_in:,} in · {old_out:,} out\n"
+                f"  now: $0.0000 · 0 in · 0 out\n"
             )
             return True
         if head == "/plan":
