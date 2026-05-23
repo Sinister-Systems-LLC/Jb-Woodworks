@@ -1,0 +1,127 @@
+<!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+# Multi-agent git-index contention storm (empirical anchor 2026-05-23)
+
+> **Status:** doctrine, empirical, binding
+> **Origin:** rkoj-lane session 2026-05-23T07:00-07:30 EDT. 5+ concurrent `git.exe` processes from sibling lanes (jb-woodworks, showmasters, sinister-generator, sinister-seraphim, sanctum-launcher) held `.git/index.lock` for ~25 minutes mid-session, causing my staged commits to fail/duplicate. Recovery via `git branch -f <my-branch> <orphan-commit>` fast-forward.
+> **Composes with:** `multi-agent-branch-contention-isolation-pattern` (the pre-existing doctrine — this entry is the empirical anchor showing what happens when isolation isn't enforced).
+
+## The storm symptoms
+
+When N≥4 concurrent EVE sessions all run on the same shared `.git/` directory, the index lock becomes a serial bottleneck. Symptoms observed on 2026-05-23 evening:
+
+1. **`fatal: Unable to create '.git/index.lock': File exists`** — fires whenever any agent runs `git add` / `git commit` / `git checkout` while another agent holds the lock.
+2. **Stale-looking 9+ minute locks that aren't actually stale** — the lock file looks abandoned, but `rm -f .git/index.lock` returns `Device or resource busy` because Windows still has an exclusive open handle to it from a sibling `git.exe`.
+3. **`Please move or remove them before you switch branches`** — sibling agents leave untracked files (e.g. `automations/window-position-monitor.ps1` from Sanctum WIP, `projects/jb-woodworks/components/sections/hero.tsx` from JB Woodworks WIP) that block `git checkout` to your own branch.
+4. **Mid-session branch swap silently moves your working tree off your own branch** — a sibling's `git checkout <their-branch>` switches the shared working tree, leaving your in-flight edits sitting on the sibling's branch. Your subsequent `git add` + `git commit` lands on the sibling's branch, not yours.
+5. **Commits landing on the WRONG branch** — empirical anchor: `ab16d16` + `59667b7` (both my v1.6.89 work) landed on `agent/sinister-generator/source-package-2026-05-23` instead of `agent/rkoj/next-slate-2026-05-23` because of the working-tree swap above.
+6. **Background commit-loops stack up + collide** — my own `until [ ! -f .git/index.lock ]; do sleep 2; done && git commit ...` patterns spawned 3 separate loops all racing for the lock; once it cleared, each fired its own queued commit, producing duplicate commits (`59667b7` + `ab16d16` with the same commit message).
+
+## Recovery moves (empirical green path)
+
+When you encounter the storm, in priority order:
+
+### 1. Verify your work hasn't been lost
+
+`git log --oneline -5` then check WHERE your commits landed. If they're on a sibling's branch, that's recoverable.
+
+```bash
+# Find a commit by message
+git log --all --oneline --grep="<your unique commit prefix>" -5
+# Or by author + date
+git log --all --oneline --since="30 min ago" -10
+```
+
+### 2. Fast-forward your branch ref to include orphan commits
+
+If your work landed on sibling-branch X but you want it on your-branch Y, AND your-branch is an ancestor of X:
+
+```bash
+# Don't switch — just move the branch pointer (no working-tree touch)
+git branch -f agent/<your-slug>/<your-topic> <orphan-commit-sha>
+git push origin agent/<your-slug>/<your-topic>
+```
+
+This works because `git branch -f` is purely a ref-rewrite — it doesn't need to lock the index. Empirically verified 2026-05-23T07:30Z: `git branch -f agent/rkoj/next-slate-2026-05-23 ab16d16` succeeded mid-storm while the index was locked.
+
+### 3. Kill your own redundant background commit-loops
+
+The `until [ ! -f .git/index.lock ]; do sleep 2; done && git commit ...` pattern is fine for a ONE-SHOT wait, but if you stack 3 of them they'll all fire their commits the moment the lock clears, producing duplicates. Kill all but the most recent:
+
+```bash
+ps -ef | grep -E "until.*lock"   # find your stacked loops
+kill <pid-of-stale-loop>           # only kill YOUR loops, not sibling git.exe processes
+```
+
+### 4. NEVER kill sibling `git.exe` processes
+
+The `tasklist` view shows all Windows-side `git.exe` PIDs from every concurrent agent. Killing one breaks that lane's commit. Operator authorization is for OPERATOR-OWN work; killing a sibling agent's git is destructive in the canonical-11 sense (R3 reversibility — a half-written commit can corrupt the index).
+
+If a sibling's `git.exe` is genuinely stuck (>20 min, no progress), surface to operator with one-liner `tasklist | findstr git.exe` and `Get-Date` for context. Operator decides whether to kill.
+
+### 5. The lock storms DO eventually clear
+
+Sibling commits take seconds in steady state. Storm length 2026-05-23 was ~25 minutes for ~5 concurrent agents. Once a lull happens (auto-push daemon idle window between 30-min schedules + no sibling pushing), you get a clean ~30 second window. Watch for it via:
+
+```bash
+until [ ! -f "D:/Sinister Sanctum/.git/index.lock" ]; do sleep 3; done && echo "clear at $(date)"
+```
+
+Then run your atomic commit IMMEDIATELY (single shell command, no intermediate user prompts).
+
+## Why this happens (root cause)
+
+The launcher v6.1 design + operator autonomy directive 2026-05-23 enabled simultaneous spawning of multiple EVE sessions, each working on the same shared `D:\Sinister Sanctum\.git\` directory. `.git/index` is a single-writer file by git's design — concurrent writers serialize through `.git/index.lock`. Five concurrent writers means each commit waits for 4 others to drain.
+
+Each per-agent lane is supposed to be isolated by `git worktree add` per `multi-agent-branch-contention-isolation-pattern`, but the current launcher does NOT spin up worktrees — it shares the main working tree. Empirically the operator has 4-5 lanes running this evening (sanctum, rkoj, jb-woodworks, sinister-seraphim, sinister-generator) all on the main working tree.
+
+## Fixes (proposed for sanctum-lane, not master-actionable from rkoj)
+
+### Layer A — launcher spawns worktrees by default (recommended)
+
+`automations/start-sinister-session.ps1` should call `git worktree add ../wt-<slug>` before launching each per-agent EVE session. Each worktree has its own `.git/index` so concurrent commits don't contend.
+
+Cost: ~few MB per worktree (cheap on NTFS hard links), one extra step in spawn flow.
+
+### Layer B — single-writer auto-push daemon serialization (mitigation)
+
+Add a file-lock fence to the auto-push daemon so it doesn't run while any per-agent `git.exe` is active. Currently the daemon runs every 30 min regardless of contention; under storm it just queues behind other writers.
+
+### Layer C — agent-side commit serialization via a flock file (cheap)
+
+Each agent's first action in a commit cycle: `flock /tmp/sinister-sanctum-git-write.lock -- git ...`. Requires fleet-wide adoption to be useful.
+
+## Anti-patterns to never repeat
+
+1. **`rm -f .git/index.lock` when it's truly held** — empirically returns `Device or resource busy` on Windows AND can corrupt the index if a `git.exe` is mid-write when you remove its lock. Only remove if you have CONFIRMED no `git.exe` is running on this repo (`tasklist | findstr git.exe`).
+2. **Stacking >1 background `until ... do sleep` lock-wait loops** — they all fire their queued commits the moment the lock clears, producing duplicate commits with the same message. Pattern: `59667b7` + `ab16d16` both v1.6.89.
+3. **Trusting "Branch is up to date"** — `git status` lies during the storm because it can't read the index. Verify by `git log --oneline -3` and `git rev-parse HEAD` independently.
+4. **Committing on whatever branch git happens to be on** — sibling-agent `git checkout` can swap your working tree underneath you. Always `git branch --show-current` before staging.
+5. **Spinning up parallel `git add` + `git commit` shells** — they collide. Always atomic: `git add ... && git commit ...` in a single shell line.
+
+## Empirical anchor (2026-05-23 storm timeline)
+
+| Time (EDT) | Event |
+|---|---|
+| 07:03 | First `.git/index.lock` appears mid-iteration-5 |
+| 07:04 | First `until ... lock` background loop submitted (PID 1753016) |
+| 07:13 | Second `until ... lock` background loop submitted (PID 1783734) — now 2 stacked |
+| 07:13:53 | Third loop submitted — 3 stacked |
+| 07:19:46 | Lock briefly clears; bcs370b11 fires `git commit` → lands on `agent/sinister-generator/source-package-2026-05-23` as `59667b7` (working tree was on wrong branch) |
+| 07:20-ish | boqie86g9 fires its commit → lands as `ab16d16` (same content) |
+| 07:24 | Tasklist shows 5 concurrent `git.exe` PIDs (30596, 49732, 27456, 37088, 11092) |
+| 07:30 | Storm clears; `git branch -f` rkoj-tip → ab16d16 succeeds; push lands |
+| 07:35 | PROGRESS reapply commit `6008056` lands cleanly |
+| 07:40 | Resume-point write succeeds (fs-only, no git lock needed) |
+
+## Composability
+
+- `multi-agent-branch-contention-isolation-pattern` (existing doctrine — this entry is the empirical proof)
+- `verify-head-before-commit-multi-agent` (pre-write HEAD check)
+- `sanctum-mirror-orphan-corruption-pattern-2026-05-23` (related — concurrent writers corrupt mirror dirs)
+- `branch-checkout-silently-undoes-doctrine-2026-05-23` (sibling-checkout reverts doctrine — related symptom)
+- `agent-autonomy-push-and-completion-2026-05-23` (the autonomy grant that enabled simultaneous spawns)
+- `sanctioned-bypasses-doctrine-2026-05-21` (operator-own destructive moves like `rm .git/index.lock` are NOT sanctioned without confirmation)
+
+## Tags (for INDEX.md)
+
+doctrine, empirical, binding, multi-agent, git-index, contention-storm, index-lock, fast-forward-recovery, git-branch-f, working-tree-swap, sibling-checkout, stacked-until-loops, duplicate-commits, worktree-isolation, single-writer-fence, flock-serialization, empirical-anchor, 5-concurrent-agents, 25-min-storm, rkoj-lane-empirical-anchor, 2026-05-23-evening
