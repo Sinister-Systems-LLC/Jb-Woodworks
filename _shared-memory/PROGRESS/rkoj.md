@@ -6,6 +6,56 @@ Append-only progress log for the `rkoj` umbrella lane (Forge + Term + Workstatio
 
 ---
 
+## 2026-05-23 06:42 — /loop iteration 4 — matrix flips + Layer A probe + script fix
+
+Operator: *"keep working on everyting you need to complete"*. Continued the cycle on the now-pushed `agent/rkoj/next-slate-2026-05-23` branch. Three concrete deliverables shipped:
+
+### Ships this iteration
+
+| Surface | Effect |
+|---|---|
+| `_shared-memory/knowledge/jcode-feature-matrix.md` row 12 | 🚧 → ✅ **shipped**. All four memory-graph consumers (Forge `Ctrl+D` panel + RKOJ `/api/diagrams` + Mind `/diagrams` web view + render pipeline) now target the single on-disk cache. Notes column rewritten to point at Mind v0.3.0 + commit `b199dae`. |
+| `_shared-memory/knowledge/jcode-feature-matrix.md` row 26 | Notes updated. Status flipped from `🚧 doc` to `🚧 doc + Layer A probe` (still 🚧 — full ✅ when Layer B+C+D land). References the new audit doc + `tools/sinister-browser/` package. |
+| `tools/sinister-browser/` v0.1.0 (new package, 4 files + tests) | Layer A connectivity probe for the upstream firefox-agent-bridge. stdlib-only. TCP-connect + minimal RFC 6455 §4.2.2 HTTP Upgrade handshake (computes the expected `Sec-WebSocket-Accept` and compares against server response). Exits 0=alive / 2=not-installed / 3=installed-but-unreachable. CLI: `sinister-browser probe [--host --port --timeout --json]` + `sinister-browser version`. 4/4 unittests green (against in-process fake servers: nothing-listening / valid-WS / wrong-accept / plain-HTTP). pyproject.toml AGPL-3.0-or-later + RKOJ-ELENO authors. Registered in `tools/_INDEX.md`. |
+| `automations/resume-point-write.ps1` slug-map | `'rkoj'` slug now routes to `'RKOJ'` display dir (the umbrella per projects.json v6) instead of legacy `'RKOJ Workstation'`. PROGRESS lookup updated to `'rkoj.md'`. Legacy `rkoj-workstation` sub-lane unchanged for back-compat. Parse-validated + live-tested: resume-point now writes to `_shared-memory/resume-points/RKOJ/2026-05-23T064149Z.json`. |
+
+### Smoke-test transcripts
+
+```
+# Layer A probe — no bridge running (expected exit 2)
+$ python -m sinister_browser probe
+sinister-browser :: 127.0.0.1:8766 :: NOT-INSTALLED
+  bridge not installed or Firefox not running (ConnectionRefusedError)
+exit=2
+
+# JSON output
+$ python -m sinister_browser probe --json
+{ "exit_code": 2, "summary": "bridge not installed or Firefox not running (ConnectionRefusedError)", ... }
+exit=2
+
+# Unit tests (in-process fake servers)
+test_exit_0_when_valid_ws_handshake ... ok
+test_exit_2_when_nothing_listening ... ok
+test_exit_3_when_plain_http ... ok
+test_exit_3_when_wrong_accept ... ok
+Ran 4 tests in 1.178s — OK
+```
+
+### Matrix status overall after this iteration
+
+| Row | Before | After |
+|---|---|---|
+| 12 (memory-graph viz) | 🚧 PNG + Forge + REST API shipped, Mind view pending | ✅ shipped |
+| 26 (browser-bridge) | 🚧 doc | 🚧 doc + Layer A probe |
+
+3 rows of the original 11-row Sanctum ASK still in flight: 22 (Mind nodes — different from /diagrams, deferred), 23 (claude-hooks, external pkg not on disk), 24 (Skill_Seekers, external pkg not on disk). 2 rows fully operator-gated: 25 (agentgrep cargo install) + 28 (Rust mermaid renderer toolchain). Layer B+C+D of sinister-browser deferred until operator brings up live firefox-agent-bridge — Layer A is the green-path connectivity probe.
+
+### 5-check gate
+
+✅ inbox empty; TaskList resolved (#8/9/10 all completed, #11 = this turn); PROGRESS appended; matrix flips committed in same turn; resume-point write next (correctly into `RKOJ/` after the script fix).
+
+---
+
 ## 2026-05-23 06:30 — /loop dynamic iteration 3 — Mind /diagrams web view + 2 brain entries
 
 EVE on RKOJ, cold-resume in `resume` mode at HEAD `73c628b` (the operator anti-revert doctrine commit). Per the `2026-05-23T1545Z-from-sanctum-no-more-self-imposed-blocks.json` broadcast, per-agent branches push freely. Branch cut fresh as `agent/rkoj/next-slate-2026-05-23` after catching the **pre-doctrine HEAD branch-cut hazard** (see brain entry below).

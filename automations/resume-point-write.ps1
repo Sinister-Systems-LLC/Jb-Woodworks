@@ -1,4 +1,4 @@
-# Sinister Sanctum :: resume-point writer (v1.2 :: 2026-05-21)
+# Sinister Sanctum :: resume-point writer (v1.3 :: 2026-05-23)
 # Operator: "i need all projects to resume where they left off and always
 # ahve resume points." Writes a structured resume-point JSON at
 # _shared-memory/resume-points/<project>/<UTC>.json with everything the
@@ -14,6 +14,11 @@
 #       matched no plan dirs (all kebab-cased like 'sanctum-coaudit-...').
 #       Also: Resolve-InboxSlug known-prefix carve-out extended from
 #       just 'sanctum' to forge/term/panel/kernel-apk/apk/freeze too.
+# v1.3: ProjectKey slug now maps to canonical display-name dir per the
+#       resume-point-dir-name-convention brain entry (display-name is canonical).
+#       Was: -ProjectKey sanctum wrote to resume-points/sanctum/ (lowercase slug);
+#       now: maps to "Sinister Sanctum/" via Resolve-ResumePointDirName.
+#       Unknown keys pass through unchanged (back-compat for lanes not yet listed).
 
 param(
     [Parameter(Mandatory)][string]$SanctumRoot,
@@ -29,7 +34,36 @@ if (-not (Test-Path $SanctumRoot)) {
     exit 1
 }
 
-$rpDir = Join-Path $SanctumRoot "_shared-memory\resume-points\$ProjectKey"
+function Resolve-ResumePointDirName {
+    param([string]$Key)
+    $known = @{
+        'sanctum'          = 'Sinister Sanctum'
+        'forge'            = 'Sinister Forge'
+        'panel'            = 'Sinister Panel'
+        'kernel-apk'       = 'Sinister Kernel APK'
+        'apk'              = 'Sinister Kernel APK'
+        'term'             = 'Sinister Term'
+        'sinister-term'    = 'Sinister Term'
+        'snap-api'         = 'Sinister Snap API'
+        'tiktok-api'       = 'Sinister TikTok API'
+        # 'rkoj' umbrella (projects.json v6) maps to display 'RKOJ' per
+        # CLAUDE.md cold-start step 7 + agent-prefs.json. The legacy
+        # 'rkoj-workstation' sub-lane keeps its own dir for back-compat
+        # with existing resume-points landed there from earlier sessions.
+        'rkoj'             = 'RKOJ'
+        'rkoj-workstation' = 'RKOJ Workstation'
+        'claw'             = 'Sinister Claw'
+        'jb-woodworks'     = 'Jb Woodworks'
+        'showmasters'      = 'Showmasters'
+        'eve-on-sanctum'   = 'EVE on Sanctum'
+    }
+    $k = $Key.ToLower()
+    if ($known.ContainsKey($k)) { return $known[$k] }
+    return $Key
+}
+
+$rpDirName = Resolve-ResumePointDirName -Key $ProjectKey
+$rpDir = Join-Path $SanctumRoot "_shared-memory\resume-points\$rpDirName"
 New-Item -ItemType Directory -Force -Path $rpDir | Out-Null
 
 $stamp = (Get-Date -Format 'yyyy-MM-ddTHHmmssZ')
@@ -72,7 +106,9 @@ function Resolve-ProgressPath {
         'sinister-term'   = 'Sinister Term.md'
         'snap-api'        = 'Sinister Snap API.md'
         'tiktok-api'      = 'Sinister TikTok API.md'
-        'rkoj'            = 'rkoj-workstation.md'
+        # Umbrella's PROGRESS file is 'rkoj.md' (per CLAUDE.md cold-start
+        # step 7 + the v6 umbrella entry); legacy sub-lane keeps its own.
+        'rkoj'            = 'rkoj.md'
         'rkoj-workstation'= 'rkoj-workstation.md'
     }
     $key = $Name.ToLower()

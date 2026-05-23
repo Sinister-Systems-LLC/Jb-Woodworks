@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sinister-browser"
+version = "0.1.0"
+description = "Sinister wrapper around firefox-agent-bridge (web-as-tool). Layer A probe shipped; Layer B/C/D deferred per jcode-feature-matrix row 26."
+readme = "README.md"
+license = { text = "AGPL-3.0-or-later" }
+authors = [{ name = "RKOJ-ELENO", email = "andrew.viperrr@gmail.com" }]
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+sinister-browser = "sinister_browser.__main__:run"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["sinister_browser*"]
