@@ -15,10 +15,24 @@ The Sanctum-side mirror of `SESSION-START/02-OPERATOR-QUEUE.md`, with checkboxes
 EVE on Sanctum shipped 4 commits this session unblocking ~all Sanctum-lane infra. Open items now:
 
 - [ ] 🔴 **Restart Claude Code** — activates: (a) 12 newly-resolvable MCP servers (sinister-bus + sentinel + translator + librarian + watcher + auditor + triage + scribe + curator + custodian + stealth-browser + researcher) via the new `D:\Sinister\Sinister Skills` junction; (b) 14 newly-enabled dev plugins at Sanctum project level (claude-code-setup, claude-md-management, code-review, pr-review-toolkit, coderabbit, code-simplifier, commit-commands, frontend-design, github, hookify, session-report, cwc-makers, desktop-commander, exa). Without restart, spawned agents see ~9 skills; after restart they see ~30+.
-- [ ] 🟠 **Decide on `sinister_apk_mcp`** — module source folder at `D:\Sinister Sanctum\_sinister-skills\02_MD_ARCHIVE\kernel-su-setup\leo-version\mcp-server\sinister_apk_mcp\` is empty (archived). The MCP entry in `~/.claude/.mcp.json` references it but it fails silently at startup. Two options: (1) restore the Python source from a backup, OR (2) ask EVE to draft an .mcp.json edit removing the entry (needs explicit operator go-ahead since `.mcp.json` is normally off-limits).
+- [x] ~~🟠 **Decide on `sinister_apk_mcp`**~~ — RESOLVED 2026-05-23T08:20Z (sanctum resume audit). The empty folder at `_sinister-skills/02_MD_ARCHIVE/.../sinister_apk_mcp/` is a red herring — `pip show sinister_apk_mcp` confirms it's editable-installed from `C:\Users\Zonia\Desktop\Sinister-Snap-APK-\mcp-server` (`Version: 0.1.0`), so `python -m sinister_apk_mcp` resolves the module via `sys.path`, not via cwd. The MCP launches fine; the queue row was based on a cwd-only inspection that missed the pip editable install. No operator action needed.
+- [x] ~~🟢 **`term` Python package resolves to a worktree path**~~ — RESOLVED 2026-05-23T08:20Z. `pip show sinister-term` returns `Editable project location: D:\Sinister Sanctum\projects\sinister-term\source` — canonical, not the worktree. Prior session report ("resolves to D:\Sinister-Term-WT") was outdated; canonical install is already in place.
+- [x] ~~🟠 **`pip install -e D:/Sinister Sanctum/tools/sinister-review/`**~~ — RESOLVED 2026-05-23T08:20Z. `pip show sinister-review` confirms editable install from canonical `D:\Sinister Sanctum\tools\sinister-review` (Version 0.1.0). Prior session's "harness blocked" note: install evidently shipped on a later iteration. 15-of-15 Sanctum tools now confirmed importable.
 - [ ] 🟡 **Enable external-service plugins individually** — 20 plugins installed but not enabled (need API tokens): airtable, apollo, asana, atlassian, box, circleback, discord, gitlab, imessage, intercom, legalzoom, linear, notion, pigment, slack, spotify-ads-api, telegram, windsor-ai, youdotcom-agent-skills, zapier. Use `/plugin enable <name>` per-need after configuring auth.
 
 ---
+
+## 2026-05-23 — Sinister Generator project live (fleet-wide image-gen)
+
+EVE on `general` promoted image generation from `tools/nano-banana/` to a full project at `D:\Sinister Sanctum\projects\sinister-generator\`. Desktop satellite at `C:\Users\Zonia\Desktop\Sinister Generator\` (NTFS junction → outputs).
+
+Status: 3 projects registered (jkor, showmasters, jb-woodworks). 7 JKOR banners shipped this session (v1-v3 rejected as over-correction, v4-v6 preservation edits, v7 landed the operator's "use ART/banner.png layout" brief). Workflow audit doc + anti-slop checklist + brand-pack spec all written.
+
+No new operator action required for the generator itself — billing + key already in place. Open items for the operator if they want to push further:
+
+- [ ] 🟢 **Iterate banner v7 for exact aspect / palette** — model ignored 2.5:1 pixel request and bg came out slightly medium-purple instead of deep-dark sidebar. Cure: pass a wide reference image first (Gemini biases toward ref aspect), pass the sidebar screenshot weighted higher. Cost: ~$0.04 per variant.
+- [ ] 🟢 **Have other lane agents drop their BRAND.md into the per-project memory dir** — Showmasters has its `BRANDING/NANO-BANANA-INTEGRATION.md` (just needs to be ported), JB Woodworks needs a fresh BRAND.md pulled from their v0.2.0 canonical pull. Inbox messages already sent to both.
+- [ ] 🟢 **Build the `source/sinister_generator/` Python package** — currently the dir is scaffolded but empty. The brand-lock helpers + audit checks live in `tools/nano-banana/nano_banana/api.py` for now. Promotion to the project's own package is optional.
 
 ## 2026-05-23 — Nano Banana wired (fleet-wide image generation)
 
