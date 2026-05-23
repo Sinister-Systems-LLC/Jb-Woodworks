@@ -4,6 +4,24 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not command-versions (each lane has its own).
 
+## v1.6.65 — 2026-05-22
+
+**Status dot click → /persona, mode pill click → /model. Header
+click sweep complete — every visible element in the card header
+is now navigable without typing.**
+
+- `status_dot` (was QLabel) → `_ClickPill("", self, intercept="/persona")`.
+  Tooltip: "Click → /persona (identity dump)".
+- `mode_pill` (was QLabel) → `_ClickPill(self.session.mode, self,
+  intercept="/model")`. Tooltip: "Click → /model (show/change model)".
+- `/shortcuts` block now lists 7 click targets: status dot, PROJECT,
+  mode pill, N turns, $X.XXXX, ⏱ elapsed, tag chip (L+R).
+- Closes the header click-action sweep: any operator workflow that
+  previously required `/<command>` typing can now happen via a
+  single click anywhere in the card chrome.
+- MANIFEST.json 1.6.64 → 1.6.65.
+- `__init__.py __version__ = "1.6.65"`.
+
 ## v1.6.64 — 2026-05-22
 
 **Elapsed pill click → /timer, project label click → /find <project>.

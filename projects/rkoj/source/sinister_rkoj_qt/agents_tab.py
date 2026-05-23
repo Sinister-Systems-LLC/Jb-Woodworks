@@ -852,13 +852,15 @@ class AgentCard(QFrame):
         # Status dot — SVG (no glyph). Tinted in code via setStyleSheet
         # because Qt's SVG renderer won't honour CSS currentColor on
         # standalone shapes. We re-tint on _set_status().
-        self.status_dot = QLabel()
+        # v1.6.65 — clickable: fires /persona for identity dump.
+        self.status_dot = _ClickPill("", self, intercept="/persona")
         self.status_dot.setObjectName("StatusDot")
         self.status_dot.setProperty("state", "idle")
         self.status_dot.setFixedSize(12, 12)
         self.status_dot.setStyleSheet(
             f"background-color: {DIM}; border-radius: 6px;"
         )
+        self.status_dot.setToolTip("Click → /persona (identity dump)")
 
         # v1.6.64 — project label is clickable: fires /find <project>
         # so operator can fan to all sibling cards on the same project.
@@ -876,8 +878,10 @@ class AgentCard(QFrame):
         self._title_label.setObjectName("AgentTitle")
         title = self._title_label  # local alias to keep existing hdr.addWidget refs working
 
-        mode_pill = QLabel(self.session.mode)
+        # v1.6.65 — mode pill clickable: fires /model (show/change model).
+        mode_pill = _ClickPill(self.session.mode, self, intercept="/model")
         mode_pill.setObjectName("ModePill")
+        mode_pill.setToolTip("Click → /model (show/change model)")
 
         # v1.6.9 — turn counter pill (updates after each /send completes)
         # v1.6.63 — clickable: fires /history. Wrap in _ClickPill.
@@ -2271,7 +2275,9 @@ class AgentCard(QFrame):
                 "  ☆ / ★       pin/unpin (pinned cards float to top of grid)\n"
                 "  ▾ / ▸       collapse / expand chevron (same as Ctrl+M)\n"
                 "  ✕           close this card (autosaves resume-point first)\n"
+                "  status dot  click → /persona\n"
                 "  PROJECT     click → /find <project>\n"
+                "  mode pill   click → /model\n"
                 "  N turns     click → /history\n"
                 "  $X.XXXX     click → /cost\n"
                 "  ⏱ elapsed   click → /timer\n"
