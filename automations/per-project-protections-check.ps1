@@ -31,8 +31,16 @@ if (-not (Test-Path $projectsFile)) {
     exit 2
 }
 
-$projData = Get-Content $projectsFile -Raw | ConvertFrom-Json
-$allLanes = $projData.projects | Where-Object { $_.root -and (Test-Path $_.root) }
+# BOM-tolerant JSON read (PowerShell 5.1 ConvertFrom-Json mis-handles BOM in
+# some edge cases; sibling scripts hit same issue).
+$rawJson = [System.IO.File]::ReadAllText($projectsFile)
+if ($rawJson.Length -gt 0 -and [int]$rawJson[0] -eq 0xFEFF) { $rawJson = $rawJson.Substring(1) }
+$projData = $rawJson | ConvertFrom-Json
+
+# Iter 5 fix: hard-skip entries with null/empty root. The .root field is a
+# string from JSON parsing; PowerShell truthiness handles null + empty cleanly.
+# Test-Path tolerates spaces in paths when called this way.
+$allLanes = $projData.projects | Where-Object { $_ -and $_.root -and (Test-Path $_.root) }
 
 if ($Lane) {
     $lanes = $allLanes | Where-Object { $_.key -eq $Lane -or $_.display -eq $Lane }
@@ -51,10 +59,15 @@ $brainIndexContent = if (Test-Path $brainIndex) { Get-Content $brainIndex -Raw }
 
 $results = @()
 
-foreach ($lane in $lanes) {
-    $key = $lane.key
-    $display = $lane.display
-    $root = $lane.root
+# NOTE: $lane case-INSENSITIVELY shadows the [string]$Lane param, which coerces
+# every PSCustomObject to "" in the loop body. Iter 5 fix: use $proj instead.
+foreach ($proj in $lanes) {
+    # Defensive: skip if entry somehow has null root (filter above should
+    # have caught it, but belt-and-suspenders since the prior bug crashed here).
+    if (-not $proj -or -not $proj.root) { continue }
+    $key = $proj.key
+    $display = if ($proj.display) { $proj.display } else { $key }
+    $root = $proj.root
 
     # PP1: CLAUDE.md presence
     $cmCandidates = @(
@@ -93,11 +106,13 @@ foreach ($lane in $lanes) {
         } catch { }
     }
 
-    # PP4: PROGRESS log presence (use display name as filename)
+    # PP4: PROGRESS log presence (try display, key, "Sinister X" forms)
+    $sinisterPrefix = if ($display -notlike 'Sinister *') { "Sinister $display.md" } else { $null }
     $progressCandidates = @(
         (Join-Path $progressDir "$display.md"),
-        (Join-Path $progressDir "$key.md")
-    )
+        (Join-Path $progressDir "$key.md"),
+        $(if ($sinisterPrefix) { Join-Path $progressDir $sinisterPrefix })
+    ) | Where-Object { $_ }
     $progressFound = $progressCandidates | Where-Object { Test-Path $_ } | Select-Object -First 1
     $pp4 = [bool]$progressFound
 

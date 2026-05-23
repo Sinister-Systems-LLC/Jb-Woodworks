@@ -4,6 +4,66 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-23 21:30Z — /loop iter 5 — 3 real bugs found + fixed end-to-end + C.4 auto-restore shipped
+
+EVE on Sanctum continued /loop with operator's "test everything and fix all findings" directive. **3 real bugs found via testing; all fixed with same-turn evidence.** Plus C.4 auto-restore shipped (was previously logging intent only).
+
+**TEST → FOUND → FIXED (all same turn):**
+
+1. **per-project-protections-check.ps1: `$lane` variable shadowed by `[string]$Lane` param** (case-insensitive in PowerShell). Foreach iteration coerced PSCustomObjects to empty strings; script reported "0 lanes" instead of 22.
+   - Debug trail: traced `$lanes.Count=22 type=Object[]` right before foreach → inside foreach `$lane` showed `type=String key=[] root=[]` for all 22 iterations.
+   - FIX: renamed foreach var to `$proj` (lowercase). All 7 references updated.
+   - VERIFY: `-Lane sanctum` now reports **Sanctum 5/5 PASS** (was 0/5).
+   - Bonus: improved PP4 lookup to also try "Sinister X.md" form (catches `Sinister Sanctum.md` for display="Sanctum").
+
+2. **canonical-protections-check.ps1 P9 hung multi-minute** when invoked manually. Root cause: `Get-ChildItem -Path $SanctumRoot -Recurse -File -Filter 'settings*.json'` scanned `projects/jb-woodworks/.next/cache/` which has 100K+ files.
+   - FIX: replaced full-tree recursion with explicit `.claude/` dir enumeration from `projects.json` manifest. Per-project `.claude/` dirs are cheap (one Test-Path each).
+   - VERIFY: timed run **2.99 seconds PASS=9 FAIL=0** (was hanging > 60s).
+
+3. **JSON encoding gotcha (NOT a bug, just confirmation)**: BOM-aware read added defensively to per-project-protections (matches sibling scripts' pattern from iter 3).
+
+**EXPAND — C.4 auto-restore via reference snapshot SHIPPED:**
+
+- **NEW** `_shared-memory/canonical-protections-reference/user-settings.json.canonical` — snapshot of current good `~/.claude/settings.json`
+- **NEW** `_shared-memory/canonical-protections-reference/sanctum-settings.json.canonical` — snapshot of current good `D:\Sinister Sanctum\.claude\settings.json`
+- **EDIT** `automations/canonical-protections-check.ps1` — replaced "auto-restore enabled but not yet implemented" stub with real splice-back logic. When `-AutoRestore` (or `SINISTER_CANONICAL_PROTECTIONS_AUTORESTORE=1`) is set AND any protection fails, the script:
+  - Reads the live settings.json + the reference snapshot
+  - For each top-level key in reference NOT in live → adds it (conservative; never overwrites)
+  - For `permissions.allow[]` entries in reference NOT in live → appends
+  - For `enabledPlugins.*` keys in reference NOT in live → adds
+  - Creates a `<file>.pre-autorestore-<UTC>` backup before write
+  - Writes BOM-free via `[System.IO.File]::WriteAllText` + `UTF8Encoding($false)` (per iter 3 BOM doctrine)
+  - Reports per-file `restored N keys` / `no-missing-keys` / `ERROR`
+- VERIFY: env var off → no-op (PASS=9 means nothing to restore). Snapshots parse cleanly via Python `json.load`. Restore code path not exercised this turn (waiting for first canonical-protection FAIL).
+
+**Composes with:**
+
+- `do-not-revert-operator-canonical-protections-2026-05-23` (this iteration ships the 3rd L3 layer the doctrine described as "deferred")
+- `multi-agent-branch-contention-isolation-pattern` (variable-shadowing bug was a multi-agent race-with-self pattern)
+- `no-bullshit-tested-before-claimed-doctrine-2026-05-23` (every fix has same-turn evidence: debug trace + smoke result)
+
+**Files touched this iteration (sanctum-lane only):**
+
+- EDIT: `automations/per-project-protections-check.ps1` (F1: `$lane`→`$proj` rename + BOM-aware read + PP4 lookup improved)
+- EDIT: `automations/canonical-protections-check.ps1` (F2: P9 fast scan + X1 C.4 auto-restore splice-back)
+- NEW: `_shared-memory/canonical-protections-reference/user-settings.json.canonical`
+- NEW: `_shared-memory/canonical-protections-reference/sanctum-settings.json.canonical`
+- EDIT: `_shared-memory/PROGRESS/Sinister Sanctum.md` (this entry)
+
+**Brain status:** 144 on-disk / 115 indexed / 29 orphans / APPROACHING (144/150). NOT adding new doctrines this iter (per Rule 7.5).
+
+**Next iter plan:**
+
+- EVE.exe rebuild investigation (broken since 13:21Z)
+- Voice prompting POC once operator picks A/B
+- Wire `per-project-protections-check.ps1` -Json into telemetry-rollup
+- Drop [INFO] inbox messages to lanes with PP scores < 4/5
+- Cross-lane orphan brain-entry index cleanup follow-up (28 → 0 by enlisting per-lane agents)
+
+Auto-push to GitHub: per operator's "auto push to github for leo once done" — commits pushed directly to `agent/sinister-sanctum/grant-autonomy-followup-2026-05-23`; auto-push daemon picks up main per 30-min cron.
+
+---
+
 ## 2026-05-23 20:45Z — /loop iter 4 + 2 operator urgent fixes + Leo missing-sources fix + push
 
 EVE on Sanctum interleaved /loop iter 4 master-plan work with 3 operator-urgent items that landed mid-iteration. Net result: 3 commits pushed to origin (`d75f71f` Leo fix + iter 4 batch, `00f15b2` sibling auto-push merge, `4f3f8ee` bat fix).

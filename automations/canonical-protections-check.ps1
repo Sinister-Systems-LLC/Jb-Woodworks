@@ -138,14 +138,31 @@ if ($p8Missing -and $p8Missing.Count -gt 0) {
 # saw a popup "Stop hook error: cd ... No such file" every turn (autonomy bleed).
 $script:p9Broken = @()
 Test-Protection -Id 'P9' -Description 'No .claude/settings*.json hook command cds to a missing path' -Check {
+    # Iter 5 fix: scan ONLY known .claude/ dirs instead of recursing the whole
+    # tree. Was hanging multi-minute when projects/jb-woodworks/.next/cache/
+    # accumulated >100K files. New approach: enumerate likely .claude/ locations
+    # explicitly via the projects.json manifest + the user-scope settings.
     $hookFiles = @()
-    $hookFiles += Get-ChildItem -Path $SanctumRoot -Recurse -File -Filter 'settings*.json' -ErrorAction SilentlyContinue |
-        Where-Object {
-            $_.FullName -like '*\.claude\*' -and
-            $_.FullName -notlike '*\node_modules\*' -and
-            $_.FullName -notlike '*\worktrees\*' -and
-            $_.FullName -notlike '*\external-imports\*'
+    $claudeDirs = @(
+        (Join-Path $SanctumRoot '.claude')
+    )
+    # Add per-project .claude/ dirs (cheap: one Test-Path each)
+    try {
+        $projJson = [System.IO.File]::ReadAllText((Join-Path $SanctumRoot 'automations\session-templates\projects.json'))
+        if ($projJson.Length -gt 0 -and [int]$projJson[0] -eq 0xFEFF) { $projJson = $projJson.Substring(1) }
+        $projects = ($projJson | ConvertFrom-Json).projects
+        foreach ($p in $projects) {
+            if ($p.root) {
+                $claudeDirs += (Join-Path $p.root '.claude')
+                $claudeDirs += (Join-Path $p.root 'source\.claude')
+            }
         }
+    } catch { }
+    foreach ($cd in ($claudeDirs | Sort-Object -Unique)) {
+        if (-not (Test-Path $cd)) { continue }
+        if ($cd -like '*\node_modules\*' -or $cd -like '*\worktrees\*' -or $cd -like '*\external-imports\*' -or $cd -like '*\.next\*') { continue }
+        $hookFiles += Get-ChildItem -Path $cd -File -Filter 'settings*.json' -ErrorAction SilentlyContinue
+    }
     foreach ($f in $hookFiles) {
         try {
             $cfg = Get-Content $f.FullName -Raw -Encoding UTF8 | ConvertFrom-Json
@@ -226,7 +243,74 @@ if ($failCount -gt 0) {
 }
 
 if ($AutoRestore -and $failCount -gt 0) {
-    Write-Host "    [auto-restore enabled but not yet implemented; logging intent only]" -ForegroundColor DarkGray
+    # Iter 5 X1: C.4 auto-restore via reference snapshot.
+    # When a canonical settings file fails P1/P2 because some key was removed,
+    # splice the missing key(s) back from the reference snapshot. Conservative:
+    # ONLY adds missing keys; never overwrites a key the operator changed.
+    $refDir = Join-Path $SanctumRoot '_shared-memory\canonical-protections-reference'
+    $restored = 0
+    $skipped = 0
+
+    function Restore-MissingKeys {
+        param([string]$LiveFile, [string]$ReferenceFile)
+        if (-not (Test-Path $ReferenceFile)) { return 'no-snapshot' }
+        if (-not (Test-Path $LiveFile)) { return 'no-live-file' }
+        try {
+            $live = Get-Content $LiveFile -Raw | ConvertFrom-Json
+            $ref = Get-Content $ReferenceFile -Raw | ConvertFrom-Json
+            $added = @()
+            foreach ($prop in $ref.PSObject.Properties) {
+                if (-not $live.PSObject.Properties[$prop.Name]) {
+                    Add-Member -InputObject $live -MemberType NoteProperty -Name $prop.Name -Value $prop.Value
+                    $added += $prop.Name
+                }
+            }
+            # Handle nested permissions.allow / enabledPlugins specifically
+            if ($ref.permissions -and $live.permissions) {
+                if ($ref.permissions.allow -and $live.permissions.allow) {
+                    foreach ($entry in @($ref.permissions.allow)) {
+                        if ($live.permissions.allow -notcontains $entry) {
+                            $live.permissions.allow = @($live.permissions.allow) + $entry
+                            $added += "permissions.allow:$entry"
+                        }
+                    }
+                }
+            }
+            if ($ref.enabledPlugins -and $live.enabledPlugins) {
+                foreach ($pp in $ref.enabledPlugins.PSObject.Properties) {
+                    if (-not $live.enabledPlugins.PSObject.Properties[$pp.Name]) {
+                        Add-Member -InputObject $live.enabledPlugins -MemberType NoteProperty -Name $pp.Name -Value $pp.Value
+                        $added += "enabledPlugins:$($pp.Name)"
+                    }
+                }
+            }
+            if ($added.Count -gt 0) {
+                # Backup before write
+                Copy-Item $LiveFile "$LiveFile.pre-autorestore-$(Get-Date -Format yyyyMMdd-HHmmss)" -Force
+                $json = $live | ConvertTo-Json -Depth 10
+                [System.IO.File]::WriteAllText($LiveFile, $json, [System.Text.UTF8Encoding]::new($false))
+                return "restored $($added.Count) keys: $($added -join ', ')"
+            }
+            return 'no-missing-keys'
+        } catch {
+            return "ERROR: $($_.Exception.Message)"
+        }
+    }
+
+    $userRef = Join-Path $refDir 'user-settings.json.canonical'
+    $sanctumRef = Join-Path $refDir 'sanctum-settings.json.canonical'
+
+    if (Test-Path $userRef) {
+        $r1 = Restore-MissingKeys -LiveFile $UserSettings -ReferenceFile $userRef
+        Write-Host "    [auto-restore] user settings.json: $r1" -ForegroundColor DarkGray
+        if ($r1 -like 'restored *') { $restored++ } else { $skipped++ }
+    }
+    if (Test-Path $sanctumRef) {
+        $r2 = Restore-MissingKeys -LiveFile $SanctumSettings -ReferenceFile $sanctumRef
+        Write-Host "    [auto-restore] Sanctum settings.json: $r2" -ForegroundColor DarkGray
+        if ($r2 -like 'restored *') { $restored++ } else { $skipped++ }
+    }
+    Write-Host "    [auto-restore] summary: $restored file(s) restored, $skipped skipped" -ForegroundColor Yellow
 }
 
 exit $(if ($failCount -eq 0) { 0 } else { 1 })
