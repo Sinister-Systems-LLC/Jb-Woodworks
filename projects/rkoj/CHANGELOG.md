@@ -4,6 +4,21 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not command-versions (each lane has its own).
 
+## v1.6.67 — 2026-05-22
+
+**Sortable `/fleet` — `/fleet cost`, `/fleet turns`, `/fleet project|agent|mode|status`.**
+
+- `fleet_table_requested` signal now carries `(invoker_id, sort_key)`.
+- Default sort (no arg): pinned-first → project → agent (unchanged).
+- Numeric columns (turns, cost) sort DESC so heavy hitters surface
+  at the top. Text columns sort ASC by lowercase value.
+- Unknown sort key prints a helpful "Valid: …" hint and falls back
+  to default.
+- Header line now annotates the active sort: `[/fleet] 4 card(s) sorted by cost:`.
+- Updated SLASH_COMMANDS description so /help shows the sort syntax.
+- MANIFEST.json 1.6.66 → 1.6.67.
+- `__init__.py __version__ = "1.6.67"`.
+
 ## v1.6.66 — 2026-05-22
 
 **`/fleet` — per-card table with project / mode / turns / cost /

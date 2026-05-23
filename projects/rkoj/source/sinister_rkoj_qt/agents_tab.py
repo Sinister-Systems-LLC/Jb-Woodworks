@@ -118,7 +118,7 @@ SLASH_COMMANDS: list[tuple[str, str]] = [
     ("/diff",     "unified diff between two assistant replies (/diff A B)"),
     ("/export",   "export conversation to a markdown file"),
     ("/export-all","write every live card's transcript to a bundle dir"),
-    ("/fleet",    "per-card table (project / mode / turns / cost / status / tags)"),
+    ("/fleet",    "per-card table — `/fleet cost|turns|project|...` to sort"),
     ("/focus",    "focus the input box"),
     ("/forget-last","drop last user+reply locally (claude server-side still remembers)"),
     ("/expand-all", "expand every collapsed card in the grid"),
@@ -741,9 +741,10 @@ class AgentCard(QFrame):
     # v1.6.60 — /summarize-all emits invoker pane_id; AgentsView stages
     # the canned TL;DR prompt into every non-empty card + fires _on_send.
     summarize_all_requested = pyqtSignal(str)
-    # v1.6.66 — /fleet emits invoker pane_id; AgentsView prints a
-    # per-card table (project, mode, turns, cost, status, tags).
-    fleet_table_requested = pyqtSignal(str)
+    # v1.6.66 — /fleet emits (invoker_id, sort_key). sort_key is one of:
+    # "" (default: pinned, project, agent), "project", "agent", "mode",
+    # "turns", "cost", "status". v1.6.67 added the sort arg.
+    fleet_table_requested = pyqtSignal(str, str)
 
     # Braille spinner for the "thinking" indicator (jcode-style).
     _SPINNER = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
@@ -1994,7 +1995,10 @@ class AgentCard(QFrame):
             return True
         if head == "/fleet":
             # v1.6.66 — per-card table fan-out to AgentsView.
-            self.fleet_table_requested.emit(self.session.pane_id)
+            # v1.6.67 — optional sort key: project|agent|mode|turns|cost|status.
+            parts = cmd.split(None, 1)
+            sort_key = parts[1].strip().lower() if len(parts) > 1 else ""
+            self.fleet_table_requested.emit(self.session.pane_id, sort_key)
             return True
         if head == "/history":
             n = len(self.session.turns)
@@ -3845,19 +3849,24 @@ class AgentsView(QWidget):
     # v1.6.66 — per-card table. Columns: project, mode, turns, cost,
     # status, tags. Aligned with `max(len(col))` per-column widths so
     # wide names don't break the layout. Echoes to invoker.
-    def _print_fleet_table(self, invoker_id: str) -> None:
+    # v1.6.67 — accepts optional sort_key: project, agent, mode, turns,
+    # cost, status. Default sorts pinned-first, then project, then agent.
+    def _print_fleet_table(self, invoker_id: str, sort_key: str = "") -> None:
         invoker = self._cards.get(invoker_id)
         if invoker is None:
             return
         if not self._cards:
             invoker._append_terminal("[/fleet] no cards in the grid\n")
             return
+        # Build row tuples plus a parallel list of typed sort tuples so
+        # numeric columns sort numerically.
         rows: list[tuple[str, str, str, str, str, str, str]] = []
-        for c in self._cards.values():
+        numeric_data: list[tuple[int, float]] = []  # parallel (turns_int, cost_float)
+        cards_in_order = list(self._cards.values())
+        for c in cards_in_order:
             sess = c.session
             n_turns = len([t for t in sess.turns if t.get("user")])
-            cost = f"${c._total_cost_usd:.4f}"
-            tags = ",".join(sess.tags) if sess.tags else "-"
+            cost = c._total_cost_usd
             pin = "★" if sess.pinned else " "
             rows.append((
                 pin,
@@ -3865,17 +3874,41 @@ class AgentsView(QWidget):
                 sess.agent_name or sess.pane_id[:8],
                 sess.mode or "?",
                 str(n_turns),
-                cost,
+                f"${cost:.4f}",
                 sess.status or "?",
             ))
-        # Sort: pinned first, then by project then by agent_name.
-        rows.sort(key=lambda r: (r[0] != "★", r[1].lower(), r[2].lower()))
+            numeric_data.append((n_turns, cost))
+        # Sorting. zip rows + numeric so columns stay aligned.
+        paired = list(zip(rows, numeric_data))
+        valid_keys = {"", "project", "agent", "mode", "turns", "cost", "status"}
+        if sort_key not in valid_keys:
+            invoker._append_terminal(
+                f"[/fleet] unknown sort '{sort_key}' — using default. "
+                f"Valid: {', '.join(sorted(k for k in valid_keys if k))}\n"
+            )
+            sort_key = ""
+        if sort_key == "":
+            paired.sort(key=lambda p: (p[0][0] != "★", p[0][1].lower(), p[0][2].lower()))
+        elif sort_key == "project":
+            paired.sort(key=lambda p: p[0][1].lower())
+        elif sort_key == "agent":
+            paired.sort(key=lambda p: p[0][2].lower())
+        elif sort_key == "mode":
+            paired.sort(key=lambda p: p[0][3].lower())
+        elif sort_key == "turns":
+            paired.sort(key=lambda p: p[1][0], reverse=True)
+        elif sort_key == "cost":
+            paired.sort(key=lambda p: p[1][1], reverse=True)
+        elif sort_key == "status":
+            paired.sort(key=lambda p: p[0][6].lower())
+        rows = [p[0] for p in paired]
         # Pre-pend a header row + ruler.
         header = ("", "PROJECT", "AGENT", "MODE", "TURNS", "COST", "STATUS")
         all_rows = [header] + rows
         widths = [max(len(r[i]) for r in all_rows) for i in range(7)]
+        sort_note = f" sorted by {sort_key}" if sort_key else ""
         invoker._append_terminal(
-            f"[/fleet] {len(rows)} card(s):\n"
+            f"[/fleet] {len(rows)} card(s){sort_note}:\n"
         )
         # Print rows; loop twice so the ruler sits under the header.
         for i, r in enumerate(all_rows):
