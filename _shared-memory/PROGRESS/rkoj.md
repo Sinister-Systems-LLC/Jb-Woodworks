@@ -6,6 +6,46 @@ Append-only progress log for the `rkoj` umbrella lane (Forge + Term + Workstatio
 
 ---
 
+## 2026-05-23 07:30 EDT — /loop iteration 5 — RKOJ v1.6.89 scrcpy-no-stray + BOM bug caught + full test pass
+
+Operator (verbatim 2026-05-23T06:48 EDT): *"dont have scrpoy windows show up outside of the ui itself. create a plan to test everything and review everything you need to do and complete it all"*. Two real bugs caught + fixed; comprehensive test plan written; 29 of ~41 tests executed in-sandbox.
+
+### Ships this iteration
+
+| Surface | Effect |
+|---|---|
+| `projects/rkoj/source/sinister_rkoj_qt/devices_tab.py::_spawn_scrcpy` | scrcpy now spawned at offscreen `(30000, 30000)` with `--window-width`/`--window-height` pinned to `MIRROR_SIZE` from the first frame. The headline operator complaint addressed at the spawn surface. |
+| `devices_tab.py::_try_embed` | Defense-in-depth `ShowWindow(SW_HIDE)` immediately after `FindWindow` returns the HWND, BEFORE `SetParent` + style changes; then `ShowWindow(SW_SHOWNOACTIVATE)` once the window is positioned inside `_body_host`. |
+| `projects/rkoj/source/sinister_rkoj_qt/__init__.py` | `__version__ = "1.6.89"` |
+| `projects/rkoj/CHANGELOG.md` | v1.6.89 entry at top — root cause + two-part fix + verification path |
+| `projects/rkoj/source/sinister_rkoj_qt/state.py::load_projects` | **Real bug caught by running the test plan.** `projects.json` carries a UTF-8 BOM (PowerShell `Out-File` default); `load_projects` opened with `encoding="utf-8"` so `json.load` raised `JSONDecodeError("Unexpected UTF-8 BOM")`; the outer `except` swallowed it; `load_projects` returned `[]`. Resume picker was silently empty whenever the launcher rewrote `projects.json`. Fix: `encoding="utf-8-sig"`. Verified — returns 20 project records now. |
+| `_shared-memory/plans/rkoj-test-review-complete-2026-05-23T0700Z/plan.md` (new, ~270 lines) | Full RKOJ surface map split into 5 test categories (A1 sandbox-runnable / A2 offscreen-Qt / A3 ADB-phone / A4 firefox-bridge / A5 PyInstaller-build) + matrix review + bug catches + recommended ordering. |
+| `_shared-memory/OPERATOR-ACTION-QUEUE.md` | New top row for v1.6.89 rebuild + on-hardware verify + BOM-fix sanity check |
+
+### Test pass results
+
+| Category | Run | Pass | Fail | Notes |
+|---|---|---|---|---|
+| A1 sandbox | 25 | 25 | 0 | 12 module imports + `load_projects` (20 records after fix) + 7 RKOJ `/api/*` + 4 Mind `/diagrams` + 4 sinister-browser probe unit tests + 1 resume-point script + 2 indices |
+| A2 offscreen-Qt | 4 | 4 | 0 | MainWindow + DevicesView + AgentsView + `_MirrorCard(mock_device)` |
+| A3 ADB phone | 7 | 0 | 0 | needs operator hardware (`adb` already sees phone `26031JEGR17598`) |
+| A4 firefox-bridge | 1 | 0 | 0 | needs operator XPI + native-host install |
+| A5 PyInstaller | 3 | 0 | 0 | operator double-clicks the build script |
+
+### Commits + branch state
+
+`59667b7` + `ab16d16` (both same v1.6.89 message — see note below) landed on `agent/sinister-generator/source-package-2026-05-23` due to a sibling-agent `git checkout` mid-session; rkoj branch ref was then fast-forwarded via `git branch -f agent/rkoj/next-slate-2026-05-23 ab16d16` (no history rewrite — it's a clean fast-forward from `a4b71cf`). Pushed to origin after one HTTP 408 retry.
+
+### Multi-agent git-index contention storm
+
+5+ concurrent `git.exe` processes from sibling lanes (jb-woodworks, showmasters, sinister-generator, sinister-seraphim, launcher) held the `.git/index.lock` for ~25 minutes mid-session, causing my staged commits to fail/duplicate. Recovery via fast-forward + `git branch -f` to the right ref. Anti-pattern to capture in the next brain-entry cycle: "multi-agent git-index contention storm — N concurrent lanes need `git worktree add` isolation or serialization through a single writer".
+
+### 5-check gate
+
+✅ inbox empty; TaskList #1-#14 all completed; PROGRESS appended; matrix already at correct ✅/🚧/📋 state; resume-point written to `_shared-memory/resume-points/RKOJ/2026-05-23T073733Z.json`.
+
+---
+
 ## 2026-05-23 06:42 — /loop iteration 4 — matrix flips + Layer A probe + script fix
 
 Operator: *"keep working on everyting you need to complete"*. Continued the cycle on the now-pushed `agent/rkoj/next-slate-2026-05-23` branch. Three concrete deliverables shipped:
