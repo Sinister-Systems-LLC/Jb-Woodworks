@@ -59,6 +59,45 @@ Restart any open shells. Format is the standard Anthropic SDK key `sk-ant-api03-
 
 Optional sibling keys (skip unless you need them): `GEMINI_API_KEY` (image-gen), `OPENAI_API_KEY` (Codex peer-review).
 
+### Multi-account rotation (optional — recommended for heavy fleet use)
+
+The launcher supports rotating between multiple Claude accounts so fleet sessions don't all hit one account's rate-limit cap. Adding your own account:
+
+1. **Create a private credentials file** at `C:\Users\<you>\.claude\credentials.leo.json` with:
+   ```json
+   { "api_key": "sk-ant-api03-your-personal-key" }
+   ```
+   This file is operator-private — never enters the repo.
+
+2. **Register your account** in `_shared-memory/claude-accounts.json`:
+   ```json
+   {
+     "name": "leo",
+     "label": "Leo (collaborator)",
+     "env_key": "ANTHROPIC_API_KEY",
+     "credentials_file": "C:\\Users\\<you>\\.claude\\credentials.leo.json",
+     "plan_tier": "max",
+     "max_sessions_concurrent": 5,
+     "current_sessions": 0,
+     "rate_limited_until_utc": null,
+     "fleet_share": 0.4
+   }
+   ```
+
+3. **Optional — install the watchdog** so the fleet auto-resumes after a rate-limit clears:
+   ```powershell
+   powershell -ExecutionPolicy Bypass -File "D:\Sinister Sanctum\automations\install-account-watchdog-task.ps1"
+   ```
+   Registers `SinisterAccountWatchdog` scheduled task (runs every 5 min, hidden).
+
+4. **Smoke-test the rotation library:**
+   ```powershell
+   powershell -ExecutionPolicy Bypass -File "D:\Sinister Sanctum\automations\test-claude-accounts.ps1"
+   ```
+   Should print 8/8 PASS.
+
+Once registered, EVE.exe / PS1 picker → spawn flow automatically picks the next available account via round-robin, injects its `ANTHROPIC_API_KEY` into the spawned shell, marks rate-limits on 429 detection, and releases the slot on session-end. See `_shared-memory/plans/multi-account-rotation-2026-05-23.md` for full architecture.
+
 ---
 
 ## 2. Clone + path setup
