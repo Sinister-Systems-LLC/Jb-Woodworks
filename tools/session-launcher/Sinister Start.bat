@@ -26,6 +26,18 @@ if /I "%~1"=="--diagnose"       goto :run_diagnose
 if /I "%~1"=="-diagnose"        goto :run_diagnose
 if /I "%~1"=="/diagnose"        goto :run_diagnose
 
+REM ----- Multi-account flags (RKOJ-ELENO :: 2026-05-23) -----
+REM --account <name>  -- pin a specific account for this session (overrides round-robin)
+REM --account-status   -- print current claude-accounts.json state and exit
+if /I "%~1"=="--account" (
+    set "SINISTER_ACCOUNT=%~2"
+    shift
+    shift
+    goto :continue_after_account
+)
+if /I "%~1"=="--account-status" goto :run_account_status
+:continue_after_account
+
 REM ----- Optional wt.exe redirect (off by default after v4 silent-close bug) -----
 if defined SINISTER_USE_WT (
     if not defined WT_SESSION (
@@ -147,6 +159,23 @@ echo  [FAIL] Sinister Sanctum repo not found.
 echo  Set SINISTER_SANCTUM_ROOT env var or place repo at D:\Sinister Sanctum
 pause
 exit /b 1
+
+:run_account_status
+REM Print current multi-account state and exit. RKOJ-ELENO :: 2026-05-23.
+set "SANCTUM_ROOT="
+call :tryroot "%SINISTER_SANCTUM_ROOT%"
+if not defined SANCTUM_ROOT call :tryroot "D:\Sinister Sanctum"
+if not defined SANCTUM_ROOT call :tryroot "C:\Sinister Sanctum"
+if not defined SANCTUM_ROOT call :tryroot "%USERPROFILE%\Sinister Sanctum"
+if not defined SANCTUM_ROOT goto :no_sanctum
+echo.
+echo  ====================================================================
+echo   Sinister Sanctum :: Multi-account status (--account-status)
+echo  ====================================================================
+powershell.exe -NoProfile -ExecutionPolicy Bypass -Command ". '%SANCTUM_ROOT%\automations\claude-accounts.ps1'; $cfg = Get-AccountsConfig; Write-Host \"Default: $($cfg.default)\"; Write-Host \"Strategy: $($cfg.rotation_strategy)\"; Write-Host \"Accounts:\"; $cfg.accounts | ForEach-Object { $rl = if ($_.rate_limited_until_utc) { 'RATE-LIMITED until ' + $_.rate_limited_until_utc } else { 'available' }; Write-Host \"  - $($_.name) [$($_.plan_tier)] sessions=$($_.current_sessions)/$($_.max_sessions_concurrent) $rl\" }"
+echo.
+pause
+exit /b 0
 
 :probe_eve
 REM Args: %~1 = path to EVE.exe candidate.
