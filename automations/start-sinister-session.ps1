@@ -1151,7 +1151,12 @@ cd "$bashPath" || { echo '[FAIL] could not cd to project root'; exec bash; }
 claude --dangerously-skip-permissions '$bashPhrase'
 printf '\n  > Claude exited. Writing close-time resume-point...\n'
 powershell -NoProfile -ExecutionPolicy Bypass -File '$SanctumRoot\automations\resume-point-write.ps1' -SanctumRoot '$SanctumRoot' -ProjectKey '$projKey' -AgentName '$bashAgentName' -Mode resume >/dev/null 2>&1
-printf '  > resume-point written. Dropping into sinister-term (our own shell)...\n\n'
+# RKOJ-ELENO :: 2026-05-23 — auto-push on session end (operator: "every time it
+# updates it pushes to github ... thats the only github repo we push to ...
+# connects with leo so we can work as one"). Backgrounded so the session-end
+# UX stays snappy; auto-push.log captures the result.
+( powershell -NoProfile -ExecutionPolicy Bypass -File '$SanctumRoot\automations\sanctum-auto-push.ps1' >/dev/null 2>&1 & ) >/dev/null 2>&1
+printf '  > resume-point written + auto-push fired. Dropping into sinister-term (our own shell)...\n\n'
 # M) operator directive 2026-05-23: use OUR own terminal (sinister-term) where possible.
 # sterm = sinister-term entry-point installed via projects/sinister-term/source pip install -e
 # Falls back to bash if sterm is not on PATH (graceful per the AGPL-quarantine-friendly path).

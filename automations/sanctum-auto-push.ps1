@@ -1,24 +1,31 @@
 ﻿# Author: Sinister Sanctum master agent (Claude) :: 2026-05-19
+# Updated: RKOJ-ELENO :: 2026-05-23 — push CURRENT branch (not just main) so
+#   per-agent branches (agent/<slug>/<topic>) also propagate to GitHub. Operator
+#   directive: "make sure sinsiter bat file everytime it updates it pushes to
+#   github ... thats the only github repo we push to ... connects with leo so
+#   we can work as one".
 #
 # Sanctum auto-push daemon.
 #
-# Runs every 30 min via SinisterSanctumAutoPush scheduled task. Diffs the
-# working tree + checks for unpushed local commits on `main`. If there's
-# nothing to do, exits clean. If there's activity, stages everything (the
-# .gitignore is the secrets gate), commits with a timestamped chore message,
-# and pushes to origin.
+# Runs every 30 min via SinisterSanctumAutoPush scheduled task. Pushes the
+# CURRENT branch (whichever one HEAD is on). For `main` it does the original
+# stage-everything-and-commit behavior; for any `agent/*` branch it ONLY
+# pushes existing commits (no auto-staging — agents own their own staging).
+# Either way, also runs `git fetch --all --prune` so Leo's pushed branches
+# show up on operator's machine (and vice versa).
 #
 # Exit codes:
-#   0  = pushed (commit landed on origin/main)
-#   1  = skipped (no activity OR not on main)
+#   0  = pushed (commit landed on origin/<branch>)
+#   1  = skipped (no activity)
 #   2  = lock held (another run in progress)
 #   10 = staging/commit failed
 #   11 = push failed
 #   12 = secret-scrub regex tripped (abort, do NOT push)
 #
 # Safety rails:
-#   - Branch guard: only commits on `main`. Other agents' per-agent branches
-#     stay untouched.
+#   - Branch handling: on `main` → stage + commit + push.
+#                       on `agent/*` → push existing commits only (no auto-add).
+#                       on any other branch (e.g. detached HEAD) → skip.
 #   - Lock file at _shared-memory/.auto-push.lock (cleaned in finally).
 #   - Secret regex defense-in-depth beyond .gitignore.
 #   - Never force-push.
@@ -26,7 +33,7 @@
 [CmdletBinding()]
 param(
     [string]$RepoRoot   = 'D:\Sinister Sanctum',
-    [string]$Branch     = 'main',
+    [string]$Branch     = '',
     [string]$Remote     = 'origin',
     [int]$LogRotateMB   = 2,
     [switch]$DryRun
@@ -85,16 +92,51 @@ if (Test-Path $lockFile) {
 try {
     Set-Content -LiteralPath $lockFile -Value $PID -Encoding utf8
 
-    # ---- Branch guard ----
+    # ---- Branch detection + mode selection ----
+    # RKOJ-ELENO :: 2026-05-23 — was: only push when on $Branch (default main).
+    # Now: push whatever HEAD is on. main = stage + commit + push.
+    # agent/* = push existing commits only (no auto-staging — agents own staging).
     $b = Invoke-Git rev-parse --abbrev-ref HEAD
     if ($b.exit -ne 0) {
         Write-Log 'error' "branch-detect-failed: $($b.output)"
         exit 10
     }
     $current = $b.output.Trim()
-    if ($current -ne $Branch) {
-        Write-Log 'skipped' "not-on-target-branch current=$current target=$Branch"
+
+    # Decide push mode
+    $allowAutoStage = $false
+    if ($Branch -and $Branch -ne '') {
+        # Explicit -Branch override: respect old behavior
+        if ($current -ne $Branch) {
+            Write-Log 'skipped' "not-on-target-branch current=$current target=$Branch"
+            exit 1
+        }
+        $allowAutoStage = $true
+        $TargetBranch = $Branch
+    } elseif ($current -eq 'main') {
+        # Default: main → stage + commit + push
+        $allowAutoStage = $true
+        $TargetBranch = 'main'
+    } elseif ($current -like 'agent/*') {
+        # Per-agent branch → push existing commits only
+        $allowAutoStage = $false
+        $TargetBranch = $current
+    } elseif ($current -eq 'HEAD') {
+        Write-Log 'skipped' "detached-HEAD"
         exit 1
+    } else {
+        # Any other branch (e.g. feature/*, fix/*) → push existing commits only
+        $allowAutoStage = $false
+        $TargetBranch = $current
+    }
+
+    # ---- Global fetch so Leo's branches sync to operator + vice versa ----
+    # RKOJ-ELENO :: 2026-05-23 — fetch all branches not just $TargetBranch
+    # so multi-operator workflows (Leo + operator on different agent branches)
+    # see each other's branches without manual `git fetch`.
+    $fetchAll = Invoke-Git fetch $Remote --prune
+    if ($fetchAll.exit -ne 0) {
+        Write-Log 'warn' "fetch-all-failed (non-fatal): $($fetchAll.output.Split([Environment]::NewLine)[0])"
     }
 
     # ---- Activity check ----
@@ -105,26 +147,39 @@ try {
     }
     $dirty = -not [string]::IsNullOrWhiteSpace($porc.output)
 
-    # Are there local commits not yet on origin?
-    $fetch = Invoke-Git fetch $Remote $Branch
-    if ($fetch.exit -ne 0) {
-        # Network glitch — log + retry next tick.
-        Write-Log 'error' "fetch-failed: $($fetch.output.Split([Environment]::NewLine)[0])"
-        exit 11
-    }
-    $ahead = Invoke-Git rev-list "$Remote/$Branch..HEAD" --count
+    # Are there local commits not yet on origin/<TargetBranch>?
+    $ahead = Invoke-Git rev-list "$Remote/$TargetBranch..HEAD" --count
     $aheadCount = 0
     if ($ahead.exit -eq 0 -and $ahead.output -match '^\d+$') {
         $aheadCount = [int]$ahead.output.Trim()
+    } else {
+        # Upstream may not exist yet (new agent branch never pushed) — try without ..
+        $headCount = Invoke-Git rev-list HEAD --count
+        if ($headCount.exit -eq 0 -and $headCount.output -match '^\d+$') {
+            $aheadCount = 1  # treat as "needs push" so first push lands
+        }
     }
 
-    if (-not $dirty -and $aheadCount -eq 0) {
-        Write-Log 'skipped' 'no-activity'
-        exit 1
+    # Branch-mode-aware activity check.
+    # main-mode (allowAutoStage=true): need EITHER $dirty OR $aheadCount>0 to proceed.
+    # agent-mode (allowAutoStage=false): need ONLY $aheadCount>0 (we ignore dirty tree
+    #   because the agent owns its own staging — auto-push must never touch agents' WIP).
+    if ($allowAutoStage) {
+        if (-not $dirty -and $aheadCount -eq 0) {
+            Write-Log 'skipped' 'no-activity'
+            exit 1
+        }
+    } else {
+        if ($aheadCount -eq 0) {
+            Write-Log 'skipped' "no-commits-to-push branch=$TargetBranch (agent-mode)"
+            exit 1
+        }
+        $sha = (Invoke-Git rev-parse --short HEAD).output.Trim()
+        Write-Log 'note' "agent-branch-push ahead=$aheadCount sha=$sha branch=$TargetBranch"
     }
 
-    # ---- Stage ----
-    if ($dirty) {
+    # ---- Stage (main-mode only; agent-mode skips this whole block) ----
+    if ($dirty -and $allowAutoStage) {
         $add = Invoke-Git add -A
         if ($add.exit -ne 0) {
             Write-Log 'error' "add-failed: $($add.output)"
@@ -163,7 +218,7 @@ try {
         $stampUtc = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
         $top10 = ($changedLines | Select-Object -First 10) -join "`n - "
         $msgSubject = "chore(auto-push): $stampUtc — $changeCount file$(if($changeCount -ne 1){'s'}) changed"
-        $msgBody = "Auto-mirror of D:\Sinister Sanctum to origin/$Branch via SinisterSanctumAutoPush.`n`nTop changes:`n - $top10"
+        $msgBody = "Auto-mirror of D:\Sinister Sanctum to $Remote/$TargetBranch via SinisterSanctumAutoPush.`n`nTop changes:`n - $top10"
         if ($changeCount -gt 10) { $msgBody += "`n - ... and $($changeCount - 10) more" }
         $msgFull = "$msgSubject`n`n$msgBody"
 
@@ -198,17 +253,25 @@ try {
     }
 
     # ---- Push ----
+    # RKOJ-ELENO :: 2026-05-23 — push $TargetBranch (whichever branch HEAD is on),
+    # not just $Branch. First-time pushes get -u to track upstream.
     if ($DryRun) {
-        Write-Log 'dry-run' "would-push sha=$sha"
+        Write-Log 'dry-run' "would-push sha=$sha to=$Remote/$TargetBranch"
         exit 0
     }
-    $push = Invoke-Git push $Remote $Branch
+    # Check if upstream exists; if not, use -u to set it on first push.
+    $upstream = Invoke-Git rev-parse --abbrev-ref "$TargetBranch@{upstream}"
+    if ($upstream.exit -ne 0) {
+        $push = Invoke-Git push -u $Remote $TargetBranch
+    } else {
+        $push = Invoke-Git push $Remote $TargetBranch
+    }
     if ($push.exit -ne 0) {
         Write-Log 'error' "push-failed: $($push.output.Split([Environment]::NewLine)[0])"
         exit 11
     }
 
-    Write-Log 'pushed' "sha=$sha to=$Remote/$Branch"
+    Write-Log 'pushed' "sha=$sha to=$Remote/$TargetBranch"
     exit 0
 }
 catch {
