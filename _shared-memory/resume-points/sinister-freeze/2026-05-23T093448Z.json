@@ -1,0 +1,45 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-23T13:38:12.5564338Z",
+    "project":  "sinister-freeze",
+    "agent_name":  "sinister-freeze",
+    "mode":  "resume",
+    "focus_intent":  "Voice corpus + Gmail OAuth + ingest shipped, 134/134 tests, wired into brief system prompt. Live on :5079. Next: Anthropic key wiring + Telegram inbound + onboarding wizard + PWA",
+    "git":  {
+                "branch":  "agent/sinister-sanctum/grant-autonomy-followup-2026-05-23",
+                "head":  "1578270f9dc40d3cbced9677ad7f5b643f510525",
+                "head_msg":  "ship(seraphim+quantum-test-env): dual-lane test env + 22x perf via batch sidecars",
+                "recent_commits":  [
+                                       "1578270 ship(seraphim+quantum-test-env): dual-lane test env + 22x perf via batch sidecars",
+                                       "0c2dc66 sanctum: ship EVE.exe completion plan + jcode-parity quick wins update",
+                                       "2ffe44b launcher(perf): TTL-cache Get-MCPCount + Get-BotCount (30s) -- jcode-parity quick win",
+                                       "d39c931 sanctum: headless cmd windows + swarm/loop opt-in + jcode-parity audit close-out",
+                                       "121704b ph1(sinister-freeze): Day 10 test-drive prep + Day 16 anniversary nudge",
+                                       "57af0fe ship(seraphim): EMU RE adapter (snap_re.py) + Snap-focused doctrine + dashboard refresh",
+                                       "1bf857f sanctum: P9 hook-path check + Sinister Generator fleet-wide policy + master plan",
+                                       "d17772e ship(seraphim): cross-lane offer to kernel-apk + brain entry status update",
+                                       "a02a164 ship(seraphim+launcher): Lane 1+2 tested + EVE-style banner rename",
+                                       "960ca8c ph1(sinister-freeze): MVP Day 3 scaffold ΓÇö FastAPI + Frost + Daily brief generator"
+                                   ]
+            },
+    "progress_top3":  [
+                          "2026-05-23T13:30Z â€” Voice corpus + Gmail OAuth ingest shipped (live on :5079)"
+                      ],
+    "latest_plan":  {
+                        "dir":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\sinister-freeze-2026-05-21",
+                        "artifact":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\sinister-freeze-2026-05-21\\deep-research.md"
+                    },
+    "inbox_unread_count":  0,
+    "last_5_files_touched_24h":  [
+                                     "projects\\jb-woodworks\\.next\\cache\\images\\z2UYZ9qsvQbq9_1_E1ftWd-uAhR3Ze18JVryosmV8Ns\\60.1779543348229.m1ppM4dUKYp1nsb1RqUC-6JdE94xFAuKqiZHFDi0Ms8.Vy8iOGM0M2UtMTllNTQyODUyNjAi.avif",
+                                     "projects\\jb-woodworks\\.next\\cache\\images\\pV151K6OXMi-aO0H_PS6dU71IUZGRGt_9Fft9aIzVCo\\60.1779543348238.xXrUiPeA_jFn6c-Ujf5-I-fZNCIMkzzCV6g9LVjAHJU.Vy8iMmU1ZGYzLTE5ZTU0Yzg1NjY0Ig.avif",
+                                     "projects\\jb-woodworks\\.next\\cache\\images\\z0QSevaR9BzZxLFxN9Ww8xkld5BFBT7OPgGTd1NjZI4\\60.1779543344989.r-col7BJFhI-pW1WBH_-_0eumwKBe1SC0h_F0VKDeWY.Vy8iY2Y1ZGUtMTllNTQyODQwYzQi.avif",
+                                     "projects\\jb-woodworks\\.next\\cache\\images\\XXnDd-JfK3ECcJC2aUoxRcqJMwmsFm-FqkFCM2MtS20\\60.1779543345150.h1RKPABdAlsusNXTjNxb-FfKZqjC9XXIWPLDd1HAPuo.Vy8iMWY0YTFhLTE5ZTU0YzgyNTViIg.avif",
+                                     "projects\\jb-woodworks\\.next\\cache\\images\\3QQPpqkTGE3JjoZBpOKqylFjxj03mIT6_BNUyLS6D9I\\60.1779543337300.F4FIIS-vWmpK4dZGHQg2e6skqsoYPx9vAuf32iMwsCk.Vy8iMzcyOGZmLTE5ZTU0YzdkZjJlIg.avif"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\sinister-freeze.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\plans\\sinister-freeze-2026-05-21\\deep-research.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}

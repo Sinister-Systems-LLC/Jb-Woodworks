@@ -2,6 +2,176 @@
 
 > Append-only log; most-recent at top. Author: RKOJ-ELENO.
 
+## 2026-05-23T13:30Z — Voice corpus + Gmail OAuth ingest shipped (live on :5079)
+
+**Branch:** `agent/sinister-freeze/ph1-mvp-day3-brief`
+**Operator clearance:** "keep going with voice corpus and gmail oauth" (2026-05-23). Same "real, tested, no fairy-tale" discipline: every claim has a passing test AND a curl probe captured below.
+
+**What shipped this turn:**
+
+- `freeze/voice/corpus.py` — Joe's voice corpus stored locally as JSONL at `~/.sinister-freeze/voice-corpus.jsonl`. Real, append-only:
+  - `VoiceSample` dataclass — text + channel + kind + captured_at + pii flag
+  - `add_sample()` — strict (rejects empty); appends one JSONL line
+  - `import_samples()` — accepts both JSON-array and JSONL formats; skips malformed lines
+  - `read_all()` / `count_samples()` / `recent_samples(channel, kind, n)` — local scan with filters
+  - `voice_few_shot(n, channel)` — builds a Frost-prompt prefix that demonstrates Joe's voice via examples; empty-corpus returns empty string (safe no-op)
+  - `clear()` — wipes the corpus (Joe-only operation)
+  - `redact_pii()` — naive but real redactor (email + phone + caller-supplied literals); used before LLM-send of corpus samples
+- `freeze/voice/frost.py` — `render_system_prompt_with_voice()` helper that appends the few-shot block to the base Frost system prompt when corpus has samples. Safe no-op otherwise.
+- `freeze/modules/brief.py` — `build_prompt_pair()` now uses `render_system_prompt_with_voice()`. The moment Joe adds any voice sample, the next LLM-driven brief auto-includes the few-shot. **No code change needed when ANTHROPIC_API_KEY is wired.**
+- `freeze/comms/gmail.py` — Google OAuth + Gmail/Calendar ingest:
+  - `OAuthNotConfigured` exception with clean "do this next" message
+  - `client_secrets_path()` / `token_path()` / `is_authorized()` / `has_client_secrets()` predicates
+  - `authorize_local(port=8088)` — runs `google_auth_oauthlib.flow.InstalledAppFlow.run_local_server()`; persists token JSON
+  - `load_credentials()` — loads + auto-refreshes
+  - `GoogleClient` Protocol + `RealGoogleClient` (production: `googleapiclient.discovery.build`) + `RecordingGoogleClient` (test double with canned `IngestedEvent`/`IngestedThread` payloads)
+  - `_classify_event_kind()` — calendar summary → `test_drive`/`service`/`delivery`/`None`
+  - `_parse_from_header()` — RFC-5322 `From:` header → (name, email)
+  - `ingest_into_db(client, since, until)` — pulls threads (creates contacts + conversation_notes) then events (links to attendee contacts; dedups by external_id). Returns `IngestReport`.
+  - `ingest_status_dict()` — for the `/gmail/status` endpoint; gives Joe-friendly next-steps regardless of state
+- `freeze/app.py` — 4 new endpoints:
+  - `POST /voice/sample` — add one (Pydantic-validated)
+  - `GET  /voice/recent?channel=...&n=N` — recent samples + few-shot preview
+  - `GET  /gmail/status` — state + paste-ready next steps
+  - `POST /gmail/ingest?since_days=2&until_days=14` — runs the ingest (refuses cleanly when not authorized)
+- `freeze/cli.py` — full sub-commands:
+  - `sinister-freeze voice {add,import,show,few-shot,clear}` (clear requires `--yes`)
+  - `sinister-freeze gmail {status,authorize,ingest}` (auth + ingest refuse cleanly when unconfigured)
+- Tests added: `test_voice_corpus.py` (17), `test_gmail.py` (14), `test_voice_integration.py` (4), `test_app_voice_gmail.py` (5), `test_cli_voice_gmail.py` (6) — **all 134 tests pass on Python 3.12.10**.
+
+**End-to-end live verification (this turn — service still on :5079 for you to poke):**
+
+```
+$ curl -X POST /voice/sample -d '{"text":"Hi Marcus, ...","channel":"email"}'
+  → {"stored":true,"total_samples":1}
+$ curl -X POST /voice/sample -d '{"text":"New 296 GTB ...","channel":"ig_caption"}'
+  → {"stored":true,"total_samples":2}
+$ curl /voice/recent
+  → count=2; few_shot_preview includes both samples with "Voice-match examples" header
+$ curl /gmail/status
+  → client_secrets_present:false, authorized:false, next_steps:"Operator: create a Google Cloud OAuth client..."
+$ curl -X POST /gmail/ingest
+  → ok:false, refused_reason:"Gmail token missing. Run: sinister-freeze gmail authorize"
+```
+
+**Why this is real (not fairy tale):**
+
+- **Voice corpus** is a literal JSONL file you can `cat ~/.sinister-freeze/voice-corpus.jsonl` to see Joe's samples; the few-shot prefix is constructed by reading that exact file. The wire into the brief is one line: `build_prompt_pair` uses `render_system_prompt_with_voice`. The next time the brief runs against Claude, it WILL see those samples.
+- **Gmail OAuth** uses the official `google-auth-oauthlib` `InstalledAppFlow.run_local_server()` (industry-standard; Google's own example). Token storage / refresh uses `google.oauth2.credentials.Credentials.from_authorized_user_file()` + `Request()`. The `RealGoogleClient` uses `googleapiclient.discovery.build('gmail','v1')` and `build('calendar','v3')` — real Google API.
+- **Ingest** is exercised end-to-end via `RecordingGoogleClient`: events dedupe by external_id, attendees auto-link to contacts, threads create new contacts when needed, conversation notes are persisted. The recording client + real client share the same `GoogleClient` Protocol so the prod path exercises the same `ingest_into_db()` code the tests cover.
+- **Status / refused paths** carry paste-ready instructions for the next action — no silent failures.
+
+**To turn the Gmail surface live** (operator + Joe one-time setup):
+
+1. Operator: Google Cloud Console → New OAuth client (Desktop application) → Download JSON → save to `C:\Users\Zonia\.sinister-freeze\google-client-secrets.json` (path shown in `/gmail/status`)
+2. Joe: `sinister-freeze gmail authorize` — local browser pops up the Google consent screen. Token saved.
+3. Joe: `sinister-freeze gmail ingest` (or `POST /gmail/ingest`) — pulls upcoming calendar events + recent Gmail threads into the local DB. Calendar test-drives auto-classified; emails populate `conversation_note` for test-drive prep briefs.
+
+**Cumulative source tree (post-voice + gmail):**
+
+```
+source/freeze/
+  __init__.py  app.py  cli.py  config.py  db.py  scheduler.py  schema.py
+  comms/      __init__.py  telegram.py  gmail.py
+  modules/    __init__.py  brief.py  triage.py  wrap.py  test_drive.py  anniversary.py  ferrari_specs.py
+  voice/      __init__.py  frost.py  redflag.py  corpus.py
+source/tests/  (18 modules, 134 tests, all green)
+source/Joe's Freeze.bat
+```
+
+**Why the wire into brief actually changes behavior:**
+
+When ANTHROPIC_API_KEY is set and Joe has any voice samples, `generate_brief()` → `build_prompt_pair()` → `render_system_prompt_with_voice()` will prepend the few-shot examples to the Frost system prompt. Tested at `tests/test_voice_integration.py`:
+- `test_brief_prompt_pair_uses_voice_when_available` — confirms the few-shot text shows up in the LLM system prompt
+- `test_brief_prompt_pair_clean_when_corpus_empty` — confirms the base prompt is unchanged when corpus is empty
+
+**What's next (resume-point pre-warms):**
+
+1. **Anthropic key wiring + monitoring** — once `ANTHROPIC_API_KEY` lands in env, the brief / wrap / triage modules switch from local-fallback to LLM-driven. Add `freeze/llm.py` thin client with prompt-cache headers + cost telemetry per model.
+2. **Telegram inbound** — let Joe reply "approve <draft_id>" / "skip <id>" via Telegram. Bridge layer enforces JOE-SAFETY (only from configured chat).
+3. **Onboarding wizard** — `sinister-freeze onboard` interactive flow: connect Gmail / IG / TT / FB Marketplace / Calendar; collect 30 voice samples; pick brief delivery time + primary ask-channel.
+4. **PWA scaffold** — React + Vite + Tailwind, Sanctum purple. Pull layout + section primitives from `projects/sinister-dashboard-skeleton/`, `projects/showmasters/`, `projects/jb-woodworks/`.
+5. **Anniversary draft LLM upgrade** — wire `render_system_prompt_with_voice()` into `anniversary.draft_for()` so refined trade-up emails get Joe's voice once the LLM key is wired.
+
+**Lane discipline:**
+
+- Touched only `projects/sinister-freeze/source/` + `_shared-memory/{heartbeats,PROGRESS,resume-points}/sinister-freeze*`.
+- Did NOT touch sibling lanes, `~/.claude/.mcp.json`, `_vault/`.
+- All new files carry `Author: RKOJ-ELENO :: 2026-05-23`.
+
+## 2026-05-23T13:10Z — PH1-MVP Day 18 shipped + live localhost UI (Ferrari spec lookup + dashboard)
+
+**Branch:** `agent/sinister-freeze/ph1-mvp-day3-brief`
+**Operator clearance + critical feedback:** "keep going with the ferrari-spec lookup chatbot. place things on local host so i can view and test. make sure these are real functions and not fairy tail shit test everything before you add it" (2026-05-23). Took the feedback seriously: real published Ferrari catalog data, real fuzzy search code path, every endpoint live-verified with curl before claiming done.
+
+**What shipped this turn:**
+
+- `freeze/modules/ferrari_specs.py` — Day 18 deliverable. **Real catalog data** (no stubs):
+  - 10 current-production Ferrari models from public press material: 296 GTB, 296 GTS, SF90 Stradale, SF90 Spider, 12Cilindri, 12Cilindri Spider, Roma, Roma Spider, Purosangue, Daytona SP3 (Icona)
+  - Per-model: body style, engine, hp (both cv and SAE), torque, 0-100 km/h, top speed, drivetrain, transmission, MSRP "from" floor (honestly disclaimed as spec-dependent), status, aliases
+  - `0-60 mph` derived from `0-100 km/h × 0.96`; `mph` derived from `km/h × 0.621371` — both checked numerically in tests
+  - `search(q, limit=5)` — ranked fuzzy match across name, normalised name (case-insensitive, hyphen/space-collapsed), aliases, body style ("spider"/"coupe"/"suv"), engine class ("v6"/"v8"/"v12"). Returns `list[(model, score)]` sorted high→low. No LLM call; pure data.
+  - `model_by_name()` — direct name/alias resolution
+  - `format_model_telegram()` — concise Frost-toned card
+  - `format_search_telegram()` — multi-hit digest
+  - `to_dict()` — JSON-serialisable conversion for the API
+  - Sanity guardrail tests reject any catalog entry with implausible hp/0-100/top-speed/drivetrain — so a typo can't ship "0hp" specs
+- `freeze/app.py` — endpoint additions + **live HTML dashboard**:
+  - `GET /` — full dark Sinister-purple HTML dashboard. Six sections (brief, wrap, Ferrari lookup, DM triage, scheduler, upcoming drives). Live JS hits every endpoint; Ferrari lookup + DM triage both have working input forms. Configured/unconfigured state shown for Telegram + Anthropic.
+  - `GET /ferrari/lookup?q=...&limit=N` — JSON `{query, count, digest, hits[{score, model}]}`
+  - `GET /ferrari/catalog` — full 10-model list
+  - `GET /ferrari/model/{name}` — plain-text spec card; 404 on unknown
+  - Internals refactored so business logic lives in `_ferrari_*_impl()` helpers — tests call them directly, route handlers stay thin (avoids FastAPI Query() vs direct-call type collision)
+- `freeze/cli.py` — `sinister-freeze ferrari <query> [--limit N]` — exit 0 on match, 2 on no match
+- Tests: `test_ferrari_specs.py` (21), `test_app_ferrari.py` (8), `test_cli_ferrari.py` (3) — **all 88 tests pass on Python 3.12.10**
+
+**End-to-end live verification (this turn — service kept running on :5079 for operator):**
+
+```
+$ curl /health          → status ok
+$ curl /ferrari/lookup?q=SF90       → 2 hits: SF90 Stradale (score 0.95) + SF90 Spider (0.85)
+$ curl /ferrari/lookup?q=296        → 296 GTB + 296 GTS
+$ curl /ferrari/lookup?q=ferrari+suv → Purosangue (alias)
+$ curl /ferrari/lookup?q=v12        → 12Cilindri + 12Cilindri Spider + Purosangue + Daytona SP3
+$ curl /ferrari/model/Daytona%20SP3 → real Icona card, $2.3M from, sold_out status
+$ curl /ferrari/catalog             → 10 models, ordered V6 → V8 → V12 → SUV → Icona
+$ curl /                            → Sinister-purple dashboard HTML loads + JS wires to all endpoints
+```
+
+**Why this is not "fairy tale shit" — verifiable claims:**
+
+- Every spec comes from Ferrari's public press / build-configurator copy (HP, torque, 0-100, top speed, drivetrain). Where MSRP varies by spec, the field is labelled "MSRP from" and the disclaimer "(spec-dependent)" ships in every card.
+- The search has no LLM dependency — it's a pure ranked-substring algorithm with explicit scoring tiers; the test suite exercises name match, normalised match, alias, body style, engine class, multi-hit ordering, zero-match.
+- Every endpoint was probed live via curl with the actual response captured here and in the heartbeat. No assertion of "it works" without a recorded HTTP response.
+- The HTML index page is tested for required substrings AND was hit live in a browser-equivalent curl.
+
+**Cumulative source tree (post-Day-18):**
+
+```
+source/freeze/
+  __init__.py  app.py  cli.py  config.py  db.py  scheduler.py  schema.py
+  comms/      __init__.py  telegram.py
+  modules/    __init__.py  brief.py  triage.py  wrap.py  test_drive.py  anniversary.py  ferrari_specs.py
+  voice/      __init__.py  frost.py  redflag.py
+source/tests/  (13 modules, 88 tests, all green)
+source/Joe's Freeze.bat
+source/pyproject.toml  .gitignore  README.md
+```
+
+**What's next (resume-point will pre-warm these):**
+
+1. **Voice corpus + Anthropic key wiring** — once `ANTHROPIC_API_KEY` lands, brief/wrap/triage/anniversary auto-upgrade to LLM. Voice corpus: pull Joe's last 30 IG captions + 50 sent emails into `forge-memory/freeze/voice-corpus.jsonl`; few-shot the Frost system prompt.
+2. **Gmail OAuth ingest** — `freeze/comms/gmail.py` populates `calendar_event` + flags inbound threads.
+3. **Telegram inbound** — Joe replies "approve" / "skip" to a queued draft via Telegram. Bridge enforces JOE-SAFETY (only from configured chat).
+4. **Onboarding wizard** — first-run flow that connects Gmail / IG / TT / FB Marketplace / Calendar / voice baseline + saves to `~/.sinister-freeze/onboarding.json`.
+5. **PWA scaffold** — React + Vite + Tailwind, Sanctum purple. Pull layout + section primitives from `projects/sinister-dashboard-skeleton/`, `projects/showmasters/`, `projects/jb-woodworks/`.
+
+**Lane discipline:**
+
+- Touched only `projects/sinister-freeze/source/` + `_shared-memory/{heartbeats,PROGRESS,resume-points}/sinister-freeze*`.
+- Did NOT touch sibling lanes, `~/.claude/.mcp.json`, `_vault/`.
+- All new files carry `Author: RKOJ-ELENO :: 2026-05-23`.
+
 ## 2026-05-23T12:35Z — PH1-MVP Day 10 + Day 16 shipped (test-drive prep brief + anniversary nudge)
 
 **Branch:** `agent/sinister-freeze/ph1-mvp-day3-brief`
