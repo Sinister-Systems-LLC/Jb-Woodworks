@@ -10,6 +10,12 @@ The Sanctum-side mirror of `SESSION-START/02-OPERATOR-QUEUE.md`, with checkboxes
 
 ---
 
+## 2026-05-23 evening — MCP server failure fix shipped (operator screenshot "1 MCP server failed")
+
+- [ ] 🔴 **Restart Claude Code to load the MCP fix shipped 2026-05-23 evening** — `~/.claude/.mcp.json` had 2 failing servers (not 1): `sinister-apk` (package empty on disk - REMOVED) + `translator` (.venv missing `mcp` package - switched to bare `python`). Server count now 22 (was 23). MCPs load on cold-start only, so every spawned EVE needs Claude Code restarted to pick up the fix. Brain entry: `_shared-memory/knowledge/mcp-server-failure-fix-2026-05-23.md`.
+
+---
+
 ## 2026-05-23 07:00 EDT — RKOJ v1.6.89 ready (scrcpy-no-stray-window + BOM fix)
 
 EVE on RKOJ shipped two fixes that need PyInstaller rebuild + on-hardware verification:
