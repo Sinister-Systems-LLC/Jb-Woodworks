@@ -106,9 +106,16 @@ _SUMMARIZE_PROMPT = (
 )
 
 
+# v1.6.70 — token-budget warning threshold. claude opus typically has
+# 200k effective context; warning at 100k gives operator runway to
+# /summarize or fork via /clone before truncation pressure.
+_TOKEN_WARN_THRESHOLD = 100_000
+
+
 SLASH_COMMANDS: list[tuple[str, str]] = [
     ("/help",     "show all slash commands"),
     ("/broadcast","send the same message to all live cards"),
+    ("/budget",   "show token-budget gauge vs warn threshold"),
     ("/cancel",   "kill the in-flight turn (Esc) — keeps card alive"),
     ("/clear",    "clear terminal scrollback (Ctrl+L)"),
     ("/clone",    "spawn a sibling card with the same project + mode"),
@@ -863,6 +870,11 @@ class AgentCard(QFrame):
         # /font-reset). Tracked on the card so each card can have its
         # own zoom level (not a global preference).
         self._terminal_font_size: int = 10  # matches QFont("Cascadia Mono", 10) default
+        # v1.6.70 — token-budget warning state. Surfaces a one-shot
+        # yellow line when (in + out) cumulative tokens cross the
+        # warn threshold. Reset by /clear and /forget-last is intentionally
+        # NOT a reset trigger (claude --resume still has the context).
+        self._token_warning_shown: bool = False
         self._build()
         # v1.6.45 — render any restored tags after build.
         self._rebuild_tags()
@@ -1747,6 +1759,24 @@ class AgentCard(QFrame):
         if head == "/clear":
             self.terminal.clear()
             self._append_terminal("[cleared]\n")
+            return True
+        if head == "/budget":
+            combined = self._total_in_tokens + self._total_out_tokens
+            pct = (combined / _TOKEN_WARN_THRESHOLD) * 100 if _TOKEN_WARN_THRESHOLD else 0
+            bar_width = 30
+            filled = min(bar_width, int(bar_width * combined / _TOKEN_WARN_THRESHOLD)) if _TOKEN_WARN_THRESHOLD else 0
+            bar = "█" * filled + "░" * (bar_width - filled)
+            self._append_terminal(
+                f"[/budget] cumulative tokens (in+out):\n"
+                f"  {bar}  {combined:,} / {_TOKEN_WARN_THRESHOLD:,} ({pct:.0f}%)\n"
+                f"  in     : {self._total_in_tokens:,}\n"
+                f"  out    : {self._total_out_tokens:,}\n"
+                f"  cost   : ${self._total_cost_usd:.4f}\n"
+            )
+            if combined >= _TOKEN_WARN_THRESHOLD:
+                self._append_terminal(
+                    "  ⚠ at/over warn threshold — consider /summarize or /clone\n"
+                )
             return True
         if head in ("/clone", "/dup"):
             # v1.6.41 — spawn a sibling card with the same project + mode
@@ -2935,6 +2965,18 @@ class AgentCard(QFrame):
                 )
             except Exception:
                 pass
+            # v1.6.70 — one-shot token-budget warning when combined
+            # in+out crosses the threshold. Operator gets runway to
+            # /summarize or /clone before truncation pressure hits.
+            combined = self._total_in_tokens + self._total_out_tokens
+            if (not self._token_warning_shown
+                    and combined >= _TOKEN_WARN_THRESHOLD):
+                self._token_warning_shown = True
+                self._append_dim(
+                    f"\n  ⚠ token budget: {combined:,} cumulative tokens "
+                    f"(≥{_TOKEN_WARN_THRESHOLD:,}). Consider /summarize, "
+                    f"/clone fresh, or /export-all + start a new card.\n"
+                )
         elif t == "system":
             # System events (init / status / hook_started / hook_response).
             # We don't render these to keep the terminal quiet — too verbose.

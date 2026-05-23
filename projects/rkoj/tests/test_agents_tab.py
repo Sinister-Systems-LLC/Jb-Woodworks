@@ -201,9 +201,21 @@ class TestSkillFrontmatter(unittest.TestCase):
         self.assertEqual(body, text)
 
 
+class TestTokenBudget(unittest.TestCase):
+    def test_threshold_constant_present(self) -> None:
+        self.assertTrue(hasattr(agents_tab, "_TOKEN_WARN_THRESHOLD"))
+        self.assertGreater(agents_tab._TOKEN_WARN_THRESHOLD, 0)
+
+    def test_threshold_is_realistic(self) -> None:
+        # Should be a substantial but not full-context number so operator
+        # gets runway before truncation. Bounded 25k..200k.
+        self.assertGreaterEqual(agents_tab._TOKEN_WARN_THRESHOLD, 25_000)
+        self.assertLessEqual(agents_tab._TOKEN_WARN_THRESHOLD, 200_000)
+
+
 class TestModuleSurface(unittest.TestCase):
     def test_version_matches(self) -> None:
-        self.assertEqual(sinister_rkoj_qt.__version__, "1.6.69")
+        self.assertEqual(sinister_rkoj_qt.__version__, "1.6.70")
 
     def test_classes_present(self) -> None:
         for name in (

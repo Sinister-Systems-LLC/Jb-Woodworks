@@ -4,6 +4,34 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not command-versions (each lane has its own).
 
+## v1.6.70 — 2026-05-23 — token-budget warning + /budget gauge
+
+**One-shot yellow warning when a card crosses 100k cumulative tokens
+(in + out). Plus new `/budget` slash with a Unicode block-bar gauge.**
+
+- New module constant `_TOKEN_WARN_THRESHOLD = 100_000` — opus has
+  ~200k effective context, so 100k gives operator runway to
+  /summarize or /clone before truncation pressure.
+- New `_token_warning_shown: bool` per-card state so the warning
+  fires exactly once per card lifetime (not every turn).
+- Warning text (dim color, prefixed `⚠`):
+  ```
+  ⚠ token budget: 102,341 cumulative tokens (≥100,000).
+  Consider /summarize, /clone fresh, or /export-all + start a new card.
+  ```
+- New `/budget` command prints a 30-char block-bar gauge:
+  ```
+  [/budget] cumulative tokens (in+out):
+    ███████████████░░░░░░░░░░░░░░  47,182 / 100,000 (47%)
+    in     : 41,233
+    out    : 5,949
+    cost   : $0.6321
+  ```
+- 2 new test assertions (threshold-present + bounded 25k..200k).
+- Test suite now 29 assertions / 9 TestCases, all pass.
+- MANIFEST.json 1.6.69 → 1.6.70.
+- `__init__.py __version__ = "1.6.70"`.
+
 ## v1.6.69 — 2026-05-22 — jcode skill-frontmatter parity
 
 **`/skill` + `/skills` now parse jcode-style YAML frontmatter
