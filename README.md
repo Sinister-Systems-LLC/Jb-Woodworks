@@ -3,6 +3,8 @@
 > ðŸ“› **Local path:** `D:\Sinister Sanctum\` (junction) **or** `D:\Sinister Sanctum\` (canonical underlying). Both resolve to the same content. Use whichever feels natural; existing scripts use `D:\Sinister Sanctum\` and won't break.
 > See **`SANCTUM.md`** for the 5-repo universe (Sanctum + Snap-API-EMU + TikTok-EMU + Panel + Kernel-APK).
 > **GitHub org:** `Sinister-Systems-LLC`
+>
+> ðŸ‘‹ **New here / first-time setup?** Read **[`docs/LEO-SETUP.md`](docs/LEO-SETUP.md)** â€” one-page guide covering prereqs, clone, first-run, common pitfalls, and verification. The `leo-ready-2026-05-23` tag marks the snapshot that's been end-to-end tested for a fresh-clone workflow.
 
 Sanctum is the "new library of alexandria" for Sinister â€” the orchestration repo
 that every other Sinister company project consumes for bots, automations, docs,

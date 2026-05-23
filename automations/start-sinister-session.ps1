@@ -914,12 +914,16 @@ function Prompt-AgentModes {
         return @{ swarm = $defSwarm; loop = $defLoop }
     }
     $defLabel = if ($defSwarm -and $defLoop) { 'both' } elseif ($defSwarm) { 'swarm' } elseif ($defLoop) { 'loop' } else { 'neither' }
+    # RKOJ-ELENO :: 2026-05-23 :: SPEED FIX — $C.Header / $C.Prompt were never defined
+    # in the $C palette (lines ~54-64), so each spawn emitted two silent Write-Host
+    # parameter errors that polluted stderr and could stall buffered output. Use
+    # existing palette entries (White / LightP).
     Write-Host ''
-    Write-Host '  Modes (jcode-parity autonomy):' -ForegroundColor $C.Header
+    Write-Host '  Modes (jcode-parity autonomy):' -ForegroundColor $C.White
     Write-Host '    s = swarm  (spawn parallel sub-agents for multi-file work)' -ForegroundColor $C.Dim
     Write-Host '    l = loop   (keep iterating + expanding; do not stop on first solution)' -ForegroundColor $C.Dim
     Write-Host '    b = both   |   Enter = none   |   ! = remember default (this session)' -ForegroundColor $C.Dim
-    Write-Host -NoNewline ('  Choose [default: ' + $defLabel + ']: ') -ForegroundColor $C.Prompt
+    Write-Host -NoNewline ('  Choose [default: ' + $defLabel + ']: ') -ForegroundColor $C.LightP
     $ans = Read-Host
     $modes = @{ swarm = $defSwarm; loop = $defLoop }
     if (-not $ans) { return $modes }
@@ -961,8 +965,13 @@ function Get-SavedWindowPosition($projectKey, $sanctumRoot) {
 }
 
 function Test-WindowPositionOccupied($x, $y, $w, $h) {
+    # RKOJ-ELENO :: 2026-05-23 :: SPEED FIX — operator opt-out + lazy Add-Type.
+    # Setting SINISTER_SKIP_POSITION_CHECK=1 skips the Win32 EnumWindows scan
+    # entirely (eliminates 50-500ms cold-path latency on the spawn hot path).
+    if ($env:SINISTER_SKIP_POSITION_CHECK -eq '1') { return $false }
     try {
-        Add-Type @"
+        if (-not ('WinPosCheck' -as [type])) {
+            Add-Type @"
 using System;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
@@ -991,6 +1000,7 @@ public class WinPosCheck {
     }
 }
 "@ -ErrorAction SilentlyContinue
+        }
         [WinPosCheck]::rects = New-Object 'System.Collections.Generic.List[WinPosCheck+RECT]'
         [WinPosCheck]::EnumWindows([WinPosCheck+EnumWindowsProc][WinPosCheck]::Collect, [IntPtr]::Zero) | Out-Null
         $savedArea = $w * $h
@@ -1112,12 +1122,13 @@ export SINISTER_LOOP_MODE='$loopEnv'
 clear 2>/dev/null || printf '\033c'
 printf '\n'
 # Animated jcode-style ASCII C banner (operator 2026-05-23 image #3).
-# Background script handles color animation; ~0.6s total so it doesn't delay claude.
-# Sanctum root resolved at spawn-time from PS1 (`$SanctumRoot`) so this works on
-# any operator's machine (e.g. Leo's clone, regardless of drive letter).
+# RKOJ-ELENO :: 2026-05-23 :: SPEED FIX — was blocking ~0.56s before claude
+# (worst-case 8s if `sleep` fallback triggered). Now backgrounded so claude
+# starts immediately and the banner animates in parallel. Skip entirely via
+# SINISTER_SKIP_BANNER=1.
 _sanctum_banner='$bashSanctumRoot/automations/sinister-banner.sh'
-if [ -f "$_sanctum_banner" ]; then
-    bash "$_sanctum_banner" 8 0.07 2>/dev/null || true
+if [ -f "\$_sanctum_banner" ] && [ "\${SINISTER_SKIP_BANNER:-0}" != "1" ]; then
+    ( bash "\$_sanctum_banner" 8 0.07 2>/dev/null & ) >/dev/null 2>&1
 fi
 printf '\n'
 printf '  $pillA $agentName $pillZ  $pillM resume $pillZ  $pillD claude-opus-4-7[1m] $pillZ  $pillG mcp:$mcpCnt $pillZ  $pillB bots:$botCnt $pillZ  $pillR --skip-perms $pillZ\n'

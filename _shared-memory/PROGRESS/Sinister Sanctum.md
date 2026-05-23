@@ -4,6 +4,46 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-23 19:45Z — Leo-ready ship + tag — 5 parallel agents land launcher hardening for external operator
+
+EVE on Sanctum landed commit `774aac9` and annotated tag `leo-ready-2026-05-23` on `agent/sinister-sanctum/grant-autonomy-followup-2026-05-23` — the snapshot Leo can clone and run `Sinister Start.bat` against without manual fixes.
+
+**Operator stack this turn:**
+1. *"push the entire sanctum to github"* + *"sweep commit the rest"* → commits `0fafe63` (launcher hardening), `79067ef` (sweep batch 1), `774aac9` (Leo-ready) all pushed; tag `leo-ready-2026-05-23` annotated on 774aac9.
+2. *"sinster start bat file wont work fix it"* → bat v6.3 (Desktop + Sanctum-tree both synced): simple `start "" "%EXE%"` syntax (was: blocking `"%EVE_EXE%"`); plugin check moved to async background via `start "" /B ... -WindowStyle Hidden`; X-button now works on EVE.exe / picker window.
+3. *"fix this make auto"* (image #9 + #12) → `check-required-plugins.ps1` now has `-Silent` (all output → `~/.claude/sanctum-plugin-check.log`) + `-AutoInstall` covers both required AND recommended.
+4. *"make sure we have the jcode animation"* (image #3) → `automations/sinister-banner.sh` (animated 256-color C, 1:1 transcribed; 8 frames × 0.07s, palette 196→213); wired into spawned `.sh` before claude launch; portable via `$bashSanctumRoot`.
+5. *"fix errors like this"* (image #13 railway login) → Agent D shipped `non-interactive-auth-doctrine-2026-05-23.md` (16-CLI env-var table); `docs/ENV-VARIABLES.md` updated; OPERATOR-ACTION-QUEUE row.
+6. *"make sure leo can run it"* → Agent B shipped `docs/LEO-SETUP.md` (one-pager: prereqs, clone, first-run, pitfalls, verify); Agent C verified end-to-end + applied 1-line portability fix at `start-sinister-session.ps1:1131`.
+7. *"make our terminals perfect"* → Agent E shipped 3 sinister-term quick wins to `term/app.py` (in-process `cd`, OSC-0 window title, bare exit/quit/logout).
+8. *"everything just froze for some time"* → Agent F running speed audit of `start-sinister-session.ps1`.
+9. *"make x button work"* → covered by item 2 (`start ""` + `exit /b 0` pattern in bat v6.3).
+
+**Verified working (no code change needed):**
+- Cold-start prompt delivery — image #8 caught the phrase mid-stream ("Metamorphosing… 22s · 606 tokens"). Positional arg path in `start-sinister-session.ps1:1129` works.
+- Bat v6.3 `--diagnose` returns all OK on the operator's machine.
+
+**Files modified this turn (already committed):**
+- `automations/sinister-banner.sh` (new, animated ASCII C banner)
+- `automations/start-sinister-session.ps1` (banner wiring + 2 portability fixes — lines 1077-1079, 1118-1120, 1131, 1141)
+- `automations/check-required-plugins.ps1` (-Silent + -AutoInstall for recommended)
+- `automations/eve-launcher/build-eve-exe.bat` (removed invalid PyInstaller flag)
+- `tools/session-launcher/Sinister Start.bat` (v6.3, identical to Desktop copy)
+- `C:\Users\Zonia\Desktop\Sinister Start.bat` (v6.3, out-of-tree but synced)
+- `docs/LEO-SETUP.md` (new, one-page external-operator setup guide)
+- `docs/ENV-VARIABLES.md` (new "Third-party CLI auth tokens" section)
+- `_shared-memory/knowledge/non-interactive-auth-doctrine-2026-05-23.md` (new doctrine)
+- `_shared-memory/knowledge/_INDEX.md` (new doctrine row added)
+- `_shared-memory/plans/leo-launcher-ready-2026-05-23.md` (new plan doc)
+- `_shared-memory/OPERATOR-ACTION-QUEUE.md` (third-party CLI tokens row)
+- `projects/sinister-term/source/term/app.py` (3 quick-win fixes)
+- `.gitignore` (`*.bak*` + `_shared-memory/qrng-provenance/` to break sibling-agent loop contention)
+
+**In flight:**
+- Agent F (speed audit) — fallback wake at 14:03; ScheduleWakeup armed.
+
+---
+
 ## 2026-05-23 19:00Z — /loop iteration 2 — B.5 + B.10 + C.13 + B.9 shipped (audit scripts + spec)
 
 EVE on Sanctum (dynamic /loop mode continuing). 4 master plan items shipped end-to-end:

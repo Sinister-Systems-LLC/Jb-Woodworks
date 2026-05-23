@@ -69,10 +69,14 @@ render_frame() {
 if [ "$USE_COLOR" = "1" ]; then printf '\033[?25l'; fi
 for _ in "${LOGO_LINES[@]}"; do printf '\n'; done
 
+# RKOJ-ELENO :: 2026-05-23 :: SPEED FIX — was `sleep 1` fallback on failure,
+# which would freeze the spawn ~8s if `sleep` ever broke. No fallback now —
+# if sleep fails we just animate as fast as possible (~instantaneous) instead
+# of locking the terminal up for seconds.
 frame=0
 while [ "$frame" -lt "$FRAMES" ]; do
     render_frame "$frame"
-    sleep "$DELAY" 2>/dev/null || sleep 1
+    sleep "$DELAY" 2>/dev/null || true
     frame=$((frame + 1))
 done
 
