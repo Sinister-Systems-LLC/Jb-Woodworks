@@ -1,0 +1,23 @@
+# Author: RKOJ-ELENO :: 2026-05-23
+node_modules/
+.next/
+out/
+build/
+dist/
+.env
+.env.local
+.env*.local
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.DS_Store
+.idea/
+.vscode/
+*.tsbuildinfo
+next-env.d.ts
+.vercel
+.turbo
+_legacy-flask/__pycache__/
+_legacy-flask/instance/

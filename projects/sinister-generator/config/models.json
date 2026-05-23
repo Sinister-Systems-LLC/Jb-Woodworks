@@ -1,0 +1,64 @@
+{
+  "schema_version": "sinister-generator.models.v1",
+  "updated_utc": "2026-05-23T07:30:00Z",
+  "default_model": "gemini-2.5-flash-image",
+  "models": [
+    {
+      "id": "gemini-2.5-flash-image",
+      "display_name": "Nano Banana (GA)",
+      "endpoint": "generateContent",
+      "approx_cost_per_image_usd": 0.039,
+      "strengths": "best speed/quality/price; default for everyday gen",
+      "weaknesses": "ignores explicit pixel-size requests; aspect ratio biases toward reference image"
+    },
+    {
+      "id": "gemini-3-pro-image-preview",
+      "display_name": "Nano Banana Pro (preview)",
+      "endpoint": "generateContent",
+      "approx_cost_per_image_usd": 0.12,
+      "strengths": "sharper detail; better text fidelity; better for hero/final shots",
+      "weaknesses": "3x cost; preview tier"
+    },
+    {
+      "id": "nano-banana-pro-preview",
+      "display_name": "Nano Banana Pro (alias)",
+      "endpoint": "generateContent",
+      "approx_cost_per_image_usd": 0.12,
+      "strengths": "same as gemini-3-pro-image-preview",
+      "weaknesses": "alias; prefer gemini-3-pro-image-preview as canonical id"
+    },
+    {
+      "id": "gemini-3.1-flash-image-preview",
+      "display_name": "Gemini 3.1 Flash Image (preview)",
+      "endpoint": "generateContent",
+      "approx_cost_per_image_usd": 0.05,
+      "strengths": "newer flash model; faster",
+      "weaknesses": "preview tier; not yet benchmarked"
+    },
+    {
+      "id": "imagen-4.0-fast-generate-001",
+      "display_name": "Imagen 4 Fast",
+      "endpoint": "predict",
+      "approx_cost_per_image_usd": 0.02,
+      "strengths": "cheapest; bulk drafts",
+      "weaknesses": "different API endpoint (predict); requires separate adapter; no multimodal ref input"
+    },
+    {
+      "id": "imagen-4.0-generate-001",
+      "display_name": "Imagen 4",
+      "endpoint": "predict",
+      "approx_cost_per_image_usd": 0.04,
+      "strengths": "photorealism-leaning",
+      "weaknesses": "predict endpoint; no multimodal ref input"
+    },
+    {
+      "id": "imagen-4.0-ultra-generate-001",
+      "display_name": "Imagen 4 Ultra",
+      "endpoint": "predict",
+      "approx_cost_per_image_usd": 0.06,
+      "strengths": "max quality photorealism",
+      "weaknesses": "predict endpoint; no multimodal ref input"
+    }
+  ],
+  "notes": "Cost figures are operator estimates based on Google AI pricing page as of 2026-05-23. Verify at https://ai.google.dev/pricing before scripting bulk jobs."
+}

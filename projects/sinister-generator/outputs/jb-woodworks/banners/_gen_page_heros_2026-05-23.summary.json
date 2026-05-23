@@ -1,0 +1,23 @@
+[
+  {
+    "name": "contact-shop",
+    "status": "ok",
+    "elapsed_seconds": 7.66,
+    "image_bytes": 1383884,
+    "error": null
+  },
+  {
+    "name": "services-tools",
+    "status": "ok",
+    "elapsed_seconds": 7.1,
+    "image_bytes": 1461373,
+    "error": null
+  },
+  {
+    "name": "portfolio-finish",
+    "status": "ok",
+    "elapsed_seconds": 5.8,
+    "image_bytes": 1071518,
+    "error": null
+  }
+]

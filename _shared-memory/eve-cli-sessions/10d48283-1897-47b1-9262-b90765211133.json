@@ -1,0 +1,16 @@
+{
+  "schema": "sinister-eve.cli-session.v1",
+  "session_uuid": "10d48283-1897-47b1-9262-b90765211133",
+  "model": "claude-opus-4-7",
+  "project": null,
+  "turns": [
+    {
+      "user": "\u00ef\u00bb\u00bf/sandbox",
+      "assistant": "EVE here. `/sandbox` isn't in the available-skills list for this session, and I don't recognize it as a built-in Claude Code command. Before I try anything, let me check whether it's a project-level slash command shipped with Sanctum."
+    }
+  ],
+  "total_cost_usd": 0.13940825,
+  "total_in_tokens": 7,
+  "total_out_tokens": 1525,
+  "saved_at": "2026-05-23T05:00:46Z"
+}

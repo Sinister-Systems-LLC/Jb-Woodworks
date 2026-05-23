@@ -1,0 +1,9 @@
+{
+  "prompt": "Wide horizontal shot of a darkened theater during a focus call. A single par-can light from a high front-of-house position is on, casting a sharp amber cone onto an empty stage. A lighting designer's silhouette stands far back at the FOH mixing position. Deep black void elsewhere. Cinematic widescreen. \u2014 cinematic volumetric stage lighting, deep black background (#0A0A0F), gold gradient accent (#E8C078 -> #D4A24A -> #9C7126), high-contrast subject, no text in image, no emojis, no logos",
+  "model": "gemini-2.5-flash-image",
+  "created_utc": "2026-05-23T09:15:31Z",
+  "elapsed_seconds": 6.32,
+  "ref_image_count": 0,
+  "image_bytes": 1021897,
+  "text_response_excerpt": "Here's that shot for you: "
+}

@@ -1,0 +1,9 @@
+{
+  "prompt": "A warm cinematic photograph of a quiet woodworking shop in the late afternoon. A wide pine workbench takes the foreground; a single warm tungsten work light spills gold onto a half-finished board. A clipboard with a folded tape measure rests off to one side. No people, no text. Deep black surroundings, soft glow on the right side. Aspect 16:9, photorealistic, slight depth of field. \u2014 premium craftsmanship, hand-finished wood close-up, warm gold accent (#c9a84c) on deep black (#080808) background, soft directional light, photographic realism, no text in image, no emojis, no plastic / faux finishes",
+  "model": "gemini-2.5-flash-image",
+  "created_utc": "2026-05-23T09:49:14Z",
+  "elapsed_seconds": 7.66,
+  "ref_image_count": 0,
+  "image_bytes": 1383884,
+  "text_response_excerpt": "Here's that cinematic photograph for you: "
+}

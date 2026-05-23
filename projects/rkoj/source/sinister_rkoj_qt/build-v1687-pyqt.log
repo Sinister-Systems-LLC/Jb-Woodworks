@@ -1,0 +1,149 @@
+146 INFO: PyInstaller: 6.20.0, contrib hooks: 2026.5
+430 INFO: Python: 3.12.10
+459 INFO: Platform: Windows-10-10.0.19045-SP0
+459 INFO: Python environment: C:\Users\Zonia\AppData\Local\Programs\Python\Python312
+462 INFO: Removing temporary files and cleaning cache in C:\Users\Zonia\AppData\Local\pyinstaller
+2983 INFO: Module search paths (PYTHONPATH):
+['C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Scripts\\pyinstaller.exe',
+ 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\python312.zip',
+ 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\DLLs',
+ 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib',
+ 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312',
+ 'C:\\Users\\Zonia\\AppData\\Roaming\\Python\\Python312\\site-packages',
+ 'C:\\Users\\Zonia\\Desktop\\Sinister Library Of Alexandria\\eve '
+ 'mcp\\eve-server\\src',
+ 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages',
+ '__editable__.sinister_mind-0.1.0.finder.__path_hook__',
+ 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\win32',
+ 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\win32\\lib',
+ 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\Pythonwin',
+ 'D:\\Sinister Sanctum\\projects\\rkoj\\source',
+ 'D:\\Sinister Sanctum\\projects\\rkoj\\source\\sinister_rkoj_qt']
+3626 INFO: Appending 'datas' from .spec
+3628 INFO: checking Analysis
+3628 INFO: Building Analysis because Analysis-00.toc is non existent
+3628 INFO: Looking for Python shared library...
+3628 INFO: Using Python shared library: C:\Users\Zonia\AppData\Local\Programs\Python\Python312\python312.dll
+3628 INFO: Running Analysis Analysis-00.toc
+3628 INFO: Target bytecode optimization level: 0
+3628 INFO: Initializing module dependency graph...
+3628 INFO: Initializing module graph hook caches...
+3638 INFO: Analyzing modules for base_library.zip ...
+4669 INFO: Processing standard module hook 'hook-encodings.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+5555 INFO: Processing standard module hook 'hook-pickle.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+6181 INFO: Processing standard module hook 'hook-heapq.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+6385 INFO: Caching module dependency graph...
+6412 INFO: Analyzing D:\Sinister Sanctum\projects\rkoj\source\sinister_rkoj_qt\__main__.py
+6425 INFO: Processing standard module hook 'hook-PyQt6.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+6722 INFO: Processing standard module hook 'hook-PyQt6.QtCore.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+7983 INFO: Processing standard module hook 'hook-PyQt6.QtGui.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+12698 INFO: Processing standard module hook 'hook-PyQt6.QtWidgets.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+13986 INFO: Processing standard module hook 'hook-platform.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+13991 INFO: Processing standard module hook 'hook-PyQt6.QtSvgWidgets.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+14160 INFO: Processing standard module hook 'hook-PyQt6.QtSvg.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+14434 INFO: Processing standard module hook 'hook-difflib.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+107609 INFO: Processing standard module hook 'hook-_ctypes.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+107633 INFO: Analyzing hidden import 'PyQt6.QAxContainer'
+107637 INFO: Processing standard module hook 'hook-PyQt6.QAxContainer.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+107790 INFO: Analyzing hidden import 'PyQt6.QtBluetooth'
+107815 INFO: Processing standard module hook 'hook-PyQt6.QtBluetooth.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+107943 INFO: Analyzing hidden import 'PyQt6.QtDBus'
+107954 INFO: Processing standard module hook 'hook-PyQt6.QtDBus.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+108169 INFO: Analyzing hidden import 'PyQt6.QtDesigner'
+108181 INFO: Processing standard module hook 'hook-PyQt6.QtDesigner.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+108459 WARNING: QtLibraryInfo(PyQt6): could not find translations with base name 'designer'! These translations will not be collected.
+108460 INFO: Analyzing hidden import 'PyQt6.QtHelp'
+108467 INFO: Processing standard module hook 'hook-PyQt6.QtHelp.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+108669 INFO: Analyzing hidden import 'PyQt6.QtMultimediaWidgets'
+108671 INFO: Processing standard module hook 'hook-PyQt6.QtMultimediaWidgets.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+108830 INFO: Analyzing hidden import 'PyQt6.QtNfc'
+108837 INFO: Processing standard module hook 'hook-PyQt6.QtNfc.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+109000 INFO: Analyzing hidden import 'PyQt6.QtOpenGL'
+109102 INFO: Processing standard module hook 'hook-PyQt6.QtOpenGL.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+109514 INFO: Analyzing hidden import 'PyQt6.QtOpenGLWidgets'
+109516 INFO: Processing standard module hook 'hook-PyQt6.QtOpenGLWidgets.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+109692 INFO: Analyzing hidden import 'PyQt6.QtPdf'
+109698 INFO: Processing standard module hook 'hook-PyQt6.QtPdf.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+109963 INFO: Analyzing hidden import 'PyQt6.QtPdfWidgets'
+109965 INFO: Processing standard module hook 'hook-PyQt6.QtPdfWidgets.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+110145 INFO: Analyzing hidden import 'PyQt6.QtPositioning'
+110164 INFO: Processing standard module hook 'hook-PyQt6.QtPositioning.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+110578 INFO: Analyzing hidden import 'PyQt6.QtPrintSupport'
+110586 INFO: Processing standard module hook 'hook-PyQt6.QtPrintSupport.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+110793 INFO: Analyzing hidden import 'PyQt6.QtQml'
+110818 INFO: Processing standard module hook 'hook-PyQt6.QtQml.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+114630 INFO: Analyzing hidden import 'PyQt6.QtQuick'
+114665 INFO: Processing standard module hook 'hook-PyQt6.QtQuick.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+114997 INFO: Analyzing hidden import 'PyQt6.QtQuick3D'
+115000 INFO: Processing standard module hook 'hook-PyQt6.QtQuick3D.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+115349 INFO: Analyzing hidden import 'PyQt6.QtQuickWidgets'
+115352 INFO: Processing standard module hook 'hook-PyQt6.QtQuickWidgets.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+115633 INFO: Analyzing hidden import 'PyQt6.QtRemoteObjects'
+115638 INFO: Processing standard module hook 'hook-PyQt6.QtRemoteObjects.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+115868 INFO: Analyzing hidden import 'PyQt6.QtSensors'
+115881 INFO: Processing standard module hook 'hook-PyQt6.QtSensors.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+116270 INFO: Analyzing hidden import 'PyQt6.QtSerialPort'
+116273 INFO: Processing standard module hook 'hook-PyQt6.QtSerialPort.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+116460 INFO: Analyzing hidden import 'PyQt6.QtSpatialAudio'
+116466 INFO: Processing standard module hook 'hook-PyQt6.QtSpatialAudio.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+116697 INFO: Analyzing hidden import 'PyQt6.QtSql'
+116715 INFO: Processing standard module hook 'hook-PyQt6.QtSql.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+117556 INFO: Analyzing hidden import 'PyQt6.QtStateMachine'
+117564 INFO: Processing standard module hook 'hook-PyQt6.QtStateMachine.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+117759 INFO: Analyzing hidden import 'PyQt6.QtTest'
+117764 INFO: Processing standard module hook 'hook-PyQt6.QtTest.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+118069 INFO: Analyzing hidden import 'PyQt6.QtTextToSpeech'
+118072 INFO: Processing standard module hook 'hook-PyQt6.QtTextToSpeech.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+118469 INFO: Analyzing hidden import 'PyQt6.QtWebChannel'
+118470 INFO: Processing standard module hook 'hook-PyQt6.QtWebChannel.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+118651 INFO: Analyzing hidden import 'PyQt6.QtWebSockets'
+118657 INFO: Processing standard module hook 'hook-PyQt6.QtWebSockets.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+118871 INFO: Analyzing hidden import 'PyQt6.QtXml'
+118882 INFO: Processing standard module hook 'hook-PyQt6.QtXml.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+119095 INFO: Analyzing hidden import 'PyQt6.lupdate'
+119098 INFO: Processing standard module hook 'hook-PyQt6.uic.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+119301 INFO: Processing standard module hook 'hook-xml.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+119315 INFO: Processing standard module hook 'hook-xml.etree.cElementTree.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+119397 INFO: Processing standard module hook 'hook-multiprocessing.util.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+119629 INFO: Analyzing hidden import 'PyQt6.lupdate.pylupdate'
+119631 INFO: Analyzing hidden import 'PyQt6.uic.pyuic'
+119635 INFO: Processing module hooks (post-graph stage)...
+119785 INFO: Performing binary vs. data reclassification (1597 entries)
+119963 INFO: Looking for ctypes DLLs
+119974 INFO: Analyzing run-time hooks ...
+119975 INFO: Including run-time hook 'pyi_rth_inspect.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
+119977 INFO: Including run-time hook 'pyi_rth_pkgutil.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
+119978 INFO: Including run-time hook 'pyi_rth_multiprocessing.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
+119979 INFO: Including run-time hook 'pyi_rth_pyqt6.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
+119980 INFO: Processing pre-find-module-path hook 'hook-_pyi_rth_utils.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks\\pre_find_module_path'
+119981 INFO: Processing standard module hook 'hook-_pyi_rth_utils.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+120008 INFO: Creating base_library.zip...
+120587 INFO: Looking for dynamic libraries
+120844 INFO: Extra DLL search directories (AddDllDirectory): ['C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyQt6\\Qt6\\bin']
+120844 INFO: Extra DLL search directories (PATH): ['C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyQt6\\Qt6\\bin']
+122503 WARNING: Library not found: could not resolve 'MIMAPI64.dll', dependency of 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyQt6\\Qt6\\plugins\\sqldrivers\\qsqlmimer.dll'.
+122503 WARNING: Library not found: could not resolve 'OCI.dll', dependency of 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyQt6\\Qt6\\plugins\\sqldrivers\\qsqloci.dll'.
+122503 WARNING: Library not found: could not resolve 'fbclient.dll', dependency of 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyQt6\\Qt6\\plugins\\sqldrivers\\qsqlibase.dll'.
+122503 WARNING: Library not found: could not resolve 'LIBPQ.dll', dependency of 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyQt6\\Qt6\\plugins\\sqldrivers\\qsqlpsql.dll'.
+122937 INFO: Warnings written to D:\Sinister Sanctum\projects\rkoj\source\sinister_rkoj_qt\build\RKOJ\warn-RKOJ.txt
+123182 INFO: Graph cross-reference written to D:\Sinister Sanctum\projects\rkoj\source\sinister_rkoj_qt\build\RKOJ\xref-RKOJ.html
+123970 INFO: checking PYZ
+123970 INFO: Building PYZ because PYZ-00.toc is non existent
+123970 INFO: Building PYZ (ZlibArchive) D:\Sinister Sanctum\projects\rkoj\source\sinister_rkoj_qt\build\RKOJ\PYZ-00.pyz
+124819 INFO: Building PYZ (ZlibArchive) D:\Sinister Sanctum\projects\rkoj\source\sinister_rkoj_qt\build\RKOJ\PYZ-00.pyz completed successfully.
+125562 INFO: checking PKG
+125562 INFO: Building PKG because PKG-00.toc is non existent
+125562 INFO: Building PKG (CArchive) RKOJ.pkg
+160143 INFO: Building PKG (CArchive) RKOJ.pkg completed successfully.
+161411 INFO: Bootloader C:\Users\Zonia\AppData\Local\Programs\Python\Python312\Lib\site-packages\PyInstaller\bootloader\Windows-64bit-intel\runw.exe
+161411 INFO: checking EXE
+161411 INFO: Building EXE because EXE-00.toc is non existent
+161411 INFO: Building EXE from EXE-00.toc
+161692 INFO: Copying bootloader EXE to D:\Sinister Sanctum\projects\rkoj\source\sinister_rkoj_qt\dist\RKOJ.exe
+162620 INFO: Copying icon to EXE
+162770 INFO: Copying 0 resources to EXE
+162770 INFO: Embedding manifest in EXE
+163081 INFO: Appending PKG archive to EXE
+212722 INFO: Fixing EXE headers
+229646 INFO: Building EXE from EXE-00.toc completed successfully.
+229905 INFO: Build complete! The results are available in: D:\Sinister Sanctum\projects\rkoj\source\sinister_rkoj_qt\dist

@@ -1,0 +1,12 @@
+﻿{
+    "ts":  "2026-05-23T02:22:33.5635530-04:00",
+    "project":  "test-launcher-audit",
+    "agent":  "test-launcher-audit",
+    "accent":  "purple",
+    "kind":  "newproject",
+    "launcher_version":  "v6",
+    "outputs":  {
+                    "project":  "test-launcher-audit",
+                    "mode":  "resume"
+                }
+}

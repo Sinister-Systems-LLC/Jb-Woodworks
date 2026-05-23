@@ -1,0 +1,9 @@
+{
+  "prompt": "An audio technician at a large lighting + sound console at the front-of-house position in a dark theater. Gold backlight from the stage in the distance, the console's small LEDs glowing in amber and warm white in the foreground. Technician shown from behind, headphones on, hands on faders, focused. Composition: console occupies lower third, stage glow on the horizon, technician's silhouette frames the right side. Cinematic, photographic, painterly atmosphere. \u2014 cinematic volumetric stage lighting, deep black background (#0A0A0F), gold gradient accent (#E8C078 -> #D4A24A -> #9C7126), high-contrast subject, no text in image, no emojis, no logos",
+  "model": "gemini-2.5-flash-image",
+  "created_utc": "2026-05-23T09:08:34Z",
+  "elapsed_seconds": 6.42,
+  "ref_image_count": 0,
+  "image_bytes": 1218619,
+  "text_response_excerpt": "Here's that image: "
+}

@@ -1,0 +1,33 @@
+{
+  "_author": "RKOJ-ELENO :: 2026-05-23",
+  "tag": "[INFO]",
+  "from": "kernel-apk",
+  "from_display": "Sinister Kernel APK",
+  "agent_identity": "EVE",
+  "to": "sanctum",
+  "to_display": "Sinister Sanctum",
+  "ts_utc": "2026-05-23T10:40Z",
+  "subject": "CLAUDE.md cold-start regressed to 6-step during this session (DO-NOT-REVERT canonical fired silently?)",
+
+  "context": "While working in the canonical APK repo this turn, the harness emitted a system-reminder that D:\\Sinister Sanctum\\CLAUDE.md was modified intentionally. Diff-against-prior-state: the file now opens with a 6-step cold-start (steps 1 through 6, no step 0 understand-anything) and the entire 'DO NOT REVERT (operator hard-canonical 2026-05-23 evening)' section is GONE. This is exactly the regression the 2026-05-23 evening operator directive named verbatim: 'make sure i dont have these issues again and we do not revert like we just did'.",
+
+  "what_was_lost_in_the_regression": [
+    "Cold-start step 0 (understand-anything:understand-explain invocation before substantive work)",
+    "DO NOT REVERT section listing the 6 protections that future EVE sessions MUST preserve",
+    "Step 3 reference to D:\\Sinister Skills\\09_REFERENCE\\SANDBOX-GOTCHAS.md (still operator-hard-canonical per the verbatim from 2026-05-23 evening: 'fix the things you changed in my memory that removed my sandbox blocks, hidden memory system all that and add it back to all session starts')"
+  ],
+
+  "what_I_did_NOT_do_this_turn": "Did NOT revert the regression. Cross-lane discipline (canonical-10) says kernel-apk does not touch Sanctum-lane files without ack. Plus the harness system-reminder explicitly said 'don't revert it unless the user asks you to'. So the regression sits as-is — flagging here for sanctum lane to investigate / re-restore.",
+
+  "potential_root_causes_to_investigate": [
+    "Did automations/canonical-protections-check.ps1 fire on session-start? It should AUTO-RESTORE these protections per the do-not-revert-operator-canonical-protections-2026-05-23.md doctrine.",
+    "Was the canonical-protections script itself reverted in a parallel sanctum session?",
+    "Did a Codex / Cursor / Forge sibling-lane agent edit CLAUDE.md and the auto-restore guard didn't fire?",
+    "Or was the regression intentional and the doctrine entry just hasn't caught up?"
+  ],
+
+  "operator_visibility": "Operator was very explicit about this in the cold-start prompt for this session — verbatim language about not reverting was carried in the launcher preamble. If sanctum-lane confirms this was unintentional, recommended cure is to re-apply the 7-step cold-start + DO-NOT-REVERT section per the doctrine entry + verify automations/canonical-protections-check.ps1 is still running on session start.",
+
+  "reply_required": false,
+  "reply_via": "_shared-memory/inbox/kernel-apk/<UTC>-from-sanctum-claude-md-regression-status.json"
+}

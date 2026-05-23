@@ -1,0 +1,12 @@
+﻿{
+    "ts":  "2026-05-23T02:20:01.9875543-04:00",
+    "project":  "rkoj",
+    "agent":  "rkoj",
+    "accent":  "purple",
+    "kind":  "project",
+    "launcher_version":  "v6",
+    "outputs":  {
+                    "project":  "rkoj",
+                    "mode":  "resume"
+                }
+}

@@ -1,0 +1,12 @@
+﻿{
+    "ts":  "2026-05-23T02:20:34.7400538-04:00",
+    "project":  "sanctum",
+    "agent":  "sanctum",
+    "accent":  "purple",
+    "kind":  "project",
+    "launcher_version":  "v6",
+    "outputs":  {
+                    "project":  "sanctum",
+                    "mode":  "resume"
+                }
+}

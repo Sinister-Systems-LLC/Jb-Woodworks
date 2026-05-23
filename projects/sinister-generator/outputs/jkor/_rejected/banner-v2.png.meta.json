@@ -1,0 +1,9 @@
+{
+  "prompt": "A wide horizontal banner illustration. Center of frame: the same charismatic purple-skinned demon-jester character with small dark horns, a small gold crown, knowing smirk, expressive purple-rimmed eyes. Three-quarter body view, turned slightly to camera-right. Holds a fan of playing cards outward toward the viewer with the left hand as if about to deal them, with the wand (star-tipped) resting against the right shoulder. Wearing a regal purple-and-gold jester collar and cape. Background: calm premium dark backdrop, deep near-black (#0A0B1E) at the edges with a tighter circular Sanctum-purple backlight halo (#7A3DD4 to #4B1F8B) framing the head only. Rest of background pure dark. Wide cinematic banner aspect (4:1). Style: clean cinematic digital painting, dramatic rim-light on the silhouette, premium video-game character-art quality, very high contrast between the lit subject and the dark backdrop. \u2014 clean cinematic digital painting, deep near-black background (#0A0B1E) with a subtle vertical Sanctum-purple glow (#7A3DD4 -> #4B1F8B), minimal, calm, premium video-game UI art quality, smooth lighting, high-contrast subject, NO busy patterns, NO runic symbols, NO swirls, NO sparkles, NO magical particles, NO UI elements, NO download icons, NO buttons, NO interface chrome in any corner, NO text in image, NO emojis, NO logos",
+  "model": "gemini-2.5-flash-image",
+  "created_utc": "2026-05-23T07:22:17Z",
+  "elapsed_seconds": 10.47,
+  "ref_image_count": 2,
+  "image_bytes": 667097,
+  "text_response_excerpt": "Here is a banner illustration of the demon-jester character as you described:\n"
+}

@@ -1,0 +1,43 @@
+<!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- Social share card — 1200x630 — for Open Graph / Twitter Cards -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="Show Masters Production Logistics social card">
+  <defs>
+    <linearGradient id="goldOG" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%"  stop-color="#E8C078"/>
+      <stop offset="55%" stop-color="#D4A24A"/>
+      <stop offset="100%" stop-color="#9C7126"/>
+    </linearGradient>
+    <radialGradient id="vignetteOG" cx="40%" cy="40%" r="80%">
+      <stop offset="0%"  stop-color="#1A1A22"/>
+      <stop offset="100%" stop-color="#08080C"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#vignetteOG)"/>
+  <!-- Top-right gold triangle -->
+  <path d="M960 0 L1200 0 L1200 240 Z" fill="url(#goldOG)"/>
+  <!-- Bottom gold rule -->
+  <rect x="80" y="560" width="1040" height="2" fill="url(#goldOG)" opacity="0.6"/>
+
+  <!-- SMPL -->
+  <g font-family="Inter, Arial, sans-serif" font-weight="900" fill="#FFFFFF">
+    <text x="80" y="290" font-size="190" letter-spacing="-6">SMPL</text>
+  </g>
+
+  <!-- Tagline -->
+  <g font-family="Inter, Arial, sans-serif" fill="#FFFFFF" letter-spacing="6">
+    <text x="80" y="350" font-size="30" font-weight="700">SHOW MASTERS PRODUCTION LOGISTICS</text>
+  </g>
+
+  <!-- Headline -->
+  <text x="80" y="450" font-family="Inter, Arial, sans-serif" font-size="58" font-weight="800" fill="#FFFFFF">
+    We Make Great Days Happen.
+  </text>
+  <text x="80" y="510" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="500" fill="#C7C7CF">
+    Stagehands, riggers, technicians and crew leads for live events &#x2014; nationwide since 2002.
+  </text>
+
+  <!-- Footer line -->
+  <text x="80" y="600" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="600" letter-spacing="4" fill="#D4A24A">
+    ORLANDO &#xb7; DALLAS &#xb7; 33 STATES
+  </text>
+</svg>

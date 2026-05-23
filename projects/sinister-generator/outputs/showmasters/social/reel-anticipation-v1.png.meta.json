@@ -1,0 +1,9 @@
+{
+  "prompt": "Vertical 9:16 deep black canvas. A single warm amber cone of stage light enters from the upper right corner and pools softly in the lower left quadrant of the frame. Subtle volumetric haze catches the light. The rest of the canvas is empty deep black negative space for typography overlay later. No subject. No people. No text. No logos. The mood is the moment of held breath before a show starts. \u2014 cinematic volumetric stage lighting, deep black background (#0A0A0F), gold gradient accent (#E8C078 -> #D4A24A -> #9C7126), high-contrast subject, no text in image, no emojis, no logos",
+  "model": "gemini-2.5-flash-image",
+  "created_utc": "2026-05-23T09:42:47Z",
+  "elapsed_seconds": 5.82,
+  "ref_image_count": 0,
+  "image_bytes": 944621,
+  "text_response_excerpt": null
+}

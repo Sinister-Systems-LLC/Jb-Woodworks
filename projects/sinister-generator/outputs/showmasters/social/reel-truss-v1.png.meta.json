@@ -1,0 +1,9 @@
+{
+  "prompt": "Vertical 9:16 deep black canvas viewed straight up from the deck toward a truss grid high above. The truss steel forms a geometric grid pattern at the very top of the frame, lit gold from below. The lower three-quarters is empty deep black void for typography overlay. No people. No text. \u2014 cinematic volumetric stage lighting, deep black background (#0A0A0F), gold gradient accent (#E8C078 -> #D4A24A -> #9C7126), high-contrast subject, no text in image, no emojis, no logos",
+  "model": "gemini-2.5-flash-image",
+  "created_utc": "2026-05-23T09:15:01Z",
+  "elapsed_seconds": 6.77,
+  "ref_image_count": 0,
+  "image_bytes": 1505015,
+  "text_response_excerpt": "Here's that image for you!\n"
+}

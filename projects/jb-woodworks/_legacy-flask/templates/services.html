@@ -1,0 +1,47 @@
+{# Author: RKOJ-ELENO :: 2026-05-23 #}
+{% extends "base.html" %}
+{% block title %}Services - {{ site.name }}{% endblock %}
+{% block meta_description %}Docks, custom decks, furniture and tables, interior trim and millwork, outdoor living spaces, repairs and staining. JB Woodworks in Orlando, FL.{% endblock %}
+{% block body_class %}services{% endblock %}
+
+{% block content %}
+<section class="page-head">
+  <div class="container">
+    <span class="section-tag">Services</span>
+    <h1 class="section-headline">What we<br><em>build.</em></h1>
+    <p class="section-subheadline">Six lanes of work. Pick one to read the details, or send a message and we will figure out where your project fits.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="service-stack">
+      {% for s in services %}
+      <article class="service-row" id="{{ s.slug }}">
+        <header>
+          <div class="service-icon">
+            <svg width="28" height="28" aria-hidden="true"><use href="{{ url_for('static', filename='img/icons.svg') }}#i-{{ s.icon }}"/></svg>
+          </div>
+          <h2>{{ s.title }}</h2>
+        </header>
+        <p class="blurb">{{ s.blurb }}</p>
+        <p class="details">{{ s.details }}</p>
+        <p><a class="link-arrow" href="{{ url_for('contact') }}?service={{ s.slug }}">Ask about {{ s.title|lower }}
+          <svg aria-hidden="true" width="14" height="14"><use href="{{ url_for('static', filename='img/icons.svg') }}#i-arrow-right"/></svg>
+        </a></p>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section-cta">
+  <div class="container cta-band-inner">
+    <div>
+      <h2>Not sure where your project fits?</h2>
+      <p>Send a photo and a few details. Free estimate.</p>
+    </div>
+    <a class="btn btn-primary btn-large" href="{{ url_for('contact') }}">Start the conversation</a>
+  </div>
+</section>
+{% endblock %}

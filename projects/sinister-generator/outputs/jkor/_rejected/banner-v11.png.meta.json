@@ -1,0 +1,29 @@
+{
+  "operation": "PIL: tight character crop + radial feather + composite onto dark canvas with subtle cloud texture",
+  "source": "D:\\Sinister Sanctum\\projects\\sinister-generator\\outputs\\jkor\\_rejected\\banner-v6.png",
+  "model": "PIL/local (no LLM)",
+  "created_utc": "2026-05-23T08:02:03Z",
+  "crop_box": [
+    495,
+    130,
+    1045,
+    640
+  ],
+  "scaled_char_size": [
+    544,
+    505
+  ],
+  "canvas_size": [
+    1620,
+    648
+  ],
+  "canvas_color": [
+    26,
+    23,
+    41
+  ],
+  "paste_at": [
+    60,
+    71
+  ]
+}

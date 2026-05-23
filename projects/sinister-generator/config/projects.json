@@ -1,0 +1,42 @@
+{
+  "schema_version": "sinister-generator.projects.v1",
+  "updated_utc": "2026-05-23T07:30:00Z",
+  "projects": [
+    {
+      "slug": "jkor",
+      "display_name": "JKOR",
+      "lane": "jkor",
+      "brand_lock_helper": "jkor_image",
+      "output_root": "outputs/jkor/",
+      "memory_root": "memory/per-project/jkor/",
+      "default_image_types": ["banners", "social", "thumbs", "cutouts"],
+      "owner_agent": "general",
+      "registered_utc": "2026-05-23T07:00:00Z",
+      "notes": "First project. Brand: purple cartoon demon-jester w/ gold crown + jester staff + cards + JOKR text. See memory/per-project/jkor/BRAND.md"
+    },
+    {
+      "slug": "showmasters",
+      "display_name": "Showmasters",
+      "lane": "showmasters",
+      "brand_lock_helper": "smpl_image",
+      "output_root": "outputs/showmasters/",
+      "memory_root": "memory/per-project/showmasters/",
+      "default_image_types": ["banners", "social", "blog-heroes", "service-illustrations"],
+      "owner_agent": "showmasters",
+      "registered_utc": "2026-05-23T06:55:00Z",
+      "notes": "Brand: dark stage-light cinematic + gold gradient. See Showmasters lane BRANDING/NANO-BANANA-INTEGRATION.md"
+    },
+    {
+      "slug": "jb-woodworks",
+      "display_name": "JB Woodworks",
+      "lane": "jb-woodworks",
+      "brand_lock_helper": "jbw_image",
+      "output_root": "outputs/jb-woodworks/",
+      "memory_root": "memory/per-project/jb-woodworks/",
+      "default_image_types": ["banners", "social", "blog-heroes", "portfolio-teasers"],
+      "owner_agent": "jb-woodworks",
+      "registered_utc": "2026-05-23T06:55:00Z",
+      "notes": "Brand: premium hand-finished wood close-up + gold-on-black palette. Photoreal."
+    }
+  ]
+}

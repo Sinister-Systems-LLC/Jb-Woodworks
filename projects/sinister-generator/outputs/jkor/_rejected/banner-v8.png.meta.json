@@ -1,0 +1,9 @@
+{
+  "prompt": "EDIT the attached source banner (first reference image, the JKOR demon-jester) with these specific changes and PRESERVE EVERYTHING ELSE EXACTLY. CHANGES: (1) RESHAPE to a wide horizontal banner aspect approximately 2.5:1 \u2014 refer to the second reference image (a wide purple banner with a small logo on the left) for the target layout. Reposition the JKOR demon-jester character so it occupies the LEFT THIRD of the wider frame; the right two-thirds becomes plain dark purple background field with no decorative elements. (2) REMOVE the white caption text PRIMARY WHIMSICAL MIGHT MAGIC BANNER along the top edge entirely \u2014 replace those pixels with matching dark background. (3) REMOVE the rounded neon glowing border edge (the cyan-and-purple aura around the perimeter of the image). Make the edges crisp and rectangular. (4) DEEPEN the background palette to match the third reference image (the Sinister Command Center sidebar) \u2014 base color around #1A1729 to #221944, deep dark purple. The runic circle and magic swirls behind the character can stay (those are part of the brand) but darken them so they read more atmospheric and less neon-saturated. The empty right two-thirds of the frame stays mostly plain dark purple. PRESERVE EXACTLY: the cartoony purple demon-jester character with cheeky teeth-showing grin, small horns, gold crown, jester staff topped with mini-jester-head bell, fan of playing cards, purple-and-gold royal-jester collar; the JOKR display lettering in white at the bottom; the gold accents on the crown and JOKR letter; the overall character art style. Output as a wide horizontal banner.",
+  "model": "gemini-2.5-flash-image",
+  "created_utc": "2026-05-23T07:50:10Z",
+  "elapsed_seconds": 14.45,
+  "ref_image_count": 3,
+  "image_bytes": 972328,
+  "text_response_excerpt": null
+}

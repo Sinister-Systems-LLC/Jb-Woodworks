@@ -1,0 +1,9 @@
+{
+  "prompt": "Vertical 9:16 deep black canvas with the silhouettes of stacked road cases occupying only the lower 25 percent of the frame, lit from above by a single amber spotlight casting long shadows up the cases. The upper three-quarters is empty deep-black negative space for typography overlay. No people. No text. \u2014 cinematic volumetric stage lighting, deep black background (#0A0A0F), gold gradient accent (#E8C078 -> #D4A24A -> #9C7126), high-contrast subject, no text in image, no emojis, no logos",
+  "model": "gemini-2.5-flash-image",
+  "created_utc": "2026-05-23T09:14:54Z",
+  "elapsed_seconds": 6.49,
+  "ref_image_count": 0,
+  "image_bytes": 1162247,
+  "text_response_excerpt": null
+}

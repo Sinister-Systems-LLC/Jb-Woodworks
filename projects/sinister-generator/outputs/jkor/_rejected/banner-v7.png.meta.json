@@ -1,0 +1,9 @@
+{
+  "prompt": "Generate a wide horizontal banner at 1620x648 pixels (2.5:1 aspect ratio). LAYOUT (match the second reference image): the character occupies the LEFT third of the frame, with the remaining right two-thirds being a plain calm purple background field. Crisp rectangular edges \u2014 NO rounded neon glowing border, NO outline glow, NO decorative frame. CHARACTER (preserve from the first reference image): the JKOR purple-skinned cartoon demon-jester with cheeky teeth-showing grin, small horns, gold crown, jester staff with a mini-jester-head bell topper held in one hand, fan of 4 playing cards in the other hand, purple-and-gold royal-jester collar with a central gem. Character three-quarter body, facing camera. BACKGROUND: deep dark sanctum-purple matching a Sinister Command Center sidebar \u2014 base color around #1A1729 to #221944, with very subtle vertical purple gradient and barely-there cloud-like texture (no swirls, no runes, no sparkles, no magical particles). The right side stays mostly empty plain dark purple. TEXT: the JOKR display lettering stays in clean white sans-serif, positioned centered along the BOTTOM of the canvas under the character. NO other text in the image. NO whimsical caption at the top. NO download icon anywhere. NO UI artifacts. Style: clean cinematic digital painting, premium video-game character-art quality, calm and minimal, the deep purple Sinister Command Center aesthetic.",
+  "model": "gemini-2.5-flash-image",
+  "created_utc": "2026-05-23T07:34:40Z",
+  "elapsed_seconds": 11.0,
+  "ref_image_count": 3,
+  "image_bytes": 1384938,
+  "text_response_excerpt": "Here is the image you requested. "
+}

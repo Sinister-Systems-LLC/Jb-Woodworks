@@ -1,0 +1,46 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-23T09:03:01.7100535Z",
+    "project":  "showmasters",
+    "agent_name":  "showmasters",
+    "mode":  "resume",
+    "focus_intent":  "",
+    "git":  {
+                "branch":  "agent/rkoj/complete-without-operator-2026-05-23",
+                "head":  "b9e89dceaae31e2a0d97f9620ec256458ac67da6",
+                "head_msg":  "brain(correction): pip-show says installed != import works (stale .pth)",
+                "recent_commits":  [
+                                       "b9e89dc brain(correction): pip-show says installed != import works (stale .pth)",
+                                       "915a878 ship(rkoj): v1.6.88 — fix Sini-stray-window leak + Resume picker merges all 14 projects.json projects + per-phone scrcpy stderr → log file",
+                                       "70297c6 plan(agent-stack): readiness review + wake-on-demand bot dispatcher doctrine",
+                                       "f68ecf0 info(rkoj): projects.json schema v6 fields advisory note (optional consumer patch)",
+                                       "35ef9ff queue(2026-05-23): annotate restart row — spawn unblocked at session level; restart still needed for MCP/plugin activation",
+                                       "7fa8fcc progress(sanctum): operator hard-canonical 2026-05-23 + spawn validation captured",
+                                       "c763ce2 brain(spawn): end-to-end validation pattern + index row",
+                                       "c5513a9 doctrine(spawn): operator hard-canonical 2026-05-23 — master may spawn child Claude + dangerously-skip-permissions is fleet default",
+                                       "6b17946 ship(rkoj): v1.6.86 — fix stray \"Sini...\" window + bleed-through (no startup scrcpy)",
+                                       "db19f79 fix(docs): session-contracts.md count \"5 binding contracts\" -\u003e \"6\""
+                                   ]
+            },
+    "progress_top3":  [
+                          "2026-05-23 08:56 â€” Nano-banana FIRST FIRE shipped Â· SMPL archetype lands clean Â· brand memory seeded",
+                          "2026-05-23 09:15 â€” Local server live Â· stage-cue intro replaced Digital-Loom Â· home de-slop Â· live-site content sync",
+                          "2026-05-23 08:20 â€” Video lazy-load + entrance cascade + shows portfolio + STACK doc + Next.js app-v2 scaffold (LetsText-aligned)"
+                      ],
+    "latest_plan":  {
+                        "dir":  null,
+                        "artifact":  null
+                    },
+    "inbox_unread_count":  0,
+    "last_5_files_touched_24h":  [
+                                     "_shared-memory\\heartbeats\\apk.json",
+                                     "_shared-memory\\PROGRESS\\rkoj.md",
+                                     "_shared-memory\\resume-points\\Showmasters\\2026-05-23T045730Z.json",
+                                     "automations\\start-sinister-session.ps1.tmp.41080.1779526902259",
+                                     "_shared-memory\\heartbeats\\rkoj.json"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\showmasters.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}

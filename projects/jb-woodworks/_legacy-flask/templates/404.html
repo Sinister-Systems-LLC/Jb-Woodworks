@@ -1,0 +1,18 @@
+{# Author: RKOJ-ELENO :: 2026-05-23 #}
+{% extends "base.html" %}
+{% block title %}Page not found - {{ site.name }}{% endblock %}
+{% block body_class %}error{% endblock %}
+
+{% block content %}
+<section class="page-head">
+  <div class="container">
+    <span class="section-tag">404</span>
+    <h1 class="section-headline">That page doesn't<br><em>exist.</em></h1>
+    <p class="section-subheadline">Sawdust on the link, maybe. Try the main floor:</p>
+    <p class="hero-cta-group">
+      <a class="btn btn-primary btn-large" href="{{ url_for('index') }}">Go home</a>
+      <a class="btn btn-ghost btn-large" href="{{ url_for('portfolio') }}">See the work</a>
+    </p>
+  </div>
+</section>
+{% endblock %}

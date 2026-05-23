@@ -1,0 +1,46 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-23T08:11:11.5985535Z",
+    "project":  "sanctum",
+    "agent_name":  "sanctum",
+    "mode":  "resume",
+    "focus_intent":  "",
+    "git":  {
+                "branch":  "agent/showmasters/scaffold-and-launch",
+                "head":  "f68ecf0c604ef311b3276571cca4edb738a5f61f",
+                "head_msg":  "info(rkoj): projects.json schema v6 fields advisory note (optional consumer patch)",
+                "recent_commits":  [
+                                       "f68ecf0 info(rkoj): projects.json schema v6 fields advisory note (optional consumer patch)",
+                                       "35ef9ff queue(2026-05-23): annotate restart row ΓÇö spawn unblocked at session level; restart still needed for MCP/plugin activation",
+                                       "7fa8fcc progress(sanctum): operator hard-canonical 2026-05-23 + spawn validation captured",
+                                       "c763ce2 brain(spawn): end-to-end validation pattern + index row",
+                                       "c5513a9 doctrine(spawn): operator hard-canonical 2026-05-23 ΓÇö master may spawn child Claude + dangerously-skip-permissions is fleet default",
+                                       "6b17946 ship(rkoj): v1.6.86 ΓÇö fix stray \"Sini...\" window + bleed-through (no startup scrcpy)",
+                                       "db19f79 fix(docs): session-contracts.md count \"5 binding contracts\" -\u003e \"6\"",
+                                       "20f3e6f brain(mcp+launcher): junction-fix pattern entry + BOM-write anti-pattern + queue update",
+                                       "f5698ef ship(rkoj): v1.6.85 ΓÇö revert agent-card transparency (bleed-through) + Sinister Panel canonical colors + fix API offline status pill",
+                                       "74560a2 audit(jcode-parity): Sanctum-lane verified end-to-end + [ASK] to RKOJ for matrix flips"
+                                   ]
+            },
+    "progress_top3":  [
+                          "2026-05-23 08:15 â€” resume pickup: cleared 3 stale operator-queue rows via pip-install audit",
+                          "2026-05-23 03:15 â€” jcode-parity audit + cross-agent [ASK] to RKOJ for matrix flips",
+                          "2026-05-23 03:05 â€” shipped: MCP path fixes via 2 junctions + 14 dev plugins enabled at Sanctum project level"
+                      ],
+    "latest_plan":  {
+                        "dir":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\Sanctum-agent-stack-readiness-2026-05-23T0820Z",
+                        "artifact":  null
+                    },
+    "inbox_unread_count":  0,
+    "last_5_files_touched_24h":  [
+                                     "projects\\rkoj\\source\\sinister_rkoj_qt\\devices_tab.py",
+                                     "automations\\resume-point-write.ps1",
+                                     "projects\\sinister-generator\\outputs\\jkor\\_source-provenance.json",
+                                     "projects\\sinister-generator\\outputs\\jkor\\word-marks\\iridescent-jokr-banner.jpg",
+                                     "projects\\sinister-generator\\outputs\\jkor\\pfp\\horned-jester-bust-pfp.jpg"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Sinister Sanctum.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}

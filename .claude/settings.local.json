@@ -2,7 +2,10 @@
   "permissions": {
     "allow": [
       "Bash(rmdir \"_shared-memory/external-imports/ruflo/.git\")",
-      "Bash(rm \"automations/window-manager/_daemon-logs/console-~0,8LOCAL_DT\")"
+      "Bash(rm \"automations/window-manager/_daemon-logs/console-~0,8LOCAL_DT\")",
+      "Bash(mkdir -p \"/c/Users/Zonia/Desktop/JKOR/reference\" \"/c/Users/Zonia/Desktop/JKOR/_prompts\" \"/c/Users/Zonia/Desktop/JKOR/generated\")",
+      "Bash(cp \"/c/Users/Zonia/.claude/image-cache/e1b033bd-ce4e-48a4-b5cf-2745d7954065/2.png\" \"/c/Users/Zonia/Desktop/JKOR/reference/00-base-banner-original.png\")",
+      "Bash(cp \"/c/Users/Zonia/.claude/image-cache/e1b033bd-ce4e-48a4-b5cf-2745d7954065/3.png\" \"/c/Users/Zonia/Desktop/JKOR/reference/01-color-scheme-command-center.png\")"
     ]
   }
 }

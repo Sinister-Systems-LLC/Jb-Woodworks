@@ -1,0 +1,9 @@
+{
+  "prompt": "A boom-lift operator raising a scissor lift platform high inside a dark arena, viewed from a low angle. Amber stage lighting catches the painted yellow lift mast and the operator's safety harness silhouette. Background is deep black void with subtle truss geometry visible far above. Subject centered slightly right of middle, lift extending upward into the frame. Cinematic photographic realism. \u2014 cinematic volumetric stage lighting, deep black background (#0A0A0F), gold gradient accent (#E8C078 -> #D4A24A -> #9C7126), high-contrast subject, no text in image, no emojis, no logos",
+  "model": "gemini-2.5-flash-image",
+  "created_utc": "2026-05-23T09:08:40Z",
+  "elapsed_seconds": 6.3,
+  "ref_image_count": 0,
+  "image_bytes": 1235763,
+  "text_response_excerpt": "Here's an image of a boom-lift operator in a dark arena: "
+}

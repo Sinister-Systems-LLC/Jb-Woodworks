@@ -1,0 +1,9 @@
+{
+  "prompt": "A wide horizontal banner illustration. The same purple-skinned demon-jester character positioned in the left third of the frame, captured mid-action: laughing mischievously with teeth showing, throwing a single playing card across the frame toward the right edge with a subtle motion trail behind the card. The wand in the other hand crackles with faint purple energy at the star tip. Small dark horns, small gold crown, regal purple-and-gold jester attire. Background: calm premium dark backdrop, deep near-black (#0A0B1E) with a soft horizontal Sanctum-purple light sweep (#7A3DD4 to #4B1F8B) along the path of the thrown card, fading at both ends. Rest of background pure dark. Wide cinematic banner aspect (4:1). Style: clean cinematic digital painting, dynamic motion, premium video-game character-art quality, high-contrast lit subject against the calm dark backdrop. \u2014 clean cinematic digital painting, deep near-black background (#0A0B1E) with a subtle vertical Sanctum-purple glow (#7A3DD4 -> #4B1F8B), minimal, calm, premium video-game UI art quality, smooth lighting, high-contrast subject, NO busy patterns, NO runic symbols, NO swirls, NO sparkles, NO magical particles, NO UI elements, NO download icons, NO buttons, NO interface chrome in any corner, NO text in image, NO emojis, NO logos",
+  "model": "gemini-2.5-flash-image",
+  "created_utc": "2026-05-23T07:22:31Z",
+  "elapsed_seconds": 10.15,
+  "ref_image_count": 2,
+  "image_bytes": 1132006,
+  "text_response_excerpt": null
+}

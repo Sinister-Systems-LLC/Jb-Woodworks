@@ -351,6 +351,18 @@ class _MirrorCard(QFrame):
             self._log_path = _LOG_DIR / f"{self.dev.serial}-{ts}.log"
             self._log_fh = open(self._log_path, "wb", buffering=0)
             self._log_read_pos = 0
+            # v1.6.89 — spawn scrcpy fully offscreen at (30000, 30000) so the
+            # window NEVER appears on the visible desktop between spawn and
+            # the SetParent embed (operator: "dont have scrcpy windows show
+            # up outside of the ui itself"). Win32 allows placement beyond
+            # any monitor's working area; the window stays invisible until
+            # _try_embed reparents it into _body_host. Also fix the initial
+            # window-width/height so scrcpy doesn't first render at its
+            # default ~540x1170 portrait then resize down.
+            #
+            # Defense-in-depth: _try_embed additionally ShowWindow(SW_HIDE)s
+            # the HWND immediately after FindWindow returns it, before
+            # SetParent, then SW_SHOWNOACTIVATE after positioning settles.
             self._proc = subprocess.Popen(
                 [
                     _SCRCPY,
@@ -358,6 +370,10 @@ class _MirrorCard(QFrame):
                     "--window-title", self._unique_title,
                     "--window-borderless",
                     "--max-size", str(self.MIRROR_SIZE),
+                    "--window-x", "30000",
+                    "--window-y", "30000",
+                    "--window-width", str(self.MIRROR_SIZE),
+                    "--window-height", str(self.MIRROR_SIZE),
                     "--no-audio",
                     "--render-driver", "software",
                 ],
@@ -405,6 +421,8 @@ class _MirrorCard(QFrame):
             SWP_NOZORDER = 0x0004
             SWP_NOACTIVATE = 0x0010
             SWP_FRAMECHANGED = 0x0020
+            SW_HIDE = 0
+            SW_SHOWNOACTIVATE = 4
 
             user32.GetWindowLongW.restype = ctypes.c_long
             user32.GetWindowLongW.argtypes = [ctypes.c_void_p, ctypes.c_int]
@@ -419,6 +437,16 @@ class _MirrorCard(QFrame):
                 ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int,
                 ctypes.c_uint,
             ]
+            user32.ShowWindow.restype = ctypes.c_int
+            user32.ShowWindow.argtypes = [ctypes.c_void_p, ctypes.c_int]
+
+            # v1.6.89 — defense-in-depth: HIDE the HWND immediately. Even
+            # though the spawn flags put scrcpy at (30000,30000) so it
+            # shouldn't be visible to begin with, hiding here protects
+            # against any future scrcpy version that ignores --window-x.
+            # The window stays hidden through SetWindowLong + SetParent +
+            # SetWindowPos, then we re-show it AFTER it's parented + sized.
+            user32.ShowWindow(hwnd, SW_HIDE)
 
             # 1. Strip top-level decorations + add WS_CHILD
             cur_style = user32.GetWindowLongW(hwnd, GWL_STYLE)
@@ -437,6 +465,11 @@ class _MirrorCard(QFrame):
                 hwnd, None, 0, 0, w, h,
                 SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED,
             )
+
+            # 4. NOW show the window (it's a child of body_host, positioned
+            # correctly, no flash to desktop).
+            user32.ShowWindow(hwnd, SW_SHOWNOACTIVATE)
+
             self._embedded_hwnd = hwnd
             self._status_label.hide()
         except Exception as exc:

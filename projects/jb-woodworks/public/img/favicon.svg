@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- JB Woodworks favicon - bold JB monogram + gold underline, readable at 16x16. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="JB Woodworks">
+  <rect width="64" height="64" rx="10" fill="#080808"/>
+  <g fill="#ffffff">
+    <path d="M 16 12 L 26 12 L 26 42 Q 26 50 19 50 Q 12 50 9 44 L 14 41 Q 16 45 19 45 Q 21 45 21 42 L 21 12 Z"/>
+    <path d="M 30 12 L 44 12 Q 54 12 54 22 Q 54 28 49 30 Q 56 32 56 39 Q 56 50 44 50 L 30 50 Z M 35 16 L 35 28 L 43 28 Q 49 28 49 22 Q 49 16 43 16 Z M 35 32 L 35 46 L 43 46 Q 51 46 51 39 Q 51 32 43 32 Z" fill-rule="evenodd"/>
+  </g>
+  <rect x="14" y="54" width="36" height="3" fill="#c9a84c"/>
+</svg>

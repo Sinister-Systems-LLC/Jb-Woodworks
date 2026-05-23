@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- JB Woodworks - 1200x630 social/OG card with wordmark + tagline. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="JB Woodworks - Premium Craftsmanship. Built to Last.">
+  <defs>
+    <radialGradient id="bgGlow" cx="0.85" cy="-0.1" r="1.1">
+      <stop offset="0" stop-color="#c9a84c" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#c9a84c" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="#080808"/>
+  <rect width="1200" height="630" fill="url(#bgGlow)"/>
+
+  <text x="80" y="220" fill="#ffffff" font-family="Inter, sans-serif" font-size="160" font-weight="900" letter-spacing="20">JB</text>
+  <text x="80" y="280" fill="#c9a84c" font-family="Inter, sans-serif" font-size="28" font-weight="700" letter-spacing="20">WOODWORKS</text>
+  <line x1="80" y1="330" x2="500" y2="330" stroke="#c9a84c" stroke-width="2"/>
+  <text x="80" y="400" fill="#ffffff" font-family="'DM Serif Display', Georgia, serif" font-size="62" font-style="normal">Premium Craftsmanship.</text>
+  <text x="80" y="470" fill="#c9a84c" font-family="'DM Serif Display', Georgia, serif" font-size="62" font-style="italic">Built to Last.</text>
+  <text x="80" y="540" fill="rgba(255,255,255,0.6)" font-family="Inter, sans-serif" font-size="20" font-weight="500" letter-spacing="4">DECKS  -  DOCKS  -  PERGOLAS  -  FURNITURE</text>
+  <text x="80" y="572" fill="rgba(255,255,255,0.4)" font-family="Inter, sans-serif" font-size="16" font-weight="500" letter-spacing="3">ORLANDO, FL  -  jb.woodworkss</text>
+</svg>

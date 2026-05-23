@@ -11,7 +11,7 @@ import time
 from dataclasses import dataclass, field
 from typing import Iterable, Optional, Union
 
-DEFAULT_MODEL = "gemini-2.5-flash-image-preview"
+DEFAULT_MODEL = "gemini-2.5-flash-image"
 
 RefImage = Union[bytes, str, pathlib.Path]
 
@@ -177,12 +177,15 @@ JBW_STYLE = (
 )
 
 JKOR_STYLE = (
-    " — clean cinematic digital painting, deep near-black background (#0A0B1E) with"
-    " a subtle vertical Sanctum-purple glow (#7A3DD4 -> #4B1F8B), minimal, calm,"
-    " premium video-game UI art quality, smooth lighting, high-contrast subject,"
-    " NO busy patterns, NO runic symbols, NO swirls, NO sparkles, NO magical particles,"
-    " NO UI elements, NO download icons, NO buttons, NO interface chrome in any corner,"
-    " NO text in image, NO emojis, NO logos"
+    " — preserve the canonical JKOR look: playful cartoon purple demon-jester"
+    " character with cheeky showing-teeth grin, small horns, gold crown,"
+    " jester staff topped with a mini-jester-head bell, fan of playing cards,"
+    " purple-and-gold royal-jester collar with central gem. Background uses"
+    " the canonical runic circle with purple-and-cyan magic glow + sparkles,"
+    " just dialed back slightly so the character pops more — deep purple-navy"
+    " at the corners (#1A0D3A fading to #0A0B1E). The JOKR display lettering"
+    " stays where the source has it. NO download icons, NO UI buttons, NO"
+    " interface chrome in any corner."
 )
 
 

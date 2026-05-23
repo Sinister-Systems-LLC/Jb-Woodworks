@@ -1,0 +1,45 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-23T10:51:25.6711397Z",
+    "project":  "rkoj",
+    "agent_name":  "rkoj",
+    "mode":  "resume",
+    "focus_intent":  "",
+    "git":  {
+                "branch":  "agent/rkoj/next-slate-2026-05-23",
+                "head":  "a4b71cf4c38e19af6b25da1d29560fdd598c767b",
+                "head_msg":  "ship(rkoj+browser): jcode matrix row 12 ✅ + Layer A probe + resume-point script fix",
+                "recent_commits":  [
+                                       "a4b71cf ship(rkoj+browser): jcode matrix row 12 ✅ + Layer A probe + resume-point script fix",
+                                       "3c1df84 launcher(refusal+menu+letstext+plugins+pos-restore): operator-stack 2026-05-23 evening",
+                                       "c430e4a launcher(eve.exe): jcode-speed picker wrapper + sterm jcode-memory ask",
+                                       "b199dae ship(rkoj+mind): Mind /diagrams web view + 2 brain entries (matrix row 12 complete)",
+                                       "3eec73f launcher(live-bugfix): Auto-Resume freeze + Rename/Color visibility + multi-spawn dispatcher",
+                                       "73c628b doctrine+freeze+autonomy: anti-revert protection system + Sinister Freeze restore + agent autonomy override",
+                                       "6d00c59 ship(rkoj+forge): /api/diagrams endpoint + row 12 advance + PROGRESS update",
+                                       "4bc5b4d ship(forge): jcode-parity matrix rows 5/15/18 → ✅ (boot art audit, mermaid in-TUI panel, skill watchdog)",
+                                       "9b76247 ship(rkoj): resume-pickup + jcode matrix flips (5 rows) + inbox triage (5 closed)",
+                                       "b9e89dc brain(correction): pip-show says installed != import works (stale .pth)"
+                                   ]
+            },
+    "progress_top3":  [
+                          "2026-05-23 06:42 â€” /loop iteration 4 â€” matrix flips + Layer A probe + script fix",
+                          "2026-05-23 06:30 â€” /loop dynamic iteration 3 â€” Mind /diagrams web view + 2 brain entries"
+                      ],
+    "latest_plan":  {
+                        "dir":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\rkoj-complete-2026-05-23T0621Z",
+                        "artifact":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\rkoj-complete-2026-05-23T0621Z\\forward-plan.md"
+                    },
+    "inbox_unread_count":  1,
+    "last_5_files_touched_24h":  [
+                                     "_shared-memory\\knowledge\\jcode-feature-matrix.md",
+                                     "_shared-memory\\knowledge\\_INDEX.md",
+                                     "_shared-memory\\PROGRESS\\rkoj.md",
+                                     "_shared-memory\\PROGRESS\\Sinister Sanctum.md",
+                                     "_shared-memory\\resume-points\\Sinister Panel\\2026-05-23T103500Z.json"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\rkoj.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}

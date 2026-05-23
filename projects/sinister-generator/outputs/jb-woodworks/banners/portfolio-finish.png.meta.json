@@ -1,0 +1,9 @@
+{
+  "prompt": "An extreme low-angle photograph along a freshly oiled walnut tabletop, the surface glossy enough to reflect a single warm gold highlight that races down the length of the wood. The far end fades into pure black. No people, no text, no objects on the table. Aspect 16:9, photorealistic, dramatic raking light, calm and premium. \u2014 premium craftsmanship, hand-finished wood close-up, warm gold accent (#c9a84c) on deep black (#080808) background, soft directional light, photographic realism, no text in image, no emojis, no plastic / faux finishes",
+  "model": "gemini-2.5-flash-image",
+  "created_utc": "2026-05-23T09:49:27Z",
+  "elapsed_seconds": 5.8,
+  "ref_image_count": 0,
+  "image_bytes": 1071518,
+  "text_response_excerpt": null
+}

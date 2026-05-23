@@ -1,0 +1,9 @@
+{
+  "prompt": "A stage manager at the prompt corner of a theater wing, partially silhouetted, holding a clipboard with a small clip-on pencil light illuminating the call sheet, headset on with the boom mic positioned. Intense concentration on the face. Amber side-light spills from offstage right. Subject in the right third of the frame, dark stage flats receding to the left into shadow. Cinematic photographic realism. \u2014 cinematic volumetric stage lighting, deep black background (#0A0A0F), gold gradient accent (#E8C078 -> #D4A24A -> #9C7126), high-contrast subject, no text in image, no emojis, no logos",
+  "model": "gemini-2.5-flash-image",
+  "created_utc": "2026-05-23T09:40:30Z",
+  "elapsed_seconds": 6.45,
+  "ref_image_count": 0,
+  "image_bytes": 1441195,
+  "text_response_excerpt": null
+}

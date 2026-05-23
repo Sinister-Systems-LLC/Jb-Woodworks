@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- JB Woodworks - horizontal wordmark for header/footer/email-sig. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 80" role="img" aria-label="JB Woodworks">
+  <text x="20" y="54"
+        fill="#ffffff"
+        font-family="Inter, -apple-system, sans-serif"
+        font-size="42"
+        font-weight="900"
+        letter-spacing="7">JB</text>
+  <text x="115" y="46"
+        fill="#c9a84c"
+        font-family="Inter, -apple-system, sans-serif"
+        font-size="11"
+        font-weight="700"
+        letter-spacing="9">WOODWORKS</text>
+  <text x="115" y="64"
+        fill="#888888"
+        font-family="Inter, -apple-system, sans-serif"
+        font-size="8"
+        font-weight="500"
+        letter-spacing="5">CUSTOM WOODWORKING + CONSTRUCTION</text>
+</svg>

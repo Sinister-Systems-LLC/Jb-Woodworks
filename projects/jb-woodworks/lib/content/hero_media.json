@@ -1,0 +1,8 @@
+[
+  {"type": "video", "src": "Pergola/IMG_0047.mp4",      "poster": "Pergola/IMG_0047.jpg",      "duration_ms": 11000},
+  {"type": "video", "src": "Trex Deck/I like.mp4",      "poster": "Trex Deck/I like.jpg",      "duration_ms": 6000},
+  {"type": "video", "src": "Deck/My Movie 2.mp4",       "poster": "Deck/My Movie 2.jpg",       "duration_ms": 9000},
+  {"type": "video", "src": "Pergola/IMG_0050.mp4",      "poster": "Pergola/IMG_0050.jpg",      "duration_ms": 9000},
+  {"type": "video", "src": "Boat Dock/IMG_1605.mp4",    "poster": "Boat Dock/IMG_1605.jpg",    "duration_ms": 6500},
+  {"type": "video", "src": "Custom Furniture/IMG_1133.mp4", "poster": "Custom Furniture/IMG_1133.jpg", "duration_ms": 5500}
+]

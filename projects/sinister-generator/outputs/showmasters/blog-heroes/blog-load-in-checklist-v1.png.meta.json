@@ -1,0 +1,9 @@
+{
+  "prompt": "Wide horizontal shot of a half-loaded arena stage at the start of load-in. Several stagehands moving cases, one technician focused on a console at front of stage, scattered amber work lights, the venue mostly dark with one cool white house light still on far stage right. Camera at audience-level height, slightly off-center. Deep negative space top and right for typography overlay. \u2014 cinematic volumetric stage lighting, deep black background (#0A0A0F), gold gradient accent (#E8C078 -> #D4A24A -> #9C7126), high-contrast subject, no text in image, no emojis, no logos",
+  "model": "gemini-2.5-flash-image",
+  "created_utc": "2026-05-23T09:15:24Z",
+  "elapsed_seconds": 10.68,
+  "ref_image_count": 0,
+  "image_bytes": 987113,
+  "text_response_excerpt": null
+}

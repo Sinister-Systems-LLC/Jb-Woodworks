@@ -1,0 +1,9 @@
+{
+  "prompt": "A broadcast camera operator behind a professional multicam camera mounted on a jib arm at the side of a dark arena, viewed from a low side angle. The camera viewfinder LCD glows soft amber on the operator's face. Gold rim light catches the camera body and the jib arm extending into the frame. Subject in the left third, the jib arm reaches across the middle. Concrete venue floor below catches a faint gold reflection. Cinematic photographic realism. \u2014 cinematic volumetric stage lighting, deep black background (#0A0A0F), gold gradient accent (#E8C078 -> #D4A24A -> #9C7126), high-contrast subject, no text in image, no emojis, no logos",
+  "model": "gemini-2.5-flash-image",
+  "created_utc": "2026-05-23T09:40:13Z",
+  "elapsed_seconds": 8.63,
+  "ref_image_count": 0,
+  "image_bytes": 1473669,
+  "text_response_excerpt": null
+}

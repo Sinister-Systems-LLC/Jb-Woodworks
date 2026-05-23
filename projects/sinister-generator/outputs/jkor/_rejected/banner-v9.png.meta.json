@@ -1,0 +1,40 @@
+{
+  "prompt": "PIL compose: v6 cropped + composited on 1620x648 dark-purple canvas with feathered edges. No LLM call.",
+  "source": "D:\\Sinister Sanctum\\projects\\sinister-generator\\outputs\\jkor\\banners\\banner-v6.png",
+  "model": "PIL/local (no LLM)",
+  "created_utc": "2026-05-23T07:52:48Z",
+  "crop_box": [
+    320,
+    65,
+    1216,
+    665
+  ],
+  "scaled_size": [
+    907,
+    608
+  ],
+  "canvas_size": [
+    1620,
+    648
+  ],
+  "paste_at": [
+    30,
+    20
+  ],
+  "feather": {
+    "right": 140,
+    "left": 40,
+    "topbottom": 30
+  },
+  "canvas_color_top": [
+    32,
+    27,
+    59
+  ],
+  "canvas_color_bottom": [
+    26,
+    23,
+    41
+  ],
+  "elapsed_seconds": "n/a (PIL local)"
+}

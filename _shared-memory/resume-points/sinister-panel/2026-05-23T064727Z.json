@@ -1,0 +1,44 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-23T10:50:06.5335590Z",
+    "project":  "sinister-panel",
+    "agent_name":  "sinister-panel",
+    "mode":  "resume",
+    "focus_intent":  "",
+    "git":  {
+                "branch":  "agent/rkoj/next-slate-2026-05-23",
+                "head":  "c430e4aee66f8389740bb6c2726c07962a62f553",
+                "head_msg":  "launcher(eve.exe): jcode-speed picker wrapper + sterm jcode-memory ask",
+                "recent_commits":  [
+                                       "c430e4a launcher(eve.exe): jcode-speed picker wrapper + sterm jcode-memory ask",
+                                       "b199dae ship(rkoj+mind): Mind /diagrams web view + 2 brain entries (matrix row 12 complete)",
+                                       "3eec73f launcher(live-bugfix): Auto-Resume freeze + Rename/Color visibility + multi-spawn dispatcher",
+                                       "73c628b doctrine+freeze+autonomy: anti-revert protection system + Sinister Freeze restore + agent autonomy override",
+                                       "6d00c59 ship(rkoj+forge): /api/diagrams endpoint + row 12 advance + PROGRESS update",
+                                       "4bc5b4d ship(forge): jcode-parity matrix rows 5/15/18 ΓåÆ Γ£à (boot art audit, mermaid in-TUI panel, skill watchdog)",
+                                       "9b76247 ship(rkoj): resume-pickup + jcode matrix flips (5 rows) + inbox triage (5 closed)",
+                                       "b9e89dc brain(correction): pip-show says installed != import works (stale .pth)",
+                                       "915a878 ship(rkoj): v1.6.88 ΓÇö fix Sini-stray-window leak + Resume picker merges all 14 projects.json projects + per-phone scrcpy stderr ΓåÆ log file",
+                                       "70297c6 plan(agent-stack): readiness review + wake-on-demand bot dispatcher doctrine"
+                                   ]
+            },
+    "progress_top3":  [
+
+                      ],
+    "latest_plan":  {
+                        "dir":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\sinister-panel-complete-2026-05-23T0623Z",
+                        "artifact":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\sinister-panel-complete-2026-05-23T0623Z\\forward-plan.md"
+                    },
+    "inbox_unread_count":  1,
+    "last_5_files_touched_24h":  [
+                                     "_shared-memory\\PROGRESS\\rkoj.md",
+                                     "tools\\session-launcher\\Sinister Start.bat",
+                                     "automations\\session-templates\\projects.json",
+                                     "_shared-memory\\PROGRESS\\Sinister Panel.md",
+                                     "tools\\_INDEX.md"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\plans\\sinister-panel-complete-2026-05-23T0623Z\\forward-plan.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}

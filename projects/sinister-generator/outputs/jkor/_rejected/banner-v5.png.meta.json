@@ -1,0 +1,9 @@
+{
+  "prompt": "EDIT the attached source banner with TWO minimal changes and PRESERVE EVERYTHING ELSE EXACTLY. CHANGES: (1) Significantly darken the swirling magic background and tone down the runic-circle glow \u2014 keep all the elements (runes, swirls, sparkles) but render them deeper purple and more muted so the character is clearly the focal point and the corners fade to a deep navy-black (#0A0B1E). (2) Remove the small white download icon in the bottom-right corner and replace it with the matching dark background. KEEP UNCHANGED: the cartoony purple demon-jester (cheeky teeth-showing grin, small horns, gold crown, purple-and-gold collar with central gem), the jester staff with mini-jester-head topper in the left hand, the fan of playing cards in the right hand, the runic-circle composition, the JOKR display text at the bottom, the wide horizontal banner aspect. Make ONLY those two edits.",
+  "model": "gemini-2.5-flash-image",
+  "created_utc": "2026-05-23T07:25:49Z",
+  "elapsed_seconds": 8.61,
+  "ref_image_count": 1,
+  "image_bytes": 2287695,
+  "text_response_excerpt": "Here is the edited banner with the darkened background and removed download icon. "
+}

@@ -4,6 +4,55 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not command-versions (each lane has its own).
 
+## v1.6.89 — 2026-05-23 — no more stray scrcpy windows outside the UI
+
+**Operator directive (verbatim 2026-05-23):** *"dont have scrcpy windows
+show up outside of the ui itself"*.
+
+**Root cause:** v1.6.88 spawned scrcpy with the OS default window
+position — by the time the embed poller fired at `EMBED_RETRY_MS = 300ms`
+and Win32 `SetParent` reparented the HWND into the `_body_host` widget,
+scrcpy had already drawn a visible window onto the desktop. Even short
+flashes were enough to count as "outside the UI".
+
+**Two-part fix:**
+
+1. **Spawn offscreen.** `devices_tab.py::_spawn_scrcpy` now passes:
+   ```
+   --window-x 30000 --window-y 30000
+   --window-width MIRROR_SIZE --window-height MIRROR_SIZE
+   ```
+   Win32 allows positioning beyond any monitor's working area, so the
+   window exists but is fully invisible until reparented. The
+   `--window-width`/`--window-height` flags also fix the initial size
+   so scrcpy doesn't render at its default ~540x1170 portrait then
+   resize down on the first `SetWindowPos` call.
+
+2. **Hide during reparent.** `_try_embed` now calls
+   `ShowWindow(hwnd, SW_HIDE)` immediately after `FindWindow` returns
+   the HWND — before `SetParent` and the style changes — then
+   `ShowWindow(hwnd, SW_SHOWNOACTIVATE)` once the window is positioned
+   inside `_body_host`. This is defense-in-depth: even if a future
+   scrcpy version ignores `--window-x`, the window stays hidden until
+   it's a child of our body widget.
+
+**Verification path** (since scrcpy needs an ADB-attached phone):
+
+```
+# 1. Connect a phone via USB; verify adb sees it
+adb devices
+
+# 2. Launch RKOJ.exe
+"D:/Sinister Sanctum/projects/rkoj/source/sinister_rkoj_qt/dist/RKOJ.exe"
+
+# 3. Devices tab → click "Mirror" on a phone row
+# Expected: no scrcpy window appears anywhere on the desktop. The
+# embedded mirror just appears inside the MirrorCard. Status label
+# briefly shows "Connecting to phone…" then hides.
+```
+
+`__version__` bumped 1.6.88 → 1.6.89 in `sinister_rkoj_qt/__init__.py`.
+
 ## v1.6.71 — 2026-05-23 — sidebar nav labels visible + sinister-eve.exe shipped
 
 **Bug fix:** Sidebar nav row labels were invisible (operator screenshot

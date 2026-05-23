@@ -1,0 +1,45 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-23T09:09:44.7550532Z",
+    "project":  "rkoj",
+    "agent_name":  "rkoj",
+    "mode":  "resume",
+    "focus_intent":  "",
+    "git":  {
+                "branch":  "agent/rkoj/complete-without-operator-2026-05-23",
+                "head":  "9b762479c762765b1bcd46daffcae6554712b7c0",
+                "head_msg":  "ship(rkoj): resume-pickup + jcode matrix flips (5 rows) + inbox triage (5 closed)",
+                "recent_commits":  [
+                                       "9b76247 ship(rkoj): resume-pickup + jcode matrix flips (5 rows) + inbox triage (5 closed)",
+                                       "b9e89dc brain(correction): pip-show says installed != import works (stale .pth)",
+                                       "915a878 ship(rkoj): v1.6.88 ΓÇö fix Sini-stray-window leak + Resume picker merges all 14 projects.json projects + per-phone scrcpy stderr ΓåÆ log file",
+                                       "70297c6 plan(agent-stack): readiness review + wake-on-demand bot dispatcher doctrine",
+                                       "f68ecf0 info(rkoj): projects.json schema v6 fields advisory note (optional consumer patch)",
+                                       "35ef9ff queue(2026-05-23): annotate restart row ΓÇö spawn unblocked at session level; restart still needed for MCP/plugin activation",
+                                       "7fa8fcc progress(sanctum): operator hard-canonical 2026-05-23 + spawn validation captured",
+                                       "c763ce2 brain(spawn): end-to-end validation pattern + index row",
+                                       "c5513a9 doctrine(spawn): operator hard-canonical 2026-05-23 ΓÇö master may spawn child Claude + dangerously-skip-permissions is fleet default",
+                                       "6b17946 ship(rkoj): v1.6.86 ΓÇö fix stray \"Sini...\" window + bleed-through (no startup scrcpy)"
+                                   ]
+            },
+    "progress_top3":  [
+                          "2026-05-23 04:55 â€” resume pickup + complete-without-operator forward-plan"
+                      ],
+    "latest_plan":  {
+                        "dir":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\rkoj-complete-2026-05-23T0455Z",
+                        "artifact":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\rkoj-complete-2026-05-23T0455Z\\forward-plan.md"
+                    },
+    "inbox_unread_count":  0,
+    "last_5_files_touched_24h":  [
+                                     "_shared-memory\\script-runs\\start-sinister-session-20260523-050933-6b00.json",
+                                     "_shared-memory\\spawned-windows.jsonl",
+                                     "automations\\session-templates\\agent-prefs.json",
+                                     "_shared-memory\\heartbeats\\apk.json",
+                                     "_shared-memory\\script-runs\\start-sinister-session-20260523-050908-d33e.json"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\rkoj.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\plans\\rkoj-complete-2026-05-23T0455Z\\forward-plan.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}

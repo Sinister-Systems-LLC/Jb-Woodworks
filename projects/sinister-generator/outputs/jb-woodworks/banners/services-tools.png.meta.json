@@ -1,0 +1,9 @@
+{
+  "prompt": "A top-down photograph of a curated row of hand tools laid out on dark stained planks: a block plane, three chisels of different widths, a marking gauge, a pencil. Warm gold rim light comes from the top edge, the rest falls to deep black. Clean, deliberate, no people, no text. Aspect 16:9, photorealistic, macro detail. \u2014 premium craftsmanship, hand-finished wood close-up, warm gold accent (#c9a84c) on deep black (#080808) background, soft directional light, photographic realism, no text in image, no emojis, no plastic / faux finishes",
+  "model": "gemini-2.5-flash-image",
+  "created_utc": "2026-05-23T09:49:21Z",
+  "elapsed_seconds": 6.94,
+  "ref_image_count": 0,
+  "image_bytes": 1461373,
+  "text_response_excerpt": null
+}

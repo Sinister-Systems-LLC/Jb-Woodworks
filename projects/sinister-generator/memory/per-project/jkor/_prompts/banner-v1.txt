@@ -1,0 +1,31 @@
+# JKOR banner — prompt v1
+# Author: RKOJ-ELENO :: 2026-05-23
+# Pairs with: generate-banner.bat
+# Goal: regenerate the base banner with two fixes — quieter background + no download button.
+# Color scheme pulled from C:\Users\Zonia\Desktop\JKOR\reference\01-color-scheme-command-center.png
+
+PROMPT:
+A wide horizontal banner illustration for the JKOR brand. Center-left of the frame: a charismatic purple-skinned demon-jester character with small dark horns, a small gold crown, mischievous grin showing teeth, expressive purple-rimmed eyes. The character holds a fan of playing cards in the left hand and a sorcerer's wand with a small star at the tip in the right hand. Wearing a regal purple-and-gold jester collar and cape. Looking directly at the viewer with confidence.
+
+Background: a calm, premium dark backdrop — deep near-black (#0A0B1E) at the edges with a subtle vertical Sanctum-purple gradient glow (#7A3DD4 fading to #4B1F8B fading to the dark base) directly behind the character only. The rest of the background stays clean and dark.
+
+Wide cinematic banner aspect ratio (3:1 to 4:1).
+
+REQUIRED NEGATIVES (must NOT appear):
+- No runic symbols
+- No swirling magical patterns
+- No sparkles or floating particles
+- No download icons or buttons in any corner
+- No UI chrome of any kind
+- No text in the image (the word "JOKR" / "JKOR" is composited as SVG outside the image, not baked in)
+- No emojis
+- No daylight or stock-photo lighting
+
+Style: clean cinematic digital painting, smooth volumetric lighting on the character, premium video-game character-art quality (think modern card-game key art or a digital RPG title-screen portrait), high contrast between the lit subject and the calm dark backdrop.
+
+REFERENCE IMAGES PASSED:
+- reference/00-base-banner-original.png   (carries the character design + pose)
+- reference/01-color-scheme-command-center.png   (carries the calm-dark palette + minimal-purple-glow vibe)
+
+FLAGS:
+--brand jkor   (auto-appends the locked JKOR style suffix)

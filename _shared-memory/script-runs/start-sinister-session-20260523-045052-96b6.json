@@ -1,0 +1,12 @@
+{
+    "ts":  "2026-05-23T04:50:52.7240539-04:00",
+    "project":  "sinister-panel",
+    "agent":  "sinister-panel",
+    "accent":  "purple",
+    "kind":  "project",
+    "launcher_version":  "v6",
+    "outputs":  {
+                    "project":  "sinister-panel",
+                    "mode":  "resume"
+                }
+}

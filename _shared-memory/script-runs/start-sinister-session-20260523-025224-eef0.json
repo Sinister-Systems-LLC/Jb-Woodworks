@@ -1,0 +1,12 @@
+{
+    "ts":  "2026-05-23T02:52:24.0235529-04:00",
+    "project":  "kernel-apk",
+    "agent":  "kernel-apk",
+    "accent":  "purple",
+    "kind":  "project",
+    "launcher_version":  "v6",
+    "outputs":  {
+                    "project":  "kernel-apk",
+                    "mode":  "resume"
+                }
+}

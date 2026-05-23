@@ -1,0 +1,12 @@
+{
+    "ts":  "2026-05-23T06:25:25.5141174-04:00",
+    "project":  "jb-woodworks",
+    "agent":  "jb-woodworks",
+    "accent":  "purple",
+    "kind":  "project",
+    "launcher_version":  "v6",
+    "outputs":  {
+                    "project":  "jb-woodworks",
+                    "mode":  "resume"
+                }
+}

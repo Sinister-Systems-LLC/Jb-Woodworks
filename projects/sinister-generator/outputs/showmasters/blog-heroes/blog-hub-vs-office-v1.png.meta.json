@@ -1,0 +1,9 @@
+{
+  "prompt": "Wide horizontal shot of a half-lit warehouse interior with a few stagehand silhouettes loading a truck through a roll-up door at the far end. The truck's tail-lights cast a faint red glow. Most of the warehouse is in deep shadow with one amber utility light bracketed on the left wall. Cinematic widescreen, painterly. \u2014 cinematic volumetric stage lighting, deep black background (#0A0A0F), gold gradient accent (#E8C078 -> #D4A24A -> #9C7126), high-contrast subject, no text in image, no emojis, no logos",
+  "model": "gemini-2.5-flash-image",
+  "created_utc": "2026-05-23T09:15:46Z",
+  "elapsed_seconds": 6.79,
+  "ref_image_count": 0,
+  "image_bytes": 754106,
+  "text_response_excerpt": null
+}

@@ -1,0 +1,9 @@
+{
+  "prompt": "A rigger high up in the truss above a darkened arena, securing a chain motor to a steel beam. Low upward camera angle. Gold key light from a follow-spot below catches the rigger's silhouette and the geometric lines of the truss. Deep black void surrounds, with faint hints of empty venue seats far below. Subject occupies the upper third of the frame, truss diagonals frame the shot. Cinematic photographic realism. \u2014 cinematic volumetric stage lighting, deep black background (#0A0A0F), gold gradient accent (#E8C078 -> #D4A24A -> #9C7126), high-contrast subject, no text in image, no emojis, no logos",
+  "model": "gemini-2.5-flash-image",
+  "created_utc": "2026-05-23T09:08:27Z",
+  "elapsed_seconds": 6.3,
+  "ref_image_count": 0,
+  "image_bytes": 1329923,
+  "text_response_excerpt": null
+}

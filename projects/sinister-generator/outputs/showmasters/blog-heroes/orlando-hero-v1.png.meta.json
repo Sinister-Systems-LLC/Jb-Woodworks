@@ -1,0 +1,9 @@
+{
+  "prompt": "Cinematic dusk view of Orlando, Florida across Lake Eola at dusk with downtown buildings as silhouettes. Tall buildings as black silhouettes against a deep gradient sky fading from dark navy at the top to warm amber-gold at the horizon. A faint pinpoint of warm gold stage-light glow concentrated in the lower right of the frame, suggesting a venue district. No people, no text, no logos. Painterly photoreal, wide cinematic framing. \u2014 cinematic volumetric stage lighting, deep black background (#0A0A0F), gold gradient accent (#E8C078 -> #D4A24A -> #9C7126), high-contrast subject, no text in image, no emojis, no logos",
+  "model": "gemini-2.5-flash-image",
+  "created_utc": "2026-05-23T09:14:40Z",
+  "elapsed_seconds": 7.21,
+  "ref_image_count": 0,
+  "image_bytes": 1334831,
+  "text_response_excerpt": null
+}

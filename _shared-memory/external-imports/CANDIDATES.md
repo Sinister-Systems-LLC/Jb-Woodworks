@@ -8,6 +8,28 @@ Tag legend: `scouted` · `mcp-only` · `forked-candidate` · `keep` · `archive`
 
 ---
 
+## 2026-05-23 — operator-suggested scout (EVE / Sanctum)
+
+### llm_wiki (`github.com/nashsu/llm_wiki`) — self-building Karpathy-pattern knowledge base
+
+| Field | Value |
+|---|---|
+| State | **scouted** (candidate — operator suggested 2026-05-23; aligns with `understand-anything:understand-knowledge` skill already loaded) |
+| URL | https://github.com/nashsu/llm_wiki |
+| License | GPL v3.0 (copyleft — consumption fine; any fork we publish must also be GPL v3) |
+| Pinned version | v0.4.12 (2026-05-19) |
+| Repo pulse | 443 commits on main, 8.9k stars, 1.1k forks, active development |
+| Stack | Tauri desktop (TypeScript 79% + Rust 15% + JS 5%) — cross-platform desktop app |
+| What it is | Personal knowledge base that builds itself. Ingests documents, runs an LLM over them, emits a structured wiki + knowledge graph that the system keeps current. Extends Andrej Karpathy's "LLM Wiki" pattern with community detection, multimodal image ingestion, graph insights, web search, and **a local HTTP API for external agents**. |
+| Why we care | Sanctum has 80+ hand-written brain entries in `_shared-memory/knowledge/` + ~30 PROGRESS logs + tens of resume-points + case-studies. Today the brain is grep-only — no semantic edges, no auto-clustering, no self-maintenance. llm_wiki could ingest the whole `_shared-memory/` tree and emit a queryable knowledge graph. Critically, the **local HTTP API** means EVE / fleet bots could query the wiki without spawning the desktop UI, and the output is exactly the Karpathy format that the already-loaded `understand-anything:understand-knowledge` skill consumes. Producer-side of a pipeline whose consumer-side is already live. |
+| What we'd take | (Phase C, post case-study) Either: (a) run the desktop app locally pointed at `_shared-memory/`, expose its HTTP API to fleet bots via a new `tools/brain-graph/` wrapper; or (b) extract the Rust ingestion + graph-build core into a headless service. Option (a) is days; option (b) is weeks. Start with (a). |
+| Open questions | (1) GPL v3 — does running the app + querying its API qualify as distribution? (No — internal use is fine. Forks would need GPL v3 republish.) (2) Does it support incremental ingest (watch a dir) or only batch? (3) What model backend — does it require OpenAI/Claude API key, or run local via Ollama? (4) Does the HTTP API expose graph traversal or just text-query? |
+| Phase | Phase 0 done (URL + version + license pinned here). Phase A pending — write `_shared-memory/external-imports/llm_wiki/ATTRIBUTION.md` + answer the four open questions above. Phase B pending — operator click to run the app once against a `_shared-memory/` snapshot for evaluation. |
+| Case-study | (deferred to post-Phase-B) `_shared-memory/case-studies/<UTC>-llm-wiki.md` — verdict on whether the graph it builds beats `_shared-memory/knowledge/_INDEX.md` + grep for our actual query patterns. |
+| Brain entry | (none yet — write after Phase B verdict) |
+
+---
+
 ## 2026-05-19 — first sweep (Sinister Sanctum master agent)
 
 ### Ruflo (`github.com/ruvnet/ruflo`) — multi-agent orchestration for Claude Code

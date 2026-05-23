@@ -1,0 +1,9 @@
+{
+  "prompt": "A single stagehand crew member pushing a wheeled black road case across a backstage corridor of an arena. Amber par-can side-light from offstage left, gold rim light catching the case edge. Volumetric atmospheric haze. Concrete floor with soft gold reflection. Crew shown as a silhouette mid-stride, plain black work clothes, no logos. Subject in left third, corridor recedes to vanishing point on the right. Cinematic photographic realism. \u2014 cinematic volumetric stage lighting, deep black background (#0A0A0F), gold gradient accent (#E8C078 -> #D4A24A -> #9C7126), high-contrast subject, no text in image, no emojis, no logos",
+  "model": "gemini-2.5-flash-image",
+  "created_utc": "2026-05-23T09:08:21Z",
+  "elapsed_seconds": 8.77,
+  "ref_image_count": 0,
+  "image_bytes": 1393184,
+  "text_response_excerpt": null
+}

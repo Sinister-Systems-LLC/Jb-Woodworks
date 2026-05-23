@@ -1,0 +1,12 @@
+﻿{
+    "ts":  "2026-05-23T02:19:43.0785536-04:00",
+    "project":  "general",
+    "agent":  "general",
+    "accent":  "purple",
+    "kind":  "headless",
+    "launcher_version":  "v6",
+    "outputs":  {
+                    "project":  "general",
+                    "mode":  "resume"
+                }
+}

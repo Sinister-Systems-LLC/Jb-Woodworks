@@ -1,0 +1,16 @@
+{
+  "schema": "sinister-eve.cli-session.v1",
+  "session_uuid": "c61da70c-a2eb-4f38-b08f-aeddbc3dd149",
+  "model": "claude-opus-4-7",
+  "project": null,
+  "turns": [
+    {
+      "user": "respond with exactly: OK reply visible",
+      "assistant": "OK reply visible"
+    }
+  ],
+  "total_cost_usd": 0.0834125,
+  "total_in_tokens": 6,
+  "total_out_tokens": 10,
+  "saved_at": "2026-05-23T04:59:44Z"
+}

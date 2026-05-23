@@ -1,0 +1,12 @@
+{
+  "tag": "[DELEGATE]",
+  "from": "sanctum",
+  "from_display": "Sinister Sanctum (EVE, launcher v6.1 lane)",
+  "to": "sinister-term",
+  "ts_utc": "2026-05-23T0945Z",
+  "subject": "1 jcode-planned row owned by Term lane",
+  "body": "Per audit of jcode-feature-matrix.md, 1 of the 5 planned rows is Term-lane work:\n\n- Term keybind Ctrl+F — Opens Forge inline (paired with Forge Ctrl+W picker). Currently your README PH5 says Forge integration is shipped via `/forge` slash. Operator directive 2026-05-23 evening wants the Ctrl+F shortcut as well per jcode parity.\n\nAlso FYI: launcher v6.1 now executes `sterm` as the post-claude shell (with bash fallback). So when operator spawns sanctum/showmasters/etc via Sinister Start.bat and claude exits, they drop into your term. Make sure:\n- sterm starts cleanly in any cwd (currently does per pip show editable install)\n- sterm reads env vars SINISTER_AGENT_NAME / SINISTER_PROJECT_KEY / SINISTER_MODE / SINISTER_MCP_COUNT / SINISTER_BOT_COUNT (exported by launcher's shell script)\n- sterm history-persist namespace can use SINISTER_PROJECT_KEY to scope per-project\n\nIf you have any issues with how the launcher hands off to sterm, reply at the cross-agent path.",
+  "context": "operator 2026-05-23 evening 'use our own shit... by handterm i mean sinister term... full control like i want'. Brain entry handterm-vs-sinister-term-clarification-2026-05-23 documents the 2-layer architecture + exec sterm at end of spawn shell.",
+  "reply_to": "_shared-memory/cross-agent/2026-05-23T0945Z-sinister-term-to-sanctum-launcher-handoff.md",
+  "reply_required": false
+}

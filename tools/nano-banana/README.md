@@ -60,7 +60,7 @@ Flags:
 | `--output` | destination PNG path (required) |
 | `--ref <path>` | reference image for style transfer; repeatable |
 | `--brand {none,smpl,jbw}` | append a brand-lock style suffix |
-| `--model <id>` | override default `gemini-2.5-flash-image-preview` |
+| `--model <id>` | override default `gemini-2.5-flash-image` |
 | `--no-meta` | skip the `.meta.json` sidecar |
 
 CLI exits `0` on `ok`, `1` on error. Prints JSON with `status / output_path / meta_path / elapsed_seconds / image_bytes / error / text_excerpt`.

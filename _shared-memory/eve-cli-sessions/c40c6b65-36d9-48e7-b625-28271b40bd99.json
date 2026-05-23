@@ -1,0 +1,16 @@
+{
+  "schema": "sinister-eve.cli-session.v1",
+  "session_uuid": "c40c6b65-36d9-48e7-b625-28271b40bd99",
+  "model": "claude-opus-4-7",
+  "project": null,
+  "turns": [
+    {
+      "user": "hey",
+      "assistant": "Hey \u2014 EVE here, standing by in `D:\\Sinister Sanctum`. What are we hitting today?"
+    }
+  ],
+  "total_cost_usd": 0.057511,
+  "total_in_tokens": 6,
+  "total_out_tokens": 40,
+  "saved_at": "2026-05-23T05:11:40Z"
+}

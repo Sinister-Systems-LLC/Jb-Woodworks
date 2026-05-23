@@ -1,0 +1,9 @@
+{
+  "prompt": "Wide horizontal shot of a crew briefing scene: 6-8 stagehands standing in a loose semicircle around a crew lead with a clipboard, viewed from behind the crew lead. Single amber work-light overhead illuminates the group from above. Deep shadow background. Cinematic widescreen. \u2014 cinematic volumetric stage lighting, deep black background (#0A0A0F), gold gradient accent (#E8C078 -> #D4A24A -> #9C7126), high-contrast subject, no text in image, no emojis, no logos",
+  "model": "gemini-2.5-flash-image",
+  "created_utc": "2026-05-23T09:15:59Z",
+  "elapsed_seconds": 6.07,
+  "ref_image_count": 0,
+  "image_bytes": 978635,
+  "text_response_excerpt": null
+}

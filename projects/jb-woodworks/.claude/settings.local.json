@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//d/Sinister Sanctum/.git/worktrees/jbw-wt/**)",
+      "Bash(rm -f \"D:/Sinister Sanctum/.git/worktrees/jbw-wt/index.lock\")"
+    ]
+  }
+}

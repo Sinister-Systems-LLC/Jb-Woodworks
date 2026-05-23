@@ -40,6 +40,17 @@ To unset (clear):
   ```
 - **Current state (2026-05-19):** UNSET. Blocks Scribe + Curator + Chatbot LLM paths AND forces RKOJ.exe into the `claude -p` fallback path (functional but slower).
 
+### `GEMINI_API_KEY`
+
+- **What it unlocks:** Fleet-wide image generation via the `nano-banana` tool (`tools/nano-banana/`). Wraps Gemini 2.5 Flash Image ("Nano Banana") via the `google-genai` SDK. Used by Showmasters (dark+gold stage-light brand-lock helper `smpl_image`), JB Woodworks (gold/black wood photoreal `jbw_image`), and any future lane that needs image generation.
+- **Format:** standard Google AI Studio key (no fixed prefix; operator copies it out of the Gemini Pro dashboard).
+- **Without it:** `nano_banana.generate()` raises `RuntimeError("No API key. Set GEMINI_API_KEY ...")`. The wrapper also accepts `NANO_BANANA_API_KEY` and `GOOGLE_API_KEY` as aliases (precedence: `GEMINI_API_KEY` → `NANO_BANANA_API_KEY` → `GOOGLE_API_KEY`).
+- **Set:**
+  ```powershell
+  [Environment]::SetEnvironmentVariable('GEMINI_API_KEY','<your-key>','User')
+  ```
+- **Current state (2026-05-23):** UNSET. `google-genai` Python SDK 2.6.0 is installed system-wide; just needs the key.
+
 ### `OPENAI_API_KEY`
 
 - **What it unlocks:** Codex Companion peer-review (`POST /api/codex/review`, `tools/codex-companion/codex.py`). Used by master agent + per-project agents to cross-check Claude's output for auth / crypto / payment / >100 LOC pushes.
@@ -125,6 +136,7 @@ To unset (clear):
 | Env var | Read by |
 |---|---|
 | `ANTHROPIC_API_KEY` | `bots/agents/scribe/server.py`, `bots/agents/curator/server.py`, `tools/sinister-chatbot/src/services/anthropic.ts` |
+| `GEMINI_API_KEY` | `tools/nano-banana/nano_banana/api.py` (via `google-genai` SDK) |
 | `OPENAI_API_KEY` | `tools/codex-companion/codex.py` |
 | `SINISTER_VAULT_PASSPHRASE` | `bots/agents/_shared/crypto.py`, `bots/agents/sinister-bus/server.py` (vault tools) |
 | `LEO_ANTHROPIC_API_KEY` | `D:\sinister-vault\accounts\leo.json` (referenced by name) |
@@ -138,7 +150,7 @@ To audit all of the above in one shot:
 
 ```powershell
 @(
-  'ANTHROPIC_API_KEY', 'OPENAI_API_KEY', 'SINISTER_VAULT_PASSPHRASE',
+  'ANTHROPIC_API_KEY', 'GEMINI_API_KEY', 'OPENAI_API_KEY', 'SINISTER_VAULT_PASSPHRASE',
   'LEO_ANTHROPIC_API_KEY', 'SINISTER_HUB_ROOT', 'SINISTER_AGENT_NAME',
   'GITEA_ADMIN_PASSWORD'
 ) | ForEach-Object {

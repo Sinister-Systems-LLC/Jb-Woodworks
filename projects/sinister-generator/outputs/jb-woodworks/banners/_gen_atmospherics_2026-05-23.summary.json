@@ -1,0 +1,23 @@
+[
+  {
+    "name": "about-workshop",
+    "status": "ok",
+    "elapsed_seconds": 8.42,
+    "image_bytes": 1218138,
+    "error": null
+  },
+  {
+    "name": "error-quiet-shop",
+    "status": "ok",
+    "elapsed_seconds": 11.29,
+    "image_bytes": 1063001,
+    "error": null
+  },
+  {
+    "name": "grain-texture",
+    "status": "ok",
+    "elapsed_seconds": 6.6,
+    "image_bytes": 1623992,
+    "error": null
+  }
+]

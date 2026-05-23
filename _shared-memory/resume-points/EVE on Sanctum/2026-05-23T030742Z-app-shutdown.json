@@ -1,0 +1,28 @@
+{
+  "schema_version": "sinister.resume-point.v1",
+  "agent_identity": "EVE",
+  "agent_display": "EVE on Sanctum",
+  "slug": "sanctum-4a9ea7",
+  "pane_id": "4a9ea7f12f3d",
+  "session_uuid": "2d34210d-6eb4-45dc-898c-1b888a2051fb",
+  "project_key": "sanctum",
+  "project_display": "Sanctum",
+  "agent_name": "Sanctum",
+  "mode": "claude",
+  "turns": [
+    {
+      "user": "pickup wherew eleft off",
+      "assistant": ""
+    }
+  ],
+  "saved_at": "2026-05-23T03:07:42.513693+00:00",
+  "save_reason": "app-shutdown",
+  "total_cost_usd": 0.0,
+  "total_in_tokens": 0,
+  "total_out_tokens": 0,
+  "pinned": false,
+  "tags": [],
+  "grep_pattern": "",
+  "input_draft": "",
+  "resume_cmd": "claude --dangerously-skip-permissions -r 2d34210d-6eb4-45dc-898c-1b888a2051fb -p 'your message'"
+}

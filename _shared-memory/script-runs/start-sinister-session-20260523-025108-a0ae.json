@@ -1,0 +1,12 @@
+{
+    "ts":  "2026-05-23T02:51:08.6925538-04:00",
+    "project":  "bom-test-project",
+    "agent":  "bom-test-project",
+    "accent":  "purple",
+    "kind":  "newproject",
+    "launcher_version":  "v6",
+    "outputs":  {
+                    "project":  "bom-test-project",
+                    "mode":  "resume"
+                }
+}

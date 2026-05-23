@@ -1,0 +1,31 @@
+// Author: RKOJ-ELENO :: 2026-05-23
+// JB Woodworks - Prisma schema. Mirrors LetsText pattern (Postgres + Prisma 5).
+// Tables are intentionally minimal for a marketing site; expand as features land.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model ContactInquiry {
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now()) @map("created_at")
+  name       String
+  email      String
+  phone      String?
+  service    String?  // slug, e.g. "pergola"
+  message    String
+  source     String?  @default("web")   // web, instagram, referral, ...
+  ip         String?
+  userAgent  String?  @map("user_agent")
+  status     String   @default("new")   // new, contacted, quoted, won, lost
+  notes      String?
+
+  @@index([createdAt])
+  @@index([status])
+  @@map("contact_inquiry")
+}

@@ -94,9 +94,16 @@ class Project:
 
 
 def load_projects() -> list[Project]:
-    """Read projects.json and return the project list."""
+    """Read projects.json and return the project list.
+
+    v1.6.89 — open with ``utf-8-sig`` so a UTF-8 BOM (which the launcher's
+    PowerShell `Out-File` writes by default on Windows) is consumed
+    silently. Without this, every BOM-prefixed `projects.json` parsed as
+    `JSONDecodeError("Unexpected UTF-8 BOM")` and the outer `except` here
+    silently swallowed it, leaving the Resume picker empty.
+    """
     try:
-        with open(PROJECTS_JSON, "r", encoding="utf-8") as fh:
+        with open(PROJECTS_JSON, "r", encoding="utf-8-sig") as fh:
             data = json.load(fh)
         out: list[Project] = []
         for p in data.get("projects", []):

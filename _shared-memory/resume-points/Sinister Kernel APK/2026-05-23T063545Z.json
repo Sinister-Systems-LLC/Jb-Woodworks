@@ -1,0 +1,46 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-23T10:35:55.7916026Z",
+    "project":  "kernel-apk",
+    "agent_name":  "kernel-apk",
+    "mode":  "resume",
+    "focus_intent":  "",
+    "git":  {
+                "branch":  "agent/rkoj/next-slate-2026-05-23",
+                "head":  "3eec73fbe5c644b14ac016428b662056f26da2ad",
+                "head_msg":  "launcher(live-bugfix): Auto-Resume freeze + Rename/Color visibility + multi-spawn dispatcher",
+                "recent_commits":  [
+                                       "3eec73f launcher(live-bugfix): Auto-Resume freeze + Rename/Color visibility + multi-spawn dispatcher",
+                                       "73c628b doctrine+freeze+autonomy: anti-revert protection system + Sinister Freeze restore + agent autonomy override",
+                                       "6d00c59 ship(rkoj+forge): /api/diagrams endpoint + row 12 advance + PROGRESS update",
+                                       "4bc5b4d ship(forge): jcode-parity matrix rows 5/15/18 → ✅ (boot art audit, mermaid in-TUI panel, skill watchdog)",
+                                       "9b76247 ship(rkoj): resume-pickup + jcode matrix flips (5 rows) + inbox triage (5 closed)",
+                                       "b9e89dc brain(correction): pip-show says installed != import works (stale .pth)",
+                                       "915a878 ship(rkoj): v1.6.88 — fix Sini-stray-window leak + Resume picker merges all 14 projects.json projects + per-phone scrcpy stderr → log file",
+                                       "70297c6 plan(agent-stack): readiness review + wake-on-demand bot dispatcher doctrine",
+                                       "f68ecf0 info(rkoj): projects.json schema v6 fields advisory note (optional consumer patch)",
+                                       "35ef9ff queue(2026-05-23): annotate restart row — spawn unblocked at session level; restart still needed for MCP/plugin activation"
+                                   ]
+            },
+    "progress_top3":  [
+                          "2026-05-23 10:34Z â€” v0.97.36 committed + 3 commits pushed to origin (f11f9d3 + 5f4dec6 + 91aff87) + 5 inbox archived + complete-without-operator plan landed",
+                          "2026-05-23 09:50Z â€” v0.97.35 LIVE on both phones (build + install in 4 min) â€” device_fingerprint_blob now actually shipping to panel"
+                      ],
+    "latest_plan":  {
+                        "dir":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\kernel-apk-complete-2026-05-23T0621Z",
+                        "artifact":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\kernel-apk-complete-2026-05-23T0621Z\\forward-plan.md"
+                    },
+    "inbox_unread_count":  0,
+    "last_5_files_touched_24h":  [
+                                     "_shared-memory\\PROGRESS\\rkoj.md",
+                                     "projects\\jb-woodworks\\.next\\server\\app\\_not-found\\page_client-reference-manifest.js",
+                                     "projects\\jb-woodworks\\.next\\server\\app\\legal\\accessibility\\page_client-reference-manifest.js",
+                                     "projects\\jb-woodworks\\.next\\server\\app\\sitemap.xml\\route_client-reference-manifest.js",
+                                     "projects\\jb-woodworks\\.next\\server\\app\\robots.txt\\route_client-reference-manifest.js"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Sinister Kernel Apk.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\plans\\kernel-apk-complete-2026-05-23T0621Z\\forward-plan.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}

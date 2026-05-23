@@ -1,0 +1,43 @@
+﻿{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-21T22:21:59.1468227Z",
+    "project":  "TikTok Emulator API",
+    "agent_name":  "tiktok-emulator-api",
+    "mode":  "resume",
+    "focus_intent":  "",
+    "git":  {
+                "branch":  "agent/sinister-sanctum/cli-dispatcher-2026-05-21",
+                "head":  "f5821a13967dde23ef190665c6023253b27c8c26",
+                "head_msg":  "docs(brain): operator-iteration-loop doctrine — 8h/12-ship RKOJ session lessons + 7 anti-patterns",
+                "recent_commits":  [
+                                       "f5821a1 docs(brain): operator-iteration-loop doctrine — 8h/12-ship RKOJ session lessons + 7 anti-patterns",
+                                       "5391374 docs(sanctum): PROGRESS turn entry + resume-point + rkoj-qt restructure sweep",
+                                       "c1b792e feat(rkoj-qt): brand asset kit — mascot/logo SVG + 5 icon PNGs + splash + palette.json",
+                                       "c800785 feat(claw -\u003e rkoj-mobile): rebrand sinister-claw to RKOJ Mobile (iOS+Android, Panel-look)",
+                                       "7303cef feat(automations): RKOJ milestone test plan + 3 PowerShell smoke scripts",
+                                       "5be8367 docs(rkoj): v1.5.1 strip-pivot — MANIFEST + CHANGELOG + README + rkoj-ui-exact-spec doctrine",
+                                       "26d20a2 docs(kernel-apk): brain entry — factory reset cures modem-stuck PDP (Verizon reactivation after SIM-clobber)",
+                                       "0b7f4fc docs(kernel-apk): mega-session PROGRESS — v0.97.5→v0.97.10 + KPM rebuild + Custom Kernel scaffold + factory-reset cured cellular",
+                                       "6c71bb2 sweep(sanctum): claw lane WIP + .gitignore hardening + _imports staging",
+                                       "a55bd14 fix(rkoj-qt): __main__.py absolute import — PyInstaller frozen build crash fix"
+                                   ]
+            },
+    "progress_top3":  [
+
+                      ],
+    "latest_plan":  {
+                        "dir":  null,
+                        "artifact":  null
+                    },
+    "inbox_unread_count":  0,
+    "last_5_files_touched_24h":  [
+                                     "projects\\sinister-tiktok-emu\\source\\TODO.md",
+                                     "projects\\sinister-tiktok-emu\\source\\docs\\TT-10-DRIVE-EXTRACT-CONVERGENCE-PROBE.md",
+                                     "_shared-memory\\heartbeats\\apk.json",
+                                     "_shared-memory\\plans\\Sinister Panel-complete-everything-2026-05-21\\full-panel-walk-plan.md",
+                                     "tools\\sinister-rkoj-qt\\sinister_rkoj_qt\\build\\RKOJ\\EXE-00.toc"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}

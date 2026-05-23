@@ -1,0 +1,9 @@
+{
+  "prompt": "Wide horizontal shot of an outdoor festival mainstage at dusk, mid-load-in. Stage scaffolding silhouetted against a deep dark-orange sky, a single follow-spot tower lit up amber against the gathering darkness. Crew silhouettes moving cases at stage level. Cinematic widescreen. \u2014 cinematic volumetric stage lighting, deep black background (#0A0A0F), gold gradient accent (#E8C078 -> #D4A24A -> #9C7126), high-contrast subject, no text in image, no emojis, no logos",
+  "model": "gemini-2.5-flash-image",
+  "created_utc": "2026-05-23T09:16:30Z",
+  "elapsed_seconds": 6.08,
+  "ref_image_count": 0,
+  "image_bytes": 1100623,
+  "text_response_excerpt": null
+}

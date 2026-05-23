@@ -1,0 +1,44 @@
+[
+  {
+    "slug": "docks",
+    "title": "Docks",
+    "blurb": "High-quality custom docks built to last, perfect for waterfront properties.",
+    "details": "Boat docks, swim docks, gangways, and dock add-ons sized for your shoreline. We build with marine-grade hardware, pressure-treated pine or composite framing, and Trex or IPE decking on request.",
+    "icon": "dock"
+  },
+  {
+    "slug": "custom-decks",
+    "title": "Custom Decks",
+    "blurb": "Relaxing, entertaining, or lakefront views. Durable, beautiful decks with attention to detail.",
+    "details": "Single-level, multi-level, wrap-around, and elevated decks. Pressure-treated pine, cedar, or composite (Trex, TimberTech). Built-in benches, planters, and railings to match.",
+    "icon": "deck"
+  },
+  {
+    "slug": "furniture-tables",
+    "title": "Furniture and Tables",
+    "blurb": "Custom pool tables, handcrafted furniture, and unique pieces built with precision.",
+    "details": "Pool tables, dining tables, bar tops, shelving, headboards, and one-off commissions. We work in hardwood (oak, walnut, cherry) and softwood depending on the piece.",
+    "icon": "table"
+  },
+  {
+    "slug": "interior-trim-millwork",
+    "title": "Interior Trim and Millwork",
+    "blurb": "Baseboards, crown molding, window trim, and detailed millwork to finish your home.",
+    "details": "Whole-home trim packages and one-room upgrades. Profile matching for older homes. Painted or stained finish. Shoe molding, casing, chair rail, and wainscoting on request.",
+    "icon": "trim"
+  },
+  {
+    "slug": "outdoor-living",
+    "title": "Outdoor Living Spaces",
+    "blurb": "Custom pergolas, patios, and living spaces designed to fit your lifestyle.",
+    "details": "Pergolas, gazebos, outdoor kitchens, fire-pit surrounds, and shaded sitting areas. We can integrate with existing patios, decks, or pools.",
+    "icon": "pergola"
+  },
+  {
+    "slug": "repairs-staining",
+    "title": "Repairs and Staining",
+    "blurb": "Keep your woodwork looking its best. Minor repairs to full refinishing and staining.",
+    "details": "Dock board replacement, rail repair, deck restaining, furniture refinishing, and water-damage repair. We will quote honestly and refund the consult fee if a piece is not worth the cost.",
+    "icon": "wrench"
+  }
+]

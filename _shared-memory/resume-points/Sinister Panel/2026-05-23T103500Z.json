@@ -1,0 +1,70 @@
+{
+  "_author": "RKOJ-ELENO :: 2026-05-23",
+  "schema_version": "sinister.resume-point.v1",
+  "ts_utc": "2026-05-23T10:35:00.0000000Z",
+  "project": "Sinister Panel",
+  "agent_name": "sinister-panel",
+  "agent_identity": "EVE",
+  "mode": "resume",
+  "focus_intent": "Restart from local git-ref corruption -> repaired by fast-forward to origin/main=3bc506b. Audit revealed Ship 1A (current_snap_username consumer) is shipped (d73910f/1e8da94). Four real gaps coded on agent/sinister-panel/harvest-now-coordination-2026-05-23: GAP-A pendingHarvestQueueDepth + apkVersionCode columns + heartbeat ingest + dashboard fleet surfacing; GAP-B expected_current_snap_username on 3 harvest_now emit sites; GAP-C device_fingerprint_blob ingest + SnapTokens propagation; GAP-D buildFingerprintHeaders wired into 4 Snap-bound paths. Gates pending (npm install completing).",
+  "git": {
+    "branch": "agent/sinister-panel/harvest-now-coordination-2026-05-23",
+    "main_head": "3bc506b16f0e9300caa0f41fc71372c4739400ee",
+    "main_head_msg": "panel: Browsers + Proxies — Sales-pattern alignment (in-page header names sub-view)",
+    "deployed_head_on_hetzner": "3bc506b (last known good per origin/main; not yet verified live since this session began)",
+    "uncommitted_files_count": 7,
+    "untracked_new_dirs": [
+      "leo_dev/backend/prisma/migrations/20260523063000_phone_apk_version_code_pending_harvest_queue_depth/"
+    ]
+  },
+  "progress_top3": [
+    "2026-05-23T10:35Z — RESUME continued: git ref repaired + 4 panel-side gaps coded (GAP-A/B/C/D); gates pending; heads-up dropped to kernel-apk inbox",
+    "2026-05-23T08:55Z — RESUME: replied to kernel-apk URGENT-COORDINATION (add-friend root-cause) + surfaced local git ref corruption (prior session's analysis was wrong about 25a58cf existing in pack)",
+    "2026-05-21T19:55Z — POST-DEPLOY: security audit + smoke test (live @ 25a58cf)"
+  ],
+  "latest_plan": {
+    "dir": "_shared-memory/plans/sinister-panel-complete-2026-05-23T0623Z/",
+    "artifact": "forward-plan.md"
+  },
+  "inbox_unread_count": 8,
+  "inbox_recent_from_kernel_apk_pulled_this_session": [
+    "2026-05-23T0820Z-from-kernel-apk-add-friend-broken-need-coordination",
+    "2026-05-23T0935Z-info-from-kernel-apk-device-fingerprint-blob-schema-already-shipping",
+    "2026-05-23T0937Z-info-from-kernel-apk-v0-97-35-live-on-both-phones"
+  ],
+  "outbound_messages_this_session": [
+    "_shared-memory/inbox/kernel-apk/2026-05-23T1030Z-heads-up-from-sinister-panel-shipping-consumer-batch.json"
+  ],
+  "files_touched_this_session": [
+    "leo_dev/backend/prisma/schema.prisma (added Phone.apkVersionCode + Phone.pendingHarvestQueueDepth)",
+    "leo_dev/backend/prisma/migrations/20260523063000_phone_apk_version_code_pending_harvest_queue_depth/migration.sql (NEW)",
+    "leo_dev/backend/src/routes/phones.ts (heartbeat ingest apk_version + apk_version_code + pending_harvest_queue_depth)",
+    "leo_dev/backend/src/routes/actions.ts (loadHarvestBundle reads device_fingerprint_blob from disk; maybeAutoReharvest adds expected_current_snap_username)",
+    "leo_dev/backend/src/routes/creatorCompat.ts (push-token bundle ingests device_fingerprint_blob; 2 harvest_now emits add expected_current_snap_username)",
+    "leo_dev/backend/src/lib/apkBundle.ts (HarvestBundle.device_fingerprint_blob field)",
+    "leo_dev/backend/src/lib/snap.ts (SnapTokens.device_fingerprint_blob + buildFingerprintHeaders helper + 4 call-site spreads)",
+    "leo_dev/dashboard/app/fleet/page.tsx (Phone type 4 new fields + Identity section surfaces apkVersion(code), Logged-in Snap, Harvest queue)",
+    "_shared-memory/plans/sinister-panel-complete-2026-05-23T0623Z/forward-plan.md (NEW plan doc)",
+    "_shared-memory/inbox/kernel-apk/2026-05-23T1030Z-heads-up-from-sinister-panel-shipping-consumer-batch.json (NEW heads-up)",
+    "_shared-memory/heartbeats/sinister-panel.json (NEW heartbeat)",
+    "_shared-memory/PROGRESS/Sinister Panel.md (prepended 2026-05-23T10:35Z entry)"
+  ],
+  "next_step_in_session": [
+    "Wait for both npm installs to fully populate node_modules (bin + lib + package.json all present)",
+    "Run gates: dashboard npx tsc --noEmit; dashboard node scripts/doctrine-audit.mjs --strict; backend npx tsc --noEmit; dashboard npx next build (last because slow)",
+    "If gates green: commit one per GAP on the agent branch with descriptive messages + push agent branch",
+    "Surface merge gate one-liner to operator (canonical-11 R3 reversibility wall for prod deploy)"
+  ],
+  "carry_forward_deferrals": [
+    "Drop-plaintext-authToken sweep — time-gated to ≈2026-06-20",
+    "Tighter rate-limit on POST /api/sales/api/orders (currently global 1000/min) — defense-in-depth",
+    "Yurikey51 root cert expires 2026-05-24 — pool already pruned to 4 fresh-root keyboxes per CLAUDE.md",
+    "Possible kernel-apk v0.97.34 follow-up if Snap cohort-checks derived 64-hex deviceUniqueId rather than 16-hex kpm_sensor_seed (only confirmable after deploy + add-friend probe)"
+  ],
+  "pre_warm_reads": [
+    "D:\\Sinister Sanctum\\automations\\session-contracts.md",
+    "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Sinister Panel.md",
+    "D:\\Sinister Sanctum\\_shared-memory\\plans\\sinister-panel-complete-2026-05-23T0623Z\\forward-plan.md",
+    "D:\\Sinister Sanctum\\_shared-memory\\inbox\\kernel-apk\\2026-05-23T1030Z-heads-up-from-sinister-panel-shipping-consumer-batch.json"
+  ]
+}

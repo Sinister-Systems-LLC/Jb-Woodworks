@@ -1,0 +1,12 @@
+{
+    "ts":  "2026-05-23T05:13:41.3790542-04:00",
+    "project":  "sinister-freeze",
+    "agent":  "sinister-freeze",
+    "accent":  "purple",
+    "kind":  "project",
+    "launcher_version":  "v6",
+    "outputs":  {
+                    "project":  "sinister-freeze",
+                    "mode":  "resume"
+                }
+}

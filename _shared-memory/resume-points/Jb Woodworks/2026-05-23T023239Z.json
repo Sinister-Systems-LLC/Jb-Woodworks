@@ -1,0 +1,45 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-23T06:35:06.0835547Z",
+    "project":  "Jb Woodworks",
+    "agent_name":  "jb-woodworks",
+    "mode":  "resume",
+    "focus_intent":  "v0.2.0 canonical-brand port shipped; standing by for nano-banana imagery integration; consider Railway vs self-host next",
+    "git":  {
+                "branch":  "agent/showmasters/scaffold-and-launch",
+                "head":  "c38beddf2d4b36f5ca2f723f0ea7307baa15cb26",
+                "head_msg":  "ship(rkoj): v1.6.79 + v1.6.80 — embed fixes + per-phone agent claims + advanced view + image paste",
+                "recent_commits":  [
+                                       "c38bedd ship(rkoj): v1.6.79 + v1.6.80 — embed fixes + per-phone agent claims + advanced view + image paste",
+                                       "30574c7 ship(rkoj): v1.6.77 + v1.6.78 — /model persists + /open-folder + /open-resume + /reset-budget",
+                                       "64069c3 ship(rkoj): v1.6.76 — no cmd popups + auto-mirror retry + /plan toggle",
+                                       "c11c5ec ship(rkoj): v1.6.75 — /todo + /todos + /done + Sinister Start.bat spawn parity",
+                                       "df7d37f ship(rkoj): v1.6.74 — auto-mirror on Devices open + Win32 SetParent embed fix + no emojis",
+                                       "8090fd4 ship(rkoj): v1.6.73 — embedded scrcpy mirrors in Devices tab + group support",
+                                       "2847a8d ship(rkoj): v1.6.72 — sinister banner + sidebar/header cleanup + working ADB viewer",
+                                       "d6b90d6 ship(sinister-eve): v0.3.0 — fix missing reply text + spinner + memory always-on + /swarm + auto-persist + inline usage popup",
+                                       "9ff9b92 ship(sinister-eve): v0.2.0 — UUID bug fix + jcode-style centered banner + claude-opus-4-7 default + /create /resume /memory /sandbox",
+                                       "254e90c ship(rkoj+eve): v1.6.71 sidebar nav labels visible + sinister-eve.exe v0.1.0"
+                                   ]
+            },
+    "progress_top3":  [
+                          "2026-05-23 06:35 - ship: v0.2.0 canonical-brand port + portfolio + Jah Images live",
+                          "2026-05-23 06:15 - ship: v0.1.0 scaffold (superseded by v0.2.0)"
+                      ],
+    "latest_plan":  {
+                        "dir":  null,
+                        "artifact":  null
+                    },
+    "inbox_unread_count":  0,
+    "last_5_files_touched_24h":  [
+                                     "_shared-memory\\PROGRESS\\jb-woodworks.md",
+                                     "projects\\rkoj\\source\\sinister_rkoj_qt\\build\\RKOJ\\PKG-00.toc",
+                                     "projects\\rkoj\\source\\sinister_rkoj_qt\\build\\RKOJ\\RKOJ.pkg",
+                                     "projects\\rkoj\\source\\sinister_rkoj_qt\\build\\RKOJ\\PYZ-00.toc",
+                                     "projects\\rkoj\\source\\sinister_rkoj_qt\\build\\RKOJ\\PYZ-00.pyz"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\jb-woodworks.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}

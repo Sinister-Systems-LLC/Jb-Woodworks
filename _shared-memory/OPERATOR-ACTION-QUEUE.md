@@ -10,6 +10,38 @@ The Sanctum-side mirror of `SESSION-START/02-OPERATOR-QUEUE.md`, with checkboxes
 
 ---
 
+## 2026-05-23 07:00 EDT — RKOJ v1.6.89 ready (scrcpy-no-stray-window + BOM fix)
+
+EVE on RKOJ shipped two fixes that need PyInstaller rebuild + on-hardware verification:
+
+- [ ] 🟠 **Rebuild RKOJ.exe v1.6.89** — `cd "D:\Sinister Sanctum\projects\rkoj\source" && pyinstaller sinister_rkoj_qt/RKOJ.spec` (or double-click the build script if you have one). The v1.6.88 EXE doesn't have the no-stray-window fix; you need a fresh build.
+- [ ] 🟠 **Verify scrcpy-no-stray-window on hardware** — attach a phone via USB → confirm `adb devices` lists it → launch the rebuilt `RKOJ.exe` → Devices tab → click "Mirror" on a phone row. **Expected:** no scrcpy window appears anywhere on the desktop. The mirror just shows up inside the MirrorCard. Status pill briefly says "Connecting to phone…" then hides. If a stray window still flashes, capture the screenshot + open a follow-up.
+- [ ] 🟢 **(Optional) Verify BOM fix** — open RKOJ.exe → Resume picker → should list 20 projects (sanctum, sinister-panel, kernel-apk, sinister-emulator, rkoj, snap-emulator-api, etc.) instead of being empty. Pre-fix the picker was silently empty whenever the launcher rewrote `projects.json` with UTF-8 BOM (`Out-File` default on Windows).
+
+Both fixes are in commit on `agent/rkoj/next-slate-2026-05-23`. Test plan + results captured at `_shared-memory/plans/rkoj-test-review-complete-2026-05-23T0700Z/plan.md` (43 sandbox-runnable tests pass; A3/A4/A5 need operator hardware or installs).
+
+---
+
+## 2026-05-23 evening — Launcher v6.1 ready for test-drive + jcode/handterm directives in-flight
+
+EVE on Sanctum shipped 12 operator-directive letters (A-L) on `automations/start-sinister-session.ps1` plus 2 brain entries + 1 _INDEX update. Pure-additive: no working state regressed; the launcher PS1 parse-validates clean. Open items:
+
+- [ ] 🟢 **Test-drive the new launcher** — double-click `C:\Users\Zonia\Desktop\Sinister Start.bat` (Desktop bat is unchanged; it just calls the PS1). Expect: random ASCII piece (8-pool: skull/raven/spider/octopus/dragon/eye/sigil/wolf) at top + centered jcode-style info block (server/client/model/version/cwd/mcp+bot counts) + new menu options R (Rename+Color) and K (Clear context) + 6 colored status pills printed when the spawn window opens. Picker re-opens after each spawn so you can launch multiple agents back-to-back. Q quits.
+- [ ] 🟢 **Free-text resume search smoke-test** — pick A (Auto-Resume), type "launcher" or "showmasters" or "kernel" — should rank by content + show top-10 matches sorted by score then recency. Empty input = recent-10 fallback.
+- [ ] 🟢 **Verify mintty transparency** — the spawn window should be see-through. Mintty options used: `Transparency=medium` + `OpaqueWhenFocused=no`. If you don't like the level: edit `automations/start-sinister-session.ps1` line ~810 from `Transparency=medium` to `Transparency=low` or `high`.
+- [ ] 🟡 **Ruflo MCP missing from `~/.claude/.mcp.json`** — L-audit found `mcpServers.ruflo` is absent from the file, but Ruflo tools ARE in this session's deferred-tool list — they load from a different registry source. If you restart Claude Code expecting Ruflo to load via `.mcp.json`, it WON'T. To add: `claude mcp add ruflo -s user -- npx ruflo@latest mcp start` (per the existing brain entry `ruflo-mcp-integration`). Operator decision — `~/.claude/.mcp.json` is operator-owned per canonical-11. Not blocking; Ruflo currently works in your active sessions.
+- [ ] 🟢 **(Optional) Pull `tools/sinister-review` install state** — currently `pip show` reports it correctly from the canonical path; no action needed unless you want to confirm the venv refresh.
+
+The launcher v6.1 baseline lives at `automations/start-sinister-session-v6-baseline.ps1.bak` as a safety net if any new edit needs rolling back. Full brain entry: `_shared-memory/knowledge/launcher-v6.1-jcode-style-directives-2026-05-23.md`.
+
+### NEW directives in-flight (M-O, from operator 2026-05-23 evening screenshot)
+
+- [ ] 🟡 **Switch launcher from mintty.exe to handterm** — operator wants our own terminal everywhere. Handterm shared-GPU host pattern from operator's image: ~61 MB first window, ~1-2 MB per additional. Parallel investigation agent dispatched to locate handterm binary + integration shape. **Operator action when M lands**: replace the mintty Transparency edit above with handterm equivalent.
+- [ ] 🟡 **Use mermaid-rs-renderer for memory-graphs** — per brain entry `jcode-memory-graph-visualization-pattern` it's the Stage-3 fastest path; need to verify integration in `tools/memory-graph-render/`. Parallel investigation ongoing.
+- [ ] 🟡 **Port remaining jcode features** — `jcode-feature-matrix.md` has 11 rows still 📋 planned. Parallel investigation will return a priority-ranked list. Most are RKOJ-lane (animated boot art, mermaid in-TUI, niri scrollable-tiling, hot-reload, etc.); a few are Sanctum-lane (skill discovery, agentgrep).
+
+---
+
 ## 2026-05-23 — Sanctum stack fully readied (launcher v6 + MCP fixes + plugins)
 
 EVE on Sanctum shipped 4 commits this session unblocking ~all Sanctum-lane infra. Open items now:
@@ -60,7 +92,7 @@ No new operator action required for the generator itself — billing + key alrea
   - `Sinister Freeze.bat` + `Sinister.bat` — Desktop-only (tree never had them). Probably operator-intentional but flagging in case the tree should mirror for backup.
   - No automated mutation — Desktop is operator territory.
 - [ ] 🟡 **Wayward Forge commit on sanctum branch** — `66a5b3e feat(forge): PH18 niri columns + PH16 swarm pump + :dm/:broadcast + PH10 :host switch` landed on `agent/sinister-sanctum/cli-dispatcher-2026-05-21` instead of a forge branch (HEAD-race per `verify-head-before-commit-multi-agent` brain entry). [ASK] dropped to `_shared-memory/inbox/forge/2026-05-21T1403Z-ask-from-sanctum-wayward-commit-66a5b3e.json`. Forge lane recovery is `git update-ref refs/heads/agent/sinister-forge/<active-branch> 66a5b3e` + push.
-- [ ] 🟢 **Mixed-case resume-point dir** — `_shared-memory/resume-points/Sinister Sanctum/` (display-name, 1 file) + `_shared-memory/resume-points/Sanctum/` (slug, 6 files) both exist. Display-name is the convention (6/7 lanes use it). v1.3 PS1 fix path documented at `_shared-memory/knowledge/resume-point-dir-name-convention.md`. Deferred while cli-dispatcher branch is hot.
+- [x] ~~🟢 **Mixed-case resume-point dir**~~ — RESOLVED 2026-05-23T08:35Z. Two-part fix shipped: (1) moved all 23 files from `_shared-memory/resume-points/Sanctum/` into the display-name dir `_shared-memory/resume-points/Sinister Sanctum/` per the canonical convention from `resume-point-dir-name-convention.md`; (2) shipped `automations/resume-point-write.ps1` v1.3 (`Resolve-ResumePointDirName` slug→display lookup at the top of the script) so future `-ProjectKey sanctum` invocations route to `Sinister Sanctum/` directly instead of recreating the slug dir. Smoke-tested live — the test write at `Sinister Sanctum/2026-05-23T041058Z.json` confirms routing + no `Sanctum/` dir regenerated. Covers 15 known lane slugs.
 
 ## 2026-05-19 — One-click bundle (master complete-everything sweep)
 

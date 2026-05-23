@@ -1,0 +1,45 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-23T09:28:24.2920532Z",
+    "project":  "jb-woodworks",
+    "agent_name":  "jb-woodworks",
+    "mode":  "resume",
+    "focus_intent":  "",
+    "git":  {
+                "branch":  "agent/rkoj/complete-without-operator-2026-05-23",
+                "head":  "6d00c5998b91c15e8948b3bff7ad1c05e8e17332",
+                "head_msg":  "ship(rkoj+forge): /api/diagrams endpoint + row 12 advance + PROGRESS update",
+                "recent_commits":  [
+                                       "6d00c59 ship(rkoj+forge): /api/diagrams endpoint + row 12 advance + PROGRESS update",
+                                       "4bc5b4d ship(forge): jcode-parity matrix rows 5/15/18 ΓåÆ Γ£à (boot art audit, mermaid in-TUI panel, skill watchdog)",
+                                       "9b76247 ship(rkoj): resume-pickup + jcode matrix flips (5 rows) + inbox triage (5 closed)",
+                                       "b9e89dc brain(correction): pip-show says installed != import works (stale .pth)",
+                                       "915a878 ship(rkoj): v1.6.88 ΓÇö fix Sini-stray-window leak + Resume picker merges all 14 projects.json projects + per-phone scrcpy stderr ΓåÆ log file",
+                                       "70297c6 plan(agent-stack): readiness review + wake-on-demand bot dispatcher doctrine",
+                                       "f68ecf0 info(rkoj): projects.json schema v6 fields advisory note (optional consumer patch)",
+                                       "35ef9ff queue(2026-05-23): annotate restart row ΓÇö spawn unblocked at session level; restart still needed for MCP/plugin activation",
+                                       "7fa8fcc progress(sanctum): operator hard-canonical 2026-05-23 + spawn validation captured",
+                                       "c763ce2 brain(spawn): end-to-end validation pattern + index row"
+                                   ]
+            },
+    "progress_top3":  [
+                          "2026-05-23 05:30 - ship: hero in-construction shot removed + folder self-contained for push",
+                          "2026-05-23 05:25 - resume: v0.3.0 scaffold verified live + themeColor deprecation fixed"
+                      ],
+    "latest_plan":  {
+                        "dir":  null,
+                        "artifact":  null
+                    },
+    "inbox_unread_count":  2,
+    "last_5_files_touched_24h":  [
+                                     "_shared-memory\\PROGRESS\\Sinister Kernel APK.md",
+                                     "_shared-memory\\PROGRESS\\jb-woodworks.md",
+                                     "projects\\jb-woodworks\\.next\\trace",
+                                     "_shared-memory\\plans\\sanctum-complete-2026-05-23T0455Z\\forward-plan.md",
+                                     "projects\\jb-woodworks\\.next\\cache\\webpack\\server-development\\8.pack.gz"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\jb-woodworks.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}

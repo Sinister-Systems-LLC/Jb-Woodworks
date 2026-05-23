@@ -1,0 +1,9 @@
+{
+  "prompt": "A logistics coordinator at a backstage staging area surrounded by neatly stacked black road cases and equipment carts. They are writing on a clipboard, partially silhouetted by an amber par-can glow from above and behind. Concrete floor with case-strap shadows. Subject in left third of frame, cases stacked into the right two-thirds with depth. Cinematic photographic realism. \u2014 cinematic volumetric stage lighting, deep black background (#0A0A0F), gold gradient accent (#E8C078 -> #D4A24A -> #9C7126), high-contrast subject, no text in image, no emojis, no logos",
+  "model": "gemini-2.5-flash-image",
+  "created_utc": "2026-05-23T09:08:53Z",
+  "elapsed_seconds": 5.68,
+  "ref_image_count": 0,
+  "image_bytes": 1481975,
+  "text_response_excerpt": null
+}

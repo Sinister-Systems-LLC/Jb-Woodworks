@@ -1,0 +1,50 @@
+{# Author: RKOJ-ELENO :: 2026-05-23 #}
+{% extends "base.html" %}
+{% block title %}{{ item.title }} - {{ site.name }}{% endblock %}
+{% block meta_description %}{{ item.blurb }} - JB Woodworks portfolio.{% endblock %}
+{% block body_class %}portfolio-item{% endblock %}
+
+{% block content %}
+<section class="page-head">
+  <div class="container">
+    <span class="section-tag">{{ item.category }}</span>
+    <h1 class="section-headline"><em>{{ item.title }}.</em></h1>
+    <p class="section-subheadline">{{ item.blurb }}</p>
+    <p><a class="link-arrow" href="{{ url_for('portfolio') }}">
+      <svg aria-hidden="true" width="14" height="14" style="transform: rotate(180deg);"><use href="{{ url_for('static', filename='img/icons.svg') }}#i-arrow-right"/></svg>
+      Back to portfolio
+    </a></p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="project-media">
+      {% for m in item.media %}
+      {% set base = 'img/projects/' if m.type == 'raw-image' else 'media/' %}
+      <figure class="project-media-tile reveal" data-reveal-delay="{{ loop.index0 * 80 }}">
+        {% if m.type == 'video' %}
+        <video controls preload="metadata" muted playsinline
+               {% if m.poster %}poster="{{ url_for('static', filename='media/' + m.poster) }}"{% endif %}>
+          <source src="{{ url_for('static', filename='media/' + m.src) }}" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+        {% else %}
+        <img src="{{ url_for('static', filename=base + m.src) }}" alt="{{ item.title }}" loading="lazy">
+        {% endif %}
+      </figure>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section-cta">
+  <div class="container cta-band-inner">
+    <div>
+      <h2>Want one like this?</h2>
+      <p>Free estimate. Tell us the space and the timeline.</p>
+    </div>
+    <a class="btn btn-primary btn-large" href="{{ url_for('contact') }}?service={{ item.slug }}">Get a Quote</a>
+  </div>
+</section>
+{% endblock %}

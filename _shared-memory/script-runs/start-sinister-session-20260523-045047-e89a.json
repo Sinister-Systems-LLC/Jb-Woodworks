@@ -1,0 +1,12 @@
+{
+    "ts":  "2026-05-23T04:50:47.8245543-04:00",
+    "project":  "showmasters",
+    "agent":  "showmasters",
+    "accent":  "purple",
+    "kind":  "project",
+    "launcher_version":  "v6",
+    "outputs":  {
+                    "project":  "showmasters",
+                    "mode":  "resume"
+                }
+}
