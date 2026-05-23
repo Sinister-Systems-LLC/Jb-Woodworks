@@ -6,6 +6,7 @@ import { ServicesList } from "@/components/sections/services-list";
 import { NumbersBand } from "@/components/sections/numbers-band";
 import { ProcessTimeline } from "@/components/sections/process-timeline";
 import { PortfolioFeature } from "@/components/sections/portfolio-feature";
+import { CommercialFeature } from "@/components/sections/commercial-feature";
 import { FaqAccordion } from "@/components/sections/faq-accordion";
 import { Reveal } from "@/components/ui/reveal";
 import { Icon } from "@/components/ui/icon";
@@ -65,6 +66,9 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Commercial builds — anchored on a real retail display project */}
+      <CommercialFeature />
+
       {/* Process timeline */}
       <ProcessTimeline />
 
@@ -85,7 +89,7 @@ export default function Home() {
                 The short answers most people need before reaching out. Tap any question to open it. Anything we missed — <a href="tel:4075611453" className="text-gold underline-offset-4 hover:underline">call us</a>.
               </p>
               <p className="mt-3 text-cream-30 text-[0.65rem] tracking-[0.32em] uppercase font-bold">
-                {faq.length} answers · &lt; 60 sec read
+                {faq.length} real answers · honest pricing · no fluff
               </p>
             </div>
           </div>

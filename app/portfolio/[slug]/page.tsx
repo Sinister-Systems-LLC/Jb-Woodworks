@@ -86,8 +86,9 @@ export default async function PortfolioItemPage({ params }: Props) {
                     sizes="(max-width: 960px) 100vw, 960px"
                     loading={i === 0 ? undefined : "lazy"}
                     priority={i === 0}
+                    quality={92}
                     style={{ width: "100%", height: "auto" }}
-                    className="block"
+                    className="block cinematic-image"
                   />
                 )}
               </Reveal>

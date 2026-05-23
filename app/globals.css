@@ -104,3 +104,31 @@
   100% { opacity: 1; }
 }
 .jbw-faq-glow { animation: jbw-faq-glow 0.45s ease-out forwards; }
+
+/* Cinematic image filter — subtle desat + contrast + warm gold cast.
+ * Applied to portfolio + featured imagery for an editorial feel. */
+.cinematic-image {
+  filter: saturate(0.92) contrast(1.08) brightness(0.96);
+  transition: filter 700ms ease, transform 11000ms ease;
+}
+.cinematic-image:hover {
+  filter: saturate(1.0) contrast(1.04) brightness(1.0);
+}
+
+/* Slow Ken-Burns push on featured commercial section */
+@keyframes jbw-ken-burns {
+  0%   { transform: scale(1.0)  translate3d(0, 0, 0); }
+  50%  { transform: scale(1.07) translate3d(-1%, -0.5%, 0); }
+  100% { transform: scale(1.0)  translate3d(0, 0, 0); }
+}
+.jbw-ken-burns { animation: jbw-ken-burns 22s ease-in-out infinite; }
+
+/* Vertical writing mode for editorial side rails (used on hero) */
+.writing-vertical { writing-mode: vertical-rl; }
+
+/* Gold pulse ring — for "live" status badges */
+@keyframes jbw-pulse-ring {
+  0%   { box-shadow: 0 0 0 0 rgba(201,168,76,0.55); }
+  100% { box-shadow: 0 0 0 16px rgba(201,168,76,0); }
+}
+.jbw-pulse-ring { animation: jbw-pulse-ring 2.2s ease-out infinite; }

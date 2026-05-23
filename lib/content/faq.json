@@ -1,8 +1,50 @@
 [
-  {"q": "Do you offer free quotes?", "a": "Yes. We provide free estimates for all projects so you know exactly what to expect."},
-  {"q": "What areas do you serve?", "a": "We are based in Orlando, Florida, and work throughout the surrounding areas across the USA."},
-  {"q": "Can you customize a project to fit my space?", "a": "Absolutely. Every project is tailored to your needs, style, and budget."},
-  {"q": "What materials do you use?", "a": "We use only high-quality lumber and finishes to ensure your project is durable and long-lasting."},
-  {"q": "Do you handle small repairs as well as large builds?", "a": "Yes. Whether it is a quick repair, a custom piece of furniture, or a full outdoor build, we handle it all."},
-  {"q": "Are you licensed and insured?", "a": "Absolutely. JB Woodworks operates fully licensed and insured, guaranteeing peace of mind and professional craftsmanship on every job site."}
+  {
+    "q": "What does a typical project cost?",
+    "a": "Pricing comes back inside one business day after we see the space. We work fixed-bid whenever we can. Decks generally run $35-$60 per square foot installed depending on material; pergolas $4,000-$15,000; custom dock builds $20,000+ depending on length, pilings, and shoreline. Furniture and pool tables are priced per piece. Every quote breaks down materials, labor, permits, and cleanup so there are no surprises later."
+  },
+  {
+    "q": "How long from the first call to walking on it?",
+    "a": "Residential decks and pergolas usually go from signed quote to walk-through in 2-4 weeks. Custom pool tables take 4-8 weeks because the slate, felt, and hardwood frame sourcing dictates the schedule. Boat docks and commercial builds book 6-10 weeks out depending on permits. We will give you a realistic date on the quote, not a sales date."
+  },
+  {
+    "q": "Are you licensed and insured?",
+    "a": "Yes - fully licensed for construction in Orange County and the surrounding municipalities, with general liability and workers compensation in force on every job site. We will send certificates of insurance straight to your inbox before the first day of work if you ask. No exceptions, no asterisks."
+  },
+  {
+    "q": "What kind of wood and materials do you use?",
+    "a": "Outdoor work: pressure-treated southern yellow pine, western red cedar, or composite (Trex, TimberTech, Azek) - your call, we will price all three. Marine-grade stainless hardware on every dock. Indoor furniture and trim: hardwoods (oak, walnut, cherry, maple) or paint-grade poplar. We list the exact spec on the quote so there is zero ambiguity about what arrives on your driveway."
+  },
+  {
+    "q": "Do you pull permits?",
+    "a": "Yes. Decks over 30 inches, structural pergolas, all dock work, and most outdoor living spaces in Orange County require a permit. We submit the drawings, pay the fees, and schedule the inspections. The cost lives on a separate line on your quote so you can see exactly what the city is charging."
+  },
+  {
+    "q": "Do you only work in Orlando?",
+    "a": "Orlando is home base but we cover the full surrounding area - Winter Park, Maitland, Apopka, Sanford, Kissimmee, Lake Mary, Clermont, Windermere, and out to the coast for the right job. For larger commercial builds we travel further; ask and we will tell you straight whether it pencils out."
+  },
+  {
+    "q": "What is the deposit and payment schedule?",
+    "a": "Standard schedule is 30% on contract to secure your spot and order materials, 40% the morning materials are delivered to the site, and 30% on walk-through approval when you sign off. Cash, check, ACH, and Zelle accepted; cards on request (a 3% processor fee applies). We do not start fabrication until the deposit clears."
+  },
+  {
+    "q": "What kind of warranty do you offer?",
+    "a": "One-year full workmanship warranty on every build - if a board pops, a fastener fails, or a joint opens up under normal use we come back and fix it. Material warranties pass through from the manufacturer: Trex/TimberTech composite carries a 25-50 year residential warranty, marine-grade stainless typically 10+ years. We hand over copies of all manufacturer paperwork at the walk-through."
+  },
+  {
+    "q": "Can you repair or restore instead of replacing?",
+    "a": "Often yes, and we will tell you straight whether it makes financial sense. Dock board replacement, rail repair, deck restaining, furniture refinishing, and water damage repair are all on the menu. If a piece is not worth the cost of restoration we will say so and refund the consult fee. We would rather lose that job than build you something that does not deserve our name."
+  },
+  {
+    "q": "Do you handle commercial builds - retail displays, restaurants, brand activations?",
+    "a": "Yes. Recent commercial work includes a New Balance and Foot Locker retail reveal build (five custom cubbies with branded panels, 48-hour on-site install). We can work from architect or set designer drawings, hit photographable finish on the install day, and coordinate with your event timeline. Reach out with the spec and the deadline; we will tell you fast whether we can hit it."
+  },
+  {
+    "q": "Do I need to be home during the build?",
+    "a": "Not for most days. We coordinate the start date, walk the site with you on day one, and check in by text or photo for material approvals and milestone questions. Walk-through and final sign-off are the two days we will ask you to be available. We respect that you have a life - we are not going to camp on your driveway."
+  },
+  {
+    "q": "What is the best way to start?",
+    "a": "Call (407) 561-1453, email jbwoodworks8@gmail.com, or fill out the contact form on this site. Free estimates, no obligation, same-day response on weekdays. Send photos of the space if you have them - we can usually shoot back a rough range before we even visit."
+  }
 ]

@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { SITE } from "@/lib/site";
-import { Icon } from "@/components/ui/icon";
 import { cn } from "@/lib/utils";
 
 export function Nav() {
@@ -43,20 +42,6 @@ export function Nav() {
           <NavLink href="/about#faq">FAQ</NavLink>
           <NavLink href="/contact">Contact</NavLink>
         </nav>
-
-        <a
-          href={SITE.socials.instagram}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hidden md:inline-flex items-center gap-2 px-4 py-2 bg-gold-dim border border-gold rounded-full text-[0.8rem] font-semibold text-white tracking-wide transition-all hover:bg-gold hover:text-ink hover:-translate-y-0.5"
-        >
-          <Icon name="instagram" size={16} />
-          <span>Follow</span>
-        </a>
-
-        <Link href="/contact" className="hidden md:inline-flex btn btn-primary !px-5 !py-2.5 !text-[0.75rem]">
-          Get a Quote
-        </Link>
 
         <button
           type="button"

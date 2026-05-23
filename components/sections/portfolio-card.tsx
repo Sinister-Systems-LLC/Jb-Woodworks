@@ -45,8 +45,11 @@ export function PortfolioCard({
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             priority={eager}
             loading={eager ? undefined : "lazy"}
-            className="object-cover object-center transition-transform duration-1000 ease-out group-hover:scale-105"
+            quality={88}
+            className="object-cover object-center transition-transform duration-1000 ease-out group-hover:scale-105 cinematic-image"
           />
+          {/* Editorial bottom-gradient + vignette so the card title pad never fights for contrast */}
+          <span aria-hidden className="absolute inset-x-0 bottom-0 h-2/3 pointer-events-none" style={{ background: "linear-gradient(180deg, transparent 0%, rgba(8,8,8,0.55) 100%)" }} />
         </div>
         <div className="px-6 pt-6 pb-7">
           <span className="block text-[0.62rem] font-bold tracking-[0.22em] uppercase text-gold mb-2">

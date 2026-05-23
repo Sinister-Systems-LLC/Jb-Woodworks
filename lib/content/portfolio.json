@@ -1,5 +1,47 @@
 [
   {
+    "slug": "new-balance-reveal",
+    "title": "New Balance × Foot Locker Reveal",
+    "category": "Commercial Builds",
+    "blurb": "Five custom wood cubbies with branded reveal panels for a New Balance launch event. 48-hour on-site install, photographable day one.",
+    "cover": "Commercial Builds/new-balance-reveal.jpg",
+    "is_raw_cover": true,
+    "media": [
+      {"type": "raw-image", "src": "Commercial Builds/new-balance-reveal.jpg"}
+    ]
+  },
+  {
+    "slug": "sku-snipers-display",
+    "title": "SKU Snipers Retail Display",
+    "category": "Commercial Builds",
+    "blurb": "Multi-cubby retail merchandising build for sportswear and footwear, with branded fascia panels, custom lighting, and integrated bench.",
+    "cover": "Commercial Builds/IMG_1324.jpg",
+    "is_raw_cover": true,
+    "media": [
+      {"type": "raw-image", "src": "Commercial Builds/IMG_1324.jpg"},
+      {"type": "raw-image", "src": "Commercial Builds/IMG_1325.jpg"},
+      {"type": "raw-image", "src": "Commercial Builds/IMG_1381.jpg"},
+      {"type": "raw-image", "src": "Commercial Builds/IMG_1382.jpg"},
+      {"type": "raw-image", "src": "Commercial Builds/IMG_1332.jpg"},
+      {"type": "raw-image", "src": "Commercial Builds/IMG_1345.jpg"}
+    ]
+  },
+  {
+    "slug": "front-porches",
+    "title": "Front Porches",
+    "category": "Outdoor Living",
+    "blurb": "Single-story and two-story front porch builds with custom column work, painted trim, balcony rails, and matched siding profiles.",
+    "cover": "Front Porch/IMG_1232.jpg",
+    "is_raw_cover": true,
+    "media": [
+      {"type": "raw-image", "src": "Front Porch/IMG_1232.jpg"},
+      {"type": "raw-image", "src": "Front Porch/IMG_1234.jpg"},
+      {"type": "raw-image", "src": "Front Porch/IMG_1220.jpg"},
+      {"type": "raw-image", "src": "Front Porch/IMG_1230.jpg"},
+      {"type": "raw-image", "src": "Front Porch/IMG_1236.jpg"}
+    ]
+  },
+  {
     "slug": "pergola",
     "title": "Pergola",
     "category": "Outdoor Living",
@@ -67,6 +109,17 @@
       {"type": "raw-image", "src": "Custom Furniture/IMG_1250_00.jpg"},
       {"type": "raw-image", "src": "Custom Furniture/IMG_1251_00.jpg"},
       {"type": "raw-image", "src": "Custom Furniture/IMG_1252_00.jpg"}
+    ]
+  },
+  {
+    "slug": "stained-mahogany-deck",
+    "title": "Stained Mahogany Deck",
+    "category": "Decks",
+    "blurb": "Low-platform stained deck with a clean radius corner — modern minimal design, hardwood finish, integrated step-down.",
+    "cover": "Deck/IMG_1649.jpg",
+    "is_raw_cover": true,
+    "media": [
+      {"type": "raw-image", "src": "Deck/IMG_1649.jpg"}
     ]
   },
   {

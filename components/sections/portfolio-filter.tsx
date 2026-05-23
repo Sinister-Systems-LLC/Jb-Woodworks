@@ -59,7 +59,7 @@ export function PortfolioFilter({
       <div
         role="tablist"
         aria-label="Filter portfolio by project type"
-        className="flex flex-wrap gap-2 mb-9 p-2 bg-ink-3 border border-line rounded-full max-w-max"
+        className="flex flex-wrap justify-center gap-2 mb-9 p-2 bg-ink-3 border border-line rounded-full max-w-max mx-auto"
       >
         {chips.map((chip) => {
           const active = filter === chip.id;
