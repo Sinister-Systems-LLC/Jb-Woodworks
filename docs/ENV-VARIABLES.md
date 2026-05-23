@@ -131,6 +131,93 @@ To unset (clear):
 
 ---
 
+## Third-party CLI auth tokens — TTY-less spawn fix
+
+Every fleet agent now spawns with `claude --dangerously-skip-permissions`, which
+disables TTY allocation. Any CLI whose `login` opens a browser (`railway login`,
+`gh auth login`, `vercel login`, etc.) dies with **`Cannot login in
+non-interactive mode`** or an equivalent string. The fix: mint a token via the
+service dashboard once, store it as a User-scope env var, and the CLI will
+auto-pick it up on every subsequent call — no `login` step needed.
+
+Full doctrine: `_shared-memory/knowledge/non-interactive-auth-doctrine-2026-05-23.md`.
+
+### Token env-var table
+
+| CLI                  | Env var(s)                                                         | Mint location                                                       |
+|----------------------|---------------------------------------------------------------------|---------------------------------------------------------------------|
+| Railway              | `RAILWAY_TOKEN` (project) or `RAILWAY_API_TOKEN` (account)         | <https://railway.com/account/tokens>                                |
+| GitHub CLI           | `GH_TOKEN` (preferred) or `GITHUB_TOKEN`                            | <https://github.com/settings/tokens> (`repo` + `workflow` scopes)   |
+| Vercel               | `VERCEL_TOKEN`                                                      | <https://vercel.com/account/tokens>                                 |
+| npm / pnpm           | `NPM_TOKEN` (write `//registry.npmjs.org/:_authToken=$NPM_TOKEN` into `~/.npmrc`) | <https://www.npmjs.com/settings/~/tokens>                |
+| Supabase             | `SUPABASE_ACCESS_TOKEN`                                             | <https://supabase.com/dashboard/account/tokens>                     |
+| Firebase             | `FIREBASE_TOKEN` (run `firebase login:ci` once on a real workstation) | n/a — `firebase login:ci` mints it                                |
+| DigitalOcean (doctl) | `DIGITALOCEAN_ACCESS_TOKEN`                                         | <https://cloud.digitalocean.com/account/api/tokens>                 |
+| Fly.io (flyctl)      | `FLY_API_TOKEN` (output of `flyctl auth token`)                     | n/a — mint with `flyctl auth token`                                 |
+| Heroku               | `HEROKU_API_KEY`                                                    | <https://dashboard.heroku.com/account> → API Key                    |
+| Expo / EAS           | `EXPO_TOKEN`                                                        | <https://expo.dev/accounts/[user]/settings/access-tokens>           |
+| Cloudflare Wrangler  | `CLOUDFLARE_API_TOKEN` (+ `CLOUDFLARE_ACCOUNT_ID` for some commands) | <https://dash.cloudflare.com/profile/api-tokens>                    |
+| Netlify              | `NETLIFY_AUTH_TOKEN`                                                | <https://app.netlify.com/user/applications#personal-access-tokens>  |
+| AWS                  | `AWS_ACCESS_KEY_ID` + `AWS_SECRET_ACCESS_KEY` (+ `AWS_DEFAULT_REGION`) | IAM console                                                      |
+| Google Cloud         | `GOOGLE_APPLICATION_CREDENTIALS=<path-to-service-account.json>`      | IAM service-accounts console                                       |
+
+> **Operator must set these.** Tokens are minted via the operator's browser
+> session in a normal (non-Claude) window. Agents will never mint these
+> themselves.
+
+### Set commands (per-user, survives reboot)
+
+```powershell
+[Environment]::SetEnvironmentVariable('RAILWAY_TOKEN','<token>','User')
+[Environment]::SetEnvironmentVariable('GH_TOKEN','<token>','User')
+[Environment]::SetEnvironmentVariable('VERCEL_TOKEN','<token>','User')
+[Environment]::SetEnvironmentVariable('NPM_TOKEN','<token>','User')
+[Environment]::SetEnvironmentVariable('SUPABASE_ACCESS_TOKEN','<token>','User')
+[Environment]::SetEnvironmentVariable('FIREBASE_TOKEN','<token>','User')
+[Environment]::SetEnvironmentVariable('DIGITALOCEAN_ACCESS_TOKEN','<token>','User')
+[Environment]::SetEnvironmentVariable('FLY_API_TOKEN','<token>','User')
+[Environment]::SetEnvironmentVariable('HEROKU_API_KEY','<token>','User')
+[Environment]::SetEnvironmentVariable('EXPO_TOKEN','<token>','User')
+[Environment]::SetEnvironmentVariable('CLOUDFLARE_API_TOKEN','<token>','User')
+[Environment]::SetEnvironmentVariable('NETLIFY_AUTH_TOKEN','<token>','User')
+```
+
+### Per-session (current PowerShell only — does NOT persist)
+
+```powershell
+$env:RAILWAY_TOKEN = '<token>'
+$env:GH_TOKEN      = '<token>'
+# etc.
+```
+
+Use per-session for one-off tests; use the User-scope `setx`-equivalent above
+for the durable path.
+
+### Verify a token is set (without printing the value)
+
+```powershell
+if ([Environment]::GetEnvironmentVariable('RAILWAY_TOKEN','User')) { 'set' } else { 'unset' }
+```
+
+### npm note
+
+`npm` reads `NPM_TOKEN` via a project- or user-scope `.npmrc` file, NOT directly
+from env. Put this single line in `~/.npmrc` (one-time):
+
+```
+//registry.npmjs.org/:_authToken=${NPM_TOKEN}
+```
+
+`pnpm` and `yarn` v1 read the same file.
+
+### Restart open sessions after setting
+
+Existing PowerShell / Claude Code / git-bash sessions cache the env at spawn
+time. Setting a new User-scope env var requires closing and reopening any
+session that needs to see it.
+
+---
+
 ## Tools that read these (cross-reference)
 
 | Env var | Read by |

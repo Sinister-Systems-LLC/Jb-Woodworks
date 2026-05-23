@@ -93,6 +93,22 @@ def _bottom_toolbar() -> FormattedText:
     return FormattedText(parts)
 
 
+def _set_window_title() -> None:
+    """RKOJ-ELENO :: 2026-05-23 — emit OSC-0 so host terminal title shows
+    we're inside sterm. Mintty/Windows-Terminal/iTerm all honor this; no-op
+    on terminals that don't (the bytes get silently swallowed)."""
+    try:
+        project = detect_project_for_cwd() or ""
+        cwd_disp = short_cwd_relative_to_project() or str(Path.cwd())
+        title = f"Sinister Term — {project + ' :: ' if project else ''}{cwd_disp}"
+        # OSC 0 ; <title> BEL
+        import sys as _sys
+        _sys.stdout.write(f"\033]0;{title}\007")
+        _sys.stdout.flush()
+    except Exception:
+        pass
+
+
 def _write_heartbeat() -> None:
     try:
         HEARTBEAT.parent.mkdir(parents=True, exist_ok=True)
@@ -108,6 +124,28 @@ def _write_heartbeat() -> None:
 
 def _run_shell_command(line: str, console: Console) -> None:
     """Fall-through: run the line in the underlying shell."""
+    # RKOJ-ELENO :: 2026-05-23 — handle bare `cd <dir>` in-process so the
+    # cwd actually persists for the next command (subprocess cd would be a
+    # no-op once the shell exits). Mirrors bash/cmd muscle-memory.
+    stripped = line.strip()
+    if stripped == "cd" or stripped.startswith("cd "):
+        target = stripped[2:].strip() or str(Path.home())
+        # strip surrounding quotes a user might paste
+        if len(target) >= 2 and target[0] == target[-1] and target[0] in ('"', "'"):
+            target = target[1:-1]
+        target = os.path.expandvars(os.path.expanduser(target))
+        try:
+            os.chdir(target)
+        except Exception as e:
+            console.print(f"[red]cd: {e}[/red]")
+        return
+
+    # RKOJ-ELENO :: 2026-05-23 — accept bare `exit`/`quit` muscle-memory
+    # (also handled at caller via SystemExit-style return; we just route to
+    # PowerShell which would no-op, so short-circuit here).
+    if stripped in ("exit", "quit", "logout"):
+        raise EOFError  # caller's loop treats EOFError as clean exit
+
     if platform.system() == "Windows":
         cmd = ["powershell.exe", "-NoProfile", "-Command", line]
     else:
@@ -141,8 +179,10 @@ def run() -> None:
     )
 
     _write_heartbeat()
+    _set_window_title()
 
     while True:
+        _set_window_title()  # refresh on every prompt so cd changes show
         try:
             line = session.prompt(_prompt_text())
         except KeyboardInterrupt:

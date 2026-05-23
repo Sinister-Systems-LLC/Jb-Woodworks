@@ -20,7 +20,7 @@ if errorlevel 1 (
 )
 
 echo  [build] packaging eve.py -^> dist\EVE.exe ...
-pyinstaller --onefile --name EVE --noconsole-warning ^
+pyinstaller --onefile --name EVE ^
     --distpath dist ^
     --workpath build ^
     --specpath build ^

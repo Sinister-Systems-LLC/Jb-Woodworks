@@ -36,6 +36,10 @@ class LearningState:
     refreshed_utc: str = ""
     great: List[LearningEntry] = field(default_factory=list)          # 💎 top tier
     good: List[LearningEntry] = field(default_factory=list)           # ✅ on-theme but needs work
+    size_off: List[LearningEntry] = field(default_factory=list)       # 📐 reshape candidate
+    wrong_guy: List[LearningEntry] = field(default_factory=list)      # 👤 good concept, char drift
+    wrong_style: List[LearningEntry] = field(default_factory=list)    # 🎨 good comp, wrong vibe
+    skip_concept: List[LearningEntry] = field(default_factory=list)   # ♻️ drop this prompt direction
     rejected: List[LearningEntry] = field(default_factory=list)       # ❌ anti-patterns
     references: List[LearningEntry] = field(default_factory=list)     # 📥 operator-supplied refs
 
@@ -96,10 +100,14 @@ def refresh_feedback(brand: str) -> LearningState:
     # init_brand(); ensure they exist before scanning so the operator always
     # has a drag-drop target.
     ensure_sorter_folders(cfg)
-    # Scan both new 3-tier folders AND legacy ✅ Yes / ❌ No so existing content
-    # surfaces in the right bucket while operator migrates.
+    # Scan the 7-tier sort folders + legacy ✅ Yes / ❌ No so existing content
+    # surfaces in the right bucket while the operator migrates.
     great_entries = _scan_dir(cfg.great_dir, "great")
     good_entries = _scan_dir(cfg.good_dir, "good")
+    size_off_entries = _scan_dir(cfg.size_off_dir, "size_off")
+    wrong_guy_entries = _scan_dir(cfg.wrong_guy_dir, "wrong_guy")
+    wrong_style_entries = _scan_dir(cfg.wrong_style_dir, "wrong_style")
+    skip_concept_entries = _scan_dir(cfg.skip_concept_dir, "skip_concept")
     bad_entries = _scan_dir(cfg.bad_dir, "rejected")
 
     # Legacy paths
@@ -115,6 +123,10 @@ def refresh_feedback(brand: str) -> LearningState:
         refreshed_utc=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         great=great_entries,
         good=good_entries,
+        size_off=size_off_entries,
+        wrong_guy=wrong_guy_entries,
+        wrong_style=wrong_style_entries,
+        skip_concept=skip_concept_entries,
         rejected=bad_entries,
         references=_scan_dir(cfg.refs_dir, "reference"),
     )
@@ -164,8 +176,13 @@ def get_endorsed_refs(brand: str, max_refs: int = 4) -> List[pathlib.Path]:
 
 
 def get_anti_patterns(brand: str) -> str:
-    """Return a prompt-ready string describing what the operator has rejected.
-    Empty string when no rejections yet."""
+    """Return a prompt-ready string describing what the operator has flagged
+    as wrong. Pulls notes from ❌ Bad (hard rejects) + 👤 Wrong Guy + 🎨 Wrong
+    Style (specific failure modes that should NOT repeat). Skips 📐 Size Off
+    notes — those describe aspect/framing fixes, not prompt mistakes.
+
+    Empty string when no notes yet.
+    """
     cfg = get_brand(brand)
     if not cfg.learning_path.is_file():
         refresh_feedback(brand)
@@ -173,17 +190,20 @@ def get_anti_patterns(brand: str) -> str:
         data = json.loads(cfg.learning_path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
         return ""
-    rejected = data.get("rejected", [])
-    if not rejected:
-        return ""
-    notes = []
-    for entry in rejected:
-        if entry.get("note"):
-            notes.append(entry["note"])
-    if not notes:
-        return ""
-    bullets = "\n".join(f"  • {n}" for n in notes[:6])
-    return (
-        "ANTI-PATTERNS (operator has rejected these — do NOT repeat):\n"
-        f"{bullets}"
-    )
+
+    sections: List[str] = []
+
+    def collect(key: str, label: str, cap: int = 6) -> None:
+        entries = data.get(key, []) or []
+        notes = [e["note"] for e in entries if e.get("note")]
+        if not notes:
+            return
+        bullets = "\n".join(f"  • {n}" for n in notes[:cap])
+        sections.append(f"{label}:\n{bullets}")
+
+    collect("rejected", "ANTI-PATTERNS (operator rejected outright — do NOT repeat)")
+    collect("wrong_guy", "CHARACTER-DRIFT ANTI-PATTERNS (concept ok but character was wrong)")
+    collect("wrong_style", "STYLE ANTI-PATTERNS (composition ok but wrong vibe/lighting/palette)")
+    collect("skip_concept", "CONCEPT ANTI-PATTERNS (operator said drop this prompt direction)")
+
+    return "\n\n".join(sections)

@@ -1,0 +1,394 @@
+<!doctype html>
+<!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>JOKR Sorter</title>
+  <style>
+    :root {
+      --bg: #0A0B1E;
+      --panel: #1A0D3A;
+      --panel-lift: #251444;
+      --fg: #FFFFFF;
+      --fg-dim: #C9BFE0;
+      --purple: #7A3DD4;
+      --purple-bright: #A855F7;
+      --gold: #E8C078;
+      --great: #7A3DD4;
+      --great-hover: #A855F7;
+      --good: #1E5128;
+      --good-hover: #2D7A3D;
+      --bad: #7A1A1A;
+      --bad-hover: #A52525;
+      --neutral: #2A2645;
+      --neutral-hover: #3a3565;
+      --size-off: #1F5260;       /* teal — composition concern */
+      --size-off-hover: #2D7787;
+      --wrong-guy: #6B4A1E;      /* amber — character concern */
+      --wrong-guy-hover: #997025;
+      --wrong-style: #5A1E5A;    /* magenta — vibe concern */
+      --wrong-style-hover: #7E2A7E;
+      --promote-ref: #B8860B;    /* dark gold — promote to canonical */
+      --promote-ref-hover: #D4A627;
+      --skip-concept: #4A4A2A;   /* olive — concept-level reject */
+      --skip-concept-hover: #6C6C3C;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; height: 100%; }
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: 'Segoe UI', Inter, system-ui, sans-serif;
+      display: grid;
+      grid-template-rows: auto 1fr auto;  /* header / main / footer */
+      height: 100vh;
+      overflow: hidden;                    /* no page scroll; everything fits */
+    }
+    header {
+      background: var(--panel);
+      padding: 10px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--purple);
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    h1 {
+      margin: 0;
+      font-size: 18px;
+      color: var(--gold);
+      letter-spacing: 0.5px;
+      font-weight: 700;
+    }
+    h1 .sub { color: var(--fg-dim); font-weight: 400; font-size: 13px; margin-left: 12px; }
+    .stats { display: flex; gap: 16px; font-size: 13px; }
+    .stat { color: var(--fg-dim); }
+    .stat strong { color: var(--fg); }
+    .stat .great { color: var(--purple-bright); }
+    .stat .good { color: #6cc879; }
+    .stat .bad { color: #d96a6a; }
+    .stat .size-off { color: #5fb8c9; }
+    .stat .wrong-guy { color: #d9b46a; }
+    .stat .wrong-style { color: #d96acd; }
+    .stat .skip-concept { color: #c9c97d; }
+
+    main {
+      display: grid;
+      grid-template-rows: 1fr auto;  /* image / info */
+      align-items: stretch;
+      justify-items: center;
+      padding: 10px 20px 6px;
+      gap: 6px;
+      min-height: 0;                 /* lets the image-wrap shrink inside flex/grid */
+      overflow: hidden;
+    }
+    .image-wrap {
+      width: 100%;
+      max-width: 1100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--panel);
+      border-radius: 12px;
+      border: 1px solid rgba(122, 61, 212, 0.3);
+      overflow: hidden;
+      min-height: 0;                 /* critical: lets image shrink to fit */
+      position: relative;
+    }
+    .image-wrap img {
+      max-width: 100%;
+      max-height: 100%;              /* parent owns the height now */
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      display: block;
+    }
+    .image-wrap.empty {
+      flex-direction: column;
+      gap: 12px;
+      padding: 60px 20px;
+      color: var(--fg-dim);
+      font-size: 16px;
+    }
+    .image-wrap.empty .big { font-size: 32px; color: var(--gold); }
+
+    .info {
+      width: 100%;
+      max-width: 1100px;
+      color: var(--fg-dim);
+      font-size: 11px;
+      font-family: 'Consolas', 'Cascadia Code', monospace;
+      padding: 4px 4px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      max-height: 60px;
+      overflow: hidden;
+    }
+    .info .filename { color: var(--purple-bright); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .info .dims { color: var(--gold); }
+    .info .prompt { color: var(--fg-dim); line-height: 1.3; max-height: 28px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    footer {
+      background: var(--panel);
+      padding: 8px 20px 10px;
+      border-top: 1px solid var(--purple);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .btn-row { display: flex; gap: 10px; align-items: stretch; }
+    .btn {
+      flex: 1;
+      padding: 10px 10px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      color: var(--fg);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      transition: background 0.12s, transform 0.05s;
+      font-family: inherit;
+      line-height: 1.2;
+    }
+    .btn:active { transform: translateY(1px); }
+    .btn.bad { background: var(--bad); }
+    .btn.bad:hover { background: var(--bad-hover); }
+    .btn.good { background: var(--good); }
+    .btn.good:hover { background: var(--good-hover); }
+    .btn.great { background: var(--great); }
+    .btn.great:hover { background: var(--great-hover); }
+    .btn.size-off { background: var(--size-off); }
+    .btn.size-off:hover { background: var(--size-off-hover); }
+    .btn.wrong-guy { background: var(--wrong-guy); }
+    .btn.wrong-guy:hover { background: var(--wrong-guy-hover); }
+    .btn.wrong-style { background: var(--wrong-style); }
+    .btn.wrong-style:hover { background: var(--wrong-style-hover); }
+    .btn.promote-ref { background: var(--promote-ref); }
+    .btn.promote-ref:hover { background: var(--promote-ref-hover); }
+    .btn.skip-concept { background: var(--skip-concept); }
+    .btn.skip-concept:hover { background: var(--skip-concept-hover); }
+    .btn.neutral { flex: 0 0 auto; background: var(--neutral); padding: 10px 18px; font-size: 12px; }
+    .btn.neutral:hover { background: var(--neutral-hover); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn .sub { display: block; font-size: 10px; font-weight: 500; opacity: 0.85; margin-top: 1px; }
+
+    .toast {
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(26, 13, 58, 0.95);
+      color: var(--fg);
+      border: 1px solid var(--purple-bright);
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      opacity: 0;
+      transition: opacity 0.25s;
+      pointer-events: none;
+      z-index: 100;
+    }
+    .toast.show { opacity: 1; }
+    kbd {
+      background: var(--neutral);
+      color: var(--gold);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-family: inherit;
+      margin: 0 2px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🪄 JOKR Sorter <span class="sub" id="folder-label">…</span></h1>
+    <div class="stats">
+      <div class="stat queue">Queue: <strong id="stat-queue">0</strong></div>
+      <div class="stat"><span class="great">💎</span> <strong id="stat-great">0</strong></div>
+      <div class="stat"><span class="good">✅</span> <strong id="stat-good">0</strong></div>
+      <div class="stat"><span class="size-off">📐</span> <strong id="stat-size-off">0</strong></div>
+      <div class="stat"><span class="wrong-guy">👤</span> <strong id="stat-wrong-guy">0</strong></div>
+      <div class="stat"><span class="wrong-style">🎨</span> <strong id="stat-wrong-style">0</strong></div>
+      <div class="stat"><span class="skip-concept">♻️</span> <strong id="stat-skip-concept">0</strong></div>
+      <div class="stat"><span class="bad">❌</span> <strong id="stat-bad">0</strong></div>
+      <div class="stat">📥 <strong id="stat-refs">0</strong></div>
+    </div>
+  </header>
+
+  <main>
+    <div class="image-wrap" id="image-wrap">
+      <div class="empty"><div class="big">⏳ loading…</div></div>
+    </div>
+    <div class="info" id="info">
+      <div class="filename" id="info-filename"></div>
+      <div class="dims" id="info-dims"></div>
+      <div class="prompt" id="info-prompt"></div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="btn-row">
+      <button class="btn bad" id="btn-bad" onclick="sort('bad')">👎 BAD <kbd>N</kbd><span class="sub">reject outright</span></button>
+      <button class="btn good" id="btn-good" onclick="sort('good')">👍 GOOD <kbd>Y</kbd><span class="sub">on-theme, needs work</span></button>
+      <button class="btn great" id="btn-great" onclick="sort('great')">💎 GREAT <kbd>G</kbd><span class="sub">would use as-is</span></button>
+      <button class="btn promote-ref" id="btn-promote-ref" onclick="sort('promote_ref')">🪄 USE AS REF <kbd>R</kbd><span class="sub">promote → 📥 Refs (canonical for next gens)</span></button>
+      <button class="btn neutral" id="btn-skip" onclick="sort('skip')">⏭ Skip <kbd>␣</kbd></button>
+      <button class="btn neutral" id="btn-undo" onclick="undo()">↶ Undo <kbd>U</kbd></button>
+    </div>
+    <div class="btn-row">
+      <button class="btn size-off" id="btn-size-off" onclick="sort('size_off')">📐 SIZE OFF <kbd>S</kbd><span class="sub">good idea, wrong size/aspect</span></button>
+      <button class="btn wrong-guy" id="btn-wrong-guy" onclick="sort('wrong_guy')">👤 WRONG GUY <kbd>W</kbd><span class="sub">good concept, character drifted</span></button>
+      <button class="btn wrong-style" id="btn-wrong-style" onclick="sort('wrong_style')">🎨 WRONG STYLE <kbd>T</kbd><span class="sub">good comp, wrong vibe</span></button>
+      <button class="btn skip-concept" id="btn-skip-concept" onclick="sort('skip_concept')">♻️ SKIP CONCEPT <kbd>C</kbd><span class="sub">drop this prompt direction in future iter</span></button>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    let queue = [];
+    let stats = {};
+    let currentName = null;
+
+    async function refreshQueue() {
+      try {
+        const r = await fetch('/api/queue');
+        const data = await r.json();
+        queue = data.queue || [];
+        stats = data.stats || {};
+        document.getElementById('folder-label').textContent = stats.folder || '';
+        document.getElementById('stat-queue').textContent = stats.queue ?? 0;
+        document.getElementById('stat-great').textContent = stats.great ?? 0;
+        document.getElementById('stat-good').textContent = stats.good ?? 0;
+        document.getElementById('stat-size-off').textContent = stats.size_off ?? 0;
+        document.getElementById('stat-wrong-guy').textContent = stats.wrong_guy ?? 0;
+        document.getElementById('stat-wrong-style').textContent = stats.wrong_style ?? 0;
+        document.getElementById('stat-skip-concept').textContent = stats.skip_concept ?? 0;
+        document.getElementById('stat-bad').textContent = stats.bad ?? 0;
+        document.getElementById('stat-refs').textContent = stats.refs ?? 0;
+        render();
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function render() {
+      const wrap = document.getElementById('image-wrap');
+      if (queue.length === 0) {
+        wrap.classList.add('empty');
+        wrap.innerHTML = '<div class="empty"><div class="big">✓ all sorted</div><div>waiting for new gens to land…</div></div>';
+        currentName = null;
+        document.getElementById('info-filename').textContent = '';
+        document.getElementById('info-dims').textContent = '';
+        document.getElementById('info-prompt').textContent = '';
+        for (const id of ['btn-bad','btn-good','btn-great','btn-promote-ref','btn-size-off','btn-wrong-guy','btn-wrong-style','btn-skip-concept','btn-skip','btn-undo']) {
+          document.getElementById(id).disabled = (id !== 'btn-undo');
+        }
+        return;
+      }
+      const name = queue[0];
+      currentName = name;
+      wrap.classList.remove('empty');
+      wrap.innerHTML = `<img src="/api/image/${encodeURIComponent(name)}" alt="${name}" />`;
+      for (const id of ['btn-bad','btn-good','btn-great','btn-promote-ref','btn-size-off','btn-wrong-guy','btn-wrong-style','btn-skip-concept','btn-skip','btn-undo']) {
+        document.getElementById(id).disabled = false;
+      }
+      loadMeta(name);
+    }
+
+    async function loadMeta(name) {
+      try {
+        const r = await fetch('/api/meta/' + encodeURIComponent(name));
+        const m = await r.json();
+        document.getElementById('info-filename').textContent = m.filename || name;
+        const dims = (m.width && m.height) ? `${m.width}×${m.height}` : '';
+        const aspect = (m.width && m.height) ? `  ·  aspect ${(m.width / m.height).toFixed(2)}:1` : '';
+        document.getElementById('info-dims').textContent = `${dims}${aspect}`;
+        const prompt = (m.prompt_excerpt || '').replace(/\s+/g, ' ').trim();
+        document.getElementById('info-prompt').textContent = prompt ? `prompt: ${prompt}…` : '';
+      } catch (e) { console.error(e); }
+    }
+
+    async function sort(verdict) {
+      if (!currentName && verdict !== 'skip') return;
+      const filename = currentName;
+      try {
+        const r = await fetch('/api/sort', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({filename, verdict}),
+        });
+        const data = await r.json();
+        if (data.status === 'ok') {
+          const labels = {
+            great: '💎 → Great',
+            good: '👍 → Good',
+            size_off: '📐 → Size Off',
+            wrong_guy: '👤 → Wrong Guy',
+            wrong_style: '🎨 → Wrong Style',
+            skip_concept: '♻️ → Skip Concept',
+            promote_ref: '🪄 → Refs (promoted)',
+            bad: '👎 → Bad',
+            skip: '⏭ skipped',
+          };
+          toast(labels[verdict] || verdict);
+        } else {
+          toast('⚠ ' + (data.error || 'error'));
+        }
+      } catch (e) {
+        toast('⚠ network error');
+      }
+      await refreshQueue();
+    }
+
+    async function undo() {
+      try {
+        const r = await fetch('/api/undo', {method: 'POST'});
+        const data = await r.json();
+        if (data.undone && data.undone !== 'none') {
+          toast(`↶ undid ${data.undone}`);
+        } else {
+          toast('nothing to undo');
+        }
+      } catch (e) {
+        toast('⚠ network error');
+      }
+      await refreshQueue();
+    }
+
+    let toastTimer;
+    function toast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('show'), 1400);
+    }
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      if (e.target.matches('input, textarea')) return;
+      const k = e.key.toLowerCase();
+      if (k === 'n' || k === '1' || e.key === 'ArrowLeft') { e.preventDefault(); sort('bad'); }
+      else if (k === 'y' || k === '2' || e.key === 'ArrowRight') { e.preventDefault(); sort('good'); }
+      else if (k === 'g' || k === '3') { e.preventDefault(); sort('great'); }
+      else if (k === 'r' || k === '4') { e.preventDefault(); sort('promote_ref'); }
+      else if (k === 's' || k === '5') { e.preventDefault(); sort('size_off'); }
+      else if (k === 'w' || k === '6') { e.preventDefault(); sort('wrong_guy'); }
+      else if (k === 't' || k === '7') { e.preventDefault(); sort('wrong_style'); }
+      else if (k === 'c' || k === '8') { e.preventDefault(); sort('skip_concept'); }
+      else if (e.key === ' ') { e.preventDefault(); sort('skip'); }
+      else if (k === 'u') { e.preventDefault(); undo(); }
+    });
+
+    // Initial + 5s auto-poll for new gens
+    refreshQueue();
+    setInterval(refreshQueue, 5000);
+  </script>
+</body>
+</html>

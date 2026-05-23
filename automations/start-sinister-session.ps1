@@ -1128,7 +1128,7 @@ printf '\n'
 cd "$bashPath" || { echo '[FAIL] could not cd to project root'; exec bash; }
 claude --dangerously-skip-permissions '$bashPhrase'
 printf '\n  > Claude exited. Writing close-time resume-point...\n'
-powershell -NoProfile -ExecutionPolicy Bypass -File 'D:\Sinister Sanctum\automations\resume-point-write.ps1' -SanctumRoot 'D:\Sinister Sanctum' -ProjectKey '$projKey' -AgentName '$bashAgentName' -Mode resume >/dev/null 2>&1
+powershell -NoProfile -ExecutionPolicy Bypass -File '$SanctumRoot\automations\resume-point-write.ps1' -SanctumRoot '$SanctumRoot' -ProjectKey '$projKey' -AgentName '$bashAgentName' -Mode resume >/dev/null 2>&1
 printf '  > resume-point written. Dropping into sinister-term (our own shell)...\n\n'
 # M) operator directive 2026-05-23: use OUR own terminal (sinister-term) where possible.
 # sterm = sinister-term entry-point installed via projects/sinister-term/source pip install -e
@@ -1138,7 +1138,7 @@ if command -v sterm >/dev/null 2>&1; then
 elif command -v sinister-term >/dev/null 2>&1; then
   exec sinister-term
 else
-  printf '  > sterm not on PATH; falling back to bash. Install with: pip install -e D:/Sinister\ Sanctum/projects/sinister-term/source\n'
+  printf '  > sterm not on PATH; falling back to bash. Install with: pip install -e $bashSanctumRoot/projects/sinister-term/source\n'
   exec bash
 fi
 "@

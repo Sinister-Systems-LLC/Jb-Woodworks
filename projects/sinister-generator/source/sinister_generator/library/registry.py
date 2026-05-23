@@ -12,14 +12,23 @@ PROJECT_ROOT = pathlib.Path(r"D:\Sinister Sanctum\projects\sinister-generator")
 REGISTRY_PATH = PROJECT_ROOT / "memory" / "learning" / "_brands.json"
 DESKTOP_ROOT = pathlib.Path(r"C:\Users\Zonia\Desktop")
 
-# 3-tier endorsement structure (operator directive 2026-05-23 evening):
-#   💎 Great → "I'd actually use this" — top tier; ref[0]/ref[1] for next gens
-#   ✅ Good  → "in theme but needs work / good gen but stupid in some areas"
-#               — secondary endorsement; informs the next gens but lower priority
-#   ❌ Bad   → rejected; anti-patterns
-#   📥 Refs  → operator-supplied canonical references (highest authority)
+# 7-tier sort structure (operator directive 2026-05-23):
+#   💎 Great       → "I'd actually use this" — top tier; ref[0]/ref[1] for next gens
+#   ✅ Good        → "in theme but needs work" — secondary endorsement; informs next gens
+#   📐 Size Off    → "good idea but wrong size/aspect/framing" — PIL reshape candidate;
+#                    still a valid look-of-record (character ok), NOT counted as endorsed ref
+#   👤 Wrong Guy   → "good concept but character drift" — prompt was good, refs failed;
+#                    NOT a ref; informs next gens to use stronger char refs for this prompt
+#   🎨 Wrong Style → "good composition but wrong vibe / lighting / palette";
+#                    NOT a ref; style cues become anti-pattern text in next prompts
+#   ❌ Bad         → rejected wholesale; anti-pattern
+#   📥 Refs        → operator-supplied canonical references (highest authority)
 GREAT_SUBDIR = "💎 Great"
 GOOD_SUBDIR = "✅ Good"
+SIZE_OFF_SUBDIR = "📐 Size Off"
+WRONG_GUY_SUBDIR = "👤 Wrong Guy"
+WRONG_STYLE_SUBDIR = "🎨 Wrong Style"
+SKIP_CONCEPT_SUBDIR = "♻️ Skip Concept"   # operator: "drop this prompt direction in future iter"
 BAD_SUBDIR = "❌ Bad"
 REFS_SUBDIR = "📥 Refs"
 
@@ -51,6 +60,22 @@ class BrandConfig:
     @property
     def good_dir(self) -> pathlib.Path:
         return self.desktop_dir / GOOD_SUBDIR
+
+    @property
+    def size_off_dir(self) -> pathlib.Path:
+        return self.desktop_dir / SIZE_OFF_SUBDIR
+
+    @property
+    def wrong_guy_dir(self) -> pathlib.Path:
+        return self.desktop_dir / WRONG_GUY_SUBDIR
+
+    @property
+    def wrong_style_dir(self) -> pathlib.Path:
+        return self.desktop_dir / WRONG_STYLE_SUBDIR
+
+    @property
+    def skip_concept_dir(self) -> pathlib.Path:
+        return self.desktop_dir / SKIP_CONCEPT_SUBDIR
 
     @property
     def bad_dir(self) -> pathlib.Path:
@@ -150,7 +175,16 @@ def ensure_sorter_folders(cfg: BrandConfig) -> List[pathlib.Path]:
     """
     created: List[pathlib.Path] = []
     cfg.desktop_dir.mkdir(parents=True, exist_ok=True)
-    for d in (cfg.great_dir, cfg.good_dir, cfg.bad_dir, cfg.refs_dir):
+    for d in (
+        cfg.great_dir,
+        cfg.good_dir,
+        cfg.size_off_dir,
+        cfg.wrong_guy_dir,
+        cfg.wrong_style_dir,
+        cfg.skip_concept_dir,
+        cfg.bad_dir,
+        cfg.refs_dir,
+    ):
         if not d.exists():
             d.mkdir(parents=True, exist_ok=True)
             created.append(d)
