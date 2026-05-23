@@ -22,7 +22,7 @@
 | 2 | Multi-pane scrolling TUI | Forge `panes/agent_pane.py` (PH2-PH3) | ✅ scaffold | forge | Textual Log widget virtual-scroll |
 | 3 | Forever-scroll buffer per agent | Forge `panes/agent_pane.py` | ✅ scaffold | forge | context-pruner.ps1 archives long-term |
 | 4 | Ctrl+W new-agent picker | Forge `panes/picker.py` (PH3) | ✅ shipped | forge | ports `start-sinister-session.ps1` Q1-Q5 |
-| 5 | Animated boot art | Forge `art.py` (PH5) | 📋 planned | forge | Vault Boy rotating frames; 1.2s |
+| 5 | Animated boot art | Forge `art.py` (PH5) | 🚧 frames shipped, boot wire-up pending | forge | Vault Boy rotating frames (4 frames, 119 LOC, `VAULT_BOY_FRAME_0..3`) ship in `forge/art.py`; `forge/app.py` does NOT yet import `art` to mount the 1.2s boot sequence — that wire-up is the remaining lift. Audited 2026-05-23 by rkoj-lane. |
 | 6 | Cascadia Code typography + jcode palette | Forge `theme.py` (PH11) | ✅ scaffold / 📋 polish | forge | purple `#7A3DD4` + dim cyan |
 | 7 | Status bar + breadcrumbs | Forge `panes/status_bar.py` + Term shell PH7 | ✅ Forge stub / ✅ Term PH7 | forge + sinister-term | cwd / git branch / heartbeat pill |
 | 8 | Semantic memory (HNSW + embeddings) | Ruflo `agentdb_*` (28 tools) | 🔄 delegated | sanctum (bridge) | DO NOT re-implement HNSW |
@@ -32,19 +32,19 @@
 | 12 | Memory-graph visualization | `tools/memory-graph-render/` → mermaid → `mermaid-rs-renderer` → PNG | 🚧 shipped | sanctum (render) + forge (RKOJ embed) + mind (web view) | PNGs at `inventions/memory-graphs/` |
 | 13 | Single-binary distribution | Forge + Term `pip install -e .` + entry-points | ✅ both | forge + sinister-term | pyproject.toml |
 | 14 | Per-keypress latency <2ms | Term v0 Python+prompt_toolkit; Term v1 Rust port (deferred) | ✅ v0 / 📋 v1 | sinister-term | Rust port = 30-day proving period |
-| 15 | Mermaid diagram panels (in-TUI) | Forge PH7 RKOJ tab embeds PNGs | 📋 planned | forge | NOT in-TUI; embed via web view |
+| 15 | Mermaid diagram panels (in-TUI) | Forge PH7 RKOJ tab embeds PNGs | 🚧 renderer wrapper shipped, in-TUI panel pending | forge | `forge/mermaid_render.py` (166 LOC) wraps the prebuilt `mmdr` CLI (1jehuang/mermaid-rs-renderer, MIT) and caches PNG/SVG to `_shared-memory/forge-diagrams/<sha>.<ext>`. No `panes/mermaid_panel.py` yet — diagram thumbnails not yet embedded in a Forge pane. Web-view embed via RKOJ dashboard tab is the path. Audited 2026-05-23 by rkoj-lane. |
 | 16 | Swarm-mode (multi-agent) | Ruflo `hive-mind_*` + Sanctum `inbox/` + `cross-agent/` | ✅ disk + 🚧 MCP | sanctum + all | hive `hive-1779361043392-k9b2bw` queen=sanctum |
 | 17 | Telemetry (phones home) | **NOT PORTED** — data sovereignty | ✅ omitted | n/a | local only |
-| 18 | Plugin / skill hot-reload | Forge `forge/plugins/` watchdog (PH8) + `_shared-memory/skills/` | 📋 planned | forge + sanctum | file-change → reload |
+| 18 | Plugin / skill hot-reload | Forge `forge/skills.py` + watchdog (PH8) | 🚧 manual reload shipped, watchdog pending | forge + sanctum | `SkillRegistry.reload_shared()` does manual disk-rescan + override-chain replay (`~/.sinister/skills/*.md` then `D:/Sinister Sanctum/skills/*.md`). Wired to `/skill reload` slash. File-change watchdog (auto on edit) still 📋. Audited 2026-05-23 by rkoj-lane. |
 | 19 | Per-agent identity / accent / project header | `automations/session-templates/agent-prefs.json` + Forge `app.py` | ✅ both | sanctum + forge | bold project name per pane |
 | 20 | Mid-turn keybind: open new agent | Forge Ctrl+W / Term Ctrl+F (planned) | ✅ Forge / 📋 Term | forge + sinister-term | Term keybind opens Forge inline |
-| 21 | RKOJ Workstation integration | Forge PH7 (`panes/rkoj_panel.py`) F2-toggle to RKOJ :5077 | 📋 planned | forge + rkoj | embed as sidebar (Q2 default) |
+| 21 | RKOJ Workstation integration | Forge `panes/workstation_panel.py` F2-toggle to RKOJ :5077 | ✅ shipped | forge + rkoj | `keybinds.py` binds `F2 → toggle_rkoj`; `panes/workstation_panel.py` (170 LOC) auto-spawns the workstation daemon (`desktop_app.py` at `automations/window-manager/`) silently via `CREATE_NO_WINDOW` if `:5077` is idle, then opens the browser. Status bar shows "F2 RKOJ" pill. Audited 2026-05-23 by rkoj-lane. |
 | 22 | Cold-start resume | CONTRACT 7 + `automations/resume-point-write.ps1` | ✅ shipped | sanctum + all | inaugural Sanctum resume-point this session |
 | 23 | Tool-use boundary hooks | Forge PH13 `claude-hooks` integration | 📋 planned | forge | wraps `claude-hooks-2.4.0` |
 | 24 | Skill discovery from external repos | Forge PH12 `Skill_Seekers` integration | 📋 planned | forge | wraps `Skill_Seekers-3.6.0` |
 | 25 | Structured semantic grep | Forge PH14 `agentgrep` (operator-gated cargo install) | 📋 planned | forge | operator-gate |
 | 26 | Browser-bridge (web-as-tool) | `_shared-memory/knowledge/agent-browser-bridge-pattern.md` (Forge PH15) | 🚧 doc | sanctum (doc) | NOT clone-and-run |
-| 27 | **Scrollable-tiling multi-pane** (niri-wm pattern) | Forge `panes/*` PH2-PH3 + `_shared-memory/knowledge/scrollable-tiling-pattern.md` (TODO) | 📋 planned | forge | Operator: niri-wm/niri pattern; mine the column-scroll UX (Wayland code itself doesn't port) |
+| 27 | **Scrollable-tiling multi-pane** (niri-wm pattern) | Forge `panes/niri_workspace.py` + `panes/columns.py` | ✅ shipped | forge | `forge/panes/niri_workspace.py` (513 LOC) implements the column-scrolling workspace; `forge/panes/columns.py` (218 LOC) is the column primitive. Mining UX-only (no Wayland code). Audited 2026-05-23 by rkoj-lane. |
 | 28 | **Sinister-branded mermaid renderer (Rust)** | `tools/sinister-mermaid-render/` (TODO: fork 1jehuang/mermaid-rs-renderer) | 📋 planned | sanctum (fork) | Operator: rebrand Sinister purple boot art + AGPL-3.0 + RKOJ-ELENO; used by `memory-graph-render/` Stage 3 |
 
 ## Composes-with map
