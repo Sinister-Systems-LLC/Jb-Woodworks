@@ -4,6 +4,24 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not command-versions (each lane has its own).
 
+## v1.6.64 — 2026-05-22
+
+**Elapsed pill click → /timer, project label click → /find <project>.
+Completes the header click-action sweep — every pill is now navigable
+without typing.**
+
+- `_elapsed_pill` was `QLabel("--")` → now `_ClickPill("--", self,
+  intercept="/timer")`. Click anytime (during a turn for live elapsed,
+  or idle for the "last turn took Xs" report).
+- `project_label` was a local QLabel → now `_ClickPill` with
+  `intercept=f"/find {project_display}"`. Click in any card to scroll
+  the grid to the next card on the same project. Repeated clicks
+  cycle via the standard /find-next wrap.
+- Tooltips added to both for discoverability.
+- `/shortcuts` block updated with PROJECT and ⏱ elapsed click rows.
+- MANIFEST.json 1.6.63 → 1.6.64.
+- `__init__.py __version__ = "1.6.64"`.
+
 ## v1.6.63 — 2026-05-22
 
 **Clickable header pills + /shortcuts updated. Turn-count pill click

@@ -860,8 +860,16 @@ class AgentCard(QFrame):
             f"background-color: {DIM}; border-radius: 6px;"
         )
 
-        project_label = QLabel(self.session.project_display.upper())
+        # v1.6.64 — project label is clickable: fires /find <project>
+        # so operator can fan to all sibling cards on the same project.
+        project_label = _ClickPill(
+            self.session.project_display.upper(), self,
+            intercept=f"/find {self.session.project_display}",
+        )
         project_label.setObjectName("AgentProject")
+        project_label.setToolTip(
+            f"Click → /find {self.session.project_display}"
+        )
 
         # v1.6.44 — kept as self._title_label so /rename can update it.
         self._title_label = QLabel(eve_label(self.session.agent_name, ""))
@@ -901,7 +909,8 @@ class AgentCard(QFrame):
         # turns. Updates every 1s from a QTimer reading _turn_started_ts.
         # Operators can see at a glance whether a turn is hung (e.g. 5m+
         # with no streaming) and reach for Esc / /cancel reflexively.
-        self._elapsed_pill = QLabel("--")
+        # v1.6.64 — clickable: fires /timer for the full report.
+        self._elapsed_pill = _ClickPill("--", self, intercept="/timer")
         self._elapsed_pill.setObjectName("ModePill")
         self._elapsed_pill.setStyleSheet(
             f"color: #f0a020; background-color: transparent; "
@@ -911,7 +920,7 @@ class AgentCard(QFrame):
         )
         self._elapsed_pill.setToolTip(
             "Elapsed time of the in-flight turn. Esc or /cancel kills "
-            "it. Type /timer for the full report."
+            "it. Click for /timer report (or type /timer)."
         )
         self._elapsed_pill.hide()
         self._elapsed_timer = QTimer(self)
@@ -2262,8 +2271,10 @@ class AgentCard(QFrame):
                 "  ☆ / ★       pin/unpin (pinned cards float to top of grid)\n"
                 "  ▾ / ▸       collapse / expand chevron (same as Ctrl+M)\n"
                 "  ✕           close this card (autosaves resume-point first)\n"
+                "  PROJECT     click → /find <project>\n"
                 "  N turns     click → /history\n"
                 "  $X.XXXX     click → /cost\n"
+                "  ⏱ elapsed   click → /timer\n"
                 "  tag chip    L-click → /find <tag>, R-click → menu\n"
                 "\n"
                 "[/shortcuts]  see /help for the full slash command list.\n"
