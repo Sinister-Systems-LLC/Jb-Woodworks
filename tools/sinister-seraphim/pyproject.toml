@@ -1,0 +1,44 @@
+# Author: RKOJ-ELENO :: 2026-05-23
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sinister-seraphim"
+version = "0.1.0"
+description = "Sinister fleet's quantum-compute application layer (Origin PilotOS / pyqpanda3 wrapper)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "AGPL-3.0-or-later" }
+authors = [{ name = "RKOJ-ELENO" }]
+keywords = ["quantum", "qrng", "pilotos", "pyqpanda3", "sinister"]
+
+# Stdlib-only for the v0.1 starter. pyqpanda3 added as an optional extra so
+# the package can be installed editable without pulling 200+ MB of QPU SDK
+# until the operator actually wants the cloud / sim-pilotos backends.
+dependencies = []
+
+[project.optional-dependencies]
+sim = []           # populated when python_simulator extract lands
+cloud = []         # populated when pyqpanda3 cloud-submission path wired
+zmq = ["pyzmq>=25"]  # for the python_simulator ZMQ router client
+fastapi = ["fastapi>=0.110", "uvicorn>=0.27"]  # for the daemon server
+dev = ["pytest>=7", "pytest-asyncio>=0.21"]
+
+[project.scripts]
+seraphim = "sinister_seraphim.cli:main"
+seraphim-qrng = "sinister_seraphim.qrng:cli_main"
+
+# Module is at tools/sinister-seraphim/ (hyphen-named dir) but the import
+# package is sinister_seraphim (underscore). Map via setuptools.
+[tool.setuptools]
+package-dir = { sinister_seraphim = "." }
+packages = ["sinister_seraphim"]
+
+[tool.setuptools.package-data]
+sinister_seraphim = ["README.md"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-v --tb=short"

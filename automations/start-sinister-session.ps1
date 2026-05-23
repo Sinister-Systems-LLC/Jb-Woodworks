@@ -3,7 +3,7 @@
 #
 # v6 rewrite (operator directive 2026-05-23):
 #   - One screen. No matrix rain / glitch reveal / multi-step wizard.
-#   - jcode-style banner header + numbered project list, full stop.
+#   - EVE-style banner header + numbered project list, full stop.
 #   - 11 visible projects (Sanctum, Sinister Panel, Kernel APK, Sinister Emulator,
 #     RKOJ unified, Snap Emulator API, TikTok Emulator API, Bumble Emulator API,
 #     Sinister Freeze, JB Woodworks, Showmasters) + G) General + A) Auto-Resume
@@ -173,6 +173,61 @@ function Get-ProjectAgentName($projectKey, $prefs) {
     return $projectKey
 }
 
+function Confirm-AgentPrefs($projectKey, $projDisplay, $prefs) {
+    # Operator 2026-05-23: "name and color on the bat file agents need to set when its
+    # opened and its not doing that or i think ever setting it". Inline confirm + override
+    # right before spawn. Single Read-Host: Enter accepts existing, 'r' triggers full
+    # Customize-Project, anything else = new agent_name (keeps current accent).
+    $currentAgent = Get-ProjectAgentName $projectKey $prefs
+    $currentAccent = 'purple'
+    if ($prefs -and $prefs.per_project -and $prefs.per_project.$projectKey -and $prefs.per_project.$projectKey.accent_color) {
+        $currentAccent = $prefs.per_project.$projectKey.accent_color
+    }
+    Write-Host ''
+    Write-Host ('  Spawning ') -NoNewline -ForegroundColor $C.Soft
+    Write-Host $projDisplay -NoNewline -ForegroundColor $C.White
+    Write-Host (' :: agent="') -NoNewline -ForegroundColor $C.Soft
+    Write-Host $currentAgent -NoNewline -ForegroundColor $C.LightP
+    Write-Host ('"  accent=') -NoNewline -ForegroundColor $C.Soft
+    Write-Host $currentAccent -ForegroundColor $C.LightP
+    Write-Host ('  [Enter to launch as-is | r to customize name+color | type new agent name to override]') -ForegroundColor $C.Dim
+    Write-Host '  > ' -NoNewline -ForegroundColor $C.LightP
+    $resp = Read-Host
+    if (-not $resp -or -not $resp.Trim()) {
+        # Accept current — make sure they're persisted so subsequent launches see them.
+        $prefs = Persist-AgentPref $projectKey $currentAgent $currentAccent $prefs
+        return @{ prefs = $prefs; agent = $currentAgent; accent = $currentAccent }
+    }
+    $resp = $resp.Trim()
+    if ($resp.ToLower() -eq 'r' -or $resp.ToLower() -eq 'rename') {
+        # Drop into full Customize-Project for THIS key only.
+        $newAgent = $currentAgent
+        $newAccent = $currentAccent
+        Write-Host ('   New agent name (Enter = keep "' + $currentAgent + '")') -ForegroundColor $C.Soft
+        Write-Host '   > ' -NoNewline -ForegroundColor $C.LightP
+        $n = Read-Host
+        if ($n -and $n.Trim()) { $newAgent = $n.Trim() }
+        $palette = @('purple','magenta','cyan','green','yellow','white','random')
+        Write-Host ('   Accent (Enter = keep "' + $currentAccent + '", options: ' + ($palette -join ', ') + ')') -ForegroundColor $C.Soft
+        Write-Host '   > ' -NoNewline -ForegroundColor $C.LightP
+        $a = Read-Host
+        if ($a -and $a.Trim()) {
+            $a = $a.Trim().ToLower()
+            if ($a -eq 'random') { $a = ($palette | Where-Object { $_ -ne 'random' } | Get-Random) }
+            if ($palette -contains $a) { $newAccent = $a } else {
+                Write-Host ('   [warn] unknown accent "' + $a + '", keeping "' + $currentAccent + '"') -ForegroundColor $C.Warn
+            }
+        }
+        $prefs = Persist-AgentPref $projectKey $newAgent $newAccent $prefs
+        Write-Host ('   [OK] saved: agent="' + $newAgent + '" accent=' + $newAccent) -ForegroundColor $C.OK
+        return @{ prefs = $prefs; agent = $newAgent; accent = $newAccent }
+    }
+    # Anything else = new agent_name override (keep accent).
+    $prefs = Persist-AgentPref $projectKey $resp $currentAccent $prefs
+    Write-Host ('   [OK] saved: agent="' + $resp + '" accent=' + $currentAccent + ' (use r to change accent)') -ForegroundColor $C.OK
+    return @{ prefs = $prefs; agent = $resp; accent = $currentAccent }
+}
+
 function Persist-AgentPref($projectKey, $agentName, $accent, $prefs) {
     # Operator 2026-05-23 evening: "amke name setting and color setting work it does not wotk now".
     # Root cause: prior impl mutated $existing.agent_name on a PSCustomObject which silently no-ops
@@ -207,7 +262,7 @@ function Persist-AgentPref($projectKey, $agentName, $accent, $prefs) {
 }
 
 # ============================================================
-# BANNER (jcode-style)
+# BANNER (EVE-style)
 # ============================================================
 
 function Draw-Banner {
@@ -933,7 +988,7 @@ function Launch-Session($projRec, $agentName, $accent, $phrase) {
 
     $launchSh = Join-Path $env:TEMP "sinister-launch-$([guid]::NewGuid().ToString().Substring(0,8)).sh"
 
-    # I) jcode-style status pills (256-color bg + white fg). bash printf interprets the \033 escapes.
+    # I) EVE-style status pills (256-color bg + white fg). bash printf interprets the \033 escapes.
     $mcpCnt = Get-MCPCount
     $botCnt = Get-BotCount
     $pillA = '\033[48;5;91;38;5;15;1m'
@@ -1187,10 +1242,10 @@ do {
                 $targetKey = $arOutcome.key
                 $projRec = $projectsJson.projects | Where-Object { $_.key -eq $targetKey } | Select-Object -First 1
                 if ($projRec) {
-                    $resolvedAgent = Get-ProjectAgentName $targetKey $prefs
-                    $accentVal = 'purple'
-                    if ($prefs -and $prefs.per_project -and $prefs.per_project.$targetKey -and $prefs.per_project.$targetKey.accent_color) { $accentVal = $prefs.per_project.$targetKey.accent_color }
-                    $prefs = Persist-AgentPref $targetKey $resolvedAgent $accentVal $prefs
+                    $confirmed = Confirm-AgentPrefs $targetKey $projRec.display $prefs
+                    $prefs = $confirmed.prefs
+                    $resolvedAgent = $confirmed.agent
+                    $accentVal = $confirmed.accent
                     $isGeneral = ($targetKey -eq 'general')
                     $phrase = Build-Phrase $projRec $resolvedAgent 'resume' $isGeneral $false
                     if (-not $NoLaunch) { Launch-Session $projRec $resolvedAgent $accentVal $phrase }
@@ -1205,10 +1260,10 @@ do {
                 $hit = $projectsJson.projects | Where-Object { $_.key -eq $row.project -or $_.display -eq $row.project } | Select-Object -First 1
                 $targetKey = if ($hit) { $hit.key } else { $defaultKey }
                 $projRec = $projectsJson.projects | Where-Object { $_.key -eq $targetKey } | Select-Object -First 1
-                $resolvedAgent = Get-ProjectAgentName $targetKey $prefs
-                $accentVal = 'purple'
-                if ($prefs -and $prefs.per_project -and $prefs.per_project.$targetKey -and $prefs.per_project.$targetKey.accent_color) { $accentVal = $prefs.per_project.$targetKey.accent_color }
-                $prefs = Persist-AgentPref $targetKey $resolvedAgent $accentVal $prefs
+                $confirmed = Confirm-AgentPrefs $targetKey $projRec.display $prefs
+                $prefs = $confirmed.prefs
+                $resolvedAgent = $confirmed.agent
+                $accentVal = $confirmed.accent
                 $phrase = Build-Phrase $projRec $resolvedAgent 'resume' ($targetKey -eq 'general') $false
                 if (-not $NoLaunch) { Launch-Session $projRec $resolvedAgent $accentVal $phrase }
                 Write-RunLog $targetKey $resolvedAgent $accentVal 'autoresume'
@@ -1239,10 +1294,10 @@ do {
             $targetKey = $resolved.key
             $projRec = $projectsJson.projects | Where-Object { $_.key -eq $targetKey } | Select-Object -First 1
             if ($projRec) {
-                $resolvedAgent = Get-ProjectAgentName $targetKey $prefs
-                $accentVal = 'purple'
-                if ($prefs -and $prefs.per_project -and $prefs.per_project.$targetKey -and $prefs.per_project.$targetKey.accent_color) { $accentVal = $prefs.per_project.$targetKey.accent_color }
-                $prefs = Persist-AgentPref $targetKey $resolvedAgent $accentVal $prefs
+                $confirmed = Confirm-AgentPrefs $targetKey $projRec.display $prefs
+                $prefs = $confirmed.prefs
+                $resolvedAgent = $confirmed.agent
+                $accentVal = $confirmed.accent
                 $isGeneral = ($targetKey -eq 'general')
                 $phrase = Build-Phrase $projRec $resolvedAgent 'resume' $isGeneral $false
                 if (-not $NoLaunch) { Launch-Session $projRec $resolvedAgent $accentVal $phrase }
