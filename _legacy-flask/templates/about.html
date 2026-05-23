@@ -1,0 +1,71 @@
+{# Author: RKOJ-ELENO :: 2026-05-23 #}
+{% extends "base.html" %}
+{% block title %}About / FAQ - {{ site.name }}{% endblock %}
+{% block meta_description %}JB Woodworks is a custom woodworking shop in Orlando, Florida. Licensed and insured. Free quotes. Answers to common questions.{% endblock %}
+{% block body_class %}about{% endblock %}
+
+{% block content %}
+<section class="page-head">
+  <div class="container">
+    <span class="section-tag">About</span>
+    <h1 class="section-headline">Built in<br><em>Orlando, Florida.</em></h1>
+    <p class="section-subheadline">JB Woodworks is a custom woodworking shop based in Orlando. We build docks, decks, pergolas, custom pool tables, furniture, and interior trim - and we travel for the right project anywhere in the surrounding areas and across the USA.</p>
+  </div>
+</section>
+
+<section class="section about-grid">
+  <div class="container grid grid--about">
+    <article>
+      <h2>How we work.</h2>
+      <ol class="process">
+        <li><strong>Reach out.</strong> Phone, email, or the form. Tell us what you need. Free estimate.</li>
+        <li><strong>Site visit + sketch.</strong> Measurements, photos, and a rough sketch so we are quoting the actual job.</li>
+        <li><strong>Honest quote.</strong> Fixed-bid where possible, with a stated material spec.</li>
+        <li><strong>Build.</strong> Photos at major milestones. Licensed and insured on every job site.</li>
+        <li><strong>Walk-through.</strong> We do not call it done until you do.</li>
+      </ol>
+    </article>
+
+    <article>
+      <h2>What we use.</h2>
+      <p>Pressure-treated pine, cedar, and composite (Trex, TimberTech) for outdoor work. Hardwoods (oak, walnut, cherry, maple) for furniture and trim. Marine-grade hardware on docks. Stain and seal chosen to outlast the Florida sun.</p>
+      <p>We do not cut corners on hardware or wood grade. You will see what we used on the invoice.</p>
+    </article>
+
+    <article>
+      <h2>Licensed and insured.</h2>
+      <p>Every job is fully licensed and insured. We carry general liability and workers comp. We are happy to send certificates before we start work.</p>
+    </article>
+
+    <article>
+      <h2>Service area.</h2>
+      <p>Based in {{ site.service_area }}. For larger custom builds we travel further - just tell us where.</p>
+    </article>
+  </div>
+</section>
+
+<section id="faq" class="section-faq">
+  <div class="container">
+    <span class="section-tag">FAQ</span>
+    <h2 class="section-headline">Everything you<br><em>need to know.</em></h2>
+    <div class="faq-grid">
+      {% for item in faq %}
+      <article class="faq-card">
+        <h4 class="faq-q">{{ item.q }}</h4>
+        <p class="faq-a">{{ item.a }}</p>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section-cta">
+  <div class="container cta-band-inner">
+    <div>
+      <h2>Have a project in mind?</h2>
+      <p>Free quote, no pressure.</p>
+    </div>
+    <a class="btn btn-primary btn-large" href="{{ url_for('contact') }}">Start the conversation</a>
+  </div>
+</section>
+{% endblock %}

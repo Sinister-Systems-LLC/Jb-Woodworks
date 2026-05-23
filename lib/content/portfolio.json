@@ -1,0 +1,83 @@
+[
+  {
+    "slug": "pergola",
+    "title": "Pergola",
+    "category": "Outdoor Living",
+    "blurb": "Elegant pergolas providing the perfect balance of shade and outdoor comfort.",
+    "cover": "Pergola/IMG_0047.jpg",
+    "media": [
+      {"type": "video", "src": "Pergola/IMG_0047.mp4", "poster": "Pergola/IMG_0047.jpg"},
+      {"type": "video", "src": "Pergola/IMG_0050.mp4", "poster": "Pergola/IMG_0050.jpg"},
+      {"type": "video", "src": "Pergola/IMG_1866.mp4", "poster": "Pergola/IMG_1866.jpg"},
+      {"type": "raw-image", "src": "Pergola/IMG_0037.jpg"},
+      {"type": "raw-image", "src": "Pergola/IMG_0053.jpg"},
+      {"type": "raw-image", "src": "Pergola/IMG_1840.jpg"},
+      {"type": "raw-image", "src": "Pergola/IMG_1943.jpg"}
+    ]
+  },
+  {
+    "slug": "boat-docks",
+    "title": "Boat Docks",
+    "category": "Docks",
+    "blurb": "Custom designed and built boat docks for durable waterfront living and easy access.",
+    "cover": "Boat Dock/IMG_1605.jpg",
+    "media": [
+      {"type": "video", "src": "Boat Dock/IMG_1605.mp4", "poster": "Boat Dock/IMG_1605.jpg"},
+      {"type": "video", "src": "Boat Dock/IMG_1577.mp4", "poster": "Boat Dock/IMG_1577.jpg"},
+      {"type": "raw-image", "src": "Boat Dock/IMG_1578_00.jpg"},
+      {"type": "raw-image", "src": "Boat Dock/IMG_1586.jpg"},
+      {"type": "raw-image", "src": "Boat Dock/IMG_1600.jpg"}
+    ]
+  },
+  {
+    "slug": "custom-pool-tables",
+    "title": "Custom Pool Tables",
+    "category": "Furniture",
+    "blurb": "Handcrafted, tournament-quality pool tables that act as the perfect centerpiece for game night.",
+    "cover": "Custom Pool Table/Resized_1000014068_733961905721315.jpg",
+    "is_raw_cover": true,
+    "media": [
+      {"type": "raw-image", "src": "Custom Pool Table/Resized_1000014068_733961905721315.jpg"}
+    ]
+  },
+  {
+    "slug": "trex-decks",
+    "title": "Trex Decks",
+    "category": "Decks",
+    "blurb": "Premium composite decking builds delivering lasting beauty and minimal maintenance.",
+    "cover": "Trex Deck/I like.jpg",
+    "media": [
+      {"type": "video", "src": "Trex Deck/I like.mp4", "poster": "Trex Deck/I like.jpg"},
+      {"type": "video", "src": "Trex Deck/IMG_2175.mp4", "poster": "Trex Deck/IMG_2175.jpg"},
+      {"type": "video", "src": "Trex Deck/IMG_2183.mp4", "poster": "Trex Deck/IMG_2183.jpg"},
+      {"type": "raw-image", "src": "Trex Deck/IMG_2628_00.jpg"}
+    ]
+  },
+  {
+    "slug": "custom-furniture",
+    "title": "Custom Furniture",
+    "category": "Furniture",
+    "blurb": "Handcrafted furniture pieces built with precision and matched to your space.",
+    "cover": "Custom Furniture/IMG_1133.jpg",
+    "media": [
+      {"type": "video", "src": "Custom Furniture/IMG_1133.mp4", "poster": "Custom Furniture/IMG_1133.jpg"},
+      {"type": "video", "src": "Custom Furniture/IMG_1134.mp4", "poster": "Custom Furniture/IMG_1134.jpg"},
+      {"type": "raw-image", "src": "Custom Furniture/IMG_1248_00.jpg"},
+      {"type": "raw-image", "src": "Custom Furniture/IMG_1137_00.jpg"},
+      {"type": "raw-image", "src": "Custom Furniture/IMG_1250_00.jpg"},
+      {"type": "raw-image", "src": "Custom Furniture/IMG_1251_00.jpg"},
+      {"type": "raw-image", "src": "Custom Furniture/IMG_1252_00.jpg"}
+    ]
+  },
+  {
+    "slug": "custom-decks",
+    "title": "Custom Decks",
+    "category": "Decks",
+    "blurb": "Custom-built decks designed for relaxing, entertaining, and lakefront living.",
+    "cover": "Deck/My Movie 2.jpg",
+    "media": [
+      {"type": "video", "src": "Deck/My Movie 2.mp4", "poster": "Deck/My Movie 2.jpg"},
+      {"type": "video", "src": "Deck/IMG_1558.mp4", "poster": "Deck/IMG_1558.jpg"}
+    ]
+  }
+]

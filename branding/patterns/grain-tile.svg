@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- Wood-grain tile for CSS background-image, 64x32 seamless. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 32" width="64" height="32">
+  <rect width="64" height="32" fill="#1a120b"/>
+  <g stroke="#d99a4e" stroke-opacity="0.06" stroke-width="1" fill="none">
+    <path d="M 0 4 Q 16 6 32 4 T 64 4"/>
+    <path d="M 0 10 Q 16 8 32 10 T 64 10"/>
+    <path d="M 0 16 Q 16 18 32 16 T 64 16"/>
+    <path d="M 0 22 Q 16 20 32 22 T 64 22"/>
+    <path d="M 0 28 Q 16 30 32 28 T 64 28"/>
+  </g>
+</svg>

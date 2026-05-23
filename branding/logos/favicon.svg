@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- JB Woodworks favicon: JB on black with thin gold underline. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="12" fill="#080808"/>
+  <text x="32" y="40" text-anchor="middle" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="26" font-weight="900" letter-spacing="2">JB</text>
+  <rect x="16" y="46" width="32" height="2" fill="#c9a84c"/>
+</svg>

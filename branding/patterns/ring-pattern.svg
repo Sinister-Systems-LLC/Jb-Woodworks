@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- Annual-ring pattern for hero backdrops. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240">
+  <rect width="240" height="240" fill="#1a120b"/>
+  <g fill="none" stroke="#d99a4e" stroke-opacity="0.10">
+    <circle cx="120" cy="120" r="20"/>
+    <circle cx="120" cy="120" r="38"/>
+    <circle cx="120" cy="120" r="58"/>
+    <circle cx="120" cy="120" r="76"/>
+    <circle cx="120" cy="120" r="94"/>
+    <circle cx="120" cy="120" r="112"/>
+  </g>
+</svg>

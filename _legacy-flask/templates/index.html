@@ -1,0 +1,116 @@
+{# Author: RKOJ-ELENO :: 2026-05-23 #}
+{% extends "base.html" %}
+{% block body_class %}home intro{% endblock %}
+
+{% block content %}
+<section id="hero" aria-label="Introduction">
+  <div class="hero-slider" id="heroSlider" aria-hidden="true">
+    {% for m in hero_media %}
+    <div class="hero-slide{% if loop.first %} active{% endif %}"
+         data-duration="{{ m.duration_ms }}"
+         data-poster="{{ url_for('static', filename='media/' + m.poster) if m.poster else '' }}"
+         {% if m.type == 'image' %}style="background-image: url('{{ url_for('static', filename='media/' + m.src) }}');"{% elif m.poster %}style="background-image: url('{{ url_for('static', filename='media/' + m.poster) }}');"{% endif %}>
+      {% if m.type == 'video' %}
+      <video class="hero-video"
+             loop muted playsinline
+             {% if loop.first %}autoplay preload="auto"{% else %}preload="none"{% endif %}
+             poster="{{ url_for('static', filename='media/' + m.poster) }}"
+             data-src="{{ url_for('static', filename='media/' + m.src) }}">
+        {% if loop.first %}<source src="{{ url_for('static', filename='media/' + m.src) }}" type="video/mp4">{% endif %}
+      </video>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  <div class="hero-overlay" aria-hidden="true"></div>
+
+  <div class="container hero-content">
+    <p class="eyebrow intro-step intro-step-1">ORLANDO, FLORIDA <span class="eyebrow-dot"></span> LICENSED &amp; INSURED</p>
+    <h1 class="hero-headline">
+      <span class="intro-step intro-step-2">Premium Craftsmanship.</span><br>
+      <em class="intro-step intro-step-3">Built to Last.</em>
+    </h1>
+    <p class="hero-subheadline intro-step intro-step-4">{{ site.subtagline }}</p>
+    <div class="hero-cta-group intro-step intro-step-5">
+      <a href="{{ url_for('contact') }}" class="btn btn-primary btn-large">Start Your Project</a>
+      <a href="{{ url_for('portfolio') }}" class="btn btn-ghost btn-large">View Our Work</a>
+    </div>
+  </div>
+  <a href="#services" class="hero-scroll-indicator intro-step intro-step-6" aria-label="Scroll to services">
+    <span class="scroll-label">SCROLL</span>
+    <span class="scroll-line"></span>
+  </a>
+</section>
+
+<section id="services" class="section-method">
+  <div class="container">
+    <span class="section-tag">What We Do</span>
+    <h2 class="section-headline">Our Custom<br><em>Services.</em></h2>
+
+    <div class="services-grid">
+      {% for s in services %}
+      <article class="service-card reveal" data-reveal-delay="{{ loop.index0 * 80 }}">
+        <div class="service-icon">
+          <svg width="28" height="28" aria-hidden="true"><use href="{{ url_for('static', filename='img/icons.svg') }}#i-{{ s.icon }}"/></svg>
+        </div>
+        <h3>{{ s.title }}</h3>
+        <p>{{ s.blurb }}</p>
+        <span class="card-accent" aria-hidden="true"></span>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section id="portfolio-preview" class="section-portfolio">
+  <div class="container">
+    <span class="section-tag">Our Work</span>
+    <h2 class="section-headline">Explore Our<br><em>Signature Projects.</em></h2>
+
+    <div class="portfolio-grid">
+      {% for p in portfolio %}
+      <a href="{{ url_for('portfolio_item', slug=p.slug) }}" class="portfolio-card reveal" data-reveal-delay="{{ loop.index0 * 80 }}">
+        <div class="portfolio-image" style="background-image: url('{{ url_for('static', filename=('img/projects/' if p.is_raw_cover else 'media/') + p.cover) }}');"></div>
+        <div class="portfolio-content">
+          <span class="portfolio-cat">{{ p.category }}</span>
+          <h3>{{ p.title }}</h3>
+          <p class="portfolio-desc">{{ p.blurb }}</p>
+          <span class="portfolio-link">View project
+            <svg aria-hidden="true" width="14" height="14"><use href="{{ url_for('static', filename='img/icons.svg') }}#i-arrow-right"/></svg>
+          </span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+
+    <div class="portfolio-cta">
+      <a href="{{ url_for('portfolio') }}" class="btn btn-primary btn-large">View Full Portfolio</a>
+    </div>
+  </div>
+</section>
+
+<section id="faq-preview" class="section-faq">
+  <div class="container">
+    <span class="section-tag">Questions</span>
+    <h2 class="section-headline">Everything you<br>need to know.</h2>
+    <div class="faq-grid">
+      {% for item in faq %}
+      <article class="faq-card reveal" data-reveal-delay="{{ loop.index0 * 60 }}">
+        <h4 class="faq-q">{{ item.q }}</h4>
+        <p class="faq-a">{{ item.a }}</p>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section id="cta-band" class="section-cta">
+  <div class="container cta-band-inner">
+    <div>
+      <h2>Ready to start?</h2>
+      <p>Free estimates. Licensed and insured. We will get back to you to discuss your vision.</p>
+    </div>
+    <a class="btn btn-primary btn-large" href="{{ url_for('contact') }}">Get a Quote</a>
+  </div>
+</section>
+{% endblock %}

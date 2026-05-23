@@ -1,0 +1,9 @@
+{
+  "prompt": "A lonely macro photograph of a single curled wood shaving lying on a dark-stained shop floor. A faint warm gold rim light catches one edge of the shaving; the rest of the floor falls to pure black. Quiet, contemplative, slightly melancholy. No people. No text. Aspect 16:9, photorealistic. \u2014 premium craftsmanship, hand-finished wood close-up, warm gold accent (#c9a84c) on deep black (#080808) background, soft directional light, photographic realism, no text in image, no emojis, no plastic / faux finishes",
+  "model": "gemini-2.5-flash-image",
+  "created_utc": "2026-05-23T09:35:16Z",
+  "elapsed_seconds": 10.39,
+  "ref_image_count": 0,
+  "image_bytes": 1063001,
+  "text_response_excerpt": null
+}
