@@ -925,21 +925,15 @@ class AgentCard(QFrame):
         self._proc: Optional[QProcess] = None
         self._first_turn = True
         self._glow_effect: Optional[QGraphicsDropShadowEffect] = None
-        # v1.6.84 — subtle breathing glow: ambient drop-shadow whose
-        # alpha gently oscillates 35..90 over 3.6s. Operator: "glowing
-        # animation like the system is breathing. suttle but there".
-        self._breathing_eff = QGraphicsDropShadowEffect(self)
-        self._breathing_eff.setBlurRadius(28)
-        _bc = QColor(PURPLE_ACCENT)
-        _bc.setAlpha(45)
-        self._breathing_eff.setColor(_bc)
-        self._breathing_eff.setOffset(0, 0)
-        self.setGraphicsEffect(self._breathing_eff)
-        self._breathing_phase = 0.0
-        self._breathing_timer = QTimer(self)
-        self._breathing_timer.setInterval(80)  # 12.5Hz
-        self._breathing_timer.timeout.connect(self._tick_breathing)
-        self._breathing_timer.start()
+        # v1.6.86 — REMOVED the v1.6.84 breathing glow. Operator
+        # screenshot showed agents-tab content bleeding through to the
+        # Devices tab — root cause was QGraphicsDropShadowEffect on
+        # AgentCard inside QStackedWidget triggering paint-cache
+        # artifacts that rendered hidden widget content. Going without
+        # the breathing animation; the awaiting-input glow + status-dot
+        # color changes provide enough motion.
+        self._breathing_eff = None
+        self._breathing_timer = None
         self._reply_started = False  # have we emitted the "<< EVE:" prefix?
         self._spinner_idx = 0
         self._thinking_start_ts: float = 0.0
@@ -1320,23 +1314,8 @@ class AgentCard(QFrame):
         self.status_changed.emit(self.session.pane_id, state_str)
 
     def _tick_breathing(self) -> None:
-        """v1.6.84 — subtle ambient breathing on the card. Skip when
-        awaiting-input glow or flash-effect is overriding."""
-        if self.session.status == "awaiting-input":
-            return
-        cur_eff = self.graphicsEffect()
-        if cur_eff is not self._breathing_eff:
-            return  # something else is driving the effect right now
-        import math
-        self._breathing_phase = (self._breathing_phase + 0.08) % (2 * math.pi)
-        # alpha 35..90, slow sine wave
-        alpha = int(62 + 27 * math.sin(self._breathing_phase))
-        c = QColor(PURPLE_ACCENT)
-        c.setAlpha(alpha)
-        try:
-            self._breathing_eff.setColor(c)
-        except Exception:
-            pass
+        """v1.6.86 — kept as no-op stub so v1.6.84 callers don't break."""
+        pass
 
     def _apply_glow(self) -> None:
         if self._glow_effect is None:

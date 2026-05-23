@@ -173,10 +173,12 @@ class _MirrorCard(QFrame):
         # Body — placeholder until scrcpy embeds; then SetParent'd into.
         # v1.6.74 — must be a NATIVE Qt widget (WA_NativeWindow) so it
         # has a real Win32 HWND for SetParent to attach scrcpy to.
-        # v1.6.79 — also opaque-paint + no system-bg so adjacent widgets
-        # don't bleed through the embed (operator screenshot showed the
-        # agents-tab "no saved sessions" text leaking through).
-        self._body_host = QFrame()
+        # v1.6.86 — pass parent=self in constructor (was QFrame() with
+        # no parent → between construction and addWidget, Qt briefly
+        # rendered it as a top-level window using the app name
+        # "Sinister Sanctum" truncated to "Sini..." which operator
+        # screenshot caught as a stray small window).
+        self._body_host = QFrame(self)
         self._body_host.setAttribute(Qt.WidgetAttribute.WA_NativeWindow, True)
         self._body_host.setAttribute(Qt.WidgetAttribute.WA_DontCreateNativeAncestors, True)
         self._body_host.setAttribute(Qt.WidgetAttribute.WA_OpaquePaintEvent, True)
@@ -628,11 +630,40 @@ class DevicesView(QWidget):
         self._refresh_timer.setInterval(4_000)
         self._refresh_timer.timeout.connect(self._refresh)
         self._refresh_timer.start()
-        # v1.6.74 — auto-mirror every connected phone on first build.
-        # 1500ms delay so the widget tree is fully realized + native HWNDs
-        # exist before SetParent runs (without this scrcpy reparents to
-        # an unrealized parent and ends up as a black box).
-        QTimer.singleShot(1500, self._auto_mirror_all)
+        # v1.6.86 — moved auto-mirror trigger from __init__ to showEvent.
+        # Was firing at app startup while Agents tab was current, which
+        # spawned scrcpy HWNDs that bled through to other tabs because
+        # native HWNDs survive QStackedWidget visibility changes.
+
+    def showEvent(self, event) -> None:
+        super().showEvent(event)
+        # Re-show any previously hidden embedded HWNDs
+        self._on_show_again()
+        if not self._auto_mirrored_once:
+            QTimer.singleShot(800, self._auto_mirror_all)
+
+    def hideEvent(self, event) -> None:
+        # v1.6.86 — when Devices tab becomes hidden (operator clicked
+        # Agents in sidebar), also hide every embedded scrcpy HWND so
+        # the native child windows don't render on top of Agents tab.
+        super().hideEvent(event)
+        for card in self._mirror_cards.values():
+            try:
+                hwnd = getattr(card, "_embedded_hwnd", None)
+                if hwnd:
+                    ctypes.windll.user32.ShowWindow(ctypes.c_void_p(hwnd), 0)  # SW_HIDE
+            except Exception:
+                pass
+
+    def _on_show_again(self) -> None:
+        # Re-show all embedded HWNDs when Devices tab becomes visible
+        for card in self._mirror_cards.values():
+            try:
+                hwnd = getattr(card, "_embedded_hwnd", None)
+                if hwnd:
+                    ctypes.windll.user32.ShowWindow(ctypes.c_void_p(hwnd), 5)  # SW_SHOW
+            except Exception:
+                pass
 
     def _build(self) -> None:
         root = QVBoxLayout(self)
