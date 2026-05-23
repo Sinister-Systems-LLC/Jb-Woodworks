@@ -1,0 +1,21 @@
+{
+  "_comment": "Multi-Claude account rotation. operator-edited. NO SECRETS HERE - credentials live at credentials_file path (operator-private, not in repo). RKOJ-ELENO :: 2026-05-23.",
+  "version": 1,
+  "default": "operator",
+  "rotation_strategy": "round-robin",
+  "accounts": [
+    {
+      "name": "operator",
+      "label": "Sinister Sanctum (Zonia)",
+      "env_key": "ANTHROPIC_API_KEY",
+      "credentials_file": "C:\\Users\\Zonia\\.claude\\credentials.operator.json",
+      "plan_tier": "max",
+      "max_sessions_concurrent": 5,
+      "current_sessions": 0,
+      "rate_limited_until_utc": null,
+      "last_429_at_utc": null,
+      "successful_spawns_today": 0,
+      "fleet_share": 1.0
+    }
+  ]
+}

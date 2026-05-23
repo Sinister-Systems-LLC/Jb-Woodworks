@@ -10,6 +10,29 @@ The Sanctum-side mirror of `SESSION-START/02-OPERATOR-QUEUE.md`, with checkboxes
 
 ---
 
+## 2026-05-23 — 🟠 Register `SinisterAccountWatchdog` scheduled task (multi-account rotation Phase 3)
+
+> Author: RKOJ-ELENO :: 2026-05-23
+
+Multi-Claude account rotation Phases 1 + 2 + 3 shipped. The watchdog scheduled task is **NOT** auto-registered (lane discipline — operator owns Task Scheduler). One-time install:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File "D:\Sinister Sanctum\automations\install-account-watchdog-task.ps1"
+```
+
+What it does: registers `SinisterAccountWatchdog` to run every 5 min, hidden, lowest-privilege. The watchdog clears expired `rate_limited_until_utc` markers in `_shared-memory/claude-accounts.json` and auto-resumes the fleet (`Sinister Start.bat --auto-resume`) when all accounts were limited and at least one is back.
+
+**Verify after install:**
+```powershell
+Get-ScheduledTask -TaskName SinisterAccountWatchdog
+Start-ScheduledTask -TaskName SinisterAccountWatchdog   # run once now
+Get-Content "D:\Sinister Sanctum\_shared-memory\account-watchdog.log" -Tail 10
+```
+
+**Smoke-test status (2026-05-23):** watchdog parses clean + runs in 0.82s + positive-path test (artificially expired rate-limit) correctly cleared marker + logged recovery line.
+
+---
+
 ## 2026-05-23 — 🟠 Merge Sinister Vault MCP entry into `~/.claude/.mcp.json` + restart Claude Code
 
 > Author: RKOJ-ELENO :: 2026-05-23
@@ -17,7 +40,7 @@ The Sanctum-side mirror of `SESSION-START/02-OPERATOR-QUEUE.md`, with checkboxes
 EVE brought up the Sinister Vault daemon (port 5078, listening on 127.0.0.1, health PASS). Wire-everything staged the MCP server proposal — operator must merge it into `~/.claude/.mcp.json` by hand (lane discipline: master agent never edits that file).
 
 **Status snapshot (2026-05-23 14:00 local):**
-- Vault daemon: LIVE on http://127.0.0.1:5078 (manually launched via venv python; SinisterVault scheduled task `vault-daemon.bat` is fast-crashing due to `wmic` stamp parsing — needs a fix in a follow-up turn)
+- Vault daemon: LIVE on http://127.0.0.1:5078 (manually launched via venv python; SinisterVault scheduled task `vault-daemon.bat` ✅ FIXED 2026-05-23T14:22Z by rkoj-lane /loop iter 5 — both `wmic os get LocalDateTime` call sites replaced with `powershell.exe Get-Date -Format yyyyMMddHHmmss`. Smoke-verified the shape: 14-digit `LOCAL_DT=20260523142209` → `STAMP=20260523T142209` per-launch log + `LOG_TS=2026-05-23 14:22:09` audit line. Operator: re-enable + start the `SinisterVault` scheduled task; daemon should now boot from logon without the wmic crash.)
 - `/health`, `/quota`, `/audit` (GET + POST): PASS
 - `/list`: ✅ FIXED 2026-05-23T14:18Z by rkoj-lane (/loop iter 4). Added module-level `VAULT_ROOT_RESOLVED = VAULT_ROOT.resolve()` constant; line 507 now uses it instead of the unresolved `VAULT_ROOT`. Live verify: 10 entries returned, paths vault-rooted relative (`'accounts'` etc., not absolute). Junction confirmed `D:\sinister-vault → D:\Sinister Sanctum\_vault`. Restart daemon to pick up the patch.
 - MCP proposal: valid JSON, both `command` (`.venv/Scripts/python.exe`) and `args[0]` (`bots/agents/vault/server.py`) resolve
@@ -76,7 +99,47 @@ After setting: **restart any open EVE sessions** so they see the new env var.
 
 ---
 
-## 2026-05-23 17:00Z — 🔴 JB Woodworks: standalone repo pushed, Railway flip needed (15-min operator task)
+## 2026-05-23 18:25Z — 🟢 JB Woodworks DEPLOYED on Railway, custom domain cert stuck (dashboard click needed)
+
+EVE drove the entire Railway deploy end-to-end after operator spawned the
+interactive `railway login` PS window. **Site is live on the Railway-provided URL**:
+<https://jb-woodworks-web-production.up.railway.app/> — all 16 routes 200,
+Postgres connected, Next.js Ready in 175ms.
+
+**Custom domain `jbwoodworks.co`:**
+- Pulled Vercel project `jbwoodworks` in `text-me` team — 0 env vars to port, just domains
+- Removed `jbwoodworks.co` + `www.jbwoodworks.co` from the Vercel project
+- Updated Vercel-hosted DNS to Railway: apex A → `66.33.22.191`, www CNAME → `5i1gw7un.up.railway.app`
+- www DNS PROPAGATED with `currentValue === requiredValue` (perfect match)
+- **Cert provisioning stuck at `CERTIFICATE_STATUS_TYPE_VALIDATING_OWNERSHIP`** for ~30 min — no error message exposed via API. Tried delete+wait+recreate, set targetPort, redeploy. The dashboard has a "Retry validation" button the API doesn't expose.
+
+### 🟢 30-sec operator action
+
+Open the dashboard, click "Retry" / "Verify" on both domains:
+
+<https://railway.com/project/4b031f94-a9af-46b5-833b-9c2b4e014a2d/service/4ad4b6cb-80df-4ffb-aab6-0eca9bd61608?environmentId=4517aa0c-b7b9-4528-a9de-8c29ec155642>
+
+Settings → Domains tab → click ⟳ next to `jbwoodworks.co` and `www.jbwoodworks.co`.
+Cert should issue in ~30s. Then `curl -sI https://jbwoodworks.co/` returns 200.
+
+### Lower-priority follow-ons (not blocking)
+
+- 🟡 Wire GitHub auto-deploy: Railway → Settings → Source → Connect repo `Sinister-Systems-LLC/Jb-Woodworks`. drew@letstextapp.com needs access (operator can `gh api repos/Sinister-Systems-LLC/Jb-Woodworks/collaborators/<drew-github-username> -X PUT -F permission=read`).
+- 🟡 Re-add MP4 background videos (excluded via `.railwayignore` for the first deploy — Railway upload timed out on 95 MB). Once GitHub-connected deploy is wired, pushed videos auto-deploy.
+- 🟢 T#7 Resend: set `RESEND_API_KEY` on the Railway service when ready.
+- 🟢 Pick canonical domain (apex vs www) + add a redirect for the other.
+
+### Key Railway IDs (for future operator/CLI use)
+
+- Workspace: `0a9ea0a9-32b1-4fde-b700-dad54429b8ab` (z0nian's Projects)
+- Project: `4b031f94-a9af-46b5-833b-9c2b4e014a2d` (Jb-Woodworks)
+- Environment: `4517aa0c-b7b9-4528-a9de-8c29ec155642` (production)
+- Web service: `4ad4b6cb-80df-4ffb-aab6-0eca9bd61608` (jb-woodworks-web)
+- Postgres service: `4951c796-d95c-488f-af94-024c2c47300a` (postgres-ssl:18)
+
+---
+
+## 2026-05-23 17:00Z — JB Woodworks: standalone repo pushed, Railway flip needed (NOW REPLACED BY THE ROW ABOVE)
 
 EVE on JB Woodworks completed every autonomous step toward production. The site
 is **not yet live publicly** — the last leg is a one-time Railway auth + deploy

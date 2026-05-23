@@ -1117,6 +1117,37 @@ function Launch-Session($projRec, $agentName, $accent, $phrase, $modes = $null) 
     # if the source dir is missing/empty (fresh-clone Sanctum bootstrap).
     Ensure-ProjectSource $projRec
 
+    # RKOJ-ELENO :: 2026-05-23 :: multi-Claude account rotation (Phase 1).
+    # Pick an available account from claude-accounts.json; bail if all rate-limited.
+    # Library is dot-sourced lazily so a missing file does not break the launcher.
+    $selectedAccountName = $null
+    $selectedApiKey      = $null
+    try {
+        $acctLib = Join-Path $SanctumRoot 'automations\claude-accounts.ps1'
+        if (Test-Path $acctLib) {
+            . $acctLib
+            $next = Get-NextAvailableAccount
+            if (-not $next) {
+                $waitUntil = Get-WaitUntilAnyAvailable
+                Write-Host "  [WAIT] all Claude accounts rate-limited until $waitUntil; bat will retry." -ForegroundColor $C.Warn
+                Write-Host '  [press Enter to return to picker]' -ForegroundColor $C.Dim
+                Read-Host | Out-Null
+                return
+            }
+            $selectedAccountName = $next.name
+            $selectedApiKey = Get-AccountCredentials -Name $selectedAccountName
+            if (-not $selectedApiKey) {
+                Write-Host "  [info] account '$selectedAccountName' selected (no credentials_file yet - using claude-cli default login)" -ForegroundColor $C.Dim
+            } else {
+                Write-Host "  [info] account '$selectedAccountName' selected (api_key injected via ANTHROPIC_API_KEY)" -ForegroundColor $C.Dim
+            }
+            # Lease the slot BEFORE we spawn so concurrent picker calls do not double-book.
+            $null = Mark-AccountSpawned -Name $selectedAccountName
+        }
+    } catch {
+        Write-Host "  [warn] account rotation init failed ($($_.Exception.Message)); continuing without rotation" -ForegroundColor $C.Dim
+    }
+
     # Color map for terminal (always purple unless overridden)
     $colorMap = @{
         purple  = @{ fg = '#E8D6FF'; bg = '#15131A'; cur = '#A06EFF' }
@@ -1144,6 +1175,14 @@ function Launch-Session($projRec, $agentName, $accent, $phrase, $modes = $null) 
     $bashPhrase = $phrase -replace "'", "'\''"
     $bashAgentName = $agentName -replace "'", "'\''"
     $windowTitle = "Sinister :: $agentName :: $($projRec.display)"
+
+    # RKOJ-ELENO :: 2026-05-23 :: Phase 1/2 — account name resolved earlier (above
+    # the colormap block). $selectedAccountName + $selectedApiKey already set there.
+    # This block just normalizes the name + sets the bash-escaped form.
+    $accountName = if ($selectedAccountName) { $selectedAccountName } elseif ($env:SINISTER_ACCOUNT) { $env:SINISTER_ACCOUNT } else { 'operator' }
+    $bashAccountName = $accountName -replace "'", "'\''"
+    # bash-escape the api_key (may be $null/empty if no credentials file on disk).
+    $bashApiKey = if ($selectedApiKey) { ($selectedApiKey -replace "'", "'\''") } else { '' }
 
     $launchSh = Join-Path $env:TEMP "sinister-launch-$([guid]::NewGuid().ToString().Substring(0,8)).sh"
 
@@ -1173,6 +1212,15 @@ export SINISTER_PROJECT_DISPLAY='$projDisplay'
 export SINISTER_MODE='resume'
 export SINISTER_SWARM_MODE='$swarmEnv'
 export SINISTER_LOOP_MODE='$loopEnv'
+# RKOJ-ELENO :: 2026-05-23 :: Phase 1/2 — multi-account rotation. PS1 resolved the
+# next available account; the .sh uses this name to mark rate-limits + release.
+_account_name='$bashAccountName'
+export SINISTER_ACCOUNT="`$_account_name"
+# Phase 1: inject ANTHROPIC_API_KEY from the account's credentials_file (if present).
+# Empty string means no per-account key on disk - claude-cli falls back to its own login.
+if [ -n '$bashApiKey' ]; then
+    export ANTHROPIC_API_KEY='$bashApiKey'
+fi
 clear 2>/dev/null || printf '\033c'
 printf '\n'
 # Animated jcode-style ASCII C banner (operator 2026-05-23 image #3).
@@ -1181,8 +1229,8 @@ printf '\n'
 # starts immediately and the banner animates in parallel. Skip entirely via
 # SINISTER_SKIP_BANNER=1.
 _sanctum_banner='$bashSanctumRoot/automations/sinister-banner.sh'
-if [ -f "\$_sanctum_banner" ] && [ "\${SINISTER_SKIP_BANNER:-0}" != "1" ]; then
-    ( bash "\$_sanctum_banner" 8 0.07 2>/dev/null & ) >/dev/null 2>&1
+if [ -f "`$_sanctum_banner" ] && [ "`${SINISTER_SKIP_BANNER:-0}" != "1" ]; then
+    ( bash "`$_sanctum_banner" 8 0.07 2>/dev/null & ) >/dev/null 2>&1
 fi
 printf '\n'
 printf '  $pillA $agentName $pillZ  $pillM resume $pillZ  $pillD claude-opus-4-7[1m] $pillZ  $pillG mcp:$mcpCnt $pillZ  $pillB bots:$botCnt $pillZ  $pillR --skip-perms $pillZ\n'
@@ -1192,6 +1240,18 @@ printf '  root:    $bashPath\n'
 printf '\n'
 cd "$bashPath" || { echo '[FAIL] could not cd to project root'; exec bash; }
 claude --dangerously-skip-permissions '$bashPhrase'
+# RKOJ-ELENO :: 2026-05-23 :: detect rate-limit + mark account
+# Claude doesn't always exit non-zero on 429, but writes telltale text to its run log.
+# We grep the recent ~/.claude session log for 429 markers + call back into PS1 library.
+_session_log_dir="`$HOME/.claude/projects"
+if [ -d "`$_session_log_dir" ]; then
+    _recent_log=`$(find "`$_session_log_dir" -name "*.jsonl" -mmin -10 -type f 2>/dev/null | head -1)
+    if [ -n "`$_recent_log" ] && grep -qE 'rate.?limit|429|too many requests|retry.?after' "`$_recent_log" 2>/dev/null; then
+        printf '\n  > [WARN] rate-limit signal detected in session log - marking account "%s" throttled\n' "`$_account_name"
+        # Default 60s retry-after if not parseable. Watchdog handles recovery.
+        powershell -NoProfile -ExecutionPolicy Bypass -File '$SanctumRoot\automations\claude-accounts.ps1' -Action RateLimited -Name "`$_account_name" -RetryAfterSeconds 60 2>/dev/null
+    fi
+fi
 printf '\n  > Claude exited. Writing close-time resume-point...\n'
 powershell -NoProfile -ExecutionPolicy Bypass -File '$SanctumRoot\automations\resume-point-write.ps1' -SanctumRoot '$SanctumRoot' -ProjectKey '$projKey' -AgentName '$bashAgentName' -Mode resume >/dev/null 2>&1
 # RKOJ-ELENO :: 2026-05-23 — auto-push on session end (operator: "every time it
@@ -1199,6 +1259,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File '$SanctumRoot\automations\re
 # connects with leo so we can work as one"). Backgrounded so the session-end
 # UX stays snappy; auto-push.log captures the result.
 ( powershell -NoProfile -ExecutionPolicy Bypass -File '$SanctumRoot\automations\sanctum-auto-push.ps1' >/dev/null 2>&1 & ) >/dev/null 2>&1
+# RKOJ-ELENO :: 2026-05-23 :: Phase 2 — release the account slot so current_sessions decrements
+powershell -NoProfile -ExecutionPolicy Bypass -File '$SanctumRoot\automations\claude-accounts.ps1' -Action Release -Name "`$_account_name" >/dev/null 2>&1
 printf '  > resume-point written + auto-push fired. Dropping into sinister-term (our own shell)...\n\n'
 # M) operator directive 2026-05-23: use OUR own terminal (sinister-term) where possible.
 # sterm = sinister-term entry-point installed via projects/sinister-term/source pip install -e
