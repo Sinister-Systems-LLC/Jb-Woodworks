@@ -118,7 +118,15 @@ SLASH_COMMANDS: list[tuple[str, str]] = [
     ("/diff",     "unified diff between two assistant replies (/diff A B)"),
     ("/export",   "export conversation to a markdown file"),
     ("/export-all","write every live card's transcript to a bundle dir"),
-    ("/fleet",    "per-card table — `/fleet cost|turns|project|...` to sort"),
+    ("/fleet",    "per-card table — `/fleet cost|turns|uptime|project|...` to sort"),
+    ("/font-down","shrink terminal font (this card)"),
+    ("/font-reset","restore default terminal font size"),
+    ("/font-up",  "enlarge terminal font (this card)"),
+    ("/forget-n", "drop user turn #N locally — `/forget-n <N>` (claude server-side keeps it)"),
+    ("/goto-card","focus card by exact pane_id prefix — `/goto-card <prefix>`"),
+    ("/jump",     "scroll terminal cursor to first <pattern> match (no highlight)"),
+    ("/uptime-all","fleet aggregate: total lifetime + turns + cost across all cards"),
+    ("/wrap",     "toggle soft line-wrap in this card's terminal"),
     ("/focus",    "focus the input box"),
     ("/forget-last","drop last user+reply locally (claude server-side still remembers)"),
     ("/expand-all", "expand every collapsed card in the grid"),
@@ -743,8 +751,10 @@ class AgentCard(QFrame):
     summarize_all_requested = pyqtSignal(str)
     # v1.6.66 — /fleet emits (invoker_id, sort_key). sort_key is one of:
     # "" (default: pinned, project, agent), "project", "agent", "mode",
-    # "turns", "cost", "status". v1.6.67 added the sort arg.
+    # "turns", "cost", "status", "uptime". v1.6.67 added the sort arg.
     fleet_table_requested = pyqtSignal(str, str)
+    # v1.6.68 — /uptime-all aggregate.
+    uptime_all_requested = pyqtSignal(str)
 
     # Braille spinner for the "thinking" indicator (jcode-style).
     _SPINNER = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
@@ -807,6 +817,10 @@ class AgentCard(QFrame):
         # v1.6.54 — wall-clock timestamp of last send (turn dispatch) so
         # /uptime can show "last activity 3m ago".
         self._last_send_ts: float | None = None
+        # v1.6.68 — terminal font-size state (/font-up + /font-down +
+        # /font-reset). Tracked on the card so each card can have its
+        # own zoom level (not a global preference).
+        self._terminal_font_size: int = 10  # matches QFont("Cascadia Mono", 10) default
         self._build()
         # v1.6.45 — render any restored tags after build.
         self._rebuild_tags()
@@ -1762,6 +1776,115 @@ class AgentCard(QFrame):
                 f"  This only affects /history + /replay numbering + resume-point JSON.\n"
             )
             return True
+        if head == "/jump":
+            # v1.6.68 — cursor-only navigation: scroll to first <pattern>
+            # match without setting any highlight overlay. Lighter than
+            # /grep when operator just wants to find their place.
+            parts = cmd.split(None, 1)
+            if len(parts) < 2 or not parts[1].strip():
+                self._append_terminal("[/jump] usage: /jump <pattern>\n")
+                return True
+            pattern = parts[1].strip()
+            doc = self.terminal.document()
+            cursor = doc.find(pattern)
+            if cursor.isNull():
+                self._append_terminal(f"[/jump] no match for '{pattern}'\n")
+                return True
+            self.terminal.setTextCursor(cursor)
+            self.terminal.ensureCursorVisible()
+            self._append_terminal(f"[/jump] cursor at first match for '{pattern}'\n")
+            return True
+        if head == "/font-up":
+            self._terminal_font_size = min(36, self._terminal_font_size + 1)
+            f = QFont("Cascadia Mono", self._terminal_font_size)
+            f.setStyleHint(QFont.StyleHint.Monospace)
+            self.terminal.setFont(f)
+            self._append_terminal(f"[/font-up] terminal font: {self._terminal_font_size}pt\n")
+            return True
+        if head == "/font-down":
+            self._terminal_font_size = max(6, self._terminal_font_size - 1)
+            f = QFont("Cascadia Mono", self._terminal_font_size)
+            f.setStyleHint(QFont.StyleHint.Monospace)
+            self.terminal.setFont(f)
+            self._append_terminal(f"[/font-down] terminal font: {self._terminal_font_size}pt\n")
+            return True
+        if head == "/font-reset":
+            self._terminal_font_size = 10
+            f = QFont("Cascadia Mono", 10)
+            f.setStyleHint(QFont.StyleHint.Monospace)
+            self.terminal.setFont(f)
+            self._append_terminal("[/font-reset] terminal font: 10pt\n")
+            return True
+        if head == "/wrap":
+            cur = self.terminal.lineWrapMode()
+            if cur == QPlainTextEdit.LineWrapMode.NoWrap:
+                self.terminal.setLineWrapMode(QPlainTextEdit.LineWrapMode.WidgetWidth)
+                self._append_terminal("[/wrap] soft-wrap ON\n")
+            else:
+                self.terminal.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
+                self._append_terminal("[/wrap] soft-wrap OFF\n")
+            return True
+        if head == "/forget-n":
+            # v1.6.68 — pop a specific user turn (1-indexed). Same
+            # caveat as /forget-last: claude --resume keeps it server-side.
+            parts = cmd.split(None, 1)
+            user_idx_pairs = [
+                (i, t) for i, t in enumerate(self.session.turns)
+                if t.get("user") and t.get("kind") != "note"
+            ]
+            if not user_idx_pairs:
+                self._append_terminal("[/forget-n] no user turns to forget\n")
+                return True
+            if len(parts) < 2:
+                self._append_terminal(
+                    f"[/forget-n] usage: /forget-n <N>  (1..{len(user_idx_pairs)})\n"
+                )
+                return True
+            try:
+                n = int(parts[1].strip())
+            except ValueError:
+                self._append_terminal(f"[/forget-n] N must be an integer\n")
+                return True
+            if n < 1 or n > len(user_idx_pairs):
+                self._append_terminal(
+                    f"[/forget-n] N={n} out of range (1..{len(user_idx_pairs)})\n"
+                )
+                return True
+            real_idx, removed = user_idx_pairs[n - 1]
+            self.session.turns.pop(real_idx)
+            preview = (removed.get("user") or "").rstrip().replace("\n", " ")[:60]
+            try:
+                n_now = len([t for t in self.session.turns if t.get("user")])
+                self._turn_pill.setText(f"{n_now} turn{'s' if n_now != 1 else ''}")
+            except Exception:
+                pass
+            try:
+                self._write_resume_point(save_reason="forget-n")
+            except Exception:
+                pass
+            self._append_terminal(
+                f"[/forget-n] dropped local turn #{n}: '{preview}{'…' if len(preview) >= 60 else ''}'\n"
+                f"  NOTE: claude --resume still has it server-side.\n"
+            )
+            return True
+        if head == "/goto-card":
+            # v1.6.68 — exact pane_id prefix focus (different from /find
+            # which does substring across project+agent+id+tags).
+            parts = cmd.split(None, 1)
+            if len(parts) < 2 or not parts[1].strip():
+                self._append_terminal(
+                    f"[/goto-card] usage: /goto-card <pane_id-prefix>\n"
+                    f"  This card's pane_id: {self.session.pane_id}\n"
+                )
+                return True
+            # Fan via find_requested — _focus_find's haystack already
+            # includes pane_id; substring-match within IDs (which are
+            # 12-char hex) is effectively a prefix match.
+            self.find_requested.emit(self.session.pane_id, parts[1].strip())
+            return True
+        if head == "/uptime-all":
+            self.uptime_all_requested.emit(self.session.pane_id)
+            return True
         if head == "/grep":
             # v1.6.34 — highlight matching text via QTextEdit.ExtraSelection
             # overlay so the document's underlying char formats (markdown
@@ -2294,6 +2417,16 @@ class AgentCard(QFrame):
                 "  $X.XXXX     click → /cost\n"
                 "  ⏱ elapsed   click → /timer\n"
                 "  tag chip    L-click → /find <tag>, R-click → menu\n"
+                "\n"
+                "\n"
+                "[/shortcuts]  v1.6.68 additions:\n"
+                "  /jump <pat>     scroll cursor to first match (no highlight)\n"
+                "  /font-up/-down/-reset   per-card terminal font zoom\n"
+                "  /wrap           toggle soft line-wrap in terminal\n"
+                "  /forget-n N     drop a specific user turn (server-side keeps)\n"
+                "  /goto-card pfx  focus card by pane_id prefix\n"
+                "  /uptime-all     fleet aggregate (lifetime + turns + cost)\n"
+                "  /fleet uptime   sort table by oldest cards first\n"
                 "\n"
                 "[/shortcuts]  see /help for the full slash command list.\n"
             )
@@ -3707,6 +3840,8 @@ class AgentsView(QWidget):
         card.summarize_all_requested.connect(self._summarize_all)
         # v1.6.66 — /fleet table fan-out.
         card.fleet_table_requested.connect(self._print_fleet_table)
+        # v1.6.68 — /uptime-all fan-out.
+        card.uptime_all_requested.connect(self._print_uptime_all)
         self._cards[sess.pane_id] = card
         self._rebuild_folder_chips()
         self._rebuild_grid()
@@ -3846,6 +3981,40 @@ class AgentsView(QWidget):
                 f"  (skipped {skipped_busy} card(s) mid-turn)\n"
             )
 
+    # v1.6.68 — fleet uptime aggregate. Sums lifetime + turns + cost
+    # across every live card. Operator gets workstation-wide totals.
+    def _print_uptime_all(self, invoker_id: str) -> None:
+        invoker = self._cards.get(invoker_id)
+        if invoker is None:
+            return
+        if not self._cards:
+            invoker._append_terminal("[/uptime-all] no cards in the grid\n")
+            return
+        now = time.monotonic()
+        total_lifetime = 0.0
+        total_turns = 0
+        total_cost = 0.0
+        oldest_card = None
+        oldest_age = 0.0
+        for c in self._cards.values():
+            up = now - c._spawn_ts
+            total_lifetime += up
+            total_turns += len([t for t in c.session.turns if t.get("user")])
+            total_cost += c._total_cost_usd
+            if up > oldest_age:
+                oldest_age = up
+                oldest_card = c
+        avg_lifetime = total_lifetime / len(self._cards)
+        oldest_name = (oldest_card.session.agent_name if oldest_card else "?")
+        invoker._append_terminal(
+            f"[/uptime-all] fleet aggregate ({len(self._cards)} card(s)):\n"
+            f"  total lifetime : {AgentCard._fmt_duration(total_lifetime)}\n"
+            f"  avg per card   : {AgentCard._fmt_duration(avg_lifetime)}\n"
+            f"  oldest card    : {oldest_name} ({AgentCard._fmt_duration(oldest_age)})\n"
+            f"  total turns    : {total_turns}\n"
+            f"  total cost     : ${total_cost:.4f}\n"
+        )
+
     # v1.6.66 — per-card table. Columns: project, mode, turns, cost,
     # status, tags. Aligned with `max(len(col))` per-column widths so
     # wide names don't break the layout. Echoes to invoker.
@@ -3860,14 +4029,16 @@ class AgentsView(QWidget):
             return
         # Build row tuples plus a parallel list of typed sort tuples so
         # numeric columns sort numerically.
-        rows: list[tuple[str, str, str, str, str, str, str]] = []
-        numeric_data: list[tuple[int, float]] = []  # parallel (turns_int, cost_float)
+        now = time.monotonic()
+        rows: list[tuple[str, str, str, str, str, str, str, str]] = []
+        numeric_data: list[tuple[int, float, float]] = []  # (turns, cost, uptime_sec)
         cards_in_order = list(self._cards.values())
         for c in cards_in_order:
             sess = c.session
             n_turns = len([t for t in sess.turns if t.get("user")])
             cost = c._total_cost_usd
             pin = "★" if sess.pinned else " "
+            up_sec = now - c._spawn_ts
             rows.append((
                 pin,
                 sess.project_display or sess.project_key or "?",
@@ -3876,11 +4047,11 @@ class AgentsView(QWidget):
                 str(n_turns),
                 f"${cost:.4f}",
                 sess.status or "?",
+                AgentCard._fmt_duration(up_sec),  # v1.6.68 uptime col
             ))
-            numeric_data.append((n_turns, cost))
-        # Sorting. zip rows + numeric so columns stay aligned.
+            numeric_data.append((n_turns, cost, up_sec))
         paired = list(zip(rows, numeric_data))
-        valid_keys = {"", "project", "agent", "mode", "turns", "cost", "status"}
+        valid_keys = {"", "project", "agent", "mode", "turns", "cost", "status", "uptime"}
         if sort_key not in valid_keys:
             invoker._append_terminal(
                 f"[/fleet] unknown sort '{sort_key}' — using default. "
@@ -3901,21 +4072,22 @@ class AgentsView(QWidget):
             paired.sort(key=lambda p: p[1][1], reverse=True)
         elif sort_key == "status":
             paired.sort(key=lambda p: p[0][6].lower())
+        elif sort_key == "uptime":
+            paired.sort(key=lambda p: p[1][2], reverse=True)
         rows = [p[0] for p in paired]
-        # Pre-pend a header row + ruler.
-        header = ("", "PROJECT", "AGENT", "MODE", "TURNS", "COST", "STATUS")
+        # Pre-pend a header row + ruler. 8 cols incl. UPTIME (v1.6.68).
+        header = ("", "PROJECT", "AGENT", "MODE", "TURNS", "COST", "STATUS", "UPTIME")
         all_rows = [header] + rows
-        widths = [max(len(r[i]) for r in all_rows) for i in range(7)]
+        widths = [max(len(r[i]) for r in all_rows) for i in range(8)]
         sort_note = f" sorted by {sort_key}" if sort_key else ""
         invoker._append_terminal(
             f"[/fleet] {len(rows)} card(s){sort_note}:\n"
         )
-        # Print rows; loop twice so the ruler sits under the header.
         for i, r in enumerate(all_rows):
-            line = "  " + "  ".join(r[k].ljust(widths[k]) for k in range(7))
+            line = "  " + "  ".join(r[k].ljust(widths[k]) for k in range(8))
             invoker._append_terminal(line.rstrip() + "\n")
             if i == 0:
-                ruler = "  " + "  ".join("-" * widths[k] for k in range(7))
+                ruler = "  " + "  ".join("-" * widths[k] for k in range(8))
                 invoker._append_terminal(ruler + "\n")
         # Optional tags footer (full width — tags often span multi-line)
         any_tags = any(c.session.tags for c in self._cards.values())

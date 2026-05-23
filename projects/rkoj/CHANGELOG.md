@@ -4,6 +4,49 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not command-versions (each lane has its own).
 
+## v1.6.68 — 2026-05-22 — feature batch + test harness
+
+**Operator escalated "add every single feature we talked about and
+test them" — shipping the queued backlog in one big push plus a
+22-assertion test suite.**
+
+8 new slash commands (52 → 60):
+
+- **`/jump <pattern>`** — scroll terminal cursor to first match
+  (lighter than /grep — no highlight overlay).
+- **`/font-up`**, **`/font-down`**, **`/font-reset`** — per-card
+  terminal font zoom (bounded 6..36pt; default 10pt).
+- **`/wrap`** — toggle soft line-wrap in terminal.
+- **`/forget-n <N>`** — drop user turn #N from local
+  `session.turns` (1-indexed; same server-side caveat as /forget-last).
+- **`/goto-card <prefix>`** — focus card by exact pane_id prefix
+  (different from /find which substring-matches across project + agent + id + tags).
+- **`/uptime-all`** — fleet aggregate: total lifetime + avg per card +
+  oldest card + total turns + total cost.
+- **`/fleet uptime`** sort key + new UPTIME column in the /fleet
+  table.
+
+Test harness:
+
+- New `tests/test_agents_tab.py` (22 assertions, all pass) covers:
+  - SLASH_COMMANDS uniqueness + minimum-count gate + leading-slash
+    + non-empty descriptions
+  - `_fmt_duration` boundaries (None, negative, seconds, minutes, hours)
+  - `_tag_colors` stability + reserved-color mapping
+    (blocked=red, wip=yellow, done=green)
+  - `AgentSession` dataclass required fields (incl. `tags`, `input_draft`)
+  - All 13 AgentCard signals (closed, status_changed, pin_changed,
+    broadcast_requested, minimize_all_requested, expand_all_requested,
+    clone_requested, find_requested, tags_census_requested,
+    export_all_requested, summarize_all_requested, fleet_table_requested,
+    uptime_all_requested)
+  - `_SUMMARIZE_PROMPT` 4-section template
+  - Version matches `__init__.py`
+- Run via: `cd projects/rkoj && python -m unittest tests.test_agents_tab -v`
+
+`/shortcuts` updated with a v1.6.68 additions block.
+MANIFEST.json 1.6.67 → 1.6.68. `__init__.py __version__ = "1.6.68"`.
+
 ## v1.6.67 — 2026-05-22
 
 **Sortable `/fleet` — `/fleet cost`, `/fleet turns`, `/fleet project|agent|mode|status`.**
