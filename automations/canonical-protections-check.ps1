@@ -132,6 +132,65 @@ if ($p8Missing -and $p8Missing.Count -gt 0) {
     }
 }
 
+# P9 -- hook commands in any .claude/settings*.json must not cd to non-existent paths.
+# Origin: operator 2026-05-23 evening — Sinister Panel Stop hook tried to
+# `cd C:/Users/Zonia/Desktop/Sinister-Panel` which was migrated to D:; agent
+# saw a popup "Stop hook error: cd ... No such file" every turn (autonomy bleed).
+$script:p9Broken = @()
+Test-Protection -Id 'P9' -Description 'No .claude/settings*.json hook command cds to a missing path' -Check {
+    $hookFiles = @()
+    $hookFiles += Get-ChildItem -Path $SanctumRoot -Recurse -File -Filter 'settings*.json' -ErrorAction SilentlyContinue |
+        Where-Object {
+            $_.FullName -like '*\.claude\*' -and
+            $_.FullName -notlike '*\node_modules\*' -and
+            $_.FullName -notlike '*\worktrees\*' -and
+            $_.FullName -notlike '*\external-imports\*'
+        }
+    foreach ($f in $hookFiles) {
+        try {
+            $cfg = Get-Content $f.FullName -Raw -Encoding UTF8 | ConvertFrom-Json
+            if (-not $cfg.hooks) { continue }
+            foreach ($prop in $cfg.hooks.PSObject.Properties) {
+                $event = $prop.Name
+                foreach ($entry in @($prop.Value)) {
+                    foreach ($h in @($entry.hooks)) {
+                        $cmd = [string]$h.command
+                        if (-not $cmd) { continue }
+                        # Extract any quoted path that follows `cd ` or `Set-Location ` and check existence.
+                        $patterns = @(
+                            'cd\s+"([^"]+)"',
+                            'cd\s+''([^'']+)''',
+                            'Set-Location\s+"([^"]+)"',
+                            'Set-Location\s+''([^'']+)'''
+                        )
+                        foreach ($pat in $patterns) {
+                            foreach ($m in [regex]::Matches($cmd, $pat)) {
+                                $p = $m.Groups[1].Value
+                                # Skip env-var-only paths (resolved at runtime).
+                                if ($p -match '^\$\{?\w+\}?$' -or $p -match '^%\w+%$') { continue }
+                                # Expand simple env vars before testing.
+                                $expanded = [Environment]::ExpandEnvironmentVariables($p)
+                                $expanded = $expanded -replace '\$\{?CLAUDE_PROJECT_DIR\}?', (Split-Path $f.FullName -Parent | Split-Path -Parent)
+                                if (-not (Test-Path $expanded)) {
+                                    $script:p9Broken += "$($f.FullName) :: $event -> $p"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch { }
+    }
+    return ($script:p9Broken.Count -eq 0)
+} | Out-Null
+
+if ($p9Broken -and $p9Broken.Count -gt 0) {
+    Add-Content -Path $ViolationsLog -Value "  P9 broken hook paths:" -Encoding UTF8 -ErrorAction SilentlyContinue
+    foreach ($b in $p9Broken) {
+        Add-Content -Path $ViolationsLog -Value "    - $b" -Encoding UTF8 -ErrorAction SilentlyContinue
+    }
+}
+
 # Report
 $ts = (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ')
 $fails = $results | Where-Object { -not $_.ok }

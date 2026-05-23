@@ -70,6 +70,23 @@ Six protections that future EVE sessions MUST preserve (auto-verified by `automa
 5. CLAUDE.md cold-start MUST reference `D:\Sinister\Sinister Skills\09_REFERENCE\SANDBOX-GOTCHAS.md` (sandbox green paths).
 6. Brain entries `sanctioned-bypasses-doctrine-2026-05-21.md` + `do-not-revert-operator-canonical-protections-2026-05-23.md` must remain in `_shared-memory/knowledge/` and be indexed in `_INDEX.md`.
 
+## Operator hard-canonical 2026-05-23 — SINISTER GENERATOR AVAILABLE FLEET-WIDE (conservative balance)
+
+Operator (verbatim 2026-05-23): *"add to the start that all agents can use sinister geneartor if needed. just be conservative on the balance"*.
+
+**Binding for every spawned EVE session.** Sinister Generator (the fleet-wide image-gen project at `projects/sinister-generator/`, wrapper at `tools/nano-banana/nano_banana/api.py`) is available to every lane that needs imagery — banners, social cards, brand visuals, mockups, doctrine illustrations, anything an LLM-driven design call can produce. No per-lane gate; no operator-handoff needed for routine generation.
+
+**Conservative balance rules** (Gemini 2.5 Flash Image is paid, ~$0.039/image):
+
+1. **Pull from cache first** — `projects/sinister-generator/outputs/` already has banner/social variants. Look before generating.
+2. **One variant per concept first** — generate v1, evaluate, iterate ONLY if the brief is unmet. Don't fan-out 5 variants on speculation.
+3. **Cap per-task spend** — ≤ 6 images per lane per task without surfacing to operator. Past 6, drop a row in `OPERATOR-ACTION-QUEUE.md` summarizing the spend before continuing.
+4. **Re-use brand-locks** — Showmasters / JB Woodworks / JKOR have brand-lock helpers; use them, don't reroll the brand from prose every call.
+5. **Skip generation when text suffices** — diagrams, ASCII art, or markdown tables often replace a generated image at zero cost.
+6. **Log every generation** in the per-lane PROGRESS file (count + estimated $ spend) so operator can see the burn-rate per session.
+
+Green path: `from nano_banana.api import generate, brand_lock_showmasters, brand_lock_jb_woodworks, brand_lock_jkor` → call with brief + reference image where relevant → outputs land in `projects/sinister-generator/outputs/<lane>/<ts>-<slug>.png`. The wrapper is the policy-enforcement layer; agents call it directly, no MCP plumbing required.
+
 ## What Sanctum is
 
 The operator's full workstation, not just an orchestration repo. Read **`SANCTUM.md`** for the workstation-level overview, then **`README.md`** for the public-facing one-pager.

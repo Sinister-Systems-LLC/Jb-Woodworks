@@ -4,6 +4,34 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-23 11:45 — RESUME audit turn — forward-plan section-C items 4 + 5 closed read-only
+
+EVE on Sanctum. Cold-start resume picked up from `_shared-memory/resume-points/Sinister Sanctum/2026-05-23T092837Z.json` (focus: anti-revert + freeze restore + forward-plan). Working tree was on `agent/sinister-generator/source-package-2026-05-23` (sibling generator agent's branch) — sanctum lane stayed read-only this turn to avoid cross-lane git contention.
+
+**Audit deliverables (forward-plan section-C, ordered):**
+
+- Item 4 (audit `_archive/` for disk-integrity): CLEAN. `_archive/` contains only `automations/`, `d-sinister-01_projects-pointers-2026-05-21/`, and `recovery-2026-05-21/` — no archived *project* folders. Sinister Freeze was already restored 2026-05-23 evening; nothing else to sweep. All 20 entries in `projects.json` resolve to existing roots. Matches canonical-protections-check.ps1 P8 PASS.
+
+- Item 5 (jcode memory system review — forge-memory-bridge session-start integration): `forge-memory-bridge` v0.1.2 healthy + pip-editable-installed from canonical `D:\Sinister Sanctum\tools\forge-memory-bridge`. **No SessionStart hook auto-injects memory** — and that's the correct design. The `forge-memory-usage-2026-05-23` brain entry is doctrine, validated: pull-not-push. Agents call `from forge_memory_bridge import recall; recall("topic")` when they need it. An auto-injector would slow spawn time, pollute context with content the agent didn't ask for, and violate the existing design. **Conclusion: no change needed; library is correctly wired, doctrine already covers the green path.** Only SessionStart hook on either user or Sanctum-project settings is `canonical-protections-check.ps1` (purposeful).
+
+- Protections gate: `canonical-protections-check.ps1` smoke-test PASS=8 FAIL=0 across P1-P8 — bypassPermissions allowlist, understand-anything plugin (user + Sanctum project), CLAUDE.md cold-start steps 0/2/3, brain entries indexed, 00-RULES.md Rule 11, and project-root disk-integrity.
+
+- Inbox sweep: 1 [INFO] from kernel-apk re. CLAUDE.md regressing to 6-step cold-start — already resolved (current CLAUDE.md is 7-step with the "DO NOT REVERT" block intact; P3 + P5 + P6 all PASS). No reply required per `reply_required: false`.
+
+**Files touched this turn:**
+- EDIT: `_shared-memory/heartbeats/sanctum.json` (refresh with audit findings)
+- EDIT: `_shared-memory/PROGRESS/Sinister Sanctum.md` (this entry)
+- READ-ONLY: `tools/forge-memory-bridge/forge_memory_bridge/__init__.py`, `automations/canonical-protections-check.ps1`, `~/.claude/settings.json`, `.claude/settings.json`, `automations/session-templates/projects.json`, `_archive/`, inbox
+
+**Deferred (next sanctum-branch turn, requires commits):**
+- Section C item 2 — Grant-Claude-Autonomy.ps1 expansion to 7-step
+- Section C item 3 — Sinister Start.bat first-run autonomy detection
+- Section C item 6 — context-cleaner spec draft
+
+Resume-point write next via `automations/resume-point-write.ps1 -ProjectKey sanctum -AgentName sanctum -Mode resume`.
+
+---
+
 ## 2026-05-23 06:30 — launcher live-bugfix turn — 5 surgical edits land Auto-Resume + Rename/Color + multi-spawn parity
 
 EVE on Sanctum (anti-revert-doctrine-2026-05-23 branch but live tree showed peer had switched to `agent/rkoj/next-slate-2026-05-23` — coordinated via inbox/sanctum/peer/, kept editing on the current tree). Operator dropped 4 live messages this turn:

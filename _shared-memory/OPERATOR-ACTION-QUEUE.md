@@ -10,6 +10,28 @@ The Sanctum-side mirror of `SESSION-START/02-OPERATOR-QUEUE.md`, with checkboxes
 
 ---
 
+## 2026-05-23 11:45Z — Sanctum "complete + expand everything" master plan + items 2+3 verified shipped
+
+EVE on Sanctum cut `agent/sinister-sanctum/grant-autonomy-followup-2026-05-23` from current HEAD (`8c57e8c`), smoke-tested the v2 9-step Grant Claude Autonomy script (PASS), synced the Sanctum mirror of Sinister Start.bat (v4 → v5), and shipped the master plan at `_shared-memory/plans/sanctum-complete-and-expand-2026-05-23T1145Z/master-plan.md` (14-page complete + expand roadmap covering 10 completion rows + 14 expansion rows + 7 operator-gated rows + sequencing + reversibility ledger + success metrics).
+
+**Prior forward-plan items 2 + 3 confirmed shipped:**
+
+- [x] ✅ ~~**Forward-plan item 2 — Grant-Claude-Autonomy.ps1 expansion to 9-step**~~ — verified shipped in commit `73c628b` (anti-revert + autonomy doctrine commit). Smoke-test via `grant-claude-autonomy.ps1 -ReadOnly` 2026-05-23T11:45Z: PASS on all 9 steps (Project trust / Env vars / Secrets / MCP / Tasks / Permissions / Protections / Hook / Plugin). 5/5 scheduled tasks installed; 213 allow + 12 deny in settings; 8/8 canonical protections PASS.
+- [x] ✅ ~~**Forward-plan item 3 — Sinister Start.bat first-run autonomy detection**~~ — verified shipped in Desktop `Sinister Start.bat` v3 (lines 47-59 marker check + lines 99-116 `--setup-autonomy` re-run flag). Sanctum mirror at `tools/session-launcher/Sinister Start.bat` was at v4 (silent-close bug); synced to v5 this turn (Desktop canonical).
+
+**Open follow-ons from master plan Section B (master-actionable, no operator gate):**
+
+- [ ] 🟠 **B.6 Ship `bot-fleet-quick-reference.md`** — single highest-leverage next move. ~30-60% token reduction per Sanctum-master session. Per-bot 5-column ref + CLAUDE.md pointer + launcher Build-Phrase one-sentence injection.
+- [ ] 🟡 **B.7 Flip jcode-feature-matrix row 16 Swarm-mode to `✅ shipped`** — sinister-swarm v0.1.0 pip-editable confirmed 187 pytest-green.
+- [ ] 🟡 **B.4 Cross-lane PROGRESS-log audit** — drop one [INFO] inbox into each low-adoption lane (Panel / APK / RKOJ / RKOJ-workstation) pointing at B.6 quick-ref.
+- [ ] 🟢 **B.3 OPERATOR-ACTION-QUEUE stale-row sweep** — close rows referencing already-shipped fixes + operator-set env vars now set.
+- [ ] 🟢 **B.5 Clarify ruflo + vault MCP registration status** — grant-autonomy step 4 reports `[WARN]` for both, but both surfaces functional via deferred-tool path. Either add via `claude mcp add` (operator-gated O3 + O4 in master plan) or update script to recognize the alt path.
+- [ ] 🟢 **B.9 Context-cleaner spec draft** — define algorithm for `automations/context-pruner.ps1` v2.
+
+The full master plan also names 14 expansion rows (Section C) + 7 operator-gated rows (Section D) with one-liners + sequencing. See plan for details.
+
+---
+
 ## 2026-05-23 evening — MCP server failure fix shipped (operator screenshot "1 MCP server failed")
 
 - [ ] 🔴 **Restart Claude Code to load the MCP fix shipped 2026-05-23 evening** — `~/.claude/.mcp.json` had 2 failing servers (not 1): `sinister-apk` (package empty on disk - REMOVED) + `translator` (.venv missing `mcp` package - switched to bare `python`). Server count now 22 (was 23). MCPs load on cold-start only, so every spawned EVE needs Claude Code restarted to pick up the fix. Brain entry: `_shared-memory/knowledge/mcp-server-failure-fix-2026-05-23.md`.

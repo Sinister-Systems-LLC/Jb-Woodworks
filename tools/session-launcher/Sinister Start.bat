@@ -1,16 +1,18 @@
 @echo off
-REM Sinister Start :: direct Sanctum session boot (v4 :: 2026-05-23 — RKOJ-ELENO)
+REM Sinister Start :: direct Sanctum session boot (v5 :: 2026-05-23 — RKOJ-ELENO)
 REM
-REM v4 changes (operator 2026-05-23):
-REM   - Prefer EVE.exe (thin jcode-speed picker) if built. Falls back to PS1
-REM     automatically when EVE.exe is missing (no regression). Probes:
-REM       1) %~dp0EVE.exe                              (Desktop, easiest)
-REM       2) %SANCTUM_ROOT%\automations\eve-launcher\dist\EVE.exe (build output)
-REM       3) %LOCALAPPDATA%\Sinister\EVE.exe           (per-user install)
-REM     Build with: %SANCTUM_ROOT%\automations\eve-launcher\build-eve-exe.bat
+REM v5 changes (operator 2026-05-23 — "bat file closes when i open it"):
+REM   - REMOVED wt.exe redirect (was silently failing on some WT installs ->
+REM     bat appeared to close instantly with no diagnostic). Operator can
+REM     still launch from inside Windows Terminal manually; bat now always
+REM     runs in whatever cmd window opened it.
+REM   - ADDED step-by-step echoes so operator sees what's running.
+REM   - ADDED pause at end of main path so any error stays visible.
+REM   - Set SINISTER_USE_WT=1 in env to re-enable the wt.exe redirect.
 REM
+REM v4 (2026-05-23): EVE.exe probe + PS1 fallback.
 REM v3 (2026-05-23 evening): First-run autonomy bootstrap via marker file.
-REM v2 (2026-05-21): direct boot, no menu. SANCTUM CORE animation handled by PS1.
+REM v2 (2026-05-21): direct boot, no menu.
 REM v1 (pre-2026-05-21): 1/2/3/4/5 picker — removed per operator ask.
 
 TITLE Sinister Sanctum :: Session Online
@@ -21,21 +23,26 @@ if /I "%~1"=="--setup-autonomy" goto :run_autonomy
 if /I "%~1"=="-setup-autonomy"  goto :run_autonomy
 if /I "%~1"=="/setup-autonomy"  goto :run_autonomy
 
-REM Prefer Windows Terminal (frameless-ish + better Unicode) if available + not already inside one.
-if not defined WT_SESSION (
-    where wt.exe >nul 2>&1
-    if not errorlevel 1 (
-        start "" wt.exe new-tab --title "Sinister Sanctum" cmd.exe /K "\"%~f0\" %*"
-        exit /b 0
+REM ----- Optional wt.exe redirect (off by default after v4 silent-close bug) -----
+if defined SINISTER_USE_WT (
+    if not defined WT_SESSION (
+        where wt.exe >nul 2>&1
+        if not errorlevel 1 (
+            start "" wt.exe new-tab --title "Sinister Sanctum" cmd.exe /K "\"%~f0\" %*"
+            exit /b 0
+        )
     )
 )
 
+echo  [start] Sinister Sanctum session launcher v5
+echo  [start] locating Sanctum root...
 set "SANCTUM_ROOT="
 call :tryroot "%SINISTER_SANCTUM_ROOT%"
 if not defined SANCTUM_ROOT call :tryroot "D:\Sinister Sanctum"
 if not defined SANCTUM_ROOT call :tryroot "C:\Sinister Sanctum"
 if not defined SANCTUM_ROOT call :tryroot "%USERPROFILE%\Sinister Sanctum"
 if not defined SANCTUM_ROOT goto :no_sanctum
+echo  [ok]    Sanctum root: %SANCTUM_ROOT%
 
 REM ----- First-run autonomy bootstrap (silent skip if marker present) -----
 if not exist "%USERPROFILE%\.sanctum-autonomy-granted" (
@@ -66,13 +73,28 @@ if not defined EVE_EXE if exist "%SANCTUM_ROOT%\automations\eve-launcher\dist\EV
 if not defined EVE_EXE if exist "%LOCALAPPDATA%\Sinister\EVE.exe" set "EVE_EXE=%LOCALAPPDATA%\Sinister\EVE.exe"
 
 if defined EVE_EXE (
+    echo  [ok]    launching EVE.exe: %EVE_EXE%
     "%EVE_EXE%"
-    exit /b %ERRORLEVEL%
+    set "LAUNCH_RC=%ERRORLEVEL%"
+    echo.
+    echo  [done]  EVE.exe exited with code %LAUNCH_RC%
+    pause
+    exit /b %LAUNCH_RC%
 )
 
 REM ----- Fallback: PS1 launcher (no regression if EVE.exe not built yet) -----
+echo  [ok]    EVE.exe not built; launching PS1 picker
+echo  [hint]  build EVE.exe: %SANCTUM_ROOT%\automations\eve-launcher\build-eve-exe.bat
+echo.
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%SANCTUM_ROOT%\automations\start-sinister-session.ps1"
-exit /b %ERRORLEVEL%
+set "LAUNCH_RC=%ERRORLEVEL%"
+echo.
+echo  [done]  PS1 launcher exited with code %LAUNCH_RC%
+if not "%LAUNCH_RC%"=="0" (
+    echo  [warn]  non-zero exit; pausing so you can read the error above.
+    pause
+)
+exit /b %LAUNCH_RC%
 
 :run_autonomy
 set "SANCTUM_ROOT="
