@@ -633,6 +633,27 @@ def _tag_colors(tag: str) -> tuple[str, str, str]:
     return _TAG_PALETTE[h % len(_TAG_PALETTE)]
 
 
+class _ClickPill(QLabel):
+    """v1.6.63 — generic clickable header pill. Left-click fires a slash
+    command on the parent AgentCard via _maybe_intercept so existing
+    intercept logic + history feedback + heartbeat / cost updates run
+    uniformly. Used for turn-count (→ /history) + cost (→ /cost) pills."""
+
+    def __init__(self, text: str, card: "AgentCard", *, intercept: str) -> None:
+        super().__init__(text)
+        self._card = card
+        self._intercept = intercept
+        self.setCursor(Qt.CursorShape.PointingHandCursor)
+
+    def mousePressEvent(self, ev) -> None:  # type: ignore[override]
+        if ev.button() == Qt.MouseButton.LeftButton:
+            try:
+                self._card._maybe_intercept(self._intercept)
+            except Exception:
+                pass
+        super().mousePressEvent(ev)
+
+
 class _TagChip(QLabel):
     """v1.6.52 — clickable tag chip in the card header. Clicking emits
     `find_requested` on the parent AgentCard with this chip's text, so
@@ -851,16 +872,19 @@ class AgentCard(QFrame):
         mode_pill.setObjectName("ModePill")
 
         # v1.6.9 — turn counter pill (updates after each /send completes)
-        self._turn_pill = QLabel("0 turns")
+        # v1.6.63 — clickable: fires /history. Wrap in _ClickPill.
+        self._turn_pill = _ClickPill("0 turns", self, intercept="/history")
         self._turn_pill.setObjectName("ModePill")
         self._turn_pill.setStyleSheet(
             f"color: {MUTED_FG}; background-color: transparent; "
             f"border: 1px solid {BORDER}; border-radius: 10px; "
             f"padding: 2px 9px; font-size: 10px; font-weight: 600;"
         )
+        self._turn_pill.setToolTip("Click → /history")
 
         # v1.6.12 — cumulative cost pill (updates after each turn's result event)
-        self._cost_pill = QLabel("$0.0000")
+        # v1.6.63 — clickable: fires /cost.
+        self._cost_pill = _ClickPill("$0.0000", self, intercept="/cost")
         self._cost_pill.setObjectName("ModePill")
         self._cost_pill.setStyleSheet(
             f"color: {PURPLE_PRIMARY}; background-color: transparent; "
@@ -870,7 +894,7 @@ class AgentCard(QFrame):
         )
         self._cost_pill.setToolTip(
             "Cumulative claude API cost across all turns in this card. "
-            "Type /cost in the chat for the full breakdown."
+            "Click for full breakdown (same as /cost)."
         )
 
         # v1.6.39 — live elapsed-time pill. Only visible during in-flight
@@ -2222,19 +2246,25 @@ class AgentCard(QFrame):
             return True
         if head == "/shortcuts":
             # v1.6.48 — operator-facing keyboard + click cheat sheet.
+            # v1.6.62 added Up/Down history recall.
+            # v1.6.63 added clickable pills (turn → /history, cost → /cost).
             self._append_terminal(
                 "[/shortcuts]  keyboard:\n"
-                "  Ctrl+L     clear this card's terminal (jcode parity)\n"
-                "  Ctrl+M     collapse / expand this card\n"
-                "  F3         scroll to next /grep match\n"
-                "  Shift+F3   scroll to previous /grep match\n"
-                "  Esc        cancel the in-flight turn (same as /cancel)\n"
+                "  Ctrl+L      clear this card's terminal (jcode parity)\n"
+                "  Ctrl+M      collapse / expand this card\n"
+                "  F3          scroll to next /grep match\n"
+                "  Shift+F3    scroll to previous /grep match\n"
+                "  Esc         cancel the in-flight turn (same as /cancel)\n"
                 "  Shift+Enter newline in input (Enter alone sends)\n"
+                "  Up / Down   recall prior user turns in input (when empty)\n"
                 "\n"
                 "[/shortcuts]  card header click affordances:\n"
-                "  ☆ / ★      pin/unpin (pinned cards float to top of grid)\n"
-                "  ▾ / ▸      collapse / expand chevron (same as Ctrl+M)\n"
-                "  ✕          close this card (autosaves resume-point first)\n"
+                "  ☆ / ★       pin/unpin (pinned cards float to top of grid)\n"
+                "  ▾ / ▸       collapse / expand chevron (same as Ctrl+M)\n"
+                "  ✕           close this card (autosaves resume-point first)\n"
+                "  N turns     click → /history\n"
+                "  $X.XXXX     click → /cost\n"
+                "  tag chip    L-click → /find <tag>, R-click → menu\n"
                 "\n"
                 "[/shortcuts]  see /help for the full slash command list.\n"
             )

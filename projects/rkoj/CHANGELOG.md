@@ -4,6 +4,27 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not command-versions (each lane has its own).
 
+## v1.6.63 — 2026-05-22
+
+**Clickable header pills + /shortcuts updated. Turn-count pill click
+→ /history; cost pill click → /cost. Operator can grok card state
+without typing anything.**
+
+- New generic `_ClickPill(QLabel)` class taking an `intercept` slash
+  command string. Left-click fires `card._maybe_intercept(intercept)`
+  so the existing handler logic runs unchanged.
+- Turn-count pill (was QLabel) → `_ClickPill("0 turns", self, intercept="/history")`.
+- Cost pill (was QLabel) → `_ClickPill("$0.0000", self, intercept="/cost")`.
+- Both gain PointingHandCursor + descriptive tooltip.
+- Extends v1.6.52 tag-chip click pattern to header pills.
+- `/shortcuts` updated to mention:
+  - Up/Down history recall (v1.6.62)
+  - N turns pill click → /history
+  - $X.XXXX pill click → /cost
+  - tag chip L-click + R-click affordances
+- MANIFEST.json 1.6.62 → 1.6.63.
+- `__init__.py __version__ = "1.6.63"`.
+
 ## v1.6.62 — 2026-05-22
 
 **Up/Down arrow history recall in input — standard bash/zsh terminal
