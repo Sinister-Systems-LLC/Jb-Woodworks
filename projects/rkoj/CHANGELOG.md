@@ -4,6 +4,36 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not command-versions (each lane has its own).
 
+## v1.6.66 — 2026-05-22
+
+**`/fleet` — per-card table with project / mode / turns / cost /
+status. Completes the introspection trio: /stats (aggregate),
+/tags (by-tag), /fleet (by-card).**
+
+- New `fleet_table_requested(invoker_id)` signal on AgentCard.
+- AgentsView slot `_print_fleet_table` walks `_cards.values()`,
+  builds 7-column tuples (pin / project / agent / mode / turns /
+  cost / status), sorts pinned-first then by project then by agent,
+  computes `max(len)` widths per column, emits a header + ruler +
+  rows + optional tag footer for cards with tags.
+- Output example:
+  ```
+  [/fleet] 4 card(s):
+       PROJECT          AGENT      MODE          TURNS  COST     STATUS
+       ---------------  ---------  ------------  -----  -------  ------
+    ★  Sinister Panel   panel      claude-opus   17     $1.4231  online
+       Sinister Snap    snap-emu   claude        4      $0.0823  busy
+       Sinister Snap    snap-2     claude        2      $0.0411  online
+       Sinister TikTok  tt-1       claude-haiku  9      $0.0117  online
+    ─── tags ───
+    snap-emu: wip
+    tt-1: review
+  ```
+- Echoes to invoker (same "stay in typing context" pattern).
+- 52 slash commands now (added /fleet).
+- MANIFEST.json 1.6.65 → 1.6.66.
+- `__init__.py __version__ = "1.6.66"`.
+
 ## v1.6.65 — 2026-05-22
 
 **Status dot click → /persona, mode pill click → /model. Header

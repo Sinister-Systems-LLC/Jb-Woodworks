@@ -118,6 +118,7 @@ SLASH_COMMANDS: list[tuple[str, str]] = [
     ("/diff",     "unified diff between two assistant replies (/diff A B)"),
     ("/export",   "export conversation to a markdown file"),
     ("/export-all","write every live card's transcript to a bundle dir"),
+    ("/fleet",    "per-card table (project / mode / turns / cost / status / tags)"),
     ("/focus",    "focus the input box"),
     ("/forget-last","drop last user+reply locally (claude server-side still remembers)"),
     ("/expand-all", "expand every collapsed card in the grid"),
@@ -740,6 +741,9 @@ class AgentCard(QFrame):
     # v1.6.60 — /summarize-all emits invoker pane_id; AgentsView stages
     # the canned TL;DR prompt into every non-empty card + fires _on_send.
     summarize_all_requested = pyqtSignal(str)
+    # v1.6.66 — /fleet emits invoker pane_id; AgentsView prints a
+    # per-card table (project, mode, turns, cost, status, tags).
+    fleet_table_requested = pyqtSignal(str)
 
     # Braille spinner for the "thinking" indicator (jcode-style).
     _SPINNER = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
@@ -1987,6 +1991,10 @@ class AgentCard(QFrame):
             # v1.6.55 — fan-out to AgentsView which exports every card
             # into one timestamped bundle dir + echoes a summary back.
             self.export_all_requested.emit(self.session.pane_id)
+            return True
+        if head == "/fleet":
+            # v1.6.66 — per-card table fan-out to AgentsView.
+            self.fleet_table_requested.emit(self.session.pane_id)
             return True
         if head == "/history":
             n = len(self.session.turns)
@@ -3693,6 +3701,8 @@ class AgentsView(QWidget):
         card.export_all_requested.connect(self._export_all_transcripts)
         # v1.6.60 — /summarize-all fans the canned TL;DR ask to every card.
         card.summarize_all_requested.connect(self._summarize_all)
+        # v1.6.66 — /fleet table fan-out.
+        card.fleet_table_requested.connect(self._print_fleet_table)
         self._cards[sess.pane_id] = card
         self._rebuild_folder_chips()
         self._rebuild_grid()
@@ -3831,6 +3841,59 @@ class AgentsView(QWidget):
             invoker._append_terminal(
                 f"  (skipped {skipped_busy} card(s) mid-turn)\n"
             )
+
+    # v1.6.66 — per-card table. Columns: project, mode, turns, cost,
+    # status, tags. Aligned with `max(len(col))` per-column widths so
+    # wide names don't break the layout. Echoes to invoker.
+    def _print_fleet_table(self, invoker_id: str) -> None:
+        invoker = self._cards.get(invoker_id)
+        if invoker is None:
+            return
+        if not self._cards:
+            invoker._append_terminal("[/fleet] no cards in the grid\n")
+            return
+        rows: list[tuple[str, str, str, str, str, str, str]] = []
+        for c in self._cards.values():
+            sess = c.session
+            n_turns = len([t for t in sess.turns if t.get("user")])
+            cost = f"${c._total_cost_usd:.4f}"
+            tags = ",".join(sess.tags) if sess.tags else "-"
+            pin = "★" if sess.pinned else " "
+            rows.append((
+                pin,
+                sess.project_display or sess.project_key or "?",
+                sess.agent_name or sess.pane_id[:8],
+                sess.mode or "?",
+                str(n_turns),
+                cost,
+                sess.status or "?",
+            ))
+        # Sort: pinned first, then by project then by agent_name.
+        rows.sort(key=lambda r: (r[0] != "★", r[1].lower(), r[2].lower()))
+        # Pre-pend a header row + ruler.
+        header = ("", "PROJECT", "AGENT", "MODE", "TURNS", "COST", "STATUS")
+        all_rows = [header] + rows
+        widths = [max(len(r[i]) for r in all_rows) for i in range(7)]
+        invoker._append_terminal(
+            f"[/fleet] {len(rows)} card(s):\n"
+        )
+        # Print rows; loop twice so the ruler sits under the header.
+        for i, r in enumerate(all_rows):
+            line = "  " + "  ".join(r[k].ljust(widths[k]) for k in range(7))
+            invoker._append_terminal(line.rstrip() + "\n")
+            if i == 0:
+                ruler = "  " + "  ".join("-" * widths[k] for k in range(7))
+                invoker._append_terminal(ruler + "\n")
+        # Optional tags footer (full width — tags often span multi-line)
+        any_tags = any(c.session.tags for c in self._cards.values())
+        if any_tags:
+            invoker._append_terminal("  ─── tags ───\n")
+            for c in self._cards.values():
+                if c.session.tags:
+                    label = c.session.agent_name or c.session.pane_id[:8]
+                    invoker._append_terminal(
+                        f"  {label}: " + ", ".join(c.session.tags) + "\n"
+                    )
 
     # v1.6.55 — fleet-wide /export. Writes every card's transcript into
     # a single timestamped bundle dir + echoes summary to invoker. Skips
