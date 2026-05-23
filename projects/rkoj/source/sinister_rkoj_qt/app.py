@@ -117,8 +117,32 @@ class _StatusBar(QFrame):
         row.addWidget(self._uptime_lbl)
         row.addStretch(1)
 
+        # v1.6.82 — API status pill (clickable: opens API health URL)
+        try:
+            from . import api_server, __version__ as _ver
+            api_st = api_server.api_status()
+            api_text = (
+                f"api: {api_st['url']}" if api_st["running"]
+                else "api: offline"
+            )
+        except Exception:
+            api_text = "api: ?"
+            _ver = "?"
+        self._api_lbl = QLabel(api_text)
+        self._api_lbl.setStyleSheet(
+            f"color: {SUCCESS if 'offline' not in api_text else MUTED_FG}; "
+            f"background: transparent; font-family: 'JetBrains Mono', monospace; "
+            f"font-size: 10px; font-weight: 600;"
+        )
+        self._api_lbl.setToolTip(
+            "Workstation API: agents POST here to claim phones, run shell, screencap.\n"
+            "Try: curl http://127.0.0.1:5077/api/health"
+        )
+        row.addWidget(self._api_lbl)
+        row.addWidget(self._make_sep())
+
         # Right side: branch label
-        self._branch_lbl = QLabel("EVE on Sanctum · v1.6.5")
+        self._branch_lbl = QLabel(f"EVE on Sanctum · v{_ver}")
         self._branch_lbl.setStyleSheet(
             f"color: {PURPLE_PRIMARY}; background: transparent; "
             f"font-size: 11px; font-weight: 600;"
@@ -202,6 +226,14 @@ class SinisterWindow(QMainWindow):
         # window close via destroyed-signal hook.
         self._agent_windows: dict[str, AgentWindow] = {}
         self._build()
+        # v1.6.82 — boot the workstation API server (127.0.0.1:5077) so
+        # spawned agents can claim phones / run adb commands / query
+        # status without going through brittle shell pipelines.
+        try:
+            from . import api_server
+            api_server.start_api_server()
+        except Exception:
+            pass
         self._wire()
 
     def _center_on_screen(self) -> None:

@@ -31,39 +31,29 @@ $onefile = Join-Path $DistDir 'RKOJ.exe'
 $folder  = Join-Path $DistDir 'RKOJ'
 $folderExe = Join-Path $folder 'RKOJ.exe'
 
+# v1.6.82 — operator directive: ONLY ONE RKOJ entry on Desktop.
+# Always nuke any stray RKOJ.lnk before shipping (we don't create one
+# anymore — the EXE alone is the operator's entry point).
+$strayLnk = Join-Path $DesktopDir 'RKOJ.lnk'
+if (Test-Path $strayLnk) {
+    Remove-Item -LiteralPath $strayLnk -Force -ErrorAction SilentlyContinue
+    Write-Host "[ship-rkoj-qt] removed stray RKOJ.lnk"
+}
+
 if (Test-Path $onefile) {
     Write-Host "[ship-rkoj-qt] onefile build detected: $onefile" -ForegroundColor Cyan
     $destExe = Join-Path $DesktopDir 'RKOJ.exe'
     Copy-Item -LiteralPath $onefile -Destination $destExe -Force
     Write-Host "[ship-rkoj-qt] copied -> $destExe"
-    # Update RKOJ.lnk to point at the Desktop EXE
-    $ws = New-Object -ComObject WScript.Shell
-    $sc = $ws.CreateShortcut((Join-Path $DesktopDir 'RKOJ.lnk'))
-    $sc.TargetPath = $destExe
-    $sc.WorkingDirectory = $DesktopDir
-    $sc.Description = 'Sinister Sanctum :: RKOJ native PyQt6 desktop UI'
-    $sc.IconLocation = "$destExe,0"
-    $sc.Save()
-    Write-Host "[ship-rkoj-qt] RKOJ.lnk -> $destExe"
 } elseif (Test-Path $folderExe) {
     Write-Host "[ship-rkoj-qt] folder build detected: $folderExe" -ForegroundColor Cyan
     $destFolder = Join-Path $DesktopDir 'RKOJ'
-    # Wipe existing destination if any (it's our own ship target)
     if (Test-Path $destFolder) {
         Write-Host "[ship-rkoj-qt] removing existing $destFolder ..."
         Remove-Item -LiteralPath $destFolder -Recurse -Force
     }
     Copy-Item -LiteralPath $folder -Destination $destFolder -Recurse -Force
     Write-Host "[ship-rkoj-qt] copied folder -> $destFolder"
-    # Update RKOJ.lnk to point at the Desktop folder's EXE
-    $ws = New-Object -ComObject WScript.Shell
-    $sc = $ws.CreateShortcut((Join-Path $DesktopDir 'RKOJ.lnk'))
-    $sc.TargetPath = (Join-Path $destFolder 'RKOJ.exe')
-    $sc.WorkingDirectory = $destFolder
-    $sc.Description = 'Sinister Sanctum :: RKOJ native PyQt6 desktop UI'
-    $sc.IconLocation = "$(Join-Path $destFolder 'RKOJ.exe'),0"
-    $sc.Save()
-    Write-Host "[ship-rkoj-qt] RKOJ.lnk -> $(Join-Path $destFolder 'RKOJ.exe')"
 } else {
     Write-Host "[ship-rkoj-qt] ERROR: neither onefile nor folder build found in $DistDir" -ForegroundColor Red
     Get-ChildItem $DistDir | Format-Table Name, Mode -AutoSize
@@ -71,4 +61,4 @@ if (Test-Path $onefile) {
 }
 
 Write-Host ""
-Write-Host "[ship-rkoj-qt] SHIPPED. Operator double-clicks Desktop/RKOJ.lnk or Desktop/RKOJ.exe." -ForegroundColor Green
+Write-Host "[ship-rkoj-qt] SHIPPED. Operator double-clicks Desktop/RKOJ.exe (only one entry, no shortcut)." -ForegroundColor Green

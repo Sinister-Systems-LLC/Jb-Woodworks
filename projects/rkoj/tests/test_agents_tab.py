@@ -365,6 +365,26 @@ class TestPlanModeV176(unittest.TestCase):
         self.assertTrue(hasattr(devices_tab.DevicesView, "_auto_mirror_all_retry"))
 
 
+class TestApiServerV182(unittest.TestCase):
+    """v1.6.82 — workstation API surface tests (don't actually start
+    the server, just verify module imports + endpoint surface)."""
+
+    def test_api_server_imports(self) -> None:
+        from sinister_rkoj_qt import api_server
+        self.assertTrue(hasattr(api_server, "start_api_server"))
+        self.assertTrue(hasattr(api_server, "stop_api_server"))
+        self.assertTrue(hasattr(api_server, "api_status"))
+        self.assertEqual(api_server.API_PORT, 5077)
+        self.assertEqual(api_server.API_HOST, "127.0.0.1")
+
+    def test_api_status_when_stopped(self) -> None:
+        from sinister_rkoj_qt import api_server
+        # If not started, running=False; doesn't crash
+        st = api_server.api_status()
+        self.assertIn("running", st)
+        self.assertIn("url", st)
+
+
 class TestPhoneClaimsV180(unittest.TestCase):
     """v1.6.80 — per-phone agent claim system (no cross-phone leaks)."""
 
@@ -447,7 +467,7 @@ class TestTokenBudget(unittest.TestCase):
 
 class TestModuleSurface(unittest.TestCase):
     def test_version_matches(self) -> None:
-        self.assertEqual(sinister_rkoj_qt.__version__, "1.6.81")
+        self.assertEqual(sinister_rkoj_qt.__version__, "1.6.82")
 
     def test_classes_present(self) -> None:
         for name in (
