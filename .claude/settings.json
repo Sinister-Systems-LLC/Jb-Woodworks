@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"D:\\Sinister Sanctum\\automations\\canonical-protections-check.ps1\" -Quiet"
+            "command": "powershell.exe -WindowStyle Hidden -NoProfile -ExecutionPolicy Bypass -File \"D:\\Sinister Sanctum\\automations\\canonical-protections-check.ps1\" -Quiet"
           }
         ]
       }

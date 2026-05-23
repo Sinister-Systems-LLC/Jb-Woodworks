@@ -10,6 +10,35 @@ The Sanctum-side mirror of `SESSION-START/02-OPERATOR-QUEUE.md`, with checkboxes
 
 ---
 
+## 2026-05-23 12:30Z — autonomy stack: P9 hook-path + Sinister Generator + swarm/loop opt-in + headless cmd windows
+
+EVE on Sanctum addressed the operator's 4-message stack on `agent/sinister-sanctum/grant-autonomy-followup-2026-05-23`. Smoke tests: canonical-protections-check `PASS=9 FAIL=0`, launcher PS-AST parse-validated, hidden-spawn parse-validated + round-tripped.
+
+**Shipped this turn:**
+
+- [x] ✅ **P9 hook-path check** in `canonical-protections-check.ps1` — scans every `.claude/settings*.json` recursively for hook commands that `cd` to non-existent paths. Caught the Sinister Panel Stop hook firing `cd C:/Users/Zonia/Desktop/Sinister-Panel` (folder gone). Hook fixed to use `$CLAUDE_PROJECT_DIR` + `git push origin HEAD` (per-agent branch, not main).
+- [x] ✅ **Sinister Generator fleet-wide section** in CLAUDE.md — all lanes may invoke `nano_banana.api.generate` + brand-locks with 6 conservative rules (cache-first, one variant then iterate, ≤6 per task, reuse brand-locks, skip when text suffices, log spend).
+- [x] ✅ **Swarm/loop opt-in at agent spawn** — `Prompt-AgentModes` runs before every Launch-Session (5 call sites wired). Compact `s`/`l`/`b`/Enter prompt with `!` suffix to lock for the session. Exports `SINISTER_SWARM_MODE` + `SINISTER_LOOP_MODE` env vars + extends Build-Phrase with explicit swarm/loop instructions to the child.
+- [x] ✅ **Headless-spawn feature** — `automations/hidden-spawn.ps1` (PowerShell file / cmdline / Python module via `pythonw.exe`). Sanctum SessionStart hook migrated to `-WindowStyle Hidden`. Brain doctrine `headless-spawn-pattern-2026-05-23` indexed.
+
+**Open follow-ons:**
+
+- [ ] 🟢 **Test-drive the swarm/loop prompt** — double-click `Sinister Start.bat`, pick a project; expect the new "Modes (jcode-parity autonomy)" prompt. `s`=swarm, `l`=loop, `b`=both, Enter=neither, `b!`=both+lock.
+- [ ] 🟢 **Verify hooks no longer flash a window** — restart Claude Code; SessionStart should run silently. Capture follow-up if any flash remains.
+- [ ] 🟡 **Migrate per-project hook surfaces to hidden-spawn.ps1** — any per-lane `.claude/settings*.json` hooks that still call `powershell.exe` without `-WindowStyle Hidden`. Helper + doctrine now available; per-lane work.
+
+**jcode terminal lightness audit (Explore agent recommendations):**
+
+Found jcode at `C:/Users/Zonia/Desktop/Github Research/jcode-0.12.3/` — Rust workspace, `ratatui`, single-binary, **48 ms boot** (vs our PS1 ~800-1200 ms, vs Claude Code 3512 ms). 5 ranked recommendations:
+
+- [ ] 🟢 **R4 (ship immediately, R0, 8 hrs)** — switch PS1 launcher to EVE.exe default dispatch. Saves ~700ms. Build once via `automations/eve-launcher/build-eve-exe.bat`; Sinister Start.bat v5 already probes EVE.exe paths.
+- [ ] 🟢 **R5 (R0, 12 hrs)** — profile EVE.exe boot; target <150 ms.
+- [ ] 🟡 **R3 (R1, 20 hrs)** — lazy-load Textual widgets in Sinister Forge hot path. -15% boot.
+- [ ] 🟡 **R2 (R1, 40 hrs)** — shared-GPU host pattern for sterm. -60% RAM for 10-session fleet.
+- [ ] 🔴 **R1 (R2, 60 hrs)** — Rust port of Forge TUI. Operator-gated 30-day Rust toolchain wait.
+
+---
+
 ## 2026-05-23 11:45Z — Sanctum "complete + expand everything" master plan + items 2+3 verified shipped
 
 EVE on Sanctum cut `agent/sinister-sanctum/grant-autonomy-followup-2026-05-23` from current HEAD (`8c57e8c`), smoke-tested the v2 9-step Grant Claude Autonomy script (PASS), synced the Sanctum mirror of Sinister Start.bat (v4 → v5), and shipped the master plan at `_shared-memory/plans/sanctum-complete-and-expand-2026-05-23T1145Z/master-plan.md` (14-page complete + expand roadmap covering 10 completion rows + 14 expansion rows + 7 operator-gated rows + sequencing + reversibility ledger + success metrics).
