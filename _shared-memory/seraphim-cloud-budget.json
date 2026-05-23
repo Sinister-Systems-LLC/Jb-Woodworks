@@ -1,0 +1,8 @@
+{
+  "schema": "sinister-seraphim.cloud-budget.v1",
+  "total_seconds": 120.0,
+  "used_seconds": 5.905999999988126,
+  "reserve_seconds": 10.0,
+  "last_update_utc": "2026-05-23T14:01:59Z",
+  "note": "Operator hard-canonical 2026-05-23: \"we only have 120 seconds on the license key\". Reset only via reset_budget(...) with explicit operator confirmation."
+}
