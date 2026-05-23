@@ -1233,7 +1233,7 @@ if [ -f "`$_sanctum_banner" ] && [ "`${SINISTER_SKIP_BANNER:-0}" != "1" ]; then
     ( bash "`$_sanctum_banner" 8 0.07 2>/dev/null & ) >/dev/null 2>&1
 fi
 printf '\n'
-printf '  $pillA $agentName $pillZ  $pillM resume $pillZ  $pillD claude-opus-4-7[1m] $pillZ  $pillG mcp:$mcpCnt $pillZ  $pillB bots:$botCnt $pillZ  $pillR --skip-perms $pillZ\n'
+printf '  $pillA $agentName $pillZ  $pillM resume $pillZ  $pillD claude-opus-4-7[1m] $pillZ  $pillG mcp:$mcpCnt $pillZ  $pillB bots:$botCnt $pillZ  $pillR --skip-perms $pillZ  $pillB acct:$selectedAccountName $pillZ\n'
 printf '\n'
 printf '  project: $projDisplay\n'
 printf '  root:    $bashPath\n'
