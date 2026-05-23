@@ -103,8 +103,9 @@ INFO_BLUE = INFO
 BLACK = "#000000"
 
 # ── Sizes — Panel layout.tsx + sidebar.tsx + tab-header.tsx ─────────────
-SIDEBAR_WIDTH = 240        # Panel `SIDEBAR_WIDTH = 240`
+SIDEBAR_WIDTH = 280        # v1.6.84 — bigger per operator (was 240)
 HEADER_HEIGHT = 96         # Panel `HEADER_HEIGHT = 96`
+SIDEBAR_BANNER_HEIGHT = 160  # v1.6.84 — was HEADER_HEIGHT (96); banner now stands alone so logo is visible
 OUTER_PADDING = 8          # Panel layout.tsx `p-2`
 # v1.6.72 — operator wants sidebar + main connected (no gap of disconnect).
 OUTER_GAP = 0
@@ -187,12 +188,12 @@ def build_qss() -> str:
         uppercase tracking-[.12em] border-b border-[#1c1c1e]` */
     QLabel#SidebarSection {{
         color: {MUTED_FG};
-        font-size: 12px;
-        font-weight: 600;
-        letter-spacing: 1.4px;
-        padding: 12px 12px 8px 12px;
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 1.8px;
+        padding: 16px 14px 10px 14px;
         border-bottom: 1px solid {ELEVATED};
-        margin: 0 0 4px 0;
+        margin: 0 0 6px 0;
     }}
 
     /* Nav item — Panel:
@@ -352,10 +353,11 @@ def build_qss() -> str:
         border: 1px solid {PURPLE_PRIMARY};
     }}
 
-    /* ── Agent cards (niri scroll grid) ──────────────────────────────── */
+    /* ── Agent cards — v1.6.84 transparent jcode-style (see dashboard
+       through them) + breathing glow handled per-card in Python ────── */
     QFrame#AgentCard {{
-        background-color: {ELEVATED};
-        border: 1px solid {BORDER};
+        background-color: rgba(28,28,30,0.78);
+        border: 1px solid rgba(191,90,242,0.35);
         border-radius: 14px;
     }}
     QFrame#AgentCard[needs_input="true"] {{

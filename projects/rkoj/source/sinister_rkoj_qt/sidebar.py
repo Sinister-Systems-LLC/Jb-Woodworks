@@ -43,7 +43,7 @@ except Exception:  # pragma: no cover
 
 from .theme import (
     FG, HEADER_HEIGHT, LEFT_SPINE_WIDTH, MUTED_FG, PURPLE_PRIMARY,
-    SIDEBAR_WIDTH, asset_path, nav_icon,
+    SIDEBAR_BANNER_HEIGHT, SIDEBAR_WIDTH, asset_path, nav_icon,
 )
 
 
@@ -81,17 +81,15 @@ class _NavRow(QPushButton):
 
     def _build(self, label: str, icon_name: str) -> None:
         row = QHBoxLayout(self)
-        row.setContentsMargins(12, 10, 12, 10)
-        row.setSpacing(12)
+        row.setContentsMargins(14, 14, 14, 14)   # v1.6.84 — bigger touch target
+        row.setSpacing(14)
         if _HAS_SVG:
-            row.addWidget(nav_icon(icon_name, size=18))
+            row.addWidget(nav_icon(icon_name, size=22))   # v1.6.84 — was 18
         self._label_widget = QLabel(label)
-        # v1.6.71 — explicit MUTED_FG color (was `color: inherit` which
-        # Qt's QSS doesn't honor → labels rendered invisible against the
-        # dark sidebar background). Swapped on active state via set_active.
+        # v1.6.84 — explicit MUTED_FG + bumped font-size to 18 per operator.
         self._label_widget.setStyleSheet(
             f"color: {MUTED_FG}; background: transparent; "
-            f"font-size: 14px; font-weight: 500;"
+            f"font-size: 18px; font-weight: 500;"
         )
         row.addWidget(self._label_widget, stretch=1)
         # v1.6.22 — optional count badge (hidden by default). Set via
@@ -110,16 +108,16 @@ class _NavRow(QPushButton):
 
     def set_active(self, active: bool) -> None:
         """v1.6.71 — swap label color so the row's text is visible in
-        both states. Inactive = muted gray; active = purple bold."""
+        both states. v1.6.84 — bumped font-size 14→18 per operator."""
         if active:
             self._label_widget.setStyleSheet(
                 f"color: {PURPLE_PRIMARY}; background: transparent; "
-                f"font-size: 14px; font-weight: 700;"
+                f"font-size: 18px; font-weight: 700;"
             )
         else:
             self._label_widget.setStyleSheet(
                 f"color: {MUTED_FG}; background: transparent; "
-                f"font-size: 14px; font-weight: 500;"
+                f"font-size: 18px; font-weight: 500;"
             )
 
     def set_badge(self, text: str | None) -> None:
@@ -206,26 +204,25 @@ class Sidebar(QWidget):
         col_layout.setContentsMargins(0, 0, 0, 0)
         col_layout.setSpacing(0)
 
-        # Banner block — 96px tall (HEADER_HEIGHT match).
+        # Banner block — v1.6.84: 160px tall (operator: "make logo bigger,
+        # I can't see it"). Banner.png fills the full width, mascot SVG
+        # is bumped 64→112 if banner.png missing.
         banner = QFrame(col)
         banner.setObjectName("BannerFrame")
-        banner.setFixedHeight(HEADER_HEIGHT)
+        banner.setFixedHeight(SIDEBAR_BANNER_HEIGHT)
         banner_layout = QVBoxLayout(banner)
         banner_layout.setContentsMargins(0, 0, 0, 0)
         banner_layout.setSpacing(0)
         banner_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        # Prefer banner.png if shipped; else center the mascot SVG.
         if _HAS_SVG and _BANNER_PNG.exists():
-            # banner.png landed — render as full-width via QLabel + QPixmap
-            # (kept inside QSvgWidget-aware code path for symmetry).
             from PyQt6.QtGui import QPixmap
             from PyQt6.QtCore import QSize
             pm = QPixmap(str(_BANNER_PNG))
             if not pm.isNull():
                 lbl = QLabel(banner)
                 lbl.setPixmap(pm.scaled(
-                    QSize(SIDEBAR_WIDTH - LEFT_SPINE_WIDTH, HEADER_HEIGHT),
+                    QSize(SIDEBAR_WIDTH - LEFT_SPINE_WIDTH, SIDEBAR_BANNER_HEIGHT),
                     Qt.AspectRatioMode.KeepAspectRatioByExpanding,
                     Qt.TransformationMode.SmoothTransformation,
                 ))
@@ -234,7 +231,7 @@ class Sidebar(QWidget):
                 banner_layout.addWidget(lbl)
         elif _HAS_SVG and _MASCOT_SVG.exists():
             svg = QSvgWidget(str(_MASCOT_SVG))
-            svg.setFixedSize(64, 64)
+            svg.setFixedSize(112, 112)   # v1.6.84 — bigger fallback mascot
             banner_layout.addWidget(svg, alignment=Qt.AlignmentFlag.AlignCenter)
 
         col_layout.addWidget(banner)

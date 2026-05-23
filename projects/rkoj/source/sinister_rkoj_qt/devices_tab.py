@@ -68,6 +68,14 @@ _ADB = _find_adb()
 _CREATE_NO_WINDOW = 0x08000000
 _DETACHED = getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0)
 
+# v1.6.84 — per-phone log directory. scrcpy stderr writes here, agent
+# shell calls via the API log here, so operator can tail or grep.
+_LOG_DIR = state.SHARED_MEMORY / "rkoj-qt" / "phone-logs"
+try:
+    _LOG_DIR.mkdir(parents=True, exist_ok=True)
+except Exception:
+    pass
+
 
 _STATE_COLOR: dict[str, str] = {
     "device": SUCCESS,

@@ -218,9 +218,15 @@ class SinisterWindow(QMainWindow):
             Qt.WindowType.FramelessWindowHint | Qt.WindowType.Window
         )
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, False)
-        self.setMinimumSize(1100, 720)
+        self.setMinimumSize(800, 500)   # v1.6.84 — operator wants resizable
         self.resize(1440, 920)
         self._center_on_screen()
+        self.setMouseTracking(True)
+        # v1.6.84 — edge-drag resize state for the frameless window
+        self._resize_edge: str | None = None
+        self._resize_origin = None
+        self._resize_geom = None
+        self._EDGE = 6  # px hit area
         # Track every spawned agent window so they don't get garbage-collected
         # the moment the dialog returns. Keyed by pane_id; auto-cleaned on
         # window close via destroyed-signal hook.
@@ -433,6 +439,80 @@ class SinisterWindow(QMainWindow):
             pass
         event.accept()
         super().closeEvent(event)
+
+    # ── v1.6.84 frameless window edge-drag resize ─────────────────────
+    def _edge_at(self, pos) -> str | None:
+        E = self._EDGE
+        w, h = self.width(), self.height()
+        x, y = pos.x(), pos.y()
+        left, right = x <= E, x >= w - E
+        top, bottom = y <= E, y >= h - E
+        if top and left: return "tl"
+        if top and right: return "tr"
+        if bottom and left: return "bl"
+        if bottom and right: return "br"
+        if left: return "l"
+        if right: return "r"
+        if top: return "t"
+        if bottom: return "b"
+        return None
+
+    def _cursor_for_edge(self, edge: str | None):
+        from PyQt6.QtCore import Qt as _Qt
+        if edge in ("l", "r"): return _Qt.CursorShape.SizeHorCursor
+        if edge in ("t", "b"): return _Qt.CursorShape.SizeVerCursor
+        if edge in ("tl", "br"): return _Qt.CursorShape.SizeFDiagCursor
+        if edge in ("tr", "bl"): return _Qt.CursorShape.SizeBDiagCursor
+        return _Qt.CursorShape.ArrowCursor
+
+    def mousePressEvent(self, ev) -> None:
+        if ev.button() == Qt.MouseButton.LeftButton:
+            edge = self._edge_at(ev.position().toPoint())
+            if edge:
+                self._resize_edge = edge
+                self._resize_origin = ev.globalPosition().toPoint()
+                self._resize_geom = self.geometry()
+                ev.accept()
+                return
+        super().mousePressEvent(ev)
+
+    def mouseMoveEvent(self, ev) -> None:
+        if self._resize_edge and (ev.buttons() & Qt.MouseButton.LeftButton):
+            delta = ev.globalPosition().toPoint() - self._resize_origin
+            g = self._resize_geom
+            x, y, w, h = g.x(), g.y(), g.width(), g.height()
+            mw, mh = self.minimumWidth(), self.minimumHeight()
+            e = self._resize_edge
+            if "l" in e:
+                nx = x + delta.x()
+                nw = max(mw, w - delta.x())
+                if nw > mw:
+                    x, w = nx, nw
+            if "r" in e:
+                w = max(mw, w + delta.x())
+            if "t" in e:
+                ny = y + delta.y()
+                nh = max(mh, h - delta.y())
+                if nh > mh:
+                    y, h = ny, nh
+            if "b" in e:
+                h = max(mh, h + delta.y())
+            self.setGeometry(x, y, w, h)
+            ev.accept()
+            return
+        # Update cursor based on edge proximity
+        edge = self._edge_at(ev.position().toPoint())
+        self.setCursor(self._cursor_for_edge(edge))
+        super().mouseMoveEvent(ev)
+
+    def mouseReleaseEvent(self, ev) -> None:
+        if self._resize_edge:
+            self._resize_edge = None
+            self._resize_origin = None
+            self._resize_geom = None
+            ev.accept()
+            return
+        super().mouseReleaseEvent(ev)
 
 
 # Backward-compat alias
