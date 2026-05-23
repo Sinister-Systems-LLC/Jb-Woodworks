@@ -95,29 +95,50 @@ function Pick-RandomArt {
     }
 }
 
+# Quick-win caches (operator 2026-05-23: "terminals keep getting held up and freeze; make
+# sure we are as efficent as we can be like how jcode works"). Both counts re-read
+# JSON / glob on every Draw-Banner call (~50-200ms each on warm cache, more on cold).
+# Cache for 30s; banner redraws within a single picker loop pay zero re-read cost.
+$script:_mcpCache = @{ ts = [DateTime]::MinValue; count = 0 }
+$script:_botCache = @{ ts = [DateTime]::MinValue; count = 0 }
+
 function Get-MCPCount {
+    if (([DateTime]::UtcNow - $script:_mcpCache.ts).TotalSeconds -lt 30) {
+        return $script:_mcpCache.count
+    }
     # MCP servers live in ~/.claude/.mcp.json (read-only here; operator-owned).
     $mcpPaths = @(
         (Join-Path $env:USERPROFILE '.claude\.mcp.json'),
         (Join-Path $env:USERPROFILE '.claude.json')
     )
+    $n = 0
     foreach ($p in $mcpPaths) {
         if (-not (Test-Path $p)) { continue }
         try {
             $c = Get-Content -Path $p -Raw -Encoding UTF8 | ConvertFrom-Json
             if ($c.mcpServers) {
                 $n = @($c.mcpServers.PSObject.Properties).Count
-                if ($n -gt 0) { return $n }
+                if ($n -gt 0) { break }
             }
         } catch {}
     }
-    return 0
+    $script:_mcpCache.ts = [DateTime]::UtcNow
+    $script:_mcpCache.count = $n
+    return $n
 }
 
 function Get-BotCount {
+    if (([DateTime]::UtcNow - $script:_botCache.ts).TotalSeconds -lt 30) {
+        return $script:_botCache.count
+    }
     $botDir = 'D:\Sinister\Sinister Skills\12_LLM_ORCHESTRATION\agents'
-    if (-not (Test-Path $botDir)) { return 0 }
-    return @(Get-ChildItem -Path $botDir -Directory -ErrorAction SilentlyContinue).Count
+    $n = 0
+    if (Test-Path $botDir) {
+        $n = @(Get-ChildItem -Path $botDir -Directory -ErrorAction SilentlyContinue).Count
+    }
+    $script:_botCache.ts = [DateTime]::UtcNow
+    $script:_botCache.count = $n
+    return $n
 }
 
 function ReadProjectsJson {
