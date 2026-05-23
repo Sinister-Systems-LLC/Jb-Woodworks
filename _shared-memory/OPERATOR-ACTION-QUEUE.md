@@ -10,6 +10,63 @@ The Sanctum-side mirror of `SESSION-START/02-OPERATOR-QUEUE.md`, with checkboxes
 
 ---
 
+## 2026-05-23 17:00Z — 🔴 JB Woodworks: standalone repo pushed, Railway flip needed (15-min operator task)
+
+EVE on JB Woodworks completed every autonomous step toward production. The site
+is **not yet live publicly** — the last leg is a one-time Railway auth + deploy
+that requires the operator's browser. Everything else is verified.
+
+**What's done (verified):**
+
+- [x] ✅ **Standalone repo created + pushed:** [`Sinister-Systems-LLC/Jb-Woodworks`](https://github.com/Sinister-Systems-LLC/Jb-Woodworks) — private, `main` branch, 4 commits, 183 files. `git subtree split` of `agent/jb-woodworks/v0.3.0-scaffold` from the Sanctum monorepo (preserves full per-feature commit history).
+- [x] ✅ **Production build PASS:** `npm run build` clean — 31 SSG pages (incl. 2 blog posts + 10 portfolio entries + /rss.xml + /sitemap.xml). 95s compile. Zero errors / warnings.
+- [x] ✅ **Prod-mode smoke PASS:** `npm start` on the built bundle — 16/16 expected-200 routes pass (`/`, `/about`, `/services`, `/portfolio`, 2 portfolio detail, `/contact`, `/contact/thanks`, `/blog`, 2 blog detail, `/rss.xml`, `/sitemap.xml`, `/robots.txt`, `/api/healthz`, `/legal`); 1 deliberate 404. Headers confirm prod (`x-nextjs-prerender: 1`, `x-nextjs-cache: HIT`).
+- [x] ✅ **Repo is Railway-ready:** `railway.json` already declares NIXPACKS + `npx prisma db push --skip-generate && npm start` + `/api/healthz` healthcheck + 5-retry restart policy.
+
+**🔴 Operator action — flip JB Woodworks live (~15 min):**
+
+> **Important domain note:** `jbwoodworks.com` is taken by a different
+> JB Woodworks (cabinet maker in Harrisburg, OR — 541 area code, WordPress
+> site, est. 1985). Joe's Orlando-FL shop needs a different domain. Use
+> the free `*.up.railway.app` subdomain to flip live today; pick a real
+> domain on the side.
+
+### Path A — Railway Dashboard (recommended, no CLI auth)
+
+1. Open <https://railway.com/new>
+2. **Deploy from GitHub repo** → pick **Sinister-Systems-LLC/Jb-Woodworks**
+3. After the project provisions, click **+ New** → **Database** → **Add PostgreSQL**
+4. On the web service, **Variables** tab — set:
+   ```
+   DATABASE_URL          = <copy from the Postgres service's "Variables" tab>
+   NEXT_PUBLIC_SITE_URL  = https://<service-name>-production.up.railway.app
+   CONTACT_TO_EMAIL      = jbwoodworks8@gmail.com
+   ```
+   Optional (for real email vs FormSubmit fallback): `RESEND_API_KEY`, `CONTACT_FROM_EMAIL`
+5. **Settings → Domains → Generate Domain** — claim the `*.up.railway.app` subdomain
+6. First build kicks off automatically; expect ~3-5 min. Watch the build log; healthcheck must pass on `/api/healthz` before traffic flips.
+
+### Path B — Railway CLI (if you prefer terminal)
+
+```bash
+cd /d/jbw-deploy            # the staging clone I prepped, has the railway.json
+railway login               # opens browser once
+railway init                # link to the new project
+railway add --database postgres
+railway variables --set "NEXT_PUBLIC_SITE_URL=https://...railway.app" \
+                  --set "CONTACT_TO_EMAIL=jbwoodworks8@gmail.com"
+railway up                  # first deploy
+railway domain              # claim *.up.railway.app
+```
+
+### After it's live
+
+- Verify `https://<sub>.up.railway.app/api/healthz` → `{"ok":true,...}`
+- Smoke `/`, `/about`, `/blog`, `/rss.xml`, `/contact` (try a form submit)
+- Tell me the production URL and I'll update `_shared-memory/PROGRESS/jb-woodworks.md` + `lib/site.ts` `NEXT_PUBLIC_SITE_URL` accordingly.
+
+---
+
 ## 2026-05-23 12:30Z — autonomy stack: P9 hook-path + Sinister Generator + swarm/loop opt-in + headless cmd windows
 
 EVE on Sanctum addressed the operator's 4-message stack on `agent/sinister-sanctum/grant-autonomy-followup-2026-05-23`. Smoke tests: canonical-protections-check `PASS=9 FAIL=0`, launcher PS-AST parse-validated, hidden-spawn parse-validated + round-tripped.
@@ -54,6 +111,20 @@ EVE on Sanctum cut `agent/sinister-sanctum/grant-autonomy-followup-2026-05-23` f
 - [x] ✅ ~~**C.10 Ship per-project bot-adoption playbook**~~ — SHIPPED 2026-05-23T18:25Z (loop iteration). `_shared-memory/knowledge/per-project-bot-adoption-playbook-2026-05-23.md` — 60-second cold-start template + 10-row lane-specific cheat sheet (Panel/APK/RKOJ/RKOJ-workstation/Showmasters/JBW/Forge/Term/Generator/any-active-dev) + copy-pasteable CLAUDE.md drop-in + target metrics table + measurement command + 6 anti-patterns. Source content for B.4 inbox drops below. Brain row count: 120 → 121.
 - [x] ✅ ~~**B.4 Cross-lane PROGRESS-log audit + [INFO] drops**~~ — SHIPPED 2026-05-23T18:25Z. 4 [INFO] inbox messages dropped (sinister-panel / kernel-apk / rkoj / rkoj-workstation) — each lane gets its lane-specific "most-likely-useful bot" recommendation + copy-paste next-turn pickup steps. Created `_shared-memory/inbox/rkoj-workstation/` directory (didn't exist). All messages `reply_required: false`.
 - [x] ✅ ~~**B.7 Flip jcode-feature-matrix row 16 (Swarm-mode) to shipped**~~ — DONE 2026-05-23T18:25Z. Row 16 now `✅ shipped (disk + CLI + Python API)` citing `sinister-swarm` v0.1.0 pip-editable verified via `pip show sinister-swarm` → editable from canonical `D:\Sinister Sanctum\tools\sinister-swarm` (Author: RKOJ-ELENO, AGPL-3.0). 187 pytest-green per audit. Cold-start hint shipped in launcher Build-Phrase.
+
+**/loop iteration 2 (2026-05-23T19:00Z) — 4 more master plan items shipped:**
+
+- [x] ✅ ~~**B.5 Clarify ruflo + vault MCP registration status**~~ — RESOLVED 2026-05-23T19:00Z. Both `ruflo` and `vault` are `✓ Connected` per `claude mcp list` — they're registered at user-scope (NOT in `~/.claude/.mcp.json`). Grant-autonomy step 4 was misreading by grepping `~/.claude/.mcp.json`; the correct check is `claude mcp list`. Fix: update step 4 to call `claude mcp list` (1-line patch, deferred to next turn — it's a script-only fix, not a state-change). Both MCPs are FUNCTIONAL right now — `mcp__vault__*` tools visible in this session's deferred-tool list.
+- [x] ✅ ~~**B.10 Brain index hygiene check**~~ — Audit script shipped: `automations/brain-index-orphan-check.ps1` (PowerShell 5.1 compatible, ASCII-safe). Smoke-tested 2026-05-23T19:00Z: 141 on-disk / 122 indexed / **28 orphans** / 9 missing-file index rows / Rule 7.5 status = `APPROACHING` (141/150 ceiling). The 28 orphans are per-lane brain entries that lanes added without updating master `_INDEX.md` — per-lane responsibility to either index OR move to `_archive/` (see follow-on row below). Audit script is now part of the fleet's hygiene tooling.
+- [x] ✅ ~~**C.13 Telemetry rollup script**~~ — `automations/telemetry-rollup.ps1` smoke-tested 2026-05-23T19:00Z. Emits `_shared-memory/telemetry/daily-YYYY-MM-DD.json` + `_latest.json` (for C.14 dashboard). 8 tracked metrics: canonical_protections (PASS=9/FAIL=0) / lane_heartbeats (37 / freshness in seconds) / operator_queue (open=71 closed=40 critical=N high=N medium=N low=N) / brain_doctrine (141 on-disk / 122 indexed / 28 orphans / status APPROACHING) / inbox_unread (total=59 across 34 lanes) / bot_adoption (per-lane mention count) / recent_commits (last 10) / resume_point_chain (per-lane file count). Ready to wire into daily cron via `SinisterCustodian` scheduled task (operator-gated).
+- [x] ✅ ~~**B.9 Context-cleaner spec draft**~~ — `_shared-memory/plans/context-cleaner-spec-2026-05-23T1245Z/spec.md` — 3-layer pipeline architecture (source / relevance-gate / emit) + 4-component scoring (lane match × keyword × recency × pinned) + 7-class retention policies + 6 trigger conditions + launcher K-option UX + 5 open operator questions (pinned mechanism / archive default / cron timing / K scope / preview UX) + 7-phase implementation roadmap (~3 hours over 2-3 turns once approved) + 6 anti-patterns. Implementation deferred until operator answers the 5 questions.
+
+**Follow-on from iteration 2:**
+
+- [ ] 🟡 **Per-lane brain orphan cleanup** — Each lane should either (a) index their orphan brain entries in `_shared-memory/knowledge/_INDEX.md` OR (b) move them to `_shared-memory/knowledge/_archive/`. The 28 orphans are listed in `automations/brain-index-orphan-check.ps1` output. Patterns identified: apk-leak-surface, rkoj-fleet-state-sse, snap-account-24h-survival, tt-captcha/hedra/cuttlefish, panel-command-center-18-wave-sweep, post-reboot-auto-unlock, themed-modulezips, yurikey-rotation, etc. Run `pwsh automations/brain-index-orphan-check.ps1` to see the full list. Lane recommendations: panel/rkoj/snap-emu/tiktok/showmasters lanes own most of these.
+- [ ] 🟢 **Remove 9 missing-file rows from _shared-memory/knowledge/_INDEX.md** — Indexed slugs with no on-disk file: adb-containerization, panel-autonomy-daemon-15min, panel-bat14-findstr-crlf-gotcha, panel-doctrine-audit-5-counter, panel-heartbeat-500-schema-drift, panel-master-self-execute-ssh-deploy, panel-one-click-deploy-bat, rka-panel-integration-2026-05-19, screenshot-batch-triage-pattern. (These are old indexed entries whose files were deleted/archived without updating the index.) ~5 min cleanup; safe to do now or wait for the "panel" lane to confirm intent.
+- [ ] 🟢 **Wire `telemetry-rollup.ps1` into daily cron** — operator-gated (touches Scheduled Tasks). One-liner: `schtasks /Create /SC DAILY /TN SinisterTelemetryRollup /TR "pwsh.exe -File 'D:\Sinister Sanctum\automations\telemetry-rollup.ps1'" /ST 03:30`. Without this, the dashboard's `_latest.json` only refreshes when the script is run manually.
+- [ ] 🟢 **Patch grant-autonomy step 4** to call `claude mcp list` instead of grepping `~/.claude/.mcp.json` — fixes the "1/3 MCP" misreport. ~5-min script edit.
 - [ ] 🟡 **B.7 Flip jcode-feature-matrix row 16 Swarm-mode to `✅ shipped`** — sinister-swarm v0.1.0 pip-editable confirmed 187 pytest-green.
 - [ ] 🟡 **B.4 Cross-lane PROGRESS-log audit** — drop one [INFO] inbox into each low-adoption lane (Panel / APK / RKOJ / RKOJ-workstation) pointing at B.6 quick-ref.
 - [ ] 🟢 **B.3 OPERATOR-ACTION-QUEUE stale-row sweep** — close rows referencing already-shipped fixes + operator-set env vars now set.
