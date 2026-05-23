@@ -10,6 +10,27 @@ The Sanctum-side mirror of `SESSION-START/02-OPERATOR-QUEUE.md`, with checkboxes
 
 ---
 
+## 2026-05-23 — Sanctum stack fully readied (launcher v6 + MCP fixes + plugins)
+
+EVE on Sanctum shipped 4 commits this session unblocking ~all Sanctum-lane infra. Open items now:
+
+- [ ] 🔴 **Restart Claude Code** — activates: (a) 12 newly-resolvable MCP servers (sinister-bus + sentinel + translator + librarian + watcher + auditor + triage + scribe + curator + custodian + stealth-browser + researcher) via the new `D:\Sinister\Sinister Skills` junction; (b) 14 newly-enabled dev plugins at Sanctum project level (claude-code-setup, claude-md-management, code-review, pr-review-toolkit, coderabbit, code-simplifier, commit-commands, frontend-design, github, hookify, session-report, cwc-makers, desktop-commander, exa). Without restart, spawned agents see ~9 skills; after restart they see ~30+.
+- [ ] 🟠 **Decide on `sinister_apk_mcp`** — module source folder at `D:\Sinister Sanctum\_sinister-skills\02_MD_ARCHIVE\kernel-su-setup\leo-version\mcp-server\sinister_apk_mcp\` is empty (archived). The MCP entry in `~/.claude/.mcp.json` references it but it fails silently at startup. Two options: (1) restore the Python source from a backup, OR (2) ask EVE to draft an .mcp.json edit removing the entry (needs explicit operator go-ahead since `.mcp.json` is normally off-limits).
+- [ ] 🟡 **Enable external-service plugins individually** — 20 plugins installed but not enabled (need API tokens): airtable, apollo, asana, atlassian, box, circleback, discord, gitlab, imessage, intercom, legalzoom, linear, notion, pigment, slack, spotify-ads-api, telegram, windsor-ai, youdotcom-agent-skills, zapier. Use `/plugin enable <name>` per-need after configuring auth.
+
+---
+
+## 2026-05-23 — Nano Banana wired (fleet-wide image generation)
+
+- [x] ✅ **Set `GEMINI_API_KEY` user env var** — operator set 2026-05-23T07:05Z (39 chars, `AIzaSy…` prefix). Wrapper round-trips clean; key is hot at User + Process scope.
+- [ ] 🔴 **Enable billing on Google Cloud project `492031902572`** — image-generation models on Gemini API are **paid-only**. Free tier `limit: 0` returns `429 RESOURCE_EXHAUSTED` on every `generateContent` call against `gemini-2.5-flash-image`. Fix: open `https://console.cloud.google.com/billing` → select project `492031902572` → link a billing account. Propagates in ~1-2 min. Cost ~$0.039/image for `gemini-2.5-flash-image`.
+- [ ] 🟡 **(Optional) Rotate the `GEMINI_API_KEY`** — the current key was pasted into a session screenshot (image cache `C:\Users\Zonia\.claude\image-cache\…\5.png`) so the value is on disk in plaintext. If that's a concern, delete the key at `https://aistudio.google.com/apikey`, create a new one, re-run `[Environment]::SetEnvironmentVariable('GEMINI_API_KEY','<new>','User')`. Not blocking — just hygiene.
+- [ ] ~~🟠 **Set `GEMINI_API_KEY` user env var**~~ — superseded by the line above — unlocks the new `tools/nano-banana/` wrapper for ALL agents (Showmasters dark+gold brand-lock, JB Woodworks gold/black photoreal, plus base `generate()` for any lane). `google-genai` SDK 2.6.0 is already installed system-wide; just need the key.
+  ```powershell
+  [Environment]::SetEnvironmentVariable('GEMINI_API_KEY','<your-key>','User')
+  ```
+  Aliases also accepted (`NANO_BANANA_API_KEY` → matches Showmasters' contract doc, `GOOGLE_API_KEY` → SDK fallback). Restart open Claude / PowerShell sessions after. Brain entry: `_shared-memory/knowledge/nano-banana-gemini-image.md`. Day-one work-list (12 blog headers + 2 city heros + 5 social templates for Showmasters; portfolio teasers + blog headers for JB) is queued in the inbox messages.
+
 ## 2026-05-21 — Sanctum session surfaces (read-only, low-stakes)
 
 - [ ] 🟠 **Install Rust toolchain (rustup-init.exe)** — unblocks the jcode source-level fork into `projects/sinister-rkoj/`. ~1.5 GB rustup install (plus ~5-7 GB MSVC Build Tools if not already present, plus ~5-10 GB for the first `cargo build` of the 60+ crate workspace). Until then the **sidecar shim** at `tools/sinister-jcode-shim/` (v0.1.0 shipped 2026-05-21) wraps the prebuilt `jcode-windows-x86_64.exe` with our Sinister env config — that's the bridge. Full plan + risk register + rebrand checklist: `_shared-memory/plans/jcode-fork-2026-05-21/plan.md`. Toolchain installer: [https://rustup.rs](https://rustup.rs).
@@ -52,7 +73,7 @@ The Sanctum-side mirror of `SESSION-START/02-OPERATOR-QUEUE.md`, with checkboxes
 
 ## 🟠 High (this session if possible)
 
-- [ ] **Restart Claude Code** so the 12 MCP servers (Sinister Bots) load + the new bus tools (heartbeat, inbox_poll, run_script, memory_garden, codec, vault) become visible. Without this, no live cross-agent messaging.
+- [ ] **Restart Claude Code** so the 12 MCP servers (Sinister Bots) load + the new bus tools (heartbeat, inbox_poll, run_script, memory_garden, codec, vault) become visible. Without this, no live cross-agent messaging. **NOTE 2026-05-23:** EVE-Sanctum's 2 junctions now make these paths resolve cleanly — restart unblocks all 12 in one go (see top-of-queue row).
 - [ ] **Install Custodian 24/7 daemon** — `cd 'D:\Sinister\Sinister Skills\12_LLM_ORCHESTRATION\agents\custodian'; .\install-task.ps1` (now unblocked per Expanded Authority, but operator picks the timing because it registers a Scheduled Task).
 - [ ] **Smoke-test Sinister Crawler** per `D:\Sinister Sanctum\tools\sinister-crawler\SMOKE.md` (BotFather token + `/start` + each command).
 - [ ] **Smoke-test Sinister Chatbot** per `D:\Sinister Sanctum\tools\sinister-chatbot\RUN.md` (npm install + `/chatbot/generate` + Eve observations).

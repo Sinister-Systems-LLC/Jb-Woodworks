@@ -76,6 +76,20 @@ All three append `READ-CONTRACTS: <session-contracts.md>` (compact reference per
 4. **Don't remove projects from `projects[]` to hide them** — siblings might depend on the key. Add `_subsumed_by` or use the `picker.visible_keys` allowlist instead.
 5. **Don't commit while a sibling agent's git index.lock is held** — backed off this session when forcing the lock would have bundled the sibling's `projects/rkoj/*` staged work with mine. Cross-agent note + wait > force.
 
+## 6th anti-pattern: PowerShell `Out-File -Encoding utf8` adds a BOM
+
+Discovered + fixed within the same session (commit `bba4231`). PowerShell 5.1's `Out-File -Encoding utf8` writes a UTF-8 **byte-order mark** (`EF BB BF`) at the start of every file. Python's `json.loads()` rejects BOM-prefixed JSON with `JSONDecodeError: Unexpected UTF-8 BOM (decode using utf-8-sig)`. The launcher's `Persist-AgentPref` + `Create-NewProject` + `.claude.json` pre-trust + runlog writer all originally used `Out-File -Encoding utf8` → corrupted `projects.json` + `agent-prefs.json` → `RKOJ Qt state.load_projects()` returning `[]` because the silent `except Exception: return []` swallowed the BOM-decode failure.
+
+**Fix**: at every PS write site that produces JSON read by Python or another strict consumer, use:
+
+```powershell
+[System.IO.File]::WriteAllText($path, $content, [System.Text.UTF8Encoding]::new($false))
+```
+
+The `($false)` argument disables BOM emission. `Set-Content -Encoding utf8` has the same BOM-emission bug on PS 5.1. PS 7+ defaults to no-BOM but check before relying on it.
+
+Also: when the consumer is Python-with-silent-except (which a lot of state loaders do for graceful failure), debugging requires inspecting the raw bytes (`Get-Content -AsByteStream` or `[System.IO.File]::ReadAllBytes`) — string-level `Get-Content -Raw` strips BOM during read, hiding the bug.
+
 ## Empirical anchors
 
 - Tested 8 paths: `-Project sanctum/general/rkoj/invalid` (headless) + `"5\n"` → rkoj + `"G\n"` → general + `"A\n1\n"` → auto-resume + sanctum + `"N\nTest...\na throwaway...\n"` → slug auto-derive + register + cleanup + `"\n"` → default sanctum + `"99\n"` → out-of-range fallback sanctum.
