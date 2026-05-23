@@ -1072,6 +1072,11 @@ function Launch-Session($projRec, $agentName, $accent, $phrase, $modes = $null) 
     $drive = $projRec.root.Substring(0,1).ToLower()
     $rest = $projRec.root.Substring(2) -replace '\\', '/'
     $bashPath = "/$drive$rest"
+    # Convert SanctumRoot to bash form too so the banner script can be located on
+    # any operator's clone (e.g. Leo's machine on a different drive letter).
+    $sanctumDrive = $SanctumRoot.Substring(0,1).ToLower()
+    $sanctumRest = $SanctumRoot.Substring(2) -replace '\\', '/'
+    $bashSanctumRoot = "/$sanctumDrive$sanctumRest"
     $bashPhrase = $phrase -replace "'", "'\''"
     $bashAgentName = $agentName -replace "'", "'\''"
     $windowTitle = "Sinister :: $agentName :: $($projRec.display)"
@@ -1108,8 +1113,11 @@ clear 2>/dev/null || printf '\033c'
 printf '\n'
 # Animated jcode-style ASCII C banner (operator 2026-05-23 image #3).
 # Background script handles color animation; ~0.6s total so it doesn't delay claude.
-if [ -f '/d/Sinister Sanctum/automations/sinister-banner.sh' ]; then
-    bash '/d/Sinister Sanctum/automations/sinister-banner.sh' 8 0.07 2>/dev/null || true
+# Sanctum root resolved at spawn-time from PS1 (`$SanctumRoot`) so this works on
+# any operator's machine (e.g. Leo's clone, regardless of drive letter).
+_sanctum_banner='$bashSanctumRoot/automations/sinister-banner.sh'
+if [ -f "$_sanctum_banner" ]; then
+    bash "$_sanctum_banner" 8 0.07 2>/dev/null || true
 fi
 printf '\n'
 printf '  $pillA $agentName $pillZ  $pillM resume $pillZ  $pillD claude-opus-4-7[1m] $pillZ  $pillG mcp:$mcpCnt $pillZ  $pillB bots:$botCnt $pillZ  $pillR --skip-perms $pillZ\n'

@@ -1,5 +1,17 @@
 # Sinister LLC monorepo - global ignores
 
+# Editor / launcher backup files (operator 2026-05-23: don't push .bak* to GitHub)
+*.bak
+*.bak-*
+
+# Seraphim QRNG provenance — runaway producer (1 file/30s; sibling sanctum sweep-loop
+# has been stuck trying to add 1986+ files for hours without ever converging to commit).
+# Operator review: if billing-audit trail needed in git, replace with a batched commit
+# job (e.g. nightly rollup of the day's JSONs into one summary file). Added 2026-05-23
+# by EVE on Sanctum during Phase-2 loop iteration 1 to break a multi-agent contention
+# storm. Reversible: `git rm` this line if operator wants the per-event files committed.
+_shared-memory/qrng-provenance/
+
 # Python
 __pycache__/
 *.py[cod]

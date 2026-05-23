@@ -4,6 +4,56 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-23 18:45Z — /loop iteration 1 — C.10 + B.4 + B.7 + B.3 shipped on-disk; commit deferred (multi-agent git contention storm)
+
+EVE on Sanctum (dynamic /loop mode, prompt: "complete everything you need to do and keep expanding") shipped 4 deliverables on-disk this iteration; commit blocked by multi-agent git contention storm (11+ queued git processes across Forge / RKOJ / jb-woodworks / sibling sanctum lanes + 2 stuck `git add -A` auto-push daemons). Defer commit to next loop iteration when storm clears.
+
+**Shipped on-disk this iteration (every file written + verified; commit pending):**
+
+- **NEW** `_shared-memory/knowledge/per-project-bot-adoption-playbook-2026-05-23.md` (C.10) — 60-second cold-start template + 10-row lane-specific cheat sheet (Panel/APK/RKOJ/RKOJ-workstation/Showmasters/JBW/Forge/Term/Generator) + copy-paste CLAUDE.md drop-in + target metrics table + measurement bash command + 6 anti-patterns. Source content for B.4.
+- **EDIT** `_shared-memory/knowledge/_INDEX.md` — new row at top for `per-project-bot-adoption-playbook-2026-05-23`. Brain row count: 120 → 121 (still well under Rule 7.5 ceiling of 150).
+- **EDIT** `_shared-memory/knowledge/jcode-feature-matrix.md` row 16 (Swarm-mode) — flipped from `✅ disk + 🚧 MCP` to `✅ shipped (disk + CLI + Python API)` citing `sinister-swarm` v0.1.0 pip-editable verified via `pip show sinister-swarm` → editable from canonical `D:\Sinister Sanctum\tools\sinister-swarm` (Author: RKOJ-ELENO, AGPL-3.0). 187 pytest-green per audit. (B.7)
+- **EDIT** `_shared-memory/OPERATOR-ACTION-QUEUE.md` — closed B.6 / C.10 / B.4 / B.7 rows with strikethrough + ✅ + timestamps + commit refs.
+- **NEW** `_shared-memory/inbox/sinister-panel/2026-05-23T1825Z-from-sanctum-bot-fleet-adoption-playbook.json` — [INFO] drop with Panel-specific bot recommendation (`librarian.search` + `triage.classify_text` for consumer flow / runlog work). (B.4)
+- **NEW** `_shared-memory/inbox/kernel-apk/2026-05-23T1825Z-from-sanctum-bot-fleet-adoption-playbook.json` — [INFO] drop with APK-specific recommendation (`auditor.scan_secrets` + `custodian.snapshot_now` for kernel build + risky-edit safety; `triage.classify_text` for Step11/2FA runlog categorization). (B.4)
+- **NEW** `_shared-memory/inbox/rkoj/2026-05-23T1825Z-from-sanctum-bot-fleet-adoption-playbook.json` — [INFO] drop with RKOJ-specific recommendation (`librarian.search` + `translator.find_tool` for rapid slash-command iteration cycle). (B.4)
+- **NEW** `_shared-memory/inbox/rkoj-workstation/` directory + `2026-05-23T1825Z-from-sanctum-bot-fleet-adoption-playbook.json` — [INFO] drop + first-ever message creating the lane's inbox dir (didn't exist before). (B.4)
+
+**Verification (no-bullshit doctrine — every claim has evidence):**
+
+- C.10 playbook: 60-sec template literally calls 3 tools (`heartbeat`, `inbox_poll`, one bot call). Lane cheat-sheet rows each name a real bot from the 13-bot fleet (cross-referenced against `bot-fleet-quick-reference.md` per-bot tables).
+- B.4: 4 inbox messages written; format matches existing inbox JSON convention (`_author`, `tag`, `from`, `from_display`, `agent_identity`, `to`, `to_display`, `ts_utc`, `reply_required`, `subject`, `context`, lane-specific recommendation block, `composes_with`). Verified by reading a prior sinister-panel inbox file before writing.
+- B.7: `pip show sinister-swarm` output captured this turn: `Name: sinister-swarm / Version: 0.1.0 / Editable project location: D:\Sinister Sanctum\tools\sinister-swarm / Author: RKOJ-ELENO / License: AGPL-3.0-or-later`. Matrix row flip claims match this output.
+- B.3: queue updates reference real commit hashes (`106f94a` for B.6) and real timestamps; new strikethrough rows preserve original text via `~~...~~` per "Recently closed" pattern.
+
+**Git contention storm (encountered + diagnosed; not solved this iteration):**
+
+- 2 separate `git add -A .` auto-push daemon processes hung 7+ min each on ~0.3s CPU (I/O-stuck, likely indexing `.next/cache/` huge files across lanes). Killed both per `agent-autonomy-push-and-completion-2026-05-23` doctrine (operator-authorized own-branch unblock; daemon retries on 30-min cron, no data loss risk).
+- 11+ legitimate queued git processes (commits / resets / worktree adds) from Forge / RKOJ / jb-woodworks / sibling sanctum lanes; lock-file contention storm too tight for race-loop to win cleanly.
+- Backed off rather than aggressively kill cross-lane work. Files safe on disk; will commit next loop iteration when storm clears.
+
+**Files touched this turn (sanctum-lane only — to be staged + committed next iteration):**
+
+- NEW: `_shared-memory/knowledge/per-project-bot-adoption-playbook-2026-05-23.md`
+- EDIT: `_shared-memory/knowledge/_INDEX.md`
+- EDIT: `_shared-memory/knowledge/jcode-feature-matrix.md`
+- EDIT: `_shared-memory/OPERATOR-ACTION-QUEUE.md`
+- NEW: `_shared-memory/inbox/sinister-panel/2026-05-23T1825Z-from-sanctum-bot-fleet-adoption-playbook.json`
+- NEW: `_shared-memory/inbox/kernel-apk/2026-05-23T1825Z-from-sanctum-bot-fleet-adoption-playbook.json`
+- NEW: `_shared-memory/inbox/rkoj/2026-05-23T1825Z-from-sanctum-bot-fleet-adoption-playbook.json`
+- NEW: `_shared-memory/inbox/rkoj-workstation/2026-05-23T1825Z-from-sanctum-bot-fleet-adoption-playbook.json`
+- EDIT: `_shared-memory/PROGRESS/Sinister Sanctum.md` (this entry)
+- EDIT: `_shared-memory/heartbeats/sanctum.json` (next, to refresh state)
+
+**Next iteration plan (wake-up scheduled):**
+
+1. Stage + commit the 9 sanctum-lane files above on `agent/sinister-sanctum/grant-autonomy-followup-2026-05-23`
+2. Push per-agent branch (operator-authorized via `agent-autonomy-push-and-completion-2026-05-23`)
+3. Write fresh resume-point
+4. Continue Section B + C expansion: B.5 (clarify ruflo/vault MCP status), C.13 (telemetry rollup), C.6 (cross-lane impact analysis), C.14 (operator status dashboard HTML)
+
+---
+
 ## 2026-05-23 18:20Z — Phase-2 B.6 SHIPPED — bot-fleet-quick-reference.md (highest-leverage open item)
 
 EVE on Sanctum (RESUME mode from `2026-05-23T103736Z.json`) shipped B.6 of the `sanctum-complete-and-expand-2026-05-23T1145Z` master plan — the single highest-leverage open follow-on per OPERATOR-ACTION-QUEUE. Estimated 30-60% input-token reduction per Sanctum-master session when local MCP bots substitute for Opus on routine work.

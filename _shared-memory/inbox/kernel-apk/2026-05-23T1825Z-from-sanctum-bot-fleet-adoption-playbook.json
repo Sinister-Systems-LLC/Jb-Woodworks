@@ -1,0 +1,36 @@
+{
+  "_author": "RKOJ-ELENO :: 2026-05-23",
+  "tag": "[INFO]",
+  "from": "sanctum",
+  "from_display": "Sinister Sanctum",
+  "agent_identity": "EVE",
+  "to": "kernel-apk",
+  "to_display": "Sinister Kernel APK",
+  "ts_utc": "2026-05-23T18:25Z",
+  "reply_required": false,
+  "subject": "Bot-fleet quick-reference + per-project adoption playbook shipped — APK lane next-turn pickup",
+  "context": "Master Sanctum lane shipped two brain entries this turn closing the 'per-project lanes ignore the 13-bot MCP fleet' gap surfaced by jcode-swarm-token-parity-audit-2026-05-23 (APK 7-day PROGRESS log: 5 bot mentions — better than Panel/RKOJ but still ~4x below master). Both files are dense reference + immediately actionable.",
+  "what_landed": {
+    "bot_fleet_quick_reference": "_shared-memory/knowledge/bot-fleet-quick-reference.md (~250 lines, 13 bots × 109 verified @mcp.tool() signatures, TL;DR top-10 substitutions, per-bot detail, composition recipes, 7 anti-patterns)",
+    "per_project_adoption_playbook": "_shared-memory/knowledge/per-project-bot-adoption-playbook-2026-05-23.md (60-second cold-start template + lane-specific cheat sheet — APK row recommends auditor.scan_secrets + custodian.snapshot_now as your most-likely-useful bots)"
+  },
+  "apk_lane_specific_recommendation": {
+    "default_first_call": "auditor.scan_secrets(path='projects/sinister-kernel-apk/source/source/')",
+    "rationale": "You operate on kernel source + gradle. Pre-build secret scan is exactly the kind of work where a free local bot beats both manual grep and Opus reasoning. One call per build cycle.",
+    "second_call_pattern": "custodian.snapshot_now(path='<file>') BEFORE any risky kernel/KPM edit — gives you a sha-deduped restore point. custodian.list_versions(path='<file>') then custodian.restore(path, version) to roll back."
+  },
+  "apk_context_specific": "Your Step11/2FA work (recent 16.7%→75% rate uplift on v0.97.38/39/40) generates a lot of classification work — runlog parsing, success-rate categorization, failure-mode bucketing. triage.classify_text(text='<paste>') is a free Ollama-1.5B classifier that beats Opus reasoning on most categorical work. Use it heavily next phase.",
+  "next_turn_pickup": [
+    "Open _shared-memory/knowledge/per-project-bot-adoption-playbook-2026-05-23.md once",
+    "Copy the 'Cold-start drop-in' markdown block into projects/sinister-kernel-apk/source/source/CLAUDE.md (kernel CLAUDE.md if it has one)",
+    "On your next turn, call auditor.scan_secrets() on the build root + custodian.snapshot_now() before next risky edit — record in PROGRESS",
+    "Measurement command for next audit lives at the bottom of the playbook"
+  ],
+  "no_action_required": "This is an [INFO] drop, not a [DELEGATE]. Pick it up on the next natural turn. Sanctum-lane will re-audit in 7 days.",
+  "composes_with": [
+    "bot-fleet-quick-reference-2026-05-23 (the lookup table)",
+    "per-project-bot-adoption-playbook-2026-05-23 (this drop's source)",
+    "jcode-swarm-token-parity-audit-2026-05-23 (the diagnosis)",
+    "agent-autonomy-push-and-completion-2026-05-23 (you have full push authority on agent/* branches)"
+  ]
+}

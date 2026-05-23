@@ -37,15 +37,14 @@ if defined SINISTER_USE_WT (
     )
 )
 
-echo  [start] Sinister Sanctum session launcher v5
-echo  [start] locating Sanctum root...
+REM v6.1: silent root probe (operator 2026-05-23: "dont incldue this at the top").
+REM Previously echoed [start] + [ok] lines. Use --verbose or --diagnose to see them.
 set "SANCTUM_ROOT="
 call :tryroot "%SINISTER_SANCTUM_ROOT%"
 if not defined SANCTUM_ROOT call :tryroot "D:\Sinister Sanctum"
 if not defined SANCTUM_ROOT call :tryroot "C:\Sinister Sanctum"
 if not defined SANCTUM_ROOT call :tryroot "%USERPROFILE%\Sinister Sanctum"
 if not defined SANCTUM_ROOT goto :no_sanctum
-echo  [ok]    Sanctum root: %SANCTUM_ROOT%
 
 REM ----- First-run autonomy bootstrap (silent skip if marker present) -----
 if not exist "%USERPROFILE%\.sanctum-autonomy-granted" (
@@ -62,18 +61,18 @@ if not exist "%USERPROFILE%\.sanctum-autonomy-granted" (
 )
 
 REM ----- Required plugin check (operator directive 2026-05-23 evening) -----
-REM Operator 2026-05-23 evening (image #9 + #10): "this needs to be fixed auto
-REM and not shown to me". Run -Silent -AutoInstall so plugins self-heal without
-REM ever displaying the check output to the operator. Output goes to:
-REM   %USERPROFILE%\.claude\sanctum-plugin-check.log
+REM v6.3 (operator: "sinster start bat file wont work fix it"): plugin install
+REM is now FULLY BACKGROUNDED via `start "" /B ... -WindowStyle Hidden`. Prior
+REM v6.2 version blocked the bat for 10-30s while `claude plugin install ...`
+REM ran each recommended plugin. The check now runs in parallel with EVE.exe
+REM launch and converges silently before the operator picks a project.
 if exist "%SANCTUM_ROOT%\automations\check-required-plugins.ps1" (
-    powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%SANCTUM_ROOT%\automations\check-required-plugins.ps1" -AutoInstall -Silent >nul 2>&1
+    start "" /B powershell.exe -WindowStyle Hidden -NoProfile -ExecutionPolicy Bypass -File "%SANCTUM_ROOT%\automations\check-required-plugins.ps1" -AutoInstall -Silent
 )
 
-REM ----- Spawn-shell preflight (v6 2026-05-23) -----
-REM Surfaces missing-shell BEFORE the picker runs so operator doesn't pick a
-REM project then hit a silent spawn failure. The PS1 also has its own loud-fail
-REM check; this is defense-in-depth.
+REM ----- Spawn-shell preflight (v6.1 2026-05-23 - silent when healthy) -----
+REM v6.1: only emits output if a shell is MISSING (operator: don't include
+REM noisy startup chatter when everything is fine). Healthy path is silent.
 set "HAS_SHELL=0"
 if exist "C:\Program Files\Git\usr\bin\mintty.exe" set "HAS_SHELL=1"
 if exist "C:\Program Files\Git\git-bash.exe"      set "HAS_SHELL=1"
@@ -99,20 +98,24 @@ if not defined EVE_EXE if exist "%SANCTUM_ROOT%\automations\eve-launcher\dist\EV
 if not defined EVE_EXE if exist "%LOCALAPPDATA%\Sinister\EVE.exe" call :probe_eve "%LOCALAPPDATA%\Sinister\EVE.exe"
 
 if defined EVE_EXE (
-    REM Operator 2026-05-23 evening (image #10: "make x button work"): launch EVE.exe
-    REM via `start` so it gets its own cmd window. The parent bat then exits
-    REM immediately so its window closes (X button works on EVE.exe's window since
-    REM EVE.exe is no longer blocked under a parent cmd holding the close signal).
-    REM Window title is set explicitly so operator can identify the picker.
-    start "Sinister Sanctum :: EVE" /D "%SANCTUM_ROOT%" "%EVE_EXE%"
+    REM v6.3 (operator: "sinster start bat file wont work fix it"): use the
+    REM simplest `start` syntax that reliably forks a new console — empty title
+    REM "" + bare exe path. Earlier v6.2 syntax with `/D` and a colonned title
+    REM ("Sinister Sanctum :: EVE") returned errorlevel 0 but didn't actually
+    REM spawn EVE.exe on this machine. X-button still works because parent cmd
+    REM exits immediately + EVE.exe owns its own console window.
+    pushd "%SANCTUM_ROOT%"
+    start "" "%EVE_EXE%"
+    popd
     exit /b 0
 )
 
 :launch_ps1
 REM ----- Fallback: PS1 launcher (no regression if EVE.exe not built yet) -----
-REM Same `start`-and-exit pattern as EVE.exe path so the parent bat window
-REM closes cleanly and operator gets a closeable picker window.
-start "Sinister Sanctum :: Picker" /D "%SANCTUM_ROOT%" powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%SANCTUM_ROOT%\automations\start-sinister-session.ps1"
+REM v6.3: same simple `start ""` pattern as EVE.exe path.
+pushd "%SANCTUM_ROOT%"
+start "" powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%SANCTUM_ROOT%\automations\start-sinister-session.ps1"
+popd
 exit /b 0
 
 :run_autonomy

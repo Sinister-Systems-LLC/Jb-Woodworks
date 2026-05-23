@@ -7,6 +7,35 @@
 
 ---
 
+## 2026-05-23T16:50Z — 7-tier sorter shipped (📐 Size Off + 👤 Wrong Guy + 🎨 Wrong Style) + 5 iter1 PFPs + 100-pack in flight
+
+Operator directive 2026-05-23T16:38Z verbatim: *"i need new options like good but suize off or good idea but not correct guy etc"*. Existing 3-action sort (Great / Good / Bad) was too coarse — partial-pass gens were being binned with hard rejects, losing salvage paths.
+
+**Shipped (verified):**
+
+1. **3 new tiers wired through the whole stack:**
+   - `library/registry.py` — new constants `SIZE_OFF_SUBDIR` / `WRONG_GUY_SUBDIR` / `WRONG_STYLE_SUBDIR`; new BrandConfig properties `size_off_dir` / `wrong_guy_dir` / `wrong_style_dir`; `ensure_sorter_folders()` scaffolds all 7 idempotently.
+   - `library/feedback.py` — `LearningState` extended with `size_off` / `wrong_guy` / `wrong_style` lists; scanner pulls each tier; `get_anti_patterns()` now pulls notes from Bad + Wrong Guy + Wrong Style (skips Size Off — those are aspect fixes, not prompt mistakes); `get_endorsed_refs()` UNCHANGED (only Refs + Great + Good become refs — the 3 nuanced-reject tiers don't pollute the ref list).
+   - `sorter_web/server.py` — 3 new verdicts (`size_off` / `wrong_guy` / `wrong_style`) with `.sizeoff.txt` / `.wrongguy.txt` / `.wrongstyle.txt` notes; undo unrolls any tier; stats endpoint returns all 7 counts.
+   - `sorter_web/index.html` — two-row footer (primary row: Bad / Good / Great / Skip / Undo; secondary row: Size Off / Wrong Guy / Wrong Style), color-coded buttons (teal/amber/magenta), 8-stat header pills, keyboard shortcuts (`S` / `W` / `T` + `4` / `5` / `6`).
+
+   **Smoke tests (green):** library scan → 7 subdirs on disk for jkor; `/api/queue` returns all 7 stat fields (verified live JSON: `great=1 good=8 size_off=0 wrong_guy=8 wrong_style=1 bad=14 refs=2` at 16:50Z); HTML serves 13787 bytes (+ ~2.9 KB vs pre-7-tier).
+
+2. **5 iter1 PFP variants shipped at 16:28Z** (`_fire_jkor_pfp_iter1.py`) — leaned into the canonical peeking pose with 5 variations on lighting/expression/framing (tight-peek, warm-lit, cold-moonlit, eye-contact, horn-forward). 5 ok / 0 error in 70.4s. Operator sort verdict so far: 3 of 5 landed in 👤 Wrong Guy = concept on-direction, character drifted = strong signal for iter2.
+
+3. **100-pack in flight (started 16:49Z)** — `_fire_jkor_100_pack.py`, operator-authorized override of conservative-balance ≤ 6 cap: *"ok give me lik 100 images"*. Composition: 35 PFP (5 lighting × 7 expression matrix) + 25 banner (5 char-position × 5 atmosphere) + 20 card (10 design × 2 treatment; no joker-classic / no tarot) + 12 wordmark (6 layout × 2 typography; no iridescent-glow / no circle-emblem) + 8 logo/icon misc. Refs: canonical pair (banner-CORRECT + peeking-CORRECT). Sequential firing + 1s sleep (AV-quarantine cure). Expected spend: $3.90 if all land; ~23 min wall clock. Progress at 16:50Z: 8/100 ok + 1 text-only-response error (pfp-05-L1-E5).
+
+**Spend so far this session:** $0.39 (10 v1) + $0.78 (20 v4) + $0.51 (10 dual-aspect) + $0.20 (5 iter1) = $1.88; +$3.90 in flight = ~$5.78 today.
+
+**Key learning from operator's first sort with the new tiers:**
+> Of 23 sorted gens so far, 👤 Wrong Guy = 8 (the operator's most-used new tier) — meaning concept/composition was on direction but the character kept drifting. iter2 prescription: NOT new prompts; tighter character refs + simplified prompts that focus signal mass on the character vs scene complexity.
+
+**Open for operator:**
+- 🟡 100-pack completion (~23 min from 16:49Z, so ~17:12Z) — sort as gens land, sorter auto-polls every 5s
+- 🟢 iter2 PFPs after sort settles — character-tightening branch
+
+---
+
 ## 2026-05-23T15:26Z — sorter-folder self-heal shipped (operator drag-drop unblocker)
 
 RESUME-mode audit caught a real gap: the 20 JKOR pack PNGs from 14:46Z were sitting in `C:\Users\Zonia\Desktop\JOKR\` flat — but the four sorter subdirs (`💎 Great`, `✅ Good`, `❌ Bad`, `📥 Refs`) **did not exist**, so the operator's drag-drop workflow had no destination folders. Same gap existed for Showmasters + JB Woodworks (their desktop dirs didn't even exist yet).
