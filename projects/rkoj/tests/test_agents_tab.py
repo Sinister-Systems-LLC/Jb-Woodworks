@@ -161,9 +161,49 @@ class TestSummarizePrompt(unittest.TestCase):
             self.assertIn(sec, agents_tab._SUMMARIZE_PROMPT)
 
 
+class TestSkillFrontmatter(unittest.TestCase):
+    parse = staticmethod(agents_tab._parse_skill_frontmatter)
+
+    def test_no_frontmatter_passthrough(self) -> None:
+        text = "Just a plain skill body.\nNo dashes here."
+        fm, body = self.parse(text)
+        self.assertEqual(fm, {})
+        self.assertEqual(body, text)
+
+    def test_basic_frontmatter(self) -> None:
+        text = (
+            "---\n"
+            "name: review-pr\n"
+            "description: Review a pull request for issues\n"
+            "---\n"
+            "Body content here."
+        )
+        fm, body = self.parse(text)
+        self.assertEqual(fm["name"], "review-pr")
+        self.assertEqual(fm["description"], "Review a pull request for issues")
+        self.assertEqual(body, "Body content here.")
+
+    def test_quoted_values_stripped(self) -> None:
+        text = '---\nname: "quoted-name"\ndescription: \'single-quoted\'\n---\nbody'
+        fm, _ = self.parse(text)
+        self.assertEqual(fm["name"], "quoted-name")
+        self.assertEqual(fm["description"], "single-quoted")
+
+    def test_allowed_tools_list(self) -> None:
+        text = "---\nallowed-tools: Read, Edit, Bash\n---\nbody"
+        fm, _ = self.parse(text)
+        self.assertEqual(fm["allowed-tools"], ["Read", "Edit", "Bash"])
+
+    def test_missing_closing_returns_passthrough(self) -> None:
+        text = "---\nname: never-closed\nbody body body"
+        fm, body = self.parse(text)
+        self.assertEqual(fm, {})
+        self.assertEqual(body, text)
+
+
 class TestModuleSurface(unittest.TestCase):
     def test_version_matches(self) -> None:
-        self.assertEqual(sinister_rkoj_qt.__version__, "1.6.68")
+        self.assertEqual(sinister_rkoj_qt.__version__, "1.6.69")
 
     def test_classes_present(self) -> None:
         for name in (

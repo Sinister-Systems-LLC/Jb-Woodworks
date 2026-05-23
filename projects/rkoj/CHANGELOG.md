@@ -4,6 +4,36 @@
 
 All notable changes to the unified RKOJ project. Format roughly Keep-a-Changelog; versions are RKOJ.exe build versions, not command-versions (each lane has its own).
 
+## v1.6.69 — 2026-05-22 — jcode skill-frontmatter parity
+
+**`/skill` + `/skills` now parse jcode-style YAML frontmatter
+(`name` / `description` / `allowed-tools`). No PyYAML dep — small
+regex-free string parser. Body-only send when frontmatter present.**
+
+- New `_parse_skill_frontmatter(text) -> (dict, body)` helper at
+  module level. Recognizes `---`-delimited frontmatter block at
+  top of file. Strips surrounding quotes from values. Comma-splits
+  `allowed-tools` / `tools` / `tags` into Python lists. Silent
+  passthrough when no frontmatter is present (existing raw-content
+  skills keep working).
+- `/skill <name>` now stages only the body (not the frontmatter
+  block) and echoes the parsed metadata:
+  ```
+  [/skill] loaded review-pr.md (847 chars)
+    name=review-pr · description=Review a pull request for issues
+    → sending 692 chars as a turn…
+  ```
+- `/skills` lists skills with `/skill <name> — <description>`
+  formatting jcode-style, falling back to the filename stem when
+  no frontmatter is present.
+- 5 new test assertions in `tests/test_agents_tab.py` covering:
+  no-frontmatter passthrough, basic key/value parse, quoted-value
+  stripping, allowed-tools list parsing, missing-closing-delimiter
+  passthrough.
+- Test suite now 27 assertions across 8 TestCases, all pass.
+- MANIFEST.json 1.6.68 → 1.6.69.
+- `__init__.py __version__ = "1.6.69"`.
+
 ## v1.6.68 — 2026-05-22 — feature batch + test harness
 
 **Operator escalated "add every single feature we talked about and

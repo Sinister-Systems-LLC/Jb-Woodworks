@@ -627,6 +627,48 @@ _TAG_RESERVED: dict[str, tuple[str, str, str]] = {
 }
 
 
+def _parse_skill_frontmatter(text: str) -> tuple[dict, str]:
+    """v1.6.69 — jcode-parity YAML frontmatter parser. Returns
+    (frontmatter_dict, body). Frontmatter must be the first block in
+    the file, delimited by `---` on its own line. Recognized keys:
+    `name`, `description`, `allowed-tools`. Values are parsed as
+    flat strings or comma-separated lists. No PyYAML dependency.
+
+    If no frontmatter is present, returns ({}, text) unchanged so
+    existing raw-content skills keep working."""
+    if not text.startswith("---"):
+        return {}, text
+    lines = text.split("\n")
+    # Find the closing ---
+    end_idx = None
+    for i in range(1, min(40, len(lines))):  # cap scan to ~40 lines
+        if lines[i].strip() == "---":
+            end_idx = i
+            break
+    if end_idx is None:
+        return {}, text
+    fm: dict = {}
+    for ln in lines[1:end_idx]:
+        ln = ln.strip()
+        if not ln or ln.startswith("#"):
+            continue
+        if ":" not in ln:
+            continue
+        key, _, val = ln.partition(":")
+        key = key.strip().lower()
+        val = val.strip()
+        # Strip surrounding quotes
+        if (val.startswith('"') and val.endswith('"')) or (val.startswith("'") and val.endswith("'")):
+            val = val[1:-1]
+        # Parse comma-separated lists for allowed-tools-like keys
+        if "," in val and key in ("allowed-tools", "tools", "tags"):
+            fm[key] = [v.strip() for v in val.split(",") if v.strip()]
+        else:
+            fm[key] = val
+    body = "\n".join(lines[end_idx + 1:]).lstrip()
+    return fm, body
+
+
 def _tag_colors(tag: str) -> tuple[str, str, str]:
     """v1.6.58 — return (fg, bg, border) for a tag. Reserved names win;
     others hash-index into the palette deterministically so 'foo' always
@@ -1527,13 +1569,28 @@ class AgentCard(QFrame):
             except Exception as exc:
                 self._append_terminal(f"[/skill] failed to read {found_fp}: {exc}\n")
                 return True
+            # v1.6.69 — parse jcode-style YAML frontmatter if present.
+            fm, body = _parse_skill_frontmatter(skill_text)
+            send_text = body if fm else skill_text
+            meta_parts: list[str] = []
+            if fm.get("name"):
+                meta_parts.append(f"name={fm['name']}")
+            if fm.get("description"):
+                d = fm["description"]
+                meta_parts.append(f"description={d[:60]}{'…' if len(d) > 60 else ''}")
+            if fm.get("allowed-tools"):
+                tools = fm["allowed-tools"]
+                if isinstance(tools, list):
+                    meta_parts.append(f"allowed-tools=[{', '.join(tools)}]")
+                else:
+                    meta_parts.append(f"allowed-tools={tools}")
+            meta = " · ".join(meta_parts) if meta_parts else "(no frontmatter)"
             self._append_terminal(
-                f"[/skill] loaded {found_fp} ({len(skill_text):,} chars)\n"
-                f"  → sending content as a turn…\n"
+                f"[/skill] loaded {found_fp.name} ({len(skill_text):,} chars)\n"
+                f"  {meta}\n"
+                f"  → sending {len(send_text):,} chars as a turn…\n"
             )
-            # Stage into the input + trigger send via the normal path so all
-            # the spinner / streaming / history logic runs uniformly.
-            self.input.setPlainText(skill_text)
+            self.input.setPlainText(send_text)
             cur = self.input.textCursor()
             cur.movePosition(QTextCursor.MoveOperation.End)
             self.input.setTextCursor(cur)
@@ -1548,14 +1605,21 @@ class AgentCard(QFrame):
                 Path.home() / ".sinister" / "skills",
                 Path.home() / ".claude" / "skills",
             ]
-            found = []
+            # v1.6.69 — parse frontmatter to enrich the listing with
+            # name + description (jcode parity). Falls back to the
+            # filename for skills with no frontmatter.
+            found: list[tuple[Path, dict]] = []
             for r in roots:
                 if not r.exists():
                     continue
-                for p in r.glob("*.md"):
-                    found.append((str(r), p.name))
-                for p in r.glob("*/SKILL.md"):
-                    found.append((str(r), p.parent.name + "/SKILL.md"))
+                for p in list(r.glob("*.md")) + list(r.glob("*/SKILL.md")):
+                    try:
+                        fm, _ = _parse_skill_frontmatter(
+                            p.read_text(encoding="utf-8", errors="ignore")[:4096]
+                        )
+                    except Exception:
+                        fm = {}
+                    found.append((p, fm))
             if not found:
                 self._append_terminal(
                     "[/skills] no .md skills found in:\n"
@@ -1563,8 +1627,13 @@ class AgentCard(QFrame):
                 )
             else:
                 self._append_terminal(f"[/skills] {len(found)} skill(s):\n")
-                for root, name in found[:30]:
-                    self._append_terminal(f"  {root}\\{name}\n")
+                for fp, fm in found[:30]:
+                    short = fp.stem if fp.name != "SKILL.md" else fp.parent.name
+                    name = fm.get("name") or short
+                    desc = fm.get("description") or ""
+                    if desc:
+                        desc = f" — {desc[:60]}{'…' if len(desc) > 60 else ''}"
+                    self._append_terminal(f"  /skill {name}{desc}\n")
                 if len(found) > 30:
                     self._append_terminal(f"  ... ({len(found) - 30} more)\n")
             return True
