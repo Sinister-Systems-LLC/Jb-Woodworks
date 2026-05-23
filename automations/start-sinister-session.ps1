@@ -103,7 +103,7 @@ function ReadPrefsJson {
 
 function WritePrefsJson($obj) {
     try {
-        ($obj | ConvertTo-Json -Depth 8) | Out-File $PrefsPath -Encoding utf8
+        [System.IO.File]::WriteAllText($PrefsPath, ($obj | ConvertTo-Json -Depth 8), [System.Text.UTF8Encoding]::new($false))
     } catch {}
 }
 
@@ -211,10 +211,13 @@ function Render-Picker($rows, $defaultKey) {
     Write-Host '    N) ' -NoNewline -ForegroundColor $C.LightP
     Write-Host ('{0,-22}' -f 'New Project') -NoNewline -ForegroundColor $C.White
     Write-Host 'Just name + desc, we scaffold the rest' -ForegroundColor $C.Soft
+    Write-Host '    Q) ' -NoNewline -ForegroundColor $C.LightP
+    Write-Host ('{0,-22}' -f 'Quit') -NoNewline -ForegroundColor $C.White
+    Write-Host 'Close without spawning' -ForegroundColor $C.Soft
     Write-Host ''
     Hr 76 $C.Purple
     Write-Host ''
-    Write-Host ('  Selection [1-{0} / G / A / N, default={1}]  ' -f $rows.Count, $defaultKey) -NoNewline -ForegroundColor $C.White
+    Write-Host ('  Selection [1-{0} / G / A / N / Q, default={1}]  ' -f $rows.Count, $defaultKey) -NoNewline -ForegroundColor $C.White
     Write-Host '>' -NoNewline -ForegroundColor $C.LightP
     return (Read-Host ' ')
 }
@@ -230,6 +233,7 @@ function Resolve-Pick($pick, $rows, $defaultKey) {
     if ($t -eq 'g') { return @{ kind = 'project'; key = 'general' } }
     if ($t -eq 'a') { return @{ kind = 'autoresume' } }
     if ($t -eq 'n') { return @{ kind = 'newproject' } }
+    if ($t -eq 'q' -or $t -eq 'quit' -or $t -eq 'exit') { return @{ kind = 'quit' } }
     return @{ kind = 'project'; key = $defaultKey }
 }
 
@@ -383,7 +387,7 @@ idea
                 if (-not ($vk -contains $slug)) { $vk += $slug }
                 $json.picker.visible_keys = $vk
             }
-            ($json | ConvertTo-Json -Depth 12) | Out-File $ProjectsPath -Encoding utf8
+            [System.IO.File]::WriteAllText($ProjectsPath, ($json | ConvertTo-Json -Depth 12), [System.Text.UTF8Encoding]::new($false))
         }
     } catch {
         Write-Host "   [WARN] could not update projects.json: $($_.Exception.Message)" -ForegroundColor $C.Warn
@@ -471,7 +475,7 @@ function Launch-Session($projRec, $agentName, $accent, $phrase) {
                 $cfg.projects.$rootKey.hasClaudeMdExternalIncludesWarningShown = $true
                 $cfg.projects.$rootKey.hasCompletedProjectOnboarding = $true
             }
-            ($cfg | ConvertTo-Json -Depth 12) | Out-File $claudeCfg -Encoding utf8
+            [System.IO.File]::WriteAllText($claudeCfg, ($cfg | ConvertTo-Json -Depth 12), [System.Text.UTF8Encoding]::new($false))
         } catch {}
     }
 
@@ -614,7 +618,7 @@ function Write-RunLog($projectKey, $agentName, $accent, $kind) {
             outputs = [pscustomobject]@{ project = $projectKey; mode = 'resume' }
         }
         $path = Join-Path $ScriptRunsDir ("start-sinister-session-{0}-{1}.json" -f (Get-Date).ToString('yyyyMMdd-HHmmss'), [guid]::NewGuid().ToString().Substring(0,4))
-        ($rec | ConvertTo-Json -Depth 6) | Out-File $path -Encoding utf8
+        [System.IO.File]::WriteAllText($path, ($rec | ConvertTo-Json -Depth 6), [System.Text.UTF8Encoding]::new($false))
     } catch {}
 }
 
@@ -649,6 +653,12 @@ $pick = Render-Picker $visible $defaultKey
 $resolved = Resolve-Pick $pick $visible $defaultKey
 
 switch ($resolved.kind) {
+    'quit' {
+        Write-Host ''
+        Write-Host '  bye.' -ForegroundColor $C.Soft
+        Write-Host ''
+        exit 0
+    }
     'autoresume' {
         $row = Pick-ResumeRow
         if (-not $row) {

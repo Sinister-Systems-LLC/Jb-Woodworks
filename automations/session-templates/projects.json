@@ -1,5 +1,5 @@
-﻿{
-    "_comment":  "Persistent project registry. v6 (2026-05-23): added `picker` block driving the launcher\u0027s concise 12-entry visible list + ordering. Non-launcher consumers (RKOJ Qt agents_tab, sinister-eve, forge picker) continue to iterate the full `projects` array.",
+{
+    "_comment":  "Persistent project registry. v6 (2026-05-23): added picker block driving the launcher\u0027s concise 11-entry visible list + ordering. Non-launcher consumers (RKOJ Qt agents_tab, sinister-eve, forge picker) continue to iterate the full projects array.",
     "version":  6,
     "default":  "sanctum",
     "picker":  {
