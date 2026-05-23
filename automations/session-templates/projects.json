@@ -17,7 +17,8 @@
                                         "showmasters",
                                         "letstext",
                                         "sinister-generator",
-                                        "jkor"
+                                        "jkor",
+                                        "sinister-snap-api-quantum"
                                     ],
                    "special_keys":  [
                                         "general",
@@ -160,6 +161,15 @@
                          "root":  "C:\\Users\\Zonia\\Desktop\\JKOR",
                          "session_start":  "",
                          "claude_md":  "C:\\Users\\Zonia\\Desktop\\JKOR\\CLAUDE.md",
+                         "github":  ""
+                     },
+                     {
+                         "key":  "sinister-snap-api-quantum",
+                         "display":  "Sinister Snap API Quantum",
+                         "tag":  "Quantum-Seraphim test env (Snap-EMU + Sinister-EMU dual-lane)",
+                         "root":  "D:\\Sinister Sanctum\\projects\\sinister-snap-api-quantum",
+                         "session_start":  "",
+                         "claude_md":  "D:\\Sinister Sanctum\\projects\\sinister-snap-api-quantum\\CLAUDE.md",
                          "github":  ""
                      },
                      {

@@ -93,6 +93,19 @@ def _dashboard_cmd(args) -> int:
     return 0
 
 
+def _summarize_cmd(args) -> int:
+    try:
+        from .summarize import render_human, summarize_all
+    except ImportError:
+        from summarize import render_human, summarize_all  # type: ignore
+    s = summarize_all(since=args.since)
+    if args.json:
+        print(json.dumps(s, indent=2, ensure_ascii=False, default=str))
+    else:
+        print(render_human(s))
+    return 0
+
+
 def _budget_cmd(args) -> int:
     try:
         from .budget import status, remaining_seconds
@@ -156,6 +169,10 @@ def main(argv: list[str] | None = None) -> int:
     p_db = sub.add_parser('dashboard', help='Regenerate the static HTML dashboard (_shared-memory/dashboards/seraphim.html)')
     p_db.add_argument('--out', default=None, help='Optional output path (defaults to _shared-memory/dashboards/seraphim.html)')
     p_db.set_defaults(fn=_dashboard_cmd)
+
+    p_sum = sub.add_parser('summarize', help='Aggregate provenance + snap-re ledger + cloud-budget stats')
+    p_sum.add_argument('--since', default=None, help="Filter window (e.g. '24h', '3d', '90m')")
+    p_sum.set_defaults(fn=_summarize_cmd)
 
     p_ver = sub.add_parser('version', help='Print package version')
     p_ver.set_defaults(fn=_version_cmd)
