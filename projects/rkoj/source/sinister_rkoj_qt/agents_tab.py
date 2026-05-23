@@ -121,6 +121,7 @@ SLASH_COMMANDS: list[tuple[str, str]] = [
     ("/clone",    "spawn a sibling card with the same project + mode"),
     ("/copy",     "copy the most recent EVE reply to clipboard"),
     ("/cost",     "cumulative spend breakdown for THIS card"),
+    ("/api",      "print workstation API surface (127.0.0.1:5077 endpoints)"),
     ("/devices",  "list connected ADB devices inline"),
     ("/diff",     "unified diff between two assistant replies (/diff A B)"),
     ("/export",   "export conversation to a markdown file"),
@@ -2273,6 +2274,32 @@ class AgentCard(QFrame):
                 f"[/model] mode -> {alias} (persisted to agent-prefs.json)\n"
                 f"  Will take effect on the NEXT session you spawn for this agent\n"
                 f"  (claude --resume locks the model to the session's original).\n"
+            )
+            return True
+        if head == "/api":
+            # v1.6.83 — print the workstation API surface so EVE knows
+            # what endpoints are available without having to read source.
+            try:
+                from . import api_server
+                st = api_server.api_status()
+            except Exception:
+                st = {"running": False, "url": "http://127.0.0.1:5077"}
+            self._append_terminal(
+                f"[/api]  workstation API "
+                f"{'(LIVE)' if st['running'] else '(offline)'} "
+                f"-> {st['url']}\n"
+                f"  Endpoints (use any HTTP client):\n"
+                f"    GET  /api/health                       service uptime + version\n"
+                f"    GET  /api/version                      sinister_rkoj_qt version\n"
+                f"    GET  /api/phones                       adb devices + claim owners\n"
+                f"    POST /api/phones/<serial>/claim        {{agent_id, agent_display}}\n"
+                f"    POST /api/phones/<serial>/release      {{agent_id?}}\n"
+                f"    POST /api/phones/<serial>/screenshot   {{agent_id}} -> Desktop PNG\n"
+                f"    POST /api/phones/<serial>/shell        {{agent_id, cmd}}\n"
+                f"    POST /api/phones/<serial>/install-apk  {{agent_id, apk_path, replace?}}\n"
+                f"    GET  /api/agents                       claim-owners + counts\n"
+                f"  Owner-check enforced on shell + screenshot + install-apk.\n"
+                f"  Loopback-only (127.0.0.1) - no external exposure.\n"
             )
             return True
         if head == "/devices":

@@ -30,3 +30,4 @@ Running catalog of every registered tool in the Sanctum. Append-only. See `READM
 | sinister-model | tools/sinister-model/ | tools/sinister-model/sinister_model/ | shipped | 2026-05-21 |
 | sinister-recovery-watchdog | tools/sinister-recovery-watchdog/ | tools/sinister-recovery-watchdog/watchdog.ps1 | shipped | 2026-05-21 |
 | sinister-usage | tools/sinister-usage/ | tools/sinister-usage/sinister_usage/ | shipped | 2026-05-21 |
+| nano-banana | tools/nano-banana/ | tools/nano-banana/nano_banana/api.py | shipped | 2026-05-23 |

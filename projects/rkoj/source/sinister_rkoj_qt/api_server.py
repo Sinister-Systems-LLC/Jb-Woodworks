@@ -177,6 +177,42 @@ class _Handler(BaseHTTPRequestHandler):
                 return self._send_json(200, {"path": str(out_fp)})
             except Exception as exc:
                 return self._send_json(500, {"error": str(exc)})
+        if p.startswith("/api/phones/") and p.endswith("/install-apk"):
+            # v1.6.83 — install an APK file onto a claimed phone via adb.
+            serial = p[len("/api/phones/"):-len("/install-apk")]
+            apk_path = body.get("apk_path", "").strip()
+            if not apk_path or not Path(apk_path).exists():
+                return self._send_json(400, {
+                    "error": "apk_path required + must exist on disk",
+                })
+            adb = _find_adb()
+            if not adb:
+                return self._send_json(500, {"error": "adb not found"})
+            req_aid = body.get("agent_id", "")
+            cur = state.who_owns(serial)
+            if cur and cur.get("agent_id") != req_aid:
+                return self._send_json(403, {
+                    "error": "phone is claimed by another agent",
+                    "owner": cur,
+                })
+            try:
+                args = [adb, "-s", serial, "install"]
+                if body.get("replace", False):
+                    args.append("-r")
+                args.append(apk_path)
+                r = subprocess.run(
+                    args, capture_output=True, timeout=120,
+                    creationflags=_CREATE_NO_WINDOW,
+                )
+                return self._send_json(200 if r.returncode == 0 else 500, {
+                    "stdout": r.stdout.decode("utf-8", "replace"),
+                    "stderr": r.stderr.decode("utf-8", "replace"),
+                    "returncode": r.returncode,
+                })
+            except subprocess.TimeoutExpired:
+                return self._send_json(504, {"error": "install timeout 120s"})
+            except Exception as exc:
+                return self._send_json(500, {"error": str(exc)})
         if p.startswith("/api/phones/") and p.endswith("/shell"):
             serial = p[len("/api/phones/"):-len("/shell")]
             cmd = body.get("cmd", "").strip()

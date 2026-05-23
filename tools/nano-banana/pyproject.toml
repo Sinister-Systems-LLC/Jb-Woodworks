@@ -1,0 +1,18 @@
+# Author: RKOJ-ELENO :: 2026-05-23
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nano-banana"
+version = "0.1.0"
+description = "Gemini 2.5 Flash Image (Nano Banana) wrapper for the Sinister fleet."
+authors = [{ name = "RKOJ-ELENO" }]
+requires-python = ">=3.10"
+dependencies = ["google-genai>=0.7.0"]
+
+[project.scripts]
+nano-banana = "nano_banana.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["nano_banana*"]
