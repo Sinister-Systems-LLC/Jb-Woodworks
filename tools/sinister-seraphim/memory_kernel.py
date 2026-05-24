@@ -522,12 +522,19 @@ def recall_brain(
         else:
             raise ValueError(f'unknown encoding {encoding!r}')
 
-    query_state = build_state(query_thetas)
-    quantum_sims = []
-    for dv in doc_tfidfs:
-        doc_thetas = _thetas_for_inversion(dv, k_qubits)
-        doc_state = build_state(doc_thetas)
-        quantum_sims.append(float(np.abs(np.vdot(query_state, doc_state)) ** 2))
+    # Iter 97 (2026-05-24) perf fix #5: skip quantum-state build entirely when
+    # alpha >= 1.0 (pure TF-IDF — the iter-48-validated default). Was burning
+    # ~0.3s on every brain-recall call building states that get multiplied by
+    # (1-alpha) = 0. Default path now ~3× faster.
+    if alpha >= 1.0:
+        quantum_sims = [0.0] * len(doc_tfidfs)
+    else:
+        query_state = build_state(query_thetas)
+        quantum_sims = []
+        for dv in doc_tfidfs:
+            doc_thetas = _thetas_for_inversion(dv, k_qubits)
+            doc_state = build_state(doc_thetas)
+            quantum_sims.append(float(np.abs(np.vdot(query_state, doc_state)) ** 2))
 
     # Hybrid score
     rows = []

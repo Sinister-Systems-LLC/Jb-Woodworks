@@ -7,6 +7,70 @@ Append-only memory. Most recent at top. Cross-references to brain entries and ot
 
 ---
 
+## 2026-05-24T23:30Z — 🚀 ITER 97: QUANTUM-EXPAND DISPATCH — 4 more parallel agents + perf fix + 6th broadcast + quantum-expand options queued
+
+Operator pivot: "tell the sanctume agents what all they can do with your work. run a quantum expand we will call it and expand your ideas and lets get our memeory system as efficent aspossible". Spawned 4 more parallel audit agents + executed in-lane work.
+
+### Four parallel audits returned
+
+1. **6 remaining lanes audit** (TT-EMU, Bumble-EMU, Freeze, Showmasters, Generator, JKOR):
+   - Zero quantum-doctrine contamination (properly siloed)
+   - 7 cross-lane improvement opportunities surfaced (TT-EMU stale paths + PROGRESS fragmentation, Bumble dormant authorship, Showmasters PROGRESS at 904 lines, Generator 30+ scripts, JKOR dual-path, all 6 lanes missing meta-lessons reference)
+
+2. **Performance audit of seraphim toolkit**:
+   - 5 specific optimizations identified with effort + speedup estimates
+   - Highest-ROI (immediate): alpha=1.0 short-circuit (~15 min, ~3× faster default path)
+   - Next: TF-IDF cache (~2 hr, 10-30× speedup), pairwise kernel vectorization (~1.5 hr, 20-40×), statevector-direct gates (~2 hr, 5-10×)
+
+3. **Quantum-expand: 5 application targets** (corpus-agnostic find-qbc beyond brain):
+   - Option 1: RKOJ-cluster (16 docs) — smallest, fastest sanity check
+   - Option 2: Snap-EMU rule corpus (99 docs, 3.2 MB) — iter-95 target
+   - Option 3: PROGRESS-cross-lane pattern-finder (novel signal — detects duplicated work)
+   - Option 4: Operator-private memory triad discovery (229 docs in Skills 01_MEMORY)
+   - Option 5: Plans-vs-shipped reconciler (213 plans × 158 brain docs)
+
+4. **Action-guide broadcast draft** (700 words, action-oriented, 5 sections)
+
+### In-lane execution (5 deliverables)
+
+1. **Perf fix #5 shipped:** alpha=1.0 short-circuit in `recall_brain()`. Skips per-doc quantum-state build entirely when alpha >= 1.0 (the iter-48 default). Verified: pure-TF-IDF path is now ~0.16s warm (was building quantum states it would multiply by 0). 28/28 tests still pass.
+
+2. **6th cross-agent broadcast posted:** `2026-05-24T2300Z-sanctum-broadcast-action-guide-iters-37-96.md`. Action-oriented "here's what every Sanctum agent can DO" — 5 sections (TL;DR / DO TODAY / ADD TO LANE / AVOID / EXAMPLES). Different framing than the 5 prior broadcasts (which covered doctrine, not actions).
+
+3. **OPERATOR-ACTION-QUEUE expanded** with two new queue blocks:
+   - 6 lane-specific findings (TT-EMU stale paths + 5 more, OWNER-tagged per lane)
+   - 5 quantum-expand application options ranked by ROI
+
+4. **Quantum-expand options documented** as operator-pick queue item (waiting for operator signal to spawn execution agent on chosen target).
+
+5. **Verified test suite still 28/28 green** after perf fix.
+
+### Net session deliverables to date (iters 37→97)
+
+- 1 empirical theorem (Shared-Top-K Necessary Condition)
+- 1 refined conjecture (K' = K × D)
+- 2 brain entries (quantum-kernel doctrine + meta-lessons)
+- **6 cross-agent broadcasts** (iter 41/44/55/64/70/92/97)
+- 2 new CLI features (find-qbc --rank-by + brain-recall + tiebreaker)
+- 3 bug fixes (iter 43 + iter 48 + iter 96 documented failure mode)
+- 2 perf optimizations (iter 95 design + iter 97 implementation #5)
+- 14 self-corrections caught in-iteration
+- 28 regression tests (all green)
+- Production recipe untouched on real-QPU (25-35pp quintuple-verified)
+- Cross-lane queue: 13 specific OWNER-tagged improvement items across 10+ fleet lanes
+- Quantum-expand options: 5 corpus-targets queued for operator pick
+
+### Iter 97 doctrine point
+
+The session has now produced a consistent pattern: **operator pivot → spawn parallel audit agents → synthesize findings → execute in-lane + queue cross-lane.** Each pivot yields a discrete batch of operator value. This is the iter-90 meta-lesson 1 applied: persistent /loop produces probing-questions that reveal real gaps.
+
+### Cost / verification
+
+- Zero cloud burn; ~30 min wall time (4 parallel audits + serial synthesis + perf fix + broadcast + queue rows + test verify)
+- Status: **tested-before-claimed** (28/28 pass; perf fix verified; broadcast posted; queue rows operator-readable)
+
+---
+
 ## 2026-05-24T22:30Z — 🚨 ITER 96: STRESS-TEST CAUGHT TIEBREAKER FAILURE MODE — applies iter-48 lesson to iter 95
 
 Per iter-48's "one smoke test is anecdote, multiple is empirical" lesson, ran a 10-query stress test on the iter-95 tiebreaker. Caught a real failure mode.

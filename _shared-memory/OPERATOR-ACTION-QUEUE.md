@@ -10,6 +10,25 @@ The Sanctum-side mirror of `SESSION-START/02-OPERATOR-QUEUE.md`, with checkboxes
 
 ---
 
+## 2026-05-24 — 🟢 Sinister Chatbot A6: Local LLM probe LIVE on `/chatter` — ready to click-test
+
+> Author: RKOJ-ELENO :: 2026-05-24
+
+**What's live:** `/chatter` page on https://snap.sinijkr.com now has a green/yellow/red probe-status dot next to the "Local LLM" provider pill. When the dot is green, the model field becomes a dropdown of every model the runner has pulled. Click the dot to refresh. Deployed via auto-push commit `009544f`; verified via `docker exec sinister-backend grep -c 'local-probe' /app/dist/...` = 2 hits + production endpoint returns 401 (auth-gated; not 404). Smoke harness verified 3/3 failure-path scenarios (unreachable port → 503, wrong endpoint → 502, localhost-on-production → cross-machine-tunnel hint).
+
+**Click-test (no install needed to see the red-dot path):**
+
+1. Open https://snap.sinijkr.com/chatter
+2. Click the **Local LLM** pill in the provider row → expect red dot "offline" within ~500ms. Hover the dot → tooltip shows: "Local LLM unreachable at http://localhost:11434/v1. NOTE: this backend is the production panel — 'localhost' here means the SERVER ..."
+3. If green dot is desired (full happy path), one of:
+   - **Option A — Ollama on workstation + cloudflared tunnel:** `winget install Ollama.Ollama` → `ollama serve` → `ollama pull llama3.1:8b` → `cloudflared tunnel --url http://localhost:11434` → paste the `https://*.trycloudflare.com/v1` URL into the baseUrl field on /chatter
+   - **Option B — Ollama on Hetzner:** `ssh root@95.216.240.227 'curl -fsSL https://ollama.com/install.sh | sh && systemctl enable --now ollama && ollama pull llama3.1:8b'` → leave baseUrl default → set `LOCAL_LLM_BASE_URL=http://host.docker.internal:11434/v1` in `/opt/sinister-panel/leo_dev/backend/.env` → `docker compose restart sinister-backend`
+   - **Option C — pure UI smoke only:** click around the provider switcher + observe the dot transitions; happy path doesn't need to work for the UI to be exercised
+
+**No operator action required to mark closed** — once one of the green-dot paths is exercised, drop a note in `_shared-memory/inbox/sinister-chatbot/` and the chatbot lane will close this row + pick up A4 (hot-reload persona system_prompt) next.
+
+---
+
 ## 2026-05-24 — 🟠 Sinister OS master plan READY for operator review (P0 → P1 gate)
 
 > Author: RKOJ-ELENO :: 2026-05-24
@@ -36,11 +55,80 @@ The Sinister OS project (Linux-based, EVE-controlled, gaming-capable full-PC OS 
 
 ---
 
+## 2026-05-24 — 🟡 Fleet-wide memory-system findings from iter-97 parallel audits (TT-EMU + Bumble + Freeze + Showmasters + Generator + JKOR)
+
+> Author: RKOJ-ELENO :: 2026-05-24 (iter 97 — second parallel-audit sweep)
+
+Six more lanes scanned. Zero quantum-doctrine contamination (siloed to snap-api-quantum). Other patterns:
+
+### 🟡 Sinister TikTok-EMU — stale C-drive paths + PROGRESS fragmentation
+**Owner:** `agent/sinister-tiktok-emu/*`
+- `CLAUDE.md:3` still points to pre-C→D-move path `D:\Sinister\01_Projects\...`
+- `RESUME-HERE.md:34` says working folder is `C:\Users\Zonia\Desktop\Sinister Tiktok EMU.API`
+- THREE PROGRESS files (`tiktok-emu.md`, `tiktok-emulator-api.md`, `Sinister TikTok API.md`) — collapse to single canonical
+
+### 🟡 Sinister Bumble-EMU — pre-EVE/RKOJ-ELENO authorship
+**Owner:** `agent/sinister-bumble-emu/*` (dormant scaffold)
+`eleno/README.md` + `me/README.md` authored by pre-2026-05-21 convention. When lane wakes, scaffold `CLAUDE.md` with iter-37+ cold-start (brain `_INDEX` grep + `seraphim brain-recall`).
+
+### 🟡 Sinister Showmasters — PROGRESS approaching consolidation threshold
+**Owner:** `agent/showmasters/*`
+`PROGRESS/Showmasters.md` = 904 lines (15 entries). Site shipped LIVE 2026-05-23 19:30 — pre-launch history is reference. Recommend archive entries older than 2026-05-23 15:50Z to `_archive/`.
+
+### 🟡 Sinister Generator — script proliferation
+**Owner:** `agent/sinister-generator/*`
+Source dir has 30+ `_fire_*` / `_one_shot_*` / `_run_*` scripts. Recommend `source/runners/generate_pack.py --brand X --pack Y` dispatcher.
+
+### 🟢 JKOR — dual output-path drift
+**Owner:** `agent/jkor/*`
+`CLAUDE.md:48-49` says both local `generated/` + canonical `sinister-generator/outputs/jkor/` exist. Local is EMPTY. Drop OR symlink — surface as [ASK] before changing.
+
+### 🟢 Sinister Freeze — clean but silo'd from fleet brain
+**Owner:** `agent/sinister-freeze/*`
+Best-in-class memory pattern but ZERO `_shared-memory/knowledge/_INDEX.md` references. Add cold-start "grep brain for `joe-safety`/`tcpa`/`pii` rows".
+
+### 🟢 ALL 6 LANES — none reference the meta-lessons doctrine
+**Owner:** each lane's per-project agent
+Add cold-start step: "Read `_shared-memory/knowledge/loop-driven-sessions-meta-lessons-2026-05-24.md` before any `/loop` invocation."
+
+---
+
+## 2026-05-24 — 🟡 Quantum-expand application options (iter 97 — operator pick)
+
+> Author: RKOJ-ELENO :: 2026-05-24
+
+The `seraphim find-qbc` machinery is corpus-agnostic. Five candidate application targets identified, ranked by ROI:
+
+### Option 1 — RKOJ-cluster topical-coherence audit (smallest, fastest, validates ~16-doc cluster)
+Corpus: 16 `rkoj-*.md` in `_shared-memory/knowledge/`. Question: internally-contradictory pairs requiring tiebreaker doctrine? **Effort: very low.**
+
+### Option 2 — Snap-EMU rule corpus (iter-95 target)
+Corpus: 99 docs in `projects/sinister-snap-emu/source/living-mds/` (46) + `snap-signer-tree/docs/` (53), 3.2 MB. Question: 3 Snap signer/living-md rules forming conflict triangle? Quantum kernel catches semantic-related rules with low lexical overlap. **Effort: low.**
+
+### Option 3 — PROGRESS-cross-lane pattern-finder (novel signal)
+Corpus: `_shared-memory/PROGRESS/*.md` chunked by date headers (~500-1500 chunks across 27 lane logs). Question: 3 entries across DIFFERENT lanes describing the same milestone/bug/decision in different vocabularies? **Effort: low.** **Value: detects duplicated work + missed cross-lane reuse.**
+
+### Option 4 — Operator-private memory triad discovery (Skills 01_MEMORY)
+Corpus: 229 docs in `D:\Sinister\Sinister Skills\01_MEMORY\`. Question: 3 operator-private notes forming hidden decision-chain no per-lane agent can see? **Effort: low.** **Value: detects drift between operator-private and public brain.**
+
+### Option 5 — Plans-vs-shipped reconciler (Skills 10_PLANS vs brain)
+Corpus: 213 plans + 158-doc brain. Question: planned items with quantum-near-equivalent shipped doctrine? **Effort: medium.** **Value: prevents re-implementation.**
+
+**Pick which to pursue — operator signal triggers spawned execution agent.**
+
+---
+
 ## 2026-05-24 — 🟠 Cross-lane findings from parallel memory-audit sweep (EVE on snap-api-quantum, iter 95)
 
 > Author: RKOJ-ELENO :: 2026-05-24
 
 Six parallel audit agents spawned to find memory-system improvement opportunities across the fleet. Cross-lane findings flagged for per-lane agent action (Sanctum master lane / snap-api-quantum lane cannot edit per-project source directories per lane discipline):
+
+**Routing status (2026-05-24T12:15Z, test-modes lane /loop iter 1):** All three actionable rows routed to per-lane inboxes so next-spawn cold-start picks them up:
+- `_shared-memory/inbox/sinister-forge/2026-05-24T1215Z-from-sanctum-REAL-BUG-memory-bridge-2arg-api-4sites.json` (CRITICAL)
+- `_shared-memory/inbox/sinister-panel/2026-05-24T1215Z-from-sanctum-PROGRESS-no-bullshit-restructure.json` (ASK)
+- `_shared-memory/inbox/kernel-apk/2026-05-24T1215Z-from-sanctum-stale-detector-version-literals-3sites.json` (INFO)
+
 
 ### 🔴 Sinister Forge — REAL BUG: `forge_memory_bridge.write()` 2-arg-API mismatch
 
