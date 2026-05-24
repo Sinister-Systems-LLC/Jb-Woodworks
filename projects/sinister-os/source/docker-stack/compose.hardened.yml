@@ -1,0 +1,222 @@
+# compose.hardened.yml — Ghost-server hardening overlay for Sinister Mesh OS
+# Author: RKOJ-ELENO :: 2026-05-24
+#
+# Layers on top of docker-compose.yml with:
+#   docker compose -f docker-compose.yml -f compose.hardened.yml up -d
+#
+# Applies the always-on baseline from operator directive
+# (2026-05-24 verbatim: "i need all safety features you can offer with still
+#  having speed so that each one of my servers is a complete ghost"):
+#
+#   1. no-new-privileges:true  — block setuid escalation in containers
+#   2. cap_drop: [ALL]         — drop every Linux capability by default
+#   3. read_only: true         — root filesystem immutable where service tolerates it
+#   4. tmpfs: /tmp             — paired with read_only so /tmp scratch still works
+#   5. pids_limit              — cap fork bombs
+#   6. mem_limit + cpus        — bound resource burn per service
+#   7. logging size cap        — prevent log-flood disk-exhaustion DoS
+#
+# Per-service tolerance audit (what's NOT hardened and why) lives in
+# HARDENING.md in this folder.
+#
+# Verification (no daemon required):
+#   docker compose -f docker-compose.yml -f compose.hardened.yml config --services
+#   docker compose -f docker-compose.yml -f compose.hardened.yml config > /tmp/effective.yml
+#   python -c "import yaml; yaml.safe_load(open('compose.hardened.yml'))"
+
+name: sinister-mesh
+
+services:
+
+  # ===== FOUNDATION =====
+
+  gitea:
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    pids_limit: 400
+    mem_limit: 1g
+    cpus: 1.0
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  syncthing:
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    pids_limit: 200
+    mem_limit: 1g
+    cpus: 1.0
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  nats:
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m
+    pids_limit: 100
+    mem_limit: 512m
+    cpus: 0.5
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "3"
+
+  yjs:
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m
+    pids_limit: 100
+    mem_limit: 256m
+    cpus: 0.5
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "3"
+
+  ollama:
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    pids_limit: 400
+    mem_limit: 8g
+    cpus: 4.0
+    logging:
+      driver: json-file
+      options:
+        max-size: "20m"
+        max-file: "3"
+
+  vault-api:
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m
+    pids_limit: 100
+    mem_limit: 256m
+    cpus: 0.5
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "3"
+
+  panel:
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    tmpfs:
+      - /tmp:size=64m
+    pids_limit: 200
+    mem_limit: 512m
+    cpus: 1.0
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ===== COMMUNICATIONS =====
+
+  rocketchat-mongo:
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    pids_limit: 400
+    mem_limit: 2g
+    cpus: 2.0
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  rocketchat-mongo-init:
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m
+    pids_limit: 50
+    mem_limit: 128m
+    cpus: 0.25
+    logging:
+      driver: json-file
+      options:
+        max-size: "2m"
+        max-file: "2"
+
+  rocketchat:
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    pids_limit: 800
+    mem_limit: 2g
+    cpus: 2.0
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  guacd:
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m
+    pids_limit: 200
+    mem_limit: 512m
+    cpus: 1.0
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "3"
+
+  guacamole:
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    pids_limit: 400
+    mem_limit: 1g
+    cpus: 1.0
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  filebrowser:
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m
+    pids_limit: 100
+    mem_limit: 256m
+    cpus: 0.5
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "3"

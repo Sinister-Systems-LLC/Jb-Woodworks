@@ -4,6 +4,24 @@ Every spawned Claude session reads this on cold-start. Most-recent at top.
 
 ---
 
+## 2026-05-24 — AGENT CONTINUITY — no >5min self-imposed waits (HARD RULE)
+
+Operator (verbatim 2026-05-24): *"i ened all agents to work foreveer and stop having 20 minutes breaks and shit like this make sure we have all jhcode features swarm. deep audit and reviews all that shit"*.
+
+**Standing rule — every Sanctum agent, every turn, every `/loop` iteration:**
+
+1. No agent may self-impose a `ScheduleWakeup` / `Start-Sleep` / `time.sleep` / `await asyncio.sleep` exceeding **300 seconds (5 minutes)**. Hard ceiling. The "Next wake 20 min for verification" / `delaySeconds=1200` / `+25 min fallback` pattern is **BANNED**.
+2. If verifying a build, job, boot, push, or external file: watch the output file (event-driven via Bash `run_in_background=true` + Monitor) OR re-check every 60-270 s. The 270-s sweet-spot keeps Anthropic prompt-cache warm (~90% input-token discount on resume).
+3. Verification is folded into the **next /loop iteration's natural turn-open**, NOT a separate dedicated nap. Per `no-bullshit-tested-before-claimed-doctrine-2026-05-23` Rule 4 (continuous self-audit), every iteration re-reads + re-verifies meaningful changes.
+4. Allowed values: 60 / 90 / 120 / 180 / 240 / 270 / 300 seconds. Pick the smallest that matches actual upstream latency.
+5. Banned phrasings (do not write these in PROGRESS / heartbeat / cross-agent files): `Next wake 20min`, `ScheduleWakeup armed for 1200s`, `+25 min fallback`, `Fallback wake at +25 min`, `Idle until next operator ping`.
+
+The 20-min nap costs full-rate tokens on resume (cache evicted) AND delays operator-visible work by ~15 min for no gain. Continue with the next queued master-plan / OPERATOR-ACTION-QUEUE item instead.
+
+Full doctrine: `_shared-memory/knowledge/agent-continuity-no-long-naps-2026-05-24.md`. Composes with `agent-autonomy-push-and-completion-2026-05-23` + `no-bullshit-tested-before-claimed-doctrine-2026-05-23` + `wake-on-demand-bot-dispatcher-2026-05-23`.
+
+---
+
 ## 2026-05-19 — Plugin discipline (no marketplace cancer) — HARD RULE
 
 Operator (verbatim): "remove all the shit we added. i want everything to be our shit that we have no asana, discord plugins or any of that slop i told you to review things not add of of this junk to the machine. you should know better."
