@@ -1,0 +1,137 @@
+/* sinister-theme-tokens.css — single source of truth for Sinister UI tokens
+ * Author: RKOJ-ELENO :: 2026-05-24
+ * Doctrine: _shared-memory/knowledge/sinister-ui-canonical-dashboard-skeleton-inheritance-2026-05-24.md
+ *
+ * Import into any web-facing service to inherit Sinister look + feel.
+ * Per-service theme files reference these tokens; never inline values.
+ */
+
+:root {
+  /* ===== surface ramp ===== */
+  --bg:            #0e0a1f;
+  --bg-2:          #1a1330;
+  --surface:       #251a3d;
+  --border:        color-mix(in oklab, white 10%, transparent);
+  --border-strong: color-mix(in oklab, white 16%, transparent);
+
+  /* ===== accent (sinister purple — overrides dashboard-skeleton's iOS blue) ===== */
+  --accent:         #c084fc;
+  --accent-soft:    #a78bfa;
+  --accent-strong:  #8b5cf6;
+  --accent-tint:    color-mix(in oklab, #c084fc 18%, transparent);
+  --accent-glow:    color-mix(in oklab, #c084fc 30%, transparent);
+
+  /* ===== text ramp ===== */
+  --text:           #e9d5ff;
+  --text-soft:      #cbd5e1;
+  --text-muted:     #94a3b8;
+
+  /* ===== semantic ===== */
+  --success:        #86efac;
+  --warning:        #fde047;
+  --danger:         #fca5a5;
+  --info:           var(--accent);
+
+  /* ===== motion (3 durations, 1 easing — per Commandment 6) ===== */
+  --motion-fast:    150ms;
+  --motion-med:     300ms;
+  --motion-slow:    600ms;
+  --easing:         cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* ===== radius ===== */
+  --radius-sm:      6px;
+  --radius:         10px;
+  --radius-lg:      16px;
+  --radius-full:    9999px;
+
+  /* ===== shadow + glow ===== */
+  --shadow-glow:    0 8px 32px var(--accent-glow);
+  --shadow-card:    0 4px 12px rgba(0, 0, 0, 0.4),
+                    inset 0 1px 0 0 color-mix(in oklab, white 14%, transparent);
+  --shadow-popover: 0 16px 48px rgba(0, 0, 0, 0.6);
+
+  /* ===== font ===== */
+  --font-ui:        ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono:      ui-monospace, "JetBrains Mono", "Fira Code", Consolas, monospace;
+}
+
+/* ===== Liquid Glass primitives (per Commandment 7) ===== */
+/* Forked from dashboard-skeleton globals.css with purple accent */
+
+.lg-card {
+  background: color-mix(in oklab, var(--bg-2) 70%, transparent);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card), var(--shadow-glow);
+}
+
+.lg-pill {
+  background: color-mix(in oklab, var(--bg-2) 60%, transparent);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  padding: 0.25rem 0.75rem;
+  color: var(--text-soft);
+  transition: color var(--motion-fast) var(--easing),
+              background var(--motion-fast) var(--easing);
+}
+
+.lg-pill-active {
+  background: color-mix(in oklab, var(--accent) 18%, var(--bg-2));
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.lg-button {
+  background: color-mix(in oklab, var(--accent) 14%, var(--bg-2));
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-full);
+  padding: 0.5rem 1.25rem;
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-weight: 500;
+  transition: transform var(--motion-fast) var(--easing),
+              box-shadow var(--motion-fast) var(--easing);
+  cursor: pointer;
+}
+.lg-button:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-glow);
+}
+
+.lg-input {
+  background: color-mix(in oklab, var(--bg-2) 50%, transparent);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.5rem 0.75rem;
+  color: var(--text);
+  font-family: var(--font-ui);
+}
+.lg-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-tint);
+}
+
+.lg-popover {
+  background: color-mix(in oklab, var(--bg-2) 85%, transparent);
+  backdrop-filter: blur(36px) saturate(180%);
+  -webkit-backdrop-filter: blur(36px) saturate(180%);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-popover);
+}
+
+/* ===== base body ===== */
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+}

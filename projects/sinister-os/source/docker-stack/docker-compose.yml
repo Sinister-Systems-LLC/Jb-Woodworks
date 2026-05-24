@@ -166,32 +166,51 @@ services:
           mkdir -p /tmp/panel
           cat > /tmp/panel/server.js <<'EOF'
         const http = require('http');
-        const html = `<!doctype html><html><head><title>Sinister Mesh OS</title><style>
-          body{margin:0;background:#0e0a1f;color:#e9d5ff;font-family:ui-monospace,monospace;padding:40px;}
-          h1{color:#c084fc;letter-spacing:0.1em;}
-          a{color:#a78bfa;}
-          .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-top:24px;}
-          .card{background:#1a1330;border:1px solid #4c1d95;border-radius:8px;padding:18px;}
-          .card h2{margin:0 0 8px;color:#c084fc;font-size:14px;text-transform:uppercase;letter-spacing:0.08em;}
-          .card p{margin:4px 0;font-size:12px;color:#cbd5e1;}
-          .ok{color:#86efac;} .err{color:#fca5a5;}
-        </style></head><body>
+        // Sinister-theme placeholder per sinister-ui-canonical doctrine 2026-05-24.
+        // Liquid Glass tokens forked from dashboard-skeleton with purple accent.
+        const html = `<!doctype html><html><head>
+          <title>Sinister Mesh OS</title>
+          <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+          <style>
+            :root{
+              --bg:#0e0a1f; --bg-2:#1a1330; --surface:#251a3d;
+              --border:rgba(255,255,255,0.10);
+              --accent:#c084fc; --accent-soft:#a78bfa; --accent-tint:rgba(192,132,252,0.18);
+              --text:#e9d5ff; --text-soft:#cbd5e1; --text-muted:#94a3b8;
+              --success:#86efac; --shadow-glow:0 8px 32px rgba(192,132,252,0.30);
+              --easing:cubic-bezier(0.22,1,0.36,1);
+            }
+            *{box-sizing:border-box}
+            body{margin:0;background:var(--bg);color:var(--text);font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:48px 32px;min-height:100vh}
+            body::before{content:"";position:fixed;inset:0;background:radial-gradient(ellipse at top,var(--accent-tint),transparent 60%);pointer-events:none;z-index:0}
+            .wrap{position:relative;z-index:1;max-width:1280px;margin:0 auto}
+            h1{color:var(--accent);letter-spacing:0.12em;font-size:32px;margin:0 0 8px}
+            .sub{color:var(--text-muted);font-size:13px;margin:0 0 32px}
+            .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+            .lg-card{display:block;text-decoration:none;color:inherit;padding:18px;border-radius:16px;background:rgba(26,19,48,0.7);backdrop-filter:blur(28px) saturate(180%);-webkit-backdrop-filter:blur(28px) saturate(180%);border:1px solid var(--border);box-shadow:0 4px 12px rgba(0,0,0,0.4),inset 0 1px 0 0 rgba(255,255,255,0.14);transition:transform 150ms var(--easing),box-shadow 150ms var(--easing),border-color 150ms var(--easing)}
+            .lg-card:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:var(--shadow-glow),0 4px 12px rgba(0,0,0,0.4),inset 0 1px 0 0 rgba(255,255,255,0.14)}
+            .lg-card h2{margin:0 0 6px;color:var(--accent);font-size:13px;text-transform:uppercase;letter-spacing:0.10em;font-weight:600}
+            .lg-card p{margin:2px 0;font-size:12px;color:var(--text-soft);font-family:ui-monospace,monospace}
+            .dot{display:inline-block;width:6px;height:6px;border-radius:9999px;background:var(--success);margin-right:6px;vertical-align:middle;box-shadow:0 0 8px var(--success)}
+            .foot{margin-top:32px;color:var(--text-muted);font-size:11px;text-align:center}
+          </style></head><body><div class="wrap">
           <h1>SINISTER MESH OS</h1>
-          <p>Panel placeholder. Run <code>bake-panel.sh</code> to install the real dashboard.</p>
+          <p class="sub">10 services live. Theme inherited from dashboard-skeleton (Liquid Glass + purple accent).</p>
           <div class="grid">
-            <div class="card"><h2>Gitea</h2><p>http://localhost:8030</p></div>
-            <div class="card"><h2>Syncthing</h2><p>http://localhost:8384</p></div>
-            <div class="card"><h2>NATS Monitor</h2><p>http://localhost:8222</p></div>
-            <div class="card"><h2>Yjs CRDT</h2><p>ws://localhost:1234</p></div>
-            <div class="card"><h2>Ollama</h2><p>http://localhost:11434</p></div>
-            <div class="card"><h2>Vault API</h2><p>http://localhost:5079/api/vault/health</p></div>
-            <div class="card"><h2>Rocket.Chat</h2><p>http://localhost:8050</p></div>
-            <div class="card"><h2>Guacamole (remote desktop)</h2><p>http://localhost:8060/guacamole</p></div>
-            <div class="card"><h2>Filebrowser</h2><p>http://localhost:8090</p></div>
+            <a class="lg-card" href="http://localhost:8030" target="_blank"><h2><span class="dot"></span>Gitea</h2><p>self-hosted git</p><p>:8030</p></a>
+            <a class="lg-card" href="http://localhost:28384" target="_blank"><h2><span class="dot"></span>Syncthing</h2><p>file replication</p><p>:28384</p></a>
+            <a class="lg-card" href="http://localhost:8222" target="_blank"><h2><span class="dot"></span>NATS Monitor</h2><p>mesh pub/sub</p><p>:8222</p></a>
+            <a class="lg-card" href="http://localhost:1234/healthz" target="_blank"><h2><span class="dot"></span>Yjs CRDT</h2><p>concurrent edits</p><p>:1234</p></a>
+            <a class="lg-card" href="http://localhost:11434" target="_blank"><h2><span class="dot"></span>Ollama</h2><p>local LLM</p><p>:11434</p></a>
+            <a class="lg-card" href="http://localhost:5079/api/vault/health" target="_blank"><h2><span class="dot"></span>Vault API</h2><p>file tree + audit</p><p>:5079</p></a>
+            <a class="lg-card" href="http://localhost:8050" target="_blank"><h2><span class="dot"></span>Rocket.Chat</h2><p>self-hosted comms</p><p>:8050</p></a>
+            <a class="lg-card" href="http://localhost:8060/guacamole/" target="_blank"><h2><span class="dot"></span>Guacamole</h2><p>remote desktop (browser)</p><p>:8060</p></a>
+            <a class="lg-card" href="http://localhost:8090" target="_blank"><h2><span class="dot"></span>Filebrowser</h2><p>file viewer (NIRI-style)</p><p>:8090</p></a>
           </div>
-        </body></html>`;
+          <div class="foot">Inherits dashboard-skeleton theme doctrine (Commandments 1-11) with Sinister purple accent.</div>
+          </div></body></html>`;
         http.createServer((q,r)=>{r.writeHead(200,{'Content-Type':'text/html'});r.end(html);}).listen(3080);
-        console.log('panel placeholder on :3080');
+        console.log('panel placeholder on :3080 (sinister-theme-tokens, liquid glass)');
         EOF
           exec node /tmp/panel/server.js
         fi
