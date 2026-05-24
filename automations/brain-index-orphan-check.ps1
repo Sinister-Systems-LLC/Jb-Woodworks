@@ -28,8 +28,12 @@ if (-not (Test-Path $indexFile)) {
 # Meta files to exclude from orphan list
 $metaFiles = @('README', '_INDEX', '_TEMPLATE')
 
-# On-disk .md files
-$diskSlugs = Get-ChildItem $knowledgeDir -Filter '*.md' -File |
+# On-disk .md files (iter 27: now recurses subdirs but EXCLUDES _archive/).
+# Was non-recursive — missed panel/screenshot-batch-triage-pattern.md and similar
+# lane-organized subdirectory entries. Includes them now; _archive/ stays excluded
+# so brain-archive-orphans output doesn't inflate on_disk count.
+$diskSlugs = Get-ChildItem $knowledgeDir -Filter '*.md' -File -Recurse |
+    Where-Object { $_.FullName -notmatch '[\\/]_archive[\\/]' } |
     ForEach-Object { $_.BaseName } |
     Where-Object { $_ -notin $metaFiles } |
     Sort-Object -Unique

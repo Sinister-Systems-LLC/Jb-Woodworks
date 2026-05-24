@@ -4,6 +4,46 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-24 11:40Z — /loop iter 27 — REAL FINDING: brain-orphan-check missed subdir entries; iter 8 regression discovered + fixed
+
+EVE on Sanctum. Probing for latent bugs paid off again — found a real subtle issue + a regression I'd caused 19 iters ago.
+
+**T1 Probe: does brain-orphan-check correctly exclude `_archive/`?**
+
+Discovered TWO things:
+1. ✅ It DOES exclude `_archive/` (because non-recursive, so any subdir is skipped)
+2. ❌ It ALSO excludes ALL other subdirs — including `_shared-memory/knowledge/panel/` which contains panel-lane brain entries
+
+Specifically: `_shared-memory/knowledge/panel/screenshot-batch-triage-pattern.md` (authored by sinister-panel agent 2026-05-21) was invisible to the auditor.
+
+**Regression discovered:** in iter 8 I "cleaned" 9 missing-file rows from `_INDEX.md`. One of those rows was `screenshot-batch-triage-pattern` — the slug WAS valid; the file just lived in a subdir my auditor couldn't see. **I unintentionally removed a real panel-lane doctrine index row** based on faulty auditor output.
+
+**Fix shipped this iter:**
+- EDIT `automations/brain-index-orphan-check.ps1` — switched `Get-ChildItem -File` to `-File -Recurse` + added `Where-Object` filter to exclude `_archive/` paths. Now finds subdir entries.
+- EDIT `_shared-memory/knowledge/_INDEX.md` — re-added the `screenshot-batch-triage-pattern` row with full title-summary + path note + iter-27-fix attribution
+
+**Verify:**
+- Before fix: on_disk=152 indexed=124 orphans=29 (panel entry hidden)
+- After recurse fix: on_disk=154 indexed=124 orphans=30 (panel entry visible as orphan; +1 also found `apk-install-must-force-stop-2026-05-24` from apk lane in subdir or with similar pattern)
+- After re-index: on_disk=154 indexed=125 **orphans=29** (panel entry indexed; iter-8 regression healed)
+
+**Composes with:**
+- `loop-driven-sessions-meta-lessons-2026-05-24` (sibling brain doctrine — "don't declare saturation prematurely; /loop persistence finds real gaps". This iter is empirical proof — 26 iters in, found a real bug AND a regression I'd caused.)
+- `no-bullshit-tested-before-claimed-doctrine-2026-05-23` (probe-and-fix pattern caught it)
+
+**Files touched:**
+- EDIT `automations/brain-index-orphan-check.ps1` (recurse + _archive exclude)
+- EDIT `_shared-memory/knowledge/_INDEX.md` (re-added screenshot-batch-triage-pattern row)
+- EDIT `_shared-memory/PROGRESS/Sinister Sanctum.md` (this entry)
+
+**Bugs caught + fixed this iter:** 2 (subdir blindness in auditor + iter-8 regression where I removed a valid row).
+
+**Master plan:** unchanged 19/24 (~83%). Brain 154/125/29 APPROACHING.
+
+**Net value:** future EVE sessions can now subdirectory-organize their brain entries (per-lane convention) and they'll still be discoverable. Plus a real panel-lane doctrine is back in the index.
+
+---
+
 ## 2026-05-24 11:35Z — /loop iter 26 — telemetry-delta script + sinister-doctor 8th check
 
 EVE on Sanctum continuing /loop. Operator: "keep going". Sibling brain doctrine `loop-driven-sessions-meta-lessons-2026-05-24` validates: "Don't declare saturation prematurely. /loop persistence can find real gaps." Iter 22's CI-breaking bug spot-check was exactly that pattern.
