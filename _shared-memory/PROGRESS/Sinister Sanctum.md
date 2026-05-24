@@ -4,6 +4,53 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-24 10:00Z — /loop iter 19 — indexed 5 sanctum-owned brain orphans
+
+Short iter. Surfaced 5 sanctum-master-owned doctrines from the orphan list into `_INDEX.md`.
+
+**T1 Regression + sibling activity:**
+- sinister-doctor: YELLOW unchanged
+- Git log: 2 seraphim commits since iter 18 (iter 83/84 — regression tests for memory-kernel)
+- No new bugs found
+
+**X1 Indexed 5 sanctum-owned brain orphans:**
+- `multi-agent-git-coordination-2026-05-23` (sanctum doctrine on race conditions)
+- `multi-agent-git-index-contention-storm-2026-05-23` (empirical anchor for storms)
+- `pip-editable-stale-pth-correction-2026-05-23` (audit-correction)
+- `powershell-out-file-bom-bites-python-readers-2026-05-23` (encoding empirical)
+- `windows-case-folding-resume-point-trap` (Windows fs gotcha)
+- Each gets full _INDEX row with title-summary + status tags + tag list + dates
+- All tagged `indexed-iter-19` for traceability
+- Bug fixed mid-iter: first attempt used slug `windows-case-folding-resume-point-trap-2026-05-21` but actual filename has no date suffix. Corrected to match file.
+
+**Brain status after iter 19:**
+- on_disk: 150 → 151 (sibling added 1 file)
+- indexed: 117 → **122** (my 5 + sibling no-op)
+- orphans: 33 → **29** (5 of mine resolved + 1 new added by sibling)
+- missing_files: 0 (clean!)
+- Rule 7.5: OK → **APPROACHING** (122 hit the 120 threshold; ceiling still 150)
+
+**Status note:** APPROACHING is the script's >=120-indexed warning. Still 28 entries of headroom before VIOLATED. Continued additions should be careful.
+
+**Composes with:**
+- Each entry composes with its sibling related doctrines (linked in title-summary)
+- `no-bullshit-tested-before-claimed-doctrine` (verified slug match before claim)
+- `agent-autonomy-push-and-completion` (own-branch push freely)
+
+**Files touched:**
+- EDIT `_shared-memory/knowledge/_INDEX.md` (5 new rows + 1 slug fix)
+- EDIT `_shared-memory/PROGRESS/Sinister Sanctum.md` (this entry)
+
+**Master plan:** unchanged 19/24 (~83%).
+
+**Net value:** these 5 doctrines are now discoverable to future EVE sessions via grep/search of `_INDEX.md`. Reduces "I hit an issue and need to know if there's prior doctrine" friction.
+
+**Next iter plan:**
+- Continue light polish OR yield
+- Wait on operator for voice POC Q1-Q5 and 4 operator-gated items
+
+---
+
 ## 2026-05-24 09:30Z — /loop iter 18 — CLAUDE.md cold-start now links OPERATOR-QUICK-REFERENCE
 
 Short iter. Wire iter 17's quick-ref into CLAUDE.md cold-start for discoverability.
