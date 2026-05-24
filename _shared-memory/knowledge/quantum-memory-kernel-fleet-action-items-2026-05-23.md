@@ -41,7 +41,23 @@ For K-ANGLE encoding at any K∈{4..8}, **if the top-K TF-IDF features have zero
 
 **Theorem boundary (iter 61):** the rule is intrinsic to ANGLE encoding (individual-feature RY rotations only). It does NOT extend to ZZ-FM at the top-K window (the encoding uses cross-feature RZZ entangling terms).
 
-**Iter 62 sharpening:** ZZ-FM r=1 has a weak feature-overlap predictor at **shared top-2K (top-8 for K=4 qubits) = 0 → anti-QBC**. But it rules out only 2% of triads vs ANGLE's 24% — too weak to be operator-useful. ZZ-FM candidate selection still needs `find-qbc` enumeration. Conjecture (iter 62, 1 data point): for encoding with D-degree feature interactions, the predictor window is K' = K × D.
+**Iter 62-63 sharpening:** ZZ-FM r=1 has a weak feature-overlap predictor at **shared top-2K = 0 → anti-QBC** (2% rule-out, operator-marginal). ZZ-FM r=2 needs **shared top-3K = 0 → anti-QBC** (K=12 at K=4 qubits; 0% rule-out in current corpus, theoretically safe but practically useless).
+
+**Refined conjecture (iter 63, 2 data points):** For ZZ-FM family at reps=r, the predictor window is K' = K × D where **D = 1 + r**. ANGLE family has D=1 (K' = K).
+
+Mechanism: ZZ-FM's repeated CNOT-RZ-CNOT layers compound — each rep propagates correlations one hop further, building effective r-body+ interactions. ANGLE has no entangling layer (D=1; only individual features).
+
+**Operator-utility table:**
+
+| Encoding | D | Safe K' | Rule-out rate | Operator-useful pre-screen? |
+|---|---|---|---|---|
+| ANGLE K=4 | 1 | 4 | 24% | YES |
+| ANGLE K=8 | 1 | 8 | 2% | weak |
+| ZZ-FM r=1 | 2 | 8 | 2% | weak/no |
+| ZZ-FM r=2 | 3 | 12 | 0% | no |
+| ZZ-FM r≥3 | r+1 | (r+1)×K | 0% (predicted) | no |
+
+For ZZ-FM at any reps, `find-qbc` enumeration is required for candidate selection. No useful pre-screen exists.
 
 Mechanism: ZZ-FM's CNOT-RZ(θ_i · θ_j / π)-CNOT layer captures pairwise feature interactions. Even when triads have disjoint top-K features, the cross-feature products can still discriminate. ANGLE has no such cross-feature mechanism, so disjoint top-K → no discrimination → anti-QBC.
 

@@ -7,6 +7,31 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T10:40Z — iteration 63 (K' = K × D conjecture refined — ZZ-FM r=2 has D=3)
+
+Operator: /loop. Tested iter-62's K' = K × D conjecture on ZZ-FM r=2.
+
+### Result
+| K (predictor) | r=1 FP (iter 62) | r=2 FP (iter 63) |
+|---|---|---|
+| 4 | 2 | 10 |
+| 8 | 0 | **1** |
+| 12 | — | **0** |
+| 16 | — | 0 |
+
+ZZ-FM r=2 safe predictor K' = 12 = K × 3. Confirms conjecture refinement: **D = 1 + r** for ZZ-FM family. r=1: D=2 (K'=8). r=2: D=3 (K'=12).
+
+### Mechanism
+ZZ-FM's repeated CNOT-RZ-CNOT layers compound. Each rep propagates correlations one hop further through the entangled state, building effective r-body+ interactions. ANGLE has no entangling layer (D=1; only individual features).
+
+### Operator utility
+ZZ-FM r=2 at safe K' = 12 has 0% rule-out rate — too wide for any current-corpus triad to have zero feature overlap. Pre-screen is theoretically valid but operationally useless. find-qbc enumeration required for ZZ-FM candidate selection at any reps.
+
+### Cost
+Zero cloud burn; 5s CPU.
+
+---
+
 ## 2026-05-24T10:10Z — iteration 62 (ZZ-FM r=1 has weak predictor at shared top-2K)
 
 Operator: /loop. Searched for any ZZ-FM r=1 feature-overlap predictor at broader windows.

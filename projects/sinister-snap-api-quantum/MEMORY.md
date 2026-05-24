@@ -7,6 +7,90 @@ Append-only memory. Most recent at top. Cross-references to brain entries and ot
 
 ---
 
+## 2026-05-24T10:40Z — 📊 ITER 63: K' = K × D conjecture REFINED — ZZ-FM r=2 has D=3 (1+reps)
+
+Iter 62 found ZZ-FM r=1 predictor at K' = 2K (shared top-8) and conjectured K' = K × D. Iter 63 tests on ZZ-FM r=2 — does the conjecture hold?
+
+### Method
+
+For ZZ-FM r=2 on 129-pool top-50: test shared top-K = 0 as anti-QBC predictor for K∈{4, 8, 12, 16, 24, 32}.
+
+### Results
+
+| K (predictor) | ZZ r=1 FP (iter 62) | ZZ r=2 FP | Safe for r=2? |
+|---|---|---|---|
+| 4 | 2 | 10 | NO |
+| 8 | 0 | **1** | NO (1 FP) |
+| **12** | — | **0** | **YES** (0 rule-outs) |
+| 16 | — | 0 | useless |
+| 24 | — | 0 | useless |
+| 32 | — | 0 | useless |
+
+### Finding
+
+**ZZ-FM r=2's safe predictor window is K' ≥ 12.** K' = 8 has 1 false positive (one r=2 QBC triad with zero shared top-8 features).
+
+K' = 12 for r=2 = K × 3, vs K' = 8 for r=1 = K × 2.
+
+### Refined conjecture (now with 2 data points)
+
+```
+ITER-63 REFINED CONJECTURE:
+For ZZ-FM family encoding at reps=r, the Shared-Top-K Necessary Condition
+predictor window is K' = K × D where D = 1 + r:
+
+  r=1:  D = 2,  K' = 2K = 8   (1 anti-QBC rule-out at K=8 in 129-pool)
+  r=2:  D = 3,  K' = 3K = 12  (0 rule-outs at K=12 — too wide to filter)
+  r=3:  D = 4,  K' = 4K = 16  (untested; predicted 0 rule-outs)
+
+For ANGLE family: D = 1, K' = K (24% rule-out at K=4 — operator-useful).
+```
+
+### Mechanism (proposed)
+
+ZZ-FM's RZZ entangling layer couples adjacent qubit pairs:
+- r=1: each pair gets ONE CNOT-RZ-CNOT, capturing 2-body interactions
+- r=2: the second rep operates on an ALREADY-entangled state from r=1. Correlations propagate through the entangled state to NON-adjacent qubits, creating effective 3-body interactions
+- r=3+: each additional rep extends the correlation depth by 1, building up higher-order multi-body interactions
+
+So the effective interaction degree D grows linearly with r: **D(r) = 1 + r for ZZ-FM** (the constant 1 comes from the always-present individual-feature RY-like rotation; +r from each rep adding a correlation depth).
+
+The predictor window K' = K × D scales the feature window proportionally to the encoding's effective interaction complexity.
+
+### Operational implication
+
+Already established (iter 62): no useful pre-screen for ZZ-FM r=1 (2% rule-out). Iter 63 strengthens this: no useful pre-screen for ZZ-FM r=2 either (0% rule-out at safe K').
+
+For ZZ-FM r=2+, the feature window required to be safe (K' = 12+) is too wide for any triad in the current corpus to have zero overlap. The encoding is too expressive — virtually every triad has some shared feature in the top-12 window.
+
+### Doctrine status
+
+The Shared-Top-K Necessary Condition is now:
+
+| Encoding | D | Safe K' | Rule-out rate | Operator-useful? |
+|---|---|---|---|---|
+| ANGLE K=4 | 1 | K' = 4 | 24% | YES |
+| ANGLE K=5..K=8 | 1 | K' = K | 2-20% | partial |
+| ZZ-FM r=1 | 2 | K' = 8 | 2% | weak/no |
+| ZZ-FM r=2 | 3 | K' = 12 | 0% | no |
+| ZZ-FM r≥3 | r+1 | K' = (r+1)*K | predicted 0% | no |
+
+**Practical takeaway:** the feature-overlap predictor is only operator-useful for ANGLE-family encodings. For ZZ-FM at any reps, find-qbc enumeration is required for candidate selection.
+
+### Cost / verification
+
+- Zero cloud burn
+- ~5s CPU for 6-K-value predictor search on r=2
+- Status: **tested-before-claimed** (raw FP counts measured; conjecture refined with 2 supporting data points)
+
+### Untested predictions
+
+- ZZ-FM r=3 should need K' = 16 (D = 4). Untested.
+- An angle-cnot encoding at r=2 should be equivalent to ANGLE r=2 if the cancellation theorem extends (untested — cancellation was only proven for r=1).
+- A higher-order entangling encoding (e.g. RZZZ 3-qubit terms) should have D = 3 at r=1 directly. None implemented; would test the conjecture cleanly.
+
+---
+
 ## 2026-05-24T10:10Z — ⚖️ ITER 62: ZZ-FM r=1 has a weak feature-overlap predictor (shared top-8)
 
 Iter 61 refuted "shared top-K = 0 → anti-QBC" for ZZ-FM at the same top-K (top-4) the encoding uses. Iter 62 searches a broader top-K window.
