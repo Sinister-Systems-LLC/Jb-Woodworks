@@ -115,3 +115,41 @@ When the operator says "this UI doesn't feel right" → check against the 11 Com
 ## Brain INDEX row
 
 Indexed in `_shared-memory/knowledge/_INDEX.md` under "UI / theme" with tag `sinister-ui-canonical`.
+
+---
+
+## Operator reinforcement 2026-05-24 (15:44Z) — the EXPAND principle
+
+Operator (verbatim, second utterance reinforcing the same doctrine):
+
+> *"update memory everything that makes a ui needs to base off our dsahboard skeleton so we have the same uniform clean look across projects and each time we make a dahsbaord and such we need to expand on that"*
+
+This adds one new binding clause to the doctrine: **every new dashboard is an EXPANSION of the skeleton, not a fork.** When a lane needs a primitive or pattern the skeleton doesn't have yet, the lane:
+
+1. **Adds the primitive to `projects/sinister-dashboard-skeleton/dashboard-skeleton/`** first (PR / commit there), then consumes it.
+2. **Updates `THEME-DOCTRINE.md`'s 11 Commandments** if the new primitive introduces a new role (e.g., "one DataGrid" if a project needs the first virtualized table).
+3. **Adds a row to `PATTERNS.md`** in the skeleton with: pattern name · use-case · which surface first needed it · before/after screenshot or token diff.
+4. **NEVER rolls a one-off ad-hoc primitive** in a per-project repo when the skeleton lacks one — that path is exactly what produces the "different feel across projects" the operator is preventing.
+
+The skeleton grows monotonically. Per-project lanes only diverge on the per-surface accent token + brand-lock palette (see "Where this binding diverges" above). All primitives, motion, layout grammar, empty/loading/error slots, and number-animation conventions remain shared.
+
+### Audit hook (post-doctrine)
+
+When any agent ships a UI surface, post-merge self-audit:
+
+| Check | Pass criterion |
+|---|---|
+| Reuses `.lg-*` primitives | Grep new surface for `className.*lg-` → ≥1 match per Card/Button/Rail/Pill |
+| Imports tokens | Surface CSS contains `@import` or inline reference to `sinister-theme-tokens.css` (or per-brand equivalent) |
+| No stock lucide-react | `grep -r "from 'lucide-react'" <surface>/` → 0 matches |
+| Per-page signature | New route has at least one PageShell signature class no other route uses |
+| Skeleton expansion logged | If a new primitive was needed, `dashboard-skeleton/PATTERNS.md` has a fresh row |
+
+A failing audit doesn't block the PR — it logs a row in `_shared-memory/improvement-log.jsonl` via `automations/forever-improve.ps1 -Action Review` (cold-start step 10).
+
+### Composes with
+
+- `forever-improve-review-doctrine-2026-05-24` — the EXPAND principle is forever-expansion applied to UI
+- `github-first-sourcing-doctrine-2026-05-24` — before adding a primitive, check the skeleton AND GitHub for an existing component
+- `no-bullshit-tested-before-claimed-doctrine-2026-05-23` — "shipped a uniform UI" requires the audit hook above to pass, not just visual approval
+

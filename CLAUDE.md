@@ -2,6 +2,18 @@
 
 > **Author:** RKOJ-ELENO :: 2026-05-19
 
+## Operator hard-canonical 2026-05-24 — UI BASE = `dashboard-skeleton`; every new dashboard EXPANDS, never forks
+
+Operator (verbatim 2026-05-24, 15:44Z, reinforcing prior 2026-05-24 mid-loop directive on same topic):
+*"update memory everything that makes a ui needs to base off our dsahboard skeleton so we have the same uniform clean look across projects and each time we make a dahsbaord and such we need to expand on that"*
+
+**Binding for every UI surface the fleet ships** — web, desktop, mobile, OS kiosk shell, every embedded admin (filebrowser/Gitea/Rocket.Chat/Guacamole brand wrappers), every operator-facing tool, every per-project dashboard.
+
+1. **Inherit from `projects/sinister-dashboard-skeleton/dashboard-skeleton/`** — its `THEME-DOCTRINE.md` 11 Commandments are the floor; its `.lg-*` Liquid Glass classes + `sinister-theme-tokens.css` are the canonical token set. Per-surface accent token (`--accent`) is the ONLY allowed divergence (Sinister purple `#c084fc` for fleet surfaces; iOS-blue `#0A84FF` preserved as skeleton-reference; per-project brand-locks set their own).
+2. **EXPAND, never fork.** When a lane needs a primitive the skeleton lacks: add it to the skeleton FIRST (commit there), then consume. Update `dashboard-skeleton/PATTERNS.md` with the new row. The skeleton grows monotonically.
+3. **Never roll a one-off** ad-hoc Button/Card/Input/Chart/StatCard in a per-project repo when the skeleton lacks one — that's what produces the "different feel across projects" the operator is preventing.
+4. Full doctrine: `_shared-memory/knowledge/sinister-ui-canonical-dashboard-skeleton-inheritance-2026-05-24.md` (operator reinforcement appended 2026-05-24 15:44Z with EXPAND principle + post-merge audit hook).
+
 ## Operator hard-canonical 2026-05-23 — MASTER SPAWN AUTHORITY + `--dangerously-skip-permissions` STANDING DEFAULT
 
 Operator (verbatim 2026-05-23): *"you can spawn a child claude. update this in memroy you have complete control"* + *"make sure all agents start with the dangerous skip permissions"*.

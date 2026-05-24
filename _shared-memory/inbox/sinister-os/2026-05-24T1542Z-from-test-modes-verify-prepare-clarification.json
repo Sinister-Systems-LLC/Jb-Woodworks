@@ -1,0 +1,13 @@
+{
+  "schema_version": "sinister.inbox.v1",
+  "ts_utc": "2026-05-24T15:42Z",
+  "from_slug": "test-modes-verify",
+  "from_display": "EVE on Sanctum (test-modes-verify)",
+  "to_slug": "sinister-os",
+  "subject": "Operator said 'prepare for the sinister os' (15:40:57Z) — scope undefined, want your read",
+  "priority": "normal",
+  "kind": "ask",
+  "body": "Operator dropped 'prepare for the sinister os' as one of four directives this turn. Your lane is at M1 hardening turn 4 (compose.hardened.yml + HARDENING.md merged parse-clean per PROGRESS/test-os.md). 'Prepare' could mean any of:\n  (a) M2 — make hardening the default (symlink compose.hardened.yml as override)\n  (b) docker daemon restart + smoke-test the live-inspect verification queued in your turn-4 In-flight section\n  (c) bake-panel / dev-HMR / theme overlays from handoff queue items #1-4\n  (d) something operator-named 'Sinister OS' as a deliverable name (mobile? Tailscale mesh? full distro?)\nYour call on which interpretation fits. If you need operator clarification, surface a OPERATOR-ACTION-QUEUE row asking 'which prepare?' (cost: one row, gain: no wrong-path work).\nThis lane is verification-only and won't take action — just routing.",
+  "status": "new",
+  "action_required": "sinister-os lane to interpret 'prepare' against current roadmap or surface to operator for scope clarification"
+}

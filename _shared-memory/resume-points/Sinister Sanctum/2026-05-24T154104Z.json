@@ -1,0 +1,54 @@
+{
+  "schema_version": "sinister.resume-point.v1",
+  "ts_utc": "2026-05-24T15:41Z",
+  "project": "sanctum",
+  "agent_name": "test-modes-verify",
+  "intended_slug": "test-modes",
+  "slug_collision_note": "Spawn instructed slug 'test-modes' but the slug was actively held by a concurrent 'Sinister Custodian' persona who clobbered both my heartbeat AND PROGRESS file mid-turn. Rehomed deliverables to 'test-modes-verify' per lane-discipline canonical-10.",
+  "mode": "resume",
+  "focus_intent": "verification lane — canonical-protections-check captured 3 churn reproducers + 3 fresh operator directives queued (multi-account/round-robin, never-stop broadcast, prepare-for-sinister-os) routed to right lanes via this resume-point",
+  "git": {
+    "branch": "agent/sinister-os/m1-hardening-2026-05-24",
+    "head": "532f4e9",
+    "head_msg": "sinister-os: M1 hardening overlay (compose.hardened.yml + HARDENING.md)"
+  },
+  "progress_top3": [
+    "2026-05-24 15:36Z — turn 10 verification: 3 churn reproducers captured (transient P8 / sinister-chatbot status-code pollution / live slug-collision) + 3 operator utterances logged + rehomed to test-modes-verify slug",
+    "2026-05-24 14:35Z — turn 9 heartbeat (prior session): branch-hygiene crisis acknowledged, EVE.exe v0.4.5 verified 11/11 PASS, abandoned committing",
+    "2026-05-24 (pre): EVE on Sanctum lane original spawn for test-modes verification work"
+  ],
+  "deliverables_this_session": [
+    "_shared-memory/PROGRESS/test-modes-verify.md (NEW) — full 3-finding writeup with no-bullshit ledger",
+    "_shared-memory/heartbeats/test-modes-verify.json (NEW) — turn 10 heartbeat with slug_collision_note",
+    "_shared-memory/operator-utterances.jsonl — appended 3 fresh rows (15:40:56Z, 15:40:57Z x2) for: multi-account/round-robin · never-stop broadcast · prepare-for-sinister-os",
+    "_shared-memory/canonical-protections-violations.log — captured 15:31:42Z PASS=10 (after transient FAIL at ~15:31Z)"
+  ],
+  "open_for_next_session": [
+    "Route directive 1 (multi-account/round-robin) to Sinister Custodian lane — they already shipped launcher full-power fallback this turn at start-sinister-session.ps1:1129-1153 and edited claude-accounts.json (max_sessions_concurrent 5->999); they have active context for the round-robin extension",
+    "Route directive 2 (never-stop broadcast + hot memory/tool updates) to Sanctum master lane — fleet-update channel ALREADY exists at _shared-memory/fleet-updates.jsonl (cold-start step 11); needs hot-reload mechanism so agents don't need restart for memory/tool updates",
+    "Route directive 3 (prepare for sinister os) to test-os lane — they're already deep in M1 hardening (test-os.md turn 4 has compose.hardened.yml + HARDENING.md verified parse-clean); ask them what 'prepare' means in their lane's roadmap",
+    "Recommend Custodian rename their slug from 'test-modes' to 'custodian' (free) so this lane's slug stops getting clobbered"
+  ],
+  "verification_artifacts": {
+    "canonical_protections_check_run1": "PowerShell exit 1, PASS=9 FAIL=1, P8 missing sinister-chatbot",
+    "canonical_protections_check_run2": "PowerShell exit 0, PASS=10 FAIL=0, dir reappeared ~30s later",
+    "pollution_files_in_chatbot": "200/307/401/502 (broken curl redirect from snap.sinijkr.com probe)",
+    "slug_collision_evidence": "Read tool got EVE-on-Sanctum heartbeat, ~3min later got Sinister-Custodian heartbeat at same path"
+  },
+  "inbox_unread_count": 0,
+  "last_5_files_touched_24h": [
+    "_shared-memory/PROGRESS/test-modes-verify.md",
+    "_shared-memory/heartbeats/test-modes-verify.json",
+    "_shared-memory/operator-utterances.jsonl",
+    "_shared-memory/resume-points/Sinister Sanctum/2026-05-24T154104Z.json",
+    "_shared-memory/canonical-protections-violations.log"
+  ],
+  "pre_warm_reads": [
+    "_shared-memory/PROGRESS/test-modes-verify.md",
+    "_shared-memory/heartbeats/test-modes-verify.json",
+    "_shared-memory/PROGRESS/test-modes.md",
+    "_shared-memory/heartbeats/test-modes.json",
+    "automations/canonical-protections-check.ps1",
+    "_shared-memory/canonical-protections-violations.log"
+  ]
+}
