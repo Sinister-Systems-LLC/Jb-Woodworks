@@ -7,6 +7,25 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T15:00Z — iteration 73 (seraphim README sync — brain-recall default + combined predictor)
+
+Operator: /loop. Found two genuine README sync gaps that the iter-42/iter-47 README updates didn't cover:
+
+### Updated `tools/sinister-seraphim/README.md`
+1. **brain-recall comment block fixed.** Was: "alpha=0.5 → equal mix; alpha=1.0 → pure TF-IDF" (the iter-47 broken default). Now: clearly states alpha=1.0 default, why alpha<1.0 degrades pair-wise recall, and points to the iter-44 vs pair-wise scope distinction.
+2. **Added Shared-Top-K Necessary Condition paragraph + K=4 combined pre-screen Python snippet.** Covers the iter-58→66 theorem + 44% rule-out on 149-full corpus + the operator-usable Python pre-screen code. K=5/K=6 safe-but-narrower rule-outs noted; ZZ-FM "no useful pre-screen" stated explicitly.
+
+### Net value
+README now matches brain entry TL;DR (iter-68 refreshed) for the operator-facing pre-screen + brain-recall default. The two main operator-onboarding docs are now in sync.
+
+### Cost
+Zero cloud burn; ~5 min wall time.
+
+### Iter 72 skipped no-op
+Iter 72 was a signal-check no-op (no changes). Skipped logging it to PROGRESS to avoid noise.
+
+---
+
 ## 2026-05-24T14:25Z — iteration 71 (no-op check; doctrine + broadcasts internally consistent)
 
 Operator: /loop. No change signals (corpus 150, budget 60.11s/50). Audited other broadcasts (iter-41, iter-55, iter-64) for stale claims — all explicitly compose/extend rather than supersede; no annotations needed.

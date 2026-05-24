@@ -106,9 +106,12 @@ seraphim audit --variant zzfm-r1 --resume-from outputs/prior.json --triad ... --
 seraphim audit --variant zzfm-r2 --sim-only            # ZZ-FM r=2 sim only (real-QPU refused by guard)
 seraphim audit --list-variants                         # show all 5 variants + their depth/burn estimates
 
-seraphim brain-recall "your query string" --top-k 5    # NEW iter 47: TF-IDF + quantum-kernel hybrid recall
-                                                       # default encoding: K=8 ANGLE (iter-44 doctrine)
-                                                       # alpha=0.5 → equal mix; alpha=1.0 → pure TF-IDF; alpha=0.0 → pure quantum
+seraphim brain-recall "your query string" --top-k 5    # iter 47 SHIPPED, iter 48 FIXED: TF-IDF + quantum-kernel hybrid recall
+                                                       # DEFAULT alpha=1.0 (pure TF-IDF) per iter-48 stress-test.
+                                                       # alpha<1.0 DEGRADES pair-wise recall (K=8 ANGLE collapses to
+                                                       # noise-docs at sparse-query input). Override only after empirical
+                                                       # validation. Doctrine: iter-44 K=8 ANGLE "wider net" applies to
+                                                       # TRIAD (3-doc) discrimination, NOT pair-wise (query vs doc).
 
 seraphim summarize --since 24h                         # provenance + ledger aggregation
 ```
@@ -128,6 +131,23 @@ seraphim summarize --since 24h                         # provenance + ledger agg
 **Sim-ceiling characterization** (added iter 40, 2026-05-24): a 12-triad reps-sweep established **`classical ↔ sim ceiling` Pearson r=+0.9537** (very strong). Classical TF-IDF baseline is the single best predictor of theoretical quantum-kernel advantage. Higher classical → higher ceiling, almost monotonically. Production recipe r=1 captures 48-82% of the ceiling depending on triad — the 18-52% gap is what error-mitigation work (ZNE / twirling / readout cal) could theoretically unlock at r=2..r=5 on a quieter QPU. Today's Wukong-180 noise saturates real-QPU at r=2+, so r=1 is optimal for production today.
 
 Use `--rank-by ceiling` to surface high-ceiling triads (highest theoretical ZZ-FM advantage). Use `--rank-by headroom` to surface triads with biggest `ceiling - r=1` gap (= error-mitigation payoff targets). Use `--rank-by classical` to re-sort the top-N by classical baseline.
+
+**Shared-Top-K Necessary Condition + K=4 combined pre-screen** (iter 58/59/60 theorem + iter 65/66 sharpening): For K-ANGLE encoding at K∈{4..8}, a triad is NEVER QBC if the top-K TF-IDF features have zero intersection across all 3 docs (500 zero-FP classifications across 2 corpora). For K=4 ANGLE specifically, the predictor extends: skip a triad if (a) shared top-4 = 0 OR (b) all 3 docs share the same #1 feature. Combined predictor rules out **44% of candidate triads on the 149-doc full corpus** before running the encoding — zero false positives. Mechanism: K=4 only uses top-4 features; disjoint sets → orthogonal feature subspaces → no quantum discrimination; same #1 → qubit 0 stuck (25% of capacity lost).
+
+Quick Python pre-screen (saves ~half of pointless K=4 audit runs):
+```python
+import numpy as np
+def k4_angle_worth_running(triad_tfidfs):
+    top4 = [set(np.argsort(np.abs(v))[-4:].tolist()) for v in triad_tfidfs]
+    if len(top4[0] & top4[1] & top4[2]) == 0:
+        return False  # guaranteed K=4 anti-QBC
+    top1 = [int(np.argmax(np.abs(v))) for v in triad_tfidfs]
+    if top1[0] == top1[1] == top1[2]:
+        return False  # all 3 same #1 → guaranteed K=4 anti-QBC
+    return True  # might be QBC; run audit to verify
+```
+
+For K=5/K=6 ANGLE: the combined predictor stays safe (28% / 12% rule-out on the 129-doc pool). For K≥7 ANGLE or any ZZ-FM reps: use only the shared-top-K=0 condition (safe but weak filter). ZZ-FM r=1+ has no useful pre-screen — use `find-qbc` enumeration.
 
 Full doctrine: `_shared-memory/knowledge/quantum-memory-kernel-fleet-action-items-2026-05-23.md`.
 
