@@ -4,6 +4,63 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-24 08:00Z — /loop iter 11 — C.1 sinister-doctor SHIPPED + master plan audit (17/24 shipped over 10 iters)
+
+EVE on Sanctum continuing /loop. Quick iter: regression + meta-CLI + audit.
+
+**T1 Regression:** canonical-protections 0.22s PASS=9 / brain 150/117 OK / EVE.exe v0.3.0.
+
+**Master plan audit (sanctum-complete-and-expand-2026-05-23T1145Z):**
+
+24 actionable rows (10 Section B + 14 Section C). After /loop iters 1-10:
+
+| Status | Count | Items |
+|---|---|---|
+| ✅ Shipped | 17 | B.1, B.3-B.7, B.9, B.10, C.2, C.4, C.5, C.6, C.9, C.10, C.11, C.13, C.14 |
+| ⏳ Pending master | 1 | C.1 sinister-doctor (this iter X1) |
+| 🟡 Operator-gated | 4 | C.3 L3 guard, C.7 browser, C.8 mermaid Rust, C.12 context impl |
+| 🟢 Low value | 2 | B.2 resume-point cleanup, B.8 inbox cleanup |
+
+**X1 C.1 sinister-doctor SHIPPED:**
+
+- NEW `automations/sinister-doctor.ps1` — meta-CLI composing 6 individual scripts:
+  - canonical-protections-check (P1-P9)
+  - per-project-protections-check (PP1-PP5 per lane)
+  - brain-index-orphan-check (Rule 7.5 ceiling)
+  - inbox-manifest-build (per-lane unread)
+  - telemetry-rollup (daily metrics; slow-skippable)
+  - index-resume-search (970-entry index; slow-skippable)
+- 3 output modes: console (default colored summary) / `-Html` (HTML report) / `-Json` (machine-readable)
+- `-Quick` flag skips the 2 slow steps; quick run completes in **0.59s**
+- Exit codes: 0=GREEN, 1=YELLOW, 2=RED (CI-friendly)
+- Smoke PASS: `quick mode` returns YELLOW (per-project 4/22 < 50% threshold; everything else green)
+
+**Coverage:** This single command is now the operator's "is the fleet healthy?" answer. Hooks into:
+- Hot-path: P1-P9 + brain ceiling = sub-second
+- Slow-path: telemetry + resume-search = ~3-5s including index rebuild
+- Could be wired into SinisterCustodian nightly cron for trend tracking
+
+**X2 Master plan audit complete:** documented above. 17/24 shipped = ~71% of original master-plan scope landed in 10 /loop iters. Remaining items split: 1 master-actionable (now shipped), 4 operator-gated (need decisions), 2 low-value sweeps.
+
+**Composes with:**
+- All 6 component scripts (composes literally — calls each directly)
+- `no-bullshit-tested-before-claimed-doctrine-2026-05-23` (consolidated audit in one shot)
+- `bot-fleet-quick-reference-2026-05-23` (sinister-doctor is the "is the fleet healthy?" tool the operator now has)
+
+**Files touched:**
+- NEW `automations/sinister-doctor.ps1` (C.1)
+- EDIT `_shared-memory/PROGRESS/Sinister Sanctum.md` (this entry)
+
+**Brain status:** 150/117/33 OK. No new doctrines (sinister-doctor is impl of existing C.1 row in master plan).
+
+**Next iter plan:**
+- Wire sinister-doctor into nightly cron (operator-gated SinisterCustodian or new SinisterDoctor task)
+- Wire index-resume-search into launcher Pick-ResumeRow
+- Per-project autofix opt-in (operator runs the script to bring lanes from 4 → 12+ fully PASS)
+- Wait on operator: voice POC Q1-Q5 / C.7 browser bridge / C.8 mermaid Rust
+
+---
+
 ## 2026-05-24 08:25Z — /loop iter 10 — dashboard PP card + C.11 resume-search index + regression
 
 EVE on Sanctum continuing /loop. Test-first emphasis maintained.
