@@ -5,6 +5,64 @@
 
 ---
 
+## 2026-05-24T13:23Z — Turn 2: Mesh OS plan + docker stack live (9/10 services UP)
+
+Operator stacked three additional directives mid-turn:
+1. *"file system + multi-system mesh + 2-devs-no-override + agents compound + central self-hosted + all systems embedded + plan + docker test"* (the big one)
+2. *"multi claude account support + round-robin + swarm + all memory + quantum tools"*
+3. *"folder viewer (NIRI-style) + comms self-hosted + AnyDesk replacement + Sinister mobile app + Sinister panel theme"*
+
+### Shipped (verified)
+
+- **`plans/mesh-os-master-plan-2026-05-24.md`** — supersedes the single-machine plan with the mesh layer. 12 sections; covers: mesh shape ASCII, Vault-as-FS, NATS pub/sub, Yjs CRDT, multi-account mesh extension, swarm leader election, 8 phased deliverables (M0-M8), dashboard `/mesh` tab spec, embedded-fleet checklist (15 Sinister systems), risks, operator gate questions. **Extended scope §11.5** added the 3rd directive's modules (M-Files / M-Chat / M-Remote / M-Mobile / M-Workspace) + a 26-row daily-driver feature audit + theme-compliance plan.
+- **`source/docker-stack/docker-compose.yml`** — 10-service stack: gitea, syncthing, nats, yjs, ollama, vault-api, panel, rocketchat (+mongo +mongo-init), guacamole (+guacd), filebrowser. Non-conflicting port range chosen for operator's machine (3081/8030/28384/8050/8060/8090).
+- **`source/docker-stack/yjs-server/{Dockerfile,package.json,server.js}`** — Yjs WebSocket relay built locally (no public image exists). LevelDB persistence.
+- **`source/docker-stack/vault-api/{Dockerfile,requirements.txt,server.py}`** — FastAPI containerized vault HTTP API (mirrors existing daemon surface). Note: existing host daemon on 5078 took the port; the container still defined for portability to other nodes.
+- **`source/docker-stack/SERVICE-MAP.md`** — operator-facing port + URL + login-creds reference with smoke-test results.
+- **`source/docker-stack/README.md` + `smoke-test.sh`** — service catalog + curl-based health verification script.
+- **`source/docker-stack/config/guacamole/user-mapping.xml`** — placeholder operator login (must rotate on real deployment).
+
+**Live smoke-test 2026-05-24T13:18Z (host: operator's Docker Desktop 29.1.3):**
+
+| Service | Endpoint | Result |
+|---|---|---|
+| gitea | `:8030/api/healthz` | ✅ `{"status":"OK"}` |
+| syncthing | `:28384/` | ✅ HTTP 200 |
+| nats | `:8222/healthz` | ✅ `{"status":"ok"}` |
+| yjs | `:1234/healthz` | ✅ `{"status":"ok","service":"sinister-yjs"}` |
+| ollama | `:11434/` | ✅ `Ollama is running` |
+| vault | `:5078/api/vault/health` | ✅ (existing host daemon answering) |
+| panel | `:3081/` | ✅ HTTP 200 (placeholder page with Sinister purple) |
+| guacamole | `:8060/guacamole/` | ✅ HTTP 200 |
+| filebrowser | `:8090/` | ✅ HTTP 200 |
+| rocketchat | `:8050/api/info` | 🟡 mongo replset reconfigured to use `rocketchat-mongo:27017` hostname; RC restarted; still completing first-boot initialization at turn-close |
+
+### In-flight (unverified)
+
+- **Rocket.Chat first-boot** — Mongo replica set is now correctly configured (verified `rs.conf()` returns `rocketchat-mongo:27017`). RC takes 2-5 min on first start. Next turn: re-check `curl :8050/api/info` and run the operator setup wizard.
+- **Sinister theme overlay** on filebrowser/gitea/guacamole/rocketchat — listed in plan §11.5 as M2 work; not yet applied.
+- **Containerized vault-api** — bound to host port 5079 in compose (after edit), but the existing host daemon at 5078 is what answered the smoke-test. The container isn't actively serving (overshadowed by host daemon). Acceptable for single-host; on Leo's machine (no existing daemon) the container will be the primary.
+
+### Open (queued for M2+)
+
+- Bake Panel via `bake-panel.sh` so the placeholder swaps for the real Next.js dashboard. Requires Node 20+ on host and the panel/dashboard repo to support `output: 'standalone'` (handled by staging-copy in bake-panel.sh).
+- Add `/mesh` route to Panel showing connected nodes + agents + phones.
+- Wire EVE chat into a Panel API route + RC integration.
+- M3: second node (Leo's machine); Syncthing pair; Gitea mirror; NATS cluster.
+- M5: phone (sinister-kernel-apk) joins as edge node; bundles RC + Guacamole + EVE WebViews.
+- Migrate existing GitHub repos to mesh Gitea (M8 — final cutover step).
+- Theme pack (M2): Sinister CSS for filebrowser/gitea/rocketchat/guacamole.
+- M-Mobile build (Android APK with EVE socket relay + RC client + Guacamole webview).
+
+### No-bullshit ledger for this turn
+
+- Said "verified" only for the 9 services that returned an actual 200 + expected payload to curl. Rocket.Chat correctly listed as "in-flight (unverified)" with the specific reason and the fix-step that was applied.
+- Plan additions in §11.5 are labeled by phase; no claim that any of M2-M8 work shipped this turn.
+- Containerized vault-api: explicitly noted as overshadowed by host daemon (not pretending the container is what's serving).
+- Quality-degradation signals: master plan now at ~14 sections (cap is 12 per doctrine; consolidated §11.5 into existing rather than spawning new top-level). PROGRESS file still under 300 KB.
+
+---
+
 ## 2026-05-24T12:40Z — Turn 1: fresh spawn, operator redirect to ship-now mode
 
 Spawned in RESUME mode on `projects/sinister-os/`. No prior `Sinister OS` resume-point folder existed → first turn for this lane slug. Operator redirected mid-spawn:

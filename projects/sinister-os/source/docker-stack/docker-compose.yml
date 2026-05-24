@@ -1,0 +1,291 @@
+# docker-compose.yml — Sinister Mesh OS foundation stack
+# Author: RKOJ-ELENO :: 2026-05-24
+#
+# Brings up every service a Mesh OS node runs locally. Port mapping picks a
+# Sinister-friendly non-conflicting range (8030-8099 + 5079 + 3081 + 4222 +
+# 1234 + 11434) so the stack co-exists with the operator's existing
+# sanctum-git (3300), JOKR (7071/7078/9000), and Sinister Vault daemon
+# (5078).
+#
+# Bring up:   docker compose up -d --build
+# Status:     docker compose ps
+# Logs:       docker compose logs -f <service>
+# Tear down:  docker compose down       (keep data)
+#             docker compose down -v    (wipe data — DANGEROUS)
+#
+# Lane discipline:
+#   - This compose file is OWNED BY the sinister-os lane.
+#   - Data volumes write into ./data/* (gitignored).
+#   - Config templates in ./config/* are committed and reusable.
+
+name: sinister-mesh
+
+networks:
+  mesh:
+    driver: bridge
+
+services:
+
+  # ===== FOUNDATION (M1) =====
+
+  # --- Gitea: self-hosted git ---
+  gitea:
+    image: gitea/gitea:1.22.6
+    container_name: sinister-gitea
+    restart: unless-stopped
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+      - GITEA__database__DB_TYPE=sqlite3
+      - GITEA__server__DOMAIN=localhost
+      - GITEA__server__SSH_PORT=8022
+      - GITEA__server__HTTP_PORT=3000
+      - GITEA__server__ROOT_URL=http://localhost:8030/
+      - GITEA__service__DISABLE_REGISTRATION=true
+      - GITEA__security__INSTALL_LOCK=true
+    volumes:
+      - ./data/gitea:/data
+    ports:
+      - "8030:3000"
+      - "8022:22"
+    networks: [mesh]
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/api/healthz || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+
+  # --- Syncthing: file replication ---
+  syncthing:
+    image: syncthing/syncthing:1.30
+    container_name: sinister-syncthing
+    restart: unless-stopped
+    hostname: sinister-mesh-node
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - ./data/syncthing:/var/syncthing/config
+      - ./data/sync:/var/syncthing/Sync
+    ports:
+      - "28384:8384"
+      - "22000:22000/tcp"
+      - "22000:22000/udp"
+      - "21027:21027/udp"
+    networks: [mesh]
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8384/rest/noauth/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+
+  # --- NATS: mesh pub/sub ---
+  nats:
+    image: nats:2.10-alpine
+    container_name: sinister-nats
+    restart: unless-stopped
+    command: >
+      -js
+      -m 8222
+      --name sinister-mesh-node
+      --cluster_name SINISTER_MESH
+    volumes:
+      - ./data/nats:/data
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+      - "6222:6222"
+    networks: [mesh]
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8222/healthz || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+
+  # --- Yjs CRDT relay (built from yjs-server/) ---
+  yjs:
+    build:
+      context: ./yjs-server
+    container_name: sinister-yjs
+    restart: unless-stopped
+    volumes:
+      - ./data/yjs:/app/data
+    ports:
+      - "1234:1234"
+    networks: [mesh]
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:1234/healthz || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+
+  # --- Ollama: local LLM substrate ---
+  ollama:
+    image: ollama/ollama:0.5.7
+    container_name: sinister-ollama
+    restart: unless-stopped
+    volumes:
+      - ./data/ollama:/root/.ollama
+    ports:
+      - "11434:11434"
+    networks: [mesh]
+
+  # --- Vault HTTP API (containerized; non-conflicting port 5079) ---
+  vault-api:
+    build:
+      context: ./vault-api
+    container_name: sinister-vault-api
+    restart: unless-stopped
+    environment:
+      - VAULT_ROOT=/vault
+      - VAULT_PORT=5078
+    volumes:
+      - ./data/vault:/vault
+    ports:
+      - "5079:5078"
+    networks: [mesh]
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:5078/api/vault/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+
+  # --- Panel (dashboard kiosk; non-conflicting port 3081) ---
+  panel:
+    image: node:22-alpine
+    container_name: sinister-panel
+    restart: unless-stopped
+    working_dir: /app
+    command:
+      - sh
+      - -c
+      - |
+        if [ -f /app/server.js ]; then
+          exec node server.js
+        else
+          mkdir -p /tmp/panel
+          cat > /tmp/panel/server.js <<'EOF'
+        const http = require('http');
+        const html = `<!doctype html><html><head><title>Sinister Mesh OS</title><style>
+          body{margin:0;background:#0e0a1f;color:#e9d5ff;font-family:ui-monospace,monospace;padding:40px;}
+          h1{color:#c084fc;letter-spacing:0.1em;}
+          a{color:#a78bfa;}
+          .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-top:24px;}
+          .card{background:#1a1330;border:1px solid #4c1d95;border-radius:8px;padding:18px;}
+          .card h2{margin:0 0 8px;color:#c084fc;font-size:14px;text-transform:uppercase;letter-spacing:0.08em;}
+          .card p{margin:4px 0;font-size:12px;color:#cbd5e1;}
+          .ok{color:#86efac;} .err{color:#fca5a5;}
+        </style></head><body>
+          <h1>SINISTER MESH OS</h1>
+          <p>Panel placeholder. Run <code>bake-panel.sh</code> to install the real dashboard.</p>
+          <div class="grid">
+            <div class="card"><h2>Gitea</h2><p>http://localhost:8030</p></div>
+            <div class="card"><h2>Syncthing</h2><p>http://localhost:8384</p></div>
+            <div class="card"><h2>NATS Monitor</h2><p>http://localhost:8222</p></div>
+            <div class="card"><h2>Yjs CRDT</h2><p>ws://localhost:1234</p></div>
+            <div class="card"><h2>Ollama</h2><p>http://localhost:11434</p></div>
+            <div class="card"><h2>Vault API</h2><p>http://localhost:5079/api/vault/health</p></div>
+            <div class="card"><h2>Rocket.Chat</h2><p>http://localhost:8050</p></div>
+            <div class="card"><h2>Guacamole (remote desktop)</h2><p>http://localhost:8060/guacamole</p></div>
+            <div class="card"><h2>Filebrowser</h2><p>http://localhost:8090</p></div>
+          </div>
+        </body></html>`;
+        http.createServer((q,r)=>{r.writeHead(200,{'Content-Type':'text/html'});r.end(html);}).listen(3080);
+        console.log('panel placeholder on :3080');
+        EOF
+          exec node /tmp/panel/server.js
+        fi
+    environment:
+      - PORT=3080
+      - HOSTNAME=0.0.0.0
+      - BACKEND_URL=http://vault-api:5078
+    volumes:
+      - ../iso-build/airootfs/srv/sinister-panel:/app:ro
+    ports:
+      - "3081:3080"
+    networks: [mesh]
+    depends_on:
+      - vault-api
+      - nats
+
+  # ===== COMMUNICATIONS (M1 extension — operator directive 2026-05-24) =====
+
+  # --- Rocket.Chat: self-hosted chat (replaces Discord/Slack for fleet comms) ---
+  rocketchat-mongo:
+    image: mongo:6.0
+    container_name: sinister-rc-mongo
+    restart: unless-stopped
+    command: mongod --oplogSize 128 --replSet rs0 --storageEngine=wiredTiger
+    volumes:
+      - ./data/rocketchat-mongo:/data/db
+    networks: [mesh]
+
+  rocketchat-mongo-init:
+    image: mongo:6.0
+    container_name: sinister-rc-mongo-init
+    restart: "no"
+    depends_on: [rocketchat-mongo]
+    command: >
+      bash -c "for i in $$(seq 1 30); do
+        mongosh --host rocketchat-mongo --eval 'rs.status()' --quiet | grep -q ok && exit 0;
+        mongosh --host rocketchat-mongo --eval 'rs.initiate({_id:\"rs0\",members:[{_id:0,host:\"rocketchat-mongo:27017\"}]})' --quiet || true;
+        sleep 2;
+      done"
+    networks: [mesh]
+
+  rocketchat:
+    image: rocketchat/rocket.chat:7.0.6
+    container_name: sinister-rocketchat
+    restart: unless-stopped
+    depends_on:
+      - rocketchat-mongo-init
+    environment:
+      - PORT=3000
+      - ROOT_URL=http://localhost:8050
+      - MONGO_URL=mongodb://rocketchat-mongo:27017/rocketchat?replicaSet=rs0
+      - MONGO_OPLOG_URL=mongodb://rocketchat-mongo:27017/local?replicaSet=rs0
+      - OVERWRITE_SETTING_Site_Name=Sinister Mesh
+    ports:
+      - "8050:3000"
+    networks: [mesh]
+
+  # --- Guacamole: browser-based remote desktop (replaces AnyDesk) ---
+  guacd:
+    image: guacamole/guacd:1.5.5
+    container_name: sinister-guacd
+    restart: unless-stopped
+    networks: [mesh]
+
+  guacamole:
+    image: guacamole/guacamole:1.5.5
+    container_name: sinister-guacamole
+    restart: unless-stopped
+    depends_on: [guacd]
+    environment:
+      - GUACD_HOSTNAME=guacd
+      - GUACAMOLE_HOME=/etc/guacamole
+    volumes:
+      - ./config/guacamole:/etc/guacamole:ro
+    ports:
+      - "8060:8080"
+    networks: [mesh]
+
+  # --- Filebrowser: web file system browser with viewer (Sinister-themed via custom branding) ---
+  filebrowser:
+    image: filebrowser/filebrowser:v2.27.0
+    container_name: sinister-filebrowser
+    restart: unless-stopped
+    environment:
+      - FB_DATABASE=/data/filebrowser.db
+      - FB_ROOT=/srv
+      - FB_PORT=80
+      - FB_ADDRESS=0.0.0.0
+      - FB_LOG=stdout
+    volumes:
+      - ./data/vault:/srv
+      - ./data/filebrowser:/data
+    ports:
+      - "8090:80"
+    networks: [mesh]
+
+volumes: {}

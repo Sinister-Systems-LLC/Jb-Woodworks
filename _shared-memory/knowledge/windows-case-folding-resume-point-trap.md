@@ -4,6 +4,7 @@
 > **Lane tags:** sanctum, forge, term, panel, kernel-apk (all lanes that call `resume-point-write.ps1`)
 > **Discovered:** 2026-05-21 ~14:00Z by EVE on sanctum lane
 > **Repro hash:** commit `7577a24` (the commit where `--only` silently dropped the resume-point because Windows had folded `sanctum/` to `Sanctum/` underneath git)
+> **Status (added 2026-05-25 audit):** ✅ RESOLVED — Cure A shipped 2026-05-23T08:35Z. `Resolve-ResumePointDirName` is at `automations/resume-point-write.ps1:44` with full slug→display mapping (sanctum→Sinister Sanctum, forge→Sinister Forge, term→Sinister Term, panel→Sinister Panel, kernel-apk→Sinister Kernel APK, apk→Sinister Kernel APK, freeze→Sinister Freeze, rkoj→RKOJ Workstation, rkoj-workstation→RKOJ Workstation). The 6 "likely" affected-lane markers in the §Affected-lanes table below were SPECULATIVE at 2026-05-21 write time — they are now CONFIRMED resolved by the shipped function. Brain entry retained as historical anchor + repro recipe; Cure A is no longer a TODO.
 
 ## The trap in one sentence
 
@@ -90,16 +91,18 @@ if ($tracked -and ($tracked -notcontains (Split-Path $canonical -Leaf))) {
 
 That single warning would have caught this turn's silent-drop.
 
-## Affected lanes (verify on next sweep)
+## Affected lanes — all resolved by Resolve-ResumePointDirName (2026-05-23)
 
-- `sanctum/` vs `Sanctum/` vs `Sinister Sanctum/` — confirmed colliding 2026-05-21
-- `forge/` vs `Sinister Forge/` — likely (Sinister Forge tracked; some scripts pass `forge`)
-- `term/` vs `sinister-term/` vs `Sinister Term/` — likely (all three slugs appear in code paths)
-- `panel/` vs `Sinister Panel/` — likely
-- `kernel-apk/` vs `Sinister Kernel APK/` — likely
-- `apk/` vs `Sinister Kernel APK/` — likely
-- `rkoj/` vs `rkoj-workstation/` vs `RKOJ Workstation/` — likely (three-way ambiguity)
+- `sanctum/` vs `Sanctum/` vs `Sinister Sanctum/` — ✅ resolved (maps to `Sinister Sanctum`)
+- `forge/` vs `Sinister Forge/` — ✅ resolved (maps to `Sinister Forge`)
+- `term/` vs `sinister-term/` vs `Sinister Term/` — ✅ resolved (maps to `Sinister Term`)
+- `panel/` vs `Sinister Panel/` — ✅ resolved (maps to `Sinister Panel`)
+- `kernel-apk/` vs `Sinister Kernel APK/` — ✅ resolved (`kernel-apk` AND `apk` both map to `Sinister Kernel APK`)
+- `apk/` vs `Sinister Kernel APK/` — ✅ resolved (same — aliased to `kernel-apk` slot)
+- `rkoj/` vs `rkoj-workstation/` vs `RKOJ Workstation/` — ✅ resolved (both `rkoj` and `rkoj-workstation` map to `RKOJ Workstation`)
 
-## Next action
+## Next action — DONE
 
-This brain entry is the "surface" half. The "fix" half is Cure A in `automations/resume-point-write.ps1` — defer to next sanctum-lane sweep after operator confirms which case is canonical. (Recommendation: title-case display name, matching `PROGRESS/Sinister X.md` and the existing `git ls-tree` tracked dirs.)
+Cure A is shipped at `automations/resume-point-write.ps1:44`. This brain entry is now historical anchor + repro recipe; the function is the canonical resolver going forward.
+
+(Original 2026-05-21 recommendation: title-case display name. Adopted in shipped function.)

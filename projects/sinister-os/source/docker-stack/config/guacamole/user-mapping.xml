@@ -1,0 +1,13 @@
+<user-mapping>
+  <!-- Sinister Mesh OS — Guacamole user mapping
+       Author: RKOJ-ELENO :: 2026-05-24
+       Default operator login. CHANGE THE PASSWORD on first real deployment;
+       this stub exists so the container starts. -->
+  <authorize username="operator" password="sinister-change-me">
+    <connection name="Local SSH">
+      <protocol>ssh</protocol>
+      <param name="hostname">host.docker.internal</param>
+      <param name="port">22</param>
+    </connection>
+  </authorize>
+</user-mapping>

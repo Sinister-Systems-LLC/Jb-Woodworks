@@ -1,0 +1,15 @@
+{
+  "name": "sinister-yjs-server",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Sinister Mesh OS CRDT relay (Yjs over WebSocket + LevelDB persistence)",
+  "author": "RKOJ-ELENO",
+  "license": "GPL-3.0-or-later",
+  "main": "server.js",
+  "dependencies": {
+    "y-websocket": "^2.0.4",
+    "y-leveldb": "^0.1.2",
+    "yjs": "^13.6.20",
+    "ws": "^8.18.0"
+  }
+}
