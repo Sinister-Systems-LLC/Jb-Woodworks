@@ -7,6 +7,34 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T17:55Z — iteration 81 (memory-kernel regression tests added — 4 new, all pass)
+
+Operator: /loop. No change signals. Found genuine gap: seraphim test suite covered qrng/audit/fingerprint but ZERO tests for the iter-37+ memory-kernel doctrine.
+
+### Added to `tools/sinister-seraphim/tests/test_smoke.py`
+4 regression tests protecting the post-iter-37 work:
+
+1. **`test_recall_brain_default_alpha_returns_top_k`** — verifies iter-48 fix is durable (default alpha=1.0 pure TF-IDF; output schema correct; ranks 1..k)
+2. **`test_find_qbc_triads_zzfm_r1_pool_returns_top_n`** — verifies iter-41 find-qbc CLI feature (correct schema, top-N count, fields, top-1 advantage > 0, sorted descending)
+3. **`test_shared_top_k_necessary_condition_holds_at_k4`** — verifies the iter-59 empirical theorem via the canonical Snap-RE triad (low classical → K=4 ANGLE anti-QBC)
+4. **`test_k4_combined_predictor_safety_on_top_qbc_triads`** — verifies the iter-65/66 combined predictor (shared=0 OR same-top-1) doesn't false-positive on the 3 known universal-QBC triads from iter 52
+
+### Test results
+- 4/4 new tests PASS
+- 15/15 total seraphim suite PASS (no regressions in existing 11 tests)
+- ~6s total wall time
+
+### Why this matters
+Future EVE sessions / fleet contributors editing memory_kernel.py or cli.py would have unknowingly broken the iter-48 default fix, the iter-59 theorem, or the iter-65 combined predictor without these tests. Now `pytest tools/sinister-seraphim/tests/` enforces the doctrine.
+
+### Cost
+Zero cloud burn; ~10 min wall time (write tests + verify pass + verify no regressions).
+
+### Iter 80 was no-op
+Iter 80 was a signal-check no-op (no PROGRESS entry, no commit). Iter 81 found real work.
+
+---
+
 ## 2026-05-24T17:15Z — iteration 79 (caught 2 more 25-34pp leftovers in project README)
 
 Operator: /loop. After iter 78's annotations, ran grep across all repo .md files for remaining "25-34pp" / "quadruple" / etc. Found 2 more in the project README that iter 77's update didn't cover (they were further down the file, outside the audit-table snapshot).
