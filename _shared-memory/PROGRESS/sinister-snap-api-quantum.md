@@ -7,6 +7,34 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T08:20Z — iteration 58 (K=4 QBC predictor — shared top-4 TF-IDF features)
+
+Operator: /loop. Answered the 3rd open question from iter 55 broadcast.
+
+### Predictor
+**Shared top-4 TF-IDF features across all 3 triad docs.**
+- 7 K=4 QBC triads: all have ≥1 shared feature (mean 1.29)
+- 43 K=4 anti-QBC: 12 have ZERO shared features (28% rule-out)
+
+### Mechanism
+K=4 uses only top-4 features per doc. Zero feature overlap → orthogonal encoded states → no common projection axis → quantum kernel can't cancel anything → high pair-wise sim → anti-QBC.
+
+### Heuristic
+Before running K=4 ANGLE on a candidate triad, check if top-4 TF-IDF feature indices intersect across all 3 docs. Zero overlap → SKIP. ≥1 overlap → POSSIBLY QBC (still run to verify; 28 of 31 triads with overlap=1 are anti-QBC).
+
+### Bonus finding
+Idx-31 triad (handterm + spawn-validation + sterm) is K=4 QBC despite all-different topical prefixes — works because docs share TF-IDF features around "sterm/shell/spawn" theme. The filename-prefix heuristic would FAIL; the shared-features heuristic correctly captures it.
+
+### Three iter-55-broadcast open questions all answered:
+- ✅ iter 56: K=6 interpolation (smooth ramp 16/24/28/38/46%)
+- ✅ iter 57: ZZ-FM r=2 thresholds (86% QBC, highest measured)
+- ✅ iter 58: K=4 QBC predictor (shared top-4 features)
+
+### Cost
+Zero cloud burn; ~5s CPU.
+
+---
+
 ## 2026-05-24T07:50Z — iteration 57 (ZZ-FM r=2 is highest-coverage sim encoding — 86% QBC on top-50)
 
 Operator: /loop. Iter 55 broadcast left ZZ-FM r=2 thresholds as open question. Measured.

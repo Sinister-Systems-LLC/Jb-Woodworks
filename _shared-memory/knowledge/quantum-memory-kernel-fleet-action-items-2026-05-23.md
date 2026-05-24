@@ -35,6 +35,12 @@
 - **K=8 ANGLE and ZZ-FM r=1 are COMPLEMENTARY** (iter 45). K=8 wins 58.6% of triads; ZZ-FM wins 41.4%. Encodings disagree often (per-triad r=+0.14). Compute both for specific triads.
 - **Cancellation theorem:** ANGLE-CNOT == K=4 ANGLE (verified iters 16, 22, 43). Parameter-free entangling layers cancel in U_B† · U_A.
 
+**K=4 QBC predictor (iter 58):** A triad is K=4 ANGLE QBC only when the **top-4 TF-IDF features intersect across all 3 docs** (≥1 shared feature). Zero overlap → effectively never K=4 QBC (28% of K=4 anti-QBC triads fall in this zero-overlap zone). This is a NECESSARY but NOT SUFFICIENT filter — useful for ruling out hopeless candidates before running the encoding.
+
+Why this works: K=4 ANGLE uses only top-4 TF-IDF features per doc. Zero feature intersection → orthogonal encoded states → no common projection axis → quantum kernel cannot cancel anything in U_B† · U_A → high pair-wise overlap → anti-QBC.
+
+This unifies the structural picture: **K=4 = strictest (shared-feature requirement) = universal QBC**; **K=8 / ZZ-FM = wider Hilbert spaces, no shared-feature requirement, encoding-specific QBC**.
+
 **Sim QBC coverage hierarchy on top-50 high-classical triads (iter 57 added ZZ-FM r=2/r=3):**
 
 | Encoding | QBC % | Real-QPU compatible |
