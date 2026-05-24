@@ -2,8 +2,14 @@
 // Sprite-backed SVG icon. References /img/icons.svg <symbol>s.
 import { cn } from "@/lib/utils";
 
+export type IconName =
+  | "dock" | "deck" | "table" | "trim" | "pergola" | "wrench"
+  | "arrow-right" | "phone" | "mail" | "pin" | "menu"
+  | "instagram" | "facebook" | "tiktok" | "twitter"
+  | "anvil" | "ruler" | "leaf" | "compass";
+
 type Props = {
-  name: string;
+  name: IconName;
   size?: number;
   className?: string;
   "aria-hidden"?: boolean;

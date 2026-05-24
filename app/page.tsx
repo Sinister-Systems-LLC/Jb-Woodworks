@@ -63,20 +63,13 @@ export default function Home() {
               <span className="tabular-nums">{String(services.length).padStart(2, "0")}</span>
               <span className="mx-3 text-cream-30">·</span>
               <span>What we build</span>
-              <span className="mx-3 text-cream-30">·</span>
-              <span className="text-cream-30">Custom-focused</span>
             </p>
-            <h2 className="font-display text-[clamp(2.4rem,5.5vw,4.4rem)] leading-[1.05] text-white m-0 max-w-[920px]">
-              Residential craftsmanship and commercial fabrication &mdash; <em className="text-gold">all built custom, in-house.</em>
+            <h2 className="font-display text-[clamp(2.4rem,5.5vw,4.4rem)] leading-[1.05] text-white m-0 max-w-[820px]">
+              Residential and commercial &mdash; <em className="text-gold">all built in-house.</em>
             </h2>
-            <div className="mt-8 flex flex-col sm:flex-row gap-4 sm:gap-12 items-start max-w-[820px] text-cream-50 text-[0.95rem] leading-[1.8]">
-              <p className="flex-1">
-                Decks, docks, pergolas, outdoor living, hardwoods, and custom furniture &mdash; plus <em className="text-gold not-italic font-semibold">custom fabrication, branded displays, commercial &amp; event builds, and specialty installations</em> for brands and retailers.
-              </p>
-              <p className="flex-1 italic font-display">
-                Premium. Modern. Made for your space &mdash; not pulled from a catalog.
-              </p>
-            </div>
+            <p className="mt-8 max-w-[640px] text-cream-50 text-[1rem] leading-[1.75]">
+              Decks, docks, pergolas, custom furniture &mdash; plus <em className="text-gold not-italic font-semibold">branded displays, event builds, and specialty fabrication</em> for brands.
+            </p>
           </div>
 
           <div className="mt-16">

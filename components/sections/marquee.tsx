@@ -3,15 +3,20 @@
 import { motion } from "framer-motion";
 
 const ITEMS = [
+  "DECKS",
   "DOCKS",
-  "CUSTOM DECKS",
   "PERGOLAS",
-  "POOL TABLES",
+  "OUTDOOR LIVING",
   "CUSTOM FURNITURE",
-  "INTERIOR TRIM",
-  "TREX DECKS",
-  "BOAT DOCKS",
-  "OUTDOOR LIVING"
+  "MILLWORK",
+  "CABINETRY",
+  "BUILT-INS",
+  "TRIM CARPENTRY",
+  "HARDWOOD FLOORS",
+  "COMMERCIAL FABRICATION",
+  "BRANDED DISPLAYS",
+  "EVENT BUILDS",
+  "FEATURE WALLS"
 ];
 
 export function Marquee() {

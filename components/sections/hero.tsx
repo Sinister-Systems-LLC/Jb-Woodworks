@@ -96,7 +96,7 @@ export function Hero() {
       {/* Vertical metadata strip - left edge, editorial detail */}
       <div className="hidden md:block absolute top-1/2 -translate-y-1/2 left-7 z-[3] writing-vertical text-cream-30 text-[0.65rem] tracking-[0.4em] uppercase font-semibold">
         <div className="space-y-8" style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
-          <span>EST. 2019  /  ORLANDO FL</span>
+          <span>EST. 2025  /  ORLANDO FL</span>
           <span>CUSTOM WOODWORKING</span>
         </div>
       </div>
@@ -140,10 +140,10 @@ export function Hero() {
       {/* Content - centered editorial layout */}
       <div className="container-site relative z-[3] h-full flex flex-col items-center justify-center text-center pt-[82px] pb-24">
         <motion.p custom={0} variants={stagger} initial={reduced ? false : "hidden"} animate="show" className="eyebrow !mb-7">
-          <span className="eyebrow-dot" /> ORLANDO, FLORIDA <span className="eyebrow-dot" /> EST. 2019 <span className="eyebrow-dot" />
+          <span className="eyebrow-dot" /> ORLANDO, FLORIDA <span className="eyebrow-dot" /> EST. 2025 <span className="eyebrow-dot" />
         </motion.p>
 
-        {/* Lead wordmark - JB WOODWORKS as the primary headline */}
+        {/* Lead lockup - owner's stacked JBW wordmark as the primary mark */}
         <motion.div
           custom={1}
           variants={stagger}
@@ -151,12 +151,14 @@ export function Hero() {
           animate="show"
           className="select-none"
         >
-          <div className="font-sans text-[clamp(3.4rem,11vw,7.5rem)] font-black tracking-[0.16em] text-white leading-[0.95] mb-1">
-            JB
-          </div>
-          <div className="text-[clamp(0.8rem,1.5vw,1.05rem)] tracking-[0.55em] text-gold font-bold uppercase">
-            Woodworks
-          </div>
+          <Image
+            src="/img/branding/jbw-wordmark-stacked.png"
+            alt="JB Woodworks - Construction & Fabrication"
+            width={971}
+            height={733}
+            priority
+            className="h-[clamp(7rem,18vw,12rem)] w-auto mx-auto drop-shadow-[0_4px_24px_rgba(0,0,0,0.45)]"
+          />
         </motion.div>
 
         {/* Animated gold rule with shimmer */}

@@ -112,19 +112,19 @@ export function CommercialFeature() {
                 transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
                 className="block"
               >
-                Built for brands.
+                Retail.
               </motion.span>
               <motion.em
                 variants={{ hidden: { opacity: 0, y: 22 }, show: { opacity: 1, y: 0 } }}
                 transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
                 className="inline-block"
               >
-                Same shop, same standard.
+                Events. Brand spaces.
               </motion.em>
             </motion.h2>
 
-            <p className="text-cream-50 text-[1.1rem] leading-[1.7] max-w-[520px] mb-9 font-display italic">
-              Custom fabrication, branded displays, retail installations, event builds, feature walls &mdash; designed and built in-house, photographable from day one.
+            <p className="text-cream-50 text-[1.05rem] leading-[1.7] max-w-[480px] mb-9 font-display italic">
+              Branded displays, feature walls, event builds &mdash; designed and built in-house.
             </p>
 
             <div className="flex flex-wrap items-center gap-6">
