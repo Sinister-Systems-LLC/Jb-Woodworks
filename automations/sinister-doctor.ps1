@@ -183,6 +183,28 @@ $rs = Run-Check 'resume_search_index' -SlowSkippable {
 }
 $results.resume_search_index = $rs
 
+# Check 7: regression-json-audit (iter 25; slow-skippable)
+# Verifies every JSON-emitting script's stdout + every generated JSON file
+# parses cleanly via Python json.load. Catches Write-Host contamination
+# (iter 22 doctrine) + BOM encoding (iter 3 doctrine) regressions.
+$rja = Run-Check 'regression_json_audit' -SlowSkippable {
+    $auditScript = "$auto\regression-json-audit.ps1"
+    if (-not (Test-Path $auditScript)) { return $null }
+    $jsonOut = & $auditScript -Json 2>$null | Out-String
+    if ($jsonOut) {
+        $obj = $jsonOut | ConvertFrom-Json
+        return [ordered]@{
+            surface_count = $obj.surface_count
+            pass_count = $obj.pass_count
+            fail_count = $obj.fail_count
+            skip_count = $obj.skip_count
+        }
+    }
+    return $null
+}
+$results.regression_json_audit = $rja
+if ($rja -and $rja.fail_count -gt 0) { $globalStatus = 'RED' }
+
 # Final summary
 $results.global_status = $globalStatus
 $results.elapsed = $elapsed
@@ -286,6 +308,10 @@ if ($Json) {
     }
     if ($rs) {
         Write-Host ("  Resume-search index    {0} entries / {1} sources" -f $rs.entry_count, ($rs.sources -join ',')) -ForegroundColor Green
+    }
+    if ($rja) {
+        $kind = if ($rja.fail_count -eq 0) { 'Green' } else { 'Red' }
+        Write-Host ("  JSON regression audit  {0}/{1} surfaces PASS ({2} skip)" -f $rja.pass_count, $rja.surface_count, $rja.skip_count) -ForegroundColor $kind
     }
     Write-Host ''
     Write-Host '  Elapsed:' -ForegroundColor DarkGray

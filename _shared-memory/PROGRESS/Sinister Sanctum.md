@@ -4,6 +4,41 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-24 11:30Z — /loop iter 25 — sinister-doctor 7th check: regression-json-audit
+
+EVE on Sanctum. Composing iter 24's audit into the daily fleet health roll-up.
+
+**X1 EDIT `automations/sinister-doctor.ps1`:**
+- Added Check 7: `regression_json_audit` (slow-skippable; runs in full mode, skipped in -Quick)
+- Calls `regression-json-audit.ps1 -Json` → captures `surface_count`/`pass_count`/`fail_count`/`skip_count`
+- Sets global_status to RED if `fail_count > 0`
+- Console output: `JSON regression audit  6/6 surfaces PASS (0 skip)`
+
+**Smoke (full mode):**
+```
+P1-P9 protections      PASS=9 FAIL=0
+Per-project PP1-PP5    4/22 fully PASS (14 weak)
+Brain (Rule 7.5)       124 indexed / 150 ceiling [APPROACHING]
+Inbox (unread)         106 across 35 lanes
+Operator queue         85 open / 49 closed
+Resume-search index    1024 entries / 4 sources
+JSON regression audit  6/6 surfaces PASS (0 skip)
+```
+
+Elapsed: full mode ~10s (telemetry 1.16s + resume-search 7.47s + json-audit 1.36s + 4 fast checks).
+
+**Sibling activity since iter 24:** brain 123→124 indexed (sibling +1) / inbox 100→106 (sibling +6) / resume-search 970→1024 (sibling +54 entries).
+
+**Files touched:**
+- EDIT `automations/sinister-doctor.ps1` (Check 7 + console row)
+- EDIT `_shared-memory/PROGRESS/Sinister Sanctum.md` (this entry)
+
+**Master plan:** unchanged 19/24 (~83%). Tooling polish continues to be the only available work.
+
+**Net value:** future Write-Host contamination / BOM encoding regressions caught automatically by sinister-doctor + the SinisterDoctorTask cron + Fleet-Tour bat.
+
+---
+
 ## 2026-05-24 10:45Z — /loop iter 24 — regression-json-audit codified (6/6 PASS + meta bug-fix mid-iter)
 
 EVE on Sanctum. Codified iter 23's manual audit as a runnable CI script.
