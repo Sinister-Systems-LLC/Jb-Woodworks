@@ -48,10 +48,15 @@ python daemon.py --port 5078 --max-gb 1024 --warn-gb 950
 | GET    | `/api/vault/audit`       | Tail JSONL audit stream (`limit`, `since`)             |
 | POST   | `/api/vault/audit`       | Append a custom event (`kind, actor, path, message`)   |
 | GET    | `/api/vault/list`        | Sandboxed recursive listing (`path`, `depth`, cap=1000)|
-| POST   | `/api/vault/snapshot`    | Robocopy a sub-tree into `snapshots/<UTC-iso>-…/`      |
+| POST   | `/api/vault/snapshot`    | Robocopy a sub-tree into `snapshots/<UTC-iso>-…/` (body: `{subtree, label?, actor?}` — `subtree` ∈ {repos, sync, audit, accounts}, NOT `path`) |
 
 RKOJ (window-manager on port 5077) proxies `/api/vault/{health,quota,audit}`
 so the Sanctum Console's Vault drawer never needs CORS.
+
+> **Parameter note (2026-05-24, RKOJ-ELENO):** the snapshot endpoint
+> uses `subtree` not `path`. Passing `path` is silently ignored and the
+> daemon falls back to the default `repos`. Verified live during
+> 2026-05-24 endpoint sweep — see audit log entries with `label: sweep-real`.
 
 ## Audit-event shape
 
