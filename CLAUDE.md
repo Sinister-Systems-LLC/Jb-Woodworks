@@ -64,6 +64,7 @@ The snapshot tagged `leo-ready-2026-05-23` is the end-to-end-tested commit you s
 5. **`_shared-memory/WORKSTATION.md`** + **`DIRECTIVES.md`** (canonical-14 standing rules) + **`WORK-TOWARD.md`** (rolling shared goals).
 6. **`_shared-memory/knowledge/_INDEX.md`** — the brain. Grep before risky actions.
 7. **`_shared-memory/OPERATOR-ACTION-QUEUE.md`** — open operator-clicked items.
+8. **`_shared-memory/operator-utterances.jsonl`** — read the last 10 rows where `status` is `new` or `acknowledged` and surface them in the first response under "Open operator utterances". Append every fresh operator message via `automations/log-operator-utterance.ps1`; ack/resolve via `automations/ack-operator-utterance.ps1`. Full doctrine at `_shared-memory/knowledge/operator-utterance-tracking-doctrine-2026-05-24.md`. Operator hard-canonical 2026-05-24: *"make sure that everything i ever say is tracked and flagged for a few and evertyhing that needs to get sdone gets done. with every agent i am in"*. NEVER remove this step.
 
 **Operator tools quick-reference:** see `docs/OPERATOR-QUICK-REFERENCE.md` for every runnable script shipped iters 1-17 of /loop (sinister-doctor / per-project-protections-autofix / brain-archive-orphans / clone-missing-sources / EVE.exe / Fleet-Tour.bat / etc) with one-line descriptions + invocation. Compose this with the brain index (step 6) and operator queue (step 7).
 

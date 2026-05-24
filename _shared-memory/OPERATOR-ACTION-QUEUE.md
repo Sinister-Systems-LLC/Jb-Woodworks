@@ -10,6 +10,59 @@ The Sanctum-side mirror of `SESSION-START/02-OPERATOR-QUEUE.md`, with checkboxes
 
 ---
 
+## 2026-05-24 — 🟠 Operator-utterance tracking LIVE — review seed + flip rows to resolved as you confirm
+
+> Author: RKOJ-ELENO :: 2026-05-24
+
+**What's live:** fleet-wide append-only JSONL at `_shared-memory/operator-utterances.jsonl` (27 seed rows pulled from this session's PROGRESS log + the current message that triggered the build). Every spawned EVE on every lane will now log any future operator message via `automations/log-operator-utterance.ps1` and surface open rows in its first response via CLAUDE.md cold-start step 8. Doctrine at `_shared-memory/knowledge/operator-utterance-tracking-doctrine-2026-05-24.md`. Operator verbatim 2026-05-24: *"make sure that everything i ever say is tracked and flagged for a few and evertyhing that needs to get sdone gets done. with every agent i am in"*.
+
+**Operator action:**
+
+- [ ] Open `_shared-memory/operator-utterances.jsonl` and scan the 27 seed rows — confirm the seed captures the directives you intended (any missing? any rows mis-captured?).
+- [ ] As each row is genuinely shipped, run `powershell -File automations/ack-operator-utterance.ps1 -TsUtc "<row-ts>" -AgentSlug sanctum -Deliverable "<commit-sha-or-file>" -Resolve` to flip `status: acknowledged -> resolved`. Resolution is sticky.
+- [ ] (Optional follow-up, deferred) wire P11a-P11d protections into `canonical-protections-check.ps1` so the cold-start step + CLIs don't get reverted by future launcher rewrites.
+- [ ] (Optional follow-up, deferred) EVE.exe picker overlay: show unresolved-utterance count in launcher chrome ("3 open operator utterances").
+
+---
+
+## 2026-05-24T12:30Z — 🟡 Brain at 162/150 entries — rule-8 ceiling breach; consolidation required before next doctrine add
+
+> Author: RKOJ-ELENO :: 2026-05-24 (test-modes lane /loop iter 4)
+
+Fleet brain at `_shared-memory/knowledge/` now contains **162 entries** vs the 150-row ceiling specified by no-bullshit doctrine rule 8 ("expansion has quality-degradation limits"). 12 entries over budget. The 2026-05-24T0651Z Sanctum master resume-point already flagged 148/150 "APPROACHING (2 from 150 ceiling)" — we've since drifted further. STOP-expanding rule now applies: no new brain entries until consolidation.
+
+**Candidate consolidations** (suggested; require lane-owner judgement — Sanctum master shouldn't unilaterally merge entries that belong to per-lane doctrine):
+
+- 6× `bundle-*-2026-05-20.md` entries (cvd-1, holding, proxy, rka, smoke, yk50) — Sinister Emulator lane could merge into one comprehensive `bundle-iter-2026-05-20.md` post-AOSP-rebuild
+- Multiple per-day `apk-*-2026-05-23.md` and `apk-*-2026-05-24.md` — Kernel APK lane could merge into rolling per-week doctrine
+- Old per-event entries with no recent `composes-with` traffic — candidates for `_archive/`
+
+**Not in this turn's scope** — semantic merges require lane context Sanctum master doesn't carry; queued so the right lane agent (or operator) can do the careful consolidation. Until done, every new doctrine row makes the situation worse.
+
+---
+
+## 2026-05-24T12:30Z — 🟢 Inbox slug inconsistency — both `forge/` and `sinister-forge/` (also `panel/` vs `sinister-panel/`) used in parallel
+
+> Author: RKOJ-ELENO :: 2026-05-24 (test-modes lane /loop iter 4)
+
+Found while routing iter-95-audit pings: the fleet has TWO active inbox folder conventions per lane and no single canonical source. Sample counts from `_manifest.json` (2026-05-24T12:24Z):
+
+- `forge` = 7 unread + `sinister-forge` = 2 unread (both folders have recent sanctum→forge traffic)
+- `panel` = 1 unread + `sinister-panel` = 57 unread (sinister-panel is the high-traffic one — opposite ratio from forge)
+- `kernel-apk` = 24 unread (no `sinister-kernel-apk` folder — consistent)
+
+`automations/resume-point-write.ps1::Resolve-InboxSlug` strips the `sinister-` prefix for short-slug lanes (`sanctum`, `forge`, `term`, `panel`, `kernel-apk`, `apk`, `freeze`, `vault`, `os`) — so the FUNCTION canonicalizes to short-slug, but the actual inbox **folders in use** are mixed.
+
+This iter routed my Forge CRITICAL ping from `sinister-forge/` back to `forge/` to match historical sanctum→forge traffic. But the inconsistency is fleet-wide and a doctrine question, not a Sanctum-master unilateral pick.
+
+**Operator decision needed:** Pick one convention and stick. Either:
+- (A) Short-slug canonical (matches `Resolve-InboxSlug`): merge `sinister-forge/` → `forge/`, `sinister-panel/` → `panel/`. Fleet uses ≤9-char paths.
+- (B) Full-slug canonical: rename `forge/` → `sinister-forge/`, `panel/` → `sinister-panel/`. Matches branch namespace `agent/sinister-*/`.
+
+Risk of doing nothing: inbox messages routed to the non-canonical folder may be missed by per-lane agents on cold-start.
+
+---
+
 ## 2026-05-24 — 🟠 Anthropic server-throttle mitigation SHIPPED — new `H` picker key + `SINISTER_FLEET_BURST_LIMIT` env knob
 
 > Author: RKOJ-ELENO :: 2026-05-24
