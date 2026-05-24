@@ -183,6 +183,7 @@ Operator already directed (2026-05-23 evening) that agents push their own `agent
 | `audit-pipeline` | 3-phase: find-qbc → sim-gate → real-QPU (only burns cloud at phase 3 if you allow) | Free at phase 1-2 | `python tools/sinister-seraphim/cli.py audit-pipeline --skip-real-qpu` |
 | Cross-lane PROGRESS finder (iter 99) | Surfaces dup-work pairs across all lanes | Free, ~5s | `python projects/sinister-snap-api-quantum/sim-progress-cross-lane-finder.py` |
 | `rkoj-cluster-coherence` (iter 98) | Pattern for auditing a tag-prefixed subset of your brain | Free, ~3s | Copy the script, change the prefix filter to your lane's tag |
+| `brain-stale-claim-scan` (iter 107, **new 2026-05-25**) | Surfaces stale `likely / probably / should be / may need / TODO / FIXME / untested` markers in brain entries — operationalizes Bug #2 of this broadcast | Free, ~2s | `powershell -File automations\brain-stale-claim-scan.ps1 -LaneFilter <your-slug> -MinHits 3` (omit LaneFilter for fleet sweep; add `-Json` for machine output) |
 
 ---
 

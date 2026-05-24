@@ -1317,17 +1317,26 @@ powershell -NoProfile -ExecutionPolicy Bypass -File '$SanctumRoot\automations\re
 ( powershell -NoProfile -ExecutionPolicy Bypass -File '$SanctumRoot\automations\sanctum-auto-push.ps1' >/dev/null 2>&1 & ) >/dev/null 2>&1
 # RKOJ-ELENO :: 2026-05-23 :: Phase 2 — release the account slot so current_sessions decrements
 powershell -NoProfile -ExecutionPolicy Bypass -File '$SanctumRoot\automations\claude-accounts.ps1' -Action Release -Name "`$_account_name" >/dev/null 2>&1
-printf '  > resume-point written + auto-push fired. Dropping into sinister-term (our own shell)...\n\n'
-# M) operator directive 2026-05-23: use OUR own terminal (sinister-term) where possible.
-# sterm = sinister-term entry-point installed via projects/sinister-term/source pip install -e
-# Falls back to bash if sterm is not on PATH (graceful per the AGPL-quarantine-friendly path).
-if command -v sterm >/dev/null 2>&1; then
-  exec sterm
-elif command -v sinister-term >/dev/null 2>&1; then
-  exec sinister-term
+printf '  > resume-point written + auto-push fired.\n'
+# RKOJ-ELENO :: 2026-05-24 :: window-persist fix. Operator (2026-05-24, screenshot):
+# spawned mintty windows linger over the browser after claude exits. Root cause:
+# `exec sterm/bash` here kept the bash process alive indefinitely so mintty never
+# closed. Default behavior is now to EXIT cleanly so mintty closes within ~1s of
+# claude exit. Operators who want the old "drop into sterm" behavior can opt in
+# via SINISTER_KEEP_SHELL=1 in their environment.
+if [ "`${SINISTER_KEEP_SHELL:-0}" = "1" ]; then
+  printf '  > SINISTER_KEEP_SHELL=1 set — dropping into sinister-term (our own shell)...\n\n'
+  if command -v sterm >/dev/null 2>&1; then
+    exec sterm
+  elif command -v sinister-term >/dev/null 2>&1; then
+    exec sinister-term
+  else
+    printf '  > sterm not on PATH; falling back to bash. Install with: pip install -e $bashSanctumRoot/projects/sinister-term/source\n'
+    exec bash
+  fi
 else
-  printf '  > sterm not on PATH; falling back to bash. Install with: pip install -e $bashSanctumRoot/projects/sinister-term/source\n'
-  exec bash
+  printf '  > closing window. (set SINISTER_KEEP_SHELL=1 to drop into sinister-term instead.)\n'
+  exit 0
 fi
 "@
     $shContent = $shContent -replace "`r`n", "`n"
@@ -1371,15 +1380,29 @@ fi
     $spawnAttemptLog = @()
     try {
         if (Test-Path $minttyExe) {
-            # E) operator directive 2026-05-23: transparent look on the spawn window.
+            # RKOJ-ELENO :: 2026-05-24 :: window-persist + always-on-top fix.
+            # Operator screenshot (2026-05-24): spawned mintty windows linger after
+            # claude exits AND appear to stay on top of the operator's browser.
+            #
+            # Root cause 1: launch.sh used `exec sterm/bash` after claude exit, which
+            # kept the bash process alive indefinitely (mintty stays open). Fixed in
+            # the .sh body — sterm fallthrough is now opt-in via SINISTER_KEEP_SHELL=1.
+            #
+            # Root cause 2: Transparency=medium + OpaqueWhenFocused=no produced the
+            # "on top of browser" optical illusion (translucent overlay). Removed —
+            # window is now solid + only on top while focused.
+            #
+            # `--hold never` (was implicit default; now explicit) closes the mintty
+            # window the instant bash exits — defensive against any stray exit code.
             $minttyArgs = @(
+                '--hold', 'never',
                 '-o', "ForegroundColour=$fgRgb",
                 '-o', "BackgroundColour=$bgRgb",
                 '-o', "CursorColour=$curRgb",
                 '-o', 'FontSize=11',
                 '-o', 'Term=xterm-256color',
-                '-o', 'Transparency=medium',
-                '-o', 'OpaqueWhenFocused=no'
+                '-o', 'Transparency=off',
+                '-o', 'OpaqueWhenFocused=yes'
             ) + $minttyExtraArgs + @('--', '/bin/bash', $launchShBash)
             $spawnAttemptLog += "mintty.exe : $minttyExe"
             $spawnedProcess = Start-Process -FilePath $minttyExe -ArgumentList $minttyArgs -PassThru -ErrorAction Stop
