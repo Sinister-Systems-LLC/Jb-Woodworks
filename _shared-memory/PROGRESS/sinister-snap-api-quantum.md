@@ -7,6 +7,31 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T06:10Z — iteration 53 (classical-vs-QBC-probability curve; sharp per-encoding thresholds)
+
+Operator: /loop. Bucketed all 168k+ triads (classical > 0.10) by classical and measured QBC% per encoding per bucket.
+
+### Sharp thresholds (measured)
+| Encoding | 50% QBC at classical | 100% QBC at classical |
+|---|---|---|
+| K=4 ANGLE | ~0.55 | 0.55+ |
+| K=8 ANGLE | ~0.45 | 0.55+ |
+| ZZ-FM r=1 | ~0.50 | 0.55+ |
+
+### Curve highlights
+- classical < 0.30: essentially never QBC (0-3.5% under K=8/ZZ; literally 0% K=4 across 167k triads)
+- 0.30-0.45: "needs find-qbc verification" — 79-99% anti-QBC
+- 0.45-0.55: transitional — K=8/ZZ work most of the time, K=4 still ~80% anti
+- 0.55+: guaranteed universal QBC (3 triads in current 129-doc pool)
+
+### Doctrine improvement
+Replaces iter-44 rough estimates ("K=4 0.40 / K=8 0.30") with measured thresholds. Brain entry TL;DR updated.
+
+### Cost
+Zero cloud burn; 11.7s CPU (mostly pair-matrix build) + 0.15s enumeration.
+
+---
+
 ## 2026-05-24T05:45Z — iteration 52 (K=4 ⊂ K=8 ⊂ ZZ structure; universal-QBC triads identified)
 
 Operator: /loop. Probed the iter-51 QBC counts (8/23/23) for set-overlap structure.

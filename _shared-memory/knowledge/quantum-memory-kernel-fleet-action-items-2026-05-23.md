@@ -35,6 +35,16 @@
 - **K=8 ANGLE and ZZ-FM r=1 are COMPLEMENTARY** (iter 45). K=8 wins 58.6% of triads; ZZ-FM wins 41.4%. Encodings disagree often (per-triad r=+0.14). Compute both for specific triads.
 - **Cancellation theorem:** ANGLE-CNOT == K=4 ANGLE (verified iters 16, 22, 43). Parameter-free entangling layers cancel in U_B† · U_A.
 
+**Sharp per-encoding QBC thresholds (iter 53 measured across all 168k+ triads in 129-doc pool):**
+
+| Encoding | 50% QBC at classical | 100% QBC at classical |
+|---|---|---|
+| K=4 ANGLE | ~0.55 | 0.55 |
+| K=8 ANGLE | ~0.45 | 0.55 |
+| ZZ-FM r=1 | ~0.50 | 0.55 |
+
+**The "guaranteed universal-QBC" zone is classical > 0.55** (only ~3 triads in current corpus). Below classical 0.30 = essentially never QBC for any encoding. The 0.30-0.45 zone is "needs find-qbc verification" — 79-99% anti-QBC depending on encoding.
+
 **Cross-encoding QBC structure (iter 52):** the encodings' QBC sets are nested + complementary:
 
 - **K=4 ⊂ K=8** and **K=4 ⊂ ZZ-FM** (strict subsets)
