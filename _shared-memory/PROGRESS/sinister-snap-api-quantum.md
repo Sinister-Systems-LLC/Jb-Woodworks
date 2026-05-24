@@ -7,6 +7,31 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T21:00Z — iteration 92 (cross-agent broadcast for the meta-lessons brain entry)
+
+Operator: /loop. Iter-90's brain entry was discoverable only via grep. Posted explicit fleet-wide broadcast so other lanes running /loop see it actively.
+
+### Posted
+`_shared-memory/cross-agent/2026-05-24T2100Z-sanctum-broadcast-loop-session-meta-lessons.md`
+
+### Different audience than prior 4 broadcasts
+Prior: iter-41/44/55/64 + iter-70 annotation. All to "lanes using seraphim quantum kernel".
+New: this one to "all lanes running /loop autonomous sessions" — broader scope.
+
+### Coverage
+- TL;DR with the 4 meta-lessons + concrete examples
+- Action items section for operators running /loop on THEIR lane (5 concrete rules)
+- Table of 7 documented self-corrections from this session
+- Forward pointer to the full brain entry
+
+### Iter 91 was no-op
+Iter 91 was a signal-check no-op (no PROGRESS entry).
+
+### Cost
+Zero cloud burn; ~5 min wall time.
+
+---
+
 ## 2026-05-24T20:30Z — iteration 90 (NEW brain entry: loop-driven session meta-lessons — fleet-wide advisory)
 
 Operator: /loop. No signals this iter. But after 4 honest no-op iters (87-89), realized the session itself produced META-LESSONS that future /loop-driven EVE sessions across ALL lanes could benefit from. Wrote a new brain entry capturing them.
