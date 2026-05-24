@@ -37,7 +37,7 @@
 
 **Shared-Top-K Necessary Condition (iter 58/59 — universal for K=4..K=8 ANGLE):**
 
-For K-ANGLE encoding at any K∈{4..8}, **if the top-K TF-IDF features have zero intersection across all 3 docs of a triad, the triad is NOT QBC.** Verified across 5 K values × 50 triads = 250 classifications with ZERO false positives.
+For K-ANGLE encoding at any K∈{4..8}, **if the top-K TF-IDF features have zero intersection across all 3 docs of a triad, the triad is NOT QBC.** Verified across **5 K values × 2 corpora (129-pool + 149-full) × 50 triads = 500 classifications with ZERO false positives** (iter 59 + iter 60).
 
 Predictor utility decreases with K (because larger top-K windows are easier to satisfy):
 

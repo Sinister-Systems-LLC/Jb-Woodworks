@@ -7,6 +7,32 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T09:10Z — iteration 60 (Shared-Top-K theorem corpus-stable — 500 classifications zero FP)
+
+Operator: /loop. Iter 59 verified the theorem on 129-doc pool. Iter 60 verifies on 149-doc full corpus.
+
+### Result
+| K | 129-pool QBC/=0 | 149-full QBC/=0 |
+|---|---|---|
+| 4 | 7 / 12 | 8 / 15 |
+| 5 | 12 / 10 | 13 / 10 |
+| 6 | 14 / 2 | 18 / 3 |
+| 7 | 18 / 2 | 23 / 3 |
+| 8 | 22 / 1 | 27 / 2 |
+
+**500 total classifications across 2 corpora; zero false positives.**
+
+### Observation
+149-doc corpus has MORE QBC at every K (wider TF-IDF vocabulary helps encoding). K=4 QBC count shifts +1 (per iter-54 K=4 corpus-sensitivity). Predictor safety is invariant.
+
+### Brain entry updated
+"250 classifications" → "500 classifications across 2 corpora".
+
+### Cost
+Zero cloud burn; 15s CPU.
+
+---
+
 ## 2026-05-24T08:45Z — iteration 59 (Shared-Top-K Necessary Condition — universal for K=4..K=8 ANGLE)
 
 Operator: /loop. Tested whether iter-58's K=4 shared-feature predictor scales to K=5/6/7/8.
