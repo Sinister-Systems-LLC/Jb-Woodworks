@@ -1,4 +1,4 @@
-# Sinister Sanctum :: resume-point writer (v1.3 :: 2026-05-23)
+# Sinister Sanctum :: resume-point writer (v1.4 :: 2026-05-24)
 # Operator: "i need all projects to resume where they left off and always
 # ahve resume points." Writes a structured resume-point JSON at
 # _shared-memory/resume-points/<project>/<UTC>.json with everything the
@@ -19,6 +19,13 @@
 #       Was: -ProjectKey sanctum wrote to resume-points/sanctum/ (lowercase slug);
 #       now: maps to "Sinister Sanctum/" via Resolve-ResumePointDirName.
 #       Unknown keys pass through unchanged (back-compat for lanes not yet listed).
+# v1.4: Filename timestamp now real-UTC. Was: `Get-Date -Format '...Z'` formatted
+#       LOCAL time and literally appended 'Z', producing EDT-mislabeled-as-UTC
+#       filenames (rkoj iter-85 caught the same systematic drift in their own
+#       lane via `date -u` ground-truth; see
+#       _shared-memory/inbox/sanctum/2026-05-24T1152Z-from-rkoj-systematic-edt-as-utc-clarification.json).
+#       Body's `ts_utc` was already correct (line 215 uses [datetime]::UtcNow);
+#       only the filename inherited the bug.
 
 param(
     [Parameter(Mandatory)][string]$SanctumRoot,
@@ -57,6 +64,15 @@ function Resolve-ResumePointDirName {
         'showmasters'      = 'Showmasters'
         'eve-on-sanctum'   = 'EVE on Sanctum'
         'sinister-generator' = 'Sinister Generator'
+        'snap-emulator-api'  = 'Snap Emulator API'
+        'tiktok-emulator-api' = 'TikTok Emulator API'
+        'sinister-chatbot'   = 'Sinister Chatbot'
+        'chatbot'            = 'Sinister Chatbot'
+        'sinister-emulator'  = 'Sinister Emulator'
+        'emulator-bundle'    = 'Sinister Emulator'
+        'sinister-imessage-bridge' = 'Sinister iMessage Bridge'
+        'imessage-bridge'          = 'Sinister iMessage Bridge'
+        'imessage'                 = 'Sinister iMessage Bridge'
     }
     $k = $Key.ToLower()
     if ($known.ContainsKey($k)) { return $known[$k] }
@@ -67,7 +83,7 @@ $rpDirName = Resolve-ResumePointDirName -Key $ProjectKey
 $rpDir = Join-Path $SanctumRoot "_shared-memory\resume-points\$rpDirName"
 New-Item -ItemType Directory -Force -Path $rpDir | Out-Null
 
-$stamp = (Get-Date -Format 'yyyy-MM-ddTHHmmssZ')
+$stamp = ([datetime]::UtcNow).ToString('yyyy-MM-ddTHHmmssZ')
 $rpFile = Join-Path $rpDir "$stamp.json"
 
 $branch = ''
@@ -112,6 +128,10 @@ function Resolve-ProgressPath {
         'rkoj'            = 'rkoj.md'
         'rkoj-workstation'= 'rkoj-workstation.md'
         'sinister-generator' = 'Sinister Generator.md'
+        'snap-emulator-api'  = 'snap-emulator-api.md'
+        'tiktok-emulator-api' = 'tiktok-emulator-api.md'
+        'sinister-emulator'  = 'sinister-emulator.md'
+        'emulator-bundle'    = 'sinister-emulator.md'
     }
     $key = $Name.ToLower()
     if ($known.ContainsKey($key)) {

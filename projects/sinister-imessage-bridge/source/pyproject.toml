@@ -1,0 +1,36 @@
+# pyproject.toml :: RKOJ-ELENO :: 2026-05-24
+# Sinister iMessage Bridge — Python package
+# License: GPL-3.0-or-later
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sinister-imessage-bridge"
+version = "0.1.0"
+description = "Sinister iMessage Bridge — read/send/index iMessage via operator-controlled Mac farm"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "GPL-3.0-or-later" }
+authors = [{ name = "RKOJ-ELENO" }]
+dependencies = [
+    "aiohttp>=3.9",
+    "click>=8.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+]
+
+[project.scripts]
+imessage = "cli.imessage_cli:main"
+
+[tool.setuptools.packages.find]
+include = ["bridge_daemon*", "send_worker*", "recv_worker*", "cli*"]
+exclude = ["tests*", "fixtures*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"

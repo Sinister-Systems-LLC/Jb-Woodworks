@@ -1,0 +1,51 @@
+{
+  "schema_version": "sinister.resume-point.v1",
+  "ts_utc": "2026-05-24T15:41:13.0000000Z",
+  "project": "sinister-imessage-bridge",
+  "agent_name": "sinister-imessage-bridge",
+  "mode": "resume",
+  "focus_intent": "P0 housekeeping landed: first heartbeat + PROGRESS log + plans/p1-readonly-acceptance.md (8-section P1 handoff plan with concrete SSH/sqlite3 commands and 4 read-only metadata queries). Lane is ready for the moment operator says 'farm is online' — no work between here and then needs the farm. Next deliverables before farm-online: docs/applescript-surface.md skeleton + memory/decisions.md + brain entry under _shared-memory/knowledge/. After farm-online: execute plans/p1-readonly-acceptance.md sections 0-6 in order.",
+  "git": {
+    "branch": "agent/sinister-os/m1-hardening-2026-05-24",
+    "branch_note": "Shared working tree is on sinister-os branch with ~211 uncommitted files; this lane's intended branch is agent/sinister-imessage-bridge/p0-scaffold-2026-05-24 — did NOT switch to avoid clobbering sibling work. Operator/Sanctum can rebalance.",
+    "head": "532f4e9",
+    "head_msg": "sinister-os: M1 hardening overlay (compose.hardened.yml + HARDENING.md)",
+    "recent_commits": [
+      "532f4e9 sinister-os: M1 hardening overlay (compose.hardened.yml + HARDENING.md)",
+      "1f79582 sanctum: broadcast feature-refresh 2026-05-24 to all 18 visible lanes (no restart)",
+      "af54f4b sanctum: fix window-persist bug in mintty spawn",
+      "bce570c sinister-os: /loop iter 1 - dashboard-skeleton theme inheritance binding (10/10 services HTTP 200 verified)",
+      "daff913 sanctum: iter 108 - broadcast cites brain-stale-claim-scan.ps1 (Bug #2 operational tool)"
+    ]
+  },
+  "progress_top3": [
+    "2026-05-24T1535Z — first resume / P1 acceptance plan being drafted"
+  ],
+  "latest_plan": {
+    "dir": "projects/sinister-imessage-bridge/plans",
+    "artifact": "projects/sinister-imessage-bridge/plans/p1-readonly-acceptance.md"
+  },
+  "inbox_unread_count": 0,
+  "phase": "P0",
+  "phase_blocker": "operator has not connected the Mac farm yet (P1 unlock)",
+  "pre_warm_reads": [
+    "projects/sinister-imessage-bridge/CLAUDE.md",
+    "projects/sinister-imessage-bridge/README.md",
+    "projects/sinister-imessage-bridge/plans/p1-readonly-acceptance.md",
+    "_shared-memory/PROGRESS/Sinister iMessage Bridge.md",
+    "_shared-memory/heartbeats/sinister-imessage-bridge.json"
+  ],
+  "next_actions_if_farm_connected": [
+    "Read _vault/farm-ssh/<host>.meta.json for SSH+ApppleID+chat.db params",
+    "Execute plans/p1-readonly-acceptance.md §2-§5 in order",
+    "Append farm row to memory/farm-inventory.md",
+    "Persist observed schema to memory/chat-db-schema.md",
+    "Land brain entry _shared-memory/knowledge/imessage-bridge-p1-readonly-2026-MM-DD.md"
+  ],
+  "next_actions_if_farm_still_offline": [
+    "Write docs/applescript-surface.md skeleton (public AppleScript+osascript surface; no farm needed)",
+    "Write memory/decisions.md with P0 architectural decisions (per-thread vs per-contact opt-in; AppleScript-as-primary-send-path; FDA-required-for-SSH-read note)",
+    "Write memory/chat-db-schema.md with baseline public schema from Apple docs + Stack Overflow corpus",
+    "Add brain entry _shared-memory/knowledge/imessage-bridge-p0-scaffold-2026-05-24.md and index it"
+  ]
+}

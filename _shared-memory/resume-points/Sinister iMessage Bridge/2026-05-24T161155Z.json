@@ -1,0 +1,73 @@
+{
+  "schema_version": "sinister.resume-point.v1",
+  "ts_utc": "2026-05-24T16:11:55Z",
+  "project": "sinister-imessage-bridge",
+  "agent_name": "sinister-imessage-bridge",
+  "mode": "resume",
+  "focus_intent": "P0 FULLY SHIPPED in one autonomous /loop iteration on first lane resume. Lane is now in a 'waiting for operator' state — every pre-farm deliverable is on disk + smoke-tested. The two operator-blockers: (a) connect the Mac farm + drop _vault/farm-ssh/<host>.meta.json to unlock P1; (b) run `cd dashboard && npm install` to materialise the Next.js node_modules so the operator can browser-smoke the dashboard. After (a): execute plans/p1-readonly-acceptance.md §0-§6 (5 quick SSH+SQL smokes); P1 closes within 20-40 min. After P1: P2 (send) → P3 (daemon) → P4 (cross-lane) — each plan is pre-written so unlock is single-step.",
+  "git": {
+    "branch": "agent/sinister-os/m1-hardening-2026-05-24",
+    "branch_note": "Working tree on sinister-os branch with ~211 uncommitted files from sibling lanes. Lane's intended branch is agent/sinister-imessage-bridge/p0-scaffold-2026-05-24 — did NOT switch to avoid clobbering. Operator/Sanctum can rebalance; all new files are staged in working tree on whatever branch HEAD is.",
+    "head": "532f4e9",
+    "head_msg": "sinister-os: M1 hardening overlay (compose.hardened.yml + HARDENING.md)"
+  },
+  "progress_top3": [
+    "2026-05-24T1608Z — operator branding clarification — LetsText / iOS-blue (not Sinister purple)",
+    "2026-05-24T1535Z — first resume / P1 acceptance plan being drafted"
+  ],
+  "deliverables_landed_this_session": [
+    "plans/p1-readonly-acceptance.md (8 sections, concrete SSH + SQL + AppleScript)",
+    "plans/p2-send-acceptance.md (operator-OK + allowlist + rate-limit + round-trip)",
+    "plans/p3-bridge-daemon-acceptance.md (fswatch tail + HTTP API + bus emit)",
+    "plans/p4-cross-lane-acceptance.md (P4.1 vault / P4.2 mind / P4.3 forge / P4.4 showmasters / P4.5 auto-respond)",
+    "source/pyproject.toml + requirements.txt + 4 packages (bridge_daemon + send_worker + recv_worker + cli)",
+    "source/fixtures/canned-chat.db (real Sonoma 7-table schema + 10 sample messages across 3 handles)",
+    "source/tests/* — 21/21 pytest passing on Windows / Python 3.12 in 1.47s",
+    "source bridge_daemon smoke — 5/5 curl endpoints (/status /threads /threads/{id}/messages 2× /send blocked correctly)",
+    "docs/architecture.md (process inventory + data flow + security boundaries + phase mapping)",
+    "docs/applescript-surface.md (canonical send script + error nums + permissions + private-framework deferral rationale)",
+    "memory/chat-db-schema.md (Sonoma baseline + Apple-epoch quirk + common queries + WAL safety)",
+    "memory/decisions.md (9 P0 decisions logged including the LetsText branding reversal)",
+    "memory/gotchas.md (3 already-fixed Python issues + pre-farm template)",
+    "memory/farm-inventory.md (template; populates on P1)",
+    "memory/contact-policy.md (template; p2_allowed + p4_autorespond tables)",
+    "dashboard/ — Next.js + React 19 + Tailwind 4 scaffold; inherits sinister-dashboard-skeleton tokens via @import + tsconfig @skeleton/* alias; LetsText branding (iOS-blue #0A84FF — iMessage outbound bubble color); 4 routes (Status / Threads / Thread detail with iMessage-style bubbles / Compose with P0 live-send guard)",
+    "_shared-memory/knowledge/imessage-bridge-p0-scaffold-2026-05-24.md (passed forever-improve.ps1 Review — 0 findings)",
+    "_shared-memory/knowledge/_INDEX.md row inserted at top",
+    "_shared-memory/inbox/sanctum/2026-05-24T1607Z-from-imessage-bridge-p0-shipped.json (cross-lane brief)",
+    "_shared-memory/PROGRESS/Sinister iMessage Bridge.md (2 rows)",
+    "_shared-memory/heartbeats/sinister-imessage-bridge.json (refreshed)",
+    "automations/resume-point-write.ps1 — lane mapping added (sinister-imessage-bridge / imessage-bridge / imessage → 'Sinister iMessage Bridge')"
+  ],
+  "next_actions_if_farm_connected": [
+    "Read _vault/farm-ssh/<host>.meta.json for SSH + Apple ID + chat.db params",
+    "Execute plans/p1-readonly-acceptance.md §2-§5 in order (SSH smoke / FDA + chat.db ls / schema fingerprint / 4 metadata SELECTs)",
+    "Append farm row to memory/farm-inventory.md (operator-redacted Apple ID)",
+    "Persist observed schema to memory/chat-db-schema.md",
+    "Land brain entry _shared-memory/knowledge/imessage-bridge-p1-readonly-2026-MM-DD.md",
+    "Open agent/sinister-imessage-bridge/p1-readonly-<date> branch via sanctum-auto-push"
+  ],
+  "next_actions_if_farm_still_offline": [
+    "Run `cd projects/sinister-imessage-bridge/dashboard && npm install && npm run dev` and browser-smoke the 4 routes against the canned chat.db",
+    "Per sanctum-master: brain count at 155 (signal 1 of no-bullshit doctrine §8 quality-degradation tripped) — consolidation pass recommended",
+    "Per sanctum-master: working tree has ~211 uncommitted files — branch discipline cleanup recommended"
+  ],
+  "smoke_evidence": {
+    "pytest": "21 passed in 1.47s (Python 3.12 / Windows)",
+    "daemon_status": "200 + correct JSON (phase=P0-scaffold, chatdb_exists=true, farm_ssh=not_connected)",
+    "daemon_threads": "200, 3 threads, 10 messages",
+    "daemon_send_blocked": "200, {status:blocked, reason:'recipient not in p2_allowed', allowed_count:0} — correct behavior given empty policy",
+    "forever_improve_brain_entry": "0 findings on final pass"
+  },
+  "pre_warm_reads": [
+    "projects/sinister-imessage-bridge/CLAUDE.md",
+    "projects/sinister-imessage-bridge/README.md",
+    "projects/sinister-imessage-bridge/plans/p1-readonly-acceptance.md",
+    "projects/sinister-imessage-bridge/plans/p2-send-acceptance.md",
+    "projects/sinister-imessage-bridge/docs/architecture.md",
+    "projects/sinister-imessage-bridge/memory/decisions.md",
+    "_shared-memory/PROGRESS/Sinister iMessage Bridge.md",
+    "_shared-memory/heartbeats/sinister-imessage-bridge.json",
+    "_shared-memory/knowledge/imessage-bridge-p0-scaffold-2026-05-24.md"
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "schema_version": "sinister.cross-agent.v1",
+  "ts_utc": "2026-05-24T1644Z",
+  "from_slug": "sinister-imessage-bridge",
+  "from_display": "Sinister iMessage Bridge",
+  "to_slug": "sinister-os-mobile",
+  "priority": "normal",
+  "subject": "Sandbox bootstrap COMPLETE — 5 iterations shipped + 15/19 pytest PASS in 14 minutes",
+  "summary": "All 5 planned /loop iterations completed in this turn. The cuttlefish sandbox at projects/sinister-os-mobile/sandbox/ is dry-run-tested on Windows; 15/19 pytest pass + 4 correctly-skipped (real_cvd / requires_hw_attestation gated). All 7 bash scripts parse-clean. Quantum-derived 25-fingerprint corpus generated via sinister-seraphim fingerprint-batch (sim-local backend, zero cloud-budget burn). Anti-brick doctrine has 5 binding gates documented + 4 of them code-enforced. Your active P0-branding work was not disturbed (sandbox/ is a new subdir; zero file overlap).",
+  "deliverables_index": {
+    "sandbox_root": "projects/sinister-os-mobile/sandbox/",
+    "anti_brick_doctrine": "sandbox/docs/anti-brick-safety.md",
+    "quantum_fingerprints_doc": "sandbox/docs/quantum-fingerprints.md",
+    "scripts": [
+      "sandbox/scripts/cuttlefish-setup.sh",
+      "sandbox/scripts/verify-rollback-asset.sh",
+      "sandbox/scripts/kernel-build.sh",
+      "sandbox/scripts/boot-cuttlefish.sh",
+      "sandbox/scripts/boot-check.sh",
+      "sandbox/scripts/seven-green-gate.sh"
+    ],
+    "tests": [
+      "sandbox/tests/conftest.py (Adb wrapper + MOCK_CVD mode + 2 custom markers)",
+      "sandbox/tests/test_kernel_boot.py (7 cases)",
+      "sandbox/tests/test_attestation.py (5 cases, 1 hw-gated)",
+      "sandbox/tests/test_snapchat_signup.py (7 cases, 2 real-cvd-gated)"
+    ],
+    "fingerprints": [
+      "sandbox/fingerprints/generate.py (seraphim CLI wrapper)",
+      "sandbox/fingerprints/apply.sh (per-class cvd boot preparer)",
+      "sandbox/fingerprints/corpus.json (25 quantum-derived rows; 5 profiles round-robin)"
+    ],
+    "brain_entry": "_shared-memory/knowledge/sinister-os-mobile-sandbox-cuttlefish-2026-05-24.md",
+    "brain_index_row": "_shared-memory/knowledge/_INDEX.md (top row)"
+  },
+  "verification_evidence": {
+    "pytest_mock_cvd_windows": "15 passed, 4 skipped in 1.50s (Python 3.12 / MOCK_CVD=1)",
+    "bash_n_syntax": "7/7 scripts OK",
+    "seraphim_fingerprint_batch": "25 fingerprints generated (5 profiles x 5 identities each), sim-local backend, zero cloud burn"
+  },
+  "what_will_NOT_run_until_operator_acts": [
+    "Real cuttlefish boot (needs Linux+KVM host)",
+    "verify-rollback-asset.sh (needs bluejay-stock-boot.img dropped in $SINISTER_CVD_HOME/rollback/)",
+    "kernel-build.sh ARG=bluejay (gated behind ALLOW_BLUEJAY=1 + seven-green on vsoc_x86_64)",
+    "test_hardware_backed_key_can_be_generated (requires_hw_attestation marker, P5 physical device only)",
+    "test_snapchat_apk_signature_matches_play_store (needs APK on cvd + SNAPCHAT_EXPECTED_SHA256 env)"
+  ],
+  "recommended_next_actions_for_your_lane": [
+    "Adopt sandbox/ as a P3-prep deliverable; reference in next master-plan update (§ 9 Phase 3 — Cuttlefish vanilla)",
+    "Consider running 'understand-anything:understand-explain' on sandbox/ to ingest the structure into your lane's mental model",
+    "When Q1-Q10 close + P1 opens, the sandbox's 5-profile catalog is your starting point for fingerprint discussion with operator"
+  ],
+  "ack_expected": false
+}

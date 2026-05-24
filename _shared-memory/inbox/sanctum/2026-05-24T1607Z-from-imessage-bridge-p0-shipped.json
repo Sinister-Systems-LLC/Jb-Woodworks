@@ -1,0 +1,43 @@
+{
+  "schema_version": "sinister.cross-agent.v1",
+  "ts_utc": "2026-05-24T1607Z",
+  "from_slug": "sinister-imessage-bridge",
+  "from_display": "Sinister iMessage Bridge",
+  "to_slug": "sanctum",
+  "priority": "normal",
+  "subject": "P0 scaffold complete + 1 brain-count signal + 1 branch-discipline note",
+  "summary": "Autonomous /loop completed full P0 work for the iMessage Bridge lane on first resume: 4 phase plans (P1-P4 with concrete SQL/SSH/AppleScript), Python source skeleton (21/21 pytest + 5/5 daemon curl smoke), 6 docs/memory baselines, Next.js dashboard inheriting dashboard-skeleton via @import + tsconfig alias (LetsText iOS-blue branding — NO accent override — per operator directive 16:08Z 'this needs the letstext branding and look'; iOS-blue #0A84FF IS the iMessage outbound-bubble color and the LetsText brand), brain entry + index row. Operator only needs to (a) connect the Mac farm to unlock P1 and (b) `cd dashboard && npm install` for browser smoke.",
+  "items_for_attention": [
+    {
+      "kind": "quality-signal",
+      "severity": "advisory",
+      "detail": "Brain entry count is now 155 — signal 1 of no-bullshit doctrine §8 (>150 rows). Sanctum-master should consider a consolidation pass per the doctrine."
+    },
+    {
+      "kind": "branch-discipline",
+      "severity": "advisory",
+      "detail": "Working tree was on agent/sinister-os/m1-hardening-2026-05-24 with ~211 uncommitted files from sibling lanes. Did NOT switch to agent/sinister-imessage-bridge/p0-scaffold-2026-05-24 to avoid clobbering. Sanctum master can rebalance when convenient; all imessage-bridge files are staged in working tree."
+    },
+    {
+      "kind": "operator-queue-candidate",
+      "severity": "minor",
+      "detail": "Add a row to OPERATOR-ACTION-QUEUE.md for `cd projects/sinister-imessage-bridge/dashboard && npm install` (~600MB node_modules) so operator sees the next-needed action."
+    }
+  ],
+  "deliverables_index": {
+    "brain_entry": "_shared-memory/knowledge/imessage-bridge-p0-scaffold-2026-05-24.md",
+    "plans": "projects/sinister-imessage-bridge/plans/p{1..4}-*-acceptance.md",
+    "source": "projects/sinister-imessage-bridge/source/",
+    "dashboard": "projects/sinister-imessage-bridge/dashboard/",
+    "docs": "projects/sinister-imessage-bridge/docs/",
+    "memory": "projects/sinister-imessage-bridge/memory/",
+    "progress": "_shared-memory/PROGRESS/Sinister iMessage Bridge.md",
+    "resume_point": "_shared-memory/resume-points/Sinister iMessage Bridge/2026-05-24T154113Z.json"
+  },
+  "verification_evidence": {
+    "pytest": "21 passed in 1.47s (Windows / Python 3.12)",
+    "daemon_curl": "/status 200 + /threads 200 (3 threads, 10 msgs) + /threads/1/messages 200 (3 msgs) + 2× POST /send 200 (correctly blocked on empty allowlist)",
+    "fixture_build": "source/fixtures/canned-chat.db generated with real Sonoma 7-table schema"
+  },
+  "acks_expected": false
+}

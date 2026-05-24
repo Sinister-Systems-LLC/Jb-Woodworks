@@ -1,0 +1,33 @@
+{
+  "name": "sinister-imessage-bridge-dashboard",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Sinister iMessage Bridge — operator dashboard. LetsText branding (iOS-blue #0A84FF — iMessage dark-mode bubble color); inherits sinister-dashboard-skeleton tokens + components via path alias; no accent override. Author: RKOJ-ELENO :: 2026-05-24.",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "next dev --port 3171",
+    "build": "next build",
+    "start": "next start --port 3171",
+    "lint": "next lint",
+    "doctrine-audit:strict": "node ../../sinister-dashboard-skeleton/dashboard-skeleton/enforcement/doctrine-audit.mjs --strict",
+    "gates": "tsc --noEmit && next lint && npm run doctrine-audit:strict"
+  },
+  "dependencies": {
+    "next": "^15.5.14",
+    "react": "19.2.5",
+    "react-dom": "19.2.5",
+    "tailwindcss": "^4.1.9",
+    "@tailwindcss/postcss": "^4.2.4",
+    "postcss": "^8.5",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "typescript": "^5"
+  }
+}

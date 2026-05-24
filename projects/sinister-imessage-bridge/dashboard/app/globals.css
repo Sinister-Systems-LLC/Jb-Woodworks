@@ -1,0 +1,27 @@
+/* Sinister iMessage Bridge dashboard — global stylesheet.
+ * RKOJ-ELENO :: 2026-05-24
+ *
+ * Strategy: inherit the dashboard-skeleton tokens + .lg-* Liquid Glass
+ * classes verbatim. NO --accent override — this lane is a LetsText
+ * surface (iMessage bridge = LetsText product), so the skeleton's
+ * default iOS-blue `#0A84FF` (the iMessage dark-mode bubble color) IS
+ * the brand. Per CLAUDE.md hard-canonical 2026-05-24 15:44Z — EXPAND,
+ * never fork; per operator directive 2026-05-24 16:08Z — "this needs
+ * the letstext branding and look".
+ */
+@import "tailwindcss";
+@import "../../../sinister-dashboard-skeleton/dashboard-skeleton/tokens/globals.css";
+
+/* No --accent override: skeleton default (iOS-blue) is the LetsText brand
+ * for this lane. Other Sinister-fleet surfaces (sanctum/forge/etc) flip to
+ * purple `#c084fc`; this one stays iOS-blue. */
+
+/* Page-fade-in motion per skeleton motion-system doctrine */
+@keyframes page-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.page-fade-in { animation: page-fade-in var(--motion-med, 300ms) var(--motion-ease, cubic-bezier(0.22, 1, 0.36, 1)) both; }
+
+/* Body baseline so we don't fight Next.js defaults */
+html, body { background: var(--surface-0); color: var(--text-primary, #FFFFFF); }
