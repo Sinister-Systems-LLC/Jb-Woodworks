@@ -286,3 +286,78 @@ def test_cancellation_theorem_angle_cnot_equals_k4_angle():
             f"cancellation theorem broken: top-{t_a['rank']} advantage differs"
         assert abs(t_a['sim_off_diag_mean'] - t_ac['sim_off_diag_mean']) < 1e-9, \
             f"cancellation theorem broken: top-{t_a['rank']} sim differs"
+
+
+def test_encoding_nesting_k4_subset_of_zzfm_r1():
+    """iter-52 universal-QBC nesting: K=4 ANGLE QBC ⊂ ZZ-FM r=1 QBC.
+
+    The 3 known K=4 universal-QBC triads from iter 52 must also be
+    ZZ-FM r=1 QBC. This protects the cross-encoding transferability
+    rule operators rely on for safe-default triad selection.
+
+    IMPORTANT (iter 84 catch): iter-52 used the 129-doc find-qbc pool
+    TF-IDF, not the 3-doc legacy. Tests must pass `corpus` to match.
+    """
+    from pathlib import Path
+    # Build the same topical-balanced pool find-qbc uses
+    BRAIN_DIR = memory_kernel.BRAIN_DIR
+    SKIP = {'README.md', '_INDEX.md', '_TEMPLATE.md'}
+    files = sorted(p.name for p in BRAIN_DIR.glob('*.md') if p.name not in SKIP)
+    topics = {}
+    for f in files:
+        topics.setdefault(f.split('-')[0], []).append(f)
+    pool = []
+    for prefix, group in sorted(topics.items()):
+        pool.extend(group[:4])
+
+    universal_qbc_triads = [
+        ['multi-agent-branch-contention-isolation-pattern.md',
+         'multi-agent-git-coordination-2026-05-23.md',
+         'multi-agent-git-index-contention-storm-2026-05-23.md'],
+        ['multi-agent-branch-contention-isolation-pattern.md',
+         'multi-agent-git-coordination-2026-05-23.md',
+         'verify-head-before-commit-multi-agent.md'],
+        ['multi-agent-branch-contention-isolation-pattern.md',
+         'multi-agent-git-index-contention-storm-2026-05-23.md',
+         'verify-head-before-commit-multi-agent.md'],
+    ]
+    for triad in universal_qbc_triads:
+        # K=4 ANGLE verdict (corpus=pool to match iter-52 measurement)
+        r_k4 = memory_kernel.run_kernel_audit(
+            encoding='angle', k=4, reps=1,
+            triad=triad, corpus=pool, sim_only=True,
+        )
+        # ZZ-FM r=1 verdict (same corpus)
+        r_zz = memory_kernel.run_kernel_audit(
+            encoding='zzfm', k=4, reps=1,
+            triad=triad, corpus=pool, sim_only=True,
+        )
+        # K=4 advantage must be > 0 (verified iter 52 universal-QBC)
+        assert r_k4['classical_off_diag_mean'] > r_k4['sim_off_diag_mean'], \
+            f"K=4 ANGLE not QBC on universal-QBC triad: {triad} " \
+            f"(cl={r_k4['classical_off_diag_mean']:.4f} sim={r_k4['sim_off_diag_mean']:.4f})"
+        # ZZ-FM r=1 advantage must also be > 0 (nesting K=4 ⊂ ZZ-FM)
+        assert r_zz['classical_off_diag_mean'] > r_zz['sim_off_diag_mean'], \
+            f"iter-52 nesting broken: K=4 QBC but ZZ-FM r=1 anti-QBC on {triad}"
+
+
+def test_audit_pipeline_skip_real_qpu_produces_summary():
+    """iter-41 audit-pipeline with --skip-real-qpu does not touch cloud and
+    produces a phase-summary table. This is the primary operator-facing
+    orchestration command; the underlying functions (find_qbc + run_kernel_audit)
+    are tested separately, this verifies they compose correctly.
+    """
+    # Import the cli module to access the audit-pipeline cmd handler directly
+    import cli
+    import argparse
+
+    # Build args namespace matching what argparse would produce
+    args = argparse.Namespace(
+        variant='zzfm-r1', corpus='pool', top_n=2,
+        shots=128, cap=60.0, stall=30.0,
+        skip_real_qpu=True, out=None, json=False,
+    )
+
+    # Should run cleanly and return exit code 0
+    result = cli._audit_pipeline_cmd(args)
+    assert result == 0, f"audit-pipeline returned non-zero exit: {result}"

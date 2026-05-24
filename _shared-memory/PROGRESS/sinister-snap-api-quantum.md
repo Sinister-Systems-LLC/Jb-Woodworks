@@ -7,6 +7,42 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T18:55Z — iteration 84 (2 more tests: K=4⊂ZZ nesting + audit-pipeline orchestration; FAILURE caught corpus-mismatch nuance)
+
+Operator: /loop. Added 2 more regression tests. The nesting test FAILED initially — surfaced a real corpus-context nuance from iter 42.
+
+### Added to `tools/sinister-seraphim/tests/test_smoke.py`
+1. **`test_encoding_nesting_k4_subset_of_zzfm_r1`** — verifies iter-52 universal-QBC nesting: 3 known K=4 QBC triads must ALSO be ZZ-FM r=1 QBC.
+2. **`test_audit_pipeline_skip_real_qpu_produces_summary`** — verifies iter-41 audit-pipeline orchestration (find-qbc + sim-gate composing correctly) with --skip-real-qpu.
+
+### The interesting test failure (and what it revealed)
+My initial nesting test called `run_kernel_audit(triad=..., sim_only=True)` WITHOUT a `corpus` parameter — which falls back to legacy 3-doc TF-IDF (iter 42 doctrine). Result: K=4 ANGLE on `branch + coord + index` triad gave cl=0.636 sim=0.820 → anti-QBC.
+
+But iter-52 measured this triad as K=4 QBC using the 129-pool TF-IDF. The discrepancy is corpus-specific — same triad, different TF-IDF vocabulary, different verdict.
+
+**Implication (corpus-context doctrine extended):** iter-52's universal-QBC nesting claim holds **in the find-qbc pool corpus, NOT in the 3-doc legacy mode.** Operators using `run_kernel_audit` directly (not through `find-qbc` or `audit`) must pass `corpus=pool` to reproduce iter-52 results.
+
+Fixed the test by building the pool inline and passing `corpus=pool`. Both encodings then return QBC verdicts as expected.
+
+### Test results
+- 19/19 total seraphim suite PASS (no regressions)
+- 2 new memory-kernel tests + 6 from iter 81/83 = 8 memory-kernel tests total
+- ~24s wall time
+
+### Doctrine coverage now
+- iter-16/22/43 cancellation theorem
+- iter-39/41 rank-by ceiling + rank-inversion
+- iter-41 find-qbc schema + audit-pipeline orchestration
+- iter-48 brain-recall default
+- iter-52 universal-QBC nesting (with corpus-context noted)
+- iter-59 Shared-Top-K Necessary Condition
+- iter-65/66 K=4 combined predictor safety
+
+### Cost
+Zero cloud burn; ~6 min wall time (write + debug failure + fix).
+
+---
+
 ## 2026-05-24T18:35Z — iteration 83 (2 more regression tests: rank-by ceiling + cancellation theorem)
 
 Operator: /loop. Corpus grew 150→151 but pool still 129 (over-capped). Focus on test coverage gaps instead.
