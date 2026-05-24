@@ -1,0 +1,43 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-24T16:35:49.7539395Z",
+    "project":  "sinister-os-mobile",
+    "agent_name":  "sinister-os-mobile",
+    "mode":  "resume",
+    "focus_intent":  "PATTERNS.md gap audit landed - 19 EXPAND PRs queued. Next: update branding-spec § 4 + draft cross-lane handoff to sinister-dashboard-skeleton for Tier 1 PRs",
+    "git":  {
+                "branch":  "agent/sinister-os-mobile/p0-spec-2026-05-24",
+                "head":  "c5552c984f6b02f77d1fddc65ffe855ee55da6a1",
+                "head_msg":  "sanctum: jcode-parity-probe.ps1 v0.1 + audit hypothesis empirically confirmed",
+                "recent_commits":  [
+                                       "c5552c9 sanctum: jcode-parity-probe.ps1 v0.1 + audit hypothesis empirically confirmed",
+                                       "f0be8fe sinister-os-mobile: P0 branding lock (operator hard-canonical 2026-05-24T16:09:10Z)",
+                                       "4196b28 sanctum: jcode parity audit + ensure-docker-up helper (iter-2)",
+                                       "d4cd1a0 sanctum: counter-argument.ps1 + sinister-os-mobile spawn",
+                                       "a1c9a98 sanctum: bootstrap sinister-os-mobile lane + P11 + idea-intake",
+                                       "68e43db sanctum(broadcast): fan-out UI-base + EXPAND doctrine to 37 lanes",
+                                       "08ce1a2 sanctum(doctrine): UI BASE = dashboard-skeleton + EXPAND principle (2026-05-24 hard-canonical)",
+                                       "30135f2 sinister-os: parallel ramp — themes (4 services) + eve CLI + panel-dev HMR + 4 docs + bake-panel safety",
+                                       "532f4e9 sinister-os: M1 hardening overlay (compose.hardened.yml + HARDENING.md)",
+                                       "1f79582 sanctum: broadcast feature-refresh 2026-05-24 to all 18 visible lanes (no restart)"
+                                   ]
+            },
+    "progress_top3":  [
+
+                      ],
+    "latest_plan":  {
+                        "dir":  null,
+                        "artifact":  null
+                    },
+    "inbox_unread_count":  1,
+    "last_5_files_touched_24h":  [
+                                     "projects\\sinister-os\\build\\_work\\x86_64\\airootfs\\usr\\share\\i18n\\charmaps\\CP1258.gz",
+                                     "projects\\sinister-os\\source\\sinister-overlay\\etc\\sudoers.d\\eve",
+                                     "_shared-memory\\heartbeats\\sinister-os-mobile.json",
+                                     "projects\\sinister-os\\source\\sinister-overlay\\etc\\hostname.sinister",
+                                     "projects\\sinister-panel\\source\\leo_dev\\dashboard\\tsconfig.tsbuildinfo"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}

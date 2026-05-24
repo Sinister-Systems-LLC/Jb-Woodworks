@@ -5,6 +5,52 @@
 
 ---
 
+## 2026-05-24T16:35Z — Turn 2 (PATTERNS.md mobile gap audit)
+
+Operator directive Turn 2: *"audit PATTERNS.md for mobile primitive gaps"* — direct ask, no /loop.
+
+### Shipped (verified — file exists + parse-clean + inventory grep-cited)
+
+- **`projects/sinister-os-mobile/research/patterns-md-mobile-gap-audit-2026-05-24.md`** (~14 KB, 9 sections)
+  - § 2 Skeleton inventory ground-truth: 16 PATTERNS.md recipes + 23 ui/ + 17 primitives/ + 9 shared/ + 2 layout/ — every component file listed
+  - § 3 Per-surface verdict table — 35+ mobile primitive needs classified across SystemUI / launcher / modals / lists / gestures
+  - § 4 EXPAND PR rollout plan — **19 PRs to ship to skeleton** (Tier 1: 8 must-land-before-P4, Tier 2: 9 surface-specific, Tier 3: 2 augment-existing)
+  - § 5 cross-check against branding-spec § 4 (5 original callouts covered + 14 new primitives surfaced)
+  - § 6 sizing tokens to add to skeleton `tokens/globals.css` (mobile.css partial proposed)
+  - § 7 documentation deltas (PATTERNS.md § 17-§ 33 to add, branding-spec § 4 update, skeleton CHANGELOG rows)
+
+### Verification
+
+| Check | Evidence | Result |
+|---|---|---|
+| PATTERNS.md read full | 590 lines, 16 sections enumerated in audit § 2.1 | ✅ |
+| components/ inventory cited | `ls components/{ui,primitives,shared,layout}/` outputs reproduced in § 2.2-2.5 | ✅ |
+| Sheet.tsx confirms BottomSheet PARTIAL verdict | `ui/sheet.tsx` line 49-53 supports `side='bottom'` but no mobile recipe | ✅ |
+| Slider primitive MISSING confirmed | `ui/` enumeration shows `switch.tsx` only (binary), no slider | ✅ |
+| 19 PRs enumerated with file paths + complexity | § 4.1 + § 4.2 + § 4.3 tables | ✅ |
+| Branding-spec § 4 cross-check | § 5 table reconciles 5 callouts + 14 newly surfaced | ✅ |
+
+### Open (queued for next turn / operator gate / cross-lane handoff)
+
+- **Branding-spec § 4 update** — current paragraph says "likely candidates" with a 5-primitive list; replace with pointer at this audit + Tier 1/2/3 link. Small edit, do next turn or batch.
+- **Skeleton EXPAND PR #1 (`bottom-sheet.tsx`)** — first PR per Tier 1. Cross-lane: needs `sinister-dashboard-skeleton` lane to execute. Open `OPERATOR-ACTION-QUEUE` row or send inbox message to skeleton lane.
+- **Brain `_INDEX.md` row** — add row for this audit doc when committed (or batch with branding-spec update).
+- **P0 operator-gate Q1-Q10** — still pending; § 14 branding lock + this audit progress independently.
+
+### No-bullshit ledger
+
+- Claimed only: audit doc exists + sections present + inventory grep-cited. NOT claimed: "EXPAND PRs landed" / "skeleton has these primitives now" — those are queued in § 4.
+- Verb at gate for the audit: **scaffolded** (audit complete, no PRs opened yet).
+- Verb at gate for each EXPAND PR: still **pending** (skeleton lane must build).
+- Quality-degradation signals: PROGRESS file grew from ~5 KB to ~7 KB (under 300 KB cap). Brain row count unchanged this turn. Audit doc is ~14 KB single file (no concerns).
+
+### Lane discipline notes
+
+- This lane (sinister-os-mobile) authored the audit but does NOT own the skeleton repo. The 19 EXPAND PRs in § 4 belong to a future cross-lane handoff to the sinister-dashboard-skeleton lane. This lane queues them, doesn't execute them.
+- Did NOT touch sibling lane files this turn. Lane discipline maintained.
+
+---
+
 ## 2026-05-24T16:15Z — Turn 1 (sinister-os-mobile lane, first dedicated EVE session, RESUME mode)
 
 Operator utterance 2026-05-24T16:09:10Z (logged via `log-operator-utterance.ps1`): *"take note this needs the sinister branding and look"*. Branding lock added to P0 deliverables.
