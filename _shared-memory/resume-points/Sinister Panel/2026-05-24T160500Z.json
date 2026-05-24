@@ -1,0 +1,43 @@
+{
+  "_author": "RKOJ-ELENO :: 2026-05-24",
+  "schema_version": "sinister.resume-point.v1",
+  "ts_utc": "2026-05-24T16:05:00.0000000Z",
+  "project": "Sinister Panel",
+  "agent_name": "sinister-panel",
+  "agent_identity": "EVE",
+  "mode": "resume",
+  "focus_intent": "Loop iter 2 of keybox-OEM-probe expansion. Branch agent/sinister-panel/keybox-oem-probe-2026-05-24 now at HEAD 3da52e3 (3 commits: c782adb base, 116e373 5th KPI + smoke, 3da52e3 inline smoke: ref). Smoke 5/5 PASS. Awaits operator merge + deploy. Next iter cadence: ~20min idle ping to check Hetzner health + new inbox + kernel-apk response.",
+  "git": {
+    "branch": "agent/sinister-panel/keybox-oem-probe-2026-05-24",
+    "branch_head": "3da52e3",
+    "branch_commits_atop_main": 3,
+    "main_head": "5b9aece",
+    "deployed_head_on_hetzner": "5b9aece",
+    "branch_pushed_to_origin": true,
+    "merge_gate_one_liner": "git checkout main && git merge --no-ff agent/sinister-panel/keybox-oem-probe-2026-05-24 && git push origin main && ssh root@[hetzner-ip] 'bash /tmp/remote-deploy.sh --with-backend'"
+  },
+  "gates_at_ship": {
+    "backend_tsc": "exit 0",
+    "dashboard_tsc": "exit 0",
+    "doctrine_audit_strict": "0/0/0/0/0/0/0 (clean)",
+    "next_build": "30 routes green",
+    "smoke_keybox_oem": "5/5 fixtures PASS"
+  },
+  "progress_top3": [
+    "2026-05-24T16:05Z — Loop iter 2 closed: 5th KPI (mismatch count) + smoke 5/5 PASS + forever-improve Q4-verifiability finding closed (3da52e3)",
+    "2026-05-24T15:45Z — Shipped keybox-OEM-probe c782adb on agent branch; inbox heads-up to kernel-apk + emu ack with phased plan",
+    "2026-05-24T15:25Z — RESUME entry"
+  ],
+  "carry_forward_deferrals": [
+    "OEM pill refactor → propose <StatusBadge tone=\"info-3\"> to dashboard-skeleton per new UI canonical 2026-05-24 EXPAND principle",
+    "automations/fleet-update.ps1 CLI does not exist — Sanctum lane todo (channel seed-note flagged it)",
+    "sinister-chatbot lane's 3 uncommitted tree files — operator paused 14:36Z; do not touch",
+    "EMU FLEET 7-widget tab — awaits operator Phase 0 greenlight",
+    "Operator merge-gate for branch agent/sinister-panel/keybox-oem-probe-2026-05-24 (3 commits ready, gates green)"
+  ],
+  "pre_warm_reads": [
+    "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Sinister Panel.md",
+    "D:\\Sinister Sanctum\\_shared-memory\\inbox\\sinister-panel\\",
+    "D:\\Sinister Sanctum\\projects\\sinister-panel\\source\\leo_dev\\backend\\src\\lib\\keyboxOem.ts"
+  ]
+}

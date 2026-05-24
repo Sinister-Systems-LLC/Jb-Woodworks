@@ -1,0 +1,41 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-24T16:50:00Z",
+    "project": "sinister-snap-api-quantum",
+    "agent_name": "sinister-snap-api-quantum",
+    "mode": "resume",
+    "focus_intent": "Iter 105 — 6 Sanctum-core lanes reconciled vs fleet brain via new reconcile-corpora CLI. Novel signal: 'what fleet doctrine each lane implicitly absorbed'. Each lane has 4-283 reconciliation candidates. Kernel-APK is outlier (283; own per-lane Brain mirror tree). Per-lane cross-reference candidates surfaced + Sanctum inbox routed.",
+    "git": {
+        "branch": "agent/sinister-os/m1-hardening-2026-05-24",
+        "head": "532f4e9",
+        "branch_drift_flag": "still on sinister-os branch"
+    },
+    "iter_105_artifacts": {
+        "findings": "projects/sinister-snap-api-quantum/outputs/sanctum-lanes-vs-brain-iter105.md",
+        "reconcile_jsons": [
+            "_shared-memory/quantum-sweeps/snap-emu-vs-brain-reconcile-2026-05-24T164656Z.json",
+            "_shared-memory/quantum-sweeps/letstext-vs-brain-reconcile-2026-05-24T164648Z.json",
+            "_shared-memory/quantum-sweeps/tiktok-emu-vs-brain-reconcile-2026-05-24T164750Z.json",
+            "_shared-memory/quantum-sweeps/panel-vs-brain-reconcile-2026-05-24T164747Z.json",
+            "_shared-memory/quantum-sweeps/dashboard-skeleton-vs-brain-reconcile-2026-05-24T164657Z.json",
+            "_shared-memory/quantum-sweeps/kernel-apk-vs-brain-reconcile-2026-05-24T164827Z.json"
+        ],
+        "inbox": "_shared-memory/inbox/sanctum/2026-05-24T1650Z-from-snap-api-quantum-iter105-lanes-vs-brain.json"
+    },
+    "loop_continuation": {
+        "mode": "self-paced dynamic",
+        "scheduled_wakeup_seconds": 1500,
+        "next_options_ranked": [
+            "Promote seraphim verify-triad-real-qpu CLI (3rd subcommand)",
+            "Reconcile chatbot + sinister-os + imessage-bridge vs fleet brain (3 more lanes)",
+            "Cross-lane reconciliations for sibling-architecture audits",
+            "Per-lane plans-vs-brain reconciliations",
+            "K=8 real-QPU upgrade research"
+        ]
+    },
+    "inbox_unread_count": 0,
+    "pre_warm_reads": [
+        "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\sinister-snap-api-quantum.md",
+        "D:\\Sinister Sanctum\\projects\\sinister-snap-api-quantum\\outputs\\sanctum-lanes-vs-brain-iter105.md"
+    ]
+}

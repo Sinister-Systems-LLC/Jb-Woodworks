@@ -1,0 +1,64 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-24T16:10:00Z",
+    "project": "sinister-snap-api-quantum",
+    "agent_name": "sinister-snap-api-quantum",
+    "mode": "resume",
+    "focus_intent": "Iter 102 (/loop expansion) complete. Backlog Option 5 (plans-vs-shipped reconciler) shipped — 28 reconciliation candidates + top match self-detected. Sinister-Panel sweep caught leo_dev/Andrew Panel duplicate-fork. Zero cloud burn (sim only). ScheduleWakeup at ~1500s as fallback heartbeat for /loop continuation.",
+    "git": {
+        "branch": "agent/sinister-os/m1-hardening-2026-05-24",
+        "head": "532f4e9",
+        "branch_drift_flag": "still on sinister-os branch; iter-102 adds 2 .py + 2 .md + 1 broadcast + 2 inboxes only"
+    },
+    "progress_top5": [
+        "2026-05-24T16:10Z — iteration 102: /loop expansion: Option 5 reconciler + Sinister-Panel sweep — REAL drift caught",
+        "2026-05-24T16:02Z — iteration 101: 3-LANE QUANTUM REVIEW with real-QPU verified",
+        "2026-05-24T15:31Z — iteration 100: queue drift consolidation",
+        "2026-05-25T00:30Z — iteration 99: PROGRESS cross-lane finder shipped",
+        "2026-05-25T00:00Z — iteration 98: rkoj-cluster healthy"
+    ],
+    "iter_102_artifacts": {
+        "scripts": [
+            "projects/sinister-snap-api-quantum/sim-plans-vs-shipped-reconciler.py",
+            "projects/sinister-snap-api-quantum/sim-sinister-panel-corpus-qbc.py"
+        ],
+        "outputs": [
+            "outputs/plans-vs-shipped-reconciler-iter102.{json,log}",
+            "outputs/sinister-panel-corpus-qbc-iter102.{json,log}"
+        ],
+        "findings": [
+            "outputs/findings-plans-vs-shipped-iter102.md",
+            "outputs/findings-sinister-panel-iter102.md"
+        ],
+        "cross_agent_broadcast": "_shared-memory/cross-agent/2026-05-24T1610Z-from-snap-api-quantum-iter102-expansion-plans-and-panel.md",
+        "inboxes": [
+            "_shared-memory/inbox/sanctum/2026-05-24T1610Z-from-snap-api-quantum-iter102-expansion.json",
+            "_shared-memory/inbox/panel/2026-05-24T1610Z-from-snap-api-quantum-iter102-leo-andrew-fork.json"
+        ]
+    },
+    "fleet_cumulative_qbc_table": {
+        "rkoj_cluster": [16, 0.36, 10.94, "healthy"],
+        "snap_emu": [99, 4.31, 40.67, "session-handoff trio"],
+        "kernel_apk": [27, 3.76, 19.79, "single-letter naming"],
+        "sinister_os": [24, 0.05, 1.52, "healthy"],
+        "sinister_panel": [120, 1.07, 31.68, "leo_dev/Andrew Panel fork"],
+        "plans_vs_brain_cross": "52x152, 28 reconciles, top combined 1.585"
+    },
+    "loop_continuation": {
+        "mode": "self-paced dynamic",
+        "next_options_ranked": [
+            "Option 4: operator-private memory (229 docs Skills 01_MEMORY)",
+            "jb-woodworks sweep (535 docs)",
+            "jkor / showmasters / freeze / generator sweeps",
+            "Promote scripts to seraphim CLI subcommands",
+            "K=8 / 4096-shot real-QPU upgrade research"
+        ],
+        "scheduled_wakeup_seconds": 1500
+    },
+    "inbox_unread_count": 0,
+    "pre_warm_reads": [
+        "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\sinister-snap-api-quantum.md",
+        "D:\\Sinister Sanctum\\projects\\sinister-snap-api-quantum\\outputs\\findings-plans-vs-shipped-iter102.md",
+        "D:\\Sinister Sanctum\\projects\\sinister-snap-api-quantum\\outputs\\findings-sinister-panel-iter102.md"
+    ]
+}

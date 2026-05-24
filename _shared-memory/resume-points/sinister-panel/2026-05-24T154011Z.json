@@ -1,0 +1,44 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-24T16:22:41.2043656Z",
+    "project":  "sinister-panel",
+    "agent_name":  "sinister-panel",
+    "mode":  "resume",
+    "focus_intent":  "Shipped keybox-OEM-probe on agent/sinister-panel/keybox-oem-probe-2026-05-24 (commit c782adb, pushed origin): new GET /api/rka/keyboxes/oem parses each .xml in RKA_KEYBOX_DIR, classifies as samsung/google/unknown via leaf cert Subject DN + DeviceID heuristic. /fleet \u003e Keyboxes surfaces inline OEM pill + right-pane detail card with mismatch banner when keybox is samsung on Pixel fleet. Closes 11:55Z PROGRESS offer to kernel-apk. Awaits operator merge-to-main + deploy.",
+    "git":  {
+                "branch":  "agent/sinister-os/m1-hardening-2026-05-24",
+                "head":  "532f4e9bb26a47a4848b2590394ca3c663691f37",
+                "head_msg":  "sinister-os: M1 hardening overlay (compose.hardened.yml + HARDENING.md)",
+                "recent_commits":  [
+                                       "532f4e9 sinister-os: M1 hardening overlay (compose.hardened.yml + HARDENING.md)",
+                                       "1f79582 sanctum: broadcast feature-refresh 2026-05-24 to all 18 visible lanes (no restart)",
+                                       "af54f4b sanctum: fix window-persist bug in mintty spawn",
+                                       "bce570c sinister-os: /loop iter 1 - dashboard-skeleton theme inheritance binding (10/10 services HTTP 200 verified)",
+                                       "daff913 sanctum: iter 108 - broadcast cites brain-stale-claim-scan.ps1 (Bug #2 operational tool)",
+                                       "97f06a7 merge: take theirs for _INDEX.md (sibling lane authoritative)",
+                                       "ef149a5 sinister-os: smoke-test corrected ports, 10/10 services HTTP 200",
+                                       "125c1a1 sanctum: iter 101 - audit + resolve stale \u0027likely\u0027 speculations in windows-case-folding-resume-point-trap",
+                                       "5fb0a5d sanctum: iter 100 - add modular-fleet compose-with link to cross-lane finder doctrine",
+                                       "783db84 sanctum: brain entry for PROGRESS cross-lane pattern-finder (iter 99 doctrine)"
+                                   ]
+            },
+    "progress_top3":  [
+
+                      ],
+    "latest_plan":  {
+                        "dir":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\sinister-panel-complete-2026-05-23T0623Z",
+                        "artifact":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\sinister-panel-complete-2026-05-23T0623Z\\forward-plan.md"
+                    },
+    "inbox_unread_count":  1,
+    "last_5_files_touched_24h":  [
+                                     "_shared-memory\\plans\\d-drive-reorg-2026-05-24\\run-20260524-114453-phaseall-dryrun.log",
+                                     "_shared-memory\\operator-utterances.jsonl",
+                                     "_shared-memory\\resume-points\\Snap Emulator API\\2026-05-24T154314Z.json",
+                                     "_shared-memory\\heartbeats\\apk.json",
+                                     "_shared-memory\\resume-points\\Sinister Kernel APK\\2026-05-24T1545Z.json"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\plans\\sinister-panel-complete-2026-05-23T0623Z\\forward-plan.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}

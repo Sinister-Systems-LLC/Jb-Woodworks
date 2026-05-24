@@ -1,0 +1,47 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-24T12:25:00Z",
+    "project": "jb-woodworks",
+    "agent_name": "jb-woodworks",
+    "mode": "ship",
+    "focus_intent": "JB owner's logo system integrated + LIVE. Monogram → favicon + splash. Horizontal wordmark → nav. Stacked wordmark → footer. Site colors preserved per owner.",
+    "git": {
+        "branch": "agent/jb-woodworks/v0.3.0-scaffold",
+        "head": "7905f2f (Sanctum) / 867a9f5 (standalone main)",
+        "head_msg": "brand(jb-woodworks): integrate owner-supplied JBW logo system (monogram + horizontal + stacked wordmarks)",
+        "build_worktree": "C:/tmp/jbw-build (replaces deleted D:/jbw-wt)"
+    },
+    "live": {
+        "url": "https://jbwoodworks.co/",
+        "http_status": "200 in 0.31s",
+        "routes_200_of_7": 7,
+        "favicons_200": "16/32/48/180/192/512 PNG + .ico",
+        "brand_assets_200": "monogram, monogram-on-ink, wordmark-horizontal, wordmark-stacked"
+    },
+    "deploy": {
+        "railway_id": "d4a935dd-2f48-4720-9b44-b673e3385832",
+        "vercel_proxy": "force-redeployed (cache busted)"
+    },
+    "progress_top3": [
+        "2026-05-24 12:25 - JB owner's logo system shipped (monogram + horizontal + stacked) — LIVE",
+        "2026-05-24 11:05 - resume check-in (no new operator ask)",
+        "2026-05-24 09:35 - JB owner asks: add Commercial & Event Fabrication service + recategorize"
+    ],
+    "infra_drift_recovered": [
+        "D:/jbw-wt worktree was pruned by parallel cleanup lane — created C:/tmp/jbw-build for this turn",
+        "D:/jbw-deploy was deleted — rebuilt and re-staged for railway up",
+        "D:/jbw-proxy was deleted — recreated minimal vercel.json+package.json from spec; jb-publish.ps1 paths unchanged"
+    ],
+    "open_followons_low_priority": [
+        "Update branding/BRAND-GUIDELINES.md with new logo system spec (owner's 3 placements + when-to-use rules) — currently lives only as comments in scripts/recolor-logos.py",
+        "Update og-image.svg to use new JBW monogram lockup (currently uses old text wordmark; not blocking — owner approved current OG)",
+        "Install Railway GitHub App on Sinister-Systems-LLC org so pushes auto-deploy (workaround: jb-publish.ps1 runs railway up locally)",
+        "Set RESEND_API_KEY on Railway service for real email send"
+    ],
+    "pre_warm_reads": [
+        "D:\\Sinister Sanctum\\_shared-memory\\resume-points\\JB Woodworks\\HANDOFF-2026-05-24.md",
+        "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\jb-woodworks.md",
+        "D:\\Sinister Sanctum\\projects\\jb-woodworks\\CLAUDE.md"
+    ],
+    "note_for_next_session": "Owner's logo system is now the canonical brand. Recolor pipeline at scripts/recolor-logos.py + scripts/_logo-src/. If owner ships an updated source PNG, drop it into _logo-src/ with the matching name (jbw-{monogram,horizontal,stacked}-src.png) and re-run the script; outputs auto-replace."
+}

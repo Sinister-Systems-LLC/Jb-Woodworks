@@ -1,0 +1,36 @@
+{
+  "schema_version": "sinister.resume-point.v1",
+  "ts_utc": "2026-05-24T15:45:00Z",
+  "project": "Sinister Kernel APK",
+  "agent_name": "diagnose",
+  "mode": "resume",
+  "focus_intent": "diagnose-pass-1 complete: 5 findings surfaced (broken trees scope-isolated to 2 commits + recovery path + telemetry conflict + 38 uncommitted versions). --swarm fanout returned actionable sharpening.",
+  "git": {
+    "branch": "agent/sinister-kernel-apk/crispy-cosmos-resume",
+    "head": "cda2e4e",
+    "head_msg": "v0.97.9 (BROKEN: missing tree 25a5e50 — only readable via reflog walk to 9e5c766 v0.97.7 baseline)",
+    "commits_ahead_of_origin": 11,
+    "main_branch_clean": true,
+    "main_diverged_at": "1c11273",
+    "main_commits": 223,
+    "last_clean_agent_commit": "9e5c766 v0.97.7"
+  },
+  "findings_summary": {
+    "F1_broken_trees": "ISOLATED to 2 commits (fec894c v0.97.8 + cda2e4e v0.97.9). 4 missing trees + orphan tmp_pack_bqSd0e (24MB no .idx). Recovery in OPERATOR-ACTION-QUEUE row 2026-05-24T13:55Z.",
+    "F2_version_drift_resolved": "v0.97.10-v0.97.47 never committed to git — phone-install telemetry only. Build dir empty. No hidden branches. 38 versions live as uncommitted working-tree state.",
+    "F3_branch_push": "11 commits ahead of origin (kernel-apk lane owns push). Will be blocked until F1 clears since sanctum-auto-push uses git status.",
+    "F4_telemetry_conflict": "CURRENT-STATE.md v0.96.68 @ 2026-05-20 vs PROGRESS v0.97.47 @ 2026-05-24 — 39-version gap. Needs ADB dumpsys ground-truth.",
+    "F5_commit_cadence_risk": "38 uncommitted versions = single-point-of-failure on workstation disk. Doctrine recommendation: periodic commit during long /loop sessions."
+  },
+  "operator_messages_this_session": [
+    {"ts_utc": "2026-05-24T15:36:01Z", "text": "--swarm", "response": "fanned out 2 Explore sub-agents on the open audit angles; results folded into PROGRESS/diagnose.md + OPERATOR-ACTION-QUEUE.md"},
+    {"ts_utc": "2026-05-24T15:36:04Z", "text": "phone 1 got ss11 fix", "response": "relayed to kernel-apk inbox at 2026-05-24T1536Z; positive signal that recent APK is firing SS11 mitigation on P1"}
+  ],
+  "carry_forward": [
+    "Operator: ack OPERATOR-ACTION-QUEUE 2026-05-24T13:55Z row + authorize step 0 → 1 → 2 of the recovery sequence",
+    "Operator: ground-truth phone versions via adb dumpsys to resolve F4 telemetry conflict",
+    "kernel-apk lane: consider periodic commits during /loop survival (F5)",
+    "Next diagnose-pass: re-run fsck after operator-authorized recovery; sanity-check working-tree state for v0.97.10-47 reconstruction"
+  ],
+  "operator_directive_at_session": "Working on Kernel APK at projects/sinister-kernel-apk/source as 'diagnose' lane. RESUME mode. Pick up from latest resume-point. After each meaningful deliverable, write a fresh resume-point."
+}

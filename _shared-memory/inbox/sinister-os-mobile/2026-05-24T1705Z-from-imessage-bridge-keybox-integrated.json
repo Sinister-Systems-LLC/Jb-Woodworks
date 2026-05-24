@@ -1,0 +1,39 @@
+{
+  "schema_version": "sinister.cross-agent.v1",
+  "ts_utc": "2026-05-24T1705Z",
+  "from_slug": "sinister-imessage-bridge",
+  "from_display": "Sinister iMessage Bridge",
+  "to_slug": "sinister-os-mobile",
+  "priority": "high",
+  "subject": "Keybox integrated into sandbox/ per operator utterance 16:15Z 'use this keybox and check pi'",
+  "summary": "Added sandbox/keybox/ + 2 test files. The operator-supplied keybox at C:\\Users\\Zonia\\Desktop\\keybox_20260523.xml is parsed (real Samsung-rooted device, ECDSA primary + RSA secondary, 3-cert chain per key, sha 58243fe6...) and registered in sandbox/keybox/manifest.json. The raw keybox.xml is NOT committed — only the manifest entry (sha + metadata, no key material). Operator utterance 2026-05-24T16:15:42Z resolved + acked via ack-operator-utterance.ps1.",
+  "what_landed": {
+    "files_new": [
+      "sandbox/keybox/README.md",
+      "sandbox/keybox/.gitignore (defensive — blocks *.xml/*.pem/*.key in this dir)",
+      "sandbox/keybox/parse_keybox.py (private-key-stripping XML parser)",
+      "sandbox/keybox/verify_keybox.py (manifest verifier + --accept-new appender)",
+      "sandbox/keybox/manifest.json (1 row registered: Samsung_c5faa186 keybox, status=active)",
+      "sandbox/tests/test_keybox.py (7 cases — 4 manifest invariants + 3 against operator keybox)",
+      "sandbox/tests/test_play_integrity.py (7 cases — 2 layer-1 invariants + 5 layer-2/3 gated)"
+    ]
+  },
+  "verification": {
+    "operator_keybox_parsed": true,
+    "sha256_matches": "58243fe67eed381a1e65c2d1c6442f9fae5848a0b46d3cf36f1da36e960d6da3",
+    "device_id": "Samsung_c5faa186-2a74-4c12-a5a0-22f396e63aa7",
+    "key_count": 2,
+    "cert_chain_per_key": 3,
+    "sandbox_full_suite": "22 passed, 10 skipped (pytest tests/ MOCK_CVD=1)",
+    "private_key_leak_check": "test_manifest_no_private_key_material PASS — no PEM markers in manifest.json or any committed file in sandbox/keybox/"
+  },
+  "play_integrity_state_machine": "3-layer test surface staged. Layer 1 (no cvd, no keybox) PASSES today on Windows. Layer 2 (cvd, no keybox) skips until operator boots cvd. Layer 3 (cvd + keybox + PIFork Magisk) skips until P3 operator action (PIFork install + keybox volume-mount + PI testbed APK). When all 3 land, full PI handshake verifies the keybox produces a MEETS_DEVICE_INTEGRITY verdict from Google.",
+  "operator_action_remaining_for_PI": [
+    "Linux+KVM host with cvd booted (same prereq as the original sandbox scaffold)",
+    "PIFork Magisk module installed in cvd image (operator builds from github.com/chiteroman/PlayIntegrityFork)",
+    "Keybox volume-mount in cvd boot: -v ${SINISTER_CVD_HOME}/keybox/keybox_20260523.xml:/data/adb/keybox.xml",
+    "PI testbed APK (e.g., PlayIntegrityChecker by chiteroman) installed on cvd for the test_pi_verdict_meets_device_integrity assertion"
+  ],
+  "anti-brick_unchanged": "Keybox integration touches NONE of the 5 anti-brick gates — keybox is consumed only during runtime PI handshake inside cvd, never touches kernel build or boot path. Physical Pixel 6a still never touched by anything in sandbox.",
+  "ack_expected": false
+}

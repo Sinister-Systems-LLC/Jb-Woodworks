@@ -1,0 +1,79 @@
+{
+  "slug": "test-os",
+  "project_key": "sinister-os",
+  "agent_display": "EVE on Sinister OS",
+  "agent_identity": "EVE",
+  "lane": "sinister-os",
+  "ts_utc": "2026-05-24T15:44:52Z",
+  "mode": "RESUME",
+  "branch": "agent/sinister-os/m1-hardening-2026-05-24",
+  "pushed_to_origin": true,
+  "lane_canonical_branch": "agent/sinister-os/p1-docker-bootstrap-2026-05-24",
+  "cwd": "D:/Sinister Sanctum/projects/sinister-os",
+  "focus_intent": "M1 hardening + themes + eve CLI + panel-dev HMR + 4 docs + bake-panel safety SHIPPED via 5 parallel agents",
+  "phase": "M1 substrate shipped; live-container smoke blocked on Docker Desktop daemon being DOWN",
+  "operator_utterance_count": 18,
+  "latest_operator_utterance": "use all parrallel agents you need i need this done",
+  "shipped_this_turn": [
+    "source/docker-stack/compose.hardened.yml",
+    "source/docker-stack/HARDENING.md",
+    "source/docker-stack/eve",
+    "source/docker-stack/eve.md",
+    "source/docker-stack/compose.dev.yml",
+    "source/docker-stack/PANEL-DEV.md",
+    "source/docker-stack/config/filebrowser/branding/custom.css",
+    "source/docker-stack/config/filebrowser/branding/sinister-theme-tokens.css",
+    "source/docker-stack/config/gitea/templates/custom/header.tmpl",
+    "source/docker-stack/config/rocketchat/sinister-custom.css",
+    "source/docker-stack/config/guacamole/branding/sinister.css",
+    "source/docker-stack/config/guacamole/branding/BRANDING-INSTALL.md",
+    "source/docker-stack/docker-compose.yml (edited: 2 mounts added)",
+    "source/iso-build/bake-panel.sh (edited: 3 safety fixes)",
+    "source/iso-build/BAKE-PANEL-NOTES.md",
+    "docs/qol-features.md",
+    "docs/ghost-server-hardening.md",
+    "docs/live-dev-workflow.md",
+    "docs/geo-mesh-routing.md"
+  ],
+  "commits_this_turn": [
+    "532f4e9 sinister-os: M1 hardening overlay (compose.hardened.yml + HARDENING.md)",
+    "<latest> sinister-os: parallel ramp — themes (4 services) + eve CLI + panel-dev HMR + 4 docs + bake-panel safety"
+  ],
+  "verifications_passed": {
+    "compose_base_parse": "docker compose -f docker-compose.yml config --services -> 13 services, exit 0",
+    "compose_hardened_merge": "docker compose -f docker-compose.yml -f compose.hardened.yml config --services -> 13 services, exit 0",
+    "compose_full_overlay": "docker compose -f docker-compose.yml -f compose.hardened.yml -f compose.dev.yml config --services -> 14 services, exit 0",
+    "eve_cli_parse": "bash -n source/docker-stack/eve -> exit 0",
+    "eve_cli_version": "bash source/docker-stack/eve --version -> 'eve 0.1.0'",
+    "bake_panel_parse": "bash -n source/iso-build/bake-panel.sh -> exit 0 (post-edit)",
+    "effective_merged_security": "gitea security_opt=[no-new-privileges:true], cap_drop=[ALL]; nats read_only=True, tmpfs=[/tmp:size=64m]"
+  },
+  "blocked_on_operator": [
+    "Start Docker Desktop daemon so next-turn smoke-test can verify the hardened stack and the panel-dev HMR + themed services live"
+  ],
+  "next_eve_first_action": "bash projects/sinister-os/source/docker-stack/smoke-test.sh; if all 10/10 healthy: cd projects/sinister-os/source/docker-stack && docker compose -f docker-compose.yml -f compose.hardened.yml up -d && docker inspect sinister-gitea --format '{{.HostConfig.SecurityOpt}}' (expected: [no-new-privileges:true]); then bash source/docker-stack/eve doctor",
+  "next_eve_must_read": [
+    "_shared-memory/PROGRESS/test-os.md",
+    "projects/sinister-os/SESSION-HANDOFF-2026-05-24T1442Z.md",
+    "projects/sinister-os/source/docker-stack/HARDENING.md",
+    "projects/sinister-os/source/docker-stack/PANEL-DEV.md",
+    "projects/sinister-os/source/docker-stack/eve.md",
+    "projects/sinister-os/docs/qol-features.md",
+    "projects/sinister-os/plans/mesh-os-master-plan-2026-05-24.md"
+  ],
+  "remaining_queue": [
+    "Bake real Panel via bake-panel.sh (requires Node 20+ on host + Panel source build)",
+    "Live smoke-test of hardened + themed stack (operator must start Docker Desktop)",
+    "Tailscale/WireGuard mesh between machines (M5)",
+    "Sinister mobile app (M6)",
+    "Rocket.Chat custom CSS paste in Admin -> Layout -> Custom CSS",
+    "Guacamole skin via Caddy/nginx sub_filter or extension JAR (BRANDING-INSTALL.md Path A or B)"
+  ],
+  "quality_signals": {
+    "progress_kb": "test-os.md grew ~11 KB (under 300 KB cap)",
+    "brain_rows_added": 0,
+    "cold_start_steps": 11,
+    "docs_dir_size": "6 files (under any cap)",
+    "compose_files": 3
+  }
+}

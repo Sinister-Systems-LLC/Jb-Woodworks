@@ -1,0 +1,52 @@
+{
+  "_author": "RKOJ-ELENO :: 2026-05-24",
+  "schema_version": "sinister.resume-point.v1",
+  "ts_utc": "2026-05-24T17:00:00.0000000Z",
+  "project": "Sinister Panel",
+  "agent_name": "sinister-panel",
+  "agent_identity": "EVE",
+  "mode": "resume",
+  "focus_intent": "Loop iter 4. Operator pivoted off keybox-OEM theory (16:22Z); strong-keybox / keybox_20260523.xml share same leaf cert, DeviceID is just a label. Shipped 24h-survival cron + Command Center redo (PipelineHealth hero + Quick Actions rail) + ban-check-self-test endpoint addressing operator's 'triple-confirm ban-checker' directive. Two agent branches now sit awaiting operator merge.",
+  "git": {
+    "main_head": "5b9aece",
+    "deployed_head_on_hetzner": "5b9aece (HTTP 200 verified at 15:56:46Z)",
+    "agent_branches": [
+      {
+        "name": "agent/sinister-panel/survival-24h-cron-2026-05-24",
+        "head": "45d108c",
+        "commits_atop_main": 2,
+        "commits": [
+          "d7fdc0c — 24h-survival cron + Account.survival24h columns + GET /accounts/survival-24h + smoke 5/5 PASS",
+          "45d108c — Command Center redo: PipelineHealth hero + Quick Actions rail + GET /accounts/ban-check-self-test"
+        ],
+        "merge_gate": "git checkout main && git merge --no-ff agent/sinister-panel/survival-24h-cron-2026-05-24 && git push origin main && ssh root@[hetzner-ip] 'bash /tmp/remote-deploy.sh --with-backend'",
+        "needs_migration": "20260524162500_account_survival_24h (auto-applied by --with-backend deploy)"
+      },
+      {
+        "name": "agent/sinister-panel/keybox-oem-probe-2026-05-24",
+        "head": "72781f2",
+        "commits_atop_main": 4,
+        "status": "Operator pivoted off OEM-mismatch theory; metadata still operator-useful but mismatch warnings will never fire. Merge OR drop decision pending."
+      }
+    ]
+  },
+  "operator_directives_active": [
+    "real test every single panel featue and make sure it all works (16:22Z) — partially addressed via ban-check-self-test; full feature test would be ~hours scope",
+    "fix the ban chec cker and triple confirm its working (16:22Z) — addressed via /api/accounts/ban-check-self-test endpoint + Quick Actions surfacing",
+    "use C:\\Users\\Zonia\\Desktop\\keybox_20260523.xml (16:25Z) — needs operator action: upload via /fleet > Keyboxes UI (SUPER_ADMIN-gated)",
+    "be as efficient as possible (16:22Z)"
+  ],
+  "carry_forward_deferrals": [
+    "OPERATOR ACTION: upload keybox_20260523.xml to Hetzner pool via /fleet > Keyboxes UI",
+    "OPERATOR ACTION: merge agent/sinister-panel/survival-24h-cron-2026-05-24 to main + deploy",
+    "OPERATOR DECISION: merge or drop agent/sinister-panel/keybox-oem-probe-2026-05-24",
+    "Continue 'test every panel feature' — needs scoping from operator (full E2E test would be days)",
+    "andrewt407 add-friend protocol stays armed (actions.ts:741) when kernel-apk pushes a working account",
+    "EMU FLEET 7-widget tab — awaits operator Phase 0 greenlight",
+    "sinister-chatbot lane's 3 uncommitted tree files — operator paused 14:36Z"
+  ],
+  "pre_warm_reads": [
+    "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Sinister Panel.md",
+    "D:\\Sinister Sanctum\\_shared-memory\\inbox\\sinister-panel\\"
+  ]
+}

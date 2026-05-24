@@ -1,0 +1,58 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-24T16:10Z",
+    "project": "sinister-chatbot",
+    "agent_name": "sinister-chatbot",
+    "agent_display": "Sinister Chatbot",
+    "agent_identity": "EVE",
+    "mode": "resume",
+    "focus_intent": "Operator-directive sweep 2026-05-24: chatbot placement (already in repo), NSFW-permissive OpenRouter routing, quantum 10-sec probe, training/feedback plan, memory updates. 5 deliverables shipped + verified this turn.",
+    "git": {
+        "head": "fdfbc63",
+        "branch": "main",
+        "working_tree": "modified — leo_dev/backend/src/routes/{dashboard.ts,sinister.ts}, leo_dev/dashboard/app/chatter/page.tsx, leo_dev/docs/CHATBOT-DIRECTION-2026-05-24.md (new), CLAUDE.md, _shared-memory/{knowledge/sinister-chatbot-direction-2026-05-24.md (new),PROGRESS/Sinister Chatbot.md,heartbeats/sinister-chatbot.json,resume-points/Sinister Chatbot/*.json}, automations/quantum-probe-10s.py (new)"
+    },
+    "progress_top5": [
+        "2026-05-24 16:10 — shipped automations/quantum-probe-10s.py (seraphim audit --variant zzfm-r1 --sim-only with 10s hard cap, JSON output) — smoke-tested both human + JSON modes, elapsed 0.26s, exit 0",
+        "2026-05-24 16:10 — shipped uncensored:boolean on /chatter/test (sinister.ts) — defaults to cognitivecomputations/dolphin-mixtral-8x22b + provider:{allow_fallbacks,data_collection:deny}; no jailbreak strings",
+        "2026-05-24 16:10 — shipped Uncensored pill on /chatter (page.tsx) — persists via localStorage:sinister:eve-uncensored, only visible when provider=openrouter",
+        "2026-05-24 16:10 — shipped plan doc (leo_dev/docs/CHATBOT-DIRECTION-2026-05-24.md, Phase 0-5) + brain entry (_shared-memory/knowledge/sinister-chatbot-direction-2026-05-24.md)",
+        "2026-05-24 16:10 — updated lane CLAUDE.md with hard-canonical 2026-05-24 block (chatbot direction + nsfw routing + quantum probe pointers); doctrine-audit:strict still PASS exit 0"
+    ],
+    "latest_plan": {
+        "dir": "D:\\Sinister Sanctum\\projects\\sinister-chatbot\\leo_dev\\docs",
+        "artifact": "D:\\Sinister Sanctum\\projects\\sinister-chatbot\\leo_dev\\docs\\CHATBOT-DIRECTION-2026-05-24.md"
+    },
+    "inbox_unread_count": 0,
+    "last_files_touched": [
+        "automations/quantum-probe-10s.py",
+        "leo_dev/backend/src/routes/dashboard.ts",
+        "leo_dev/backend/src/routes/sinister.ts",
+        "leo_dev/dashboard/app/chatter/page.tsx",
+        "leo_dev/docs/CHATBOT-DIRECTION-2026-05-24.md",
+        "CLAUDE.md (lane-level)",
+        "_shared-memory/knowledge/sinister-chatbot-direction-2026-05-24.md",
+        "_shared-memory/PROGRESS/Sinister Chatbot.md",
+        "_shared-memory/heartbeats/sinister-chatbot.json"
+    ],
+    "pre_warm_reads": [
+        "D:\\Sinister Sanctum\\projects\\sinister-chatbot\\leo_dev\\docs\\CHATBOT-DIRECTION-2026-05-24.md",
+        "D:\\Sinister Sanctum\\_shared-memory\\knowledge\\sinister-chatbot-direction-2026-05-24.md",
+        "D:\\Sinister Sanctum\\_shared-memory\\knowledge\\sinister-chatbot-test-env-findings-2026-05-24.md",
+        "D:\\Sinister Sanctum\\projects\\sinister-chatbot\\CLAUDE.md",
+        "D:\\Sinister Sanctum\\projects\\sinister-chatbot\\leo_dev\\backend\\src\\routes\\sinister.ts",
+        "D:\\Sinister Sanctum\\projects\\sinister-chatbot\\leo_dev\\dashboard\\app\\chatter\\page.tsx",
+        "D:\\Sinister Sanctum\\automations\\quantum-probe-10s.py"
+    ],
+    "in_flight_subagents": [],
+    "open_questions_for_operator": [
+        "OpenRouter API key — operator said 'here is open router key' but didn't paste the actual key string. Need it to set OPENROUTER_API_KEY env in leo_dev/backend/.env for local dev (Hetzner prod still has its own key configured).",
+        "OPENROUTER_UNCENSORED_MODEL pick — default is cognitivecomputations/dolphin-mixtral-8x22b. Alternatives (all OR-hosted permissive): neversleep/llama-3-lumimaid-70b, anthracite-org/magnum-v2-72b, nothingiisreal/mn-celeste-12b, sao10k/l3-lunaris-8b, gryphe/mythomax-l2-13b."
+    ],
+    "next_logical_steps": [
+        "Phase 2 — shipping automations/feedback-to-sft-jsonl.py to export chatter-feedback.json into per-persona SFT training corpus (JSONL).",
+        "Phase 3 step 1 — design Prisma migration for FanMemory table (per-fan traits + lastSummary). Requires operator authorization for migration per canonical-11.",
+        "Phase 5 step 1 — wire seraphim qrng bytes into chatEngine.ts as response-entropy seed; gate behind a 'quantum_entropy' Group config flag.",
+        "Verify the uncensored routing end-to-end once operator pastes OPENROUTER_API_KEY (curl POST to /api/chatter/test with uncensored:true)."
+    ]
+}

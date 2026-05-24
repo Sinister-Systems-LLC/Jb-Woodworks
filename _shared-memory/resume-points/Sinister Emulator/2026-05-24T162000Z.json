@@ -1,0 +1,77 @@
+{
+  "schema_version": "sinister.resume-point.v1.4",
+  "project_key": "sinister-emulator",
+  "agent_name": "Sinister Emulator",
+  "agent_identity": "EVE",
+  "agent_display": "Sinister Emulator",
+  "slug": "sinister-emulator",
+  "accent": "purple",
+  "mode": "operator-directive",
+  "ts_utc": "2026-05-24T16:20:00Z",
+  "written_by": "manual-fallback (resume-point-write.ps1 stalled on recursive scan in earlier turn; same root cause persists)",
+  "supersedes": "_shared-memory/resume-points/Sinister Emulator/2026-05-24T155500Z.json",
+  "branch_at_write": "agent/test-modes-verify/dashboard-skeleton-ui-base-2026-05-24",
+  "focus_intent": "Wired new keybox + local RKA into emu testing per 2 stacked operator directives 2026-05-24. Shipped RUN_LOCAL_RKA_FOR_EMU_TESTING.bat (Java server wrapper, 0.0.0.0:59348, new keybox_20260523.xml). Updated Phase 0 audit. Surfaced Samsung-vs-Pixel OEM conflict as new operator gate.",
+  "deliverables_this_turn": [
+    "projects/sinister-emulator-bundle/RUN_LOCAL_RKA_FOR_EMU_TESTING.bat (NEW — operator double-click launcher)",
+    "_shared-memory/plans/emu-pixel-6a-gap-audit-2026-05-24T1540Z/audit.md (§Boot state row swap + §Operator-directed updates section added)",
+    "_shared-memory/heartbeats/sinister-emulator.json (refreshed with keybox_in_use + rka_target_for_emu_testing fields)",
+    "_shared-memory/PROGRESS/sinister-emulator.md (2026-05-24T16:18Z entry appended at top)",
+    "_shared-memory/resume-points/Sinister Emulator/2026-05-24T162000Z.json (this file)"
+  ],
+  "keybox_in_use": {
+    "path": "C:\\Users\\Zonia\\Desktop\\keybox_20260523.xml",
+    "device_id": "Samsung_c5faa186-2a74-4c12-a5a0-22f396e63aa7",
+    "oem": "Samsung",
+    "algorithms": ["ecdsa", "rsa"],
+    "cert_chain_depth": 3,
+    "size_bytes": 13133,
+    "md5": "67b0ea211acd178112a945a54843893b"
+  },
+  "rka_target": {
+    "mode": "local",
+    "bind": "0.0.0.0",
+    "port": 59348,
+    "launcher": "projects/sinister-emulator-bundle/RUN_LOCAL_RKA_FOR_EMU_TESTING.bat",
+    "server_jvm_repo": "C:\\Users\\Zonia\\Desktop\\Sinister RKA GOOD\\server-java",
+    "main_class": "com.sinister.rka.server.Main",
+    "log_path": "C:\\Users\\Zonia\\Desktop\\Snap Signer\\Tiktok Signer\\panel\\state\\rka_server_emu-local.log",
+    "side_by_side_with": "C:\\Users\\Zonia\\Desktop\\Sinister RKA GOOD\\server-java\\run-yk50.bat (different port 59347; no conflict)"
+  },
+  "operator_gates_open_new_this_turn": [
+    "Samsung-vs-Pixel north-star decision (A keep Pixel + OEM-mismatch flag · B pivot to Samsung Galaxy variant)",
+    "Validate the local RKA actually serves attestation to cvd-1 — operator double-click + cvd boot + check log file"
+  ],
+  "operator_gates_open_carried": [
+    "Confirm 5 hub rails as scoped (from 2026-05-24T08:40Z queue row)",
+    "O1: device-sinister/com.auto.snop.xml fate",
+    "O2: frameworks-base/google_release_cert.{hex,txt} fate",
+    "O3: env-var-ize SOCKS5 creds in proxy_bridge.py",
+    "O4: confirm AOSP image artifact pickup path for 2026-05-20T0839Z build",
+    "Real Pixel 6a getprop + dumpsys dump for Phase 0 gap-audit truth-table cvd-1 column"
+  ],
+  "next_actions_priority": [
+    "1. (operator) Double-click RUN_LOCAL_RKA_FOR_EMU_TESTING.bat → verify server starts cleanly (log path), no port conflict",
+    "2. (operator) Boot cvd-1 against the local RKA → verify libsinister_attest.so reaches it via host-bridge",
+    "3. (hub) Reply to Sinister Panel inbox 2026-05-24T1545Z (their 7-widget EMU FLEET phased plan ACK) — confirm phased rollout + data shapes, surface operator-greenlight ask",
+    "4. (hub) Decide whether Rail R1 (AOSP patch registry) lives in plans-dir vs brain (brain ceiling 162/150 — plans-dir wins by default)",
+    "5. (operator) Resolve Samsung-vs-Pixel north-star decision so hub + siblings know what fingerprint to target"
+  ],
+  "pre_warm_reads": [
+    "projects/sinister-emulator-bundle/CLAUDE.md",
+    "projects/sinister-emulator-bundle/RUN_LOCAL_RKA_FOR_EMU_TESTING.bat",
+    "_shared-memory/PROGRESS/sinister-emulator.md",
+    "_shared-memory/plans/emu-pixel-6a-gap-audit-2026-05-24T1540Z/audit.md",
+    "_shared-memory/heartbeats/sinister-emulator.json",
+    "_shared-memory/knowledge/emu-pixel-6a-os-fidelity-canonical-2026-05-24.md",
+    "_shared-memory/knowledge/emu-sim-card-proxy-integration-2026-05-24.md",
+    "_shared-memory/inbox/sinister-emulator/2026-05-24T1545Z-ack-from-sinister-panel-emu-fleet-7-widget-phased-plan.json"
+  ],
+  "no_bullshit_self_check": {
+    "shipped_this_turn": ["launcher .bat", "audit doc updates", "PROGRESS entry", "heartbeat refresh", "resume-point"],
+    "claimed_but_NOT_shipped": ["local RKA actually serving attestation to cvd-1 (requires operator action)", "Samsung-vs-Pixel decision (requires operator)", "reply to Panel inbox (next turn)"],
+    "precise_verbs_used": true,
+    "all_shipped_have_evidence": true
+  },
+  "author": "RKOJ-ELENO :: 2026-05-24"
+}

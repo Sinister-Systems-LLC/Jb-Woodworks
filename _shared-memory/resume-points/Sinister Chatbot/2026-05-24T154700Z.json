@@ -1,0 +1,47 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-24T15:47Z",
+    "project": "sinister-chatbot",
+    "agent_name": "sinister-chatbot",
+    "agent_display": "Sinister Chatbot",
+    "agent_identity": "EVE",
+    "mode": "resume",
+    "focus_intent": "Lane bootstrap (was paused at Bucket A 6/6 shipped). Drive-by import-hoist cleanup on dashboard.ts post-fdfbc63.",
+    "git": {
+        "head": "fdfbc63",
+        "branch": "main",
+        "working_tree": "modified — leo_dev/backend/src/routes/dashboard.ts (imports moved to top)"
+    },
+    "progress_top5": [
+        "2026-05-24 15:46 — hoisted node:fs + node:path imports from line 492 to top of dashboard.ts (mechanical, ES-hoist-equivalent)",
+        "2026-05-24 15:46 — doctrine-audit:strict PASS (exit 0, 7/7 counters at 0 hits)",
+        "2026-05-24 15:46 — tsc + next build NOT runnable (no node_modules in either backend or dashboard subtree of this lane)",
+        "2026-05-24 15:46 — planted PROGRESS file (was absent) at _shared-memory/PROGRESS/Sinister Chatbot.md",
+        "2026-05-24 15:46 — refreshed heartbeat (previous was status=PAUSED from prior session at 14:37Z)"
+    ],
+    "latest_plan": {
+        "dir": null,
+        "artifact": null
+    },
+    "inbox_unread_count": 0,
+    "last_files_touched": [
+        "leo_dev/backend/src/routes/dashboard.ts",
+        "_shared-memory/PROGRESS/Sinister Chatbot.md",
+        "_shared-memory/heartbeats/sinister-chatbot.json"
+    ],
+    "pre_warm_reads": [
+        "D:\\Sinister Sanctum\\_shared-memory\\knowledge\\sinister-chatbot-test-env-findings-2026-05-24.md",
+        "D:\\Sinister Sanctum\\projects\\sinister-chatbot\\CLAUDE.md",
+        "D:\\Sinister Sanctum\\projects\\sinister-chatbot\\SESSION-START.md",
+        "D:\\Sinister Sanctum\\projects\\sinister-chatbot\\leo_dev\\backend\\src\\routes\\dashboard.ts"
+    ],
+    "in_flight_subagents": [],
+    "open_questions_for_operator": [
+        "Auto-push daemon will sweep dashboard.ts import-hoist within 30 min and land on origin/main. OK to let it land or want it reverted before sweep?"
+    ],
+    "next_logical_steps": [
+        "Wait for operator direction — lane was paused at 14:37Z; this session only did a drive-by cleanup.",
+        "If continuing: run `npx tsc --noEmit` and `npx next build` from inside the Hetzner deploy container (or after running `npm install` locally) to formally verify the import-hoist edit. Doctrine-audit already PASS.",
+        "Consider extending IP_PREFIX_TO_ISO2 in dashboard.ts geo-aggregate (currently 9 entries; non-US prefixes will silently drop)."
+    ]
+}

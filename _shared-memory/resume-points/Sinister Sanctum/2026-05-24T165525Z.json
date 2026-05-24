@@ -1,0 +1,50 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-24T16:55Z",
+    "project":  "sanctum",
+    "agent_name":  "test-modes",
+    "agent_display":  "Sinister Custodian",
+    "mode":  "resume-loop",
+    "loop_iter":  1,
+    "focus_intent":  "D:\\ reorg execution + ref-cleanup verification (Phase 2 + 3 + Triage all live; LetsText locked + Phase 4 outstanding)",
+    "shipped_this_loop_iter":  [
+                                   "Phase 2: 6/7 personal moves + 7 ref updates",
+                                   "Phase 3: 2 sanctum moves + 2 junction deletes + 1 ref update",
+                                   "Triage: 4 cruft moves to Backups + Sanctum",
+                                   "jbw-wt2 sweep",
+                                   "LetsText partial dedup to Backups",
+                                   "Live-config ref sweep: zero broken refs (8 files audited)"
+                               ],
+    "d_drive_state":  {
+                          "outstanding":  [
+                                              {
+                                                  "operator_action":  "close + re-run Phase 2",
+                                                  "name":  "LetsText",
+                                                  "reason":  "directory-level lock (Explorer/editor)"
+                                              },
+                                              {
+                                                  "operator_action":  "review + run Phase 4",
+                                                  "name":  "Sinister",
+                                                  "reason":  "Phase 4 high-risk rename"
+                                              }
+                                          ],
+                          "target_entries":  3,
+                          "root_entries":  5
+                      },
+    "quality_signals_fired":  [
+                                  "cold-start step count = 12 (\u003e10 threshold) — pre-existing",
+                                  "recurring branch-hygiene crisis (sibling-switched working tree blocks commit) — structural fix needed"
+                              ],
+    "git":  {
+                "branch_actual":  "agent/sinister-os-mobile/p0-spec-2026-05-24",
+                "commit_status":  "deferred - branch-hygiene crisis",
+                "branch_should_be":  "agent/sinister-sanctum/grant-autonomy-followup-2026-05-23"
+            },
+    "next_loop_action":  "check if operator unblocked LetsText OR ran Phase 4; otherwise idle-tick",
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\test-modes.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\OPERATOR-ACTION-QUEUE.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\plans\\d-drive-reorg-2026-05-24",
+                           "D:\\Sinister Sanctum\\automations\\d-drive-reorg.ps1"
+                       ]
+}

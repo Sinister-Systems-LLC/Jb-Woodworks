@@ -1,0 +1,20 @@
+{
+  "schema_version": "sinister.keybox-manifest.v1",
+  "keyboxes": [
+    {
+      "filename": "keybox_20260523.xml",
+      "sha256": "58243fe67eed381a1e65c2d1c6442f9fae5848a0b46d3cf36f1da36e960d6da3",
+      "size_bytes": 13133,
+      "first_seen_utc": "2026-05-24T17:01Z",
+      "operator_provided_path_hint": "C:\\Users\\Zonia\\Desktop\\keybox_20260523.xml",
+      "device_id": "Samsung_c5faa186-2a74-4c12-a5a0-22f396e63aa7",
+      "key_count": 2,
+      "primary_key_algorithm": "ecdsa",
+      "primary_key_format": "pem",
+      "cert_chain_length_per_key": 3,
+      "primary_chain_root_der_sha256": "1ef1a04b8ba58ab94589ac498c8982a783f24ea7307e0159a0c3a73b377d87cc",
+      "status": "active",
+      "notes": "Operator-supplied 2026-05-24T16:15Z via /loop directive. Samsung-rooted keybox for PI sandbox testing. NOT for operator primary device."
+    }
+  ]
+}

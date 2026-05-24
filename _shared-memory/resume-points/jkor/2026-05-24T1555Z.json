@@ -1,0 +1,52 @@
+{
+  "agent": "jkor",
+  "agent_display": "JOKR",
+  "agent_identity": "EVE",
+  "slug": "jkor",
+  "ts_utc": "2026-05-24T15:55Z",
+  "branch": "agent/jkor/jkor-to-JOKR-rename-2026-05-24",
+  "mode": "resume",
+  "focus_intent": "Option-A jkor->JOKR rename SHIPPED + sorter dashboard verified on http://127.0.0.1:7099/",
+  "session_summary": "Operator chose Option A (slug paths stay 'jkor'; display + function + outputs become JOKR/jokr). Shipped: sorter dashboard live (http://127.0.0.1:7099/ — 388 images already-sorted across 9 tiers, queue=0); missing sorter_web/__main__.py written; function jkor_image -> jokr_image (alias preserved); JKOR_STYLE -> JOKR_STYLE (alias preserved); outputs/jkor/ -> outputs/JOKR/ via 2-step git mv (16MB / hundreds of files, all 'R' renames in git status — history preserved); desktop junction auto-pointed at new JOKR/; config/projects.json + library/registry.py + 7 source files + 5 docs updated; PROGRESS/JKOR.md -> JOKR.md; heartbeat agent_display updated; smoke test PASS (sinister-generator v0.3.0). Not committed (operator hasn't asked).",
+  "verified_deliverables_this_turn": [
+    "sorter_web/__main__.py + sorter live on :7099",
+    "outputs/jkor -> outputs/JOKR (git-tracked renames)",
+    "jokr_image function + JOKR_STYLE constant (with jkor_image / JKOR_STYLE back-compat aliases)",
+    "config/projects.json display_name=JOKR + brand_lock_helper=jokr_image + output_root=outputs/JOKR/",
+    "library/registry.py BrandConfig display_name + style_helper updated",
+    "PROGRESS/JOKR.md (renamed from JKOR.md)",
+    "heartbeat agent_display: JKOR -> JOKR",
+    "projects/jkor/CLAUDE.md + BRAND.md display rename to JOKR",
+    "sinister-generator README + CLAUDE + ANTI-SLOP code-examples updated",
+    "_smoke_test.py PASS — outputs\\JOKR\\... resolves cleanly"
+  ],
+  "open_questions": [
+    "Operator visual-verify sorter UI loads + renders 9-tier counters",
+    "Commit + push the rename — operator has NOT asked for commit yet",
+    "Should fire-script names (_fire_jkor_*.py) also rename to _fire_jokr_*.py, or leave (they target Desktop\\JOKR directly)?"
+  ],
+  "pre_warm_reads": [
+    "_shared-memory/PROGRESS/JOKR.md",
+    "projects/jkor/CLAUDE.md",
+    "projects/jkor/BRAND.md",
+    "projects/sinister-generator/memory/per-project/jkor/BRAND.md",
+    "projects/sinister-generator/source/sinister_generator/sorter_web/__main__.py",
+    "projects/sinister-generator/source/sinister_generator/brands/jkor.py",
+    "projects/sinister-generator/config/projects.json",
+    "projects/sinister-generator/source/sinister_generator/library/registry.py"
+  ],
+  "sorter_state": {
+    "url": "http://127.0.0.1:7099/",
+    "folder": "C:\\Users\\Zonia\\Desktop\\JOKR",
+    "queue": 0,
+    "great": 48,
+    "good": 83,
+    "size_off": 9,
+    "wrong_guy": 155,
+    "wrong_style": 52,
+    "skip_concept": 4,
+    "bad": 29,
+    "refs": 8,
+    "pid": 21192
+  }
+}

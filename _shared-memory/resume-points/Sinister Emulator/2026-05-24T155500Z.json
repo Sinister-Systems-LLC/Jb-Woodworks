@@ -1,0 +1,79 @@
+{
+  "schema_version": "sinister.resume-point.v1.4",
+  "project_key": "sinister-emulator",
+  "agent_name": "Sinister Emulator",
+  "agent_identity": "EVE",
+  "agent_display": "Sinister Emulator",
+  "slug": "sinister-emulator",
+  "accent": "purple",
+  "mode": "resume",
+  "ts_utc": "2026-05-24T15:55:00Z",
+  "written_by": "manual-fallback (resume-point-write.ps1 stalled on recursive file scan; killed at ~10min)",
+  "branch_at_write": "agent/test-modes-verify/dashboard-skeleton-ui-base-2026-05-24",
+  "branch_note": "Session originally opened on agent/sinister-os/m1-hardening-2026-05-24 per environment; another lane appears to have switched branches mid-turn (auto-push daemon or sibling session). All deliverables this turn live under _shared-memory/ and project/sinister-emulator-bundle/CLAUDE.md — branch-agnostic. Did NOT switch to a per-emu branch this turn.",
+  "head_sha": "a1c9a98250872c7e63ee7f1fc906378342c3de6c",
+  "head_subject": "sanctum: bootstrap sinister-os-mobile lane + P11 + idea-intake",
+  "focus_intent": "bootstrap turn: heartbeat refreshed with prior-claim audit (4/13 real, 9/13 fairy-tale), PROGRESS file created at lowercase-slug path, CLAUDE.md hub-rails R2-R5 status truth-corrected to claimed-unverified, Phase 0 Pixel-6a-vs-cvd-1 gap-audit truth-table scaffold authored",
+  "deliverables_this_turn": [
+    "_shared-memory/heartbeats/sinister-emulator.json (refreshed with prior-claim audit table)",
+    "_shared-memory/PROGRESS/sinister-emulator.md (NEW — lowercase-slug PROGRESS log; 78 lines)",
+    "projects/sinister-emulator-bundle/CLAUDE.md (hub-rails table truth-correction R2-R5; audit note appended)",
+    "_shared-memory/plans/emu-pixel-6a-gap-audit-2026-05-24T1540Z/audit.md (NEW — 231 lines; operator-dump-ready Phase 0 scaffold)",
+    "_shared-memory/resume-points/Sinister Emulator/2026-05-24T155500Z.json (this file)"
+  ],
+  "next_actions_priority": [
+    "1. Operator: real-Pixel-6a getprop + dumpsys dump per command list in audit.md §\"What the operator runs\". Drop tarball into _shared-memory/plans/emu-pixel-6a-gap-audit-2026-05-24T1540Z/operator-dump/",
+    "2. Hub-side: mirror commands against cvd-1 once it's reachable; populate cvd-1 column of truth-table",
+    "3. Re-author the 4 missing cross-emu doctrines (R2-R5) OR file them as plans-dir docs instead (brain >150 ceiling blocks new knowledge/ entries until consolidation)",
+    "4. Re-author the 5 missing hub-establishment artifacts the prior heartbeat claimed (3 sibling inbox introductions + 1 hub inbox manifest + 1 cross-agent broadcast)",
+    "5. Decide Rail R1 (AOSP patch registry) home: plans-dir vs brain — depends on Phase 0 completion outcome"
+  ],
+  "operator_gates_open": [
+    "Real Pixel 6a getprop + dumpsys dump (NEW — blocks Phase 0 completion)",
+    "Confirm 5 hub rails as scoped (carried from prior turn's queue row)",
+    "O1: device-sinister/com.auto.snop.xml fate (archive vs annotate)",
+    "O2: frameworks-base/google_release_cert.{hex,txt} fate",
+    "O3: env-var-ize SOCKS5 creds in proxy_bridge.py",
+    "O4: confirm AOSP image artifact pickup path for 2026-05-20T0839Z build"
+  ],
+  "pre_warm_reads": [
+    "projects/sinister-emulator-bundle/CLAUDE.md",
+    "_shared-memory/PROGRESS/sinister-emulator.md",
+    "_shared-memory/knowledge/emu-pixel-6a-os-fidelity-canonical-2026-05-24.md",
+    "_shared-memory/knowledge/emu-sim-card-proxy-integration-2026-05-24.md",
+    "_shared-memory/plans/emu-pixel-6a-gap-audit-2026-05-24T1540Z/audit.md",
+    "_shared-memory/heartbeats/sinister-emulator.json",
+    "_shared-memory/OPERATOR-ACTION-QUEUE.md (search 'emulator' / 'emu-hub' rows)"
+  ],
+  "prior_heartbeat_audit_summary": {
+    "prior_ts_utc": "2026-05-24T10:10:00Z",
+    "claims_real": 4,
+    "claims_fairy_tale": 9,
+    "real_rate_pct": 31,
+    "see": "_shared-memory/PROGRESS/sinister-emulator.md §\"Prior-claim audit\" for per-claim verdict"
+  },
+  "hub_rails_status": {
+    "R1": "pending Phase 1 (AOSP patch registry; needs Phase 0 gap-audit completion first)",
+    "R2": "claimed-unverified — cross-emu-cvd-wedge-recovery-2026-05-24.md missing from knowledge/",
+    "R3": "claimed-unverified — cross-emu-rka-port-registry-2026-05-24.md missing",
+    "R4": "claimed-unverified — cross-emu-dlopen-intercept-pattern-2026-05-24.md missing",
+    "R5": "claimed-unverified — cross-emu-frida-detection-survival-2026-05-24.md missing",
+    "R6": "shipped (verified) — emu-sim-card-proxy-integration-2026-05-24.md present",
+    "R7": "shipped (verified) — emu-pixel-6a-os-fidelity-canonical-2026-05-24.md present"
+  },
+  "phase_status": {
+    "phase_0_gap_audit": "scaffold-shipped; data-pending-operator",
+    "phase_1_aosp_patch_registry": "pending (blocks on phase 0)",
+    "phase_2_sim_card_ril_hijack_spec": "doctrine-shipped (R6); implementation pending",
+    "phases_3_through_7": "pending (block on phase 1)",
+    "phases_8_through_12": "pending (block on phases 3-7)"
+  },
+  "no_bullshit_self_check": {
+    "precise_verbs_used": true,
+    "claims_smoke_tested": true,
+    "evidence_present_for_each_shipped_claim": true,
+    "in_flight_vs_shipped_separated": true,
+    "tangential_work_avoided": true
+  },
+  "author": "RKOJ-ELENO :: 2026-05-24"
+}

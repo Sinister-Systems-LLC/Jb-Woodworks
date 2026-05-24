@@ -1,0 +1,62 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-24T15:43:14.0000000Z",
+    "project": "snap-emulator-api",
+    "agent_name": "snap-emulator-api",
+    "mode": "resume",
+    "focus_intent": "Shipped capture_messagelite_v2.py (per-subclass GeneratedMessageLite toByteArray hook + 6s rescan loop). Scaffolded+parse-clean only — WSL Ubuntu-22.04 Stopped on entry, no smoke test possible this turn (would require Rule-7 sandbox-bypass routing via SinisterAPK_RunMe.ps1 + Policy-42 coordination with TT lane on cvd-2). Off-stack code-authoring lane was used to pre-stage the next-iter capture diagnostic. Next stack-up window: run v2 in parallel with capture_messagenano.py during form drive Steps 1-4+Submit to identify the concrete protobuf-lite class wrapping the REGISTER POST body; then update fire_register_via_zck_headers.py to that wire shape and verify autonomous fire reproduces SS03 (pipeline-validation). SS03 root cause is empty 'time-out' attestation in PSf.12 F1.9 per 2026-05-24 10:05 β capture; fix paths are pi-relay attested device OR Hlm.d call-site fake-JWS patch.",
+    "git": {
+        "branch": "agent/sinister-snap-api/expand-cleanup-2026-05-20",
+        "head": "30135f20bdf4bad70299352caa12bcc7666cd31e",
+        "head_msg": "sinister-os: parallel ramp — themes (4 services) + eve CLI + panel-dev HMR + 4 docs + bake-panel safety",
+        "recent_commits": [
+            "30135f2 sinister-os: parallel ramp — themes (4 services) + eve CLI + panel-dev HMR + 4 docs + bake-panel safety",
+            "532f4e9 sinister-os: M1 hardening overlay (compose.hardened.yml + HARDENING.md)",
+            "1f79582 sanctum: broadcast feature-refresh 2026-05-24 to all 18 visible lanes (no restart)",
+            "af54f4b sanctum: fix window-persist bug in mintty spawn",
+            "bce570c sinister-os: /loop iter 1 - dashboard-skeleton theme inheritance binding (10/10 services HTTP 200 verified)"
+        ]
+    },
+    "progress_top3": [
+        "2026-05-24 17:30 - shipped: capture_messagelite_v2.py — per-subclass GeneratedMessageLite hook (off-stack, WSL down)",
+        "2026-05-24 10:05 - β CAPTURE BREAKTHROUGH (autonomous, no operator): SS03 root cause = empty attestation, NOT crypto signature gate",
+        "2026-05-24 09:50 - β CAPTURE WORKING (autonomous): MessageNano.toByteArray hook captures Snap's REAL outbound protos"
+    ],
+    "latest_plan": {
+        "dir": null,
+        "artifact": null
+    },
+    "inbox_unread_count": 0,
+    "last_5_files_touched_24h": [
+        "projects\\sinister-snap-emu\\source\\snap-api-prototype\\_2026-05-12_phone-bridge\\capture_messagelite_v2.py",
+        "_shared-memory\\heartbeats\\snap-emulator-api.json",
+        "_shared-memory\\PROGRESS\\snap-emu.md"
+    ],
+    "pre_warm_reads": [
+        "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\snap-emu.md",
+        "D:\\Sinister Sanctum\\_shared-memory\\heartbeats\\snap-emulator-api.json",
+        "D:\\Sinister Sanctum\\projects\\sinister-snap-emu\\source\\snap-api-prototype\\_2026-05-12_phone-bridge\\capture_messagelite_v2.py",
+        "D:\\Sinister Sanctum\\projects\\sinister-snap-emu\\source\\snap-api-prototype\\_2026-05-12_phone-bridge\\capture_messagenano.py",
+        "D:\\Sinister Sanctum\\projects\\sinister-snap-emu\\source\\CLAUDE.md"
+    ],
+    "this_turn_notes": {
+        "wsl_state_on_entry": "Stopped",
+        "wsl_state_on_exit": "Stopped (unchanged — no restart attempted)",
+        "policy_42_respected": true,
+        "phones_off_limits_respected": true,
+        "sandbox_bypass_routing_respected": true,
+        "verbs_used": ["scaffolded", "parse-clean"],
+        "verbs_avoided": ["smoke-tested", "acceptance-tested", "shipped-and-verified"],
+        "rationale": "Per no-bullshit doctrine rule 1: precise verbs. The v2 script is parse-clean Python but its Frida JS hook cannot be runtime-verified off-stack — claiming smoke-tested would be false."
+    },
+    "next_stack_up_runbook": [
+        "1. Operator (or SinisterAPK_RunMe.ps1) brings WSL + cvd-1 back; coordinates with TT lane on cvd-2",
+        "2. RKA daemon re-launch (keybox_20260523.xml per surviving asset list)",
+        "3. python3 capture_messagenano.py --hold 300  (Terminal 1)",
+        "4. python3 capture_messagelite_v2.py --hold 300  (Terminal 2)",
+        "5. Drive form Steps 1-4 + Submit via existing UI driver scripts in third terminal",
+        "6. Inspect both harvests; v2 by-class summary should reveal the concrete protobuf-lite class wrapping the REGISTER POST (expected ≥500B, com.android.framework.protobuf.* namespace)",
+        "7. Extract hex of that proto; update fire_register_via_zck_headers.py to match the wire shape",
+        "8. Verify autonomous fire reproduces SAME SS03 (pipeline-validation)"
+    ]
+}

@@ -1,0 +1,26 @@
+﻿{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-24T17:03Z",
+    "project":  "test-modes-verify",
+    "agent_name":  "test-modes-verify",
+    "mode":  "resume",
+    "focus_intent":  "RESUME turn 10: canonical-protections-check captured live churn reproducer (run1 P8 FAIL: projects/sinister-chatbot missing -\u003e run2 P8 PASS: dir reappeared with status-code-pollution); wrote PROGRESS/test-modes.md (NEW) cataloguing 3 findings (transient P8, sinister-chatbot pollution, slug-collision); no product edits",
+    "seeded_by":  "seed-resume-points.ps1 (test-modes-verify lane)",
+    "seed_reason":  "no prior resume-point existed; created baseline so Start-Sinister-Session.bat restart restores state",
+    "git":  {
+                "branch":  "agent/sinister-os/m1-hardening-2026-05-24",
+                "head":  "(use git rev-parse HEAD at restore-time)",
+                "head_msg":  ""
+            },
+    "progress_top3":  [
+                          "_shared-memory/PROGRESS/test-modes.md (NEW) + canonical-protections-check transient reproducer + live slug-collision capture"
+                      ],
+    "last_5_files_touched_24h":  [
+
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\CLAUDE.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\test-modes-verify.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\heartbeats\\test-modes-verify.json"
+                       ]
+}

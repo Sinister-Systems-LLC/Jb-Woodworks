@@ -1,0 +1,37 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-24T11:05:00Z",
+    "project": "jb-woodworks",
+    "agent_name": "jb-woodworks",
+    "mode": "resume",
+    "focus_intent": "resume check-in only — no new operator ask in this spawn; site live + healthy; standing by",
+    "git": {
+        "branch": "agent/jb-woodworks/v0.3.0-scaffold",
+        "head": "63be3d9 (Sanctum branch) / 5235fbd (standalone main)",
+        "head_msg": "iter12 publish: FAQ tabs + hero rotation + jb-publish.ps1 pipeline (per HANDOFF-2026-05-24.md)",
+        "note": "Worktree this spawn opened in is on agent/sinister-os/m1-hardening-2026-05-24 because the working-dir path overlaps with that lane's worktree; jb-woodworks code paths themselves were untouched. The canonical jb-woodworks branch (per the handoff) is agent/jb-woodworks/v0.3.0-scaffold, both repos at the heads above."
+    },
+    "live": {
+        "url": "https://jbwoodworks.co/",
+        "http_status": "200 in 0.26s",
+        "sitemap_url_count": 33,
+        "cert": "CN=jbwoodworks.co, LE R12, exp 2026-07-20"
+    },
+    "progress_top3": [
+        "2026-05-24 11:05 - resume check-in (no new operator ask)",
+        "2026-05-24 09:35 - JB owner asks: add Commercial & Event Fabrication service + recategorize",
+        "2026-05-24 09:05 - +10 blog posts shipped + new editorial portfolio header"
+    ],
+    "open_followons_low_priority": [
+        "Install Railway GitHub App on Sinister-Systems-LLC org so pushes auto-deploy (workaround: bats/jb-publish.ps1 runs `railway up` locally)",
+        "Set RESEND_API_KEY on Railway service for real email send (form persists to Postgres, emailSent:false until set)",
+        "Old Vercel project prj_xOyAeuwJHZ89KUWcqHBhq9n0Wol5 has domains unbound — safe to delete from dashboard whenever"
+    ],
+    "deploy_pipeline": "bats/jb-publish.ps1 -Message '...': mirror → commit → push Sanctum branch → subtree-split → push standalone main → railway up → Vercel proxy force-redeploy (~30s to live)",
+    "pre_warm_reads": [
+        "D:\\Sinister Sanctum\\_shared-memory\\resume-points\\JB Woodworks\\HANDOFF-2026-05-24.md",
+        "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\jb-woodworks.md",
+        "D:\\Sinister Sanctum\\projects\\jb-woodworks\\CLAUDE.md"
+    ],
+    "note_for_next_session": "HANDOFF-2026-05-24.md is the comprehensive reference. Read it FIRST before this JSON if you're picking up cold. Site is live, all 12 prior asks shipped. Deploy any new edit with bats/jb-publish.ps1."
+}

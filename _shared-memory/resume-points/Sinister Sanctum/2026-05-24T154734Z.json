@@ -1,0 +1,46 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-24T15:47Z",
+    "project":  "sanctum",
+    "agent_name":  "test-modes",
+    "agent_display":  "Sinister Custodian",
+    "mode":  "resume",
+    "focus_intent":  "launcher rate-limit fix + per-project swarm/loop + agent-mode-set CLI + D-drive 3-folder reorg plan (operator-gated execute)",
+    "git":  {
+                "head":  "uncommitted",
+                "branch":  "agent/sinister-sanctum/grant-autonomy-followup-2026-05-23"
+            },
+    "progress_top5":  [
+                          "2026-05-24 15:30 - shipped launcher full-power fallback (no more rate-limit blocks)",
+                          "2026-05-24 15:30 - shipped per-project default_modes in projects.json + Prompt-AgentModes update",
+                          "2026-05-24 15:31 - shipped agent-mode-set.ps1 (mid-session swarm/loop flip via mode file + operator-utterance)",
+                          "2026-05-24 15:45 - shipped d-drive-reorg.ps1 (23-action plan, dry-run verified, operator-gated execute)",
+                          "2026-05-24 15:45 - queued operator action row: 3-folder reorg one-click commands"
+                      ],
+    "latest_plan":  {
+                        "dir":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\d-drive-reorg-2026-05-24",
+                        "artifact":  "D:\\Sinister Sanctum\\automations\\d-drive-reorg.ps1"
+                    },
+    "inbox_unread_count":  0,
+    "last_files_touched":  [
+                               "automations\\start-sinister-session.ps1",
+                               "automations\\session-templates\\projects.json",
+                               "automations\\agent-mode-set.ps1",
+                               "automations\\d-drive-reorg.ps1",
+                               "_shared-memory\\OPERATOR-ACTION-QUEUE.md",
+                               "_shared-memory\\PROGRESS\\test-modes.md",
+                               "_shared-memory\\heartbeats\\test-modes.json",
+                               "_shared-memory\\claude-accounts.json"
+                           ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\test-modes.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\plans\\d-drive-reorg-2026-05-24",
+                           "D:\\Sinister Sanctum\\_shared-memory\\plans\\d-drive-reorg-2026-05-21\\plan.md"
+                       ],
+    "in_flight_subagents":  [
+                                {
+                                    "id":  "adebcc813cb712582",
+                                    "purpose":  "D-drive audit (running before operator escalated to 3-folder reorg; will likely return audit doc compatible with new plan)"
+                                }
+                            ]
+}

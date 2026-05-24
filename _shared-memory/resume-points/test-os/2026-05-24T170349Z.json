@@ -1,0 +1,26 @@
+﻿{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-24T17:03Z",
+    "project":  "test-os",
+    "agent_name":  "test-os",
+    "mode":  "resume",
+    "focus_intent":  "first-spawn baseline (seeded by seed-resume-points.ps1)",
+    "seeded_by":  "seed-resume-points.ps1 (test-modes-verify lane)",
+    "seed_reason":  "no prior resume-point existed; created baseline so Start-Sinister-Session.bat restart restores state",
+    "git":  {
+                "branch":  "(unknown)",
+                "head":  "(use git rev-parse HEAD at restore-time)",
+                "head_msg":  ""
+            },
+    "progress_top3":  [
+                          "first session (no prior progress)"
+                      ],
+    "last_5_files_touched_24h":  [
+
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\CLAUDE.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\test-os.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\heartbeats\\test-os.json"
+                       ]
+}

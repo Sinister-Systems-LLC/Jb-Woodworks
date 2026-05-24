@@ -1,0 +1,26 @@
+﻿{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-24T17:03Z",
+    "project":  "test-modes",
+    "agent_name":  "test-modes",
+    "mode":  "resume",
+    "focus_intent":  "/loop iter 1: D:\\ root reduced 17-\u003e5 entries. Phase 2 (6/7 + refs), Phase 3 (full), Triage (full) all executed. Live configs verified ref-clean. LetsText (locked) + Sinister/ (Phase 4 high-risk) outstanding. Commit deferred (branch-hygiene crisis).",
+    "seeded_by":  "seed-resume-points.ps1 (test-modes-verify lane)",
+    "seed_reason":  "no prior resume-point existed; created baseline so Start-Sinister-Session.bat restart restores state",
+    "git":  {
+                "branch":  "agent/sinister-os-mobile/p0-spec-2026-05-24",
+                "head":  "(use git rev-parse HEAD at restore-time)",
+                "head_msg":  ""
+            },
+    "progress_top3":  [
+                          "first session (no prior progress)"
+                      ],
+    "last_5_files_touched_24h":  [
+
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\CLAUDE.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\test-modes.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\heartbeats\\test-modes.json"
+                       ]
+}

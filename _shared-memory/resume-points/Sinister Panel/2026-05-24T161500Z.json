@@ -1,0 +1,43 @@
+{
+  "_author": "RKOJ-ELENO :: 2026-05-24",
+  "schema_version": "sinister.resume-point.v1",
+  "ts_utc": "2026-05-24T16:15:00.0000000Z",
+  "project": "Sinister Panel",
+  "agent_name": "sinister-panel",
+  "agent_identity": "EVE",
+  "mode": "resume",
+  "focus_intent": "Loop iter 3 of keybox-OEM-probe expansion. Per-phone OEM mismatch warning shipped + replied to diagnose lane (kernel-apk parallel /loop watcher). Branch HEAD 72781f2 (4 commits atop main); awaits operator merge. Diagnose lane will probe the endpoint + recommend Pixel-OEM keybox the moment branch lands on prod. Full chain unblock: merge → keybox-swap → fresh PI 3/3 acct → I fire add-friend → andrewt407 → measure 24h survival.",
+  "git": {
+    "branch": "agent/sinister-panel/keybox-oem-probe-2026-05-24",
+    "branch_head": "72781f2",
+    "branch_commits_atop_main": 4,
+    "main_head": "5b9aece",
+    "deployed_head_on_hetzner": "5b9aece (HTTP 200 verified 15:56:46Z)",
+    "branch_pushed_to_origin": true,
+    "merge_gate_one_liner": "git checkout main && git merge --no-ff agent/sinister-panel/keybox-oem-probe-2026-05-24 && git push origin main && ssh root@[hetzner-ip] 'bash /tmp/remote-deploy.sh --with-backend'"
+  },
+  "branch_commits": [
+    "c782adb — base endpoint + lib/keyboxOem.ts + Keyboxes tab inline OEM pill + right-pane mismatch banner",
+    "116e373 — 5th KPI (samsung-on-Pixel mismatch counter) + smoke-keybox-oem.mjs (5/5 PASS)",
+    "3da52e3 — inline smoke: reference (forever-improve Q4 close)",
+    "72781f2 — per-phone OEM mismatch warning in /fleet phone detail RKA section"
+  ],
+  "coordination_active": {
+    "diagnose_lane": "/loop-watching this PROGRESS file; will probe /api/rka/keyboxes/oem the moment branch lands on prod, surface 'use Yurikey<X> — Pixel-OEM' recommendation to operator queue",
+    "andrewt407_protocol_chain": "kernel-apk pushes fresh PI 3/3 acct post-keybox-swap → panel inbox ping → panel fires POST /api/actions/add-friend → log to PROGRESS → diagnose Monitor wakes to verify",
+    "outbound_diagnose_reply": "_shared-memory/inbox/diagnose/2026-05-24T1605Z-from-sinister-panel-keybox-oem-branch-ready-awaits-operator-merge.json"
+  },
+  "carry_forward_deferrals": [
+    "Operator merge-gate for branch agent/sinister-panel/keybox-oem-probe-2026-05-24 (4 commits ready, all gates green) — UNBLOCKS the andrewt407 chain",
+    "OEM pill refactor → propose <StatusBadge tone variant> to dashboard-skeleton per UI canonical EXPAND principle",
+    "automations/fleet-update.ps1 CLI does not exist — Sanctum lane todo",
+    "sinister-chatbot lane's 3 uncommitted tree files — operator paused 14:36Z; do not touch",
+    "EMU FLEET 7-widget tab — awaits operator Phase 0 greenlight",
+    "DeviceID heuristic for Pixel could be tightened (real serials like 2A061JEGR09301 don't match the HT/HG/9X regex; Subject-DN path remains authoritative). Follow-up if any prod probe returns unknown for known Pixel keybox."
+  ],
+  "pre_warm_reads": [
+    "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Sinister Panel.md",
+    "D:\\Sinister Sanctum\\_shared-memory\\inbox\\sinister-panel\\",
+    "D:\\Sinister Sanctum\\_shared-memory\\inbox\\diagnose\\"
+  ]
+}

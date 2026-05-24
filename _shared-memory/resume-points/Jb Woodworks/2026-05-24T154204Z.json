@@ -1,0 +1,47 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-24T16:22:41.1818665Z",
+    "project":  "jb-woodworks",
+    "agent_name":  "jb-woodworks",
+    "mode":  "resume",
+    "focus_intent":  "",
+    "git":  {
+                "branch":  "agent/sinister-os/m1-hardening-2026-05-24",
+                "head":  "30135f20bdf4bad70299352caa12bcc7666cd31e",
+                "head_msg":  "sinister-os: parallel ramp — themes (4 services) + eve CLI + panel-dev HMR + 4 docs + bake-panel safety",
+                "recent_commits":  [
+                                       "30135f2 sinister-os: parallel ramp — themes (4 services) + eve CLI + panel-dev HMR + 4 docs + bake-panel safety",
+                                       "532f4e9 sinister-os: M1 hardening overlay (compose.hardened.yml + HARDENING.md)",
+                                       "1f79582 sanctum: broadcast feature-refresh 2026-05-24 to all 18 visible lanes (no restart)",
+                                       "af54f4b sanctum: fix window-persist bug in mintty spawn",
+                                       "bce570c sinister-os: /loop iter 1 - dashboard-skeleton theme inheritance binding (10/10 services HTTP 200 verified)",
+                                       "daff913 sanctum: iter 108 - broadcast cites brain-stale-claim-scan.ps1 (Bug #2 operational tool)",
+                                       "97f06a7 merge: take theirs for _INDEX.md (sibling lane authoritative)",
+                                       "ef149a5 sinister-os: smoke-test corrected ports, 10/10 services HTTP 200",
+                                       "125c1a1 sanctum: iter 101 - audit + resolve stale \u0027likely\u0027 speculations in windows-case-folding-resume-point-trap",
+                                       "5fb0a5d sanctum: iter 100 - add modular-fleet compose-with link to cross-lane finder doctrine"
+                                   ]
+            },
+    "progress_top3":  [
+                          "2026-05-24 11:05 - resume check-in (no new operator ask)",
+                          "2026-05-24 09:35 - JB owner asks: add Commercial \u0026 Event Fabrication service + recategorize",
+                          "2026-05-24 09:05 - +10 blog posts shipped + new editorial portfolio header"
+                      ],
+    "latest_plan":  {
+                        "dir":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\jb-woodworks-complete-2026-05-23T0625Z",
+                        "artifact":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\jb-woodworks-complete-2026-05-23T0625Z\\forward-plan.md"
+                    },
+    "inbox_unread_count":  4,
+    "last_5_files_touched_24h":  [
+                                     "_shared-memory\\plans\\d-drive-reorg-2026-05-24\\run-20260524-114453-phaseall-dryrun.log",
+                                     "_shared-memory\\operator-utterances.jsonl",
+                                     "_shared-memory\\resume-points\\Snap Emulator API\\2026-05-24T154314Z.json",
+                                     "_shared-memory\\heartbeats\\apk.json",
+                                     "_shared-memory\\resume-points\\Sinister Kernel APK\\2026-05-24T1545Z.json"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\jb-woodworks.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\plans\\jb-woodworks-complete-2026-05-23T0625Z\\forward-plan.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}

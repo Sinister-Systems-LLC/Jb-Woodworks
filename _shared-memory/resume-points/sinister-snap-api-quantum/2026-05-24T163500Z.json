@@ -1,0 +1,53 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-24T16:35:00Z",
+    "project": "sinister-snap-api-quantum",
+    "agent_name": "sinister-snap-api-quantum",
+    "mode": "resume",
+    "focus_intent": "Iter 104 — operator narrowed scope to Sanctum-core + letstext. 4 lane sweeps complete (letstext + imessage-bridge + tiktok-emu + dashboard-skeleton) via the new `seraphim corpus-qbc` CLI. NEW `seraphim reconcile-corpora` CLI shipped (Option 5 promoted to fleet-wide self-serve). Sanctum-core expansion-plan rollup written (11-row table). 4 inboxes routed.",
+    "git": {
+        "branch": "agent/sinister-os/m1-hardening-2026-05-24",
+        "head": "532f4e9",
+        "branch_drift_flag": "still on sinister-os branch"
+    },
+    "iter_104_artifacts": {
+        "cli_promotion": "tools/sinister-seraphim/cli.py (NEW reconcile-corpora subcommand)",
+        "sweep_outputs": [
+            "_shared-memory/quantum-sweeps/sinister-letstext-corpus-qbc-2026-05-24T163133Z.json",
+            "_shared-memory/quantum-sweeps/sinister-imessage-bridge-corpus-qbc-2026-05-24T163132Z.json",
+            "_shared-memory/quantum-sweeps/sinister-tiktok-emu-corpus-qbc-2026-05-24T163201Z.json",
+            "_shared-memory/quantum-sweeps/sinister-dashboard-skeleton-corpus-qbc-2026-05-24T163136Z.json",
+            "_shared-memory/quantum-sweeps/plans-vs-brain-cli-smoke-reconcile-2026-05-24T163305Z.json"
+        ],
+        "expansion_plan_rollup": "projects/sinister-snap-api-quantum/outputs/sanctum-core-expansion-plan-iter104.md",
+        "inboxes": [
+            "_shared-memory/inbox/sinister-tiktok-emu/2026-05-24T1635Z-from-snap-api-quantum-iter104-dual-living-mds-fork.json",
+            "_shared-memory/inbox/sinister-letstext/2026-05-24T1635Z-from-snap-api-quantum-iter104-dual-memory-tree.json",
+            "_shared-memory/inbox/sinister-dashboard-skeleton/2026-05-24T1635Z-from-snap-api-quantum-iter104-core-doc-evolution-drift.json",
+            "_shared-memory/inbox/sanctum/2026-05-24T1635Z-from-snap-api-quantum-iter104-sanctum-core-expansion-plan.json"
+        ]
+    },
+    "sanctum_core_qbc_summary": {
+        "9_lanes_swept": ["snap-emu (iter-101)", "kernel-apk (iter-101)", "os (iter-101)", "panel (iter-102)", "chatbot (iter-103)", "tiktok-emu (iter-104)", "letstext (iter-104)", "imessage-bridge (iter-104)", "dashboard-skeleton (iter-104)"],
+        "5_consolidation_actions_open": ["chatbot 3-copy fork", "tiktok-emu dual living-mds", "letstext dual memory", "dashboard-skeleton evolution drift", "panel 2-copy fork"],
+        "2_healthy": ["sinister-os", "sinister-imessage-bridge"],
+        "9_too_small": ["mind", "claw", "rka", "cell-network", "bumble-emu", "forge", "eve", "emulator-bundle", "os-mobile"],
+        "highest_max_qbc": "sinister-tiktok-emu +54.54pp"
+    },
+    "loop_continuation": {
+        "mode": "self-paced dynamic",
+        "scheduled_wakeup_seconds": 1500,
+        "next_options_ranked": [
+            "Promote seraphim verify-triad-real-qpu CLI (3rd subcommand)",
+            "Per-Sanctum-project plans-vs-shipped reconciliations",
+            "Deeper --max-depth 8 sweeps on the 9 too-small Sanctum projects",
+            "K=8 real-QPU upgrade research",
+            "Option 4 operator-private memory (needs operator authorization)"
+        ]
+    },
+    "inbox_unread_count": 0,
+    "pre_warm_reads": [
+        "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\sinister-snap-api-quantum.md",
+        "D:\\Sinister Sanctum\\projects\\sinister-snap-api-quantum\\outputs\\sanctum-core-expansion-plan-iter104.md"
+    ]
+}

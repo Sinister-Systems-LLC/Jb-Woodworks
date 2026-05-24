@@ -1,0 +1,62 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-24T16:30Z",
+    "project": "sinister-chatbot",
+    "agent_name": "sinister-chatbot",
+    "agent_display": "Sinister Chatbot",
+    "agent_identity": "EVE",
+    "mode": "resume",
+    "focus_intent": "UI redo + Hetzner deploy verified end-to-end. Model picker, ML/test toolbar, NSFW routing, OR key planted. 8 deliverables shipped this turn, verified live on Hetzner HEAD 64e1033.",
+    "git": {
+        "head": "64e1033",
+        "branch": "main",
+        "remote": "in-sync (origin/main)",
+        "hetzner_head": "64e1033"
+    },
+    "progress_top5": [
+        "2026-05-24 16:30 — verified OpenRouter key live on operator company account; lunaris-8b 'ok' reply for $0.00000065",
+        "2026-05-24 16:30 — fixed docker-compose.prod.yml env passthrough (5 new env vars) so OPENROUTER_API_KEY actually reaches the backend container",
+        "2026-05-24 16:30 — shipped /chatter UI redo: Uncensored pill + 8-model OR picker + ML/test row (Quantum + Export training corpus)",
+        "2026-05-24 16:30 — native TS port of /chatter/training-export (no python dep on prod); /chatter/quantum-probe returns 503+reason gracefully on Hetzner",
+        "2026-05-24 16:30 — deployed via SSH→remote-deploy.sh 3 cycles; final HEAD on Hetzner = 64e1033; all 3 containers Up healthy; lunaris-8b + mythomax + unslopnemo + mistral-nemo all verified live"
+    ],
+    "latest_plan": {
+        "dir": "D:\\Sinister Sanctum\\projects\\sinister-chatbot\\leo_dev\\docs",
+        "artifact": "D:\\Sinister Sanctum\\projects\\sinister-chatbot\\leo_dev\\docs\\CHATBOT-DIRECTION-2026-05-24.md"
+    },
+    "inbox_unread_count": 0,
+    "last_files_touched": [
+        "leo_dev/backend/src/routes/sinister.ts (uncensored route + 2 ML endpoints + native TS exporter)",
+        "leo_dev/dashboard/app/chatter/page.tsx (model picker + Uncensored pill + ML/test row + handlers)",
+        "leo_dev/docker-compose.prod.yml (5 env passthroughs)",
+        "leo_dev/backend/.env (local dev; OR key + lunaris default)",
+        "Hetzner:/opt/sinister-panel/leo_dev/.env (idempotent OR key append, NOT in git)",
+        "_shared-memory/PROGRESS/Sinister Chatbot.md",
+        "_shared-memory/heartbeats/sinister-chatbot.json"
+    ],
+    "pre_warm_reads": [
+        "D:\\Sinister Sanctum\\projects\\sinister-chatbot\\leo_dev\\docs\\CHATBOT-DIRECTION-2026-05-24.md",
+        "D:\\Sinister Sanctum\\_shared-memory\\knowledge\\sinister-chatbot-direction-2026-05-24.md",
+        "D:\\Sinister Sanctum\\_shared-memory\\knowledge\\sinister-chatbot-test-env-findings-2026-05-24.md",
+        "D:\\Sinister Sanctum\\projects\\sinister-chatbot\\leo_dev\\dashboard\\app\\chatter\\page.tsx",
+        "D:\\Sinister Sanctum\\projects\\sinister-chatbot\\leo_dev\\backend\\src\\routes\\sinister.ts",
+        "D:\\Sinister Sanctum\\projects\\sinister-chatbot\\leo_dev\\docker-compose.prod.yml"
+    ],
+    "in_flight_subagents": [],
+    "verified_live_models_today": [
+        "sao10k/l3-lunaris-8b (default for uncensored=true)",
+        "gryphe/mythomax-l2-13b",
+        "thedrummer/unslopnemo-12b",
+        "mistralai/mistral-nemo"
+    ],
+    "next_logical_steps": [
+        "Phase 2 step 2 — once enough thumbs accumulate, mine bad-thumb rows + same-context good-thumb rows into DPO pair JSONL (chosen/rejected format) for downstream preference optimization.",
+        "Phase 3 — Prisma migration for FanMemory{fanUsername, traitsJson, interestLevel, lastSummary, updatedAt}; requires operator authorization per canonical-11.",
+        "Quantum-probe on Hetzner — if operator wants it functional on prod, the cheapest path is shipping a lightweight seraphim-only image as a sibling container (bigger lift than this turn's scope).",
+        "Phase 5 — wire seraphim qrng bytes into chatEngine.ts as response-entropy seed; behind a per-Group `quantum_entropy: boolean` config flag."
+    ],
+    "open_questions_for_operator": [
+        "Quantum probe button currently shows 'unavailable here' on prod /chatter — keep it as local-dev-only OR ship seraphim into a sibling container? Latter is heavier (qiskit ~hundreds of MB)."
+    ],
+    "operator_burn_today": "~$0.0001 cumulative (4 model probes + a few thumbs-worth of expected real traffic). Frugal — well within company-key sensibilities."
+}

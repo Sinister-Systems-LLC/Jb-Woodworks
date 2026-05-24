@@ -1,0 +1,47 @@
+{
+  "agent": "jkor",
+  "agent_display": "JKOR",
+  "agent_identity": "EVE",
+  "slug": "jkor",
+  "ts_utc": "2026-05-24T15:45Z",
+  "branch": "agent/jkor/jkor-to-JOKR-rename-2026-05-24",
+  "mode": "resume",
+  "focus_intent": "rename jkor->JOKR + sorter dashboard live on http://127.0.0.1:7099/",
+  "session_summary": "First-ever jkor-lane spawn. Bootstrapped heartbeat + PROGRESS + this resume-point (no prior state existed). Operator directive 2026-05-24T15:30Z: rename jkor->JOKR + open the dashboard in localhost. Found+fixed missing sorter_web/__main__.py (python -m sinister_generator.sorter_web was crashing on no-__main__). Sorter dashboard now live at http://127.0.0.1:7099/ watching C:\\Users\\Zonia\\Desktop\\JOKR\\ — queue=0, 388 images already-sorted across 9 tiers (great=48 good=83 size_off=9 wrong_guy=155 wrong_style=52 skip_concept=4 bad=29 refs=8). Surfaced rename scope to operator (8 areas) — held off on mass-rename pending scope confirmation because slug 'jokr' already belongs to the sinister-jokr home-stack lane.",
+  "verified_deliverables_this_turn": [
+    "wrote sorter_web/__main__.py (argparse for --folder + --port)",
+    "sorter dashboard listening on 127.0.0.1:7099 (verified via netstat + /api/queue probe)",
+    "browser opened to http://127.0.0.1:7099/",
+    "_shared-memory/PROGRESS/JKOR.md created",
+    "_shared-memory/heartbeats/jkor.json created",
+    "this resume-point"
+  ],
+  "open_questions": [
+    "Rename scope confirmation: slug 'jkor'->'JOKR' or '->'jokr' (collides with sinister-jokr lane)?",
+    "Rename function jkor_image -> JOKR_image or jokr_image?",
+    "Rename outputs/jkor/ -> outputs/JOKR/ (breaks 13 _fire_jkor_*.py scripts + desktop symlink)?",
+    "Operator confirms sorter UI renders OK in their browser?"
+  ],
+  "pre_warm_reads": [
+    "_shared-memory/PROGRESS/JKOR.md",
+    "projects/jkor/CLAUDE.md",
+    "projects/jkor/BRAND.md",
+    "projects/sinister-generator/memory/per-project/jkor/BRAND.md",
+    "projects/sinister-generator/docs/BRAND-LIBRARY-WORKFLOW.md",
+    "projects/sinister-generator/source/sinister_generator/sorter_web/server.py",
+    "projects/sinister-generator/source/sinister_generator/sorter_web/__main__.py"
+  ],
+  "current_sorter_stats": {
+    "url": "http://127.0.0.1:7099/",
+    "folder": "C:\\Users\\Zonia\\Desktop\\JOKR",
+    "queue": 0,
+    "great": 48,
+    "good": 83,
+    "size_off": 9,
+    "wrong_guy": 155,
+    "wrong_style": 52,
+    "skip_concept": 4,
+    "bad": 29,
+    "refs": 8
+  }
+}

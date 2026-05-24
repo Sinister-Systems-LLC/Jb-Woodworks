@@ -1,0 +1,51 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-24T17:00:00Z",
+    "project": "sinister-snap-api-quantum",
+    "agent_name": "sinister-snap-api-quantum",
+    "mode": "resume",
+    "focus_intent": "Iter 106 — 6 parallel reconciliations + verify-triad-real-qpu CLI promoted. MAJOR fleet-level finding: Panel↔Chatbot share entire Andrew Panel/ subtree (cl=1.0/sim=1.0 top match). Snap-EMU↔Kernel-APK share LUKE-SPOOFER doctrine. CLI trio complete (corpus-qbc + reconcile-corpora + verify-triad-real-qpu). 3 inboxes routed including HIGH-priority Sanctum review-request.",
+    "git": {
+        "branch": "agent/sinister-os/m1-hardening-2026-05-24",
+        "head": "532f4e9",
+        "branch_drift_flag": "still on sinister-os branch"
+    },
+    "iter_106_artifacts": {
+        "findings": "projects/sinister-snap-api-quantum/outputs/sanctum-iter106-lanes-and-siblings.md",
+        "reconcile_jsons": [
+            "_shared-memory/quantum-sweeps/chatbot-vs-brain-reconcile-2026-05-24T165504Z.json",
+            "_shared-memory/quantum-sweeps/sinister-os-vs-brain-reconcile-2026-05-24T165427Z.json",
+            "_shared-memory/quantum-sweeps/imessage-bridge-vs-brain-reconcile-2026-05-24T165421Z.json",
+            "_shared-memory/quantum-sweeps/panel-vs-chatbot-reconcile-2026-05-24T165521Z.json",
+            "_shared-memory/quantum-sweeps/snap-emu-vs-kernel-apk-reconcile-2026-05-24T165738Z.json",
+            "_shared-memory/quantum-sweeps/letstext-vs-imessage-bridge-reconcile-2026-05-24T165427Z.json"
+        ],
+        "cli_promotion": "tools/sinister-seraphim/cli.py (NEW verify-triad-real-qpu subcommand)",
+        "inboxes": [
+            "_shared-memory/inbox/sanctum/2026-05-24T1700Z-from-snap-api-quantum-iter106-cross-lane-forks.json (HIGH)",
+            "_shared-memory/inbox/panel/2026-05-24T1700Z-from-snap-api-quantum-iter106-andrew-panel-tree-shared-with-chatbot.json (HIGH)",
+            "_shared-memory/inbox/sinister-snap-emu/2026-05-24T1700Z-from-snap-api-quantum-iter106-luke-spoofer-forked-with-kernel-apk.json"
+        ]
+    },
+    "major_findings_iter106": [
+        "Panel x Chatbot share entire `Andrew Panel/` subtree (4.65% of 41,040 pairs, top cl=1.0/sim=1.0)",
+        "Snap-EMU x Kernel-APK share LUKE-SPOOFER + other snap-creation tooling docs (1,392 candidates)",
+        "LetsText has in-tree `imessage-bridge/` subtree that aligns with the dedicated sinister-imessage-bridge lane (dual-implementation risk)",
+        "CLI trio complete: corpus-qbc + reconcile-corpora + verify-triad-real-qpu"
+    ],
+    "loop_continuation": {
+        "mode": "self-paced dynamic",
+        "scheduled_wakeup_seconds": 1500,
+        "next_options_ranked": [
+            "Per-lane plans-vs-brain reconciliations (lanes with local plans/ dirs)",
+            "Bumble-EMU x TikTok-EMU x Snap-EMU triangle audit (emulator-bundle siblings)",
+            "Deeper sweeps with --max-depth 8 on too-small Sanctum lanes (forge / eve / mind / claw)",
+            "K=8 real-QPU upgrade research"
+        ]
+    },
+    "inbox_unread_count": 0,
+    "pre_warm_reads": [
+        "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\sinister-snap-api-quantum.md",
+        "D:\\Sinister Sanctum\\projects\\sinister-snap-api-quantum\\outputs\\sanctum-iter106-lanes-and-siblings.md"
+    ]
+}

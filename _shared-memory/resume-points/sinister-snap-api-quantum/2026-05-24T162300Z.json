@@ -1,0 +1,54 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-24T16:23:00Z",
+    "project": "sinister-snap-api-quantum",
+    "agent_name": "sinister-snap-api-quantum",
+    "mode": "resume",
+    "focus_intent": "Iter 103 (/loop 'keep going') complete. 3 parallel lane sweeps + NEW `seraphim corpus-qbc` CLI subcommand + fleet-pattern brain entry shipped + 3 inboxes routed. Doctrine claim: 3 universal QBC patterns confirmed across the fleet (session-handoff hotspot, single-letter memory hotspot, workstation forks). Biggest catch: sinister-chatbot 3-COPY duplicate-fork (worst in fleet).",
+    "git": {
+        "branch": "agent/sinister-os/m1-hardening-2026-05-24",
+        "head": "532f4e9",
+        "branch_drift_flag": "still on sinister-os branch"
+    },
+    "iter_103_artifacts": {
+        "cli_promotion": "tools/sinister-seraphim/cli.py (added corpus-qbc subcommand)",
+        "generic_driver": "projects/sinister-snap-api-quantum/sim-generic-corpus-qbc.py",
+        "sweep_outputs": [
+            "outputs/sinister-chatbot-corpus-qbc-iter103.{json,log}",
+            "outputs/showmasters-corpus-qbc-iter103.{json,log}",
+            "outputs/jb-woodworks-corpus-qbc-iter103.{json,log}",
+            "_shared-memory/quantum-sweeps/sinister-jokr-corpus-qbc-2026-05-24T162147Z.json (via CLI smoke-test)"
+        ],
+        "findings_doc": "outputs/findings-batch-iter103.md",
+        "brain_entry": "_shared-memory/knowledge/fleet-quantum-qbc-patterns-2026-05-24.md",
+        "brain_index_updated": "_shared-memory/knowledge/_INDEX.md (new row at top)",
+        "inboxes": [
+            "_shared-memory/inbox/sinister-chatbot/2026-05-24T1623Z-from-snap-api-quantum-iter103-triple-fork-bug.json",
+            "_shared-memory/inbox/showmasters/2026-05-24T1623Z-from-snap-api-quantum-iter103-marketing-redundancy.json",
+            "_shared-memory/inbox/sanctum/2026-05-24T1623Z-from-snap-api-quantum-iter103-batch-sweep-and-cli-promo.json"
+        ]
+    },
+    "fleet_cumulative_qbc": {
+        "lanes_swept": 9,
+        "cross_corpus": 1,
+        "biggest_finding": "sinister-chatbot 3-COPY duplicate-fork (5 docs in 3 trees, cl=0.998-0.999)",
+        "universal_patterns_count": 3
+    },
+    "loop_continuation": {
+        "mode": "self-paced dynamic",
+        "scheduled_wakeup_seconds": 1500,
+        "next_options_ranked": [
+            "Promote reconcile-corpora + verify-triad-real-qpu to CLI",
+            "Apply jb-woodworks --max-depth 8 deeper sweep",
+            "More borderline-size sweeps (letstext / freeze / generator)",
+            "K=8 real-QPU upgrade research",
+            "Option 4 operator-private memory (needs operator awareness)"
+        ]
+    },
+    "inbox_unread_count": 0,
+    "pre_warm_reads": [
+        "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\sinister-snap-api-quantum.md",
+        "D:\\Sinister Sanctum\\_shared-memory\\knowledge\\fleet-quantum-qbc-patterns-2026-05-24.md",
+        "D:\\Sinister Sanctum\\projects\\sinister-snap-api-quantum\\outputs\\findings-batch-iter103.md"
+    ]
+}

@@ -1,0 +1,32 @@
+{
+  "schema_version": "sinister.resume-point.v1",
+  "ts_utc": "2026-05-24T15:36:00Z",
+  "project": "Sinister Kernel APK",
+  "agent_name": "diagnose",
+  "mode": "resume",
+  "focus_intent": "diagnose-pass-1 surfaced broken git trees + version drift; logged operator utterances (--swarm + 'phone 1 got ss11 fix')",
+  "git": {
+    "branch": "agent/sinister-kernel-apk/crispy-cosmos-resume",
+    "head": "cda2e4e",
+    "head_msg": "v0.97.9: SpoofPanel feature parity with Luke -- 5 tabs (ID/Sensor/Network/Location/Stealth) + KPM dispatch",
+    "commits_ahead_of_origin": 11,
+    "fsck_status": "DEGRADED — 4 broken tree links + 4 missing trees + orphan tmp_pack_bqSd0e (24MB, no .idx). git status aborts. HEAD tree readable, working tree intact.",
+    "recovery_pending_operator": "OPERATOR-ACTION-QUEUE row at 2026-05-24T13:55Z — try `git fetch origin --prune` first."
+  },
+  "diagnose_findings": {
+    "F1_broken_trees": "4 missing tree objects (3b3617a / 1ec1151 / 25a5e50 / 03e6222) + 4 broken links — surfaced 2026-05-24T13:55Z, not previously logged anywhere in _shared-memory",
+    "F2_version_drift": "PROGRESS log mentions v0.97.46/47 installed on phones, git log on this branch tops out at v0.97.9. 38 versions of drift. Investigation deferred until F1 cleared (--all walk blocked by missing trees).",
+    "F3_branch_push": "11 commits ahead of origin (was 7 at 2026-05-21 resume); kernel-apk lane owns the push, diagnose deferred."
+  },
+  "operator_utterances_this_session": [
+    {"ts_utc": "2026-05-24T15:36:01Z", "text": "--swarm", "interpretation_pending": true},
+    {"ts_utc": "2026-05-24T15:36:04Z", "text": "phone 1 got ss11 fix", "interpretation": "P1 received and is running the SS11 fix — relayed to kernel-apk lane inbox"}
+  ],
+  "carry_forward": [
+    "Wait for operator ack on F1 (broken trees) — recommended `git fetch origin --prune` first",
+    "Re-run git fsck once F1 cleared; verify F2 resolves",
+    "kernel-apk lane needs the SS11-on-P1 confirmation — relay sent via inbox",
+    "Interpret --swarm: likely mode-flip (swarm=on) per recent agent-mode-set pattern in operator-utterances.jsonl"
+  ],
+  "operator_directive_at_session": "Working on Kernel APK at projects/sinister-kernel-apk/source as 'diagnose' lane. RESUME mode. Pick up from latest resume-point. After each meaningful deliverable, write a fresh resume-point."
+}

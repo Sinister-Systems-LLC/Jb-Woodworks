@@ -11,6 +11,7 @@
 ## IN-PROGRESS
 
 ## DONE
+- [x] 2026-05-24T17:04:03Z :: high :: Build seed-resume-points.ps1 + apply across fleet (16 lanes seeded, 0 gaps remain)  // evidence: 16 lanes seeded; gaps-after=0; operator directive 2026-05-24T17:01:09Z fulfilled
 - [x] 2026-05-24T16:59:13Z :: high :: Fix R9-R10 forge-memory-bridge gap via Build-Phrase edit  // evidence: commit 02aa0c7 (bundled by spawned lane); probe R9-R10 flipped FAIL -> PASS
 - [x] 2026-05-24T16:59:13Z :: low :: Expand probe to detect runtime gaps not just file presence (e.g. R8 actually call Ruflo MCP, R14 measure keypress latency)  // evidence: commit fe6341b; 26/31 PASS / 1 REAL-FAIL / 4 EXPECTED-GAP
 

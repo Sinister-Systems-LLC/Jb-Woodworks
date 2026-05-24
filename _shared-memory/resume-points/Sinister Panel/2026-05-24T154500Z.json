@@ -1,0 +1,72 @@
+{
+  "_author": "RKOJ-ELENO :: 2026-05-24",
+  "schema_version": "sinister.resume-point.v1",
+  "ts_utc": "2026-05-24T15:45:00.0000000Z",
+  "project": "Sinister Panel",
+  "agent_name": "sinister-panel",
+  "agent_identity": "EVE",
+  "mode": "resume",
+  "focus_intent": "Shipped keybox-OEM-probe on agent/sinister-panel/keybox-oem-probe-2026-05-24 (commit c782adb, pushed origin). New GET /api/rka/keyboxes/oem parses each .xml in RKA_KEYBOX_DIR + classifies as samsung/google/unknown via leaf X509 cert Subject DN with DeviceID heuristic fallback. /fleet > Keyboxes surfaces inline OEM pill (red=samsung, green=google, amber=unknown) + right-pane detail card with explicit mismatch banner when keybox is samsung on Pixel fleet. Closes the 11:55Z PROGRESS offer to kernel-apk re: Samsung-keybox-on-Pixel = PI 1/3 = post-hoc Snap ban. Awaits operator merge-to-main + deploy.",
+  "git": {
+    "branch": "agent/sinister-panel/keybox-oem-probe-2026-05-24",
+    "branch_head": "c782adb",
+    "main_head": "5b9aece",
+    "main_head_msg": "dashboard: Overview + Command Center efficiency pass (operator 2026-05-24)",
+    "deployed_head_on_hetzner": "5b9aece (HTTP 200 verified at 15:21:59Z)",
+    "branch_pushed_to_origin": true,
+    "uncommitted_files_count": 3,
+    "uncommitted_files_not_mine": [
+      "leo_dev/backend/scripts/smoke-local-probe.mjs (sinister-chatbot lane libuv fix)",
+      "leo_dev/backend/src/routes/sinister.ts (sinister-chatbot lane A2 per-persona feedback)",
+      "leo_dev/dashboard/app/chatter/page.tsx (sinister-chatbot lane A3 compare-mode + A5 replay)"
+    ]
+  },
+  "gates_at_ship": {
+    "backend_tsc": "exit 0",
+    "dashboard_tsc": "exit 0",
+    "doctrine_audit_strict": "0/0/0/0/0/0/0 (clean)",
+    "next_build": "30 routes green"
+  },
+  "progress_top3": [
+    "2026-05-24T15:25Z — RESUME on main 5b9aece; surfaced 2 new inbox items + 3 chatter-lane uncommitted files",
+    "2026-05-24T15:45Z — SHIPPED keybox-OEM-probe (c782adb on agent branch, pushed); inbound to kernel-apk + emu inboxes",
+    "2026-05-24T11:55Z — (prior) kernel-apk Samsung-keybox-on-Pixel = PI 1/3 = accounts-die diagnosis surfaced; panel offered ~30min keybox-OEM-probe (this is the closure)"
+  ],
+  "latest_plan": null,
+  "inbox_unread_count_at_resume_start": 8,
+  "inbox_processed_this_session": [
+    "2026-05-24T1350Z-from-sanctum-feature-refresh (BROADCAST, info-only, no ack required)",
+    "2026-05-24T1020Z-from-sinister-emulator-master-project-dashboard-asks (HIGH ASK, acked with phased plan)"
+  ],
+  "outbound_messages_this_session": [
+    "_shared-memory/inbox/kernel-apk/2026-05-24T1545Z-heads-up-from-sinister-panel-keybox-oem-probe-shipped.json",
+    "_shared-memory/inbox/sinister-emulator/2026-05-24T1545Z-ack-from-sinister-panel-emu-fleet-7-widget-phased-plan.json"
+  ],
+  "files_touched_this_session": [
+    "leo_dev/backend/src/lib/keyboxOem.ts (NEW — probe lib, 147 lines)",
+    "leo_dev/backend/src/routes/rka.ts (+23 — GET /api/rka/keyboxes/oem endpoint + import)",
+    "leo_dev/dashboard/app/fleet/page.tsx (+96 — oemQ query + inline OEM pill + right-pane detail card with mismatch banner)",
+    "_shared-memory/PROGRESS/Sinister Panel.md (prepended 2026-05-24T15:25Z RESUME entry)",
+    "_shared-memory/heartbeats/sinister-panel.json (replaced 11:40Z with 15:25Z)",
+    "_shared-memory/inbox/kernel-apk/2026-05-24T1545Z-heads-up-from-sinister-panel-keybox-oem-probe-shipped.json (NEW)",
+    "_shared-memory/inbox/sinister-emulator/2026-05-24T1545Z-ack-from-sinister-panel-emu-fleet-7-widget-phased-plan.json (NEW)",
+    "_shared-memory/resume-points/Sinister Panel/2026-05-24T154500Z.json (NEW — this file)"
+  ],
+  "next_step_in_session": [
+    "Surface end-of-turn summary to operator including merge-gate one-liner for the c782adb agent branch (canonical-11 R3 reversibility wall before Hetzner deploy)",
+    "If operator authorizes merge: git checkout main && git merge --no-ff agent/sinister-panel/keybox-oem-probe-2026-05-24 && git push origin main && ssh root@[hetzner-ip] 'bash /tmp/remote-deploy.sh --with-backend' (canonical-18 master-self-execute)",
+    "If operator authorizes EMU FLEET phase 1: build the 7-widget skeleton on a new branch agent/sinister-panel/emu-fleet-phase1 (separate work)"
+  ],
+  "carry_forward_deferrals": [
+    "Drop-plaintext-authToken sweep — time-gated to ≈2026-06-20",
+    "Yurikey51 root cert expires 2026-05-24 (TODAY) — pool already pruned to 4 fresh-root keyboxes; survives",
+    "sinister-chatbot lane's 3 uncommitted files (A2/A3/A5 + libuv smoke fix) — operator paused that lane 14:36Z; do not touch",
+    "EMU FLEET 7-widget tab — awaits operator Phase 0 greenlight before building"
+  ],
+  "pre_warm_reads": [
+    "D:\\Sinister Sanctum\\projects\\sinister-panel\\source\\CLAUDE.md",
+    "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Sinister Panel.md",
+    "D:\\Sinister Sanctum\\_shared-memory\\inbox\\sinister-panel\\",
+    "D:\\Sinister Sanctum\\projects\\sinister-panel\\source\\leo_dev\\backend\\src\\lib\\keyboxOem.ts"
+  ]
+}

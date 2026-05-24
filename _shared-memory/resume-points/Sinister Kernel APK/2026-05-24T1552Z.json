@@ -1,0 +1,38 @@
+{
+  "schema_version": "sinister.resume-point.v1",
+  "ts_utc": "2026-05-24T15:52:00Z",
+  "project": "Sinister Kernel APK",
+  "agent_name": "diagnose",
+  "mode": "loop-dynamic",
+  "focus_intent": "Coordination + watch lane. Operator goals: (1) Snap acct survives 24h, (2) andrewt407 add-friend. Single structural blocker = Pixel keybox swap. Monitor armed; coord msgs sent to kernel-apk + panel; OPERATOR-ACTION-QUEUE 🔴 critical row at 15:50Z spells out the unblock.",
+  "loop_status": {
+    "active": true,
+    "monitor_task_id": "bikz02xtl",
+    "monitor_watches": [
+      "_shared-memory/PROGRESS/Sinister Kernel APK.md mtime",
+      "_shared-memory/PROGRESS/Sinister Panel.md mtime",
+      "_shared-memory/inbox/diagnose/ entry count"
+    ],
+    "wake_strategy": "Monitor primary, ScheduleWakeup 1500s safety net",
+    "stop_condition": "TaskStop on bikz02xtl + omit ScheduleWakeup when (a) andrewt407 successfully added by panel + (b) at least one PI 3/3 acct has survived 24h"
+  },
+  "blocker_chain_state_2026-05-24T15:50Z": {
+    "L1_keybox_oem": "Samsung keybox on Pixel = PI 1/3 (per kernel-apk 11:50Z + panel 11:55Z)",
+    "L2_full_use_ready_count": "0 (per panel 11:40Z measurement on Hetzner)",
+    "L3_panel_keybox_oem_endpoint": "in-flight, ETA 15:55-16:00Z (branch agent/sinister-panel/keybox-oem-probe-2026-05-24)",
+    "L4_operator_physical_step": "pick Pixel-compatible keybox from RKA pool {Yurikey22, Yurikey36, yk50, keybox(2)} → push to BOTH phones → verify PI 3/3",
+    "L5_signup_then_add_friend": "kernel-apk produces <60min fresh-token PI 3/3 acct → diagnose triggers panel add-friend andrewt407 probe"
+  },
+  "diagnose_pass-1_findings_still_open": [
+    "F1 broken trees (2 commits — fec894c v0.97.8 + cda2e4e v0.97.9) — recovery seq in OPERATOR-ACTION-QUEUE 13:55Z row",
+    "F4 telemetry conflict (CURRENT-STATE.md v0.96.68 vs PROGRESS v0.97.47)",
+    "F5 38 uncommitted versions (SPOF risk; kernel-apk lane decision)"
+  ],
+  "carry_forward": [
+    "On Monitor wake: read top of changed PROGRESS, classify event, route to next action",
+    "On panel OEM endpoint live: GET keyboxes from Hetzner prod, classify, surface Pixel-OEM filename to operator queue row",
+    "On kernel-apk <60min PI 3/3 acct: ping panel inbox to trigger andrewt407 add-friend probe",
+    "On andrewt407 success: log to PROGRESS/diagnose.md + start the 24h-survival countdown timer in resume-points"
+  ],
+  "operator_directive_at_session": "you have complete control do not stop working until everything you need to do is complete and tested and we have a snapchat account that lasts 24 hours. Also do not stop working with the sinister panel agent to add andrewt407 on snapchat."
+}

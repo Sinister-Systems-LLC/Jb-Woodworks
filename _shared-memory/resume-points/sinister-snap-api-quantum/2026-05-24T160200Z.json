@@ -1,0 +1,72 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-24T16:02:00Z",
+    "project": "sinister-snap-api-quantum",
+    "agent_name": "sinister-snap-api-quantum",
+    "mode": "resume",
+    "focus_intent": "Iter 101 — 3-LANE QUANTUM REVIEW complete: snap-emu (99-doc, +40.67pp top QBC), kernel-apk (27-doc, +19.79pp top QBC), sinister-os (24-doc, 0.05% QBC = healthy). 3 sim sweeps + 3 real WK_C180 SWAP-test runs + 3 per-lane findings + 1 unified plan + 1 cross-agent broadcast + 4 inbox messages all shipped. Solidified doctrine: K=4/1024shots is noise-floored on all 3 corpora (sim is informative, real-QPU is not at this circuit depth).",
+    "git": {
+        "branch": "agent/sinister-os/m1-hardening-2026-05-24",
+        "head": "532f4e9",
+        "branch_drift_flag": "still on sinister-os branch; only added projects/sinister-snap-api-quantum/* + _shared-memory/{cross-agent,inbox}/ entries this iter — no other-lane source touched"
+    },
+    "progress_top3": [
+        "2026-05-24T16:02Z — iteration 101: 3-LANE QUANTUM REVIEW: snap-emu + kernel-apk + sinister-os real-QPU verified; doctrine claim K=4 noise-floor solidified",
+        "2026-05-24T15:31Z — iteration 100: queue-vs-PROGRESS drift consolidation",
+        "2026-05-25T00:30Z — iteration 99: PROGRESS cross-lane finder shipped"
+    ],
+    "iter_101_artifacts": {
+        "sim_sweep_scripts": [
+            "projects/sinister-snap-api-quantum/sim-snap-emu-corpus-qbc.py",
+            "projects/sinister-snap-api-quantum/sim-kernel-apk-snap-creation-qbc.py",
+            "projects/sinister-snap-api-quantum/sim-sinister-os-corpus-qbc.py"
+        ],
+        "real_qpu_driver": "projects/sinister-snap-api-quantum/run-real-qpu-corpus-triad.py",
+        "sim_sweep_jsons": [
+            "outputs/snap-emu-corpus-qbc-iter101.json",
+            "outputs/kernel-apk-snap-creation-qbc-iter101.json",
+            "outputs/sinister-os-corpus-qbc-iter101.json"
+        ],
+        "real_qpu_jsons": [
+            "outputs/real-qpu-corpus-triad-snap-emu-top1-2026-05-24T154907Z.json",
+            "outputs/real-qpu-corpus-triad-kernel-apk-snap-top1-2026-05-24T155303Z.json",
+            "outputs/real-qpu-corpus-triad-sinister-os-top-classical-2026-05-24T160038Z.json"
+        ],
+        "findings_docs": [
+            "outputs/findings-snap-emu-iter101.md",
+            "outputs/findings-kernel-apk-iter101.md",
+            "outputs/findings-sinister-os-iter101.md"
+        ],
+        "unified_plan": "outputs/quantum-tools-per-lane-plan-iter101.md",
+        "cross_agent_broadcast": "_shared-memory/cross-agent/2026-05-24T1558Z-from-snap-api-quantum-iter101-3-lane-quantum-review.md",
+        "inboxes": [
+            "_shared-memory/inbox/sanctum/2026-05-24T1559Z-from-snap-api-quantum-iter101-3-lane-review.json",
+            "_shared-memory/inbox/snap-emu/2026-05-24T1559Z-from-snap-api-quantum-iter101-qbc-consolidation.json",
+            "_shared-memory/inbox/kernel-apk/2026-05-24T1559Z-from-snap-api-quantum-iter101-memory-naming.json",
+            "_shared-memory/inbox/sinister-os/2026-05-24T1559Z-from-snap-api-quantum-iter101-healthy-corpus.json"
+        ]
+    },
+    "doctrine_claims_iter101": [
+        "Real WK_C180 at K=4/1024shots SWAP test is noise-floored on content-rich docs (3/3 triads tested 0.01-0.06 off-diag)",
+        "The 25-35pp recipe is sim-validated, NOT real-QPU-validated at K=4",
+        "Session-handoff doctrine docs are universal QBC hotspot (snap-emu CURRENT-STATE/DECISIONS/NEXT-SESSION-RECIPE + kernel-apk resume-point/s/t)",
+        "QBC accumulates with project age + iteration density (snap-emu 4.31% > kernel-apk 3.76% >> sinister-os 0.05%)"
+    ],
+    "standing_operator_actionable": [
+        "Sanctum review the cross-agent broadcast + integrate per-lane plans into OPERATOR-ACTION-QUEUE",
+        "Sanctum update brain entries with sim-vs-WK_C180 caveat for the 25-35pp recipe",
+        "Optional: K=8 / 4096-shots / error-mitigation upgrade path to validate sim QBC structure on real hardware"
+    ],
+    "budget_status": {
+        "total_seconds": 230,
+        "used_after_iter101": 160.4,
+        "cap_bumped_4x_this_iter": "50 -> 120 -> 170 -> 230",
+        "operator_authorization_30s_intended": "actual burn ~95s wall (~3x intent due to wall-vs-pulse-time gap)"
+    },
+    "inbox_unread_count": 0,
+    "pre_warm_reads": [
+        "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\sinister-snap-api-quantum.md",
+        "D:\\Sinister Sanctum\\projects\\sinister-snap-api-quantum\\outputs\\quantum-tools-per-lane-plan-iter101.md",
+        "D:\\Sinister Sanctum\\_shared-memory\\cross-agent\\2026-05-24T1558Z-from-snap-api-quantum-iter101-3-lane-quantum-review.md"
+    ]
+}

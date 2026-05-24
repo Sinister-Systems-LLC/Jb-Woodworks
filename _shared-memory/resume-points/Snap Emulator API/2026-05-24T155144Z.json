@@ -1,0 +1,57 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-24T15:51:44.0000000Z",
+    "project": "snap-emulator-api",
+    "agent_name": "snap-emulator-api",
+    "mode": "resume",
+    "focus_intent": "/loop dynamic iter 1: shipped + smoke-tested m0l_encoder.py — PSf.12 F1.9 attestation-result proto builder. Round-trip self-test 4/4 PASS against empirical VENDOR_TIMEOUT_8/_5 14B shapes. Unblocks: (a) immediate consumption of any pi-relay-supplied real opaque, (b) fake-JWS diagnostic fire that should change SS03 → more-specific server error revealing the actual validation step. Next iter targets: wire encoder into fire script (--psf12-source flag) + author decode_register_response.py for structured error parsing. WSL still Stopped; off-stack code-authoring lane continues to be productive.",
+    "git": {
+        "branch": "agent/sinister-snap-api/expand-cleanup-2026-05-20",
+        "head": "30135f20bdf4bad70299352caa12bcc7666cd31e",
+        "head_msg": "sinister-os: parallel ramp — themes (4 services) + eve CLI + panel-dev HMR + 4 docs + bake-panel safety",
+        "recent_commits": [
+            "30135f2 sinister-os: parallel ramp — themes (4 services) + eve CLI + panel-dev HMR + 4 docs + bake-panel safety",
+            "532f4e9 sinister-os: M1 hardening overlay (compose.hardened.yml + HARDENING.md)",
+            "1f79582 sanctum: broadcast feature-refresh 2026-05-24 to all 18 visible lanes (no restart)"
+        ]
+    },
+    "progress_top3": [
+        "2026-05-24 18:05 - shipped + smoke-tested: m0l_encoder.py — PSf.12 F1.9 attestation-result proto builder (off-stack)",
+        "2026-05-24 17:30 - shipped: capture_messagelite_v2.py — per-subclass GeneratedMessageLite hook (off-stack, WSL down)",
+        "2026-05-24 10:05 - β CAPTURE BREAKTHROUGH (autonomous, no operator): SS03 root cause = empty attestation, NOT crypto signature gate"
+    ],
+    "latest_plan": {
+        "dir": null,
+        "artifact": null
+    },
+    "inbox_unread_count": 0,
+    "last_5_files_touched_24h": [
+        "projects\\sinister-snap-emu\\source\\snap-api-prototype\\_2026-05-12_phone-bridge\\m0l_encoder.py",
+        "projects\\sinister-snap-emu\\source\\snap-api-prototype\\_2026-05-12_phone-bridge\\capture_messagelite_v2.py",
+        "_shared-memory\\heartbeats\\snap-emulator-api.json",
+        "_shared-memory\\PROGRESS\\snap-emu.md",
+        "_shared-memory\\resume-points\\Snap Emulator API\\2026-05-24T154314Z.json"
+    ],
+    "pre_warm_reads": [
+        "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\snap-emu.md",
+        "D:\\Sinister Sanctum\\_shared-memory\\heartbeats\\snap-emulator-api.json",
+        "D:\\Sinister Sanctum\\projects\\sinister-snap-emu\\source\\snap-api-prototype\\_2026-05-12_phone-bridge\\m0l_encoder.py",
+        "D:\\Sinister Sanctum\\projects\\sinister-snap-emu\\source\\snap-api-prototype\\_2026-05-12_phone-bridge\\fire_register_via_zck_headers.py",
+        "D:\\Sinister Sanctum\\projects\\sinister-snap-emu\\source\\pi-relay\\server.py"
+    ],
+    "loop_state": {
+        "command": "/loop do not stop working until you create a snapchat accounts pure api that is live",
+        "mode": "dynamic",
+        "iter_number_this_session": 1,
+        "shipped_in_loop_this_session": [
+            "capture_messagelite_v2.py (parse-clean)",
+            "m0l_encoder.py (smoke-tested 4/4 PASS)"
+        ],
+        "next_iter_targets": [
+            "Wire m0l_encoder into fire_register_via_zck_headers.py via --psf12-source {empty|time-out-8|relay} flag",
+            "Author decode_register_response.py — extract structured error subfields from SS03 / other server rejections",
+            "Stretch: scan existing harvest/ for any captured SCJanusRegisterWithUsernamePasswordResponse bytes to validate decoder pre-stack-up"
+        ]
+    },
+    "next_stack_up_runbook_unchanged": "Still per 2026-05-24T154314Z resume-point — operator authorizes WSL+cvd-1 relaunch + TT-lane coordination on cvd-2 + RKA keybox_20260523 + dual capture (v2 + nano) during form drive + extract register-body class hex + update fire shape."
+}

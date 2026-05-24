@@ -1,0 +1,11 @@
+# Never commit raw keybox material into this repo.
+# Only manifest.json (sha256 + metadata) is committed.
+# RKOJ-ELENO :: 2026-05-24
+*.xml
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+!manifest.json

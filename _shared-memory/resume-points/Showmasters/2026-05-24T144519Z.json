@@ -1,0 +1,45 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-24T14:45:40.1687599Z",
+    "project":  "showmasters",
+    "agent_name":  "showmasters",
+    "mode":  "resume",
+    "focus_intent":  "",
+    "git":  {
+                "branch":  "agent/sinister-sanctum/grant-autonomy-followup-2026-05-23",
+                "head":  "af54f4bea0dbd79430639ebf4bd1cff8de29e0fa",
+                "head_msg":  "sanctum: fix window-persist bug in mintty spawn",
+                "recent_commits":  [
+                                       "af54f4b sanctum: fix window-persist bug in mintty spawn",
+                                       "bce570c sinister-os: /loop iter 1 - dashboard-skeleton theme inheritance binding (10/10 services HTTP 200 verified)",
+                                       "daff913 sanctum: iter 108 - broadcast cites brain-stale-claim-scan.ps1 (Bug #2 operational tool)",
+                                       "97f06a7 merge: take theirs for _INDEX.md (sibling lane authoritative)",
+                                       "ef149a5 sinister-os: smoke-test corrected ports, 10/10 services HTTP 200",
+                                       "125c1a1 sanctum: iter 101 - audit + resolve stale \u0027likely\u0027 speculations in windows-case-folding-resume-point-trap",
+                                       "5fb0a5d sanctum: iter 100 - add modular-fleet compose-with link to cross-lane finder doctrine",
+                                       "783db84 sanctum: brain entry for PROGRESS cross-lane pattern-finder (iter 99 doctrine)",
+                                       "34484e1 sanctum: queue row — cross-agent/ canonical-impact hook over-firing (160 files; 96% noise)",
+                                       "de36d7a sanctum: broadcast memory-system add/fix list to all per-lane agents"
+                                   ]
+            },
+    "progress_top3":  [
+                          "2026-05-24 10:15 â€” SESSION-SAVE-POINT (Claude limit approaching) Â· everything captured"
+                      ],
+    "latest_plan":  {
+                        "dir":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\showmasters-2026-05-23-finish-everything",
+                        "artifact":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\showmasters-2026-05-23-finish-everything\\PLAN.md"
+                    },
+    "inbox_unread_count":  2,
+    "last_5_files_touched_24h":  [
+                                     "projects\\sinister-panel\\source\\leo_dev\\dashboard\\.next\\cache\\webpack\\server-production\\index.pack_",
+                                     "projects\\sinister-panel\\source\\leo_dev\\dashboard\\.next\\cache\\webpack\\server-production\\0.pack_",
+                                     "projects\\sinister-panel\\source\\leo_dev\\dashboard\\.next\\cache\\webpack\\server-production\\1.pack_",
+                                     "projects\\sinister-panel\\source\\leo_dev\\dashboard\\.next\\cache\\webpack\\server-production\\5.pack_",
+                                     "projects\\sinister-panel\\source\\leo_dev\\dashboard\\.next\\cache\\webpack\\server-production\\3.pack_"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\showmasters.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\plans\\showmasters-2026-05-23-finish-everything\\PLAN.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}
