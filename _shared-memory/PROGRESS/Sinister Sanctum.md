@@ -4,6 +4,53 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-24 10:45Z — /loop iter 24 — regression-json-audit codified (6/6 PASS + meta bug-fix mid-iter)
+
+EVE on Sanctum. Codified iter 23's manual audit as a runnable CI script.
+
+**X1 NEW `automations/regression-json-audit.ps1`:**
+
+- Codifies iter 23's audit pattern as a runnable script
+- Verifies every JSON-emitting script's stdout + every generated JSON file parses via `python json.load`
+- 6 surfaces: 3 script stdouts (`per-project-protections-check -Json` / `brain-index-orphan-check -Json` / `sinister-doctor -Quick -Json`) + 3 generated files (`telemetry/_latest.json` / `inbox/_manifest.json` / `resume-search-index.json`)
+- 3 modes: console (colored) / `-Json` (machine-readable) / `-Verbose` (per-surface detail)
+- Exit codes: 0=all PASS, 1=at least one FAIL
+- Wireable into CI / SinisterCustodian nightly / sinister-doctor itself
+
+**Meta bug caught + fixed mid-iter:** my own script first ran 3/6 PASS because I used `> $tmpFile` which is PowerShell's default UTF-16 LE BOM encoding. Python `json.load(encoding='utf-8')` couldn't read. SAME iter 3 BOM doctrine.
+
+FIX: switched to `Out-String | [System.IO.File]::WriteAllText with UTF8Encoding($false)` (same pattern as iter 3 fix on telemetry-rollup + inbox-manifest-build).
+
+VERIFY: re-run → **6/6 PASS**.
+
+**Verified surfaces (all PASS):**
+
+| Surface | Bytes |
+|---|---|
+| per-project-protections-check.ps1 -Json | 14100 |
+| brain-index-orphan-check.ps1 -Json | 2107 |
+| sinister-doctor.ps1 -Quick -Json | 4183 |
+| telemetry/_latest.json | 36987 |
+| inbox/_manifest.json | 1658 |
+| resume-search-index.json | 768896 |
+
+**Bugs caught + fixed this iter:** 1 (BOM encoding in tmpfile; iter 3 doctrine still relevant).
+
+**Composes with:**
+- `powershell-named-param-splat-2026-05-24` (sibling brain doctrine on PS gotchas; same lesson family)
+- `powershell-out-file-bom-bites-python-readers-2026-05-23` (this iter HIT the documented gotcha; doctrine works in real-world spot-check)
+- `no-bullshit-tested-before-claimed-doctrine-2026-05-23` (smoke test caught the bug before claim)
+
+**Files touched:**
+- NEW `automations/regression-json-audit.ps1` (X1)
+- EDIT `_shared-memory/PROGRESS/Sinister Sanctum.md` (this entry)
+
+**Master plan:** unchanged 19/24 (~83%). Brain 152/123/29 APPROACHING.
+
+**Net value:** future BOM/Write-Host contamination regressions caught automatically. Wire into cron for daily verification.
+
+---
+
 ## 2026-05-24 10:40Z — /loop iter 23 — JSON output audit (3 scripts + 3 generated files all PASS)
 
 Spot-check sweep extending iter 22's bug-find pattern across all JSON surfaces.
