@@ -7,6 +7,22 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T17:00Z — iteration 78 (find-* scripts annotated with seraphim find-qbc forward pointer)
+
+Operator: /loop. Discovered the find-*.py scripts (referenced in old _INDEX) ARE STILL at the project root (not deprecated like the run-*.py scripts in iter 28). They still work but the seraphim CLI is the canonical entry point now.
+
+### Updated
+- `projects/sinister-snap-api-quantum/find-zzfm-qbc-triads.py`: prepended docstring with "⚠️ SUPERSEDED iter 41" note pointing to `seraphim find-qbc --variant zzfm-r1`. Notes CLI version has more features (rank-by, ceiling-sweep, JSON, --out).
+- `projects/sinister-snap-api-quantum/find-optimal-triad.py`: same pattern — annotation pointing to `seraphim find-qbc --variant k4-angle`.
+
+### Net value
+Future operators or EVE sessions running `python find-zzfm-qbc-triads.py` will see the annotation at the top of the docstring (visible via `head` / IDE) and learn that the CLI version is the canonical entry. Prevents reinventing-the-wheel workflows.
+
+### Cost
+Zero cloud burn; ~3 min wall time.
+
+---
+
 ## 2026-05-24T16:40Z — iteration 77 (project README — TL;DR snapshot annotated + key-facts iter 37-67 updates)
 
 Operator: /loop. Continued sync sweep. The project README's "TL;DR audit findings (2026-05-23 session)" was a SNAPSHOT from iters 1-22 with "hardware-limited verdict" — accurate AT THE TIME but superseded by iter-19 algorithmic triad selection delivering 25-35pp.

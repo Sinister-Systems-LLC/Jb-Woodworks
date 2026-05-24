@@ -3,6 +3,12 @@ brain entries by maximizing TF-IDF top-K feature diversity.
 
 Author: RKOJ-ELENO :: 2026-05-23
 
+⚠️ SUPERSEDED iter 41 (2026-05-24): the canonical entry point is now
+   `seraphim find-qbc --variant k4-angle --top-n N --corpus pool`
+   (or any variant). This standalone script remains runnable for
+   historical reproducibility but the CLI version has the same
+   enumeration plus --rank-by/--ceiling-reps/--out features.
+
 Operator (2026-05-23 evening, loop iteration 3): "keep working and testing all
 of this to get the memory as good as we can get it"
 

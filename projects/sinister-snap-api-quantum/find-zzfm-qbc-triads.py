@@ -2,6 +2,13 @@
 
 Author: RKOJ-ELENO :: 2026-05-23
 
+⚠️ SUPERSEDED iter 41 (2026-05-24): the canonical entry point is now
+   `seraphim find-qbc --variant zzfm-r1 --top-n N --corpus pool`
+   (with --rank-by ceiling|headroom|classical for error-mitigation
+   target selection). This standalone script remains runnable for
+   historical reproducibility but the CLI version has more features
+   (rank-by modes, ceiling-sweep enrichment, JSON output, --out flag).
+
 Operator (2026-05-23 evening loop iteration 6): "keep working and dont stop
 until the memory system is fuckign great and told to the agents what to
 add and fixc".
