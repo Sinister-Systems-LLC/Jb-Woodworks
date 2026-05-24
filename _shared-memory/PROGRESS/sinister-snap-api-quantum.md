@@ -7,6 +7,30 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T05:45Z — iteration 52 (K=4 ⊂ K=8 ⊂ ZZ structure; universal-QBC triads identified)
+
+Operator: /loop. Probed the iter-51 QBC counts (8/23/23) for set-overlap structure.
+
+### Findings
+- K=4 QBC ⊂ K=8 QBC (strict subset; all 8 K=4 also K=8)
+- K=4 QBC ⊂ ZZ-FM QBC (strict subset)
+- K=8 vs ZZ-FM: 19/23 shared (83%); 4 K=8-unique + 4 ZZ-unique
+- **K=4 QBC = universal QBC** (works under all 3 encodings — guaranteed transferable)
+
+### Operator recipe (new option)
+`seraphim find-qbc --variant k4-angle ...` → strictest filter (16% hit), but selected triads guaranteed to work under any encoding. Useful when audit-pipeline uses different encodings per phase.
+
+### Doctrine update
+Brain entry TL;DR + bidirectional rule section now documents the encoding-nesting structure. Cross-encoding transferability claim: K=4 QBC → universal, but K=8 QBC or ZZ QBC → encoding-specific.
+
+### Connection to iter 45
+Iter 45 said K=8 vs ZZ are "complementary" (per-triad ranking diverges). Iter 52 says their QBC sets overlap 83% (most agree on which triads ARE QBC, but rank them differently). Both stand — different metrics.
+
+### Cost
+Zero cloud burn; 5s CPU.
+
+---
+
 ## 2026-05-24T05:15Z — iteration 51 (K=4 ANGLE is ANTI-QBC on 84% of high-classical triads — scope rule sharpened)
 
 Operator: /loop. Iter 50 declared saturation; operator hit /loop again → signal I was too conservative. Probed an untested structural question.

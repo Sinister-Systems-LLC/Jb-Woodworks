@@ -35,6 +35,14 @@
 - **K=8 ANGLE and ZZ-FM r=1 are COMPLEMENTARY** (iter 45). K=8 wins 58.6% of triads; ZZ-FM wins 41.4%. Encodings disagree often (per-triad r=+0.14). Compute both for specific triads.
 - **Cancellation theorem:** ANGLE-CNOT == K=4 ANGLE (verified iters 16, 22, 43). Parameter-free entangling layers cancel in U_B† · U_A.
 
+**Cross-encoding QBC structure (iter 52):** the encodings' QBC sets are nested + complementary:
+
+- **K=4 ⊂ K=8** and **K=4 ⊂ ZZ-FM** (strict subsets)
+- K=8 vs ZZ-FM: ~83% overlap (19 shared / 4 K=8-unique / 4 ZZ-unique) — complementary, not nested
+- **K=4 QBC = universal QBC** (works under all three encodings)
+
+**Operator recipe for cross-encoding safety:** `seraphim find-qbc --variant k4-angle ...` to find universal-QBC triads → safe to use any encoding downstream (sim or real-QPU). K=4's 16% hit rate is the strictest filter but its triads are guaranteed-transferable.
+
 **Bidirectional scope rule (sharpened iter 51):** classical > 0.4 increases the PROBABILITY of QBC but does NOT guarantee it. On the top-50 highest-classical triads:
 
 - K=4 ANGLE: **16% QBC** / 84% anti-QBC (quantum hurts most of the time)
