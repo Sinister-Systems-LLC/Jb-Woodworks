@@ -27,8 +27,43 @@ param(
     [string]$SanctumRoot = 'D:\Sinister Sanctum',
     [switch]$Html,
     [switch]$Json,
-    [switch]$Quick
+    [switch]$Quick,
+    [switch]$Watch,
+    [int]$WatchInterval = 60
 )
+
+# Iter 16: --watch mode (live monitoring loop). Operator opens once, leaves
+# on a second monitor. Re-runs the quick-mode summary every $WatchInterval
+# seconds. Clears screen between iterations for clean display. Ctrl+C exits.
+if ($Watch) {
+    if (-not $Quick) {
+        Write-Host "  [watch] forcing -Quick mode (Watch needs sub-second iterations to be useful)" -ForegroundColor DarkGray
+        $Quick = $true
+    }
+    $iteration = 0
+    try {
+        while ($true) {
+            $iteration++
+            Clear-Host
+            Write-Host ""
+            Write-Host "  Sinister Doctor :: WATCH MODE (iter $iteration; refresh ${WatchInterval}s; Ctrl+C to exit)" -ForegroundColor DarkMagenta
+            Write-Host ""
+            # Re-invoke this script without -Watch (avoid recursion); inherit other params.
+            # Iter 16 fix: hashtable splat (array splat triggers positional binding bug -
+            # SanctumRoot value gets routed to WatchInterval; same iter 5 lesson).
+            $myPath = $PSCommandPath
+            $reinvokeArgs = @{ SanctumRoot = $SanctumRoot; Quick = $true }
+            & $myPath @reinvokeArgs
+            Write-Host ""
+            Write-Host "  next refresh in ${WatchInterval}s..." -ForegroundColor DarkGray
+            Start-Sleep -Seconds $WatchInterval
+        }
+    } catch {
+        Write-Host ""
+        Write-Host "  [watch] exited: $($_.Exception.Message)" -ForegroundColor DarkGray
+    }
+    exit 0
+}
 
 $auto = Join-Path $SanctumRoot 'automations'
 $results = [ordered]@{

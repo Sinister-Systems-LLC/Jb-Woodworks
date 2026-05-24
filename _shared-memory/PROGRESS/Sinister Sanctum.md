@@ -4,6 +4,45 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-24 09:05Z — /loop iter 16 — sinister-doctor --watch mode SHIPPED
+
+Short focused iter. One feature + 1 bug fixed (caught by my own smoke test).
+
+**T1 Regression PASS:** sinister-doctor unchanged from iter 15.
+
+**X1 sinister-doctor --watch mode SHIPPED:**
+- EDIT `automations/sinister-doctor.ps1` — added `-Watch` + `-WatchInterval N` flags
+- Loops indefinitely, re-running quick-mode summary every N seconds
+- Clears screen between iterations for clean display
+- Ctrl+C exits gracefully
+- Operator opens once, leaves running on second monitor
+
+**Bug caught + fixed in same iter:**
+- First smoke: `-Watch -WatchInterval 5` failed: "Cannot convert value 'D:\Sinister Sanctum' to type System.Int32 ... 'WatchInterval'"
+- ROOT CAUSE: recursive call used **array splat** `@('-SanctumRoot', $value, '-Quick')` which binds positionally. `$SanctumRoot` value got routed to `$WatchInterval` (the 2nd int param).
+- SAME LESSON as iter 5 `$lane` shadowing + iter 4 per-project-protections-autofix: hashtable splat for named params.
+- FIX: `@{ SanctumRoot = $SanctumRoot; Quick = $true }`. Verified: ran 2 iterations cleanly at 3s interval.
+
+**Composes with:**
+- `sinister-doctor.ps1` (iter 11 + iter 13 polish)
+- `no-bullshit-tested-before-claimed-doctrine-2026-05-23` (test-found-fixed cycle in same iter)
+- Iter 5 + iter 4 array-splat lesson — should add to brain as a doctrine but Rule 7.5 says no new entries when at ceiling. Inline note here suffices for this turn.
+
+**Files touched:**
+- EDIT `automations/sinister-doctor.ps1` (--watch + fix)
+- EDIT `_shared-memory/PROGRESS/Sinister Sanctum.md` (this entry)
+
+**Master plan:** unchanged 19/24 (~83%).
+
+**Pattern note:** This is the THIRD time the array-splat-vs-hashtable-splat bug bit me. Iter 4 (autofix script), iter 5 (lane var shadow — different bug class but PS-param-related), iter 16 (this). The lesson "use hashtable splat for named params" is now empirical. Future sanctum agents: when re-invoking a script with named params, ALWAYS use `@{ Name = Value }` not `@('-Name', Value)`.
+
+**Next iter plan:**
+- Continue self-paced polish if any obvious wins; otherwise yield to operator-gated items
+- Consider: document PowerShell hashtable-splat lesson when brain ceiling clears
+- Wait on operator for voice POC Q1-Q5 / 4 operator-gated rows
+
+---
+
 ## 2026-05-24 09:00Z — /loop iter 15 — deep regression sweep + 1 misleading message fix
 
 EVE on Sanctum. Short focused iter — 7-script regression sweep + 1 nit fix.
