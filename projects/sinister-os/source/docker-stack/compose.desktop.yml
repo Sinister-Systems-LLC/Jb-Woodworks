@@ -1,0 +1,71 @@
+# compose.desktop.yml — Sinister OS DESKTOP variant overlay
+# Author: RKOJ-ELENO :: 2026-05-24
+#
+# Status: SCAFFOLDED (yaml parses; desktop services pinned to placeholder images
+#   until P3 builds real audio-bridge / controller-relay images).
+#
+# Per operator hard-canonical 2026-05-24:
+#   "we need a ui based versioin of this with desktop etc for my main pcs"
+#
+# Companion: compose.headless.yml (the inverse variant)
+# Companion doc: docs/variants-design-2026-05-24.md
+#
+# How to apply:
+#   docker compose -f docker-compose.yml \
+#                  -f compose.hardened.yml \
+#                  -f compose.panel-shell.yml \
+#                  -f compose.desktop.yml \
+#                  --profile panel-shell --profile desktop \
+#                  up -d
+#
+# Honest scope ledger:
+#   - X11/Wayland forward to a containerized panel-shell is meaningful for
+#     dev iteration when the host already runs Hyprland; we mount the socket so
+#     the container can render kiosk-mode via host compositor.
+#   - sinister-audio-bridge + sinister-controller-relay images are PLACEHOLDERS;
+#     P3 work builds them. They are not pulled by default — profile-gated.
+#   - The systemd label is a HINT for the install-time / runtime sinister-mode
+#     toggle; compose itself does not flip systemd targets.
+
+services:
+
+  sinister-panel-shell:
+    profiles:
+      - panel-shell
+      - desktop
+    environment:
+      SINISTER_MODE: desktop
+      DISPLAY: "${DISPLAY:-:0}"
+      WAYLAND_DISPLAY: "${WAYLAND_DISPLAY:-wayland-0}"
+      XDG_RUNTIME_DIR: /run/user/1000
+    # Mount X11 + Wayland sockets for kiosk-mode rendering through host compositor.
+    # Operator runs Hyprland on the host; the panel-shell container can dispatch
+    # via the same compositor when this overlay is active.
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+    labels:
+      sinister.variant: desktop
+      sinister.systemd.hint: "after=graphical.target,wants=graphical.target"
+
+  sinister-audio-bridge:
+    # PLACEHOLDER: real image built in P3. Disabled by default via profile gate.
+    image: alpine:3.20
+    profiles:
+      - desktop-extra
+    network_mode: host
+    restart: unless-stopped
+    command: ["sleep", "infinity"]
+    labels:
+      sinister.variant: desktop
+      sinister.placeholder: "true"
+
+  sinister-controller-relay:
+    # PLACEHOLDER: real image built in P3. Disabled by default via profile gate.
+    image: alpine:3.20
+    profiles:
+      - desktop-extra
+    restart: unless-stopped
+    command: ["sleep", "infinity"]
+    labels:
+      sinister.variant: desktop
+      sinister.placeholder: "true"

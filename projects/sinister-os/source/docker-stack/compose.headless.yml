@@ -1,0 +1,44 @@
+# compose.headless.yml — Sinister OS HEADLESS variant overlay
+# Author: RKOJ-ELENO :: 2026-05-24
+#
+# Status: SCAFFOLDED (yaml parses; runtime systemd-target swap is P3 work).
+#
+# Per operator hard-canonical 2026-05-24:
+#   "we also need a server based system that is all just no ui based and all
+#    things you need to see are dontrolled from our sinister web panel."
+#
+# Companion: compose.desktop.yml (the inverse variant)
+# Companion doc: docs/variants-design-2026-05-24.md
+#
+# How to apply:
+#   docker compose -f docker-compose.yml \
+#                  -f compose.hardened.yml \
+#                  -f compose.panel-shell.yml \
+#                  -f compose.headless.yml \
+#                  --profile panel-shell --profile headless \
+#                  up -d
+#
+# Honest scope ledger:
+#   - Strips desktop-only env vars (no DISPLAY / WAYLAND_DISPLAY / DRI passthrough).
+#   - Forces the panel to bind on 0.0.0.0 so the operator can browse from any
+#     mesh peer (Tailscale or WG-fallback).
+#   - systemd target swap is a HINT label; the actual `systemctl set-default
+#     multi-user.target` happens via `eve mode set headless` on the host.
+#   - NO new services added — headless is defined by what's absent (no audio,
+#     no controllers, no compositor).
+
+services:
+
+  sinister-panel-shell:
+    profiles:
+      - panel-shell
+      - headless
+    environment:
+      SINISTER_MODE: headless
+      SINISTER_KIOSK_DISABLED: "1"
+      # Mesh-reachable bind for remote browser admin.
+      SINISTER_PANEL_PUBLIC_BIND: "0.0.0.0:3082"
+    # Headless variant intentionally has NO X11/Wayland/DRI volume mounts.
+    labels:
+      sinister.variant: headless
+      sinister.systemd.hint: "after=multi-user.target,wants=multi-user.target,conflicts=graphical.target"

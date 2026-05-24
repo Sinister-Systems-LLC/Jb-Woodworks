@@ -1,0 +1,20 @@
+[Unit]
+Description=Sinister reboot-required tracker (kernel/lib delta detection)
+Documentation=https://github.com/sinister-sanctum (RKOJ-ELENO :: 2026-05-24)
+After=network-online.target
+
+[Service]
+Type=oneshot
+# Runs after every pacman post-transaction hook + on a 1h timer (see .timer companion).
+# Detects: kernel-version delta, needrestart-flagged libs, lsof | grep DEL artifacts.
+# Calls emit-reboot-banner.sh add <trigger> <reason> as appropriate.
+ExecStart=/usr/local/bin/sinister-reboot-tracker.sh
+RemainAfterExit=no
+User=root
+ReadWritePaths=/var/lib/sinister
+ProtectHome=yes
+ProtectSystem=strict
+NoNewPrivileges=yes
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,21 @@
+[Unit]
+Description=Sinister config watcher (inotify /etc/sinister/*.toml)
+Documentation=https://github.com/sinister-sanctum (RKOJ-ELENO :: 2026-05-24)
+After=network-online.target sinister-eve.service
+Wants=sinister-eve.service
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/sinister-config-watcher.py
+Restart=on-failure
+RestartSec=5s
+User=root
+# Watcher needs to read /etc/sinister/ + call systemctl + invoke emit script.
+ReadWritePaths=/var/cache/sinister /var/lib/sinister
+ProtectHome=yes
+ProtectSystem=strict
+NoNewPrivileges=yes
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target

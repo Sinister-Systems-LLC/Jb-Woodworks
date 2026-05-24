@@ -41,6 +41,11 @@ readonly PROXY_ROUTES_FILE="config/proxy/routes.json"
 readonly PROXY_VALID_ROUTES="direct ny fl tor"
 readonly WG_FALLBACK_OVERLAY="compose.wg-fallback.yml"
 readonly PANEL_SHELL_OVERLAY="compose.panel-shell.yml"
+readonly DESKTOP_OVERLAY="compose.desktop.yml"
+readonly HEADLESS_OVERLAY="compose.headless.yml"
+# Mode state file (created in docker context at ./config/sinister/mode.toml;
+# on a real install, lives at /etc/sinister/mode.toml).
+readonly MODE_STATE_FILE="config/sinister/mode.toml"
 
 # ---------------------------------------------------------------------------
 # Color helpers (degrade gracefully when piped)
@@ -915,15 +920,15 @@ cmd_panel() {
                 err "${PANEL_SHELL_OVERLAY} not found in ${SCRIPT_DIR}"
                 return 1
             fi
-            if [ ! -f "../../../sinister-panel/source/package.json" ]; then
-                err "sinister-panel source/package.json not found at expected mount path"
-                info "Check projects/sinister-panel/source/ exists relative to docker-stack/"
+            if [ ! -f "../../../sinister-panel/source/leo_dev/dashboard/package.json" ]; then
+                err "sinister-panel/source/leo_dev/dashboard/package.json not found at expected mount path"
+                info "Check projects/sinister-panel/source/leo_dev/dashboard/ exists relative to docker-stack/"
                 return 1
             fi
-            header "Bringing up panel-as-shell scaffold (port ${PANEL_SHELL_PORT:-8088})"
+            header "Bringing up panel-as-shell scaffold (port ${PANEL_SHELL_PORT:-3082})"
             docker compose -f "${COMPOSE_FILE}" -f "${HARDENED_OVERLAY}" -f "${PANEL_SHELL_OVERLAY}" \
                 --profile panel-shell up -d sinister-panel-shell
-            ok "panel-shell up. Browse http://localhost:${PANEL_SHELL_PORT:-8088}"
+            ok "panel-shell up. Browse http://localhost:${PANEL_SHELL_PORT:-3082}"
             info "First-up: npm install runs once; tail logs with: docker logs -f sinister-panel-shell"
             ;;
         down)
@@ -1010,6 +1015,99 @@ EOF
     esac
 }
 
+cmd_mode() {
+    local action="${1:-}"; shift || true
+    case "${action}" in
+        get)
+            goto_stack_dir
+            if [ -f "${MODE_STATE_FILE}" ]; then
+                cat "${MODE_STATE_FILE}"
+            else
+                printf 'mode = "unset"\n'
+            fi
+            ;;
+        set)
+            local target_mode="${1:-}"
+            if [ "${target_mode}" != "desktop" ] && [ "${target_mode}" != "headless" ]; then
+                err "usage: eve mode set {desktop|headless}"
+                return 2
+            fi
+            goto_stack_dir
+            mkdir -p "$(dirname "${MODE_STATE_FILE}")"
+            local now
+            now="$(date -u +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || date)"
+            printf 'mode = "%s"\nset_at = "%s"\n' "${target_mode}" "${now}" > "${MODE_STATE_FILE}"
+            ok "sinister-mode set: ${target_mode}"
+            info "compose overlay: compose.${target_mode}.yml"
+            info "P3+ install will additionally swap systemd default-target (graphical vs multi-user) and en/disable display manager."
+            ;;
+        verify)
+            goto_stack_dir
+            header "Variant overlays — syntax verification (no docker required)"
+            local rc=0
+            printf "  compose.desktop.yml ..... "
+            if python -c "import yaml; yaml.safe_load(open('${DESKTOP_OVERLAY}'))" >/dev/null 2>&1; then
+                printf "%sparse OK%s\n" "${C_GREEN}" "${C_RESET}"
+            else
+                printf "%sPARSE FAIL%s\n" "${C_RED}" "${C_RESET}"; rc=1
+            fi
+            printf "  compose.headless.yml .... "
+            if python -c "import yaml; yaml.safe_load(open('${HEADLESS_OVERLAY}'))" >/dev/null 2>&1; then
+                printf "%sparse OK%s\n" "${C_GREEN}" "${C_RESET}"
+            else
+                printf "%sPARSE FAIL%s\n" "${C_RED}" "${C_RESET}"; rc=1
+            fi
+            printf "  mode state file ......... "
+            if [ -f "${MODE_STATE_FILE}" ]; then
+                local mode
+                mode="$(grep -E '^mode\s*=' "${MODE_STATE_FILE}" | head -1 | sed -E 's/.*= *"([^"]+)".*/\1/')"
+                printf "%spresent (mode=%s)%s\n" "${C_GREEN}" "${mode}" "${C_RESET}"
+            else
+                printf "%sunset%s\n" "${C_YELLOW}" "${C_RESET}"
+            fi
+            if [ "${rc}" = "0" ]; then
+                ok "variant scaffold verified."
+            else
+                err "variant scaffold has issues."
+            fi
+            return "${rc}"
+            ;;
+        ""|-h|--help|help)
+            cat <<EOF
+${C_PURPLE}${C_BOLD}eve mode${C_RESET} — Sinister OS variant toggle (desktop / headless)
+
+${C_BOLD}USAGE${C_RESET}
+  eve mode <subcommand> [args]
+
+${C_BOLD}SUBCOMMANDS${C_RESET}
+  get                       Print current mode state (./config/sinister/mode.toml).
+  set {desktop|headless}    Write mode state. P3+ will additionally swap systemd target.
+  verify                    Syntax-check both variant overlays + report current mode.
+  help                      This help.
+
+${C_BOLD}VARIANTS${C_RESET}
+  desktop    Main-PC variant: Hyprland kiosk + Sinister Panel + native apps (Steam, IDEs).
+  headless   Server variant: no GUI; Panel served on mesh (0.0.0.0:3082).
+
+${C_BOLD}HONEST STATUS${C_RESET}
+  In docker context, eve mode writes state to ./config/sinister/mode.toml
+  and selects which compose overlay you bring up. On a real Sinister OS install,
+  P3+ adds /usr/local/bin/eve-mode which additionally:
+    - writes /etc/sinister/mode.toml
+    - systemctl set-default {graphical|multi-user}.target
+    - enable/disable sddm.service + hyprland.service
+
+${C_DIM}See docs/variants-design-2026-05-24.md for full design + scope ledger.${C_RESET}
+EOF
+            ;;
+        *)
+            err "unknown subcommand: mode ${action}"
+            info "run 'eve mode help' for usage"
+            return 1
+            ;;
+    esac
+}
+
 cmd_help() {
     cat <<EOF
 ${C_PURPLE}${C_BOLD}eve${C_RESET} ${EVE_VERSION} — Sinister Mesh docker-stack manager
@@ -1036,6 +1134,8 @@ ${C_BOLD}COMMANDS${C_RESET}
   wg <subcommand>        WireGuard direct-peer fallback (status/verify). See WG-FALLBACK.md.
   panel <subcommand>     Sinister Panel as OS shell scaffold (up/down/status/verify).
                          See PANEL-SHELL-DEPLOY.md. Acks operator 12:47Z utterance.
+  mode <subcommand>      Sinister OS variant toggle (get/set desktop|headless/verify).
+                         See docs/variants-design-2026-05-24.md.
   doctor                 Health-check report: daemon / compose files / images / volumes / ports.
   --help, -h             This help.
   --version              Print version string and exit.
@@ -1082,6 +1182,7 @@ main() {
         proxy)          cmd_proxy "$@" ;;
         wg)             cmd_wg "$@" ;;
         panel)          cmd_panel "$@" ;;
+        mode)           cmd_mode "$@" ;;
         doctor)         cmd_doctor "$@" ;;
         -h|--help|help) cmd_help ;;
         --version|-v)   cmd_version ;;

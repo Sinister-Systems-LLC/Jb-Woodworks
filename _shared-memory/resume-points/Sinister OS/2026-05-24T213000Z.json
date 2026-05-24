@@ -1,0 +1,81 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-24T21:30Z",
+    "project": "sinister-os",
+    "agent_name": "sinister-os",
+    "mode": "resume",
+    "focus_intent": "MASSIVE-EXPANSION turn: 4 parallel sub-agents returned with rich output (lang/Janet+CUE; Windows-parity 0-loss verdict; hot-reconfig MVP scaffold; desktop/headless variant split). 16 files shipped, all parse-verified. panel-shell LIVE on :3082 (HTTP 307 Next.js redirect). Operator 21:24Z utterance ACKED with 12-iter plan delivered. 2 counter-args logged.",
+    "git": {
+        "branch": "agent/sinister-os-mobile/p0-spec-2026-05-24",
+        "branch_note": "Cross-lane state from sanctum auto-push; sinister-os scoped work only.",
+        "head_before_this_turn": "8bd3529",
+        "head_after_prior_iter": "f064aca",
+        "head_msg_after_prior": "sinister-os: M5-EXPAND + PANEL-AS-SHELL SCAFFOLDED (iter 2-6 ship)"
+    },
+    "progress_top3": [
+        "2026-05-24 ~21:30Z — MASSIVE-EXPANSION (4 parallel sub-agents); variant split + hot-reconfig + lang-feasibility + feature-parity + 3-phase rollout; panel-shell LIVE on :3082",
+        "2026-05-24 ~20:40Z — M5-EXPAND + PANEL-AS-SHELL SCAFFOLDED (WG-fallback + DNS-split-horizon + validate-merge + panel-shell + eve wg/panel CLI)",
+        "2026-05-24 ~17:30Z — M5 mesh SCAFFOLDED (Tailscale overlay + ACL + runbook + eve mesh CLI)"
+    ],
+    "last_16_files_touched_this_turn": [
+        "projects/sinister-os/source/docker-stack/compose.desktop.yml (NEW)",
+        "projects/sinister-os/source/docker-stack/compose.headless.yml (NEW)",
+        "projects/sinister-os/source/docker-stack/eve (PATCH: cmd_mode get/set/verify)",
+        "projects/sinister-os/docs/variants-design-2026-05-24.md (NEW)",
+        "projects/sinister-os/docs/rollout-doctrine-2026-05-24.md (NEW)",
+        "projects/sinister-os/research/feature-parity-audit-2026-05-24.md (NEW)",
+        "projects/sinister-os/research/hot-reconfig-architecture-2026-05-24.md (NEW)",
+        "projects/sinister-os/research/sinister-lang-feasibility-2026-05-24.md (NEW)",
+        "projects/sinister-os/research/github-prior-art-os-shell-2026-05-24.md (NEW)",
+        "projects/sinister-os/source/hot-reconfig/README.md (NEW)",
+        "projects/sinister-os/source/hot-reconfig/watcher/sinister-config-watcher.py (NEW)",
+        "projects/sinister-os/source/hot-reconfig/classifier/classify-change.py (NEW)",
+        "projects/sinister-os/source/hot-reconfig/emitter/emit-reboot-banner.sh (NEW)",
+        "projects/sinister-os/source/hot-reconfig/systemd/sinister-config-watcher.service (NEW)",
+        "projects/sinister-os/source/hot-reconfig/systemd/sinister-reboot-tracker.service (NEW)",
+        "_shared-memory/plans/sinister-os-massive-expansion-2026-05-24T2110Z/plan.md (NEW)"
+    ],
+    "panel_shell_live": {
+        "url": "http://localhost:3082/",
+        "status_code": 307,
+        "container": "sinister-panel-shell Up (healthcheck expects 200; 307 is Next.js dashboard redirect — refinement queued)",
+        "mounted_path": "../../../sinister-panel/source/leo_dev/dashboard"
+    },
+    "existing_panel_live": {
+        "url": "http://localhost:3081/",
+        "status_code": 200,
+        "container": "sinister-panel Up (healthy ~1h+)"
+    },
+    "docker_smoke": {
+        "healthy": 7,
+        "total": 10,
+        "flaky_pre_existing": ["sinister-rc-mongo", "sinister-syncthing", "sanctum-git"]
+    },
+    "validate_merge_8_overlays": {
+        "warn": 4,
+        "fail": 0,
+        "warn_reason": "EXPECTED — desktop+headless intentionally override panel-shell env/labels; only one variant loads at a time per `eve mode`."
+    },
+    "swarm_mode": {
+        "enabled": true,
+        "loop_enabled": true,
+        "set_at_utc": "2026-05-24T18:05:13Z"
+    },
+    "operator_utterances_acked_this_session": [
+        "2026-05-24T12:47:52Z (panel-as-shell + github-review)",
+        "2026-05-24T21:24:08Z (massive-expansion: variant-split + lang + hot-reconfig + feature-parity)"
+    ],
+    "counter_arg_rows_appended_this_session": 4,
+    "open_queue_next": [
+        "Iter 14 — github-prior-art integration phasing plan (docs/integration-phasing-2026-05-24.md) — Bazzite + Hyprland + archiso + kiosk-linux per agent A research",
+        "Iter 15 — panel-shell healthcheck patch (accept 200-399 OR follow redirect)",
+        "Iter 16 — Let's Text styling token extraction into dashboard-skeleton (operator 12:47Z verbatim 'lets text look as the main OS look')",
+        "Iter 17 — Janet embed week-1 sprint (per research/sinister-lang-feasibility.md ship-order)",
+        "Iter 18 — PowerShell suite rewrite plan (P1-blocking item from feature-parity audit; 3-5 days; affects fleet-wide)",
+        "Iter 19 — Panel banner SSE endpoint scaffold (consumes /var/lib/sinister/reboot-required.json)",
+        "Bake real Panel via bake-panel.sh (blocked on docker-up + operator hands)",
+        "Live tailscale ping NY/FL/laptop (blocked on operator Tailscale signup)",
+        "WG-fallback wg-rotate.sh quarterly key-rotation script (queued)"
+    ],
+    "stop_condition_status": "Loop continues. Operator-set massive-expansion directive partially shipped this turn (variant split + hot-reconfig + lang research + feature-parity + 3-phase rollout + panel-shell LIVE). Remaining iters (14-19) are non-blocking; can proceed in next turn."
+}

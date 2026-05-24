@@ -68,35 +68,46 @@ services:
     working_dir: /app
 
     volumes:
-      # Live-mount sinister-panel/source so panel edits hot-reload.
-      # Operator runs `npm install` once on first up; subsequent edits don't need rebuild.
-      - ../../../sinister-panel/source:/app:cached
-      # Cache node_modules across container restarts.
+      # Live-mount sinister-panel/source/leo_dev/dashboard so panel edits hot-reload.
+      # README.md at sinister-panel/source/ marks leo_dev/ as canonical workspace (2026-05-15).
+      # First-up runs npm install; subsequent edits hot-reload via Next.js / Turbopack.
+      - ../../../sinister-panel/source/leo_dev/dashboard:/app:cached
+      # Cache node_modules across container restarts (separate volume so host stays clean).
       - sinister-panel-shell-modules:/app/node_modules
 
     environment:
       NODE_ENV: "${PANEL_SHELL_NODE_ENV:-development}"
-      PANEL_SHELL_PORT: "${PANEL_SHELL_PORT:-8088}"
+      # Next.js reads PORT env. Default 3082 to coexist with the existing
+      # sinister-panel container at 3081 (zero-conflict dev variant).
+      PORT: "${PANEL_SHELL_PORT:-3082}"
+      # Backend URL for the dashboard's API rewrites. Container-network address.
+      BACKEND_URL: "${PANEL_SHELL_BACKEND_URL:-http://sinister-panel:5055}"
       # Sinister-purple accent token (per UI-canonical 2026-05-24).
-      VITE_ACCENT: "#c084fc"
+      NEXT_PUBLIC_ACCENT: "#c084fc"
 
     ports:
-      - "${PANEL_SHELL_PORT:-8088}:8088"
+      - "${PANEL_SHELL_PORT:-3082}:3082"
 
-    # entrypoint: a thin install-then-dev wrapper. If sinister-panel doesn't have
-    # an `npm run dev:os-shell` script yet, this falls back to `npm run dev`.
-    # The runbook (PANEL-SHELL-DEPLOY.md) documents adding the script properly.
-    command: >-
-      sh -c "
-      if [ ! -d node_modules ]; then npm install --no-audit --no-fund || exit 1; fi;
-      if [ -f package.json ] && grep -q 'dev:os-shell' package.json; then
-        exec npm run dev:os-shell;
-      elif [ -f package.json ]; then
-        exec npm run dev;
-      else
-        echo 'FATAL: no package.json mounted at /app — check the volume mount path'; exit 1;
-      fi
-      "
+    # entrypoint: install-if-needed then start Next.js dev-server on PORT env.
+    # We bypass the package.json `dev` script (which hardcodes `-p 3081`) and
+    # call `next dev` directly so PORT env wins. Turbopack flag kept for parity.
+    # JSON-array form to avoid YAML folded-scalar quoting traps.
+    command:
+      - sh
+      - -c
+      - |
+        set -e
+        if [ ! -f package.json ]; then
+          echo "FATAL: package.json missing at /app - check volume mount"
+          exit 1
+        fi
+        if [ ! -f node_modules/.sinister-install-done ]; then
+          echo "==> first-up: npm install (this may take 2-5 min)..."
+          npm install --no-audit --no-fund
+          touch node_modules/.sinister-install-done
+        fi
+        echo "==> starting Next.js dev-server on PORT=$$PORT"
+        exec npx next dev --turbopack -p "$$PORT"
 
     healthcheck:
       test: ["CMD-SHELL", "wget -q -O- http://localhost:8088/ >/dev/null 2>&1 || exit 1"]

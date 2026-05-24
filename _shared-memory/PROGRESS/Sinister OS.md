@@ -5,6 +5,92 @@
 
 ---
 
+## 2026-05-24 ~21:30Z — MASSIVE-EXPANSION (4 parallel sub-agents) — variant split + hot-reconfig + lang-feasibility + feature-parity + 3-phase rollout — and `panel-shell LIVE on :3082`
+
+Operator interrupt 2026-05-24T21:08Z (8-directive dump): two-variant split (desktop + headless), custom language research, hot-reconfig without reboot + reboot-banner, "make sure i loose no function," docker → laptop → main PC test phases.
+
+**Sub-agents spawned in parallel (4 returned with rich output):**
+
+| Agent | Verdict / output |
+|---|---|
+| A — sinister-lang feasibility | PARTIALLY PURSUE — Janet embed + CUE schema; ship Janet week 1; defer .sin config DSL until 20+ services |
+| B — Windows feature-parity audit | ZERO unavoidable losses; 5 risk gaps mitigable; PowerShell rewrite is only P1-blocking item (3-5 days) |
+| C — hot-reconfig architecture | Layer-by-layer hot-reload matrix + reboot-banner architecture + 10 rich-possibility features brainstorm + MVP pipeline scaffold |
+| D — desktop/headless variant split | Two ISO profiles + concrete YAML overlays + eve mode CLI sketch |
+
+**Files added (16 — all parse/syntax-verified):**
+
+| Path | Verification |
+|---|---|
+| `source/docker-stack/compose.desktop.yml` | `yaml.safe_load` PASS; profiles `desktop`,`desktop-extra` |
+| `source/docker-stack/compose.headless.yml` | `yaml.safe_load` PASS; profile `headless`; mesh-bound 0.0.0.0:3082 |
+| `source/docker-stack/eve` (PATCH) | `bash -n` PASS; new `eve mode get/set/verify` subcommand; `eve mode set desktop` smoke PASS |
+| `docs/variants-design-2026-05-24.md` | full design + scope ledger + P0→P5 cross-link |
+| `docs/rollout-doctrine-2026-05-24.md` | P0a (docker active) / P0b (laptop VM) / P0c (main PC dual-boot) phase acceptance criteria + rollback strategy |
+| `research/feature-parity-audit-2026-05-24.md` | 7-category function map + Top-5 risk-gap mitigation table |
+| `research/hot-reconfig-architecture-2026-05-24.md` | layer hot-reload matrix + banner schema + 10 rich-possibilities + MVP scaffold |
+| `research/sinister-lang-feasibility-2026-05-24.md` | verdict + 6-system steal-worthy prior-art table + 1-week MVP spec + risk register + ship-order |
+| `research/github-prior-art-os-shell-2026-05-24.md` | 10 GitHub candidates (Bazzite, Hyprland, archiso, etc) + integration phasing |
+| `source/hot-reconfig/README.md` | pipeline overview + bring-up steps |
+| `source/hot-reconfig/watcher/sinister-config-watcher.py` | `python -m py_compile` PASS; ~100 LOC inotify daemon (with polling fallback) |
+| `source/hot-reconfig/classifier/classify-change.py` | `python -m py_compile` PASS; classifier smoke-test PASS (theme accent change → `hot=true, target=sinister-panel.service`) |
+| `source/hot-reconfig/emitter/emit-reboot-banner.sh` | `bash -n` PASS; jq-based atomic state file update with flock |
+| `source/hot-reconfig/systemd/sinister-config-watcher.service` | unit-file syntax OK; hardened (ProtectHome / ProtectSystem / NoNewPrivileges) |
+| `source/hot-reconfig/systemd/sinister-reboot-tracker.service` | unit-file syntax OK |
+| `_shared-memory/plans/sinister-os-massive-expansion-2026-05-24T2110Z/plan.md` | 12-iter plan w/ rich-possibilities brainstorm |
+
+**Docker-live state (operator's "start in docker once done" directive — SATISFIED):**
+
+- docker daemon UP (server 29.1.3)
+- 7/10 services HEALTHY per `smoke-test.sh` (panel / nats / yjs / ollama / vault-api / guacamole / filebrowser)
+- 3 flaky pre-existing: sinister-rc-mongo / sinister-syncthing / sanctum-git (Restarting; not this lane's scope)
+- **panel-shell LIVE on http://localhost:3082** (HTTP 307 = Next.js dashboard redirect; container "unhealthy" because healthcheck looks for 200 not 307 — refinement queued)
+- existing `sinister-panel` ALSO LIVE on http://localhost:3081 (HTTP 200; operator's primary panel)
+- 8-overlay `validate-merge.sh` smoke: **4 WARN, 0 FAIL** (WARNs are EXPECTED — desktop/headless intentionally override panel-shell env/labels; only one variant loads at a time per `eve mode`)
+
+**Verification gates (all exit 0):**
+```
+bash -n eve
+python -c "import yaml; yaml.safe_load(open('compose.desktop.yml'))"
+python -c "import yaml; yaml.safe_load(open('compose.headless.yml'))"
+python -m py_compile source/hot-reconfig/watcher/sinister-config-watcher.py
+python -m py_compile source/hot-reconfig/classifier/classify-change.py
+bash -n source/hot-reconfig/emitter/emit-reboot-banner.sh
+echo "+accent = \"#c084fc\"" | python classify-change.py theme.toml
+   → {"hot": true, "target_unit": "sinister-panel.service", "reason": "hot keys changed: ['accent']", ...}
+bash eve mode set desktop          → mode.toml written
+bash eve mode get                  → mode = "desktop", set_at = "..."
+bash eve mode verify               → variant scaffold verified, 0 FAIL
+bash validate-merge.sh 8 overlays  → 4 WARN (expected), 0 FAIL
+curl -fsS http://localhost:3082/   → HTTP 307 (Next.js dashboard redirect — LIVE)
+curl -fsS http://localhost:3081/   → HTTP 200 (existing panel — LIVE)
+```
+
+**Operator utterance acked:** `2026-05-24T21:24:08Z` (slug `sinister-os`, tags include `two-variant-split`,`desktop-variant`,`headless-server`,`custom-language`,`hot-reconfig`,`reboot-banner`,`feature-parity`,`docker-laptop-main-pc-phases`). Status flipped `new → acknowledged`.
+
+**Counter-arg log rows added (2):** (a) custom-lang challenges "build full new language" with PARTIALLY-PURSUE (Janet embed + CUE schema); (b) two-variant split challenges "single ISO" assumption with two ISO profiles + runtime toggle.
+
+**Honest scope of this turn (no-bullshit ledger):**
+
+- ✅ Shipped (verified by parse/syntax/smoke checks): 16 files; all gates exit 0; panel-shell LIVE in docker on :3082.
+- ⏳ In-flight: panel-shell healthcheck accepts only HTTP 200 not 307; node_modules cache warms ~2-5 min on first up.
+- ❌ NOT done (operator-action OR daemon-blocked OR scope-deferred):
+  - Real archiso ISO builds for desktop + headless variants (P1; needs operator Q1-Q10 answers).
+  - Real `systemctl set-default` swap (P3+; bare-metal install).
+  - Hot-reconfig pipeline installed at `/usr/local/bin/` (P3+; bare-metal install).
+  - Janet embed inside sinister-eve.service (week-1 sprint; not started).
+  - PowerShell suite rewrite (P1; 3-5 days; affects fleet-wide).
+  - Panel banner UI integration (panel-side scaffold TBD).
+  - Live `tailscale ping` between NY/FL/laptop (blocked on operator Tailscale signup).
+  - `bake-panel.sh` real Panel image bake (queue item from earlier session handoff).
+- Words not used: "complete" / "deployed live" / "shipped to fleet" — none of those is true for the new variant or hot-reconfig pieces yet.
+
+**Branch state:** HEAD remains `agent/sinister-os-mobile/p0-spec-2026-05-24`. Commit at end of this turn.
+
+**Next action for this lane:** (loop continues) commit + push; iter 14 GitHub-prior-art integration plan; iter 15 panel-shell healthcheck patch (accept 200-399 status range or follow redirect).
+
+---
+
 ## 2026-05-24 ~20:40Z — M5-EXPAND + PANEL-AS-SHELL **SCAFFOLDED** — WG-fallback + DNS-split-horizon + validate-merge + panel-shell + `eve wg/panel` CLI
 
 RESUME+REVIEW+PLAN+LOOP cold-start iter (loop=on, swarm=on per operator 18:05:13Z mode-flip). Verified prior plan's iters 2-4 were written-but-not-shipped on disk; shipped them this turn plus contradiction-expansion item (panel-as-shell) that addresses operator's 2026-05-24T12:47:52Z verbatim ask.
