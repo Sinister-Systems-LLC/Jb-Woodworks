@@ -178,6 +178,25 @@ The git-coordination thematic cluster (multi-agent + verify-head + branch-coord 
 
 ---
 
+## Conjecture test: classical baseline ↔ sim ceiling (added 2026-05-24T01:10Z iter 40)
+
+12-triad sweep spanning classical 0.16-0.58 (the full top-50 QBC range, 149-doc pool, ZZ-FM K=4, r=1..6, 72 sim runs total). Pearson correlations:
+
+| Correlation pair | r | Interpretation |
+|---|---|---|
+| classical ↔ ceiling | **+0.9537** | STRONG: classical almost perfectly predicts sim ceiling |
+| classical ↔ r=1 advantage | +0.7656 | strong: production recipe inherits the classical-driven predictor |
+| classical ↔ headroom | +0.6730 | moderate: exceptions exist (triads near-saturated at r=1) |
+
+**Implications for memory system improvement:**
+
+- The single best predictor of theoretical quantum advantage is the classical TF-IDF baseline. **Use this as a coarse filter when searching for new candidate triads.**
+- find-qbc already ranks by r=1 advantage which inherits the same predictor — explains why find-qbc's top picks all cluster around classical 0.45-0.58.
+- **Highest sim ceiling found: 51.35pp at r=5** on the rank-6 top-50 triad `git-coord + index + verify`. But this includes the historically-stalling git-coord doc → not a practical real-QPU target.
+- **Best practical ceiling-work target remains iter-21 triad C** (`branch + coord + index`, ceiling 49.65pp, real-QPU verified +25pp at r=1, no pair-stall history).
+
+Reproducer: `projects/sinister-snap-api-quantum/sim-conjecture-classical-vs-headroom.py` (zero cloud burn, 7.5s CPU). Data: `outputs/conjecture-classical-vs-headroom.json`.
+
 ## Sim-ceiling characterization (added 2026-05-24T00:25Z iter 38; CORRECTED + expanded 00:45Z iter 39)
 
 **Iter 38 single-triad observation (kept for audit trail):** ZZ-FM r=1..6 sweep on the new top-QBC triad showed r=2..r=5 plateau at ~36pp, suggesting "6-7pp headroom above r=1".

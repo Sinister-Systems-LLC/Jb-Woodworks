@@ -7,6 +7,91 @@ Append-only memory. Most recent at top. Cross-references to brain entries and ot
 
 ---
 
+## 2026-05-24T01:10Z — 🔬 ITER 40: CONJECTURE TEST — classical↔ceiling r=+0.95 (STRONG); classical↔headroom r=+0.67 (moderate)
+
+Iter 39 flagged a 3-point conjecture: "higher classical baseline → more sim headroom". Tested on 12 triads spanning classical 0.16-0.58 (the full top-50 QBC range).
+
+### Method
+
+- `outputs/top50-qbc.json` from `seraphim find-qbc --top-n 50 --corpus pool`
+- Selected 12 triads at evenly-spaced classical percentiles
+- Swept r=1..6 sim each, 149-doc pool TF-IDF
+- 72 total sim runs, 7.5s CPU
+- Script: `sim-conjecture-classical-vs-headroom.py`
+- Data: `outputs/conjecture-classical-vs-headroom.json`
+
+### Pearson correlations (n=12 triads)
+
+| Pair | Correlation | Interpretation |
+|---|---|---|
+| classical ↔ **ceiling** | **+0.9537** | **STRONG** — higher classical almost perfectly predicts higher ceiling |
+| classical ↔ r=1 advantage | +0.7656 | strong — r=1 captures most of the classical-driven advantage |
+| classical ↔ headroom (ceiling - r=1) | +0.6730 | moderate — supported but exceptions exist |
+
+### Headroom is not monotonic — the outlier
+
+Two near-extreme triads show the wrinkle:
+
+| Triad | classical | r=1 adv | ceiling | headroom | % at r=1 |
+|---|---|---|---|---|---|
+| cls=0.4858 (iter-37 #1) | 0.486 | 29.39pp | 35.89pp | **+6.50pp** | **82%** |
+| cls=0.5750 (rank-6 from top-50) | 0.575 | 17.63pp | **51.35pp** | **+33.72pp** | **34%** |
+
+These two triads have similar classical baselines (0.486 vs 0.575) but wildly different headroom (6.5pp vs 33.7pp). The iter-37 #1 triad is genuinely **near-saturated** at r=1 — its sim drops sharply from 0.222 at r=1 to a plateau, hitting only modest gains from higher reps. The rank-6 triad's sim drops monotonically from 0.384 at r=1 to 0.062 at r=5, unlocking a 33.7pp swing.
+
+### What this means for the memory system
+
+**Refined conjecture (replaces iter-39 single-trend claim):**
+
+1. **classical baseline strongly predicts ceiling (r=+0.95).** Search for high-classical triads to get the highest theoretical quantum advantage.
+2. **classical baseline strongly predicts r=1 advantage (r=+0.77).** The production recipe inherits the same predictor — same direction, slightly weaker correlation.
+3. **headroom (= ceiling - r=1) is partly structural.** Most triads' headroom grows with classical, but specific triads (like iter-37 #1) are near-saturated at r=1 regardless of classical.
+
+**Practical implications:**
+
+- **For production-recipe selection (current Wukong-180 noise regime):** prefer high-classical, high-r=1-adv triads. find-qbc already does this implicitly.
+- **For ceiling-work selection (future error-mitigation targets):** prefer high-classical AND high-headroom triads. The cls=0.575 triad (rank-6 by r=1) is the best ceiling-work target found so far at +33.72pp headroom. **Better than triad C (iter-21 verified) which iter 39 flagged as the best ceiling target with +25.90pp.**
+- **For "boring but reliable" production-recipe triads:** the iter-37 #1 triad is a poster child — already near-optimal at r=1, predictable behavior, ~30pp expected on real-QPU.
+
+### Most important finding for fleet doctrine
+
+**The cls=0.575 triad (rank-6 by r=1) has the highest sim ceiling ever measured: 51.35pp at r=5.** That eclipses the iter-39 triad C ceiling (49.65pp).
+
+The triad:
+
+- `multi-agent-git-coordination-2026-05-23.md`
+- `multi-agent-git-index-contention-storm-2026-05-23.md`
+- `verify-head-before-commit-multi-agent.md`
+
+**However** — this triad includes `multi-agent-git-coordination-2026-05-23.md` which is the Origin queue-staller per the iter-22 pair-stall pattern (5 stalls observed across iters 4, 5, 20, 22). **Highest sim ceiling, but not a practical real-QPU target.** Even with error mitigation, the pair-stall behavior would still gate cloud submissions.
+
+**The best PRACTICAL ceiling-work target therefore remains iter-21 triad C** (49.65pp ceiling, no historical pair-stalls, real-QPU verified at +25pp on r=1).
+
+So the corrected hierarchy of "best ceiling-work targets":
+
+| Triad | sim ceiling | classical | Practical for real-QPU? |
+|---|---|---|---|
+| top50-rank-6 (git-coord + index + verify) | **51.35pp** | 0.578 | ❌ pair-stalls |
+| iter-21 triad C (branch + coord + index) | **49.65pp** | 0.554 | ✅ verified +25pp at r=1 |
+| iter-19 triad B (branch + coord + verify) | 40.45pp | 0.531 | ✅ verified +34pp at r=1 |
+| iter-37 triad A (branch + index + verify) | 35.97pp | 0.486 | ✅ queued, predicted +24-30pp |
+
+Note: triad C has the highest practical sim ceiling AND was the WORST at r=1 (+25pp on real-QPU vs +34pp for triad B). With error mitigation enabling deeper reps, **triad C would jump from #3 to #1**.
+
+### Untested follow-up question
+
+- Does the headroom ratio (= headroom / ceiling) correlate with anything besides classical? Maybe the **sim r=1 value relative to classical** (i.e., the "compression ratio")?
+- 12 triads is a small N. Would a 100-triad sweep yield a tighter classical↔ceiling correlation, or reveal more outliers?
+- Are there triads with high classical but LOW r=1 advantage (= high room for ceiling work)? cls=0.575 with r=1=17.63pp is one — what makes it special?
+
+### Cost / verification
+
+- Zero cloud burn
+- 7.5s CPU for 72 sim runs
+- Status: **tested-before-claimed** (all 72 sim values measured; correlations computed from data; JSON saved; table reproduces from JSON)
+
+---
+
 ## 2026-05-24T00:45Z — 🎯 ITER 39: CROSS-TRIAD SWEEP CORRECTS ITER 38 — headroom varies 6-26pp; ranking INVERTS at high reps
 
 Iter 38 measured the sim-ceiling on the iter-37 new top-QBC triad (triad A) and claimed "6-7pp headroom above r=1, generalize across triads". **That generalization was wrong.** Cross-triad sweep across all three top-QBC triads at r=1..6, same 149-doc pool, same encoding:

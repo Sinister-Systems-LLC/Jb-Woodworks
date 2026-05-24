@@ -7,6 +7,42 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T01:10Z — iteration 40 (CONJECTURE test — classical↔ceiling r=+0.95 STRONG)
+
+Operator: /loop again. Tested iter-39's 3-point conjecture across 12 triads spanning classical 0.16-0.58.
+
+### Pearson correlations (n=12)
+
+| Pair | r | Strength |
+|---|---|---|
+| classical ↔ **ceiling** | **+0.9537** | STRONG |
+| classical ↔ r=1 advantage | +0.7656 | strong |
+| classical ↔ headroom | +0.6730 | moderate |
+
+### Findings
+
+- **Classical baseline is the single best predictor of theoretical quantum advantage.** Higher classical → higher sim ceiling, almost monotonically.
+- **Highest sim ceiling measured: 51.35pp** on the rank-6 top-50 triad (`git-coord + index + verify`). But that triad includes the Origin queue-staller, so it's a sim-only curiosity, not a practical target.
+- **Best practical ceiling-work target remains iter-21 triad C** (49.65pp ceiling, real-QPU-verified, no pair-stall history). Iter 39's recommendation stands.
+- **Headroom is partly structural.** Iter-37 triad A (cls=0.486) is 82% saturated at r=1; rank-6 triad (cls=0.575) is 34% saturated. Similar classical, very different headroom. Means classical alone doesn't tell the whole story.
+
+### Outliers to investigate (deferred)
+
+- Triads with HIGH classical AND LOW r=1 advantage = high-headroom ceiling-work targets. The rank-6 triad fits. Worth a focused search.
+- Question: does the headroom RATIO (=headroom/ceiling) have a structural predictor distinct from classical?
+
+### Artifacts
+- `sim-conjecture-classical-vs-headroom.py` (new)
+- `outputs/conjecture-classical-vs-headroom.json` (12-triad data + correlations)
+- `outputs/top50-qbc.json` (find-qbc dump for reproducibility)
+- MEMORY.md iter 40 entry with full table + corrected ceiling-work hierarchy
+- Brain entry conjecture-test section
+
+### Cost
+Zero cloud burn; 7.5s CPU for 72 sim runs.
+
+---
+
 ## 2026-05-24T00:45Z — iteration 39 (CROSS-TRIAD sweep — CORRECTS iter 38; ceiling varies 36-50pp, headroom 6-26pp)
 
 Operator: /loop again. Generalized the iter-38 single-triad finding to all three top-QBC triads. **The "6-7pp universal headroom" claim was wrong.**
