@@ -31,6 +31,7 @@ readonly EVE_VERSION="0.1.0"
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly COMPOSE_FILE="docker-compose.yml"
 readonly HARDENED_OVERLAY="compose.hardened.yml"
+readonly MESH_OVERLAY="compose.mesh.yml"
 readonly OVERRIDE_LINK="docker-compose.override.yml"
 readonly SMOKE_SCRIPT="smoke-test.sh"
 
@@ -373,6 +374,138 @@ cmd_doctor() {
     fi
 }
 
+cmd_mesh() {
+    local action="${1:-}"; shift || true
+    case "${action}" in
+        up)
+            goto_stack_dir
+            require_docker
+            if [ ! -f "${MESH_OVERLAY}" ]; then
+                err "${MESH_OVERLAY} not found in ${SCRIPT_DIR}"
+                return 1
+            fi
+            if [ -z "${TS_AUTHKEY:-}" ]; then
+                err "TS_AUTHKEY not set in env"
+                info "Generate one at https://login.tailscale.com/admin/settings/keys"
+                info "Then: export TS_AUTHKEY=tskey-auth-..."
+                return 1
+            fi
+            : "${TS_HOSTNAME:=sinister-mesh-$(hostname -s 2>/dev/null || echo node)}"
+            : "${TS_EXTRA_ARGS:=--accept-routes --accept-dns=false}"
+            export TS_HOSTNAME TS_EXTRA_ARGS
+            header "Bringing up mesh sidecar (host=${TS_HOSTNAME})"
+            info "Extra args: ${TS_EXTRA_ARGS}"
+            docker compose -f "${COMPOSE_FILE}" -f "${HARDENED_OVERLAY}" -f "${MESH_OVERLAY}" up -d tailscale
+            ok "tailscale sidecar started. Run 'eve mesh status' for tailnet status."
+            ;;
+        down)
+            goto_stack_dir
+            require_docker
+            header "Stopping mesh sidecar (tailnet node stays registered)"
+            docker compose -f "${COMPOSE_FILE}" -f "${MESH_OVERLAY}" stop tailscale 2>/dev/null \
+                || warn "tailscale service not running"
+            docker compose -f "${COMPOSE_FILE}" -f "${MESH_OVERLAY}" rm -f tailscale 2>/dev/null \
+                || true
+            ok "mesh sidecar down. State volume preserved."
+            ;;
+        status)
+            goto_stack_dir
+            require_docker
+            if ! docker ps --format '{{.Names}}' | grep -q '^sinister-tailscale$'; then
+                err "sinister-tailscale not running"
+                info "Bring up with: eve mesh up"
+                return 1
+            fi
+            header "Tailscale status"
+            docker exec sinister-tailscale tailscale status || warn "tailscale status returned non-zero"
+            ;;
+        peers)
+            goto_stack_dir
+            require_docker
+            if ! docker ps --format '{{.Names}}' | grep -q '^sinister-tailscale$'; then
+                err "sinister-tailscale not running"
+                return 1
+            fi
+            header "Tailscale peers (JSON)"
+            docker exec sinister-tailscale tailscale status --peers --json \
+                | python -m json.tool 2>/dev/null \
+                || docker exec sinister-tailscale tailscale status --peers
+            ;;
+        ping)
+            local peer="${1:-}"
+            if [ -z "${peer}" ]; then
+                err "usage: eve mesh ping <peer-name>"
+                return 1
+            fi
+            goto_stack_dir
+            require_docker
+            header "Ping ${peer} via tailnet"
+            docker exec sinister-tailscale tailscale ping "${peer}"
+            ;;
+        verify)
+            goto_stack_dir
+            header "Mesh artifacts — syntax verification (no docker required)"
+            local rc=0
+            printf "  compose.mesh.yml ........ "
+            if python -c "import yaml; yaml.safe_load(open('${MESH_OVERLAY}'))" >/dev/null 2>&1; then
+                printf "%sparse OK%s\n" "${C_GREEN}" "${C_RESET}"
+            else
+                printf "%sPARSE FAIL%s\n" "${C_RED}" "${C_RESET}"; rc=1
+            fi
+            printf "  acl.json template ....... "
+            if python -c "import json; json.load(open('config/tailscale/acl.json'))" >/dev/null 2>&1; then
+                printf "%sparse OK%s\n" "${C_GREEN}" "${C_RESET}"
+            else
+                printf "%sPARSE FAIL%s\n" "${C_RED}" "${C_RESET}"; rc=1
+            fi
+            printf "  MESH-DEPLOY.md .......... "
+            if [ -f "MESH-DEPLOY.md" ]; then
+                printf "%spresent%s\n" "${C_GREEN}" "${C_RESET}"
+            else
+                printf "%sMISSING%s\n" "${C_RED}" "${C_RESET}"; rc=1
+            fi
+            if [ "${rc}" = "0" ]; then
+                ok "mesh scaffold verified."
+            else
+                err "mesh scaffold has issues."
+            fi
+            return "${rc}"
+            ;;
+        ""|-h|--help|help)
+            cat <<EOF
+${C_PURPLE}${C_BOLD}eve mesh${C_RESET} — Tailscale mesh management (M5 scaffold)
+
+${C_BOLD}USAGE${C_RESET}
+  eve mesh <subcommand> [args]
+
+${C_BOLD}SUBCOMMANDS${C_RESET}
+  up                  Start the tailscale sidecar. Requires TS_AUTHKEY in env.
+                      Optional: TS_HOSTNAME, TS_EXTRA_ARGS.
+  down                Stop and remove the tailscale sidecar (state volume kept).
+  status              Show 'tailscale status' inside the sidecar.
+  peers               Print peers as JSON (falls back to plain text if no python).
+  ping <peer-name>    Tailscale ping to a named peer.
+  verify              Syntax-check mesh artifacts (no docker daemon required).
+
+${C_BOLD}EXAMPLES${C_RESET}
+  export TS_AUTHKEY=tskey-auth-...
+  export TS_HOSTNAME=sinister-mesh-ny
+  export TS_EXTRA_ARGS="--advertise-exit-node --advertise-tags=tag:server"
+  eve mesh up
+  eve mesh status
+  eve mesh ping sinister-mesh-fl
+
+${C_DIM}See MESH-DEPLOY.md for the full operator runbook (account setup, ACL apply, exit-node toggle).${C_RESET}
+EOF
+            ;;
+        *)
+            err "unknown subcommand: mesh ${action}"
+            info "run 'eve mesh' for help"
+            return 1
+            ;;
+    esac
+}
+
 cmd_help() {
     cat <<EOF
 ${C_PURPLE}${C_BOLD}eve${C_RESET} ${EVE_VERSION} — Sinister Mesh docker-stack manager
@@ -391,6 +524,8 @@ ${C_BOLD}COMMANDS${C_RESET}
                          Agents are NOT touched (operator's "no fucking with my agents" doctrine).
   theme list             Show available overlays (compose.*.yml) and which is active.
   theme apply <name>     Symlink docker-compose.override.yml -> compose.<name>.yml.
+  mesh <subcommand>      Tailscale mesh management (up/down/status/peers/ping/verify).
+                         Requires TS_AUTHKEY env var. See MESH-DEPLOY.md.
   doctor                 Health-check report: daemon / compose files / images / volumes / ports.
   --help, -h             This help.
   --version              Print version string and exit.
@@ -432,6 +567,7 @@ main() {
         logs)           cmd_logs "$@" ;;
         clean)          cmd_clean "$@" ;;
         theme)          cmd_theme "$@" ;;
+        mesh)           cmd_mesh "$@" ;;
         doctor)         cmd_doctor "$@" ;;
         -h|--help|help) cmd_help ;;
         --version|-v)   cmd_version ;;

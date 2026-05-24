@@ -1,0 +1,8 @@
+{
+    "slug":  "sinister-os",
+    "swarm":  true,
+    "reason":  "operator 17:35Z: activate swarm mode",
+    "loop":  true,
+    "set_via":  "agent-mode-set.ps1",
+    "set_by_operator_at_utc":  "2026-05-24T18:05:13Z"
+}

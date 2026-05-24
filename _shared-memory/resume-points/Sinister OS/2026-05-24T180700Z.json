@@ -1,0 +1,56 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-24T18:07Z",
+    "project": "sinister-os",
+    "agent_name": "sinister-os",
+    "mode": "resume",
+    "focus_intent": "M5 mesh SCAFFOLDED (Tailscale overlay + ACL + runbook + eve mesh CLI); swarm+loop mode ON for sinister-os slug as of 2026-05-24T18:05:13Z (operator: 'actiavte swarm mode')",
+    "git": {
+        "branch": "agent/sinister-os-mobile/p0-spec-2026-05-24",
+        "branch_note": "Cross-lane state from sanctum auto-push; sinister-os scoped work only.",
+        "head": "af1f1b851c6fecb1653fe91d6197eb0ad24b73a7",
+        "head_msg": "sanctum: fleet-health.ps1 (iter-10) + claude-accounts SetKey/Status (iter-9 re-add)"
+    },
+    "progress_top3": [
+        "2026-05-24 ~17:30Z — M5 mesh SCAFFOLDED — Tailscale overlay + ACL + runbook + eve mesh CLI (all parse-verified)",
+        "2026-05-24 ~12:20Z — P0 (spec lock) SHIPPED — master plan ready for operator review",
+        "(prior PROGRESS rows in turn-history file SESSION-HANDOFF-2026-05-24T1442Z.md — handed-off state)"
+    ],
+    "last_5_files_touched_24h": [
+        "projects/sinister-os/source/docker-stack/compose.mesh.yml (NEW)",
+        "projects/sinister-os/source/docker-stack/config/tailscale/acl.json (NEW)",
+        "projects/sinister-os/source/docker-stack/MESH-DEPLOY.md (NEW)",
+        "projects/sinister-os/source/docker-stack/eve (PATCH: mesh subcommand)",
+        "projects/sinister-os/docs/geo-mesh-routing.md (PATCH: Layer 1 PROPOSED -> SCAFFOLDED)"
+    ],
+    "pre_warm_reads": [
+        "D:\\Sinister Sanctum\\CLAUDE.md",
+        "D:\\Sinister Sanctum\\projects\\sinister-os\\CLAUDE.md",
+        "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Sinister OS.md",
+        "D:\\Sinister Sanctum\\_shared-memory\\heartbeats\\sinister-os.json",
+        "D:\\Sinister Sanctum\\_shared-memory\\agent-modes\\sinister-os.json",
+        "D:\\Sinister Sanctum\\projects\\sinister-os\\source\\docker-stack\\MESH-DEPLOY.md",
+        "D:\\Sinister Sanctum\\projects\\sinister-os\\docs\\geo-mesh-routing.md"
+    ],
+    "swarm_mode": {
+        "enabled": true,
+        "loop_enabled": true,
+        "set_at_utc": "2026-05-24T18:05:13Z",
+        "set_reason": "operator 17:35Z: activate swarm mode",
+        "mode_file": "_shared-memory/agent-modes/sinister-os.json"
+    },
+    "open_queue_next": [
+        "M5 layer 2 — DoH per node (compose extension or per-host resolv.conf shim)",
+        "M5 layer 3 — per-app proxy CLI (eve proxy <app> <route>)",
+        "M5 deep-merge validation — docker compose -f base -f hardened -f mesh config --services (blocked on docker daemon up)",
+        "Bake real Panel via bake-panel.sh (queue item #1 from handoff)",
+        "Tailscaled systemd unit template for source/iso-build/airootfs/etc/systemd/system/ (Sinister OS native path)"
+    ],
+    "scaffolded_this_turn": [
+        "compose.mesh.yml (yaml.safe_load PASS)",
+        "config/tailscale/acl.json (json.load PASS)",
+        "MESH-DEPLOY.md (6-step operator runbook)",
+        "eve mesh subcommand (bash -n PASS, eve mesh verify exit 0)",
+        "docs/geo-mesh-routing.md status table flipped Layer 1 PROPOSED -> SCAFFOLDED"
+    ]
+}

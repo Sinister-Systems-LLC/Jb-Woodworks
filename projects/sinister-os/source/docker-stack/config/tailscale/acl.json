@@ -1,0 +1,58 @@
+{
+  "_comment_header": "Sinister Mesh ACL template :: Author: RKOJ-ELENO :: 2026-05-24",
+  "_comment_status": "SCAFFOLDED — paste into https://login.tailscale.com/admin/acls after generating tags.",
+  "_comment_intent": "Operator: 'each one of my servers is a complete ghost' + 'all routing needs to pristine and efficient'.",
+
+  "tagOwners": {
+    "tag:operator": ["autogroup:admin"],
+    "tag:server":   ["autogroup:admin"],
+    "tag:agent":    ["autogroup:admin"],
+    "tag:exit":     ["autogroup:admin"]
+  },
+
+  "acls": [
+    {
+      "_comment": "Operator devices (laptop, phone, dev box) can reach every fleet surface on the tailnet.",
+      "action": "accept",
+      "src":    ["tag:operator"],
+      "dst":    ["tag:server:*", "tag:agent:*", "tag:exit:*"]
+    },
+    {
+      "_comment": "Servers can mesh-talk to each other (replication, CRDT sync, vault sync) on the well-known fleet ports.",
+      "action": "accept",
+      "src":    ["tag:server"],
+      "dst":    ["tag:server:3081,8030,28384,8222,4222,1234,11434,5078,5079,8050,8060,8090"]
+    },
+    {
+      "_comment": "Agents (containerized claude / bot processes on a node) can talk to local-node servers but not cross-server unless their lane needs it.",
+      "action": "accept",
+      "src":    ["tag:agent"],
+      "dst":    ["tag:server:8030,8222,4222,1234,11434,5078,5079"]
+    }
+  ],
+
+  "ssh": [
+    {
+      "_comment": "Operator can SSH into server-tagged nodes without password (Tailscale SSH; no separate sshd config needed).",
+      "action": "accept",
+      "src":    ["tag:operator"],
+      "dst":    ["tag:server"],
+      "users":  ["root", "eve", "operator"]
+    }
+  ],
+
+  "nodeAttrs": [
+    {
+      "_comment": "Force ephemeral devices to use Tailscale's DERP relays if direct UDP fails (covers coffee-shop wifi).",
+      "target": ["autogroup:tagged-devices"],
+      "attr":   ["funnel"]
+    }
+  ],
+
+  "_apply_steps": [
+    "1. Generate auth keys at https://login.tailscale.com/admin/settings/keys (one per node; mark NY+FL keys as 'reusable' if you want survival across re-installs).",
+    "2. Paste THIS file into https://login.tailscale.com/admin/acls (Tailscale strips _comment* fields automatically).",
+    "3. Tag each node when it joins: 'tailscale up --authkey=tskey-... --advertise-tags=tag:server' on NY+FL, 'tag:operator' on laptop/phone.",
+    "4. Verify with 'tailscale status' that tags landed; then 'tailscale ping <peer>' for each fleet pair."
+  ]
+}

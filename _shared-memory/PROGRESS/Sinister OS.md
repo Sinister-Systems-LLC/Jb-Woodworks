@@ -5,6 +5,49 @@
 
 ---
 
+## 2026-05-24 ~17:30Z — M5 mesh **SCAFFOLDED** — Tailscale overlay + ACL + runbook + `eve mesh` CLI
+
+EVE session resumed on `agent/sinister-os-mobile/p0-spec-2026-05-24` (cross-lane state from sanctum auto-push; sinister-os scoped work only). Docker daemon was down at session-start (smoke-test: 0/10 services HTTP 200) — chose authoring work that does not require live containers.
+
+**Picked from SESSION-HANDOFF-2026-05-24T1442Z.md open queue:** item #6 (Tailscale/WireGuard between machines — M5). Selected because docs/geo-mesh-routing.md had a clear 6-step honest M5 milestone and all five earlier queue items were already shipped in prior turns.
+
+**Files added (all parse-verified):**
+
+| Path | Verification |
+|---|---|
+| `source/docker-stack/compose.mesh.yml` | `python yaml.safe_load` exit 0 |
+| `source/docker-stack/config/tailscale/acl.json` | `python json.load` exit 0 |
+| `source/docker-stack/MESH-DEPLOY.md` | present; 6-step operator runbook + Windows path + Sinister-OS-native path + honesty ledger |
+| `source/docker-stack/eve` (patched) | `bash -n eve` exit 0; `eve mesh verify` exit 0 — added subcommands `up`/`down`/`status`/`peers`/`ping`/`verify` |
+| `docs/geo-mesh-routing.md` (patched) | Honest status table updated — Layer 1 flips PROPOSED → SCAFFOLDED; Layers 2-3 stay PROPOSED |
+
+**Verification gates (all exit 0):**
+```
+bash -n eve
+python -c "import yaml; yaml.safe_load(open('compose.mesh.yml'))"
+python -c "import json;  json.load(open('config/tailscale/acl.json'))"
+bash eve mesh verify
+```
+
+**Honest scope of this turn (no-bullshit ledger):**
+
+- ✅ Shipped (verified by parse/syntax check): compose.mesh.yml + acl.json + MESH-DEPLOY.md + eve mesh subcommand + geo-mesh-routing.md status flip.
+- ⏳ In-flight (deferred to docker-up turn): `docker compose -f docker-compose.yml -f compose.hardened.yml -f compose.mesh.yml config --services` deep-merge validation.
+- ❌ NOT done (explicitly operator-action):
+  - Tailscale account signup + auth-key generation.
+  - ACL policy paste into admin console.
+  - Real `tailscale ping` between NY/FL/laptop.
+  - Real `iperf3` numbers to replace doc estimates.
+- Words not used: "deployed" / "live" / "shipped to fleet" — none of those is true for M5 yet.
+
+**Next action for this lane:** Resume work either toward (a) Layer 2 (DoH per node — `compose.mesh.yml` extension or per-host `/etc/resolv.conf` shim) or (b) Layer 3 (per-app proxy CLI — `eve proxy <app> <route>`) once the operator returns to gate M5 rollout, OR pick a different open queue item if M5 progress is blocked on operator hands.
+
+**Branch state:** EVE did not switch branches; current HEAD remains `agent/sinister-os-mobile/p0-spec-2026-05-24` (cross-lane artifact from sanctum auto-push; cannot clean-switch without losing mobile lane's `M` files). All work-product paths are sinister-os scoped.
+
+**Commit:** see most-recent `sinister-os: M5 mesh scaffold ...` row in `git log` once committed.
+
+---
+
 ## 2026-05-24 ~12:20Z — P0 (spec lock) SHIPPED — master plan ready for operator review
 
 Created by Sanctum master during /loop iter 30-31 per operator directive *"i need oyu to add to the sessions start and complie into a proejct folder with memory etc the sinister operating system ..."*.

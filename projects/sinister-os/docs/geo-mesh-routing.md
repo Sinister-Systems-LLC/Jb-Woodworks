@@ -110,7 +110,7 @@ This is **dominated by local ISP plan, not by the VPN.**
 | **2. DNS-over-HTTPS** | Prevents DNS leaks revealing what the operator is browsing even when the rest of traffic is VPN'd. | NextDNS / Cloudflare DoH configured on every node | PROPOSED |
 | **3. Per-app proxy routing** | Lets the operator choose per-app whether traffic exits via the NY exit-node, FL exit-node, direct, or Tor. | `eve proxy <app> <route>` (PROPOSED CLI; see [qol-features.md § 3 eve CLI](qol-features.md)) | PROPOSED |
 
-None of these three layers exists on disk today. The Tailscale config in [`source/docker-stack/`](../source/docker-stack/) does not yet include a `tailscale` service; DoH is not configured; the per-app proxy CLI is not built.
+Layer 1 (private network) was **scaffolded 2026-05-24** via `source/docker-stack/compose.mesh.yml` + `config/tailscale/acl.json` + `MESH-DEPLOY.md`. Layers 2 (DoH per node) and 3 (per-app proxy CLI) remain PROPOSED — no on-disk artifact yet.
 
 ## Cross-references
 
@@ -121,15 +121,18 @@ None of these three layers exists on disk today. The Tailscale config in [`sourc
 | Soft-reboot a remote server via `eve clean` | [qol-features.md § 1 soft-reboot](qol-features.md) |
 | See the operator's full original directive in context | [SESSION-HANDOFF-2026-05-24T1442Z.md utterance #15](../SESSION-HANDOFF-2026-05-24T1442Z.md) |
 
-## Honest status summary
+## Honest status summary (2026-05-24 — M5 scaffold landed)
 
 - **Topology design**: PROPOSED (this doc)
-- **Tailscale recommendation**: PROPOSED — no `tailscale` service in any compose file yet
-- **WireGuard alternative**: PROPOSED
-- **3-layer anonymity model**: PROPOSED — zero of the three layers built
-- **Speed expectations**: documented honestly; physics confirmed via public latency-budget tables, NOT measured on the operator's actual links
-- **Operator's "download my exe file from Thailand" scenario**: blocked on Tailscale rollout (M5) + the EXE existing (M6 mobile / desktop installer)
-- **Operator's "connect to my servers with no speed issues" scenario**: achievable for throughput; interactive latency is physics-bound and needs `mosh` / WebRTC prediction to feel snappy
+- **Tailscale recommendation**: **SCAFFOLDED** — `source/docker-stack/compose.mesh.yml` shipped with the tailscale sidecar service. YAML parse PASS; effective `docker compose config` merge with base + hardened deferred until docker daemon is up. Not yet rolled out to NY/FL hardware.
+- **ACL policy**: **SCAFFOLDED** — `source/docker-stack/config/tailscale/acl.json` template ships with `tag:operator` / `tag:server` / `tag:agent` / `tag:exit` and rules; JSON parse PASS. Pasted into the Tailscale admin console by the operator (manual step) — see `source/docker-stack/MESH-DEPLOY.md § Step 2`.
+- **Mesh CLI**: **SCAFFOLDED** — `eve mesh {up|down|status|peers|ping|verify}` in `source/docker-stack/eve`; bash -n PASS; `eve mesh verify` exit 0.
+- **Operator runbook**: **SHIPPED** — `source/docker-stack/MESH-DEPLOY.md` (6 steps + Windows path + Sinister-OS-native path + honesty ledger).
+- **WireGuard alternative**: PROPOSED (Option B in this doc; deferred until Tailscale free tier hits a wall or operator's anonymity goal outranks convenience).
+- **3-layer anonymity model**: layer 1 (private network) **SCAFFOLDED** via Tailscale; layers 2 (DoH) + 3 (per-app proxy) still PROPOSED.
+- **Speed expectations**: documented honestly; physics confirmed via public latency-budget tables, NOT measured on the operator's actual links. Step 6 in `MESH-DEPLOY.md` runs `iperf3` to replace estimates with measured numbers.
+- **Operator's "download my exe file from Thailand" scenario**: blocked on (a) operator running steps 1–5 in `MESH-DEPLOY.md` and (b) the EXE existing (M6 mobile / desktop installer).
+- **Operator's "connect to my servers with no speed issues" scenario**: scaffold ready; achievable for throughput; interactive latency is physics-bound and needs `mosh` / WebRTC prediction to feel snappy.
 
 ## What an honest M5 milestone looks like
 

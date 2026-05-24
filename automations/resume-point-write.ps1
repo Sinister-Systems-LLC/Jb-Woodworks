@@ -73,6 +73,9 @@ function Resolve-ResumePointDirName {
         'sinister-imessage-bridge' = 'Sinister iMessage Bridge'
         'imessage-bridge'          = 'Sinister iMessage Bridge'
         'imessage'                 = 'Sinister iMessage Bridge'
+        'sinister-os'              = 'Sinister OS'
+        'sinister-os-mobile'       = 'Sinister OS Mobile'
+        'os-mobile'                = 'Sinister OS Mobile'
     }
     $k = $Key.ToLower()
     if ($known.ContainsKey($k)) { return $known[$k] }
