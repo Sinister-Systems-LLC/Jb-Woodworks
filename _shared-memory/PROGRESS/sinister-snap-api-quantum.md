@@ -7,6 +7,33 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T09:40Z — iteration 61 (theorem REFUTED for ZZ-FM — boundary established)
+
+Operator: /loop. Tested if Shared-Top-K Necessary Condition extends to ZZ-FM r=1/r=2.
+
+### Result
+| Corpus | Encoding | QBC | QBC with =0 share (false +) |
+|---|---|---|---|
+| 129-pool | ZZ-FM r=1 | 23 | 2 |
+| 129-pool | ZZ-FM r=2 | 43 | 10 |
+| 149-full | ZZ-FM r=1 | 26 | 5 |
+| 149-full | ZZ-FM r=2 | 43 | 11 |
+
+28 counter-examples across 200 ZZ-FM classifications. Theorem does NOT hold for ZZ-FM.
+
+### Mechanism
+ZZ-FM's CNOT-RZ(θ_i · θ_j / π)-CNOT entangling layer creates cross-feature pairwise terms. Even when triad docs have disjoint top-K features, the pairwise products can still discriminate. ANGLE has no such cross-feature mechanism → disjoint top-K → no discrimination → anti-QBC.
+
+### Doctrine boundary
+The Shared-Top-K Necessary Condition is INTRINSIC to ANGLE encoding (individual-feature RY rotations only). Iter 59-60's 500-classification verification was correctly scoped to "K-ANGLE encoding at K∈{4..8}" — that scope holds.
+
+For ZZ-FM (production recipe), operators CAN'T pre-screen with shared-top-K heuristic. Must use `find-qbc` enumeration. This is the no-bullshit doctrine working: hypothesize, test, accept negative results without papering over.
+
+### Cost
+Zero cloud burn; 10s CPU.
+
+---
+
 ## 2026-05-24T09:10Z — iteration 60 (Shared-Top-K theorem corpus-stable — 500 classifications zero FP)
 
 Operator: /loop. Iter 59 verified the theorem on 129-doc pool. Iter 60 verifies on 149-doc full corpus.

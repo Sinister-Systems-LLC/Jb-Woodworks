@@ -7,6 +7,95 @@ Append-only memory. Most recent at top. Cross-references to brain entries and ot
 
 ---
 
+## 2026-05-24T09:40Z — ⚠️ ITER 61: theorem REFUTED for ZZ-FM — boundary established (ANGLE-only)
+
+Iter 59-60 established the Shared-Top-K Necessary Condition for ANGLE encoding at K=4..K=8 (500 classifications, zero false positives). Iter 61 tests if the theorem extends to ZZ-FM r=1 / r=2 — and finds it DOES NOT.
+
+### Result
+
+| Corpus | Encoding | QBC | =0 shared | QBC with =0 (false +) | Theorem? |
+|---|---|---|---|---|---|
+| 129-pool | ZZ-FM r=1 | 23 | 12 | **2** | NO |
+| 129-pool | ZZ-FM r=2 | 43 | 12 | **10** | NO |
+| 149-full | ZZ-FM r=1 | 26 | 15 | **5** | NO |
+| 149-full | ZZ-FM r=2 | 43 | 15 | **11** | NO |
+
+Across 4 conditions (2 corpora × 2 reps), ZZ-FM produces 28 QBC triads with zero shared top-K features — direct counter-examples to the theorem.
+
+### Why ZZ-FM violates the theorem
+
+ZZ-FM has THREE layers per rep:
+
+```
+For each rep r in [1..R]:
+  1. H gate on every qubit (Hadamard superposition)
+  2. RZ(θ_i) rotation per qubit (top-K feature angle, like ANGLE)
+  3. CNOT-RZ(θ_i · θ_j / π)-CNOT entangling between adjacent qubits
+```
+
+The third layer's RZ(θ_i · θ_j / π) creates **cross-feature pairwise terms**. The encoded state captures information about FEATURE PAIRS, not just individual top-K features.
+
+So even when triad docs have disjoint top-K feature SETS:
+- The CROSS-FEATURE products (θ_i · θ_j) for the disjoint features can still be discriminating
+- The entangling layer creates correlations across the full Hilbert space
+- The orthogonality argument that worked for ANGLE breaks down
+
+This explains both:
+1. Why ZZ-FM has more QBC triads at every classical bucket (per iter 53 — wider net via cross-feature terms)
+2. Why ZZ-FM doesn't have a clean zero-overlap → anti-QBC predictor (cross-feature can compensate)
+
+### The corrected scope of the theorem
+
+```
+THEOREM (verified 500 classifications iter 59-60):
+For ANGLE-family encoding (which encodes only individual top-K features
+as RY rotations), at any K ∈ {4..8}: if the top-K TF-IDF features have
+zero intersection across all 3 docs of a triad, the triad is NOT QBC.
+
+CAVEAT (iter 61):
+This theorem does NOT extend to ZZ-FM r=1 or r=2. ZZ-FM's RZZ entangling
+gates introduce cross-feature pairwise terms that can produce QBC even
+on disjoint top-K feature sets. Across 200 ZZ-FM classifications: 28 QBC
+triads had zero shared features.
+
+Practical: the pre-screen heuristic "zero shared top-K → skip" is safe
+for ANGLE; UNSAFE for ZZ-FM. For production-recipe (ZZ-FM r=1) candidate
+selection, operators must use find-qbc to enumerate, not heuristic
+pre-screening.
+```
+
+### What this clarifies
+
+The structural relationship between ANGLE and ZZ-FM is now better understood:
+
+| Encoding | Individual features | Pairwise terms | Predictor |
+|---|---|---|---|
+| ANGLE (K=4..K=8) | yes (via RY) | no | Shared-Top-K Necessary Condition holds |
+| ZZ-FM r=1+ | yes (via RZ) | yes (via RZZ) | NO simple feature-overlap predictor |
+
+This explains the iter-45 / iter-52 finding that ZZ-FM has 4 "ZZ-unique" QBC triads not in K=8 ANGLE's set — those are likely triads where the cross-feature pairwise term provides discrimination that the individual-feature ANGLE encoding can't capture.
+
+### Operator practical advice
+
+When using `seraphim find-qbc`:
+
+- For `--variant k4-angle` / `--variant k8-angle`: the Shared-Top-K Necessary Condition gives a free pre-screen. Triads with zero feature overlap are guaranteed anti-QBC; skip them.
+- For `--variant zzfm-r1` (production) or `--variant zzfm-r2`: no pre-screen heuristic; must enumerate the full top-N.
+
+### Cost / verification
+
+- Zero cloud burn
+- ~10s CPU for 4-condition sweep (2 corpora × 2 reps × 50 triads × ZZ-FM at depth 34/68)
+- Status: **tested-before-claimed** (28 counter-examples found; theorem boundary documented)
+
+### Does this retract any prior doctrine?
+
+NO. The iter 59-60 theorem was scoped to "K-ANGLE encoding at K∈{4..8}" from the start. Iter 61 confirms that scope was correct — the theorem holds where it claimed to hold. The extension to ZZ-FM was a hypothesis tested in iter 61 and refuted.
+
+This is the no-bullshit doctrine working: hypothesize, test, accept the result whether positive or negative.
+
+---
+
 ## 2026-05-24T09:10Z — ✓ ITER 60: Shared-Top-K theorem verified on 149-doc full corpus — 500 zero-FP classifications total
 
 Iter 59 established the Shared-Top-K Necessary Condition on the 129-doc topical-balanced pool (250 classifications, 0 false positives). Iter 60 retests on the 149-doc full corpus.
