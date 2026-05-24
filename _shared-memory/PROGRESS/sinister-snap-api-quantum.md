@@ -7,6 +7,37 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-25T00:00Z — iteration 98 (Quantum-Expand Option 1: rkoj-cluster coherence audit — cluster is healthy)
+
+Operator: /loop. Executed iter-97 queue Option 1 (smallest/fastest quantum-expand validation): rkoj-* cluster coherence.
+
+### Method
+- 16 rkoj-* docs in `_shared-memory/knowledge/`
+- C(16,3) = 560 triads enumerated, ZZ-FM r=1 sim sweep
+- Script: `sim-rkoj-cluster-coherence.py`
+
+### Result
+- 2/560 triads QBC (0.36%); max advantage +10.94pp
+- Median advantage -46.52pp (most triads have sim>>classical = healthy doctrine separation)
+- 2 QBC triads are v1.6.* iteration-cluster docs (expected version-cycle similarity)
+- Top-3 anti-QBC: project-shape + session-continuity + workbench-architecture (correctly topic-distinct)
+
+### Verdict
+**rkoj cluster is internally healthy.** No internal contradictions requiring tiebreaker doctrine.
+
+### What this validates
+1. find-qbc machinery generalizes to N=16 corpora (was tested at N=129)
+2. The quantum-expand framework works for small-corpus subsets
+3. "Useful-negative-result" is genuine operator value — prevents speculation about hidden rkoj contradictions
+
+### Next quantum-expand target
+Option 3 (PROGRESS-cross-lane pattern-finder) — novel signal not derivable from any single lane's local doctrine. Queued.
+
+### Cost
+Zero cloud burn; ~5 min wall time.
+
+---
+
 ## 2026-05-24T23:30Z — iteration 97 (QUANTUM-EXPAND DISPATCH — 4 more parallel agents + perf fix + 6th broadcast)
 
 Operator: "tell the sanctume agents what all they can do with your work. run a quantum expand. let's get our memeory system as efficient as possible". Spawned 4 parallel agents + synthesized + executed.

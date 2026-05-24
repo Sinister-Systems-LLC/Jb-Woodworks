@@ -7,6 +7,76 @@ Append-only memory. Most recent at top. Cross-references to brain entries and ot
 
 ---
 
+## 2026-05-25T00:00Z — 🧪 ITER 98: QUANTUM-EXPAND OPTION 1 EXECUTED — rkoj-cluster validates find-qbc on N=16; cluster is internally healthy
+
+Operator: /loop "keep working as far as ytou can". Executed quantum-expand Option 1 (smallest/fastest validation per iter-97 queue): rkoj-* cluster coherence audit.
+
+### Method
+- Filtered brain to 16 `rkoj-*` docs (out of 152-doc brain total)
+- Built TF-IDF over rkoj subset only (16-doc vocabulary)
+- Computed pair classical + pair ZZ-FM r=1 sim for all C(16,2) = 120 pairs
+- Enumerated all C(16,3) = 560 triads + scored by (classical - sim) advantage
+- Reproducer: `projects/sinister-snap-api-quantum/sim-rkoj-cluster-coherence.py`
+- Data: `outputs/rkoj-cluster-coherence-iter98.json`
+
+### Results
+
+| Metric | Value | Interpretation |
+|---|---|---|
+| Total triads | 560 | C(16, 3) |
+| QBC count | 2 (0.36%) | Quantum kernel helps on only 2 triads |
+| Max advantage | +10.94pp | Modest peak |
+| Median advantage | -46.52pp | **Most triads sim >> classical → lexically distinct = healthy** |
+
+### Top-2 QBC triads (the only QBC-positive ones)
+
+| # | adv | docs |
+|---|---|---|
+| 1 | +10.94pp | introspection-cluster-v1.6.45-56 + polish-cluster-v1.6.20-25 + runtime-ergonomics-cluster-v1.6.37-44 |
+| 2 | +9.25pp | polish-cluster-v1.6.20-25 + polish-cluster-v1.6.27-31 + runtime-ergonomics-cluster-v1.6.37-44 |
+
+Both involve the v1.6.* iteration-cluster docs that share **version-numbering surface vocabulary** (e.g., "v1.6.20-25", "v1.6.27-31") but cover **distinct iteration ranges** of the rkoj workbench. The shared surface vocabulary causes classical TF-IDF to overestimate similarity; quantum kernel correctly identifies them as the discriminable subset. **Expected behavior — same-project version-cycle notes.**
+
+### Top-3 anti-QBC (most healthy doctrine separation)
+
+| adv | docs |
+|---|---|
+| -91.07pp | project-shape-promotion + session-continuity-pattern + workbench-architecture |
+| -88.66pp | polish-cluster-v1.6.27-31 + project-shape-promotion + workbench-architecture |
+| -87.62pp | polish-cluster-v1.6.27-31 + project-shape-promotion + session-continuity-pattern |
+
+These triads have **sim ≈ 0.99** — encoded states are nearly orthogonal because top-K features are disjoint across the docs (project-shape vs continuity vs architecture vs version-iteration). **Healthy doctrine separation; no internal contradictions to resolve.**
+
+### Verdict on rkoj-cluster
+
+**Internally healthy.** No internal contradictions requiring tiebreaker doctrine. Two findings worth noting:
+
+1. **v1.6.* iteration-cluster docs are the only quantum-discriminable subset.** These are by design version-cycle notes that share version-prefix vocabulary. find-qbc correctly identifies them. No action needed.
+2. **The cluster has good topical-distinct doctrine.** project-shape vs continuity vs architecture vs version-iteration are all top-K-disjoint. Median -46.52pp advantage confirms each doc covers a distinct surface vocabulary.
+
+### What this validates
+
+1. **find-qbc machinery generalizes to N=16 corpora.** Total runtime <2s for 560 triads. Earlier work (iters 41-58) was on N=129. Now confirmed at N=16.
+2. **The quantum-expand Option 1 framework works.** Future application targets (snap-emu rules, PROGRESS-cross-lane, operator-memory, plans-vs-shipped) can use the same `sim-<corpus>-coherence.py` pattern.
+3. **Useful-negative-result is genuine operator value.** Confirming "no action needed" is itself doctrine — prevents the operator (and future EVE) from speculating that rkoj has hidden contradictions.
+
+### What's NEXT in the quantum-expand backlog
+
+Per iter-97 queue, remaining 4 options ranked by ROI:
+- Option 2: Snap-EMU rule corpus (99 docs, 3.2 MB) — biggest target, likely most surfaceable
+- Option 3: PROGRESS-cross-lane pattern-finder (27 lane logs, novel signal)
+- Option 4: Operator-private memory triad discovery (229 docs in Skills 01_MEMORY)
+- Option 5: Plans-vs-shipped reconciler (213 plans × 158 brain docs, cross-corpus)
+
+Recommend Option 3 (PROGRESS-cross-lane) next — novel signal not derivable from any single lane's local doctrine.
+
+### Cost / verification
+
+- Zero cloud burn; ~5 min wall time (script write + run + verify + JSON dump)
+- Status: **tested-before-claimed** (all 560 triads scored; QBC counts exact; JSON saved)
+
+---
+
 ## 2026-05-24T23:30Z — 🚀 ITER 97: QUANTUM-EXPAND DISPATCH — 4 more parallel agents + perf fix + 6th broadcast + quantum-expand options queued
 
 Operator pivot: "tell the sanctume agents what all they can do with your work. run a quantum expand we will call it and expand your ideas and lets get our memeory system as efficent aspossible". Spawned 4 more parallel audit agents + executed in-lane work.
