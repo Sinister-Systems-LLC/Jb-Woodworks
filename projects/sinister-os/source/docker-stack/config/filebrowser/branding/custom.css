@@ -1,0 +1,158 @@
+/* Author: RKOJ-ELENO :: 2026-05-24 */
+/* filebrowser custom.css — Sinister Liquid Glass overlay for filebrowser v2.27.0
+ *
+ * Loaded by filebrowser when launched with `--branding.files /branding`
+ * (mounted at /branding in the sinister-filebrowser container).
+ *
+ * Tokens imported from sibling sinister-theme-tokens.css so any token change
+ * propagates without editing this overlay.
+ */
+
+@import url("/branding/sinister-theme-tokens.css");
+
+html, body, #app {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+}
+
+/* ===== top header bar ===== */
+header,
+header.header,
+.header {
+  background: color-mix(in oklab, var(--bg-2) 85%, transparent);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  box-shadow: var(--shadow-card);
+}
+header a,
+.header a,
+header .title {
+  color: var(--accent);
+}
+
+/* ===== sidebar nav ===== */
+nav,
+nav.nav,
+.shell__nav {
+  background: color-mix(in oklab, var(--bg-2) 70%, transparent);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border-right: 1px solid var(--border);
+  color: var(--text);
+}
+nav a,
+nav .nav-link,
+nav button {
+  color: var(--text-soft);
+  border-radius: var(--radius);
+  transition: background var(--motion-fast) var(--easing),
+              color var(--motion-fast) var(--easing);
+}
+nav a:hover,
+nav .nav-link:hover,
+nav button:hover,
+nav a.active,
+nav .nav-link.active {
+  background: var(--accent-tint);
+  color: var(--text);
+}
+
+/* ===== file rows / listing ===== */
+.list,
+.listing,
+main {
+  background: var(--bg);
+  color: var(--text);
+}
+.item,
+.listing .item,
+tr {
+  border-bottom: 1px solid var(--border);
+  transition: background var(--motion-fast) var(--easing);
+}
+.item:hover,
+.listing .item:hover,
+tr:hover {
+  background: var(--accent-tint);
+}
+.item.selected,
+.listing .item.selected,
+tr.selected {
+  background: color-mix(in oklab, var(--accent) 18%, var(--bg-2));
+  border-color: var(--accent);
+}
+
+/* ===== action buttons + toolbar ===== */
+button,
+.button,
+.action,
+.actions button {
+  background: color-mix(in oklab, var(--accent) 14%, var(--bg-2));
+  border: 1px solid var(--accent);
+  color: var(--text);
+  border-radius: var(--radius-full);
+  padding: 0.45rem 1rem;
+  font-family: var(--font-ui);
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform var(--motion-fast) var(--easing),
+              box-shadow var(--motion-fast) var(--easing);
+}
+button:hover,
+.button:hover,
+.action:hover,
+.actions button:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-glow);
+}
+button:disabled,
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ===== inputs ===== */
+input,
+textarea,
+select {
+  background: color-mix(in oklab, var(--bg-2) 50%, transparent);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: var(--font-ui);
+  padding: 0.4rem 0.6rem;
+}
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-tint);
+}
+
+/* ===== popovers / dialogs ===== */
+.card,
+.popup,
+.dialog,
+.prompt {
+  background: color-mix(in oklab, var(--bg-2) 85%, transparent);
+  backdrop-filter: blur(36px) saturate(180%);
+  -webkit-backdrop-filter: blur(36px) saturate(180%);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  color: var(--text);
+  box-shadow: var(--shadow-popover);
+}
+
+/* ===== links ===== */
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+a:hover {
+  color: var(--accent-soft);
+  text-decoration: underline;
+}

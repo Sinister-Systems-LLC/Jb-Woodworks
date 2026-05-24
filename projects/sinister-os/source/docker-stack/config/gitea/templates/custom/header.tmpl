@@ -1,0 +1,169 @@
+{{/* Author: RKOJ-ELENO :: 2026-05-24 */}}
+{{/* gitea custom header.tmpl — injects Sinister Liquid Glass overlay.
+     Mounted at /data/gitea/templates/custom/header.tmpl in sinister-gitea.
+     Gitea auto-renders templates/custom/header.tmpl inside <head> on every
+     page load. Tokens are inlined here (no external import) so the file is
+     self-contained even when /data/gitea/public is not exposed.
+     Keep token values in lock-step with config/theme/sinister-theme-tokens.css. */}}
+<style id="sinister-theme-overlay">
+:root {
+  --bg:            #0e0a1f;
+  --bg-2:          #1a1330;
+  --surface:       #251a3d;
+  --border:        rgba(255,255,255,0.10);
+  --border-strong: rgba(255,255,255,0.16);
+  --accent:        #c084fc;
+  --accent-soft:   #a78bfa;
+  --accent-strong: #8b5cf6;
+  --accent-tint:   rgba(192,132,252,0.18);
+  --accent-glow:   rgba(192,132,252,0.30);
+  --text:          #e9d5ff;
+  --text-soft:     #cbd5e1;
+  --text-muted:    #94a3b8;
+  --radius:        10px;
+  --radius-lg:     16px;
+  --radius-full:   9999px;
+  --easing:        cubic-bezier(0.22, 1, 0.36, 1);
+  --shadow-glow:   0 8px 32px var(--accent-glow);
+  --shadow-card:   0 4px 12px rgba(0,0,0,0.4), inset 0 1px 0 0 rgba(255,255,255,0.14);
+}
+
+/* ===== body / background ===== */
+html, body, .full.height, .page-content {
+  background: var(--bg) !important;
+  color: var(--text) !important;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at top, var(--accent-tint), transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ===== top navbar (Fomantic .ui.menu / .ui.navbar) ===== */
+.ui.menu,
+.ui.top.menu,
+#navbar,
+nav.navbar {
+  background: color-mix(in oklab, var(--bg-2) 85%, transparent) !important;
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border-bottom: 1px solid var(--border) !important;
+  box-shadow: var(--shadow-card);
+}
+.ui.menu .item,
+#navbar .item,
+nav.navbar .item {
+  color: var(--text-soft) !important;
+  transition: color 150ms var(--easing), background 150ms var(--easing);
+}
+.ui.menu .item:hover,
+.ui.menu .active.item,
+#navbar .item:hover,
+nav.navbar .item:hover {
+  color: var(--text) !important;
+  background: var(--accent-tint) !important;
+}
+.ui.menu .item .brand,
+.ui.menu .header.item,
+#navbar .brand {
+  color: var(--accent) !important;
+}
+
+/* ===== primary buttons ===== */
+.ui.primary.button,
+.ui.primary.buttons .button,
+.ui.green.button,
+.ui.green.buttons .button {
+  background: color-mix(in oklab, var(--accent) 18%, var(--bg-2)) !important;
+  border: 1px solid var(--accent) !important;
+  color: var(--text) !important;
+  border-radius: var(--radius-full) !important;
+  transition: transform 150ms var(--easing), box-shadow 150ms var(--easing);
+}
+.ui.primary.button:hover,
+.ui.green.button:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-glow);
+  background: color-mix(in oklab, var(--accent) 28%, var(--bg-2)) !important;
+}
+.ui.basic.button,
+.ui.button {
+  background: color-mix(in oklab, var(--bg-2) 60%, transparent) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text) !important;
+  border-radius: var(--radius) !important;
+}
+.ui.basic.button:hover,
+.ui.button:hover {
+  border-color: var(--accent) !important;
+  color: var(--text) !important;
+}
+
+/* ===== cards / segments / dividers ===== */
+.ui.segment,
+.ui.card,
+.ui.cards > .card,
+.repository.file.list .repo-description,
+.repository.file.list .repo-list-link {
+  background: color-mix(in oklab, var(--bg-2) 70%, transparent) !important;
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-lg) !important;
+  color: var(--text) !important;
+  box-shadow: var(--shadow-card);
+}
+.ui.divider {
+  border-top-color: var(--border) !important;
+  border-bottom-color: var(--border) !important;
+}
+
+/* ===== inputs / forms ===== */
+.ui.input > input,
+.ui.form input[type="text"],
+.ui.form input[type="email"],
+.ui.form input[type="password"],
+.ui.form textarea,
+.ui.dropdown,
+.ui.selection.dropdown {
+  background: color-mix(in oklab, var(--bg-2) 50%, transparent) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text) !important;
+  border-radius: var(--radius) !important;
+}
+.ui.input > input:focus,
+.ui.form input:focus,
+.ui.form textarea:focus,
+.ui.dropdown:focus {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px var(--accent-tint) !important;
+}
+
+/* ===== links ===== */
+a, .ui.menu a, .repo-list-link {
+  color: var(--accent);
+}
+a:hover {
+  color: var(--accent-soft);
+}
+
+/* ===== tables ===== */
+.ui.table,
+table {
+  background: color-mix(in oklab, var(--bg-2) 60%, transparent) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border) !important;
+}
+.ui.table thead th,
+.ui.table tr {
+  background: transparent !important;
+  border-bottom: 1px solid var(--border) !important;
+  color: var(--text) !important;
+}
+.ui.table tr:hover {
+  background: var(--accent-tint) !important;
+}
+</style>

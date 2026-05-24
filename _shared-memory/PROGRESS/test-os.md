@@ -5,6 +5,53 @@
 
 ---
 
+## 2026-05-24T15:25Z — Turn 4 (RESUME): M1 hardening overlay shipped (`compose.hardened.yml` + `HARDENING.md`)
+
+Picked up from rate-limit save (turn 3 at 14:42Z). Latest heartbeat said M1 LIVE (10/10 services). Verified docker stack with smoke-test on cold-open → **0/10 services healthy** (Docker Desktop daemon not running). Pivoted to a static-file deliverable that ships value without needing the daemon.
+
+Picked queue item #5 from `SESSION-HANDOFF-2026-05-24T1442Z.md`: ghost-server hardening overlay.
+
+### Shipped (verified)
+
+- **`source/docker-stack/compose.hardened.yml`** — 13-service hardening overlay. Universal baseline (no-new-privileges, cap_drop:[ALL], pids/mem/cpu/log limits) on all services; `read_only: true + tmpfs:/tmp` on the 6 services that tolerate it (nats, yjs, vault-api, rocketchat-mongo-init, guacd, filebrowser).
+- **`source/docker-stack/HARDENING.md`** — per-service tolerance audit explaining which services keep writable root (gitea, syncthing, ollama, panel, rocketchat-mongo, rocketchat, guacamole) and why; the skipped-hardening list with deferral rationale (AppArmor/SELinux, userns remapping, per-service networks, custom seccomp, egress firewall, image content trust); inspect-style verification commands the operator can run once Docker Desktop is back up.
+- **Commit `532f4e9`** on `agent/sinister-os/m1-hardening-2026-05-24` (forked from current HEAD because the operator-active sanctum branch had uncommitted edits I didn't want to disturb).
+
+### Verification (no docker daemon required)
+
+| Check | Command | Result |
+|---|---|---|
+| Pure YAML parse | `python -c "import yaml; yaml.safe_load(open('compose.hardened.yml'))"` | ✅ 13 services parsed |
+| Compose-CLI merge with base | `docker compose -f docker-compose.yml -f compose.hardened.yml config --services` | ✅ 13 services listed, exit 0 |
+| Effective merged config — gitea | `... config \| python ... ['gitea']['security_opt']` | ✅ `['no-new-privileges:true']` |
+| Effective merged config — gitea caps | `... ['gitea']['cap_drop']` | ✅ `['ALL']` |
+| Effective merged config — nats read-only | `... ['nats']['read_only']` | ✅ `True` |
+| Effective merged config — nats tmpfs | `... ['nats']['tmpfs']` | ✅ `['/tmp:size=64m']` |
+| Effective merged config — gitea logging | `... ['gitea']['logging']` | ✅ `{driver: json-file, max-size: 10m, max-file: 3}` |
+
+### In-flight (unverified)
+
+- **Live-container inspect verification** — `docker inspect sinister-gitea --format '{{.HostConfig.SecurityOpt}}'` cannot run until Docker Desktop is restarted. Queued for next turn.
+- **Compose default switch** — operator may want `docker-compose.override.yml` symlink to `compose.hardened.yml` so hardening is on by default. Deferred: documented in `HARDENING.md` "What's NOT done" → "make hardening the default".
+
+### Open (queued)
+
+- **Docker Desktop daemon is DOWN** on operator's machine (`docker ps` → "failed to connect to the docker API at npipe:///./pipe/dockerDesktopLinuxEngine"). Queued OPERATOR-ACTION row #13 to ask operator to start Docker Desktop so next-turn smoke-test can run.
+- Remaining handoff queue items #1-4, #6-7 (bake-panel, panel-dev HMR, theme overlays for filebrowser/Gitea/RC/Guacamole, eve CLI [non-P3 wrapper variety], Tailscale mesh, mobile app) still queued.
+
+### Lane-discipline notes
+
+- Branch namespace: `agent/sinister-os/m1-hardening-2026-05-24` is a clean fork off the current HEAD. The prior canonical `agent/sinister-os/p1-docker-bootstrap-2026-05-24` still exists in origin; this new branch carries M1 hardening on top of the merged history that already contains M1 stack.
+- The 3 extra files in commit `532f4e9` (`agent-continuity-no-long-naps-2026-05-24.md`, `2026-05-24T1230Z-sanctum-broadcast-no-long-naps-doctrine.md`, and an INDEX entry) were pre-staged by sanctum-lane before this session opened; I didn't add them but they came along with the commit because they were already in the index. Acceptable — they're sanctum brain entries, not lane-conflicting changes.
+
+### No-bullshit ledger for this turn
+
+- Said "verified" only for parse-tested + merge-tested fields. Did NOT claim "containers hardened" — they aren't (daemon is down).
+- Said "shipped" for the 2 files only. The behavior change (live containers using these flags) is correctly labeled in-flight until smoke runs against running containers.
+- Quality-degradation signals: PROGRESS file grew from ~9.5 KB to ~11 KB (under 300 KB cap). Brain row count not touched this turn. Cold-start step count unchanged.
+
+---
+
 ## 2026-05-24T13:23Z — Turn 2: Mesh OS plan + docker stack live (9/10 services UP)
 
 Operator stacked three additional directives mid-turn:

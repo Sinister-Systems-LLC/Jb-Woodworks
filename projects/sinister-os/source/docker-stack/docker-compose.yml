@@ -45,6 +45,9 @@ services:
       - GITEA__security__INSTALL_LOCK=true
     volumes:
       - ./data/gitea:/data
+      # Sinister theme overlay: header.tmpl injects Liquid Glass <style> tag.
+      # Mounted read-only; gitea auto-renders templates/custom/header.tmpl.
+      - ./config/gitea/templates:/data/gitea/templates:ro
     ports:
       - "8030:3000"
       - "8022:22"
@@ -300,9 +303,19 @@ services:
       - FB_PORT=80
       - FB_ADDRESS=0.0.0.0
       - FB_LOG=stdout
+      # Sinister branding: filebrowser scans /branding for custom.css + tokens.
+      # NOTE: filebrowser v2.27.0 reads `--branding.files <dir>` from CLI flag
+      # or `branding.files` in /data/.filebrowser.json. The env var
+      # FB_BRANDING_FILES is NOT honored by all builds — if the overlay does
+      # not load after `docker compose up -d`, the operator should run:
+      #   docker exec sinister-filebrowser /filebrowser config set --branding.files /branding
+      #   docker compose restart filebrowser
+      # The volume mount below is always in place so the files are reachable.
+      - FB_BRANDING_FILES=/branding
     volumes:
       - ./data/vault:/srv
       - ./data/filebrowser:/data
+      - ./config/filebrowser/branding:/branding:ro
     ports:
       - "8090:80"
     networks: [mesh]

@@ -1,0 +1,152 @@
+/* Author: RKOJ-ELENO :: 2026-05-24 */
+/* guacamole sinister.css — Sinister Liquid Glass overlay for Guacamole 1.5.5
+ *
+ * Guacamole's "official" branding path is a guacamole-ext JAR (heavy, deferred).
+ * For now this CSS file ships on disk; install paths documented in sibling
+ * BRANDING-INSTALL.md. The recommended quick path is reverse-proxy CSS
+ * injection (Caddy/nginx sub_filter) so no rebuild is required.
+ *
+ * Tokens are inlined (NOT @import) so the file works whether served via
+ * proxy injection or eventual extension JAR (which sandboxes asset paths).
+ * Keep token values in lock-step with config/theme/sinister-theme-tokens.css.
+ */
+
+:root {
+  --sn-bg:            #0e0a1f;
+  --sn-bg-2:          #1a1330;
+  --sn-surface:       #251a3d;
+  --sn-border:        rgba(255,255,255,0.10);
+  --sn-border-strong: rgba(255,255,255,0.16);
+  --sn-accent:        #c084fc;
+  --sn-accent-soft:   #a78bfa;
+  --sn-accent-strong: #8b5cf6;
+  --sn-accent-tint:   rgba(192,132,252,0.18);
+  --sn-accent-glow:   rgba(192,132,252,0.30);
+  --sn-text:          #e9d5ff;
+  --sn-text-soft:     #cbd5e1;
+  --sn-text-muted:    #94a3b8;
+  --sn-radius:        10px;
+  --sn-radius-lg:     16px;
+  --sn-radius-full:   9999px;
+  --sn-easing:        cubic-bezier(0.22, 1, 0.36, 1);
+  --sn-shadow-glow:   0 8px 32px var(--sn-accent-glow);
+  --sn-shadow-card:   0 4px 12px rgba(0,0,0,0.4), inset 0 1px 0 0 rgba(255,255,255,0.14);
+}
+
+/* ===== body / shell ===== */
+html, body {
+  background: var(--sn-bg) !important;
+  color: var(--sn-text) !important;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif !important;
+}
+
+/* ===== login page (.login-ui) ===== */
+.login-ui,
+.login-ui .login-dialog {
+  background: color-mix(in oklab, var(--sn-bg-2) 80%, transparent) !important;
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid var(--sn-border-strong) !important;
+  border-radius: var(--sn-radius-lg) !important;
+  color: var(--sn-text) !important;
+  box-shadow: var(--sn-shadow-card), var(--sn-shadow-glow);
+}
+.login-ui input,
+.login-ui input[type="text"],
+.login-ui input[type="password"] {
+  background: color-mix(in oklab, var(--sn-bg-2) 50%, transparent) !important;
+  border: 1px solid var(--sn-border) !important;
+  color: var(--sn-text) !important;
+  border-radius: var(--sn-radius) !important;
+}
+.login-ui input:focus {
+  border-color: var(--sn-accent) !important;
+  box-shadow: 0 0 0 3px var(--sn-accent-tint) !important;
+  outline: none !important;
+}
+
+/* ===== main client / home screen (.home, .client) ===== */
+.home,
+.client,
+.client-page,
+.client-content {
+  background: var(--sn-bg) !important;
+  color: var(--sn-text) !important;
+}
+
+/* ===== top menu / status bar ===== */
+.menu,
+.status,
+.user-menu,
+.header {
+  background: color-mix(in oklab, var(--sn-bg-2) 85%, transparent) !important;
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border-bottom: 1px solid var(--sn-border) !important;
+  color: var(--sn-text) !important;
+}
+.menu a,
+.user-menu a,
+.header a {
+  color: var(--sn-accent) !important;
+}
+
+/* ===== connection list tiles ===== */
+.connection,
+.connection-group,
+.recent-connection {
+  background: color-mix(in oklab, var(--sn-bg-2) 70%, transparent) !important;
+  border: 1px solid var(--sn-border) !important;
+  border-radius: var(--sn-radius-lg) !important;
+  color: var(--sn-text) !important;
+  transition: transform 150ms var(--sn-easing), border-color 150ms var(--sn-easing),
+              box-shadow 150ms var(--sn-easing);
+}
+.connection:hover,
+.connection-group:hover,
+.recent-connection:hover {
+  transform: translateY(-2px);
+  border-color: var(--sn-accent) !important;
+  box-shadow: var(--sn-shadow-glow);
+}
+
+/* ===== primary buttons ===== */
+button,
+input[type="button"],
+input[type="submit"],
+.button {
+  background: color-mix(in oklab, var(--sn-accent) 18%, var(--sn-bg-2)) !important;
+  border: 1px solid var(--sn-accent) !important;
+  color: var(--sn-text) !important;
+  border-radius: var(--sn-radius-full) !important;
+  padding: 0.5rem 1.25rem !important;
+  cursor: pointer;
+  transition: transform 150ms var(--sn-easing), box-shadow 150ms var(--sn-easing);
+}
+button:hover,
+input[type="button"]:hover,
+input[type="submit"]:hover,
+.button:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--sn-shadow-glow);
+}
+
+/* ===== modal / dialog ===== */
+.modal,
+.dialog,
+.notification {
+  background: color-mix(in oklab, var(--sn-bg-2) 85%, transparent) !important;
+  backdrop-filter: blur(36px) saturate(180%);
+  -webkit-backdrop-filter: blur(36px) saturate(180%);
+  border: 1px solid var(--sn-border-strong) !important;
+  border-radius: var(--sn-radius-lg) !important;
+  color: var(--sn-text) !important;
+}
+
+/* ===== links ===== */
+a {
+  color: var(--sn-accent) !important;
+}
+a:hover {
+  color: var(--sn-accent-soft) !important;
+}

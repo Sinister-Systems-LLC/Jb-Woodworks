@@ -1,0 +1,161 @@
+/* Author: RKOJ-ELENO :: 2026-05-24 */
+/* rocketchat sinister-custom.css — Sinister Liquid Glass overlay for Rocket.Chat 7.x
+ *
+ * HOW TO INSTALL (Rocket.Chat does NOT support file-mount CSS, only the
+ * admin UI custom-CSS panel — therefore no compose mount for this file):
+ *   1. Open http://localhost:8050 and log in as workspace admin.
+ *   2. Workspace -> Settings -> Layout -> "Custom CSS" panel.
+ *   3. Paste the entire contents of this file (including the @import block
+ *      below, which Rocket.Chat will fetch from any reachable URL — or
+ *      replace with the raw token values if your workspace cannot reach
+ *      the host serving the canonical tokens).
+ *   4. Save Changes. The CSS applies immediately to all sessions.
+ *
+ * Tokens are inlined (NOT @import) so this file works on a closed network
+ * without any external fetch. Keep token values in lock-step with
+ * config/theme/sinister-theme-tokens.css.
+ */
+
+:root {
+  --sn-bg:            #0e0a1f;
+  --sn-bg-2:          #1a1330;
+  --sn-surface:       #251a3d;
+  --sn-border:        rgba(255,255,255,0.10);
+  --sn-border-strong: rgba(255,255,255,0.16);
+  --sn-accent:        #c084fc;
+  --sn-accent-soft:   #a78bfa;
+  --sn-accent-strong: #8b5cf6;
+  --sn-accent-tint:   rgba(192,132,252,0.18);
+  --sn-accent-glow:   rgba(192,132,252,0.30);
+  --sn-text:          #e9d5ff;
+  --sn-text-soft:     #cbd5e1;
+  --sn-text-muted:    #94a3b8;
+  --sn-radius:        10px;
+  --sn-radius-lg:     16px;
+  --sn-radius-full:   9999px;
+  --sn-easing:        cubic-bezier(0.22, 1, 0.36, 1);
+  --sn-shadow-glow:   0 8px 32px var(--sn-accent-glow);
+  --sn-shadow-card:   0 4px 12px rgba(0,0,0,0.4), inset 0 1px 0 0 rgba(255,255,255,0.14);
+}
+
+/* ===== body / shell ===== */
+html, body, .rcx-box, .main-content {
+  background: var(--sn-bg) !important;
+  color: var(--sn-text) !important;
+}
+
+/* ===== sidebar (channels list) ===== */
+.rcx-sidebar,
+.rcx-sidebar-v2,
+.sidebar {
+  background: color-mix(in oklab, var(--sn-bg-2) 80%, transparent) !important;
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border-right: 1px solid var(--sn-border) !important;
+  color: var(--sn-text) !important;
+}
+.rcx-sidebar-item,
+.rcx-sidebar-v2-item,
+.sidebar-item {
+  color: var(--sn-text-soft) !important;
+  border-radius: var(--sn-radius) !important;
+  transition: background 150ms var(--sn-easing), color 150ms var(--sn-easing);
+}
+.rcx-sidebar-item:hover,
+.rcx-sidebar-item--selected,
+.rcx-sidebar-v2-item:hover,
+.rcx-sidebar-v2-item--selected,
+.sidebar-item:hover,
+.sidebar-item--selected {
+  background: var(--sn-accent-tint) !important;
+  color: var(--sn-text) !important;
+}
+
+/* ===== message list ===== */
+.rcx-message-list,
+.messages-list,
+.messages-box {
+  background: var(--sn-bg) !important;
+  color: var(--sn-text) !important;
+}
+.rcx-message,
+.message {
+  color: var(--sn-text) !important;
+  border-bottom: 1px solid var(--sn-border) !important;
+}
+.rcx-message:hover,
+.message:hover {
+  background: var(--sn-accent-tint) !important;
+}
+.rcx-message-username,
+.message .user {
+  color: var(--sn-accent) !important;
+}
+
+/* ===== composer / inputs ===== */
+.rcx-message-box,
+.rcx-input-box,
+.rc-input__element,
+textarea, input {
+  background: color-mix(in oklab, var(--sn-bg-2) 50%, transparent) !important;
+  border: 1px solid var(--sn-border) !important;
+  color: var(--sn-text) !important;
+  border-radius: var(--sn-radius) !important;
+}
+.rcx-input-box:focus,
+.rc-input__element:focus,
+textarea:focus, input:focus {
+  border-color: var(--sn-accent) !important;
+  box-shadow: 0 0 0 3px var(--sn-accent-tint) !important;
+  outline: none !important;
+}
+
+/* ===== primary buttons ===== */
+.rcx-button--primary,
+.rcx-button.rcx-button--primary,
+.rc-button.rc-button--primary,
+button[type="submit"] {
+  background: color-mix(in oklab, var(--sn-accent) 18%, var(--sn-bg-2)) !important;
+  border: 1px solid var(--sn-accent) !important;
+  color: var(--sn-text) !important;
+  border-radius: var(--sn-radius-full) !important;
+  transition: transform 150ms var(--sn-easing), box-shadow 150ms var(--sn-easing);
+}
+.rcx-button--primary:hover,
+.rc-button--primary:hover,
+button[type="submit"]:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--sn-shadow-glow);
+  background: color-mix(in oklab, var(--sn-accent) 28%, var(--sn-bg-2)) !important;
+}
+.rcx-button,
+.rc-button {
+  background: color-mix(in oklab, var(--sn-bg-2) 60%, transparent) !important;
+  border: 1px solid var(--sn-border) !important;
+  color: var(--sn-text) !important;
+  border-radius: var(--sn-radius) !important;
+}
+.rcx-button:hover,
+.rc-button:hover {
+  border-color: var(--sn-accent) !important;
+}
+
+/* ===== top bar / header ===== */
+.rcx-header,
+.rcx-room-header,
+.rc-header,
+header {
+  background: color-mix(in oklab, var(--sn-bg-2) 85%, transparent) !important;
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border-bottom: 1px solid var(--sn-border) !important;
+  color: var(--sn-text) !important;
+}
+
+/* ===== links ===== */
+a {
+  color: var(--sn-accent) !important;
+}
+a:hover {
+  color: var(--sn-accent-soft) !important;
+}

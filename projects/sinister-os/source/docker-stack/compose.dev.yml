@@ -1,0 +1,68 @@
+# compose.dev.yml — Live-edit / HMR overlay for Sinister Mesh OS
+# Author: RKOJ-ELENO :: 2026-05-24
+#
+# Purpose (operator directive, verbatim 2026-05-24):
+#   "i want you to build the OS in such a way that i can live work on things
+#    with an agent to change ui work etc without having to reboot or things
+#    like that"
+#
+# Adds an opt-in `panel-dev` service that runs the Sinister Panel Next.js
+# dev server with hot-module-reload, bind-mounting the dashboard source from
+# the sister `sinister-panel` lane so .tsx edits show up in ~500ms with no
+# rebuild / no reboot.
+#
+# Layers on top of docker-compose.yml without modifying it:
+#   docker compose -f docker-compose.yml -f compose.dev.yml up -d panel-dev
+#
+# The placeholder `panel` service (port 3081) keeps running unchanged.
+# `panel-dev` lives on port 3082, so both can run side-by-side.
+#
+# Bring-down:
+#   docker compose -f docker-compose.yml -f compose.dev.yml stop panel-dev
+#
+# Verification (no daemon required):
+#   docker compose -f docker-compose.yml -f compose.dev.yml config --services
+#   python -c "import yaml; yaml.safe_load(open('compose.dev.yml'))"
+#
+# Full doctrine + Windows-bind-mount caveats: see PANEL-DEV.md in this folder.
+
+name: sinister-mesh
+
+services:
+
+  # --- Panel dev server: live HMR for UI work without rebooting the stack ---
+  panel-dev:
+    image: node:22-alpine
+    container_name: sinister-panel-dev
+    restart: unless-stopped
+    working_dir: /app
+    command:
+      - sh
+      - -c
+      - npm install --no-audit --no-fund && npm run dev -- --hostname 0.0.0.0 --port 3082
+    environment:
+      - NODE_ENV=development
+      - PORT=3082
+      - HOSTNAME=0.0.0.0
+      # WATCHPACK_POLLING makes file-watch reliable across Windows bind-mounts
+      # (inotify events do not cross the Windows -> Linux VM boundary cleanly).
+      - WATCHPACK_POLLING=true
+      - CHOKIDAR_USEPOLLING=true
+    volumes:
+      # Source mount: live edits from D:\Sinister Sanctum\projects\sinister-panel
+      # land in the container immediately. Read-write so Next.js can write its
+      # .next build cache alongside the sources.
+      - "D:/Sinister Sanctum/projects/sinister-panel/source/Andrew Panel/Sinister Panel/panel/dashboard:/app"
+      # Named volume for node_modules so the host Windows directory (which may
+      # have a stale or platform-mismatched install) does not collide with the
+      # Linux-native install performed by `npm install` on container start.
+      - panel-dev-node-modules:/app/node_modules
+    ports:
+      - "3082:3082"
+    networks: [mesh]
+    depends_on:
+      - vault-api
+      - nats
+
+volumes:
+  panel-dev-node-modules:

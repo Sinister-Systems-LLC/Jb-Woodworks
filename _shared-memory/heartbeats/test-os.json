@@ -4,12 +4,23 @@
   "agent_display": "EVE on Sinister OS",
   "agent_identity": "EVE",
   "lane": "sinister-os",
-  "branch": "agent/sinister-os/p1-docker-bootstrap-2026-05-24",
+  "branch": "agent/sinister-os/m1-hardening-2026-05-24",
+  "lane_canonical_branch": "agent/sinister-os/p1-docker-bootstrap-2026-05-24",
   "cwd": "D:/Sinister Sanctum/projects/sinister-os",
   "mode": "RESUME",
-  "ts_utc": "2026-05-24T13:22:51Z",
-  "phase": "M1 (docker stack — 9/10 services verified responding; rocketchat still booting)",
-  "operator_redirect_count": 3,
-  "verified_services": ["gitea", "syncthing", "nats", "yjs", "ollama", "vault-api", "panel", "guacamole", "filebrowser"],
-  "still_booting": ["rocketchat"]
+  "ts_utc": "2026-05-24T15:28:00Z",
+  "phase": "Turn 4: M1 hardening overlay shipped (compose.hardened.yml + HARDENING.md); commit 532f4e9; daemon-free verification PASS; live-container verify blocked on Docker Desktop being DOWN",
+  "operator_utterance_count": 17,
+  "verified_services_last_session": ["panel", "gitea", "syncthing", "nats", "yjs", "ollama", "vault-api", "guacamole", "filebrowser", "rocketchat"],
+  "services_live_now": 0,
+  "docker_daemon_status": "down",
+  "queued_operator_actions": ["start Docker Desktop so next-turn live smoke can run"],
+  "next_eve_must_read": [
+    "_shared-memory/PROGRESS/test-os.md",
+    "projects/sinister-os/SESSION-HANDOFF-2026-05-24T1442Z.md",
+    "projects/sinister-os/source/docker-stack/HARDENING.md",
+    "projects/sinister-os/plans/mesh-os-master-plan-2026-05-24.md"
+  ],
+  "next_eve_first_action": "bash projects/sinister-os/source/docker-stack/smoke-test.sh ; if 0/10 healthy, ask operator to start Docker Desktop, else: docker compose -f docker-compose.yml -f compose.hardened.yml up -d && docker inspect sinister-gitea --format '{{.HostConfig.SecurityOpt}}'",
+  "bring_up_command": "cd 'D:/Sinister Sanctum/projects/sinister-os/source/docker-stack' && docker compose -f docker-compose.yml -f compose.hardened.yml up -d"
 }
