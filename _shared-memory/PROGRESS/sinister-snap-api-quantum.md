@@ -7,6 +7,19 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T18:05Z — iteration 82 (seraphim README — add test-run instructions)
+
+Operator: /loop. README has no mention of how to run the tests. Small addition for operator-discoverability of the regression suite.
+
+### Updated `tools/sinister-seraphim/README.md`
+Added status table row:
+- "Pytest regression tests (`tests/test_smoke.py`) | ✅ shipped — 15 tests covering qrng/audit/fingerprint + iter 47/48/59/65 memory-kernel doctrine. Run: `cd tools/sinister-seraphim && pytest tests/ -v` (~5s)"
+
+### Cost
+Zero cloud burn; ~1 min.
+
+---
+
 ## 2026-05-24T17:55Z — iteration 81 (memory-kernel regression tests added — 4 new, all pass)
 
 Operator: /loop. No change signals. Found genuine gap: seraphim test suite covered qrng/audit/fingerprint but ZERO tests for the iter-37+ memory-kernel doctrine.

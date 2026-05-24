@@ -66,6 +66,7 @@ License: paid V4.2 (operator), vaulted at `_vault-personal/licenses/pilotos.txt`
 | First consumer: kernel-apk fingerprint seeding | 📋 cross-lane (handoff offered) |
 | First consumer: Sinister Emulator account-sim | 📋 cross-lane (handoff offered) |
 | Brain entry: `seraphim-cloud-qpu-real-first-fire-2026-05-23.md` | ✅ shipped + heavily updated with 6 empirical-anchor sections |
+| Pytest regression tests (`tests/test_smoke.py`) | ✅ shipped — 15 tests covering qrng/audit/fingerprint + iter 47/48/59/65 memory-kernel doctrine. Run: `cd tools/sinister-seraphim && pytest tests/ -v` (~5s) |
 
 ## How to use
 
