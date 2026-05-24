@@ -1,0 +1,23 @@
+# /etc/sudoers.d/sinister — Sinister OS NOPASSWD allowlist for the eve user
+# Author: RKOJ-ELENO :: 2026-05-24
+#
+# Aligned with master plan § 8 (EVE control surface). Curated allowlist so
+# EVE can act on the system without UAC-style friction, while still
+# requiring explicit auth for the destructive set (covered separately by
+# polkit + the hotkey overlay).
+
+# eve user can run package management + systemd + network + display
+# brightness + the eve daemon without password
+eve ALL=(root) NOPASSWD: /usr/bin/pacman
+eve ALL=(root) NOPASSWD: /usr/bin/yay
+eve ALL=(root) NOPASSWD: /usr/bin/systemctl
+eve ALL=(root) NOPASSWD: /usr/bin/journalctl
+eve ALL=(root) NOPASSWD: /usr/bin/nmcli
+eve ALL=(root) NOPASSWD: /usr/bin/mount
+eve ALL=(root) NOPASSWD: /usr/bin/umount
+eve ALL=(root) NOPASSWD: /usr/bin/snapper
+eve ALL=(root) NOPASSWD: /usr/local/bin/sinister-panel-kiosk.sh
+eve ALL=(root) NOPASSWD: /usr/local/bin/sinister-first-boot.sh
+
+# wheel still gets the conventional everything-with-password
+%wheel ALL=(ALL:ALL) ALL

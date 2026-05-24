@@ -1,0 +1,15 @@
+# Author: RKOJ-ELENO :: 2026-05-24
+# One-shot first-boot init for Sinister OS. Disabled after first successful run.
+
+[Unit]
+Description=Sinister OS first-boot initialization
+ConditionPathExists=!/var/lib/sinister/.first-boot-done
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/sinister-first-boot.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,120 @@
+# packages.x86_64 — Sinister OS minimal live ISO package list
+# Author: RKOJ-ELENO :: 2026-05-24
+#
+# Goal of this minimal flavor: boot to a Hyprland session that auto-launches
+# Chromium in kiosk mode pointing at the bundled Sinister Panel Next.js
+# build. Proves the OS shell vision end-to-end.
+
+# --- base system ---
+base
+base-devel
+linux
+linux-firmware
+linux-headers
+intel-ucode
+amd-ucode
+mkinitcpio
+mkinitcpio-archiso
+
+# --- bootloader ---
+syslinux
+grub
+edk2-shell
+efibootmgr
+memtest86+
+memtest86+-efi
+
+# --- networking ---
+networkmanager
+iwd
+wpa_supplicant
+openssh
+dhcpcd
+
+# --- filesystem ---
+btrfs-progs
+snapper
+e2fsprogs
+dosfstools
+exfatprogs
+ntfs-3g
+parted
+gptfdisk
+
+# --- shell + cli ---
+bash
+zsh
+git
+sudo
+curl
+wget
+neovim
+vim
+htop
+fastfetch
+ripgrep
+fd
+fzf
+jq
+tmux
+
+# --- display server + compositor ---
+wayland
+xorg-xwayland
+hyprland
+hyprlock
+hypridle
+hyprpicker
+xdg-desktop-portal-hyprland
+waybar
+wofi
+swaybg
+mako
+
+# --- audio ---
+pipewire
+pipewire-pulse
+pipewire-alsa
+pipewire-jack
+wireplumber
+
+# --- session manager (greeter) ---
+greetd
+greetd-tuigreet
+
+# --- the OS shell ---
+chromium
+nodejs
+npm
+
+# --- AI integration: ollama for local models, python for sanctum tooling ---
+ollama
+python
+python-pip
+python-pipx
+
+# --- gaming stack (P4 will verify but ship in minimal so cold-start has it) ---
+steam
+gamemode
+lib32-gamemode
+mangohud
+lib32-mangohud
+mesa
+lib32-mesa
+vulkan-icd-loader
+lib32-vulkan-icd-loader
+vulkan-tools
+wine-staging
+winetricks
+lutris
+
+# --- archiso live tooling ---
+arch-install-scripts
+archinstall
+clonezilla
+ddrescue
+
+# --- creative + productivity (light defaults; full set added in P2) ---
+firefox
+mpv
+imv
