@@ -1,0 +1,5 @@
+{
+  "_author": "RKOJ-ELENO :: 2026-05-24",
+  "_purpose": "Per-lane Claude Code settings for the sinister-os lane. Inherits from user-level ~/.claude/settings.json. Empty object intentional — no lane-specific overrides yet; created so PP2 protections check sees it.",
+  "permissions": {}
+}

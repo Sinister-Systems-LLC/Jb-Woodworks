@@ -1,10 +1,10 @@
 {
     "schema_version":  "sinister.telemetry-daily.v1",
-    "ts_utc":  "2026-05-23T17:32:29Z",
+    "ts_utc":  "2026-05-23T21:59:21Z",
     "sanctum_root":  "D:\\Sinister Sanctum",
     "canonical_protections":  {
                                   "source":  "D:\\Sinister Sanctum\\_shared-memory\\canonical-protections-violations.log",
-                                  "last_run":  "2026-05-23T15:08:49Z",
+                                  "last_run":  "2026-05-23T21:58:50Z",
                                   "pass":  9,
                                   "fail":  0
                               },
@@ -16,12 +16,12 @@
                                     },
                             "general":  {
                                             "ts_utc":  "2026-05-23T06:58:00Z",
-                                            "age_sec":  38071,
+                                            "age_sec":  54082,
                                             "display":  "General"
                                         },
                             "inventions":  {
                                                "ts_utc":  "2026-05-20T15:00:00Z",
-                                               "age_sec":  268351,
+                                               "age_sec":  284362,
                                                "display":  null
                                            },
                             "jb-woodworks":  {
@@ -30,8 +30,8 @@
                                                  "display":  "Jb Woodworks"
                                              },
                             "kernel-apk":  {
-                                               "ts_utc":  "2026-05-23T17:25:00Z",
-                                               "age_sec":  451,
+                                               "ts_utc":  "2026-05-23T19:25:00Z",
+                                               "age_sec":  9262,
                                                "display":  "Sinister Kernel APK"
                                            },
                             "letstext":  {
@@ -46,72 +46,72 @@
                                       },
                             "rkoj-workstation":  {
                                                      "ts_utc":  "2026-05-21T11:09:00Z",
-                                                     "age_sec":  195812,
+                                                     "age_sec":  211822,
                                                      "display":  null
                                                  },
                             "rkoj":  {
-                                         "ts_utc":  "2026-05-23T16:37Z",
-                                         "age_sec":  3332,
+                                         "ts_utc":  "2026-05-23T19:12Z",
+                                         "age_sec":  10042,
                                          "display":  "rkoj"
                                      },
                             "sanctum-08a827":  {
                                                    "ts_utc":  "2026-05-22T01:54:37Z",
-                                                   "age_sec":  142675,
+                                                   "age_sec":  158685,
                                                    "display":  "EVE on Sanctum"
                                                },
                             "sanctum-32cd35":  {
                                                    "ts_utc":  "2026-05-23T08:10:12Z",
-                                                   "age_sec":  33740,
+                                                   "age_sec":  49750,
                                                    "display":  "EVE on Sanctum"
                                                },
                             "sanctum-4a9ea7":  {
                                                    "ts_utc":  "2026-05-23T03:07:42Z",
-                                                   "age_sec":  51890,
+                                                   "age_sec":  67900,
                                                    "display":  "EVE on Sanctum"
                                                },
                             "sanctum-6bbeab":  {
                                                    "ts_utc":  "2026-05-22T00:18:01Z",
-                                                   "age_sec":  148471,
+                                                   "age_sec":  164481,
                                                    "display":  "EVE on Sanctum"
                                                },
                             "sanctum-86199a":  {
                                                    "ts_utc":  "2026-05-23T06:59:53Z",
-                                                   "age_sec":  37959,
+                                                   "age_sec":  53969,
                                                    "display":  "EVE on Sanctum"
                                                },
                             "sanctum-b47bc2":  {
                                                    "ts_utc":  "2026-05-23T05:58:17Z",
-                                                   "age_sec":  41655,
+                                                   "age_sec":  57665,
                                                    "display":  "EVE on sanctum"
                                                },
                             "sanctum-bcd819":  {
                                                    "ts_utc":  "2026-05-22T01:41:31Z",
-                                                   "age_sec":  143461,
+                                                   "age_sec":  159471,
                                                    "display":  "EVE on Sanctum"
                                                },
                             "sanctum-cda58a":  {
                                                    "ts_utc":  "2026-05-22T01:44:55Z",
-                                                   "age_sec":  143257,
+                                                   "age_sec":  159267,
                                                    "display":  "EVE on Sanctum"
                                                },
                             "sanctum-d4e3fb":  {
                                                    "ts_utc":  "2026-05-23T05:16:43Z",
-                                                   "age_sec":  44149,
+                                                   "age_sec":  60159,
                                                    "display":  "EVE on Sanctum"
                                                },
                             "sanctum-ec0aee":  {
                                                    "ts_utc":  "2026-05-23T07:47:51Z",
-                                                   "age_sec":  35081,
+                                                   "age_sec":  51091,
                                                    "display":  "EVE on Sanctum"
                                                },
                             "sanctum":  {
-                                            "ts_utc":  "2026-05-23T18:15Z",
-                                            "age_sec":  -2548,
+                                            "ts_utc":  "2026-05-23T20:30Z",
+                                            "age_sec":  5362,
                                             "display":  "Sinister Sanctum"
                                         },
                             "showmasters":  {
-                                                "ts_utc":  "2026-05-23T17:15:00Z",
-                                                "age_sec":  1052,
+                                                "ts_utc":  "2026-05-23T19:30:00Z",
+                                                "age_sec":  8962,
                                                 "display":  "Showmasters"
                                             },
                             "sinister-bumble":  {
@@ -126,7 +126,7 @@
                                               },
                             "sinister-emulator":  {
                                                       "ts_utc":  "2026-05-20T14:38:00Z",
-                                                      "age_sec":  269672,
+                                                      "age_sec":  285682,
                                                       "display":  null
                                                   },
                             "sinister-forge":  {
@@ -136,7 +136,7 @@
                                                },
                             "sinister-freeze":  {
                                                     "ts_utc":  "2026-05-23T13:30:00Z",
-                                                    "age_sec":  14552,
+                                                    "age_sec":  30562,
                                                     "display":  "Sinister Freeze"
                                                 },
                             "sinister-generator":  {
@@ -145,8 +145,8 @@
                                                        "display":  "Sinister Generator"
                                                    },
                             "sinister-panel":  {
-                                                   "ts_utc":  "2026-05-23T17:00Z",
-                                                   "age_sec":  1952,
+                                                   "ts_utc":  "2026-05-23T18:35Z",
+                                                   "age_sec":  12262,
                                                    "display":  "Sinister Panel"
                                                },
                             "sinister-snap-api-quantum":  {
@@ -156,12 +156,12 @@
                                                           },
                             "sinister-term-coaudit":  {
                                                           "ts_utc":  "2026-05-21T12:40:00Z",
-                                                          "age_sec":  190353,
+                                                          "age_sec":  206362,
                                                           "display":  null
                                                       },
                             "sinister-term":  {
                                                   "ts_utc":  "2026-05-23T15:37:35Z",
-                                                  "age_sec":  6898,
+                                                  "age_sec":  22907,
                                                   "display":  null
                                               },
                             "snap-emu":  {
@@ -176,7 +176,7 @@
                                                   },
                             "test":  {
                                          "ts_utc":  "2026-05-20T17:35:00Z",
-                                         "age_sec":  259053,
+                                         "age_sec":  275062,
                                          "display":  null
                                      },
                             "tiktok-emu":  {
@@ -197,30 +197,31 @@
                         },
     "operator_queue":  {
                            "open":  82,
-                           "closed":  44,
-                           "critical":  8,
-                           "high":  12,
-                           "medium":  16,
-                           "low":  22
+                           "closed":  46,
+                           "critical":  7,
+                           "high":  14,
+                           "medium":  18,
+                           "low":  26
                        },
     "brain_doctrine":  {
-                           "on_disk":  142,
-                           "indexed":  123,
-                           "orphans":  28,
+                           "on_disk":  148,
+                           "indexed":  117,
+                           "orphans":  31,
                            "rule_7_5_ceiling":  150,
                            "status":  "APPROACHING"
                        },
     "inbox_unread":  {
-                         "total":  61,
+                         "total":  64,
                          "per_lane":  {
                                           "sinister-tg":  0,
                                           "sinister-rka":  0,
                                           "sinister-tiktok-emu":  0,
-                                          "kernel-apk":  10,
+                                          "kernel-apk":  11,
                                           "rkoj":  2,
                                           "jb-woodworks":  3,
                                           "sinister-forge":  1,
                                           "sanctum-ec0aee":  0,
+                                          "sinister-chatbot":  0,
                                           "sanctum-86199a":  0,
                                           "rkoj-workstation":  1,
                                           "panel":  1,
@@ -232,11 +233,10 @@
                                           "sanctum-d4e3fb":  0,
                                           "sanctum-audit":  1,
                                           "forge":  7,
-                                          "sinister-panel":  15,
+                                          "sinister-panel":  17,
                                           "sanctum-b47bc2":  0,
-                                          "sanctum-bcd819":  0,
                                           "sinister-jokr":  0,
-                                          "sinister-mind":  1,
+                                          "sanctum-bcd819":  0,
                                           "sanctum-6bbeab":  0,
                                           "sanctum":  2,
                                           "sanctum-cda58a":  0,
@@ -246,7 +246,8 @@
                                           "sinister-claw":  1,
                                           "sinister-letstext":  0,
                                           "showmasters":  1,
-                                          "bumble-emu":  1
+                                          "bumble-emu":  1,
+                                          "sinister-mind":  1
                                       }
                      },
     "bot_adoption":  {
@@ -257,6 +258,7 @@
                          "rkoj-workstation":  1,
                          "rkoj":  0,
                          "Showmasters":  0,
+                         "Sinister Chatbot":  0,
                          "Sinister Claw":  0,
                          "Sinister Forge":  0,
                          "Sinister Generator":  0,
@@ -270,40 +272,246 @@
                          "sinister-freeze":  4,
                          "sinister-snap-api-quantum":  0,
                          "snap-emu":  0,
-                         "snap-emulator-api":  0,
+                         "snap-emulator-api":  1,
                          "tiktok-emu":  0,
+                         "tiktok-emulator-api":  0,
                          "_TEMPLATE":  0
                      },
+    "per_project_protections":  {
+                                    "lane_count":  22,
+                                    "full_pass_count":  4,
+                                    "per_lane":  {
+                                                     "Sinister Chatbot":  {
+                                                                              "score":  "2/5",
+                                                                              "pp1":  true,
+                                                                              "pp2":  false,
+                                                                              "pp3":  false,
+                                                                              "pp3_hb_age_h":  null,
+                                                                              "pp4":  true,
+                                                                              "pp5_brain_hits":  0
+                                                                          },
+                                                     "Sinister Generator":  {
+                                                                                "score":  "2/5",
+                                                                                "pp1":  true,
+                                                                                "pp2":  false,
+                                                                                "pp3":  false,
+                                                                                "pp3_hb_age_h":  null,
+                                                                                "pp4":  true,
+                                                                                "pp5_brain_hits":  0
+                                                                            },
+                                                     "Snap Emulator API":  {
+                                                                               "score":  "3/5",
+                                                                               "pp1":  true,
+                                                                               "pp2":  false,
+                                                                               "pp3":  false,
+                                                                               "pp3_hb_age_h":  null,
+                                                                               "pp4":  true,
+                                                                               "pp5_brain_hits":  2
+                                                                           },
+                                                     "Sinister Term":  {
+                                                                           "score":  "3/5",
+                                                                           "pp1":  false,
+                                                                           "pp2":  false,
+                                                                           "pp3":  true,
+                                                                           "pp3_hb_age_h":  6,
+                                                                           "pp4":  true,
+                                                                           "pp5_brain_hits":  17
+                                                                       },
+                                                     "JB Woodworks":  {
+                                                                          "score":  "4/5",
+                                                                          "pp1":  true,
+                                                                          "pp2":  true,
+                                                                          "pp3":  false,
+                                                                          "pp3_hb_age_h":  null,
+                                                                          "pp4":  true,
+                                                                          "pp5_brain_hits":  1
+                                                                      },
+                                                     "Sinister Freeze":  {
+                                                                             "score":  "4/5",
+                                                                             "pp1":  true,
+                                                                             "pp2":  false,
+                                                                             "pp3":  true,
+                                                                             "pp3_hb_age_h":  8,
+                                                                             "pp4":  true,
+                                                                             "pp5_brain_hits":  8
+                                                                         },
+                                                     "Showmasters":  {
+                                                                         "score":  "3/5",
+                                                                         "pp1":  true,
+                                                                         "pp2":  false,
+                                                                         "pp3":  true,
+                                                                         "pp3_hb_age_h":  2,
+                                                                         "pp4":  true,
+                                                                         "pp5_brain_hits":  0
+                                                                     },
+                                                     "Sinister Forge":  {
+                                                                            "score":  "2/5",
+                                                                            "pp1":  false,
+                                                                            "pp2":  false,
+                                                                            "pp3":  false,
+                                                                            "pp3_hb_age_h":  null,
+                                                                            "pp4":  true,
+                                                                            "pp5_brain_hits":  14
+                                                                        },
+                                                     "Sinister Snap API Quantum":  {
+                                                                                       "score":  "3/5",
+                                                                                       "pp1":  true,
+                                                                                       "pp2":  false,
+                                                                                       "pp3":  false,
+                                                                                       "pp3_hb_age_h":  null,
+                                                                                       "pp4":  true,
+                                                                                       "pp5_brain_hits":  1
+                                                                                   },
+                                                     "Kernel APK":  {
+                                                                        "score":  "5/5",
+                                                                        "pp1":  true,
+                                                                        "pp2":  true,
+                                                                        "pp3":  true,
+                                                                        "pp3_hb_age_h":  3,
+                                                                        "pp4":  true,
+                                                                        "pp5_brain_hits":  21
+                                                                    },
+                                                     "Sinister Emulator":  {
+                                                                               "score":  "0/5",
+                                                                               "pp1":  false,
+                                                                               "pp2":  false,
+                                                                               "pp3":  false,
+                                                                               "pp3_hb_age_h":  79,
+                                                                               "pp4":  false,
+                                                                               "pp5_brain_hits":  0
+                                                                           },
+                                                     "TikTok Emulator API":  {
+                                                                                 "score":  "2/5",
+                                                                                 "pp1":  true,
+                                                                                 "pp2":  false,
+                                                                                 "pp3":  false,
+                                                                                 "pp3_hb_age_h":  null,
+                                                                                 "pp4":  true,
+                                                                                 "pp5_brain_hits":  0
+                                                                             },
+                                                     "Sinister Claw":  {
+                                                                           "score":  "2/5",
+                                                                           "pp1":  false,
+                                                                           "pp2":  false,
+                                                                           "pp3":  false,
+                                                                           "pp3_hb_age_h":  null,
+                                                                           "pp4":  true,
+                                                                           "pp5_brain_hits":  1
+                                                                       },
+                                                     "LetsText":  {
+                                                                      "score":  "1/5",
+                                                                      "pp1":  true,
+                                                                      "pp2":  false,
+                                                                      "pp3":  false,
+                                                                      "pp3_hb_age_h":  null,
+                                                                      "pp4":  false,
+                                                                      "pp5_brain_hits":  0
+                                                                  },
+                                                     "Sinister Panel":  {
+                                                                            "score":  "5/5",
+                                                                            "pp1":  true,
+                                                                            "pp2":  true,
+                                                                            "pp3":  true,
+                                                                            "pp3_hb_age_h":  3,
+                                                                            "pp4":  true,
+                                                                            "pp5_brain_hits":  5
+                                                                        },
+                                                     "RKOJ Workstation":  {
+                                                                              "score":  "2/5",
+                                                                              "pp1":  false,
+                                                                              "pp2":  false,
+                                                                              "pp3":  false,
+                                                                              "pp3_hb_age_h":  59,
+                                                                              "pp4":  true,
+                                                                              "pp5_brain_hits":  7
+                                                                          },
+                                                     "Bumble Emulator API":  {
+                                                                                 "score":  "0/5",
+                                                                                 "pp1":  false,
+                                                                                 "pp2":  false,
+                                                                                 "pp3":  false,
+                                                                                 "pp3_hb_age_h":  null,
+                                                                                 "pp4":  false,
+                                                                                 "pp5_brain_hits":  0
+                                                                             },
+                                                     "JKOR":  {
+                                                                  "score":  "1/5",
+                                                                  "pp1":  true,
+                                                                  "pp2":  false,
+                                                                  "pp3":  false,
+                                                                  "pp3_hb_age_h":  null,
+                                                                  "pp4":  false,
+                                                                  "pp5_brain_hits":  0
+                                                              },
+                                                     "General":  {
+                                                                     "score":  "5/5",
+                                                                     "pp1":  true,
+                                                                     "pp2":  true,
+                                                                     "pp3":  true,
+                                                                     "pp3_hb_age_h":  15,
+                                                                     "pp4":  true,
+                                                                     "pp5_brain_hits":  4
+                                                                 },
+                                                     "RKOJ":  {
+                                                                  "score":  "3/5",
+                                                                  "pp1":  false,
+                                                                  "pp2":  false,
+                                                                  "pp3":  true,
+                                                                  "pp3_hb_age_h":  3,
+                                                                  "pp4":  true,
+                                                                  "pp5_brain_hits":  121
+                                                              },
+                                                     "Sinister Mind":  {
+                                                                           "score":  "0/5",
+                                                                           "pp1":  false,
+                                                                           "pp2":  false,
+                                                                           "pp3":  false,
+                                                                           "pp3_hb_age_h":  null,
+                                                                           "pp4":  false,
+                                                                           "pp5_brain_hits":  0
+                                                                       },
+                                                     "Sanctum":  {
+                                                                     "score":  "5/5",
+                                                                     "pp1":  true,
+                                                                     "pp2":  true,
+                                                                     "pp3":  true,
+                                                                     "pp3_hb_age_h":  1,
+                                                                     "pp4":  true,
+                                                                     "pp5_brain_hits":  60
+                                                                 }
+                                                 }
+                                },
     "recent_commits":  [
-                           "2d9baea sanctum: ship B.5 + B.10 + C.13 + B.9 (audit scripts + telemetry + context-cleaner spec)",
-                           "80d4f7a sanctum: ship C.10 playbook + B.4 inbox drops + B.7 matrix flip + C.14 status dashboard",
-                           "79067ef sanctum: sweep batch 1 - sibling lane work + sterm doctrine + eve-picker tests",
-                           "106f94a sanctum: ship B.6 bot-fleet-quick-reference.md (Phase-2 highest-leverage)",
-                           "0fafe63 sanctum: launcher hardening — silent plugin auto-install + closeable windows + jcode ASCII C banner",
-                           "d587bcc fix(launcher): harden Sinister Start.bat spawn + ship EVE.exe build + diagnose flag",
-                           "eece014 ship(seraphim): real Wukong-180 memory-kernel experiment + accurate billing sync",
-                           "a1801c3 ship(seraphim): FIRST REAL Wukong-180 QPU submission + full project memory",
-                           "53bfdbc sanctum: upgrade memory-deep-audit with verified counts (Rule 7.5 brain-row signal approaching)",
-                           "98dbefe sanctum: upgrade github-skill-review to acceptance-tested (claims verified or corrected)"
+                           "468cf0d ﻿sanctum: add acct:\u003cname\u003e pill to spawn banner",
+                           "023a354 sanctum: iter 5 - 3 bugs FOUND+FIXED + C.4 auto-restore shipped",
+                           "36b7f54 ﻿sanctum: Sinister Start.bat --account / --account-status flags",
+                           "b9e4c79 ﻿sanctum: LEO-SETUP.md - add multi-account rotation section",
+                           "6acd513 ﻿sanctum: auto-push ErrorActionPreference fix + session-outcome doc",
+                           "978d93b ﻿sanctum: multi-account rotation (M1+M2) + critical banner-escape regression fix",
+                           "215b817 ship(sinister-generator): clean-imagery template (text-free, dark sleek pro) + style-pivot history in doctrine",
+                           "d130ef0 sanctum: iter 4 PROGRESS entry - operator urgents + Leo fix + bat fix",
+                           "4f3f8ee sanctum: fix Sinister Start.bat closing instantly + promote chatbot in picker",
+                           "00f15b2 sanctum: Agent J+K2+L+rkoj-lane — vault bring-up + sinister-term v2 + auto-clone missing project sources + /list fix"
                        ],
     "resume_point_chain":  {
                                "EVE on Sanctum":  1,
                                "Jb Woodworks":  10,
                                "Kernel APK":  6,
-                               "RKOJ":  17,
+                               "RKOJ":  18,
                                "RKOJ Workstation":  4,
-                               "Showmasters":  12,
+                               "Showmasters":  13,
+                               "Sinister Chatbot":  0,
                                "Sinister Claw":  0,
                                "Sinister Forge":  4,
                                "Sinister Generator":  4,
-                               "Sinister Kernel APK":  19,
-                               "Sinister Panel":  14,
-                               "Sinister Sanctum":  20,
+                               "Sinister Kernel APK":  20,
+                               "Sinister Panel":  16,
+                               "Sinister Sanctum":  21,
                                "Sinister Term":  4,
                                "sinister-freeze":  5,
                                "sinister-panel":  5,
-                               "sinister-snap-api-quantum":  8,
-                               "Snap Emulator API":  7,
-                               "TikTok Emulator API":  1
+                               "sinister-snap-api-quantum":  20,
+                               "Snap Emulator API":  8,
+                               "TikTok Emulator API":  6
                            }
 }

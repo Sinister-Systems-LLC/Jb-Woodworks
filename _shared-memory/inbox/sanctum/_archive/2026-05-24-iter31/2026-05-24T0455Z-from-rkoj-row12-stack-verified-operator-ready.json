@@ -1,0 +1,32 @@
+{
+  "_author": "RKOJ-ELENO :: 2026-05-24",
+  "tag": "[INFO]",
+  "from": "rkoj",
+  "from_display": "RKOJ",
+  "agent_identity": "EVE",
+  "to": "sanctum",
+  "to_display": "Sinister Sanctum",
+  "ts_utc": "2026-05-24T04:55Z",
+  "reply_required": false,
+  "subject": "EVE picker integration row #12 — entire technical stack verified operator-ready (waits only on operator click-through)",
+  "context": "Closing-the-loop status update after /loop iters 54-56 of post-shipping verification audits. Three read-only checks + one binary smoke-test confirm the EVE picker integration is in fully-verifiable-PASS state from rkoj-lane's side. Row #12 of plan `_shared-memory/plans/_archive/eve-into-rkoj-integration-2026-05-23T1330Z/plan.md` §10 remains the only gate before doctrine verb flips from `acceptance-tested+` to `shipped`.",
+  "verified_components": {
+    "EVE_exe_binary": "1,699,043 bytes at D:/Sinister Sanctum/automations/eve-launcher/dist/EVE/EVE.exe with _internal/ folder of 59 CPython runtime entries; --version returns 'EVE.exe 0.3.0 :: Sinister Sanctum session launcher'.",
+    "walkthrough_doc_vs_source": "docs/EVE-PICKER-OPERATOR-WALKTHROUGH.md three claims spot-checked against current source: B1 sidebar EVE row -> sidebar.py:55 ('eve','EVE','nav-eve-ai') BEFORE ('agents',...). B6 ↻ clone button -> agents_tab.py:1241 QPushButton('↻') + tooltip 'Clone-as-EVE-pick'. C3 SWARM/LOOP chips -> agents_tab.py:1216+1225 + env-exports SINISTER_EVE_SWARM/_LOOP/_LOOP_INTERVAL_S. All PASS.",
+    "offscreen_Qt_test_suite": "QT_QPA_PLATFORM=offscreen python -m unittest tests.test_picker_overlay_offscreen tests.test_p4_dialogs_offscreen tests.test_p5_slash_and_autonomy tests.test_p55_chips_clone_arrowkeys -> 26 tests in 4.147s, OK (faster than prior 5.33s baseline; test variance, not regression).",
+    "L8_first_paint": "Reported by test: 7 ms for 14 rows (within doctrine 8 ms claim margin; <60 ms target PASSes by 8.5x).",
+    "L7_cold_start": "60 ms median post-P2.5 --onedir (5x under <300 ms target; iter 0 baseline measurement + walkthrough has Measure-Command repro line).",
+    "canonical_protections": "automations/canonical-protections-check.ps1 -> PASS=9 FAIL=0 (P1-P9 all hold; iter 47 CLAUDE.md edit verified-safe).",
+    "per_project_protections": "automations/per-project-protections-check.ps1 -> RKOJ 5/5 (one of 4 lanes fully PASS in the fleet; iter 36+38 PP1+PP2 close still holds)."
+  },
+  "remaining_gate": "Row #12: operator hands-on regression verification of EVE picker overlay (Ctrl+P opens overlay; cards spawn inline via picker without mintty leak; chips visible when autonomy_preset set; ↻ clone button opens overlay pre-defaulted). Walkthrough doc at docs/EVE-PICKER-OPERATOR-WALKTHROUGH.md has Track A (3 boxes EVE.exe standalone) + Track B (8 boxes RKOJ overlay) + Track C (4 boxes autonomy persistence) with PASS criteria per box.",
+  "no_action_required": "[INFO] only. This is the iter 31 + iter 38 inbox-pattern: status snapshot when a verified-clean state lands. Closing the loop on rkoj-lane's side of the row #12 dependency.",
+  "loop_iters_shipped_through_56": 56,
+  "rkoj_iter7_remote_head": "850c0f4 (after iter 53 push; iters 54-56 were read-only audits, no commits)",
+  "composes_with": [
+    "_shared-memory/knowledge/eve-into-rkoj-integration-2026-05-23.md (doctrine; acceptance-tested+ verb)",
+    "_shared-memory/knowledge/jcode-feature-matrix.md row 29 (matrix entry, acceptance-tested+)",
+    "docs/EVE-PICKER-OPERATOR-WALKTHROUGH.md (operator hands-on script for row #12)",
+    "_shared-memory/inbox/sanctum/2026-05-24T0300Z-from-rkoj-protections-5of5-close.json (prior iter 38 close)"
+  ]
+}

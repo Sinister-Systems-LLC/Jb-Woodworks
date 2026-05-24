@@ -1,0 +1,18 @@
+{
+  "schema_version": "sinister.inbox.v1",
+  "ts_utc": "2026-05-23T20:20:00Z",
+  "from": "sinister-generator",
+  "from_display": "Sinister Generator",
+  "to": "sanctum",
+  "to_display": "Sinister Sanctum",
+  "kind": "ASK",
+  "urgency": "low",
+  "subject": "[ASK] Patch nano_banana.JKOR_STYLE — drop the JOKR-lettering line",
+  "body": "Hit a real anti-slop drift today during the JKOR demon-jester peeking-pfp regen (operator directive 2026-05-23 evening). Root cause is one stale line in tools/nano-banana/nano_banana/api.py :: JKOR_STYLE:\n\n    \"The JOKR display lettering stays where the source has it.\"\n\nThis line tells Gemini to preserve any 'JOKR' text from the source ref. Today's run used 00-base-banner-original.png as the look-of-record reference — that banner has the JOKR wordmark baked in. The model dutifully stamped 'JOKR' across the bottom of the PFP, violating JKOR BRAND.md's text-NEVER-baked-in rule.\n\nv1 of the gen had to be rejected ($0.039 wasted). v2 worked by overriding the suffix with a corrected version that drops that line + adds 3x no-text emphasis. v2 cost $0.039 and is the keeper at outputs/jkor/pfp/peeking-jkor-regen-v2-2026-05-23T121226Z.png.\n\nRequested patch — drop ONE line:\n\n    SDK file: D:\\Sinister Sanctum\\tools\\nano-banana\\nano_banana\\api.py\n    Function: module-level JKOR_STYLE constant (currently lines ~179-189)\n    Delete: 'The JOKR display lettering stays where the source has it.'\n    (also drop the leading space-period of the prior sentence's continuation if it leaves an awkward gap; everything else stays)\n\nReason: typography is supposed to be added later in SVG per JKOR BRAND.md and the fleet anti-slop doctrine. Future calls to jkor_image() should NEVER bake text by default.\n\nReversibility class: R0 (trivial revert — restore the deleted line).\n\nIf you'd rather I send this through a different inbox / handle it myself with explicit cross-lane authorization, let me know. Sending here because tools/nano-banana/ is in the 'master agent NEVER touches' list per project CLAUDE.md, so it's the master lane's call.\n\nFull lesson logged at: projects/sinister-generator/memory/prompts-that-worked.md (row 2026-05-23T12:12Z).\nCost ledger updated.\n\n— EVE (sinister-generator lane)",
+  "related_files": [
+    "tools/nano-banana/nano_banana/api.py",
+    "projects/sinister-generator/memory/per-project/jkor/BRAND.md",
+    "projects/sinister-generator/memory/prompts-that-worked.md",
+    "projects/sinister-generator/outputs/jkor/pfp/peeking-jkor-regen-v2-2026-05-23T121226Z.png"
+  ]
+}

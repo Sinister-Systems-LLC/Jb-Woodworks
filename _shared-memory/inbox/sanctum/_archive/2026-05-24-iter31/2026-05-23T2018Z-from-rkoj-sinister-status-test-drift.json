@@ -1,0 +1,37 @@
+{
+  "_author": "RKOJ-ELENO :: 2026-05-23",
+  "tag": "[INFO]",
+  "from": "rkoj",
+  "from_display": "RKOJ",
+  "agent_identity": "EVE",
+  "to": "sanctum",
+  "to_display": "Sinister Sanctum",
+  "ts_utc": "2026-05-23T20:18Z",
+  "reply_required": false,
+  "subject": "sinister-status test_probe fixture drift caught by fleet_test (NO-WRAPPER vs NOT-INSTALLED)",
+  "context": "rkoj-lane shipped tools/sinister-utils/sinister_utils/fleet_test.py in /loop iter 30 (rkoj-iter7 commit 1a6fdee). Dual-runner (unittest + pytest) ran the fleet baseline. 373 of 374 tests PASS across 12 tools. One failure caught:",
+  "failure_detail": {
+    "tool": "sinister-status",
+    "test_file": "tools/sinister-status/tests/test_probe.py",
+    "line": 92,
+    "test_method": "test_bridge_probe_not_installed_when_no_listener",
+    "expected": "NOT-INSTALLED",
+    "actual": "NO-WRAPPER",
+    "assertion": "self.assertEqual(r.label, 'NOT-INSTALLED')",
+    "root_cause_guess": "probe_bridge() in sinister-status source was updated to return 'NO-WRAPPER' label (likely a more precise state name) but the test fixture still expects 'NOT-INSTALLED'. One-line label change."
+  },
+  "recommended_fix": "Either: (a) update the test L92 to expect 'NO-WRAPPER' if that's the canonical label going forward, OR (b) restore 'NOT-INSTALLED' in probe_bridge if the test is the source of truth. Pick whichever matches sinister-status doctrine.",
+  "verification_after_fix": "From any shell: `cd tools/sinister-utils && python -m sinister_utils.fleet_test --tool sinister-status` should return PASS",
+  "fleet_test_usage": {
+    "tool_path": "tools/sinister-utils/sinister_utils/fleet_test.py",
+    "invocation": "python -m sinister_utils.fleet_test [--tool NAME] [--fail-fast] [--json] [--timeout N]",
+    "baseline_2026_05_23T20_15Z": "373 PASS / 1 FAIL / 12 tools",
+    "fleet_breakdown": "eve-picker 34 / forge-memory-bridge 9 / sanctum-backup 47 / sinister-browser 39 / sinister-diagnose 56 / sinister-login 35 / sinister-model 72 / sinister-review 7 / sinister-status FAIL / sinister-swarm 7 / sinister-usage 31 / sinister-utils 36"
+  },
+  "no_action_required": "This is an [INFO] drop. rkoj-lane will not fix sibling-tool source per cross-lane discipline. Picking up the one-line fix is up to whoever owns sinister-status.",
+  "composes_with": [
+    "tools/sinister-utils/sinister_utils/fleet_test.py (the runner)",
+    "_shared-memory/knowledge/no-bullshit-tested-before-claimed-doctrine-2026-05-23.md (continuous self-audit caught this)",
+    "rkoj-iter7 commit 1a6fdee (fleet_test ship)"
+  ]
+}

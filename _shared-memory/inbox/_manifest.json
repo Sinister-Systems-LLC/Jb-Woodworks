@@ -1,15 +1,15 @@
 {
     "schema_version":  "sinister.inbox-manifest.v1",
-    "ts_utc":  "2026-05-23T17:32:29Z",
+    "ts_utc":  "2026-05-24T12:24:30Z",
     "per_lane":  {
                      "bumble-emu":  1,
                      "forge":  7,
                      "jb-woodworks":  3,
-                     "kernel-apk":  10,
+                     "kernel-apk":  24,
                      "panel":  1,
-                     "rkoj":  2,
+                     "rkoj":  0,
                      "rkoj-workstation":  1,
-                     "sanctum":  2,
+                     "sanctum":  0,
                      "sanctum-08a827":  0,
                      "sanctum-32cd35":  0,
                      "sanctum-4a9ea7":  0,
@@ -23,12 +23,13 @@
                      "sanctum-ec0aee":  0,
                      "showmasters":  1,
                      "sinister-bumble-emu":  1,
+                     "sinister-chatbot":  1,
                      "sinister-claw":  1,
-                     "sinister-forge":  1,
+                     "sinister-forge":  2,
                      "sinister-jokr":  0,
                      "sinister-letstext":  0,
                      "sinister-mind":  1,
-                     "sinister-panel":  15,
+                     "sinister-panel":  57,
                      "sinister-rka":  0,
                      "sinister-snap-emu":  0,
                      "sinister-term":  9,
@@ -37,5 +38,5 @@
                      "snap-emu":  3,
                      "tiktok-emu":  1
                  },
-    "total_unread":  61
+    "total_unread":  115
 }
