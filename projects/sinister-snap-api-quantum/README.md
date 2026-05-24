@@ -17,12 +17,14 @@ Exercises **Sinister Seraphim** (the quantum-compute application layer at `D:\Si
 
 Single command: `python run-test.py` (zero cloud burn; sim-local fingerprint generation; audit-stub fires; 5-10 seconds).
 
-### Lane B — real-QPU memory-kernel audit lab (added 2026-05-23 evening)
-Empirical investigation of whether quantum-kernel SVM can beat classical TF-IDF on a 3-document brain-entry triad. Tests real Wukong-180 (WK_C180) submissions via the `seraphim audit` CLI. **6 verified audits + 2 sim sweeps + mathematical anchor** completed; see `MEMORY.md` for the audit-grade detail log.
+### Lane B — real-QPU memory-kernel audit lab (added 2026-05-23 evening; extended through 2026-05-24)
+Empirical investigation of whether quantum-kernel SVM can beat classical TF-IDF on a 3-document brain-entry triad. Tests real Wukong-180 (WK_C180) submissions via the `seraphim audit` CLI. **9 verified real-QPU audits + 20+ sim sweeps + 2 mathematical anchors (cancellation theorem + Shared-Top-K Necessary Condition) + 1 refined conjecture (K' = K × D)** completed across iters 1-67. **Production recipe verdict (post-iter-19): K=4 ZZ-FM r=1 + algorithmically-selected QBC triads delivers 25-35pp quantum advantage on real WK_C180 (mean 31pp; ~3pp run-to-run variance, 5 independent triads).** See `MEMORY.md` for the audit-grade detail log and `_shared-memory/knowledge/quantum-memory-kernel-fleet-action-items-2026-05-23.md` for the current fleet doctrine TL;DR.
 
-## TL;DR audit findings (2026-05-23 session)
+## TL;DR audit findings (2026-05-23 initial session, iters 1-22)
 
-The K=4 inversion-overlap memory-kernel investigation on WK_C180 is **closed at hardware-limited verdict**:
+> **⚠️ HISTORICAL SNAPSHOT.** The table below is from the FIRST investigation pass (iters 1-22) on the snap-RE triad. The verdict "hardware-limited" was correct AT THE TIME but was overturned by iter-19's **algorithmic triad selection** (`seraphim find-qbc`) that surfaced multi-agent + git-coordination triads where K=4 ZZ-FM r=1 delivers 25-35pp real-QPU advantage. Current production recipe is documented in `_shared-memory/knowledge/quantum-memory-kernel-fleet-action-items-2026-05-23.md` TL;DR section. The snapshot below is preserved for audit-trail purposes.
+
+The K=4 inversion-overlap memory-kernel investigation on WK_C180 (initial snap-RE triad pass, iters 1-22) was closed at hardware-limited verdict:
 
 | Audit | Depth | Sim off-diag | Real-QPU | Verdict |
 |---|---|---|---|---|
@@ -33,13 +35,15 @@ The K=4 inversion-overlap memory-kernel investigation on WK_C180 is **closed at 
 | K=4 truncated ZZ-FM reps=2 (16:43Z) | 68 | 0.6189 | **0.2422** | ❌ noise saturates near classical baseline (0.2038) |
 | K=4 truncated ZZ-FM reps=3 | 102 | 0.4504 | _sim only_ | would break plateau in sim; past hardware wall |
 
-**Key derived facts:**
-1. **Encoding-collapse plateau is structural** to product-state encodings (sim ~0.85-0.90 regardless of qubit count).
-2. **Parameter-free entanglement self-cancels** in `U_B† · U_A` protocols via `C†·C = I` — proven empirically (sim equivalence) and mathematically.
-3. **Data-parameterized entanglement breaks the plateau in sim** (~14-17pp per ZZ-FM rep), but real-QPU depth required (>34) exceeds WK_C180's clean-coherence regime (depth ~16).
-4. **WK_C180 noise model**: linear at low depth (~0.012pp/gate), asymptotic near the document set's classical baseline at high depth. For the snap-RE triad, saturation ≈ 0.20-0.25.
+**Key derived facts (from iters 1-22; some superseded by iter 37-67 work):**
+1. **Encoding-collapse plateau is structural** to product-state encodings (sim ~0.85-0.90 regardless of qubit count) — TRUE for the snap-RE triad specifically; iter-53 showed this is corpus/triad-dependent.
+2. **Parameter-free entanglement self-cancels** in `U_B† · U_A` protocols via `C†·C = I` — mathematical anchor STILL VALID (re-verified iter 22, iter 43, iter 59 in different contexts).
+3. **Data-parameterized entanglement breaks the plateau in sim** (~14-17pp per ZZ-FM rep) — TRUE; iter 57 measured this more precisely (ZZ-FM r=2 sim QBC coverage 86% on top-50 high-classical triads).
+4. **WK_C180 noise model**: linear at low depth, asymptotic at high depth — TRUE; the SATURATION baseline depends on the specific triad/corpus, not "≈0.20-0.25" universally.
 
-The full investigation arc is documented in `MEMORY.md` (project-internal audit-grade log) and `_shared-memory/knowledge/seraphim-cloud-qpu-real-first-fire-2026-05-23.md` (fleet-wide brain entry).
+**Superseded by iter 19+:** the "hardware-limited verdict" only applied to the snap-RE triad's specific classical baseline (~0.14). Iter 19 found that **algorithmically-discovered cluster-similar triads (multi-agent + git workflow) at classical 0.5+** produce real-QPU advantages of 25-35pp on the same hardware. The hardware wasn't the limit; the triad selection was.
+
+The full investigation arc is documented in `MEMORY.md` (project-internal audit-grade log, 70+ iter entries) and the fleet brain entry `_shared-memory/knowledge/quantum-memory-kernel-fleet-action-items-2026-05-23.md` (current doctrine TL;DR + theorem + conjecture + operator pre-screen).
 
 ## How to run audits — the production toolkit (`seraphim` CLI, 3-phase workflow)
 

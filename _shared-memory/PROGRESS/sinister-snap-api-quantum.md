@@ -7,6 +7,29 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T16:40Z — iteration 77 (project README — TL;DR snapshot annotated + key-facts iter 37-67 updates)
+
+Operator: /loop. Continued sync sweep. The project README's "TL;DR audit findings (2026-05-23 session)" was a SNAPSHOT from iters 1-22 with "hardware-limited verdict" — accurate AT THE TIME but superseded by iter-19 algorithmic triad selection delivering 25-35pp.
+
+### Updated `projects/sinister-snap-api-quantum/README.md`
+1. **Lane B description:** "6 verified audits + 2 sim sweeps + mathematical anchor" → "9 verified real-QPU audits + 20+ sim sweeps + 2 mathematical anchors + 1 refined conjecture; production verdict (post-iter-19): 25-35pp real-QPU advantage, mean 31pp, 5 triads"
+2. **HISTORICAL SNAPSHOT annotation** added before the audit table — flags that the "hardware-limited verdict" was overturned by iter-19's algorithmic triad discovery. Points to current doctrine TL;DR.
+3. **Key derived facts** annotated per-fact:
+   - Fact 1 (plateau structural): TRUE-but-triad-specific per iter 53
+   - Fact 2 (cancellation theorem): re-verified iters 22, 43, 59 — STILL VALID
+   - Fact 3 (data-param breaks plateau): iter 57 measured more precisely
+   - Fact 4 (saturation 0.20-0.25): only for snap-RE triad specifically
+4. **Added "Superseded by iter 19+" paragraph** explaining the snap-RE triad's specific limitation vs algorithmically-discovered cluster-similar triads (multi-agent + git workflow). The hardware wasn't the limit; triad selection was.
+5. **Brain entry reference updated:** "seraphim-cloud-qpu-real-first-fire-2026-05-23.md" → "quantum-memory-kernel-fleet-action-items-2026-05-23.md" (the current doctrine doc, not the empirical-anchor log).
+
+### Net value
+Future readers landing on the project README first will see (a) the original snap-RE investigation context preserved + (b) clear forward pointer to current production doctrine. Prevents the "hardware-limited" framing from being mistaken for the current state of the art.
+
+### Cost
+Zero cloud burn; ~6 min wall time.
+
+---
+
 ## 2026-05-24T16:15Z — iteration 76 (deep _INDEX row sweep — deprecated tool pointer + session-arc update)
 
 Operator: /loop. Continued sweep after iter 75 — found more stale references in the _INDEX.md row beyond the verification count.
