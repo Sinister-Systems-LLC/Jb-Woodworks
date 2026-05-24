@@ -7,6 +7,25 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T16:15Z — iteration 76 (deep _INDEX row sweep — deprecated tool pointer + session-arc update)
+
+Operator: /loop. Continued sweep after iter 75 — found more stale references in the _INDEX.md row beyond the verification count.
+
+### Updated `_shared-memory/knowledge/_INDEX.md`
+1. **Discovery tool pointer:** "Discovery tool: `python projects/sinister-snap-api-quantum/find-zzfm-qbc-triads.py`" → "Discovery tool: `seraphim find-qbc --variant zzfm-r1 --top-n 10 --corpus pool` (iter 41 SHIPPED; ...; supports `--rank-by ceiling|headroom|classical`)". The find-zzfm-qbc-triads.py was deprecated in iter 28.
+2. **Session arc:** "10 iterations, 9 real-QPU audits, 7 sim sweeps" → adds "Extended across iters 37-67: empirical Shared-Top-K Necessary Condition + K' = K × D conjecture + K=4 combined predictor (44% rule-out) + per-encoding QBC threshold curves".
+3. **Tags:** "find-zzfm-qbc-triads, corpus-pool" → "seraphim-find-qbc, rank-by-ceiling, rank-by-headroom, rank-by-classical, corpus-pool"
+4. **Tags:** "10-iterations, 9-real-qpu-audits, 7-sim-sweeps, 2026-05-23" → "9-real-qpu-audits, 20+-sim-sweeps-iters-37-67, shared-top-k-necessary-condition, k-d-conjecture, k4-combined-predictor-44pct, 2026-05-23-to-2026-05-24"
+5. **seraphim README line 124:** "124-doc balanced TF-IDF vocabulary" → "~129-doc topical-balanced TF-IDF vocabulary; grows with brain corpus but capped at 4-per-topic-prefix"
+
+### Net value
+The _INDEX row is what other agents read when grepping the brain catalog. Pointing to a deprecated script is actively harmful (operators waste time trying to find the .py file in projects/sinister-snap-api-quantum/, then have to chase it to _deprecated/). Now it correctly points to the production CLI.
+
+### Cost
+Zero cloud burn; ~5 min wall time.
+
+---
+
 ## 2026-05-24T15:50Z — iteration 75 (final sync sweep — brain entry _INDEX + doc body for verification count)
 
 Operator: /loop after iter-74 found seraphim README + cli.py stale claims. Iter 75 finished the sweep across the rest of the brain.

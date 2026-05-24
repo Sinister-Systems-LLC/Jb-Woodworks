@@ -121,7 +121,7 @@ seraphim summarize --since 24h                         # provenance + ledger agg
 **Quintuple-verified 25-35pp quantum-kernel-beats-classical-TF-IDF advantage** (mean 31pp; run-to-run variance ~3pp) on real WK_C180 with:
 - Encoding: `--variant zzfm-r1` (K=4 ZZ-FM nearest-neighbor reps=1, depth ~34)
 - Triad: discovered via `seraphim find-qbc` (cluster-similar docs where classical TF-IDF off-diag > 0.4)
-- Corpus: `--corpus pool` (124-doc balanced TF-IDF vocabulary)
+- Corpus: `--corpus pool` (~129-doc topical-balanced TF-IDF vocabulary; grows with brain corpus but capped at 4-per-topic-prefix)
 
 **Bidirectional scope rule** (critical):
 - classical > 0.4 → quantum helps (use the recipe)
