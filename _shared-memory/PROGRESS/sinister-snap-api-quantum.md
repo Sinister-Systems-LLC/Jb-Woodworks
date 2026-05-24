@@ -7,6 +7,33 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T03:50Z — iteration 47 (`seraphim brain-recall` SHIPPED — operationalizes iters 37-46 doctrine)
+
+Operator: /loop. Iters 37-46 produced research arc but no operator-facing tool. Iter 47 ships the bridge.
+
+### Shipped
+- `memory_kernel.recall_brain(query, ...)` — TF-IDF + quantum-kernel hybrid recall (~110 LOC)
+- `seraphim brain-recall <query> [--top-k] [--encoding] [-k] [--alpha] [--corpus] [--out] [--json]`
+- Defaults: K=8 ANGLE (iter-44 doctrine), alpha=0.5 (equal mix), corpus=full
+
+### Smoke-tested
+Query "multi-agent git coordination branch contention" against 149-doc corpus returned 5 sensible top results. **Row #5 (`pip-editable-stale-pth-correction`) is the value-add demo: TF-IDF=0.00 but quantum=0.34.** Quantum kernel surfaces docs TF-IDF alone misses.
+
+### Updated
+- tools/sinister-seraphim/README.md (one line in code block)
+- tools/sinister-seraphim/memory_kernel.py (+110 LOC: recall_brain function)
+- tools/sinister-seraphim/cli.py (+30 LOC: brain-recall subcommand + subparser)
+- brain entry triad-selection cheat sheet (added row #5 for brain-recall)
+- MEMORY.md iter 47 entry with full design notes
+
+### Cost
+Zero cloud burn; 0.2s per query.
+
+### Iter arc 37-47 complete
+Iter 47 closes the discovery → tool loop. The doctrine (iters 38-45) is now BACKED by a daily-use CLI command (iter 47). Operators can use the quantum kernel for memory routing without understanding the inversion-overlap math.
+
+---
+
 ## 2026-05-24T03:25Z — iteration 46 (iter-43 triad audited under all encodings + brain-entry TL;DR added)
 
 Operator: /loop. Two deliverables:

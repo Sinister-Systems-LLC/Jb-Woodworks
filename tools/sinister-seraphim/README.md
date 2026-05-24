@@ -106,6 +106,10 @@ seraphim audit --variant zzfm-r1 --resume-from outputs/prior.json --triad ... --
 seraphim audit --variant zzfm-r2 --sim-only            # ZZ-FM r=2 sim only (real-QPU refused by guard)
 seraphim audit --list-variants                         # show all 5 variants + their depth/burn estimates
 
+seraphim brain-recall "your query string" --top-k 5    # NEW iter 47: TF-IDF + quantum-kernel hybrid recall
+                                                       # default encoding: K=8 ANGLE (iter-44 doctrine)
+                                                       # alpha=0.5 → equal mix; alpha=1.0 → pure TF-IDF; alpha=0.0 → pure quantum
+
 seraphim summarize --since 24h                         # provenance + ledger aggregation
 ```
 

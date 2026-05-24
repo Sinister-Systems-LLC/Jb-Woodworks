@@ -395,6 +395,152 @@ def _thetas_for_inversion(vec: np.ndarray, top_k: int) -> np.ndarray:
     return np.pi * feats / max_v
 
 
+def recall_brain(
+    query: str,
+    *,
+    top_k_results: int = 5,
+    encoding: str = 'angle',
+    k_qubits: int = 8,
+    alpha: float = 0.5,
+    corpus_mode: str = 'full',
+) -> dict[str, Any]:
+    """Hybrid TF-IDF + quantum-kernel brain-entry recall.
+
+    Returns the top-`top_k_results` brain entries most similar to `query`,
+    scored by a weighted combination of classical TF-IDF cosine + sim
+    quantum-kernel inner product.
+
+    Per iter-44 doctrine the default encoding is K=8 ANGLE (wider QBC
+    coverage than K=4 ANGLE or ZZ-FM r=1 in sim).
+
+    Parameters
+    ----------
+    query : str
+        Query text (e.g. "git multi-agent coordination").
+    top_k_results : int
+        How many top brain entries to return.
+    encoding : 'angle' (default), 'angle-cnot', 'zzfm'
+        Quantum kernel encoding.
+    k_qubits : int
+        Number of qubits / top-K TF-IDF features used. Default 8 per iter-44.
+    alpha : float in [0, 1]
+        Weight on TF-IDF (1-alpha goes on quantum kernel). Default 0.5 =
+        equal mix.
+    corpus_mode : 'full' (default) or 'pool'
+        Which brain pool to scan. 'full' = all *.md in knowledge/ except
+        README/INDEX/TEMPLATE. 'pool' = the topical-balanced subset.
+
+    Returns dict with: schema, query, encoding, k_qubits, alpha,
+    corpus_size, top_results (list of {rank, filename, tfidf_sim,
+    quantum_sim, combined_score}).
+    """
+    SKIP = {'README.md', '_INDEX.md', '_TEMPLATE.md'}
+    files = sorted(p.name for p in BRAIN_DIR.glob('*.md') if p.name not in SKIP)
+    if corpus_mode == 'pool':
+        topics: dict[str, list[str]] = {}
+        for f in files:
+            topics.setdefault(f.split('-')[0], []).append(f)
+        pool = []
+        for prefix, group in sorted(topics.items()):
+            pool.extend(group[:4])
+    elif corpus_mode == 'full':
+        pool = files[:]
+    else:
+        raise ValueError(f'unknown corpus_mode {corpus_mode!r}')
+
+    docs = [_load_brain_entry(f) for f in pool] + [query]
+    tfidf = _tfidf_vectors(docs)
+    query_tfidf = tfidf[-1]
+    doc_tfidfs = tfidf[:-1]
+
+    # Classical TF-IDF cosine vs each brain doc
+    tfidf_sims = [_classical_cosine(query_tfidf, dv) for dv in doc_tfidfs]
+
+    # Quantum kernel — build query state then compute |<doc|query>|² for each
+    query_thetas = _thetas_for_inversion(query_tfidf, k_qubits)
+
+    def build_state(thetas):
+        if encoding in ('angle', 'angle-cnot'):
+            per_q = [np.array([np.cos(t / 2), np.sin(t / 2)], dtype=np.complex128) for t in thetas]
+            state = per_q[0]
+            for q in per_q[1:]:
+                state = np.kron(state, q)
+            return state
+        elif encoding == 'zzfm':
+            # ZZ-FM r=1 — same construction as find_qbc_triads' zzfm branch
+            state = np.zeros(2 ** k_qubits, dtype=np.complex128)
+            state[0] = 1.0
+            I2 = np.eye(2, dtype=np.complex128)
+            H = (1 / np.sqrt(2)) * np.array([[1, 1], [1, -1]], dtype=np.complex128)
+
+            def kron_op(target, M):
+                op = None
+                for q in range(k_qubits):
+                    m = M if q == target else I2
+                    op = m if op is None else np.kron(op, m)
+                return op
+
+            def cnot(c, t):
+                dim = 2 ** k_qubits
+                op = np.zeros((dim, dim), dtype=np.complex128)
+                for i in range(dim):
+                    cb = (i >> (k_qubits - 1 - c)) & 1
+                    if cb == 0:
+                        op[i, i] = 1
+                    else:
+                        j = i ^ (1 << (k_qubits - 1 - t))
+                        op[j, i] = 1
+                return op
+
+            for q in range(k_qubits):
+                state = kron_op(q, H) @ state
+            for q in range(k_qubits):
+                RZ = np.array([[np.exp(-1j * thetas[q] / 2), 0], [0, np.exp(1j * thetas[q] / 2)]], dtype=np.complex128)
+                state = kron_op(q, RZ) @ state
+            for ii in range(k_qubits - 1):
+                jj = ii + 1
+                a = float(thetas[ii] * thetas[jj] / np.pi)
+                state = cnot(ii, jj) @ state
+                RZ = np.array([[np.exp(-1j * a / 2), 0], [0, np.exp(1j * a / 2)]], dtype=np.complex128)
+                state = kron_op(jj, RZ) @ state
+                state = cnot(ii, jj) @ state
+            return state
+        else:
+            raise ValueError(f'unknown encoding {encoding!r}')
+
+    query_state = build_state(query_thetas)
+    quantum_sims = []
+    for dv in doc_tfidfs:
+        doc_thetas = _thetas_for_inversion(dv, k_qubits)
+        doc_state = build_state(doc_thetas)
+        quantum_sims.append(float(np.abs(np.vdot(query_state, doc_state)) ** 2))
+
+    # Hybrid score
+    rows = []
+    for i, f in enumerate(pool):
+        combined = alpha * tfidf_sims[i] + (1 - alpha) * quantum_sims[i]
+        rows.append({
+            'filename': f,
+            'tfidf_sim': float(tfidf_sims[i]),
+            'quantum_sim': float(quantum_sims[i]),
+            'combined_score': float(combined),
+        })
+    rows.sort(key=lambda r: r['combined_score'], reverse=True)
+    for rank, r in enumerate(rows[:top_k_results], 1):
+        r['rank'] = rank
+
+    return {
+        'schema': 'sinister-seraphim.brain-recall.v1',
+        'query': query,
+        'encoding': encoding,
+        'k_qubits': k_qubits,
+        'alpha': alpha,
+        'corpus_mode': corpus_mode,
+        'corpus_size': len(pool),
+        'top_results': rows[:top_k_results],
+    }
+
+
 def find_qbc_triads(
     *,
     encoding: str = 'zzfm',

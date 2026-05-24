@@ -538,6 +538,43 @@ def _find_qbc_cmd(args) -> int:
     return 0
 
 
+def _brain_recall_cmd(args) -> int:
+    try:
+        from .memory_kernel import recall_brain
+    except ImportError:
+        from memory_kernel import recall_brain  # type: ignore
+
+    result = recall_brain(
+        args.query,
+        top_k_results=args.top_k,
+        encoding=args.encoding,
+        k_qubits=args.k,
+        alpha=args.alpha,
+        corpus_mode=args.corpus,
+    )
+
+    if args.out:
+        from pathlib import Path
+        Path(args.out).write_text(json.dumps(result, indent=2, ensure_ascii=False), encoding='utf-8')
+
+    if args.json:
+        print(json.dumps(result, indent=2, ensure_ascii=False))
+        return 0
+
+    print(f'[seraphim brain-recall] query: {result["query"]!r}')
+    print(f'  encoding={result["encoding"]}  k_qubits={result["k_qubits"]}  alpha={result["alpha"]}  '
+          f'corpus={result["corpus_mode"]} ({result["corpus_size"]} docs)')
+    print()
+    print(f'  Top {args.top_k} results (ranked by alpha*tfidf + (1-alpha)*quantum):')
+    for r in result['top_results']:
+        print(f'    #{r["rank"]:>2}  combined={r["combined_score"]:.4f}  '
+              f'tfidf={r["tfidf_sim"]:.4f}  quantum={r["quantum_sim"]:.4f}')
+        print(f'         {r["filename"]}')
+    if args.out:
+        print(f'  [saved] {args.out}')
+    return 0
+
+
 def _version_cmd(args) -> int:
     try:
         from . import __version__
@@ -632,6 +669,17 @@ def main(argv: list[str] | None = None) -> int:
                       help='Space- or comma-separated extra reps to sweep for ceiling/headroom computation (e.g. "2 3 4 5 6"). '
                            'Only applies to zzfm encoding. Adds ~0.5s per triad at top-N=10.')
     p_fq.set_defaults(fn=_find_qbc_cmd)
+
+    p_br = sub.add_parser('brain-recall', help='TF-IDF + quantum-kernel hybrid brain-entry recall (iter 47)')
+    p_br.add_argument('query', help='Query text (e.g. "git multi-agent coordination")')
+    p_br.add_argument('--top-k', dest='top_k', type=int, default=5, help='How many top brain entries to return (default 5)')
+    p_br.add_argument('--encoding', default='angle', choices=['angle', 'angle-cnot', 'zzfm'],
+                      help='Quantum kernel encoding (default angle = K=8 ANGLE per iter-44 doctrine)')
+    p_br.add_argument('-k', type=int, default=8, help='Qubits / top-K TF-IDF features (default 8 per iter-44)')
+    p_br.add_argument('--alpha', type=float, default=0.5, help='TF-IDF weight (default 0.5; 1.0=TF-IDF only, 0.0=quantum only)')
+    p_br.add_argument('--corpus', default='full', choices=['full', 'pool'], help='Brain corpus mode (default full)')
+    p_br.add_argument('--out', default=None, help='Optional output JSON path')
+    p_br.set_defaults(fn=_brain_recall_cmd)
 
     p_ver = sub.add_parser('version', help='Print package version')
     p_ver.set_defaults(fn=_version_cmd)

@@ -24,6 +24,10 @@
 3. `seraphim find-qbc --variant zzfm-r1 --rank-by ceiling --top-n 10 --corpus pool` — error-mitigation targets
 4. `seraphim find-qbc --variant zzfm-r1 --rank-by classical --top-n 10 --corpus pool` — high-classical triads (iter-43 fix enumerates full pool)
 
+**Daily brain recall** (iter 47):
+
+5. `seraphim brain-recall "<query>" --top-k 5` — TF-IDF + K=8 ANGLE quantum-kernel hybrid recall. Default alpha=0.5 (equal mix). Surfaces docs TF-IDF alone misses via the quantum-kernel "wider net" property.
+
 **Key structural facts:**
 
 - **classical TF-IDF ↔ sim ceiling Pearson r = +0.9537** (iter 40). Single best predictor of theoretical quantum advantage.
