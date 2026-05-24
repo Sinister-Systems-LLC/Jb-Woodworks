@@ -183,6 +183,26 @@ $rs = Run-Check 'resume_search_index' -SlowSkippable {
 }
 $results.resume_search_index = $rs
 
+# Check 8: telemetry-delta (iter 26; slow-skippable; needs 2+ daily snapshots)
+$td = Run-Check 'telemetry_delta' -SlowSkippable {
+    $deltaScript = "$auto\telemetry-delta.ps1"
+    if (-not (Test-Path $deltaScript)) { return $null }
+    $files = Get-ChildItem "$SanctumRoot\_shared-memory\telemetry" -Filter 'daily-*.json' -File -ErrorAction SilentlyContinue
+    if (-not $files -or $files.Count -lt 2) { return $null }
+    $jsonOut = & $deltaScript -Json 2>$null | Out-String
+    if ($jsonOut) {
+        $obj = $jsonOut | ConvertFrom-Json
+        return [ordered]@{
+            old = $obj.old_snapshot
+            new = $obj.new_snapshot
+            delta_count = ($obj.deltas.PSObject.Properties | Measure-Object).Count
+            lane_change_count = ($obj.lane_changes | Measure-Object).Count
+        }
+    }
+    return $null
+}
+$results.telemetry_delta = $td
+
 # Check 7: regression-json-audit (iter 25; slow-skippable)
 # Verifies every JSON-emitting script's stdout + every generated JSON file
 # parses cleanly via Python json.load. Catches Write-Host contamination
@@ -312,6 +332,10 @@ if ($Json) {
     if ($rja) {
         $kind = if ($rja.fail_count -eq 0) { 'Green' } else { 'Red' }
         Write-Host ("  JSON regression audit  {0}/{1} surfaces PASS ({2} skip)" -f $rja.pass_count, $rja.surface_count, $rja.skip_count) -ForegroundColor $kind
+    }
+    if ($td) {
+        $kind = if ($td.lane_change_count -eq 0) { 'DarkGray' } else { 'Yellow' }
+        Write-Host ("  Telemetry delta        {0} field changes / {1} lane PP changes ({2} -> {3})" -f $td.delta_count, $td.lane_change_count, $td.old, $td.new) -ForegroundColor $kind
     }
     Write-Host ''
     Write-Host '  Elapsed:' -ForegroundColor DarkGray

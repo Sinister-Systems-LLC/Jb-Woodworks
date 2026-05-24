@@ -4,6 +4,54 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-24 11:35Z — /loop iter 26 — telemetry-delta script + sinister-doctor 8th check
+
+EVE on Sanctum continuing /loop. Operator: "keep going". Sibling brain doctrine `loop-driven-sessions-meta-lessons-2026-05-24` validates: "Don't declare saturation prematurely. /loop persistence can find real gaps." Iter 22's CI-breaking bug spot-check was exactly that pattern.
+
+**X1 NEW `automations/telemetry-delta.ps1`:**
+- Compares two daily telemetry snapshots (most-recent vs second-most-recent by default; `-A` / `-B` for explicit pair)
+- Surfaces: canonical_protections delta / per_project full_pass delta / per-lane PP score changes / brain growth / queue movement / inbox spikes
+- 2 modes: console (colored ↑↓ arrows) / `-Json`
+- Smoke result: surfaced **4 real PP score changes** I wouldn't have noticed otherwise:
+  - ↑ **RKOJ 3/5 → 5/5** (now fully PASS!)
+  - ↑ Showmasters 3/5 → 4/5
+  - ↑ Sinister Generator 2/5 → 3/5
+  - ↓ **General 5/5 → 4/5** (regression — worth surfacing)
+- Plus brain +5/+7, queue +3/+3, inbox **+42 unread** (sibling lane spike)
+
+**Wired into sinister-doctor as Check 8** (`telemetry_delta`):
+- Slow-skippable (skipped in -Quick; runs in full mode)
+- Needs ≥2 daily snapshots (gracefully returns null if not enough)
+- Console output: `Telemetry delta  3 field changes / 4 lane PP changes (daily-X.json -> daily-Y.json)`
+
+**Full-mode sinister-doctor now 8 checks, total ~3s:**
+```
+P1-P9 protections      PASS=9 FAIL=0
+Per-project PP1-PP5    4/22 fully PASS (14 weak)
+Brain (Rule 7.5)       124 indexed / 150 ceiling [APPROACHING]
+Inbox (unread)         106 across 35 lanes
+Operator queue         85 open / 49 closed
+Resume-search index    1025 entries / 4 sources
+JSON regression audit  6/6 surfaces PASS (0 skip)
+Telemetry delta        3 field changes / 4 lane PP changes
+```
+
+**Files touched:**
+- NEW `automations/telemetry-delta.ps1` (X1)
+- EDIT `automations/sinister-doctor.ps1` (Check 8 + console row)
+- EDIT `_shared-memory/PROGRESS/Sinister Sanctum.md` (this entry)
+
+**Composes with:**
+- `telemetry-rollup.ps1` (provides the daily snapshots this consumes)
+- `sinister-doctor` (consumes telemetry-delta as Check 8)
+- `loop-driven-sessions-meta-lessons-2026-05-24` (sibling-shipped doctrine validating "don't yield prematurely")
+
+**Master plan:** unchanged 19/24 (~83%). 25-iter polish stack now includes operator-facing daily-delta surface.
+
+**Net value:** operator + dashboard now see which lanes moved between snapshots without manually diffing JSON. RKOJ self-fixed to 5/5 between yesterday + today — caught only via delta.
+
+---
+
 ## 2026-05-24 11:30Z — /loop iter 25 — sinister-doctor 7th check: regression-json-audit
 
 EVE on Sanctum. Composing iter 24's audit into the daily fleet health roll-up.
