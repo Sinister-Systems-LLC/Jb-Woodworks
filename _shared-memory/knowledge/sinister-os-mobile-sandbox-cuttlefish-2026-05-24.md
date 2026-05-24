@@ -7,7 +7,14 @@
 
 ## Status
 
-Updated: 2026-05-24. **Active.** Sandbox scaffold dry-run-tested on Windows; ready for operator to provision a Linux+KVM host for real cuttlefish boots. Lives at `projects/sinister-os-mobile/sandbox/`.
+Updated: 2026-05-24 (2nd refresh — keybox + behavioral + scenario runner added). **Active.** Sandbox lives at `projects/sinister-os-mobile/sandbox/`. Full pytest suite: **31 passed + 10 correctly-gated skips** on Windows / Python 3.12 (`MOCK_CVD=1`). Awaiting operator for Linux+KVM host to advance to real-cvd verbs.
+
+### Added since first revision
+
+- **`sandbox/keybox/`** — operator-supplied Samsung-rooted Android attestation keybox (sha `58243fe6...`) registered in `manifest.json`. `parse_keybox.py` (private-key-stripping XML parser) + `verify_keybox.py` (sha verifier + `--accept-new` appender). 7 keybox tests pass against the actual operator keybox; manifest-no-private-key-material gate enforced. .gitignore in dir blocks `*.xml`/`*.pem`/`*.key` defensively.
+- **`sandbox/tests/test_play_integrity.py`** — 7-case PI surface across 3 layers: L1 (no cvd) passes; L2 (cvd, no PIFork) skips with `real_cvd` marker; L3 (cvd + PIFork + keybox) skips with both `real_cvd` + `requires_hw_attestation` markers. The full PI handshake test (`test_pi_verdict_meets_device_integrity`) is the ultimate acceptance bar — runs only when operator wires PIFork.
+- **`sandbox/behavioral/`** — quantum-derived (seraphim QRNG, chunked to <=1024 bytes per call) hyper-realistic behavioral profiles across 4 channels: gyro micro-tremor (3-axis @ 50Hz, 4Hz+8Hz sinusoids + 1/f pink noise, RMS ~1-2e-3 rad/s = human range), typing intervals (log-normal mu=5.2/sigma=0.45, median ~180ms + 3% thinking-pauses 5-30s), dwell time (gamma k=2.5/theta=4.0 with first-time-user 1.5x boost), and swipe gestures (bezier-curved 5-15% perpendicular from midpoint, 150-900ms duration). 4 profile classes (fast_typer / slow_typer / anxious_consent_reader / casual_swiper). Profile JSONs gitignored (~7700 lines each, regenerable). 9 behavioral pytest cases pass.
+- **`sandbox/scripts/run-scenario.py`** — top-level scenario runner composing (device_class + identity + keybox + behavioral_profile + target_action) tuples. 3 execution modes: `--dry-run` / `--mock-cvd` / `--real-cvd`. Appends JSON ledger row per scenario to `sandbox/.scenario-ledger.jsonl`. Predicts expected PI verdict per device-class. Smoke-tested: 5-fanout dry-run + 1-mock-cvd executed scenario.
 
 ## TL;DR
 
