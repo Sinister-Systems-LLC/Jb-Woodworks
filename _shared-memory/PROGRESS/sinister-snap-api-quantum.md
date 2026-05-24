@@ -7,6 +7,22 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T17:15Z — iteration 79 (caught 2 more 25-34pp leftovers in project README)
+
+Operator: /loop. After iter 78's annotations, ran grep across all repo .md files for remaining "25-34pp" / "quadruple" / etc. Found 2 more in the project README that iter 77's update didn't cover (they were further down the file, outside the audit-table snapshot).
+
+### Updated `projects/sinister-snap-api-quantum/README.md`
+- Line 69 (post-recipe code-block comment): "Expect 25-34pp advantage on real-QPU for QBC triads" → "Expect 25-35pp advantage on real-QPU for QBC triads (mean 31pp; ~3pp run-to-run variance, 5 verified)"
+- Line 96 (bidirectional scope rule table, classical > 0.4 row): "USE quantum kernel — 25-34pp real-QPU advantage" → "USE quantum kernel — 25-35pp real-QPU advantage (quintuple-verified; mean 31pp)"
+
+### Sweep cleanliness
+Final grep result: remaining 25-34pp / quadruple / find-zzfm references are now ONLY in intentional audit-trail files (MEMORY.md historical records, PROGRESS rows from earlier iters, broadcasts that have been annotated, auto-generated canonical-impact files). No operator-facing stale references remain.
+
+### Cost
+Zero cloud burn; ~2 min.
+
+---
+
 ## 2026-05-24T17:00Z — iteration 78 (find-* scripts annotated with seraphim find-qbc forward pointer)
 
 Operator: /loop. Discovered the find-*.py scripts (referenced in old _INDEX) ARE STILL at the project root (not deprecated like the run-*.py scripts in iter 28). They still work but the seraphim CLI is the canonical entry point now.

@@ -66,7 +66,7 @@ seraphim audit --variant zzfm-r1 \
   --triad doc1.md doc2.md doc3.md \
   --corpus pool --cap 180 --stall 120 \
   --out outputs/verify-$(date +%Y%m%dT%H%M%SZ).json
-# Expect 25-34pp advantage on real-QPU for QBC triads
+# Expect 25-35pp advantage on real-QPU for QBC triads (mean 31pp; ~3pp run-to-run variance, 5 verified)
 ```
 
 ### All 3 phases in one command
@@ -93,7 +93,7 @@ The quantum kernel **helps** for cluster-similar docs and **hurts** for already-
 
 | classical TF-IDF off-diag | Recommendation |
 |---|---|
-| **> 0.4** (cluster-similar) | USE quantum kernel — 25-34pp real-QPU advantage |
+| **> 0.4** (cluster-similar) | USE quantum kernel — 25-35pp real-QPU advantage (quintuple-verified; mean 31pp) |
 | 0.3 - 0.4 (transition) | sim-only first; only real-QPU if sim < classical |
 | **< 0.3** (already-distinct) | DON'T use — classical wins by 15-60pp |
 
