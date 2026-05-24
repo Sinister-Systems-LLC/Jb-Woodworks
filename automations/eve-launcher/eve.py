@@ -94,6 +94,11 @@ try:
 except ImportError:
     lib = None  # noqa: E402 -- handled at runtime; some flags don't need the lib
 
+try:
+    import quantum_tools  # noqa: E402  -- stdlib-only quantum sub-menu (RKOJ-ELENO 2026-05-24)
+except ImportError:
+    quantum_tools = None  # noqa: E402  -- T sub-menu disabled if module missing
+
 
 PS1_LAUNCHER = (SANCTUM_ROOT_PATH / "automations" / "start-sinister-session.ps1") if SANCTUM_ROOT_PATH else None
 
@@ -364,6 +369,26 @@ def run_diagnose() -> int:
     else:
         print(f"  {FAIL}[FAIL]{RESET} eve_picker_lib not importable")
 
+    if quantum_tools is not None:
+        try:
+            qout = quantum_tools._quantum_outputs_dir()
+            if qout is not None:
+                qcount = len(list(qout.glob("*.json")))
+                print(f"  {OK}[OK]{RESET}    quantum_tools: {qcount} JSON output files at {qout}")
+            else:
+                print(f"  {WARN}[warn]{RESET} quantum_tools: outputs/ dir not located")
+        except Exception as e:
+            print(f"  {WARN}[warn]{RESET} quantum_tools probe error: {e}")
+    else:
+        print(f"  {WARN}[warn]{RESET} quantum_tools not importable (T sub-menu will be disabled)")
+
+    # Fleet heartbeat probe
+    fleet = _fleet_heartbeat_summary()
+    if fleet:
+        print(f"  {OK}[OK]{RESET}    fleet heartbeat: {fleet}")
+    else:
+        print(f"  {WARN}[warn]{RESET} no fleet heartbeats found")
+
     print()
     print(f"  {SOFT}Done. Run EVE.exe with no args to launch.{RESET}")
     print()
@@ -373,6 +398,32 @@ def run_diagnose() -> int:
 # ---------------------------------------------------------------------------
 # Recent ship / git helpers
 # ---------------------------------------------------------------------------
+
+def _fleet_heartbeat_summary() -> str:
+    """jcode-style ticker: count fleet heartbeats fresh in last 5 minutes.
+
+    Returns ANSI-rendered "fleet 3/7 live" string. Reads JSON from
+    _shared-memory/heartbeats/<slug>.json; an agent counts as "live" if
+    file mtime is within the freshness window. Empty string on probe failure.
+    """
+    if SANCTUM_ROOT_PATH is None:
+        return ""
+    hb_dir = SANCTUM_ROOT_PATH / "_shared-memory" / "heartbeats"
+    if not hb_dir.exists():
+        return ""
+    try:
+        hbs = list(hb_dir.glob("*.json"))
+    except OSError:
+        return ""
+    if not hbs:
+        return ""
+    fresh_window = 300  # 5 minutes
+    now = time.time()
+    live = sum(1 for p in hbs if (now - p.stat().st_mtime) <= fresh_window)
+    total = len(hbs)
+    color = OK if live >= 1 else DIM
+    return f"{color}{live}/{total} live{RESET}"
+
 
 def _recent_commit_subject() -> str:
     """Best-effort one-line `git log -1 --format=%s`. Empty string on failure."""
@@ -412,10 +463,13 @@ def banner(state) -> None:
           f"{PILL_G} mcp:{state.mcp} {PILL_Z}  {PILL_B} bots:{state.bots} {PILL_Z}  "
           f"{PILL_R} --skip-perms {PILL_Z}")
     print(f"  {DARKP}{'-' * 68}{RESET}")
-    # Status line
+    # Status line + jcode-style fleet heartbeat ticker
+    fleet = _fleet_heartbeat_summary()
+    fleet_seg = f"  {DIM}[{RESET}fleet: {fleet}{DIM}]{RESET}" if fleet else ""
     print(f"  {DIM}[{RESET}account: {BRIGHTP}{account}{RESET} {DIM}]{RESET}  "
           f"{DIM}[{RESET}swarm: {swarm_tag}{DIM}]{RESET}  "
-          f"{DIM}[{RESET}loop: {loop_tag}{DIM}]{RESET}")
+          f"{DIM}[{RESET}loop: {loop_tag}{DIM}]{RESET}"
+          f"{fleet_seg}")
     recent = _recent_commit_subject()
     if recent:
         if len(recent) > 64:
@@ -447,6 +501,8 @@ def render_picker(state) -> None:
           f"{PURPLE}S){RESET} Autonomy     "
           f"{PURPLE}F){RESET} Full picker  "
           f"{PURPLE}Q){RESET} Quit")
+    print(f"  {PURPLE}T){RESET} Quantum tools     "
+          f"{DIM}// PSTF / QDDD / TLPC / qbc-recall / summary{RESET}")
     print(f"  {DIM}    multi-select: 1,3,5 or 1-3{RESET}")
     print(f"  {DARKP}{'-' * 68}{RESET}")
 
@@ -522,7 +578,7 @@ def run_account_status() -> int:
 # Arg parsing (must run BEFORE banner + picker so probe flags exit fast)
 # ---------------------------------------------------------------------------
 
-EVE_VERSION = "0.4.0"  # v2 :: absorbed bat prereq flow + animated banner + status line
+EVE_VERSION = "0.4.1"  # v0.4.1 :: quantum-tools sub-menu (T) + jcode heartbeat ticker
 
 
 def _print_help() -> None:
@@ -536,6 +592,8 @@ def _print_help() -> None:
     print("  --profile            Print 'boot=<N>ms rows=N mcp=N bots=N' + exit 0.")
     print("  --diagnose           Probe every prerequisite + exit 0.")
     print("  --account-status     Print multi-account state + exit 0.")
+    print("  --quantum-summary    Print one-screen quantum status + exit 0.")
+    print("  --quantum-tools      Open quantum tools sub-menu (PSTF/QDDD/TLPC/recall).")
     print()
     print("Setup flags:")
     print("  --setup-autonomy     Re-run grant-claude-autonomy.ps1 + exit 0.")
@@ -637,6 +695,18 @@ def main(argv: list[str] | None = None) -> int:
     if any(a.lower() in ("--account-status", "-account-status", "/account-status") for a in argv):
         enable_vt_on_windows()
         return run_account_status()
+    if any(a.lower() in ("--quantum-summary", "-quantum-summary", "/quantum-summary") for a in argv):
+        enable_vt_on_windows()
+        if quantum_tools is None:
+            print("  [FAIL] quantum_tools module not importable")
+            return 1
+        return quantum_tools.quantum_summary()
+    if any(a.lower() in ("--quantum-tools", "-quantum-tools", "/quantum-tools") for a in argv):
+        enable_vt_on_windows()
+        if quantum_tools is None:
+            print("  [FAIL] quantum_tools module not importable")
+            return 1
+        return quantum_tools.menu_loop()
 
     # Parse session-config flags (mutate env for child PS1)
     argv = _parse_session_flags(argv)
@@ -671,12 +741,22 @@ def main(argv: list[str] | None = None) -> int:
         render_picker(state)
         try:
             raw = input(
-                f"  {WHITE}Selection [1-{len(state.rows)} / G / A / N / R / K / S / F / Q, "
+                f"  {WHITE}Selection [1-{len(state.rows)} / G / A / N / R / K / S / F / T / Q, "
                 f"default={state.default_key}] {PURPLE}>{RESET} "
             ).strip()
         except (EOFError, KeyboardInterrupt):
             print()
             return 0
+
+        # T shortcut :: quantum tools sub-menu (intercept before resolve_pick)
+        if raw.lower() in ("t", "quantum", "tools"):
+            if quantum_tools is None:
+                print(f"  {WARN}quantum_tools module not importable.{RESET}")
+                time.sleep(1)
+            else:
+                quantum_tools.menu_loop()
+            state = lib.build_picker_state(boot_ms=state.boot_ms)
+            continue
 
         result = lib.resolve_pick(raw, state)
 
