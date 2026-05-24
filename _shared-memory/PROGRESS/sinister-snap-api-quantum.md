@@ -7,6 +7,28 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T07:00Z — iteration 55 (cross-agent broadcast for iters 51-54 doctrine evolution)
+
+Operator: /loop. "Told to agents" directive needs another broadcast — significant doctrine evolution since iter 44's broadcast.
+
+### Posted
+`_shared-memory/cross-agent/2026-05-24T0700Z-sanctum-broadcast-encoding-thresholds-iters-51-54.md`
+
+### Coverage
+- TL;DR + audit trail with 4 commit hashes (63f6643, e7a31a7, a2c3e0a, 1de1e17)
+- Per-encoding 50% QBC thresholds (measured): K=4 ~0.55, K=8 ~0.45, ZZ-FM ~0.50
+- Per-bucket QBC% table (129-doc pool)
+- K=4 ⊂ K=8 ⊂ ZZ nesting + universal-QBC explanation
+- Encoding-selection table by use case
+- Corpus-stability table (K=4 ANGLE is sensitive)
+- 3 ADD action items + 3 FIX action items per lane
+- 3 open questions deferred to operator interest
+
+### Cost
+Zero cloud burn; ~6 minutes wall time for the broadcast write.
+
+---
+
 ## 2026-05-24T06:35Z — iteration 54 (corpus-stability check — K=8/ZZ stable, K=4 ANGLE shifts)
 
 Operator: /loop. Re-ran iter-53 curve against full 149-doc corpus to see if thresholds shift vs 129-doc topical-balanced pool.
