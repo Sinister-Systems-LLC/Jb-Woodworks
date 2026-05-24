@@ -278,6 +278,35 @@ if ($p13Gaps -and $p13Gaps.Count -gt 0) {
     foreach ($g in $p13Gaps) {
         Add-Content -Path $ViolationsLog -Value "    - $g (run: powershell -File automations\seed-resume-points.ps1 -Apply -Lane $g)" -Encoding UTF8 -ErrorAction SilentlyContinue
     }
+    # Self-heal when -AutoRestore is on (already used for P11 auto-restore from reference)
+    if ($AutoRestore) {
+        $seeder = Join-Path $SanctumRoot 'automations\seed-resume-points.ps1'
+        if (Test-Path $seeder) {
+            Add-Content -Path $ViolationsLog -Value "  P13 auto-fix: running seed-resume-points.ps1 -Apply ..." -Encoding UTF8 -ErrorAction SilentlyContinue
+            & $seeder -Apply -SanctumRoot $SanctumRoot 2>$null | Out-Null
+            # Re-test P13 silently
+            $script:p13Gaps = @()
+            $hbDir2 = Join-Path $SanctumRoot '_shared-memory\heartbeats'
+            $rpRoot2 = Join-Path $SanctumRoot '_shared-memory\resume-points'
+            $remap = @{ 'sanctum'='Sinister Sanctum'; 'forge'='Sinister Forge'; 'panel'='Sinister Panel'; 'kernel-apk'='Sinister Kernel APK'; 'apk'='Sinister Kernel APK'; 'sinister-emulator'='Sinister Emulator'; 'sinister-os'='Sinister OS'; 'rkoj'='RKOJ'; 'rkoj-workstation'='RKOJ Workstation'; 'jb-woodworks'='Jb Woodworks'; 'showmasters'='Showmasters'; 'jkor'='JOKR'; 'snap-emulator-api'='sinister-snap-api-quantum'; 'tiktok-emulator-api'='TikTok Emulator API'; 'sinister-generator'='Sinister Generator'; 'sinister-term'='Sinister Term' }
+            foreach ($rf in (Get-ChildItem -Path $hbDir2 -Filter '*.json' -ErrorAction SilentlyContinue)) {
+                $rs = $rf.BaseName
+                if ($rs -match '\.beat$|^phones|^diagnose$|^general$|^inventions$|^sanctum-[0-9a-f]{6}$') { continue }
+                $rd = if ($remap.ContainsKey($rs)) { $remap[$rs] } else { $rs }
+                $rdir = Join-Path $rpRoot2 $rd
+                if (-not (Test-Path $rdir) -or @(Get-ChildItem $rdir -Filter '*.json' -ErrorAction SilentlyContinue).Count -eq 0) {
+                    $script:p13Gaps += $rs
+                }
+            }
+            if ($p13Gaps.Count -eq 0) {
+                # Flip the result row
+                foreach ($r in $results) { if ($r.id -eq 'P13') { $r.ok = $true } }
+                Add-Content -Path $ViolationsLog -Value "  P13 auto-fix: SUCCESS (all gaps closed)" -Encoding UTF8 -ErrorAction SilentlyContinue
+            } else {
+                Add-Content -Path $ViolationsLog -Value "  P13 auto-fix: PARTIAL ($($p13Gaps.Count) gaps remain)" -Encoding UTF8 -ErrorAction SilentlyContinue
+            }
+        }
+    }
 }
 
 # P12 -- jcode parity probe (real-fails only). Composes with jcode-parity-probe.ps1.
