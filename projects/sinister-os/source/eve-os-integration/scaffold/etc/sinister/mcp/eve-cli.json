@@ -1,0 +1,77 @@
+{
+  "_author": "RKOJ-ELENO :: 2026-05-24",
+  "_doc": "Tool registration for the eve CLI. Dropped at /etc/sinister/mcp/eve-cli.json. EVE daemon picks this up via inotify and exposes each subcommand as an MCP tool + REST callable.",
+  "tool": "eve-cli",
+  "version": "0.1.0",
+  "description": "The eve command-line client. Wraps the daemon's REST surface for shell users.",
+  "exec": "/usr/bin/eve",
+  "run_as": "eve",
+  "requires_root": false,
+  "subcommands": [
+    {
+      "name": "status",
+      "description": "Show daemon status, LLM backend health, last 5 heartbeats.",
+      "args": [],
+      "exit_codes": {
+        "0": "healthy",
+        "1": "degraded",
+        "2": "down"
+      }
+    },
+    {
+      "name": "up",
+      "description": "Bring sinister-eve.service up via systemctl start.",
+      "args": [],
+      "requires_root": true
+    },
+    {
+      "name": "down",
+      "description": "Take sinister-eve.service down via systemctl stop.",
+      "args": [],
+      "requires_root": true
+    },
+    {
+      "name": "restart",
+      "description": "Restart sinister-eve.service.",
+      "args": [],
+      "requires_root": true
+    },
+    {
+      "name": "tools",
+      "description": "List every registered MCP tool the daemon knows about.",
+      "args": []
+    },
+    {
+      "name": "say",
+      "description": "Send a free-form intent string to /v1/intent/dispatch.",
+      "args": [
+        {
+          "name": "intent",
+          "type": "string",
+          "required": true,
+          "description": "The intent string. Example: 'open my JB Woodworks dashboard'"
+        }
+      ]
+    },
+    {
+      "name": "memory-get",
+      "description": "Read a memory slot.",
+      "args": [
+        {"name": "key", "type": "string", "required": true}
+      ]
+    },
+    {
+      "name": "memory-set",
+      "description": "Write a memory slot atomically.",
+      "args": [
+        {"name": "key", "type": "string", "required": true},
+        {"name": "value", "type": "string", "required": true}
+      ]
+    }
+  ],
+  "intents": [
+    {"regex": "^status$", "subcommand": "status"},
+    {"regex": "^(restart|reboot) ?eve$", "subcommand": "restart"},
+    {"regex": "^(list|show) tools$", "subcommand": "tools"}
+  ]
+}

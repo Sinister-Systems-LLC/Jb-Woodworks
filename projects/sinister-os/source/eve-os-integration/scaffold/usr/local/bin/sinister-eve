@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# /usr/bin/sinister-eve — placeholder wrapper that exec's the Python prototype.
+# Author: RKOJ-ELENO :: 2026-05-24
+# In the P3 Rust build this file is replaced by the compiled binary.
+
+set -euo pipefail
+
+PROTO="${SINISTER_EVE_PROTOTYPE:-/usr/share/sinister-eve/sinister-eve-mcp-bridge.py}"
+
+# In dev / VM testing the prototype lives next to this script.
+if [[ ! -f "$PROTO" ]]; then
+    self_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    candidate="${self_dir}/../../../sinister-eve-mcp-bridge.py"
+    if [[ -f "$candidate" ]]; then
+        PROTO="$candidate"
+    fi
+fi
+
+if [[ ! -f "$PROTO" ]]; then
+    echo "sinister-eve: prototype not found at $PROTO" >&2
+    echo "  set SINISTER_EVE_PROTOTYPE=<path-to-sinister-eve-mcp-bridge.py>" >&2
+    exit 127
+fi
+
+PYTHON="${SINISTER_EVE_PYTHON:-python3}"
+if ! command -v "$PYTHON" >/dev/null 2>&1; then
+    echo "sinister-eve: $PYTHON not on PATH" >&2
+    exit 127
+fi
+
+exec "$PYTHON" "$PROTO" "$@"

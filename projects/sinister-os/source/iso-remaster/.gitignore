@@ -1,0 +1,9 @@
+# Sinister OS iso-remaster -- generated artefacts
+# Author: RKOJ-ELENO :: 2026-05-24
+
+out/
+workspace/
+_logs/
+*.iso
+*.iso.sha256
+*.iso.md5

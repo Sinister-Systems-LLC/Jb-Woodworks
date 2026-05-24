@@ -1,0 +1,8 @@
+# Author: RKOJ-ELENO :: 2026-05-24
+# Keep large ISOs + download scratch out of git.
+*.iso
+*.iso.sha256
+_download*.py
+_download*.log
+_parallel*.py
+_parallel*.log

@@ -1,0 +1,9 @@
+# Sinister OS — Plymouth theme manifest. Author: RKOJ-ELENO :: 2026-05-24
+[Plymouth Theme]
+Name=Sinister
+Description=Sinister OS boot splash — purple gradient + wordmark
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/sinister
+ScriptFile=/usr/share/plymouth/themes/sinister/sinister.script

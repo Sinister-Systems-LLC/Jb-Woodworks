@@ -1,0 +1,64 @@
+# Sinister OS — Calamares branding descriptor.
+# Author: RKOJ-ELENO :: 2026-05-24
+#
+# Loaded by settings.conf via `branding: sinister`. Installed at
+# /etc/calamares/branding/sinister/branding.desc on the live ISO.
+#
+# Schema: https://github.com/calamares/calamares/blob/calamares/src/branding/default/branding.desc
+#
+# Color tokens trace back to:
+#   D:/Sinister Sanctum/projects/sinister-os/source/docker-stack/config/theme/sinister-theme-tokens.css
+#   --accent        #c084fc   (sidebar accent + window title)
+#   --accent-strong #8b5cf6   (active sidebar item)
+#   --bg            #0e0a1f   (sidebar bg)
+#   --bg-2          #1a1330   (sidebar text bg-2 alt)
+#   --text          #e9d5ff   (sidebar text)
+
+---
+componentName: sinister
+
+# Welcome page: use the modern Calamares welcome layout (vs. the legacy KDE style)
+# and let our logo expand to fill the welcome card.
+welcomeStyleCalamares: true
+welcomeExpandingLogo: true
+
+# Window: fixed, comfortably-sized window. Avoids fullscreen takeover on a small VM.
+windowExpanding: normal
+windowSize: 960px,640px
+
+# User-visible strings. ${OS-RELEASE-fieldname} substitutions resolve against
+# /etc/os-release on the live ISO (which our overlay rewrote to ID=sinister,
+# NAME="Sinister OS", PRETTY_NAME="Sinister OS", VERSION="2026.05").
+strings:
+  productName:          Sinister OS
+  shortProductName:     Sinister
+  version:              2026.05
+  shortVersion:         2026.05
+  versionedName:        Sinister OS 2026.05
+  shortVersionedName:   Sinister 2026.05
+  bootloaderEntryName:  Sinister OS
+  productUrl:           https://sinister.systems/
+  supportUrl:           https://sinister.systems/support
+  knownIssuesUrl:       https://github.com/sinister-systems/sinister-os/issues
+  releaseNotesUrl:      https://sinister.systems/release-notes
+  donateUrl:            https://sinister.systems/donate
+
+# Images: all paths resolve relative to this branding.desc directory.
+# show.svg is the all-in-one wordmark+icon asset emitted by the brand-assets pipeline.
+images:
+  productIcon:      show.svg
+  productLogo:      show.svg
+  productWelcome:   show.svg
+  productWallpaper: show.svg
+
+# Slideshow: a single static image is the minimum-viable slideshow API v1.
+# (Future P4 work: ship a QML slideshow with multi-page brand story.)
+slideshow:    show.svg
+slideshowAPI: 1
+
+# Style: sidebar colors lifted from sinister-theme-tokens.css.
+style:
+  SidebarBackground:        "#0e0a1f"
+  SidebarText:              "#e9d5ff"
+  SidebarBackgroundCurrent: "#8b5cf6"
+  SidebarTextCurrent:       "#ffffff"

@@ -24,9 +24,19 @@ systemctl enable --now ollama.service || true
 mkdir -p /var/log/sinister
 chown -R eve:eve /var/log/sinister || true
 
-# Mark first-boot done so the unit doesn't re-run
-touch /var/lib/sinister/.first-boot-done
+# Safety fix 2026-05-24 (RKOJ-ELENO): reorder mkdir -> chmod -> touch so set -euo pipefail does not abort on missing parent dir
 mkdir -p /var/lib/sinister
 chmod 700 /var/lib/sinister
+# Mark first-boot done so the unit doesn't re-run
+touch /var/lib/sinister/.first-boot-done
+
+# Safety fix 2026-05-24 (RKOJ-ELENO): BLOCKER #2 simpler-option — also place kiosk Hyprland config at /root/.config/hypr/ so live ISO (boots as root/liveuser) auto-launches kiosk. Long-term M2: switch to greetd auto-login of dedicated eve user from /etc/skel.
+mkdir -p /root/.config/hypr
+if [ -f /etc/skel/.config/hypr/hyprland.conf ]; then
+    cp -f /etc/skel/.config/hypr/hyprland.conf /root/.config/hypr/hyprland.conf
+fi
+
+# Safety fix 2026-05-24 (RKOJ-ELENO): BLOCKER #3 — yay is whitelisted in /etc/sudoers.d/sinister but AUR-only. Bootstrap it from official Arch source on first boot (idempotent).
+/usr/local/bin/sinister-first-boot-install-yay.sh || true
 
 echo "[$(date --utc +%FT%TZ)] sinister-first-boot done"

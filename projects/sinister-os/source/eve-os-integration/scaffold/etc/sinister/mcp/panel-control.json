@@ -1,0 +1,75 @@
+{
+  "_author": "RKOJ-ELENO :: 2026-05-24",
+  "_doc": "Tool registration for the Sinister Panel web UI. Dropped at /etc/sinister/mcp/panel-control.json. Panel listens for these calls on its own loopback HTTP at 127.0.0.1:7080.",
+  "tool": "panel-control",
+  "version": "0.1.0",
+  "description": "Sinister Panel UI control. Daemon proxies these calls to Panel's loopback HTTP at 127.0.0.1:7080.",
+  "exec": "http://127.0.0.1:7080",
+  "transport": "http",
+  "run_as": "eve",
+  "requires_root": false,
+  "subcommands": [
+    {
+      "name": "tab.open",
+      "description": "Open a new tab in the active Panel window.",
+      "http_method": "POST",
+      "http_path": "/v1/tab/open",
+      "args": [
+        {"name": "url", "type": "string", "required": true},
+        {"name": "title", "type": "string", "required": false},
+        {"name": "background", "type": "boolean", "required": false, "default": false}
+      ]
+    },
+    {
+      "name": "tab.refresh",
+      "description": "Refresh the currently active tab.",
+      "http_method": "POST",
+      "http_path": "/v1/tab/refresh",
+      "args": []
+    },
+    {
+      "name": "tab.close",
+      "description": "Close a tab by index or title-prefix.",
+      "http_method": "POST",
+      "http_path": "/v1/tab/close",
+      "args": [
+        {"name": "index", "type": "integer", "required": false},
+        {"name": "title_prefix", "type": "string", "required": false}
+      ]
+    },
+    {
+      "name": "navigate",
+      "description": "Navigate the active tab to a URL.",
+      "http_method": "POST",
+      "http_path": "/v1/navigate",
+      "args": [
+        {"name": "url", "type": "string", "required": true}
+      ]
+    },
+    {
+      "name": "theme.set",
+      "description": "Set the Panel theme (light, dark, sinister-purple).",
+      "http_method": "POST",
+      "http_path": "/v1/theme",
+      "args": [
+        {"name": "theme", "type": "string", "required": true, "enum": ["light", "dark", "sinister-purple"]}
+      ]
+    },
+    {
+      "name": "notify",
+      "description": "Show a notification toast inside Panel.",
+      "http_method": "POST",
+      "http_path": "/v1/notify",
+      "args": [
+        {"name": "title", "type": "string", "required": true},
+        {"name": "body", "type": "string", "required": false},
+        {"name": "level", "type": "string", "required": false, "enum": ["info", "warn", "error"], "default": "info"}
+      ]
+    }
+  ],
+  "intents": [
+    {"regex": "^open (?P<url>https?://\\S+)$", "subcommand": "tab.open", "args": {"url": "{url}"}},
+    {"regex": "^refresh( panel)?$", "subcommand": "tab.refresh"},
+    {"regex": "^(switch to|use) (dark|light|purple) (theme|mode)$", "subcommand": "theme.set", "args": {"theme": "{2}"}}
+  ]
+}

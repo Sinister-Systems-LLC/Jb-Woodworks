@@ -1,0 +1,43 @@
+/* Sinister OS — GTK 4 / libadwaita accent overlay. Author: RKOJ-ELENO :: 2026-05-24
+ * libadwaita honors @define-color overrides shipped under
+ * /usr/share/themes/<name>/gtk-4.0/gtk.css when GTK_THEME=Sinister:dark is set,
+ * or when the override applies via gsettings + libadwaita's named-color system.
+ * Derived from sinister-theme-tokens.css.
+ */
+
+@define-color accent_color        #c084fc;
+@define-color accent_bg_color     #c084fc;
+@define-color accent_fg_color     #0e0a1f;
+
+@define-color destructive_color   #fca5a5;
+@define-color destructive_bg_color #fca5a5;
+@define-color destructive_fg_color #0e0a1f;
+
+@define-color success_color       #86efac;
+@define-color warning_color       #fde047;
+@define-color error_color         #fca5a5;
+
+@define-color window_bg_color     #0e0a1f;
+@define-color window_fg_color     #e9d5ff;
+@define-color view_bg_color       #1a1330;
+@define-color view_fg_color       #e9d5ff;
+@define-color headerbar_bg_color  #1a1330;
+@define-color headerbar_fg_color  #e9d5ff;
+@define-color card_bg_color       #251a3d;
+@define-color popover_bg_color    #1a1330;
+@define-color popover_fg_color    #e9d5ff;
+
+window, .background {
+  background-color: #0e0a1f;
+  color: #e9d5ff;
+}
+
+button.suggested-action {
+  background-color: #c084fc;
+  color: #0e0a1f;
+}
+
+*:selected, selection {
+  background-color: alpha(#c084fc, 0.30);
+  color: #e9d5ff;
+}

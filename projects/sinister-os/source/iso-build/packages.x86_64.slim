@@ -1,0 +1,127 @@
+# packages.x86_64.slim — Sinister OS LEAN package list
+# Author: RKOJ-ELENO :: 2026-05-24
+#
+# Derived from observed operator usage on the Windows host (see docs/pc-feature-audit.md).
+# Goal: ship only what the operator demonstrably uses + boot-critical essentials.
+# Target: ~70 non-comment lines (vs 109 in packages.x86_64).
+#
+# Sibling to packages.x86_64 — operator picks which to feed mkarchiso. Do not delete the other.
+#
+# DEFERRED-TO-FIRST-BOOT (yay/AUR or pacman post-install — NOT in base ISO):
+#   zen-browser-bin, rustdesk-bin, tresorit-cli, proton-ge-custom, obsidian (or flatpak),
+#   wireshark-qt, cloudflared, qbittorrent, android-tools, jre17-openjdk, qemu-desktop+virt-manager,
+#   docker-compose, openrgb, spotify-launcher, docker (Docker Desktop replacement),
+#   discord (multilib but big — 280 MB), obs-studio (only if recording). See first-boot.sh.
+
+# --- base system ---
+base                              # core
+base-devel                        # core (needed for AUR yay first-boot)
+linux                             # core
+linux-firmware                    # core (wireless + GPU firmware blobs)
+linux-headers                     # core (dkms for nvidia later if needed)
+intel-ucode                       # core (Intel CPU microcode)
+amd-ucode                         # core (AMD CPU microcode — hardware-agnostic ISO)
+mkinitcpio                        # core
+mkinitcpio-archiso                # archiso live boot
+
+# --- bootloader (BIOS + UEFI single path) ---
+grub                              # bootloader
+efibootmgr                        # UEFI boot entries
+edk2-shell                        # UEFI shell
+
+# --- networking ---
+networkmanager                    # network
+iwd                               # network (wifi backend)
+openssh                           # network (sshd + ssh client)
+network-manager-applet            # network (nm-applet tray)
+bluez                             # network (bluetooth core)
+bluez-utils                       # network (bluetoothctl)
+tailscale                         # network (operator runs it on Windows daily)
+
+# --- filesystem ---
+btrfs-progs                       # system (snapper backups)
+snapper                           # system (btrfs snapshot mgmt)
+e2fsprogs                         # system (ext4)
+dosfstools                        # system (FAT — USB drives)
+ntfs-3g                           # system (Windows partition mount — initial dual-boot)
+parted                            # system
+# exfatprogs deferred — install on demand when an exFAT USB is plugged
+
+# --- shell + cli (lean) ---
+git                               # core-dev (operator uses constantly)
+sudo                              # system
+curl                              # system
+wget                              # system
+neovim                            # core-dev (editor fallback to VSCode)
+htop                              # system
+ripgrep                           # core-dev
+fd                                # core-dev
+fzf                               # core-dev
+jq                                # core-dev
+7zip                              # system (replaces WinRAR + 7-Zip)
+
+# --- compositor (Hyprland minimal) ---
+wayland                           # display
+xorg-xwayland                     # display (legacy X11 app fallback)
+hyprland                          # compositor
+hyprlock                          # compositor (lockscreen)
+hypridle                          # compositor (idle daemon)
+xdg-desktop-portal                # compositor (portal umbrella)
+xdg-desktop-portal-hyprland       # compositor
+waybar                            # compositor (status bar)
+wofi                              # compositor (launcher)
+swaybg                            # compositor (wallpaper)
+mako                              # compositor (notifications)
+kitty                             # compositor (terminal — Super+Q)
+qt6-wayland                       # compositor (Qt6 plugin — Qt5 deferred, fewer Qt5 apps in 2026)
+grim                              # compositor (screenshot — replaces Gyazo)
+slurp                             # compositor (region select)
+wl-clipboard                      # compositor (clipboard)
+
+# --- audio (pipewire) ---
+pipewire                          # audio
+pipewire-pulse                    # audio (PulseAudio compat)
+pipewire-alsa                     # audio (ALSA compat)
+pipewire-jack                     # audio (JACK compat for OBS)
+wireplumber                       # audio (session mgr)
+pavucontrol                       # audio (GUI mixer)
+
+# --- greeter ---
+greetd                            # system (display manager)
+greetd-tuigreet                   # system (TUI greeter)
+
+# --- the OS shell + browsers (operator's actual stack) ---
+chromium                          # browser (kiosk-mode for Sinister Panel)
+firefox                           # browser (fallback — Zen-Browser is primary, first-boot via AUR)
+nodejs                            # core-dev (panel runtime)
+npm                               # core-dev
+
+# --- AI / scripting ---
+ollama                            # ai (operator runs locally on Windows)
+python                            # core-dev
+python-pip                        # core-dev
+
+# --- gaming (Steam + Proton + 32-bit GPU stack — 13-game library) ---
+steam                             # gaming (NON-FOSS, multilib)
+steam-native-runtime              # gaming (glibc compat)
+gamemode                          # gaming
+lib32-gamemode                    # gaming
+mangohud                          # gaming (FPS overlay)
+lib32-mangohud                    # gaming
+mesa                              # gaming (GPU)
+lib32-mesa                        # gaming
+vulkan-icd-loader                 # gaming
+lib32-vulkan-icd-loader           # gaming
+vulkan-radeon                     # gaming (AMD)
+lib32-vulkan-radeon               # gaming
+vulkan-intel                      # gaming (Intel)
+lib32-vulkan-intel                # gaming
+# lutris deferred to first-boot — pulls many deps; install when first non-Steam title needed
+
+# --- comms + media (operator-named — discord/obs/spotify deferred to first-boot) ---
+telegram-desktop                  # comms (small ~50 MB, operator-named)
+mpv                               # media (video player)
+imv                               # media (image viewer)
+
+# --- installer ---
+archinstall                       # install (TUI)

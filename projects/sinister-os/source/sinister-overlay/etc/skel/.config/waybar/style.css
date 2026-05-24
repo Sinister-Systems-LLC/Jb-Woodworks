@@ -1,0 +1,56 @@
+/* Sinister OS — Waybar style. Author: RKOJ-ELENO :: 2026-05-24
+ * Derived from sinister-theme-tokens.css:
+ *   --bg #0e0a1f, --bg-2 #1a1330, --accent #c084fc, --accent-strong #8b5cf6,
+ *   --text #e9d5ff, --border rgba(white 10%), --radius 10px
+ */
+
+* {
+  font-family: "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+  font-size: 12px;
+  border: none;
+  border-radius: 0;
+  min-height: 0;
+}
+
+window#waybar {
+  background: rgba(14, 10, 31, 0.78);
+  color: #e9d5ff;
+  border-bottom: 1px solid rgba(192, 132, 252, 0.25);
+}
+
+#workspaces button {
+  padding: 0 8px;
+  color: #cbd5e1;
+  background: transparent;
+  border-radius: 6px;
+  margin: 4px 2px;
+}
+
+#workspaces button.active {
+  background: rgba(192, 132, 252, 0.18);
+  color: #e9d5ff;
+  box-shadow: inset 0 -2px 0 #c084fc;
+}
+
+#workspaces button:hover {
+  background: rgba(192, 132, 252, 0.10);
+}
+
+#clock,
+#battery,
+#network,
+#pulseaudio,
+#tray,
+#window {
+  padding: 0 10px;
+  color: #e9d5ff;
+}
+
+#clock {
+  color: #c084fc;
+  font-weight: 600;
+}
+
+#battery.warning  { color: #fde047; }
+#battery.critical { color: #fca5a5; }
+#network.disconnected { color: #fca5a5; }

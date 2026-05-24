@@ -1,0 +1,102 @@
+# sinister-eve.service — the EVE OS-integration daemon
+# Author: RKOJ-ELENO :: 2026-05-24
+# Install path: /etc/systemd/system/sinister-eve.service
+# Activate:     sudo systemctl daemon-reload && sudo systemctl enable --now sinister-eve.service
+
+[Unit]
+Description=Sinister OS — EVE system service (LLM + MCP + memory)
+Documentation=file:///usr/share/doc/sinister-eve/DESIGN.md
+After=network-online.target
+Wants=network-online.target
+# Voice bridge depends on us; we do not depend on it. EVE runs headless if needed.
+Before=sinister-voice.service
+
+[Service]
+Type=notify
+NotifyAccess=main
+
+# Identity. The eve user is created by the sinister-eve postinstall.
+User=eve
+Group=sinister
+
+# Runtime + state.
+RuntimeDirectory=sinister
+RuntimeDirectoryMode=0750
+StateDirectory=sinister/memory
+StateDirectoryMode=0750
+ConfigurationDirectory=sinister
+ConfigurationDirectoryMode=0755
+
+# Environment.
+Environment="EVE_CONFIG=/etc/sinister/eve.toml"
+Environment="EVE_MEMORY_ROOT=/var/lib/sinister/memory"
+Environment="EVE_MCP_TOOL_DIR=/etc/sinister/mcp"
+Environment="EVE_SOCKET=/run/sinister/eve.sock"
+Environment="EVE_BIND=127.0.0.1:7331"
+# ANTHROPIC_API_KEY is supplied via /etc/sinister/eve.env (EnvironmentFile, 0640 root:sinister).
+EnvironmentFile=-/etc/sinister/eve.env
+
+ExecStartPre=/usr/bin/install -d -m 0750 -o eve -g sinister /var/lib/sinister/memory
+ExecStart=/usr/bin/sinister-eve daemon --config ${EVE_CONFIG}
+ExecReload=/bin/kill -HUP $MAINPID
+
+Restart=on-failure
+RestartSec=3s
+TimeoutStartSec=30s
+TimeoutStopSec=15s
+WatchdogSec=60s
+
+# --- Hardening ---
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+ProtectHostname=true
+ProtectClock=true
+ProtectProc=invisible
+ProcSubset=pid
+
+# Filesystem: read-only system, with carve-outs for our state + runtime.
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/sinister/memory /run/sinister
+# /etc/sinister read-only — daemon never rewrites its own config.
+
+# Capabilities: drop everything. The daemon never binds <1024, never raw-sockets.
+CapabilityBoundingSet=
+AmbientCapabilities=
+
+# Syscall filter: a sane default. Adjust if Rust tokio/io_uring needs more.
+SystemCallFilter=@system-service
+SystemCallFilter=~@privileged @resources @mount @reboot @swap @raw-io
+SystemCallErrorNumber=EPERM
+SystemCallArchitectures=native
+
+# Network: loopback + outbound only.
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+IPAddressAllow=localhost
+IPAddressAllow=api.anthropic.com
+# Operator can extend via Environment="EVE_EXTRA_IP_ALLOW=..." drop-ins.
+
+# Memory + CPU caps. Tune in /etc/systemd/system/sinister-eve.service.d/limits.conf.
+MemoryMax=2G
+TasksMax=512
+LockPersonality=true
+MemoryDenyWriteExecute=true
+RestrictNamespaces=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+RemoveIPC=true
+UMask=0027
+
+# Logging via journald.
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=sinister-eve
+
+[Install]
+WantedBy=multi-user.target
+Alias=eve.service

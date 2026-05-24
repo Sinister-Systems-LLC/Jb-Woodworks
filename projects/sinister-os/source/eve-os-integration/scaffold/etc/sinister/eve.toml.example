@@ -1,0 +1,75 @@
+# /etc/sinister/eve.toml — EVE daemon config
+# Author: RKOJ-ELENO :: 2026-05-24
+# Copy to /etc/sinister/eve.toml and edit; the daemon reloads on SIGHUP.
+
+[daemon]
+# Where the daemon listens. UNIX socket is preferred for in-host calls.
+unix_socket = "/run/sinister/eve.sock"
+tcp_bind = "127.0.0.1:7331"
+mcp_socket = "/run/sinister/mcp.sock"
+log_level = "info"        # trace | debug | info | warn | error
+# How often the daemon scans /etc/sinister/mcp/ for new registrations
+# in addition to the inotify watcher (belt + suspenders).
+mcp_rescan_interval_secs = 60
+
+[memory]
+# Layer 1 root. Inside this dir the daemon expects subdirs matching the brain port:
+# heartbeats/ knowledge/ resume-points/ inbox/ cross-agent/ PROGRESS/
+# plus operator-utterances.jsonl.
+root = "/var/lib/sinister/memory"
+# Optional sync target — if set + reachable, daemon mirrors writes to the vault.
+# Leave blank for single-machine operation.
+vault_sync_url = ""
+# Atomic write: temp file in same dir, fsync, rename, fsync parent dir.
+atomic_writes = true
+
+[llm]
+# Backend priority. Daemon tries in order until one is reachable.
+# Supported: "anthropic", "ollama"
+backends = ["anthropic", "ollama"]
+
+[llm.anthropic]
+# ANTHROPIC_API_KEY is read from /etc/sinister/eve.env (NOT this file).
+# Model id is the fleet doctrine value.
+model = "claude-opus-4-7"
+max_tokens = 4096
+# Optional: pin to a long-context variant if available.
+context_variant = "1m"
+
+[llm.ollama]
+host = "http://127.0.0.1:11434"
+model = "llama3.1:70b-instruct-q4_K_M"
+# Daemon will hit ollama /api/tags to confirm the model is pulled before use.
+
+[intent]
+# Regex-based fast path. The daemon evaluates these BEFORE calling the LLM.
+# More-specific patterns first.
+# Each rule executes the named tool with the named subcommand and arg map.
+[[intent.rules]]
+match = "^(status|how are you)$"
+tool = "eve-cli"
+subcommand = "status"
+
+[[intent.rules]]
+match = "^(restart|reboot) ?eve$"
+tool = "eve-cli"
+subcommand = "restart"
+
+[[intent.rules]]
+match = "^open (?P<target>.+)$"
+tool = "panel-control"
+subcommand = "tab.open"
+# Arg map: capture group "target" → tool arg "url".
+args.url = "{target}"
+
+[auth]
+# Group the daemon trusts for socket peer-cred. UID must be in this group.
+# Operator's user account joins `sinister` at install time.
+trusted_group = "sinister"
+# Allowlist of tools that may invoke sudo. Anything else returns 403.
+sudo_allowed_tools = ["pacman-wrapper", "systemctl-wrapper", "nmcli-wrapper"]
+
+[telemetry]
+# Sinister OS ships zero telemetry. This block exists to make the choice explicit.
+enabled = false
+endpoint = ""

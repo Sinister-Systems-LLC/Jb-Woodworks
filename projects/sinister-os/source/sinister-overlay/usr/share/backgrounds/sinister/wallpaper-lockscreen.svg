@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Sinister OS lockscreen wallpaper. Author: RKOJ-ELENO :: 2026-05-24 -->
+<!-- Darker variant of wallpaper-primary so lockscreen UI elements (clock, prompt) read cleanly. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <radialGradient id="core" cx="50%" cy="50%" r="60%">
+      <stop offset="0%"   stop-color="#6d28d9" stop-opacity="0.55"/>
+      <stop offset="40%"  stop-color="#1a1330" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#0e0a1f" stop-opacity="1"/>
+    </radialGradient>
+    <linearGradient id="vignette" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#000000" stop-opacity="0.45"/>
+      <stop offset="50%"  stop-color="#000000" stop-opacity="0.0"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.55"/>
+    </linearGradient>
+  </defs>
+  <rect width="1920" height="1080" fill="#0e0a1f"/>
+  <rect width="1920" height="1080" fill="url(#core)"/>
+  <rect width="1920" height="1080" fill="url(#vignette)"/>
+  <text x="960" y="980" text-anchor="middle"
+        font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif"
+        font-size="22" fill="#c084fc" fill-opacity="0.55" letter-spacing="8">SINISTER OS</text>
+</svg>

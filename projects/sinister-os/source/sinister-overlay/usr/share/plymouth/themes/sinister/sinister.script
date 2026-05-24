@@ -1,0 +1,33 @@
+// Sinister OS — Plymouth boot script. Author: RKOJ-ELENO :: 2026-05-24
+// Centered wordmark on the Sinister wallpaper. Subtle pulse on the accent line.
+
+Window.SetBackgroundTopColor(0.055, 0.039, 0.122);    // #0e0a1f
+Window.SetBackgroundBottomColor(0.102, 0.075, 0.188); // #1a1330
+
+bg.image = Image("background.png");
+bg.sprite = Sprite(bg.image);
+bg.sprite.SetX(Window.GetWidth()  / 2 - bg.image.GetWidth()  / 2);
+bg.sprite.SetY(Window.GetHeight() / 2 - bg.image.GetHeight() / 2);
+bg.sprite.SetZ(-100);
+
+wordmark.image = Image.Text("SINISTER  OS", 0.753, 0.518, 0.988, 1.0, "Sans Bold 32");
+wordmark.sprite = Sprite(wordmark.image);
+wordmark.sprite.SetX(Window.GetWidth()  / 2 - wordmark.image.GetWidth()  / 2);
+wordmark.sprite.SetY(Window.GetHeight() / 2 - wordmark.image.GetHeight() / 2);
+
+// Pulse the wordmark gently while booting.
+progress = 0;
+fun refresh_cb() {
+    progress += 0.04;
+    alpha = 0.55 + 0.35 * (1 + Math.Sin(progress)) / 2;
+    wordmark.sprite.SetOpacity(alpha);
+}
+Plymouth.SetRefreshFunction(refresh_cb);
+
+fun message_cb(text) {
+    msg.image = Image.Text(text, 0.92, 0.83, 0.99, 1.0, "Sans 12");
+    msg.sprite = Sprite(msg.image);
+    msg.sprite.SetX(Window.GetWidth() / 2 - msg.image.GetWidth() / 2);
+    msg.sprite.SetY(Window.GetHeight() - 80);
+}
+Plymouth.SetMessageFunction(message_cb);

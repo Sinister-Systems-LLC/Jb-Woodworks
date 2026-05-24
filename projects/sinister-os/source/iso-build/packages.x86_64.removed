@@ -1,0 +1,98 @@
+# packages.x86_64.removed — diff log: packages.x86_64 -> packages.x86_64.slim
+# Author: RKOJ-ELENO :: 2026-05-24
+#
+# Methodology: cross-checked every package in the current 109-line list against observed
+# operator usage on Windows (see docs/pc-feature-audit.md). Anything not actively used,
+# duplicate-tooled, or available as a transitive dependency was either removed or moved to
+# the first-boot script (AUR / pacman deferred install).
+#
+# Result: 109 -> 85 non-comment lines.  Removed 29, added 5 (7zip, grim, slurp, tailscale,
+# wl-clipboard).  Net delta: -24 packages.
+
+# ─── Category 1: bash/shell duplicates (operator uses git-bash + claude on Windows; one shell suffices) ───
+bash         # transitive: pulled by `base`. Listing was redundant.
+zsh          # operator does NOT use zsh on Windows (only bash via git-bash + powershell). Skip.
+vim          # neovim is in the slim list. Two vims is bullshit.
+tmux         # operator runs multiple mintty windows, not tmux sessions. Skip; install on demand.
+fastfetch    # decorative system-info banner. Cute, not needed. Skip.
+
+# ─── Category 2: redundant networking (NetworkManager covers it all) ───
+wpa_supplicant   # `iwd` is the modern wifi backend (already in slim). wpa_supplicant is the legacy path.
+dhcpcd           # NetworkManager handles DHCP. dhcpcd is double-coverage.
+
+# ─── Category 3: duplicate bootloaders ───
+syslinux         # current ISO supports BIOS via syslinux + UEFI via grub. Slim picks grub only (grub does BIOS too).
+memtest86+       # diagnostic tool. Live ISO has clonezilla/ddrescue too — too many recovery tools. Drop both memtest entries; install on demand.
+memtest86+-efi   # same reason.
+
+# ─── Category 4: redundant filesystem tooling ───
+gptfdisk         # `parted` covers partitioning; gdisk is duplicate. Drop.
+exfatprogs       # operator's exFAT use is rare (USB sticks); install on demand.
+
+# ─── Category 5: redundant compositor tools ───
+foot             # kitty is the primary terminal binding in hyprland.conf. Foot is "fallback to the fallback". Drop.
+hyprpicker       # color picker tool. Useful but niche; install on demand if operator needs design work.
+qt5-wayland      # Qt5 apps are vanishing in 2026; Qt6 covers modern stack. Drop, install on demand if a Qt5 app surfaces.
+
+# ─── Category 6: bluetooth GUI (CLI suffices for first run) ───
+blueman          # GUI bluetooth manager. `bluetoothctl` (in bluez-utils) covers headphones pairing. Install on demand.
+
+# ─── Category 7: audio diagnostics (pipewire/pavucontrol cover routine use) ───
+alsa-utils       # `alsamixer` diagnostic tool. Pipewire + pavucontrol cover normal use. Install on demand for debug.
+
+# ─── Category 8: gaming extras (Lutris pulls wine-staging as dep) ───
+wine-staging     # transitive: lutris pulls it. But lutris itself is now deferred to first-boot (only needed for non-Steam titles).
+winetricks       # same — operator can install when first non-Steam Windows title needed.
+vulkan-tools     # vulkaninfo / debug tools. Vulkan ICD loaders are kept; tools are for debugging. Install on demand.
+xf86-video-amdgpu # X11 fallback driver. Wayland-only system; only needed if XWayland fails for an AMD app. Install on demand.
+
+# ─── Category 9: recovery tools (heavy; install when needed) ───
+clonezilla       # disk imaging. Useful, but the live ISO already has dd. Operator's actual backup tool will be `snapper`. Install on demand.
+ddrescue         # data recovery. Niche emergency tool. Install on demand.
+
+# ─── Category 10: install scripts (one TUI installer suffices) ───
+arch-install-scripts  # `archinstall` (Python TUI) is kept and covers operator's needs. The shell scripts (pacstrap/etc) are still installed transitively as `archinstall` deps.
+
+# ─── Category 11: python (pipx is a luxury for global Python tools) ───
+python-pip       # KEPT in slim — kept this one wrong, actually keeping it
+python-pipx      # global-tools manager. Operator can `pip install --user` instead. Install on demand.
+
+# ─── Category 12: comms + media (deferred to first-boot pacman script) ───
+discord          # 280 MB multilib download. Moved to first-boot so the ISO stays under 3 GB.
+spotify-launcher # Operator uses Spotify, but the launcher is 5 MB + pulls the proprietary client at 200 MB first-run. Move to first-boot.
+obs-studio       # Operator records, but OBS pulls ~400 MB of deps. Move to first-boot — only installed when first recording requested.
+lutris           # See Category 8. Moved to first-boot.
+
+# ─── Category 13: AUR-only packages NOT included in slim base (handled by first-boot.sh + yay) ───
+# (these were never in the current packages.x86_64; flagging here for the first-boot script)
+zen-browser-bin       # operator's actual PRIMARY browser (observed in Get-Process)
+rustdesk-bin          # operator's actual remote-desktop tool (the one of 5 they use)
+tresorit-cli          # operator runs Tresorit constantly on Windows
+proton-ge-custom      # Proton GE for EAC games (Rust, BAR)
+obsidian              # operator-pinned note-taking
+openrgb               # replaces iCUE + ASUS Aura + Gigabyte RGB on Linux
+qemu-desktop          # replaces VirtualBox (operator runs VMs)
+virt-manager          # libvirt GUI
+libvirt               # VM management
+edk2-ovmf             # UEFI firmware for VMs
+docker                # operator runs Docker Desktop — replace with native docker
+docker-compose        # composes
+android-tools         # adb/fastboot (operator has platform-tools on Desktop for QPilotos work)
+wireshark-qt          # operator has it installed but uses rarely
+cloudflared           # operator has it installed (tunnels)
+qbittorrent           # operator has it installed
+jre17-openjdk         # for Minecraft / Android Gradle (install on demand)
+
+# ─── Categories EXPLICITLY NOT installed (operator does NOT use these on Windows) ───
+# Microsoft Office / LibreOffice / OnlyOffice  -- operator has NO office suite installed
+# Adobe Creative Cloud / GIMP / Inkscape / Krita -- no creative-graphics work observed
+# Thunderbird / Evolution / mailspring -- no desktop email client installed
+# VLC -- mpv covers media playback
+# Vivaldi / Brave / Opera -- operator uses Zen as primary, Firefox as fallback
+# GOG Galaxy -- Steam is primary; lutris (first-boot) handles GOG if needed
+# AnyDesk / TightVNC / UltraViewer / HelpWire -- redundant remote desktops, only rustdesk kept (first-boot)
+# TunnelBear -- Tailscale is the only VPN operator actually uses
+# Norton / any third-party AV -- Linux doesn't need it
+# GIGABYTE / ASUS / Corsair iCUE / NVIDIA GeForce Experience / Realtek / Intel suites -- vendor bloat, openrgb covers RGB
+
+# ─── End of removed log ───

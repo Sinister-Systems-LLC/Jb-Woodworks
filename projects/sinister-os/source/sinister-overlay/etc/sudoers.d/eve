@@ -1,0 +1,15 @@
+# Sinister OS — EVE NOPASSWD allowlist. Author: RKOJ-ELENO :: 2026-05-24
+# Installed at /etc/sudoers.d/eve, mode 0440. Validate with `visudo -cf /etc/sudoers.d/eve`.
+#
+# Doctrine: CLAUDE.md (sinister-os lane) — EVE must have root-equivalent control without
+# per-action UAC prompts; restrict to the curated allowlist below.
+
+Cmnd_Alias EVE_PKG     = /usr/bin/pacman, /usr/bin/paru, /usr/bin/yay
+Cmnd_Alias EVE_SVC     = /usr/bin/systemctl
+Cmnd_Alias EVE_NET     = /usr/bin/nmcli
+Cmnd_Alias EVE_DESKTOP = /usr/bin/xdotool, /usr/bin/swww, /usr/bin/hyprctl
+
+eve ALL=(root) NOPASSWD: EVE_PKG, EVE_SVC, EVE_NET, EVE_DESKTOP
+
+Defaults:eve !requiretty
+Defaults:eve env_keep += "HYPRLAND_INSTANCE_SIGNATURE WAYLAND_DISPLAY XDG_RUNTIME_DIR"

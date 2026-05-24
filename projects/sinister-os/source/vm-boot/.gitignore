@@ -1,0 +1,10 @@
+# Author: RKOJ-ELENO :: 2026-05-24
+# Sinister OS :: vm-boot :: gitignore
+#
+# Runtime state we never commit. The harness creates these on first boot.
+
+state/
+*.qcow2
+*.vdi
+*.vmdk
+*.log

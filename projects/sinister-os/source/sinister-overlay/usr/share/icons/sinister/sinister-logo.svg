@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Sinister OS logo wordmark. Author: RKOJ-ELENO :: 2026-05-24
+     SVG fallback (Gemini quota depleted 2026-05-24T16:38Z). 512x512 transparent
+     background. Used by app launchers + os-release LOGO + GRUB theme. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="wordmarkGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#c084fc"/>
+      <stop offset="100%" stop-color="#8b5cf6"/>
+    </linearGradient>
+  </defs>
+  <text x="256" y="282" text-anchor="middle"
+        font-family="Segoe UI, system-ui, sans-serif"
+        font-weight="800"
+        font-size="62"
+        letter-spacing="11"
+        fill="url(#wordmarkGrad)">SINISTER</text>
+</svg>

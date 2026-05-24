@@ -1,0 +1,12 @@
+# Sinister OS /etc/os-release replacement. Author: RKOJ-ELENO :: 2026-05-24
+NAME="Sinister OS"
+PRETTY_NAME="Sinister OS"
+ID=sinister
+ID_LIKE="arch cachyos"
+BUILD_ID="2026-05-24"
+ANSI_COLOR="1;35"
+HOME_URL="https://sinister.systems"
+DOCUMENTATION_URL="https://sinister.systems/docs"
+SUPPORT_URL="https://sinister.systems/support"
+BUG_REPORT_URL="https://sinister.systems/issues"
+LOGO=sinister

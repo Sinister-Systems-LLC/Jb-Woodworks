@@ -1,0 +1,32 @@
+// Sinister OS — Waybar config. Author: RKOJ-ELENO :: 2026-05-24
+{
+  "layer": "top",
+  "position": "top",
+  "height": 30,
+  "spacing": 6,
+  "modules-left":   ["hyprland/workspaces", "hyprland/window"],
+  "modules-center": ["clock"],
+  "modules-right":  ["pulseaudio", "network", "battery", "tray"],
+  "hyprland/workspaces": {
+    "format": "{name}",
+    "on-click": "activate"
+  },
+  "clock": {
+    "format": "{:%a %b %d  %H:%M}"
+  },
+  "battery": {
+    "format": "{capacity}%  {icon}",
+    "format-icons": ["", "", "", "", ""]
+  },
+  "network": {
+    "format-wifi": "{essid} ({signalStrength}%)",
+    "format-ethernet": "{ifname}",
+    "format-disconnected": "offline"
+  },
+  "pulseaudio": {
+    "format": "{volume}% {icon}",
+    "format-muted": "muted",
+    "format-icons": { "default": ["", "", ""] }
+  },
+  "tray": { "spacing": 6 }
+}
