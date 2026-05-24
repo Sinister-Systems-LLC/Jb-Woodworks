@@ -4,6 +4,34 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-24 09:30Z — /loop iter 18 — CLAUDE.md cold-start now links OPERATOR-QUICK-REFERENCE
+
+Short iter. Wire iter 17's quick-ref into CLAUDE.md cold-start for discoverability.
+
+**T1 Regression PASS:** sinister-doctor unchanged.
+
+**X1 EDIT `CLAUDE.md`:**
+- Added one paragraph after step 7 of cold-start pointing at `docs/OPERATOR-QUICK-REFERENCE.md`
+- Conservative: did NOT renumber steps 1-7 (would touch canonical-protected numbering). Added a reference paragraph between step 7 and the "DO NOT REVERT" section.
+- Compose-with note: "Compose this with the brain index (step 6) and operator queue (step 7)."
+
+**Verified:** canonical-protections-check `PASS=9 FAIL=0` after edit (all 9 protections still PASS). No regression.
+
+**Files touched:**
+- EDIT `CLAUDE.md` (1 paragraph added after step 7)
+- EDIT `_shared-memory/PROGRESS/Sinister Sanctum.md` (this entry)
+
+**Brain status:** 150/117/33 OK. No new doctrines.
+
+**Master plan:** unchanged 19/24 (~83%).
+
+**Next iter plan:**
+- Continue light polish if any wins remain
+- Wait on operator for voice POC Q1-Q5 and 4 operator-gated items
+- May yield to operator soon — most of the master-actionable scope is shipped
+
+---
+
 ## 2026-05-24 09:10Z — /loop iter 17 — docs/OPERATOR-QUICK-REFERENCE.md SHIPPED
 
 Short consolidation iter. After 16 iters of shipping individual tools, operator now has one page listing every script.

@@ -65,6 +65,8 @@ The snapshot tagged `leo-ready-2026-05-23` is the end-to-end-tested commit you s
 6. **`_shared-memory/knowledge/_INDEX.md`** — the brain. Grep before risky actions.
 7. **`_shared-memory/OPERATOR-ACTION-QUEUE.md`** — open operator-clicked items.
 
+**Operator tools quick-reference:** see `docs/OPERATOR-QUICK-REFERENCE.md` for every runnable script shipped iters 1-17 of /loop (sinister-doctor / per-project-protections-autofix / brain-archive-orphans / clone-missing-sources / EVE.exe / Fleet-Tour.bat / etc) with one-line descriptions + invocation. Compose this with the brain index (step 6) and operator queue (step 7).
+
 ### DO NOT REVERT (operator hard-canonical 2026-05-23 evening)
 
 Operator (verbatim 2026-05-23 evening): *"make the understand anything called before each propject start like we use to do and make sure i dont have these issues again and we do not revert like we just did"*.
@@ -166,13 +168,11 @@ The operator's full workstation, not just an orchestration repo. Read **`SANCTUM
 
 ## What's currently pending operator clicks
 
-The operator-action queue at `_shared-memory/OPERATOR-ACTION-QUEUE.md` tracks open items. Highlights at 2026-05-19:
+The operator-action queue at `_shared-memory/OPERATOR-ACTION-QUEUE.md` tracks open items. Status snapshot 2026-05-24 (verified via `schtasks /Query` + queue cross-check by rkoj-lane /loop iter 47):
 
-- Register `SinisterSanctumAutoPush` scheduled task (verify via `automations/verify-auto-push.ps1`)
-- Register `RKOJ` + `SinisterVault` auto-start tasks (install scripts present, never run)
-- Wire Vault MCP into `~/.claude/.mcp.json` (see `tools/sinister-vault/INSTALL-MCP.md`)
-- Restart Claude Code so MCP servers load
-- Set `ANTHROPIC_API_KEY` env var (unblocks Scribe/Curator/Chatbot — see `docs/ENV-VARIABLES.md`)
+- ✅ **Closed** — `SinisterSanctumAutoPush` task (Ready, next-run scheduled) · `RKOJ` + `SinisterVault` tasks (both Ready) · Vault MCP wired into `~/.claude.json` (10 `mcp__vault__*` tools visible in deferred-tool list, daemon endpoints PASS).
+- 🟡 **Standing** — Set `ANTHROPIC_API_KEY` env var to unblock Scribe/Curator/Chatbot (see `docs/ENV-VARIABLES.md`). Restart Claude Code when adding new MCP servers to `~/.claude.json`.
+- 🟢 **Current operator-actionable rows** live in `_shared-memory/OPERATOR-ACTION-QUEUE.md` (source-of-truth). Notable open: row #12 operator hands-on EVE-picker walkthrough (`docs/EVE-PICKER-OPERATOR-WALKTHROUGH.md`), Leo machine link (`docs/LEO-VAULT-SETUP.md`), `rkoj-iter7 → main` merge.
 
 ## Master agent identity
 
