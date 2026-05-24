@@ -525,8 +525,19 @@ def find_qbc_triads(
         'angle-cnot' if encoding == 'angle-cnot' else None
     )
 
+    # Fix iter 43 2026-05-24: --rank-by classical previously re-sorted only the
+    # top-N-by-r1, missing high-classical QBC triads that didn't crack that top-N.
+    # When rank_by='classical', enumerate the full QBC list (advantage > 0) sorted
+    # by classical descending, then take top_n from that list.
+    if rank_by == 'classical':
+        qbc_scores = [s for s in scores if s[0] > 0]
+        qbc_scores.sort(key=lambda x: x[2], reverse=True)  # x[2] = classical mean
+        selected_scores = qbc_scores[:top_n]
+    else:
+        selected_scores = scores[:top_n]
+
     top_results = []
-    for rank, (adv, s, c, idx) in enumerate(scores[:top_n], 1):
+    for rank, (adv, s, c, idx) in enumerate(selected_scores, 1):
         docs_n = [pool[i] for i in idx]
         cmd = (
             f"seraphim audit --variant {cli_variant} --triad {' '.join(docs_n)} --corpus {corpus_mode}"

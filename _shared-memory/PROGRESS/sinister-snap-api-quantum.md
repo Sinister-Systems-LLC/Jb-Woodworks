@@ -7,6 +7,34 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T02:15Z — iteration 43 (--rank-by classical bug fix + surfaces +38pp-headroom triad)
+
+Operator: /loop. Fixed the iter-41 bug where `--rank-by classical` only re-sorted top-N-by-r1 (missing high-classical triads outside that subset). Now enumerates the full QBC pool by classical baseline.
+
+### Bug fix
+`tools/sinister-seraphim/memory_kernel.py` — added pre-selection branch:
+- Before: `top_results.sort(...)` over the existing top-N
+- After: when `rank_by='classical'`, filter `scores` to QBC + sort by classical descending + take top-N from THAT list
+
+### Immediate payoff
+Re-ran `find-qbc --variant zzfm-r1 --top-n 5 --corpus pool --rank-by classical --ceiling-reps "2 3 4 5 6"`. Triad #5 surfaced:
+
+- `branch-checkout-silently-undoes-doctrine-2026-05-23.md` + `multi-agent-git-coordination-2026-05-23.md` + `multi-agent-git-index-contention-storm-2026-05-23.md`
+- classical 0.4939, r=1 advantage +6.87pp (was hidden — didn't crack r=1 top-10)
+- **ceiling +44.92pp at r=6**
+- **headroom +38.05pp** — biggest headroom measured this session (beats iter-41's 27.30pp)
+- only **15.3% of ceiling at r=1**
+
+This triad was completely invisible to iter-41's `--rank-by ceiling` (which only re-ranks top-N-by-r1). Fix unlocks discovery of these "low-r=1 / high-ceiling" candidates — exactly the targets that ceiling-work / error-mitigation would benefit most.
+
+### Sub-finding (cancellation theorem)
+Caught my own visual error mid-iter: tail-output suggested ANGLE-CNOT ≠ K=4 ANGLE rankings. Ran both inline in a single Python session — **bit-for-bit identical** (iter-16 + iter-22 claim still holds). Documented the false alarm in MEMORY.md so future EVE doesn't repeat the visual misread.
+
+### Cost
+Zero cloud burn.
+
+---
+
 ## 2026-05-24T01:55Z — iteration 42 (audit pass + README sync + broadcast corpus-mismatch correction)
 
 Operator: /loop. Closing the loop on iter-41 deliverables. The no-bullshit doctrine says self-audit after every meaningful unit of work — overdue.
