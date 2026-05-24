@@ -39,7 +39,9 @@
 
 For K-ANGLE encoding at any K∈{4..8}, **if the top-K TF-IDF features have zero intersection across all 3 docs of a triad, the triad is NOT QBC.** Verified across **5 K values × 2 corpora (129-pool + 149-full) × 50 triads = 500 classifications with ZERO false positives** (iter 59 + iter 60).
 
-**Theorem boundary (iter 61):** the rule is intrinsic to ANGLE encoding (individual-feature RY rotations only). It does NOT extend to ZZ-FM, which adds cross-feature RZZ entangling terms. ZZ-FM r=1 has 2-5 QBC triads with zero shared top-K per corpus; ZZ-FM r=2 has 10-11. Production-recipe ZZ-FM r=1 candidate selection must use `find-qbc` enumeration, not heuristic pre-screening.
+**Theorem boundary (iter 61):** the rule is intrinsic to ANGLE encoding (individual-feature RY rotations only). It does NOT extend to ZZ-FM at the top-K window (the encoding uses cross-feature RZZ entangling terms).
+
+**Iter 62 sharpening:** ZZ-FM r=1 has a weak feature-overlap predictor at **shared top-2K (top-8 for K=4 qubits) = 0 → anti-QBC**. But it rules out only 2% of triads vs ANGLE's 24% — too weak to be operator-useful. ZZ-FM candidate selection still needs `find-qbc` enumeration. Conjecture (iter 62, 1 data point): for encoding with D-degree feature interactions, the predictor window is K' = K × D.
 
 Mechanism: ZZ-FM's CNOT-RZ(θ_i · θ_j / π)-CNOT layer captures pairwise feature interactions. Even when triads have disjoint top-K features, the cross-feature products can still discriminate. ANGLE has no such cross-feature mechanism, so disjoint top-K → no discrimination → anti-QBC.
 

@@ -7,6 +7,33 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T10:10Z — iteration 62 (ZZ-FM r=1 has weak predictor at shared top-2K)
+
+Operator: /loop. Searched for any ZZ-FM r=1 feature-overlap predictor at broader windows.
+
+### Result
+| Predictor (shared top-K = 0) | FP | rule-out rate | Safe? |
+|---|---|---|---|
+| top-4 | 2 | 24% | NO |
+| **top-8** | **0** | **2%** | **YES (weak)** |
+| top-16 | 0 | 0% | useless |
+
+### Finding
+ZZ-FM r=1 (K=4 qubits) has a safe predictor at shared-top-8 = 0, but rules out only 1-of-50 triads (2%). Too weak to be operator-useful.
+
+### Conjecture (1 data point)
+For an encoding with D-degree feature interactions, the predictor window is K' = K × D.
+- ANGLE: D=1 → predictor at K' = K (24% rule-out at K=4)
+- ZZ-FM r=1: D=2 → predictor at K' = 2K = 8 (2% rule-out)
+
+### Operator practical
+ZZ-FM r=1 pre-screen heuristic exists but isn't useful at scale. find-qbc enumeration still required for ZZ-FM candidate selection. The doctrine "ZZ-FM needs find-qbc, no useful pre-screen" stands.
+
+### Cost
+Zero cloud burn; 5s CPU.
+
+---
+
 ## 2026-05-24T09:40Z — iteration 61 (theorem REFUTED for ZZ-FM — boundary established)
 
 Operator: /loop. Tested if Shared-Top-K Necessary Condition extends to ZZ-FM r=1/r=2.

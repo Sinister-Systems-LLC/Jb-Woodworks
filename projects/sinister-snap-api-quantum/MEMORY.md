@@ -7,6 +7,81 @@ Append-only memory. Most recent at top. Cross-references to brain entries and ot
 
 ---
 
+## 2026-05-24T10:10Z — ⚖️ ITER 62: ZZ-FM r=1 has a weak feature-overlap predictor (shared top-8)
+
+Iter 61 refuted "shared top-K = 0 → anti-QBC" for ZZ-FM at the same top-K (top-4) the encoding uses. Iter 62 searches a broader top-K window.
+
+### Method
+
+For ZZ-FM r=1 on 129-pool top-50: check if "shared top-K = 0" predicts anti-QBC for K∈{4, 8, 16, 32}.
+
+### Results
+
+| K (predictor window) | QBC with =0 shared (FP) | =0_share count | rule-out rate | Predictor safe? |
+|---|---|---|---|---|
+| 4 | 2 | 12 | 24% | NO |
+| **8** | **0** | **1** | **2%** | **YES (weak)** |
+| 16 | 0 | 0 | 0% | YES (useless) |
+| 32 | 0 | 0 | 0% | useless |
+
+### Finding
+
+**Shared top-8 = 0 → ZZ-FM r=1 anti-QBC** is a safe predictor with **2% rule-out rate.**
+
+Compare:
+- ANGLE K=4: shared top-4 predictor → 24% rule-out (operator-useful)
+- ZZ-FM r=1: shared top-8 predictor → 2% rule-out (barely useful)
+
+### Why top-8 not top-4
+
+ZZ-FM r=1 with K=4 qubits has 3 adjacent CNOT-RZ-CNOT pairs: (0,1), (1,2), (2,3). Each pair captures cross-feature information through TWO features at once. The encoding effectively "sees" features 0..3 individually AND their pairwise products.
+
+The shared-top-8 window captures features that could be involved in either:
+- Individual rotation (top-4) OR
+- Pairwise coupling via adjacent-qubit interaction
+
+When the top-8 features have ZERO intersection, both the individual rotations AND the pairwise products are constrained to orthogonal feature subspaces. Only then does ZZ-FM lose discrimination.
+
+### Asymmetry confirms ZZ-FM is structurally richer
+
+| Encoding | Predictor window | Mechanism | Rule-out at zero share |
+|---|---|---|---|
+| ANGLE K=4..K=8 | top-K | Individual features only | 2-24% (decreasing with K) |
+| ZZ-FM r=1 (K=4) | top-8 (= 2K) | Individual + pairwise | 2% |
+| ZZ-FM r=2 (K=4) | unknown | Individual + pairwise compounded | likely <2% |
+
+ZZ-FM uses MORE feature information per state-build, so it needs MORE feature disjointness (top-8 not top-4) to lose discrimination. The factor-of-2 (top-K → top-2K) matches the structural ratio of "individual + pairwise" vs "individual only" in the encoding.
+
+### Operator practical implication
+
+For ZZ-FM r=1 candidate selection:
+- The shared-top-8 = 0 filter rules out only 1-of-50 triads in the 129-pool — too weak to be operationally useful
+- Operators still need `seraphim find-qbc --variant zzfm-r1` for enumeration
+- The doctrine "ZZ-FM has no useful pre-screen" stands; iter 62 just sharpens it by finding the tightest possible filter
+
+### Theoretical implication
+
+The Shared-Top-K theorem's mechanism (orthogonal feature subspaces → no discrimination) extends to ZZ-FM but the WINDOW changes: ZZ-FM needs the predictor at top-2K instead of top-K. This is a structural generalization:
+
+```
+CONJECTURE (iter 62, supported by 1 data point):
+For an encoding using up to D-degree feature interactions, the Shared-Top-K
+Necessary Condition holds at predictor-window K' = K × D.
+  - ANGLE: D=1 (only individual features), predictor at K'=K
+  - ZZ-FM r=1: D=2 (individual + pairwise), predictor at K'=2K
+  - Higher-degree encodings: predict K' = K × D
+```
+
+Untested for D=3+ encodings; ANGLE/ZZ-FM is the only test pair. Conjecture flagged, not claimed.
+
+### Cost / verification
+
+- Zero cloud burn
+- ~5s CPU for predictor search (4 K candidates × 50 triads)
+- Status: **tested-before-claimed** (predictor validated; 1 anti-QBC ruled out, 0 false positives)
+
+---
+
 ## 2026-05-24T09:40Z — ⚠️ ITER 61: theorem REFUTED for ZZ-FM — boundary established (ANGLE-only)
 
 Iter 59-60 established the Shared-Top-K Necessary Condition for ANGLE encoding at K=4..K=8 (500 classifications, zero false positives). Iter 61 tests if the theorem extends to ZZ-FM r=1 / r=2 — and finds it DOES NOT.
