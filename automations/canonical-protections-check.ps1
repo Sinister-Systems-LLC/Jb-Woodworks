@@ -238,6 +238,48 @@ Test-Protection -Id 'P10' -Description 'github-first sourcing doctrine present (
     return ($coldStartOk -and $indexOk)
 } | Out-Null
 
+# P13 -- lane resume-point coverage: every heartbeat lane must have at least one resume-point so
+# `Start-Sinister-Session.bat` restart restores state per operator hard-canonical 2026-05-24T17:01:09Z
+# "make sure all agents rom bat file restart like they were never closed". Companion to
+# seed-resume-points.ps1 (canonical seeder).
+Test-Protection -Id 'P13' -Description 'every active lane has >=1 resume-point' -Check {
+    $hbDir = Join-Path $SanctumRoot '_shared-memory\heartbeats'
+    $rpRoot = Join-Path $SanctumRoot '_shared-memory\resume-points'
+    if (-not (Test-Path $hbDir)) { return $false }
+    $map = @{
+        'sanctum'='Sinister Sanctum'; 'forge'='Sinister Forge'; 'panel'='Sinister Panel'
+        'kernel-apk'='Sinister Kernel APK'; 'apk'='Sinister Kernel APK'
+        'sinister-emulator'='Sinister Emulator'; 'sinister-os'='Sinister OS'
+        'rkoj'='RKOJ'; 'rkoj-workstation'='RKOJ Workstation'
+        'jb-woodworks'='Jb Woodworks'; 'showmasters'='Showmasters'; 'jkor'='JOKR'
+        'snap-emulator-api'='sinister-snap-api-quantum'
+        'tiktok-emulator-api'='TikTok Emulator API'
+        'sinister-generator'='Sinister Generator'; 'sinister-term'='Sinister Term'
+    }
+    $gaps = @()
+    foreach ($f in (Get-ChildItem -Path $hbDir -Filter '*.json' -ErrorAction SilentlyContinue)) {
+        $slug = $f.BaseName
+        # Skip non-lane heartbeats (subprocess beats, transient sanctum spawns)
+        if ($slug -match '\.beat$|^phones|^diagnose$|^general$|^inventions$|^sanctum-[0-9a-f]{6}$') { continue }
+        $disp = if ($map.ContainsKey($slug)) { $map[$slug] } else { $slug }
+        $dir = Join-Path $rpRoot $disp
+        if (-not (Test-Path $dir)) { $gaps += $slug; continue }
+        if (@(Get-ChildItem $dir -Filter '*.json' -ErrorAction SilentlyContinue).Count -eq 0) { $gaps += $slug }
+    }
+    if ($gaps.Count -gt 0) {
+        $script:p13Gaps = $gaps
+        return $false
+    }
+    return $true
+} | Out-Null
+
+if ($p13Gaps -and $p13Gaps.Count -gt 0) {
+    Add-Content -Path $ViolationsLog -Value "  P13 lanes-missing-resume-points:" -Encoding UTF8 -ErrorAction SilentlyContinue
+    foreach ($g in $p13Gaps) {
+        Add-Content -Path $ViolationsLog -Value "    - $g (run: powershell -File automations\seed-resume-points.ps1 -Apply -Lane $g)" -Encoding UTF8 -ErrorAction SilentlyContinue
+    }
+}
+
 # P12 -- jcode parity probe (real-fails only). Composes with jcode-parity-probe.ps1.
 # Probe exits N where N = REAL-FAIL count (expected-gaps don't fail the gate).
 # This protection passes when there are 0 real failures.
