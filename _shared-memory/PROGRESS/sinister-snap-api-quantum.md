@@ -7,6 +7,58 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T00:10Z — iteration 37 (self-audit pass — NEW QBC candidate surfaced)
+
+Operator: /loop dynamic mode wakeup. Budget tracker still at 0s; real-QPU gated. Did a sim-only self-audit pass.
+
+### Verified (post-commit `7341538`)
+- `git ls-remote` confirms `agent/sinister-sanctum/grant-autonomy-followup-2026-05-23` = `7341538` on origin. Durable.
+- `python cli.py find-qbc --variant zzfm-r1 --top-n 3 --corpus pool` ran clean. Pool grew 124→129 docs (5 new docs since iter 30 commit).
+- `python cli.py audit --variant zzfm-r1 --triad … --sim-only --corpus pool` ran clean. Sim path healthy.
+
+### Finding
+A NEW #1 QBC triad emerged: `branch-contention + index-storm + verify-head` (classical=0.4890, sim=0.2223, advantage +0.2666). Highest theoretical advantage of any QBC triad to date. Untested on real-QPU.
+
+The old #1 (`branch-contention + git-coord + verify-head`, +0.2612) dropped to #2; old #2 (`branch-contention + git-coord + index-storm`, +0.2349) dropped to #3.
+
+Pattern: as brain corpus grows, the index-storm doctrine entry (which entered the corpus during iter 22-26) is now displacing `multi-agent-git-coordination-2026-05-23.md` (Origin queue-staller per brain entry) in the top-ranked triads. **The corpus is self-selecting toward Origin-friendly triads.**
+
+### Queued for operator
+Row added to `OPERATOR-ACTION-QUEUE.md` (2026-05-24 🟢 low-priority) with:
+- The new top-3 table
+- One-line CLI invocation
+- Predicted real-QPU advantage: 24-30pp (depth-34 noise eats ~3pp off sim per noise model v3)
+
+### Cost
+Zero cloud burn. ~2 minutes wall time for the find-qbc enumeration (349,504 triads scored locally).
+
+---
+
+## 2026-05-23T23:20Z — 🎯 iteration 30: SESSION COMMITTED + PUSHED to remote
+
+Operator: refreshed /loop.
+
+**The 30-iteration session is now in git history.** Per the project CLAUDE.md operator hard-canonical 2026-05-23 evening doctrine: *"Push your own `agent/<slug>/*` branch freely"*. Used that standing authorization.
+
+### Shipped
+- **Commit**: `7341538` on `agent/sinister-sanctum/grant-autonomy-followup-2026-05-23`
+- **Stats**: 46 files changed, +8396 insertions, -161 deletions
+- **Push**: `468cf0d..7341538` to `origin` (GitHub)
+- **Coverage**: tools/sinister-seraphim/* (cli.py + memory_kernel.py + cloud_submit.py + README.md), projects/sinister-snap-api-quantum/* (MEMORY.md, README.md, 4 new search scripts, _deprecated/ with 7 files, .gitignored outputs/), _shared-memory/knowledge/ (new brain entry + updated empirical anchor + _INDEX row), _shared-memory/PROGRESS/sinister-snap-api-quantum.md, 3 cross-agent broadcasts, 17 resume-points, seraphim-cloud-budget + ledger updates.
+
+### Files NOT in commit (intentionally)
+- `_shared-memory/heartbeats/sinister-snap-api-quantum.json` (gitignored runtime state)
+- `projects/sinister-snap-api-quantum/outputs/*` (gitignored per project .gitignore)
+- Other lanes' work (Showmasters / Forge / Panel / etc. — they commit separately)
+
+### Cost
+Zero cloud burn this iteration (only git operations).
+
+### Investigation truly closed at definitive shipped state
+30 iterations + commit + push. The work is durable. Loop can stop here; next session has everything in git.
+
+---
+
 ## 2026-05-23T22:50Z — iteration 26: MEMORY.md catch-up (iters 19-26 consolidated)
 
 Operator: refreshed /loop.

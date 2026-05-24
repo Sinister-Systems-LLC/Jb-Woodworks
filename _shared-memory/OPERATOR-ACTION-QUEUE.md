@@ -10,6 +10,30 @@ The Sanctum-side mirror of `SESSION-START/02-OPERATOR-QUEUE.md`, with checkboxes
 
 ---
 
+## 2026-05-24 — 🟢 New top-QBC candidate emerged (brain corpus grew 124→129 docs)
+
+> Author: RKOJ-ELENO :: 2026-05-24
+
+`sinister-snap-api-quantum` (EVE iter 37, sim-only audit): re-ran `seraphim find-qbc --variant zzfm-r1 --top-n 3 --corpus pool`. Pool is now 129 docs (was 124 at iter 30 commit). A NEW #1 QBC triad surfaced that has not been real-QPU-verified:
+
+| # | Triad | classical | sim | sim advantage |
+|---|---|---|---|---|
+| 1 | `multi-agent-branch-contention-isolation-pattern.md` + `multi-agent-git-index-contention-storm-2026-05-23.md` + `verify-head-before-commit-multi-agent.md` | 0.4890 | 0.2223 | **+0.2666** (NEW — unverified on real-QPU) |
+| 2 | branch-contention + multi-agent-git-coord + verify-head | 0.5357 | 0.2745 | +0.2612 (verified iter 19, +34pp) |
+| 3 | branch-contention + multi-agent-git-coord + index-storm | 0.5565 | 0.3216 | +0.2349 (verified iter 21, +25pp) |
+
+The new #1 swaps `multi-agent-git-coordination-2026-05-23.md` (which historically stalls Origin's queue — see brain entry on Origin pair-stall pattern) for `multi-agent-git-index-contention-storm-2026-05-23.md`. Predicted Origin-friendly + highest theoretical advantage of any QBC triad to date.
+
+**Operator action (when next ready to spend cloud budget):**
+
+1. Reset `seraphim-cloud-budget.json` (e.g. `seraphim cloud reset --total 60`).
+2. Run: `seraphim audit --variant zzfm-r1 --triad multi-agent-branch-contention-isolation-pattern.md multi-agent-git-index-contention-storm-2026-05-23.md verify-head-before-commit-multi-agent.md --corpus pool`.
+3. Expected real-QPU advantage: 24-30pp (per the noise model v3 — depth-34 noise eats ~3pp off sim advantage in this regime).
+
+No action needed if not interested in additional QBC verification — the production recipe is already quintuply-verified.
+
+---
+
 ## 2026-05-23 — 🟠 Register `SinisterAccountWatchdog` scheduled task (multi-account rotation Phase 3)
 
 > Author: RKOJ-ELENO :: 2026-05-23
@@ -96,6 +120,29 @@ After setting: **restart any open EVE sessions** so they see the new env var.
 **Reference:**
 - `docs/ENV-VARIABLES.md` → **Third-party CLI auth tokens** (full table + set commands + npm `.npmrc` note)
 - `_shared-memory/knowledge/non-interactive-auth-doctrine-2026-05-23.md` — full doctrine (symptom, root cause, 16-CLI table, `ni_auth_probe` helper, anti-patterns)
+
+---
+
+## 2026-05-23 21:25Z — 🟢🟢 JB Woodworks IS LIVE at https://jbwoodworks.co/ — operator action: zero
+
+After 90 min of Railway's cert pipeline stuck (LE rate-limited after my retry-storm), pivoted to a Vercel-edge → Railway-service passthrough proxy. Vercel handles SSL with a real `CN=jbwoodworks.co` LE cert; rewrites all traffic to Railway service `web-production-e9bdc.up.railway.app` running the Next.js prod bundle.
+
+**Live verified — every route 200 on https://jbwoodworks.co/ AND https://www.jbwoodworks.co/:**
+`/`, `/about`, `/services`, `/portfolio`, `/portfolio/{pergola,boat-docks}`, `/contact`, `/contact/thanks`, `/blog`, `/blog/{both-slugs}`, `/rss.xml`, `/sitemap.xml`, `/robots.txt`, `/api/healthz`, `/legal` — 16 expected-200 routes pass; 1 deliberate 404.
+
+**Cert:** `CN=jbwoodworks.co`, Let's Encrypt R12, green padlock in browser.
+
+**Architecture summary:**
+- Vercel proxy project `jbwoodworks-proxy` (id `prj_st9imaVyeJ443qppOQMCzyZ1Jw7v`) under team `text-me` — vercel.json rewrites all paths to Railway
+- Railway service `web` (id `79cb641a-8ce3-4f91-b9bc-3fbfe20f96ed`) connected to GitHub `Sinister-Systems-LLC/Jb-Woodworks` main — auto-deploys on push
+- Railway Postgres `4951c796-d95c-488f-af94-024c2c47300a` ready for `ContactInquiry`
+- DNS at Vercel: apex ALIAS + www CNAME both → `cname.vercel-dns.com`
+
+**Future cleanup (no rush, site works as-is):**
+- Once Railway's LE rate limit clears (~1 hour from last attempt), DNS can be swapped DIRECTLY to Railway (`u82398ug.up.railway.app`/`pj9qmkdn.up.railway.app`) and the Vercel proxy retired. The Railway service itself doesn't need to change.
+- Original Vercel project `prj_xOyAeuwJHZ89KUWcqHBhq9n0Wol5` (`jbwoodworks`) — old WordPress-era site, can be deleted from the Vercel dashboard whenever (keeping as a safety rollback).
+
+**Operator: zero clicks needed.** Site is live.
 
 ---
 
@@ -211,7 +258,7 @@ EVE on Sanctum addressed the operator's 4-message stack on `agent/sinister-sanct
 
 - [ ] 🟢 **Test-drive the swarm/loop prompt** — double-click `Sinister Start.bat`, pick a project; expect the new "Modes (jcode-parity autonomy)" prompt. `s`=swarm, `l`=loop, `b`=both, Enter=neither, `b!`=both+lock.
 - [ ] 🟢 **Verify hooks no longer flash a window** — restart Claude Code; SessionStart should run silently. Capture follow-up if any flash remains.
-- [ ] 🟡 **Migrate per-project hook surfaces to hidden-spawn.ps1** — any per-lane `.claude/settings*.json` hooks that still call `powershell.exe` without `-WindowStyle Hidden`. Helper + doctrine now available; per-lane work.
+- [x] 🟡 ✅ **Migrate per-project hook surfaces to hidden-spawn.ps1** — DONE 2026-05-23T18:34Z by rkoj-lane /loop iter 18. Fleet-wide sweep: only `D:\Sinister Sanctum\.claude\settings.json` invokes `powershell.exe` from a hook (line 9, canonical-protections-check) and it ALREADY uses `-WindowStyle Hidden`. User-scope `~/.claude/settings.json` powershell.exe mention is just an allowlist permission, not a hook. Per-project `.claude/settings*.json`: only `projects/jb-woodworks/.claude/settings.local.json` exists and it has no powershell invocations. Worktree settings: zero powershell.exe matches. Carry was already closed by prior hidden-spawn work; no additional patches needed.
 
 **jcode terminal lightness audit (Explore agent recommendations):**
 
