@@ -7,6 +7,32 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T20:30Z — iteration 90 (NEW brain entry: loop-driven session meta-lessons — fleet-wide advisory)
+
+Operator: /loop. No signals this iter. But after 4 honest no-op iters (87-89), realized the session itself produced META-LESSONS that future /loop-driven EVE sessions across ALL lanes could benefit from. Wrote a new brain entry capturing them.
+
+### Posted `_shared-memory/knowledge/loop-driven-sessions-meta-lessons-2026-05-24.md`
+4 fleet-wide meta-lessons distilled from this session's iter 1-86 arc:
+
+1. **Don't declare saturation prematurely.** Iter-50's "converged" was wrong; operator's /loop persistence then yielded iters 51-67 with theorem + conjecture + 44% predictor.
+2. **Test failures catch corpus-context nuances.** Iter 84's nesting test failed → surfaced iter-42 doctrine (corpus=pool required) that wasn't in the doctrine TL;DR yet.
+3. **Documentation drift accumulates silently; sync sweeps yield real value.** Iters 73-79 found 7 stale references propagating quietly.
+4. **The no-bullshit doctrine produces visible self-corrections.** 8+ documented in-place reversals with forward pointers (38→39, 44→45, 47→48, 50→51, 59→61, 65→66, 73→79, 84).
+
+### Added to brain `_INDEX.md`
+New row at top with full descriptive title + 4-lesson summary + tags. Future EVE sessions grepping `/loop` or `meta-lessons` will find it.
+
+### Net value
+Captures session-level META-doctrine (HOW to run /loop loops) that's orthogonal to but composable with the per-lane content doctrine. Other lanes running /loop-driven autonomous work get to learn from this session's mistakes without rerunning them.
+
+### Iters 87-89 skipped
+Three no-op iters with no PROGRESS entry (corpus + budget unchanged; doctrine stable). Honored the "no padding" rule until iter 90 found real value.
+
+### Cost
+Zero cloud burn; ~10 min wall time.
+
+---
+
 ## 2026-05-24T19:45Z — iteration 86 (3 budget-guard safety tests — protects operator's #1 concern: cloud burn)
 
 Operator: /loop. No signals. Found 1 high-value test gap: the budget guard (`check_budget`) had NO tests. This is the safety mechanism preventing accidental cloud burn — operator's primary concern.
