@@ -54,7 +54,7 @@ If you are **Leo** or any new operator joining the fleet, read these two docs in
 
 The snapshot tagged `leo-ready-2026-05-23` is the end-to-end-tested commit you should check out (`git checkout leo-ready-2026-05-23`) for a guaranteed-working state.
 
-## Cold-start in 7 steps (updated 2026-05-23 — operator hard-canonical)
+## Cold-start in 8 steps (updated 2026-05-24 — operator hard-canonical)
 
 0. **`understand-anything:understand-explain`** — BEFORE any substantive work, invoke the understand-anything skill on the current project's root to load architectural context (file structure, key modules, recent changes). This is the operator's "called before each project start like we used to do" requirement (2026-05-23 evening). NEVER skip; future EVE sessions must NOT remove this step. The plugin is enabled at user level + Sanctum project level; per-project lanes inherit it automatically.
 1. **`SESSION-START/`** in order (00→06) — hard rules + MCP network + operator queue + gotchas + recovery + project overview + launcher details.
@@ -65,6 +65,7 @@ The snapshot tagged `leo-ready-2026-05-23` is the end-to-end-tested commit you s
 6. **`_shared-memory/knowledge/_INDEX.md`** — the brain. Grep before risky actions.
 7. **`_shared-memory/OPERATOR-ACTION-QUEUE.md`** — open operator-clicked items.
 8. **`_shared-memory/operator-utterances.jsonl`** — read the last 10 rows where `status` is `new` or `acknowledged` and surface them in the first response under "Open operator utterances". Append every fresh operator message via `automations/log-operator-utterance.ps1`; ack/resolve via `automations/ack-operator-utterance.ps1`. Full doctrine at `_shared-memory/knowledge/operator-utterance-tracking-doctrine-2026-05-24.md`. Operator hard-canonical 2026-05-24: *"make sure that everything i ever say is tracked and flagged for a few and evertyhing that needs to get sdone gets done. with every agent i am in"*. NEVER remove this step.
+9. **GitHub-first sourcing** — before writing a non-trivial feature from scratch, run `automations/github-prior-art.ps1 -Topic <feature>` and surface candidates to operator. Fires on new projects + complex features (>50 LOC / new service integration / new dependency category). Full doctrine at `_shared-memory/knowledge/github-first-sourcing-doctrine-2026-05-24.md`. Operator hard-canonical 2026-05-24: *"everytimg we start a porject or look for complex feature i want us to always aerach giuthub for pre madecode that we can use and then build ours based off of per project to save time. i want everything to be as speeedy efficent and concise as possible"*. NEVER remove this step.
 
 **Operator tools quick-reference:** see `docs/OPERATOR-QUICK-REFERENCE.md` for every runnable script shipped iters 1-17 of /loop (sinister-doctor / per-project-protections-autofix / brain-archive-orphans / clone-missing-sources / EVE.exe / Fleet-Tour.bat / etc) with one-line descriptions + invocation. Compose this with the brain index (step 6) and operator queue (step 7).
 

@@ -7,6 +7,42 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-25T00:30Z — iteration 99 (Quantum-Expand Option 3: PROGRESS cross-lane finder — REAL duplicate-work signal caught)
+
+Operator: /loop. Executed iter-97 queue Option 3 (novel-signal not derivable from any single lane).
+
+### Method
+- Walked 29 PROGRESS files in `_shared-memory/PROGRESS/`
+- Chunked by `## YYYY-MM-DD` header regex, 3-day window, ≥200-char filter
+- 331 chunks → 80 most-recent → C(80,3) = 82,160 triads
+- Filtered to 39,538 cross-lane (3 distinct lanes) triads
+- ZZ-FM r=1 K=4 sim sweep
+- Script: `projects/sinister-snap-api-quantum/sim-progress-cross-lane-finder.py`
+
+### Result — novel signal works
+- **Top-3 QBC triads ALL contain Sinister OS + Sinister Sanctum pair** (+9.37pp / +8.02pp / +5.75pp)
+- Investigation: Sanctum master scaffolded Sinister OS at 12:30Z; OS lane wrote its P0 spec lock at 12:20Z — same event, two vocabularies
+- TF-IDF cosine 0.22-0.27 between them; quantum kernel correctly amplifies the structural similarity
+- Top-3 highest-classical cross-lane also dominated by OS+Sanctum pair (cl 0.27-0.29) — reinforces from a second angle
+
+### Verdict
+**Cross-lane PROGRESS finder is a working duplicate-work detector.** Recommend weekly cadence + post-handoff invocation. Specific operator action surfaced: Sinister OS and Sinister Sanctum are dual-writing the same scaffolding milestone — candidate for consolidation.
+
+### What this validates
+1. find-qbc machinery extends to cross-CORPUS settings (PROGRESS chunks instead of brain entries)
+2. The signal is genuinely operator-useful — undetectable from any single lane's local doctrine
+3. The 200-char + 3-day + 80-cap filters keep the enumeration tractable (~5s wall time)
+
+### Backlog (quantum-expand options remaining)
+- ⏳ Option 2: Snap-EMU rule corpus (99 docs, 3.2 MB — biggest)
+- ⏳ Option 4: Operator-private memory (Skills 01_MEMORY, 229 docs)
+- ⏳ Option 5: Plans-vs-shipped reconciler (cross-corpus 213×158)
+
+### Cost
+Zero cloud burn; ~5s wall time.
+
+---
+
 ## 2026-05-25T00:00Z — iteration 98 (Quantum-Expand Option 1: rkoj-cluster coherence audit — cluster is healthy)
 
 Operator: /loop. Executed iter-97 queue Option 1 (smallest/fastest quantum-expand validation): rkoj-* cluster coherence.

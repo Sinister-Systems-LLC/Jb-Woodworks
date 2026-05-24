@@ -7,6 +7,71 @@ Append-only memory. Most recent at top. Cross-references to brain entries and ot
 
 ---
 
+## 2026-05-25T00:30Z — 🎯 ITER 99: QUANTUM-EXPAND OPTION 3 EXECUTED — PROGRESS cross-lane finder caught REAL duplicate-work signal
+
+Per iter-97 queue Option 3 + iter-98 recommendation: built PROGRESS-cross-lane pattern-finder. Output reveals the novel signal works.
+
+### Method
+- Walked 29 PROGRESS files in `_shared-memory/PROGRESS/`
+- Chunked by `## YYYY-MM-DD` headers
+- Kept chunks ≥200 chars from last 3 days → 331 chunks total
+- Capped at 80 most-recent → C(80,3) = 82,160 triads enumerated
+- Filtered to **cross-lane only** (3 distinct lanes per triad) = 39,538 triads
+- Sim sweep with ZZ-FM r=1 K=4
+
+### Top-3 cross-lane QBC triads (NOVEL signal)
+
+| # | Lanes | adv | Mechanism |
+|---|---|---|---|
+| 1 | Showmasters + Sinister OS + Sinister Sanctum | +9.37pp | OS+Sanctum same event (12:20Z spec-lock + 12:30Z scaffold) + Showmasters ship-of-day |
+| 2 | OS + Sanctum + snap-api-quantum | +8.02pp | OS+Sanctum same event + quantum iter 85 |
+| 3 | OS + Sanctum + snap-api-quantum | +5.75pp | OS+Sanctum same event + quantum iter 78 |
+
+**All 3 top QBC triads include the Sinister OS + Sinister Sanctum pair.** This pair is genuinely writing about the SAME milestone from two perspectives — the Sanctum master agent scaffolded the Sinister OS project at 12:30Z; the Sinister OS lane's own PROGRESS at 12:20Z describes its P0 spec lock. Different vocabularies (TF-IDF cosine ~0.22-0.27), but quantum kernel detects the structural similarity.
+
+### Top-3 highest-classical cross-lane triads (most lexical overlap)
+
+Again dominated by the OS + Sanctum pair (classical 0.27-0.29) — confirming the duplicate-work hypothesis from multiple angles.
+
+### Interpretation
+
+**The cross-lane PROGRESS finder is a working duplicate-work detector.** Operator can run it weekly to surface lane-pair drift. Specific findings from this run:
+
+1. **Sinister OS + Sinister Sanctum need coordination:** they're describing the same scaffolding-milestone independently. Recommend a single canonical PROGRESS entry rather than dual-write.
+2. **The lower-classical (0.22-0.27) triads with QBC advantage** are exactly the "same event, different vocabularies" case Agent C predicted. The 12:20Z/12:30Z timestamp coincidence reinforces the interpretation.
+3. **The high-classical anti-QBC triads** (cl=0.27, sim=0.42, adv=-12pp at #1) are different: 3 lanes USING related vocabulary but covering DIFFERENT events. Quantum kernel correctly says these are NOT the same event despite shared vocab.
+
+### What this validates
+
+1. **find-qbc machinery extends to cross-corpus settings** (PROGRESS chunks instead of brain entries)
+2. **The cross-lane signal is genuinely operator-useful** — would not be derivable from any single lane's local doctrine
+3. **The 200-char chunk filter + 3-day window + 80-chunk cap make the sweep tractable** (~5s wall time for 82,160 triads)
+
+### Reproducer / data
+
+- Script: `projects/sinister-snap-api-quantum/sim-progress-cross-lane-finder.py`
+- Data: `outputs/progress-cross-lane-iter99.json`
+- Re-run cadence: weekly (or after any cross-lane handoff)
+
+### Operator action surfaced
+
+**File row in OPERATOR-ACTION-QUEUE** noting that Sinister OS and Sinister Sanctum scaffolding work is being dual-written. Operator decides whether to consolidate.
+
+### Cost / verification
+
+- Zero cloud burn; ~5s CPU for the sweep (~80 chunks × C(80,3) = 82k triad enumeration)
+- Status: **tested-before-claimed** (top-3 QBC triads inspected; lanes confirmed; vocabulary diff confirmed)
+
+### Backlog from quantum-expand options
+
+- ✅ Option 1: rkoj-cluster (iter 98)
+- ✅ Option 3: PROGRESS-cross-lane (THIS ITER)
+- ⏳ Option 2: Snap-EMU rule corpus (99 docs, 3.2 MB — biggest remaining target)
+- ⏳ Option 4: Operator-private memory (Skills 01_MEMORY, 229 docs)
+- ⏳ Option 5: Plans-vs-shipped reconciler (cross-corpus 213×158)
+
+---
+
 ## 2026-05-25T00:00Z — 🧪 ITER 98: QUANTUM-EXPAND OPTION 1 EXECUTED — rkoj-cluster validates find-qbc on N=16; cluster is internally healthy
 
 Operator: /loop "keep working as far as ytou can". Executed quantum-expand Option 1 (smallest/fastest validation per iter-97 queue): rkoj-* cluster coherence audit.

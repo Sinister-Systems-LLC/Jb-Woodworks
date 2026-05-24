@@ -10,6 +10,54 @@ The Sanctum-side mirror of `SESSION-START/02-OPERATOR-QUEUE.md`, with checkboxes
 
 ---
 
+## 2026-05-24T12:56Z — 🟠 Github-first doctrine live — `automations/github-prior-art.ps1` available, agents will surface 3 candidate repos before any non-trivial new feature
+
+> Author: RKOJ-ELENO :: 2026-05-24
+
+Operator hard-canonical 2026-05-24 verbatim: *"everytimg we start a porject or look for complex feature i want us to always aerach giuthub for pre madecode that we can use and then build ours based off of per project to save time. i want everything to be as speeedy efficent and concise as possible"*.
+
+**Shipped (verified)**:
+- Brain doctrine: `_shared-memory/knowledge/github-first-sourcing-doctrine-2026-05-24.md` (indexed in `_INDEX.md`)
+- Helper CLI: `automations/github-prior-art.ps1` (wraps `gh search repos` with stars+license+active filters; smoke-tested 2026-05-24 with "rate limiter" → 5 MIT/Apache results; parse-clean; zero-burn no-LLM)
+- CLAUDE.md cold-start step 9 added (binding rule); canonical-protections-check P10 prevents revert (all 10 protections PASS, exit 0)
+- Per-project CLAUDE.md template (heredoc in `per-project-protections-autofix.ps1`) extended with "GitHub prior-art search" section so new lanes auto-inherit
+
+**Agent behavior change** (effective immediately): before writing any non-trivial new feature (>50 LOC / new external service / new dependency category / new project), every EVE session MUST run `automations/github-prior-art.ps1 -Topic <kw>`, surface top 3 to operator via inbox (per-project) or inline (master), then fork OR vendor with `NOTICE-RKOJ-ELENO.md` attribution.
+
+**Operator action** (optional): nothing required — doctrine is auto-active. Operator may verify by running `.\automations\github-prior-art.ps1 -Topic "<anything>"` to see candidates surface.
+
+---
+
+## 2026-05-24T08:40Z — 🟡 Sinister Emulator declared cross-emu hub — confirm + answer 4 lane-specific asks (O1-O4 below + 3 sibling acks pending)
+
+> Author: RKOJ-ELENO :: 2026-05-24
+
+**What's live:** `sinister-emulator` lane reactivated as cross-emu shared-infra hub per operator directive 2026-05-24 *"make ssure you are linked and the main call place to the tiktok, snap chat and bumble emu projects"*. 5 shared-infra rails declared (AOSP patch registry / cvd health board / RKA endpoint registry / cross-port pattern registry / anti-detect doctrine compose). Inbox messages dropped to 3 sibling lanes (snap-emulator-api, tiktok-emulator-api, sinister-bumble-emu) + cross-agent broadcast filed. First cross-emu brain entry shipped: `cross-emu-architectural-exhaustion-pattern-2026-05-24` (consolidates Snap 2026-05-21 + TT TURN-18 2026-05-24 exhaustion verdicts into a single fleet doctrine with 5-path lateral-unblock checklist).
+
+**Hub-establishment artifacts:**
+- Plan: `_shared-memory/plans/emu-hub-master-compile-2026-05-24T0840Z/plan.md`
+- Lane CLAUDE.md: `projects/sinister-emulator-bundle/CLAUDE.md` (hub role section added)
+- Sibling inbox: `_shared-memory/inbox/{snap-emulator-api,tiktok-emulator-api,sinister-bumble-emu}/2026-05-24T0840Z-from-sinister-emulator-hub-introduction.json`
+- Cross-agent broadcast: `_shared-memory/cross-agent/2026-05-24T0840Z-sinister-emulator-hub-declaration.md`
+- Hub inbox: `_shared-memory/inbox/sinister-emulator/_manifest.json` (siblings reply here)
+
+**Operator action (hub confirmation):**
+
+- [ ] Confirm the 5 hub rails as scoped (or carve differently). Default: hub does NOT take over per-app signing oracle work; each sibling keeps its own native target.
+- [ ] Wait/check for 3 sibling acks in `_shared-memory/inbox/sinister-emulator/` over next 1-7 days (siblings reply when their lanes are next active).
+- [ ] (Optional follow-up) decide whether hub should OWN routing the verdict-flip lateral-unblock decision (pick A/B/C/D/E per lane) or just surface options.
+
+**Operator action (bundle source — O1-O4 from forward-plan, surfaced from un-merged sibling branch `agent/sinister-emulator/resume-2026-05-20`):**
+
+- [ ] **O1:** decide fate of `device-sinister/com.auto.snop.xml` (orphan — archive vs annotate). Likely SELinux/policy XML pulled in by `device-sinister/sinister.mk` PRODUCT_COPY_FILES. If used → bundle agent annotates inline. If unused → archive to `_archive/`.
+- [ ] **O2:** decide fate of `frameworks-base/google_release_cert.{hex,txt}` (orphans — same archive-vs-annotate question; possibly used by AOSP cert pinning during build).
+- [ ] **O3:** decide whether to env-var-ize SOCKS5 credentials in `proxy_bridge.py` (current: hardcoded; proposed: `SINISTERSOCKS_USER`/`SINISTERSOCKS_PASS` with current values as defaults). Trade-off: env var = defense-in-depth + cheap rotation; hardcoded = simpler.
+- [ ] **O4:** confirm AOSP image artifact pickup path for the 2026-05-20T0839Z build — exact `~/sinister-aosp/out/target/product/<device>/system_ext/lib64/libsinister_attest.so` path. Bundle currently ships a 2026-05-02 prebuilt at `patches/binaries/`; confirm if fresh rebuild output should replace it.
+
+**Lane status:** HOLDING at bundle-source level (phase 2 cvd-1 relaunch owned by Snap-EMU lane). Hub role does not require phase 2 unblock — hub work happens in `_shared-memory/` only.
+
+---
+
 ## 2026-05-24 — 🟠 Operator-utterance tracking LIVE — review seed + flip rows to resolved as you confirm
 
 > Author: RKOJ-ELENO :: 2026-05-24
@@ -930,3 +978,9 @@ These are reference sources, not RKOJ-ELENO products — keep remotes as-is.
 ## Standing rule reference
 
 This file is canonical-14 standing rule #13 ("Operator-action queue stays mirrored in `_shared-memory/OPERATOR-ACTION-QUEUE.md` for one-glance status"). See `_shared-memory/DIRECTIVES.md` index at the top.
+
+## [REVERT-DETECTED] 2026-05-24T12:53:17Z -- 2 canonical protection(s) FAILED
+- P3 :: CLAUDE.md cold-start step 0 = understand-anything pre-call
+- P10 :: github-first sourcing doctrine present (brain + cold-start + helper)
+Doctrine: _shared-memory/knowledge/do-not-revert-operator-canonical-protections-2026-05-23.md
+

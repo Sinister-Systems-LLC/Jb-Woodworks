@@ -72,7 +72,7 @@ Test-Protection -Id 'P2' -Description 'understand-anything plugin enabled (user 
 Test-Protection -Id 'P3' -Description 'CLAUDE.md cold-start step 0 = understand-anything pre-call' -Check {
     if (-not (Test-Path $ClaudeMd)) { return $false }
     $c = Get-Content $ClaudeMd -Raw
-    return ($c -match 'understand-anything:understand-explain') -and ($c -match 'Cold-start in 7 steps')
+    return ($c -match 'understand-anything:understand-explain') -and ($c -match 'Cold-start in \d+ steps')
 } | Out-Null
 
 # P4 -- CLAUDE.md references hidden memory hub
@@ -207,6 +207,23 @@ if ($p9Broken -and $p9Broken.Count -gt 0) {
         Add-Content -Path $ViolationsLog -Value "    - $b" -Encoding UTF8 -ErrorAction SilentlyContinue
     }
 }
+
+# P10 -- github-first sourcing doctrine present + indexed + cold-start references the helper.
+# Origin: operator hard-canonical 2026-05-24 — "everytimg we start a porject or look for complex feature
+# i want us to always aerach giuthub for pre madecode that we can use".
+Test-Protection -Id 'P10' -Description 'github-first sourcing doctrine present (brain + cold-start + helper)' -Check {
+    $brain = Join-Path $KnowledgeDir 'github-first-sourcing-doctrine-2026-05-24.md'
+    $helper = Join-Path $SanctumRoot 'automations\github-prior-art.ps1'
+    if (-not (Test-Path $brain)) { return $false }
+    if (-not (Test-Path $helper)) { return $false }
+    if (-not (Test-Path $ClaudeMd)) { return $false }
+    if (-not (Test-Path $IndexMd)) { return $false }
+    $c = Get-Content $ClaudeMd -Raw
+    $idx = Get-Content $IndexMd -Raw
+    $coldStartOk = $c -match 'github-prior-art\.ps1' -and $c -match 'github-first-sourcing-doctrine-2026-05-24'
+    $indexOk = $idx -match 'github-first-sourcing-doctrine-2026-05-24'
+    return ($coldStartOk -and $indexOk)
+} | Out-Null
 
 # Report
 $ts = (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ')

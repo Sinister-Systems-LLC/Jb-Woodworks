@@ -108,6 +108,20 @@ This is a minimal scaffold. The lane agent should expand with:
 1. Heartbeat: ``sinister-bus.heartbeat(my_agent="$display")``
 2. Inbox poll: ``sinister-bus.inbox_poll(my_agent="$display")``
 3. Pick one bot from ``_shared-memory/knowledge/bot-fleet-quick-reference.md``
+
+## GitHub prior-art search (binding — operator hard-canonical 2026-05-24)
+
+Before writing any non-trivial new feature (>50 LOC, new external service, new dependency category, or starting a fresh sub-project), the agent MUST first run:
+
+``powershell
+D:\Sinister Sanctum\automations\github-prior-art.ps1 -Topic "<feature keywords>"
+``
+
+Then surface the top 3 candidates to operator via inbox (``[INFO]`` tag, not ``[DELEGATE]``) with a 1-line recommendation. Fork or vendor the operator-picked candidate (keep upstream LICENSE; add ``NOTICE-RKOJ-ELENO.md`` next to it). Build the Sinister-branded version on top.
+
+Doctrine: ``_shared-memory/knowledge/github-first-sourcing-doctrine-2026-05-24.md``.
+
+Operator verbatim 2026-05-24: *"everytimg we start a porject or look for complex feature i want us to always aerach giuthub for pre madecode that we can use and then build ours based off of per project to save time. i want everything to be as speeedy efficent and concise as possible"*.
 "@
             if ($DryRun) { $acts += "[dry] would create $cm" }
             else {
