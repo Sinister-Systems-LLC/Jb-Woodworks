@@ -4,6 +4,47 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-24 10:25Z — /loop iter 20 — codified PowerShell named-param splat doctrine (3 empirical hits)
+
+EVE on Sanctum. Saw a recurring pattern across iters 4/5/16 — array-splat + case-insensitive var-shadowing — codified as brain doctrine to prevent future EVE recursion.
+
+**X1 NEW `_shared-memory/knowledge/powershell-named-param-splat-2026-05-24.md`:**
+
+Two gotchas codified:
+1. **Array splat is positional** — `& $script @('-Name', $value, '-flag')` binds positionally; routes value to wrong param when script has non-trivial types. FIX: hashtable splat `@{ Name = $value; Switch = $true }`.
+2. **PowerShell vars are case-INSENSITIVE** — `$html` shadows `[switch]$Html` param, `$lane` shadows `[string]$Lane`. Assignments get coerced to param type → silent empty results or "Cannot convert" errors. FIX: pick non-colliding identifier (`$htmlBody`, `$proj`).
+
+Empirical hits (3):
+- iter 4: per-project-protections-autofix array splat → null InputObject
+- iter 5: per-project-protections-check `$lane` shadow → "0 lanes" reported for 22 actual
+- iter 16: sinister-doctor --watch array splat + `$html` shadow → 4-byte empty HTML
+
+Includes 5 anti-patterns + detection one-liner (greps `.ps1` for potential shadowing).
+
+**Indexed in `_INDEX.md`:** new row at top with full title-summary + tag list.
+
+**Brain status after iter 20:**
+- on_disk: 151 → **152** (+1 new doctrine)
+- indexed: 122 → **123** (+1 row)
+- orphans: 29 unchanged (new doctrine is indexed, not orphan)
+- Rule 7.5: APPROACHING (123/150 — 27 entries of headroom)
+
+**Composes with:**
+- `powershell-out-file-bom-bites-python-readers-2026-05-23` (sibling PS gotcha doctrine)
+- `no-bullshit-tested-before-claimed-doctrine-2026-05-23` (smoke-test before claim catches these silently)
+- `windows-case-folding-resume-point-trap` (related sanctum-owned encoding/fs trap)
+
+**Files touched:**
+- NEW `_shared-memory/knowledge/powershell-named-param-splat-2026-05-24.md` (X1)
+- EDIT `_shared-memory/knowledge/_INDEX.md` (X1 index row)
+- EDIT `_shared-memory/PROGRESS/Sinister Sanctum.md` (this entry)
+
+**Net value:** future EVE sessions hitting this pattern can grep `_INDEX.md` for `powershell-named-param-splat` and get the fix + detection script. Saves the 3-iter cycle I went through.
+
+**Master plan:** unchanged 19/24 (~83%).
+
+---
+
 ## 2026-05-24 10:00Z — /loop iter 19 — indexed 5 sanctum-owned brain orphans
 
 Short iter. Surfaced 5 sanctum-master-owned doctrines from the orphan list into `_INDEX.md`.
