@@ -4,6 +4,39 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-24 09:10Z — /loop iter 17 — docs/OPERATOR-QUICK-REFERENCE.md SHIPPED
+
+Short consolidation iter. After 16 iters of shipping individual tools, operator now has one page listing every script.
+
+**T1 Regression / docs audit:**
+- 11 operator-facing scripts shipped iters 1-16; all listed in `automations/`
+- 15+ docs in `docs/` but no single consolidated overview existed
+- sinister-doctor still YELLOW (per-project 4/22) — unchanged
+
+**X1 NEW `docs/OPERATOR-QUICK-REFERENCE.md`:**
+- One-pager covering every operator-runnable script
+- Sections: Fleet Health / Per-project / Brain / Other tools / Status surfaces / Common workflows / What I don't do (operator-gated)
+- For each script: 1-line description + invocation + flags
+- Includes "I'm Leo / new operator, set me up" 5-step workflow
+- Composes-with section pointing to deeper docs
+
+**Purpose:** New operators (Leo, future-EVE-sessions, anyone) get a single entry point to discover what's shipped. Replaces the need to read through 16 iters of PROGRESS to find a script.
+
+**Files touched:**
+- NEW `docs/OPERATOR-QUICK-REFERENCE.md` (X1)
+- EDIT `_shared-memory/PROGRESS/Sinister Sanctum.md` (this entry)
+
+**Master plan:** unchanged 19/24 (~83%). The quick-ref doc is operator-facing polish, not a plan row.
+
+**Brain status:** 150/117/33 OK.
+
+**Next iter plan:**
+- Continue self-paced polish OR yield to operator
+- Possible: build a similar QUICK-REFERENCE for the 13-bot fleet (already exists at `_shared-memory/knowledge/bot-fleet-quick-reference.md`)
+- Possible: add `docs/OPERATOR-QUICK-REFERENCE.md` link to CLAUDE.md cold-start step 7+ for discoverability
+
+---
+
 ## 2026-05-24 09:05Z — /loop iter 16 — sinister-doctor --watch mode SHIPPED
 
 Short focused iter. One feature + 1 bug fixed (caught by my own smoke test).
