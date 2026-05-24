@@ -54,13 +54,28 @@ function _Get-DefaultAccountsConfig {
 
 function _Acquire-AccountsLock {
     [CmdletBinding()]
-    param([int]$MaxRetries = 30, [int]$SleepMs = 150)
+    param([int]$MaxRetries = 30, [int]$SleepMs = 150, [int]$StaleAgeSeconds = 30)
     for ($i = 0; $i -lt $MaxRetries; $i++) {
         try {
             $fs = [System.IO.File]::Open($script:AccountsLockFile, 'CreateNew', 'Write', 'None')
             $fs.Close()
             return $true
         } catch {
+            # v3 (RKOJ-ELENO 2026-05-24): stale-lock detection. Operator hit the bug
+            # where a crashed sibling left a 0-byte .lock around. Get-AccountsConfig
+            # then returned defaults (0 accounts) so Get-NextAvailableAccount returned
+            # null and the launcher entered "rate-limited until ;" forever. If the
+            # lock file is older than $StaleAgeSeconds we treat it as orphan + reclaim.
+            try {
+                if (Test-Path $script:AccountsLockFile) {
+                    $age = ((Get-Date) - (Get-Item $script:AccountsLockFile).LastWriteTime).TotalSeconds
+                    if ($age -gt $StaleAgeSeconds) {
+                        Remove-Item $script:AccountsLockFile -Force -ErrorAction SilentlyContinue
+                        Write-AccountsLog "stale-lock reclaimed (age ${age}s > ${StaleAgeSeconds}s threshold)" 'INFO'
+                        continue  # retry the CreateNew immediately
+                    }
+                }
+            } catch {}
             # Windows file-handle release can lag; brief wait + retry handles back-to-back ops.
             Start-Sleep -Milliseconds $SleepMs
         }

@@ -104,31 +104,57 @@ try:
 except ImportError:
     health_tools = None  # noqa: E402  -- H sub-menu disabled if module missing
 
+try:
+    import eve_logger  # noqa: E402  -- structured jsonl logger (RKOJ-ELENO 2026-05-24)
+except ImportError:
+    eve_logger = None  # noqa: E402  -- logger silently disabled if missing
+
 
 PS1_LAUNCHER = (SANCTUM_ROOT_PATH / "automations" / "start-sinister-session.ps1") if SANCTUM_ROOT_PATH else None
 
 
 # ---------------------------------------------------------------------------
 # ANSI 256-color palette (Sanctum purple-everything)
+# Color-capability detect: NO_COLOR / TERM=dumb / EVE_QUIET disable escapes.
+# (RKOJ-ELENO :: 2026-05-24 — jcode color_support.rs parity)
 # ---------------------------------------------------------------------------
 
-PURPLE = "\033[38;5;141m"     # Sanctum purple #A06EFF-ish (xterm 141)
-DARKP = "\033[38;5;91m"
-BRIGHTP = "\033[38;5;177m"
-WHITE = "\033[97m"
-SOFT = "\033[38;5;245m"
-DIM = "\033[38;5;240m"
-OK = "\033[38;5;46m"
-WARN = "\033[38;5;220m"
-FAIL = "\033[38;5;196m"
-RESET = "\033[0m"
-BOLD = "\033[1m"
+def _ansi_enabled() -> bool:
+    """True iff we should emit ANSI escapes. Honors NO_COLOR + TERM=dumb."""
+    if os.environ.get("NO_COLOR", "").strip():
+        return False
+    if os.environ.get("TERM", "").strip().lower() in ("dumb", ""):
+        # Windows console without TERM set still wants color; allow on Win.
+        if os.name != "nt":
+            return False
+    return True
 
-PILL_G = "\033[48;5;22;38;5;15;1m"
-PILL_B = "\033[48;5;19;38;5;15;1m"
-PILL_R = "\033[48;5;52;38;5;15;1m"
-PILL_P = "\033[48;5;91;38;5;15;1m"
-PILL_Z = "\033[0m"
+
+_ANSI_ON = _ansi_enabled()
+
+
+def _C(seq: str) -> str:
+    """Return seq if color enabled, else empty string."""
+    return seq if _ANSI_ON else ""
+
+
+PURPLE = _C("\033[38;5;141m")     # Sanctum purple #A06EFF-ish (xterm 141)
+DARKP = _C("\033[38;5;91m")
+BRIGHTP = _C("\033[38;5;177m")
+WHITE = _C("\033[97m")
+SOFT = _C("\033[38;5;245m")
+DIM = _C("\033[38;5;240m")
+OK = _C("\033[38;5;46m")
+WARN = _C("\033[38;5;220m")
+FAIL = _C("\033[38;5;196m")
+RESET = _C("\033[0m")
+BOLD = _C("\033[1m")
+
+PILL_G = _C("\033[48;5;22;38;5;15;1m")
+PILL_B = _C("\033[48;5;19;38;5;15;1m")
+PILL_R = _C("\033[48;5;52;38;5;15;1m")
+PILL_P = _C("\033[48;5;91;38;5;15;1m")
+PILL_Z = _C("\033[0m")
 
 
 def enable_vt_on_windows() -> None:
@@ -447,6 +473,211 @@ def _recent_commit_subject() -> str:
 
 
 # ---------------------------------------------------------------------------
+# Prefs read/write — fleet-default loop_mode toggled via L picker key
+# (RKOJ-ELENO :: 2026-05-24)
+# ---------------------------------------------------------------------------
+
+def _prefs_path() -> Path | None:
+    if SANCTUM_ROOT_PATH is None:
+        return None
+    return SANCTUM_ROOT_PATH / "automations" / "session-templates" / "agent-prefs.json"
+
+
+def _read_prefs_defaults() -> dict:
+    """Return {swarm,loop,skip_modes_prompt} from agent-prefs.json defaults block.
+
+    Silent fallback to all-False on any read/parse failure. Loop fleet-default is
+    True per operator hard-canonical 2026-05-24.
+    """
+    out = {"swarm_mode": False, "loop_mode": False, "skip_modes_prompt": False}
+    p = _prefs_path()
+    if p is None or not p.exists():
+        return out
+    try:
+        import json as _json
+        data = _json.loads(p.read_text(encoding="utf-8"))
+        d = data.get("defaults") or {}
+        out["swarm_mode"] = bool(d.get("swarm_mode", False))
+        out["loop_mode"] = bool(d.get("loop_mode", False))
+        out["skip_modes_prompt"] = bool(d.get("skip_modes_prompt", False))
+    except Exception:
+        pass
+    return out
+
+
+def _toggle_prefs_loop() -> bool | None:
+    """Flip defaults.loop_mode in agent-prefs.json. Return new state, or None on failure."""
+    p = _prefs_path()
+    if p is None or not p.exists():
+        return None
+    try:
+        import json as _json
+        data = _json.loads(p.read_text(encoding="utf-8"))
+        if "defaults" not in data or not isinstance(data["defaults"], dict):
+            data["defaults"] = {"swarm_mode": False, "loop_mode": False, "skip_modes_prompt": True}
+        cur = bool(data["defaults"].get("loop_mode", False))
+        new = not cur
+        data["defaults"]["loop_mode"] = new
+        # Pretty-print preserving 4-space indent so the file still diffs cleanly.
+        p.write_text(_json.dumps(data, indent=4) + "\n", encoding="utf-8")
+        return new
+    except Exception:
+        return None
+
+
+def _queue_top_rows(n: int = 3) -> list[str]:
+    """Return up to N most-recent open queue rows (## headers) from OPERATOR-ACTION-QUEUE.md."""
+    if SANCTUM_ROOT_PATH is None:
+        return []
+    q = SANCTUM_ROOT_PATH / "_shared-memory" / "OPERATOR-ACTION-QUEUE.md"
+    if not q.exists():
+        return []
+    try:
+        lines = q.read_text(encoding="utf-8", errors="replace").splitlines()
+        rows = [ln.lstrip("#").strip() for ln in lines if ln.startswith("## ")]
+        return rows[:n]
+    except Exception:
+        return []
+
+
+def _unresolved_utterances(n: int = 5) -> list[dict]:
+    """Return up to N most-recent unresolved operator-utterances (status != 'resolved')."""
+    if SANCTUM_ROOT_PATH is None:
+        return []
+    u = SANCTUM_ROOT_PATH / "_shared-memory" / "operator-utterances.jsonl"
+    if not u.exists():
+        return []
+    try:
+        import json as _json
+        out: list[dict] = []
+        for ln in u.read_text(encoding="utf-8", errors="replace").splitlines():
+            ln = ln.strip()
+            if not ln:
+                continue
+            try:
+                rec = _json.loads(ln)
+            except Exception:
+                continue
+            if rec.get("status") and rec["status"] != "resolved":
+                out.append(rec)
+        return out[-n:][::-1]  # last N, newest-first
+    except Exception:
+        return []
+
+
+# ---------------------------------------------------------------------------
+# Mesh dashboard (RKOJ-ELENO 2026-05-24 — v0.4.4)
+# Operator: "make sure all ai agents work together in a mesh network in a sense
+# in the ba fil and exe"
+# Shows: fleet heartbeats (live/idle/stale), per-lane inbox unread, multi-account
+# rotation status, last 8 cross-lane commits.
+# ---------------------------------------------------------------------------
+
+def _view_mesh_status() -> None:
+    """One-shot mesh-network snapshot. Returns control to picker on Enter."""
+    import json as _json
+    if SANCTUM_ROOT_PATH is None:
+        print(f"  {FAIL}[mesh] SANCTUM_ROOT not resolved{RESET}")
+        return
+    print()
+    print(f"  {WHITE}{BOLD}MESH STATUS{RESET}  {DIM}// fleet at-a-glance{RESET}")
+    print(f"  {DARKP}{'-' * 88}{RESET}")
+
+    # 1) Fleet heartbeats — live (≤5m) / idle (5m-1h) / stale (>1h)
+    hb_dir = SANCTUM_ROOT_PATH / "_shared-memory" / "heartbeats"
+    live = idle = stale = total = 0
+    hb_rows: list[tuple[str, int, str]] = []
+    if hb_dir.exists():
+        now_t = time.time()
+        for p in hb_dir.rglob("*.json"):
+            total += 1
+            age_sec = int(now_t - p.stat().st_mtime)
+            if age_sec <= 300:
+                live += 1; tag = "live"
+            elif age_sec <= 3600:
+                idle += 1; tag = "idle"
+            else:
+                stale += 1; tag = "stale"
+            hb_rows.append((p.stem, age_sec, tag))
+    print(f"  {SOFT}heartbeats{RESET}  total={WHITE}{total}{RESET}   "
+          f"{OK}live={live}{RESET}   {WARN}idle={idle}{RESET}   {DIM}stale={stale}{RESET}")
+    hb_rows.sort(key=lambda r: r[1])
+    for slug, age, tag in hb_rows[:5]:
+        color = OK if tag == "live" else (WARN if tag == "idle" else DIM)
+        age_str = f"{age}s" if age < 60 else (f"{age // 60}m" if age < 3600 else f"{age // 3600}h")
+        print(f"    {color}*{RESET} {WHITE}{slug:<32}{RESET}  {color}{tag:<5}{RESET}  {DIM}{age_str} ago{RESET}")
+
+    # 2) Inbox unread per lane (top 5)
+    print()
+    print(f"  {SOFT}inbox{RESET}  per-lane unread (top 5)")
+    manifest = SANCTUM_ROOT_PATH / "_shared-memory" / "inbox" / "_manifest.json"
+    if manifest.exists():
+        try:
+            m = _json.loads(manifest.read_text(encoding="utf-8-sig", errors="replace"))
+            total_u = m.get("total_unread", 0)
+            per_lane = m.get("per_lane", {})
+            print(f"    {DIM}total unread fleet-wide:{RESET} {WHITE}{total_u}{RESET}")
+            top = sorted(per_lane.items(), key=lambda kv: -kv[1])[:5]
+            for slug, n in top:
+                color = WARN if n > 5 else SOFT
+                print(f"    {color}*{RESET} {WHITE}{slug:<32}{RESET}  {color}{n} unread{RESET}")
+        except Exception as e:
+            print(f"    {WARN}(manifest unreadable: {e}){RESET}")
+    else:
+        print(f"    {DIM}(no manifest — run automations/inbox-manifest-build.ps1){RESET}")
+
+    # 3) Account rotation status
+    print()
+    print(f"  {SOFT}accounts{RESET}  multi-claude rotation")
+    accts_f = SANCTUM_ROOT_PATH / "_shared-memory" / "claude-accounts.json"
+    if accts_f.exists():
+        try:
+            a = _json.loads(accts_f.read_text(encoding="utf-8-sig", errors="replace"))
+            print(f"    {DIM}strategy={RESET}{a.get('rotation_strategy','?')}  "
+                  f"{DIM}max_concurrent_global={RESET}{a.get('max_concurrent_global','?')}")
+            for acct in a.get("accounts", []):
+                enabled = acct.get("enabled", False)
+                state_tag = f"{OK}enabled{RESET}" if enabled else f"{DIM}disabled{RESET}"
+                rate_lim = acct.get("rate_limited_until_utc")
+                rate_tag = f"  {FAIL}rate-limited until {rate_lim}{RESET}" if rate_lim else ""
+                cur = acct.get("current_sessions", 0)
+                cap = acct.get("max_sessions_concurrent", "?")
+                today = acct.get("successful_spawns_today", 0)
+                label = acct.get("label", acct.get("name", "?"))
+                print(f"    {BRIGHTP}*{RESET} {WHITE}{label:<32}{RESET}  "
+                      f"{state_tag}  sessions={cur}/{cap}  today={today}{rate_tag}")
+        except Exception as e:
+            print(f"    {WARN}(accounts file unreadable: {e}){RESET}")
+    else:
+        print(f"    {DIM}(claude-accounts.json not present){RESET}")
+
+    # 4) Recent cross-lane git activity (last 8 commits)
+    print()
+    print(f"  {SOFT}recent activity{RESET}  last 8 commits on this branch")
+    try:
+        log = subprocess.check_output(
+            ["git", "log", "--oneline", "-8", "--no-color"],
+            cwd=str(SANCTUM_ROOT_PATH), stderr=subprocess.DEVNULL, timeout=3
+        ).decode("utf-8", errors="replace").strip().splitlines()
+        for ln in log:
+            trunc = ln if len(ln) <= 84 else ln[:81] + "..."
+            print(f"    {DIM}*{RESET} {SOFT}{trunc}{RESET}")
+    except Exception as e:
+        print(f"    {WARN}(git log failed: {e}){RESET}")
+
+    print()
+    print(f"  {DARKP}{'-' * 88}{RESET}")
+    print(f"  {DIM}// fleet broadcast: `sinister-swarm broadcast --message \"<text>\"`{RESET}")
+    print(f"  {DIM}// DM a lane:        `sinister-swarm dm --to <slug> --message \"<text>\"`{RESET}")
+    print(f"  {DIM}// watch live:       `sinister-swarm watch`{RESET}")
+    print()
+    try:
+        input(f"  {DIM}> press Enter to return to picker:{RESET} ")
+    except (EOFError, KeyboardInterrupt):
+        pass
+
+
+# ---------------------------------------------------------------------------
 # Picker UI (jcode-feel polish)
 # ---------------------------------------------------------------------------
 
@@ -454,8 +685,13 @@ def banner(state) -> None:
     """ANSI-render the picker banner using fields from PickerState + status line."""
     now = time.strftime("%Y-%m-%d %H:%M")
     account = os.environ.get("SINISTER_ACCOUNT", "operator")
-    swarm_on = os.environ.get("SINISTER_DEFAULT_SWARM", "").strip() == "1"
-    loop_on = os.environ.get("SINISTER_DEFAULT_LOOP", "").strip() == "1"
+    # RKOJ-ELENO 2026-05-24: precedence env-var > prefs defaults. So when no CLI/env
+    # override is set, the status line reflects what the spawn will actually use.
+    prefs_def = _read_prefs_defaults()
+    swarm_env = os.environ.get("SINISTER_DEFAULT_SWARM", "").strip()
+    loop_env = os.environ.get("SINISTER_DEFAULT_LOOP", "").strip()
+    swarm_on = (swarm_env == "1") if swarm_env in ("0", "1") else prefs_def["swarm_mode"]
+    loop_on = (loop_env == "1") if loop_env in ("0", "1") else prefs_def["loop_mode"]
     swarm_tag = f"{OK}on{RESET}" if swarm_on else f"{DIM}off{RESET}"
     loop_tag = f"{OK}on{RESET}" if loop_on else f"{DIM}off{RESET}"
 
@@ -495,6 +731,13 @@ def render_picker(state) -> None:
     print()
     print(f"  {WHITE}{BOLD}Pick a project{RESET}")
     print(f"  {DARKP}{'-' * 88}{RESET}")
+    # RKOJ-ELENO 2026-05-24: fleet-default hint line. Loop is ON for the whole fleet;
+    # per-session override via --no-loop, fleet-wide via agent-prefs.json defaults.loop_mode.
+    prefs_def = _read_prefs_defaults()
+    loop_word = f"{OK}ON{RESET}" if prefs_def["loop_mode"] else f"{DIM}OFF{RESET}"
+    print(f"  {DIM}fleet-default loop: {loop_word}{DIM}   override per-session: --no-loop  |  "
+          f"toggle this session: press {RESET}{PURPLE}L{RESET}{DIM}  |  "
+          f"persist: edit agent-prefs.json defaults.loop_mode{RESET}")
     print()
     for i, r in enumerate(state.rows):
         marker = f"{BRIGHTP}*{RESET}" if r.is_default else " "
@@ -520,12 +763,20 @@ def render_picker(state) -> None:
     print(f"  {PURPLE}K){RESET}  Clear ctx       "
           f"{PURPLE}S){RESET}  Autonomy        "
           f"{PURPLE}F){RESET}  Full picker     "
-          f"{PURPLE}Q){RESET}  Quit")
+          f"{PURPLE}X){RESET}  Exit")
     print()
     print(f"  {PURPLE}T){RESET}  Quantum tools     "
           f"{DIM}// PSTF / QDDD / TLPC / qbc-recall / summary{RESET}")
     print(f"  {PURPLE}H){RESET}  Health            "
           f"{DIM}// Anthropic throttle status :: plan-quota vs server-throttle{RESET}")
+    print(f"  {PURPLE}L){RESET}  Loop toggle       "
+          f"{DIM}// flip fleet-default loop_mode in agent-prefs.json{RESET}")
+    print(f"  {PURPLE}Q){RESET}  Queue (top 3)     "
+          f"{DIM}// peek OPERATOR-ACTION-QUEUE.md{RESET}")
+    print(f"  {PURPLE}U){RESET}  Utterances (5)    "
+          f"{DIM}// last 5 unresolved operator messages{RESET}")
+    print(f"  {PURPLE}M){RESET}  Mesh status       "
+          f"{DIM}// fleet heartbeats + inbox + accounts + recent activity{RESET}")
     print()
     print(f"  {DIM}     multi-select: 1,3,5 or 1-3     |     "
           f"loop/swarm modes prompted after pick{RESET}")
@@ -604,38 +855,90 @@ def run_account_status() -> int:
 # Arg parsing (must run BEFORE banner + picker so probe flags exit fast)
 # ---------------------------------------------------------------------------
 
-EVE_VERSION = "0.4.2"  # v0.4.2 :: picker spacing v3 (88-col layout, blank-line groups) + sinister-os row + loop/swarm hint
+EVE_VERSION = "0.4.5"  # v0.4.5 :: jcode-parity logs/log-tail/log-level/trace/cwd/quiet/json-version/fuzzy/color-detect (RKOJ-ELENO 2026-05-24)
+EVE_BUILD_CHANNEL = "release"  # parity with jcode telemetry build_channel field
 
 
 def _print_help() -> None:
-    print(f"EVE.exe {EVE_VERSION} - Sinister Sanctum session launcher (jcode-style)")
+    """jcode-style structured table of every flag + env var (operator directive 2026-05-24)."""
+    H = WHITE + BOLD
+    R = RESET
+    print(f"{H}EVE.exe {EVE_VERSION}{R}  {SOFT}Sinister Sanctum session launcher (jcode-parity){R}")
     print()
-    print("Usage: EVE.exe [flags]")
+    print(f"{H}USAGE{R}")
+    print(f"  EVE.exe [flags]                 # interactive picker")
+    print(f"  EVE.exe --diagnose              # probe-only, no spawn")
+    print(f"  Sinister Start.bat [flags]      # bat shim forwards all flags")
     print()
-    print("Probe flags (exit immediately, no picker):")
-    print("  --version, -v        Print version + exit 0.")
-    print("  --help, -h           Print this help + exit 0.")
-    print("  --profile            Print 'boot=<N>ms rows=N mcp=N bots=N' + exit 0.")
-    print("  --diagnose           Probe every prerequisite + exit 0.")
-    print("  --account-status     Print multi-account state + exit 0.")
-    print("  --quantum-summary    Print one-screen quantum status + exit 0.")
-    print("  --quantum-tools      Open quantum tools sub-menu (PSTF/QDDD/TLPC/recall).")
+    print(f"{H}PROBE FLAGS{R}  {DIM}(exit immediately, no picker){R}")
+    print(f"  {PURPLE}--version, -v{R}          Print version + exit 0")
+    print(f"  {PURPLE}--version --json{R}       Print JSON {{version,build,os,python,sanctum_root}}")
+    print(f"  {PURPLE}--help, -h{R}             Print this help table + exit 0")
+    print(f"  {PURPLE}--profile{R}              Print 'boot=Nms rows=N mcp=N bots=N' + exit 0")
+    print(f"  {PURPLE}--diagnose{R}             Probe every prerequisite + exit 0")
+    print(f"  {PURPLE}--account-status{R}       Print multi-account state + exit 0")
+    print(f"  {PURPLE}--quantum-summary{R}      Print one-screen quantum status + exit 0")
+    print(f"  {PURPLE}--quantum-tools{R}        Open quantum tools sub-menu (PSTF/QDDD/TLPC/recall)")
+    print(f"  {PURPLE}--log-tail [N]{R}         Print last N events from today's log (default 20) + exit 0")
+    print(f"  {PURPLE}--log-path{R}             Print today's log file path + exit 0")
     print()
-    print("Setup flags:")
-    print("  --setup-autonomy     Re-run grant-claude-autonomy.ps1 + exit 0.")
+    print(f"{H}SETUP FLAGS{R}")
+    print(f"  {PURPLE}--setup-autonomy{R}       Re-run grant-claude-autonomy.ps1 + exit 0")
     print()
-    print("Session flags (forwarded to picker via env):")
-    print("  --account <name>     Pin a specific account (sets SINISTER_ACCOUNT).")
-    print("  --swarm              Pre-enable swarm mode.")
-    print("  --loop               Pre-enable loop mode.")
-    print("  --both               Enable both swarm + loop.")
-    print("  --no-swarm           Disable swarm.")
-    print("  --no-loop            Disable loop.")
+    print(f"{H}SESSION FLAGS{R}  {DIM}(applied before picker dispatch){R}")
+    print(f"  {PURPLE}--account <name>{R}       Pin account (sets SINISTER_ACCOUNT)")
+    print(f"  {PURPLE}--swarm{R}                Pre-enable swarm mode")
+    print(f"  {PURPLE}--loop{R}                 Pre-enable loop mode")
+    print(f"  {PURPLE}--both{R}                 Enable swarm + loop")
+    print(f"  {PURPLE}--no-swarm{R}             Disable swarm")
+    print(f"  {PURPLE}--no-loop{R}              Disable loop")
+    print(f"  {PURPLE}--cwd <path>{R}           Pin Sanctum root for this invocation (jcode -C parity)")
     print()
-    print("Env:")
-    print("  SINISTER_SANCTUM_ROOT   Path to Sanctum repo (defaults to D:\\Sinister Sanctum).")
-    print("  SINISTER_SKIP_BANNER=1  Skip the animated banner intro.")
+    print(f"{H}OBSERVABILITY FLAGS{R}  {DIM}(jcode --trace / --quiet parity){R}")
+    print(f"  {PURPLE}--trace{R}                Mirror log events to stderr (sets EVE_TRACE=1)")
+    print(f"  {PURPLE}--log-level <lvl>{R}      debug | info | warn | error  (default: info)")
+    print(f"  {PURPLE}--quiet{R}                Suppress banner + status line (sets EVE_QUIET=1)")
     print()
+    print(f"{H}ENVIRONMENT VARIABLES{R}")
+    print(f"  {SOFT}SINISTER_SANCTUM_ROOT{R}      Path to Sanctum repo (default: D:\\Sinister Sanctum)")
+    print(f"  {SOFT}SINISTER_ACCOUNT{R}           Pinned account name")
+    print(f"  {SOFT}SINISTER_DEFAULT_SWARM{R}     '1' / '0' :: pre-set swarm")
+    print(f"  {SOFT}SINISTER_DEFAULT_LOOP{R}      '1' / '0' :: pre-set loop")
+    print(f"  {SOFT}SINISTER_SKIP_MODES_PROMPT{R} '1' to skip post-pick swarm/loop prompt")
+    print(f"  {SOFT}SINISTER_SKIP_BANNER{R}       '1' to skip animated banner")
+    print(f"  {SOFT}EVE_LOG_LEVEL{R}              debug | info | warn | error (default: info)")
+    print(f"  {SOFT}EVE_TRACE{R}                  '1' to mirror logs to stderr")
+    print(f"  {SOFT}EVE_QUIET{R}                  '1' to suppress non-error output")
+    print(f"  {SOFT}NO_COLOR{R}                   Set (any value) to disable ANSI escapes")
+    print(f"  {SOFT}TERM=dumb{R}                  Disables ANSI escapes (non-Windows)")
+    print(f"  {SOFT}SINISTER_NO_TELEMETRY{R}      '1' to disable local jsonl logging")
+    print(f"  {SOFT}DO_NOT_TRACK{R}               '1' to disable local jsonl logging")
+    print(f"  {SOFT}JCODE_NO_TELEMETRY{R}         '1' to disable local jsonl logging (alias)")
+    print()
+    print(f"{H}LOG FILES{R}")
+    print(f"  ~/.sinister/logs/eve-YYYY-MM-DD.jsonl  (UTC date, auto-rotated, 7-day retention)")
+    print()
+    print(f"{H}PICKER KEYS{R}  {DIM}(at the picker prompt){R}")
+    print(f"  {PURPLE}1..N{R}  pick project       {PURPLE}1,3,5{R}  multi-select       {PURPLE}1-3{R}  range")
+    print(f"  {PURPLE}/<q>{R}  fuzzy filter rows  {PURPLE}G/A/N/R/K/S/F{R}  verbs           {PURPLE}T/H/L/M{R}  sub-menus")
+    print(f"  {PURPLE}Q{R}     queue              {PURPLE}U{R}  utterances             {PURPLE}X{R}  exit")
+    print()
+
+
+def _print_version_json() -> int:
+    """JSON version output (jcode `version --json` parity)."""
+    import json as _json
+    payload = {
+        "version": EVE_VERSION,
+        "build": EVE_BUILD_CHANNEL,
+        "os": os.name,
+        "platform": sys.platform,
+        "python": sys.version.split()[0],
+        "sanctum_root": str(SANCTUM_ROOT_PATH) if SANCTUM_ROOT_PATH else None,
+        "color": _ANSI_ON,
+    }
+    print(_json.dumps(payload, indent=2))
+    return 0
 
 
 def _parse_session_flags(argv: list[str]) -> list[str]:
@@ -678,6 +981,33 @@ def _parse_session_flags(argv: list[str]) -> list[str]:
             os.environ["SINISTER_SKIP_MODES_PROMPT"] = "1"
             i += 1
             continue
+        # Observability flags (RKOJ-ELENO 2026-05-24, jcode parity)
+        if al == "--trace":
+            os.environ["EVE_TRACE"] = "1"
+            i += 1
+            continue
+        if al == "--quiet":
+            os.environ["EVE_QUIET"] = "1"
+            i += 1
+            continue
+        if al == "--log-level":
+            if i + 1 < len(argv):
+                lvl = argv[i + 1].lower()
+                if lvl in ("debug", "info", "warn", "error"):
+                    os.environ["EVE_LOG_LEVEL"] = lvl
+                i += 2
+                continue
+            i += 1
+            continue
+        if al == "--cwd" or al == "-c":
+            if i + 1 < len(argv):
+                # Pin Sanctum root for downstream PS1
+                os.environ["SINISTER_SANCTUM_ROOT"] = argv[i + 1]
+                os.environ["SANCTUM_ROOT"] = argv[i + 1]
+                i += 2
+                continue
+            i += 1
+            continue
         out.append(a)
         i += 1
     return out
@@ -702,14 +1032,42 @@ def main(argv: list[str] | None = None) -> int:
     argv = argv if argv is not None else sys.argv[1:]
 
     # Probe flags first — these must exit fast without rendering anything heavy.
+    # --version supports optional --json (jcode parity)
     if argv:
         arg0 = argv[0].lower()
         if arg0 in ("--version", "-v", "/version"):
+            if "--json" in argv:
+                return _print_version_json()
             print(f"EVE.exe {EVE_VERSION} :: Sinister Sanctum session launcher")
             return 0
         if arg0 in ("--help", "-h", "/help", "/?"):
             _print_help()
             return 0
+
+    # Log-tail / log-path probe flags (jcode-parity, RKOJ-ELENO 2026-05-24)
+    if any(a.lower() in ("--log-tail", "/log-tail") for a in argv):
+        enable_vt_on_windows()
+        if eve_logger is None:
+            print("  [FAIL] eve_logger module not importable")
+            return 1
+        # Find optional N argument right after --log-tail
+        n = 20
+        for idx, a in enumerate(argv):
+            if a.lower() in ("--log-tail", "/log-tail") and idx + 1 < len(argv):
+                try:
+                    n = int(argv[idx + 1])
+                except ValueError:
+                    n = 20
+                break
+        return eve_logger.tail_log(n)
+
+    if any(a.lower() in ("--log-path", "/log-path") for a in argv):
+        if eve_logger is None:
+            print("  [FAIL] eve_logger module not importable")
+            return 1
+        print(str(eve_logger.log_path()))
+        return 0
+
     if "--profile" in argv:
         return _profile_and_exit()
     if any(a.lower() in ("--diagnose", "-diagnose", "/diagnose") for a in argv):
@@ -750,9 +1108,11 @@ def main(argv: list[str] | None = None) -> int:
             pass
         return 1
 
-    # Prereq flow
+    # Prereq flow (skip banner + shell warn under --quiet)
     enable_vt_on_windows()
-    play_banner()
+    _quiet = os.environ.get("EVE_QUIET", "").strip() == "1"
+    if not _quiet:
+        play_banner()
     run_autonomy_bootstrap(force=False)
     fire_plugin_check_background()
     spawn_shell_preflight(verbose=False)
@@ -762,17 +1122,73 @@ def main(argv: list[str] | None = None) -> int:
     state = lib.build_picker_state(boot_ms=0)
     state.boot_ms = int((time.monotonic() - t0) * 1000)
 
+    # session_start event (jcode-parity local jsonl logging, RKOJ-ELENO 2026-05-24)
+    if eve_logger is not None:
+        try:
+            eve_logger.info(
+                "session_start",
+                version=EVE_VERSION,
+                build=EVE_BUILD_CHANNEL,
+                boot_ms=state.boot_ms,
+                rows=len(state.rows),
+                mcp=state.mcp,
+                bots=state.bots,
+                account=os.environ.get("SINISTER_ACCOUNT", "operator"),
+                swarm=os.environ.get("SINISTER_DEFAULT_SWARM", ""),
+                loop=os.environ.get("SINISTER_DEFAULT_LOOP", ""),
+                quiet=_quiet,
+            )
+        except Exception:
+            pass
+
+    # Local helper :: log session_end events (jcode-parity, RKOJ-ELENO 2026-05-24)
+    def _log_session_end(end_reason: str, **fields):
+        if eve_logger is None:
+            return
+        try:
+            eve_logger.info("session_end", end_reason=end_reason,
+                            version=EVE_VERSION, **fields)
+        except Exception:
+            pass
+
+    # Fuzzy filter state (jcode session_picker/filter.rs parity)
+    _filter_query: str = ""
+    _full_rows = list(state.rows)
+
     while True:
         banner(state)
+        # Apply fuzzy filter to rows if active (preserve original full list)
+        if _filter_query:
+            try:
+                state.rows = lib.filter_rows(_full_rows, _filter_query)
+            except AttributeError:
+                # lib upgrade incomplete; ignore filter
+                state.rows = _full_rows
+            if not state.rows:
+                print(f"  {WARN}[filter]{RESET} no rows match {DIM}'{_filter_query}'{RESET} — clearing filter")
+                _filter_query = ""
+                state.rows = list(_full_rows)
+            else:
+                print(f"  {DIM}[filter]{RESET} {SOFT}'{_filter_query}'{RESET} matches {OK}{len(state.rows)}{RESET} of {len(_full_rows)} rows  {DIM}(/ alone to clear){RESET}")
         render_picker(state)
         try:
             raw = input(
-                f"  {WHITE}Selection [1-{len(state.rows)} / G / A / N / R / K / S / F / T / H / Q, "
+                f"  {WHITE}Selection [1-{len(state.rows)} / G / A / N / R / K / S / F / T / H / L / Q / U / M / X / /q, "
                 f"default={state.default_key}] {PURPLE}>{RESET} "
             ).strip()
         except (EOFError, KeyboardInterrupt):
             print()
+            _log_session_end("interrupt")
             return 0
+
+        # Fuzzy filter :: type '/' alone to clear, '/q' to filter on q (jcode parity)
+        if raw.startswith("/"):
+            q = raw[1:].strip()
+            _filter_query = q
+            if not q:
+                state.rows = list(_full_rows)
+                print(f"  {DIM}[filter]{RESET} cleared")
+            continue
 
         # T shortcut :: quantum tools sub-menu (intercept before resolve_pick)
         if raw.lower() in ("t", "quantum", "tools"):
@@ -794,18 +1210,95 @@ def main(argv: list[str] | None = None) -> int:
             state = lib.build_picker_state(boot_ms=state.boot_ms)
             continue
 
+        # L shortcut :: toggle fleet-default loop_mode (RKOJ-ELENO 2026-05-24)
+        if raw.lower() in ("l", "loop"):
+            new_state = _toggle_prefs_loop()
+            if new_state is None:
+                print(f"  {WARN}[L] failed to toggle (agent-prefs.json missing/unwritable){RESET}")
+            else:
+                tag = f"{OK}on{RESET}" if new_state else f"{DIM}off{RESET}"
+                print(f"  {BRIGHTP}[L]{RESET} loop_mode toggled to {tag} for next spawn")
+            time.sleep(0.8)
+            state = lib.build_picker_state(boot_ms=state.boot_ms)
+            continue
+
+        # X (exit) :: explicit exit alias since Q is rebound to Queue (RKOJ-ELENO 2026-05-24)
+        if raw.lower() in ("x", "exit"):
+            print(f"  {SOFT}bye.{RESET}")
+            _log_session_end("normal_exit")
+            return 0
+
+        # Q (queue) :: show top 3 open OPERATOR-ACTION-QUEUE rows (RKOJ-ELENO 2026-05-24)
+        # Operator directive 2026-05-24: Q is Queue. X is the new exit key.
+        if raw.lower() in ("q", "queue", "qq"):
+            rows = _queue_top_rows(3)
+            print()
+            print(f"  {WHITE}{BOLD}Top 3 open queue rows:{RESET}")
+            if not rows:
+                print(f"  {DIM}(no ## headers found in OPERATOR-ACTION-QUEUE.md){RESET}")
+            for r in rows:
+                trunc = r if len(r) <= 96 else r[:93] + "..."
+                print(f"  {PURPLE}*{RESET} {SOFT}{trunc}{RESET}")
+            print()
+            try:
+                input(f"  {DIM}> press Enter to return:{RESET} ")
+            except (EOFError, KeyboardInterrupt):
+                return 0
+            state = lib.build_picker_state(boot_ms=state.boot_ms)
+            continue
+
+        # U (utterances) :: show last 5 unresolved operator-utterances (RKOJ-ELENO 2026-05-24)
+        if raw.lower() in ("u", "utterances"):
+            recs = _unresolved_utterances(5)
+            print()
+            print(f"  {WHITE}{BOLD}Last 5 unresolved operator-utterances:{RESET}")
+            if not recs:
+                print(f"  {DIM}(none — operator-utterances.jsonl is clean){RESET}")
+            for r in recs:
+                ts = r.get("ts_utc", "?")
+                slug = r.get("session_slug", "?")
+                preview = r.get("preview") or r.get("message_full", "")
+                preview = preview if len(preview) <= 78 else preview[:75] + "..."
+                status = r.get("status", "new")
+                print(f"  {PURPLE}*{RESET} {DIM}{ts}{RESET} "
+                      f"{BRIGHTP}{slug}{RESET} {SOFT}({status}){RESET}: {WHITE}{preview}{RESET}")
+            print()
+            try:
+                input(f"  {DIM}> press Enter to return:{RESET} ")
+            except (EOFError, KeyboardInterrupt):
+                return 0
+            state = lib.build_picker_state(boot_ms=state.boot_ms)
+            continue
+
+        # M (mesh) :: fleet network at-a-glance (RKOJ-ELENO 2026-05-24 v0.4.4)
+        if raw.lower() in ("m", "mesh", "fleet"):
+            _view_mesh_status()
+            state = lib.build_picker_state(boot_ms=state.boot_ms)
+            continue
+
         result = lib.resolve_pick(raw, state)
 
         if result.verb == "quit":
             print(f"  {SOFT}bye.{RESET}")
+            _log_session_end("normal_exit")
             return 0
         elif result.verb == "multi":
+            if eve_logger is not None:
+                try: eve_logger.info("project_dispatch", verb="multi", keys=",".join(result.keys))
+                except Exception: pass
             dispatch_multi(result.keys)
         elif result.verb in ("numeric", "default"):
+            if eve_logger is not None:
+                try: eve_logger.info("project_dispatch", verb=result.verb, key=result.keys[0])
+                except Exception: pass
             dispatch_project(result.keys[0])
         elif result.verb == "general":
+            if eve_logger is not None:
+                try: eve_logger.info("project_dispatch", verb="general")
+                except Exception: pass
             dispatch_project("general")
         elif result.verb in ("auto-resume", "new", "rename", "clear", "autonomy", "full"):
+            _log_session_end("interactive_handoff", verb=result.verb)
             return dispatch_interactive()
         else:
             print(f"  {WARN}unknown selection: {raw}{RESET}")
@@ -814,12 +1307,16 @@ def main(argv: list[str] | None = None) -> int:
 
         # Refresh state so prefs changes via R) show on next iteration
         state = lib.build_picker_state(boot_ms=state.boot_ms)
+        _full_rows = list(state.rows)
+        _filter_query = ""
         try:
-            ans = input(f"  {DIM}> press Enter for picker, Q to quit:{RESET} ").strip().lower()
+            ans = input(f"  {DIM}> press Enter for picker, X to exit:{RESET} ").strip().lower()
         except (EOFError, KeyboardInterrupt):
             print()
+            _log_session_end("interrupt")
             return 0
-        if ans in ("q", "quit", "exit"):
+        if ans in ("x", "quit", "exit"):
+            _log_session_end("normal_exit")
             return 0
 
 

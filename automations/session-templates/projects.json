@@ -20,7 +20,8 @@
       "sinister-generator",
       "jkor",
       "sinister-snap-api-quantum",
-      "sinister-os"
+      "sinister-os",
+      "sinister-imessage-bridge"
     ],
     "special_keys": [
       "general",
@@ -181,6 +182,15 @@
       "root": "D:\\Sinister Sanctum\\projects\\sinister-os",
       "session_start": "",
       "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-os\\CLAUDE.md",
+      "github": ""
+    },
+    {
+      "key": "sinister-imessage-bridge",
+      "display": "iMessage Bridge",
+      "tag": "iMessage send/recv + chat.db indexing on operator's Mac farm (P0)",
+      "root": "D:\\Sinister Sanctum\\projects\\sinister-imessage-bridge",
+      "session_start": "",
+      "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-imessage-bridge\\CLAUDE.md",
       "github": ""
     },
     {

@@ -164,6 +164,13 @@ projects/sinister-os/source/**/__pycache__/
 projects/sinister-os/source/**/target/
 projects/sinister-os/source/**/*.iso
 
+# v19 (RKOJ-ELENO 2026-05-24): Sinister iMessage Bridge source is REAL code (bridge
+# daemon, AppleScript wrappers, chat.db poller, CLI) — not a junction. Track it.
+!projects/sinister-imessage-bridge/source/
+!projects/sinister-imessage-bridge/source/**
+projects/sinister-imessage-bridge/source/**/__pycache__/
+projects/sinister-imessage-bridge/source/**/*.pyc
+
 # v17 (RKOJ-ELENO 2026-05-23): Sinister Generator source is REAL code (the
 # application layer on top of tools/nano-banana/) — not a junction. Track it.
 # Per CLAUDE.md "The repo is the Sanctum monorepo — no separate GitHub remote
