@@ -49,7 +49,8 @@ $rollup.canonical_protections = $protections
 $heartbeats = [ordered]@{}
 $hbDir = Join-Path $SanctumRoot "_shared-memory\heartbeats"
 if (Test-Path $hbDir) {
-    Get-ChildItem $hbDir -Filter '*.json' -File | ForEach-Object {
+    # Iter 28: recurse to catch phones/ subdir + any future per-device heartbeats.
+    Get-ChildItem $hbDir -Filter '*.json' -File -Recurse | ForEach-Object {
         try {
             $j = Get-Content $_.FullName -Raw | ConvertFrom-Json
             $age = $null

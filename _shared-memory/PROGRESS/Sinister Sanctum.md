@@ -4,6 +4,48 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-24 11:45Z — /loop iter 28 — subdir-blindness audit complete + telemetry recurses heartbeats
+
+Continuing iter 27's bug-class probe across all sanctum scripts.
+
+**Audit results:**
+
+| Script | Non-recursive scan? | Real blind spot? |
+|---|---|---|
+| brain-index-orphan-check.ps1 | Was — fixed iter 27 | (panel/ entries; healed) |
+| canonical-protections-check P9 | Uses explicit `claudeDirs` enumeration (iter 7) | None |
+| cross-lane-impact-diff.ps1 | No (uses git diff) | None |
+| per-project-protections-check.ps1 | No (uses projects.json) | None |
+| index-resume-search.ps1 | Yes — PROGRESS scan | None (PROGRESS has no subdirs) |
+| telemetry-rollup.ps1 heartbeats | Yes | **Yes** — missed `heartbeats/phones/*.json` |
+
+**Subdir inventory of `_shared-memory/`:**
+- PROGRESS: 25 top, 25 recursive — clean
+- heartbeats: **2 hidden in `phones/`** (phone-1 + phone-2)
+- inbox: 35 per-lane subdirs (intentional; script reads per-lane already)
+- plans: 34 plan subdirs (intentional)
+- resume-points: 19 per-lane subdirs (intentional)
+
+**Fix shipped:** EDIT `automations/telemetry-rollup.ps1` — heartbeat scan now `-Recurse`. Catches 2 phone heartbeats + future per-device entries.
+
+**Verify:** telemetry lanes count rose **37 → 40** heartbeats.
+
+**Composes with:**
+- iter 27 brain-orphan-check recurse fix (same bug class)
+- `loop-driven-sessions-meta-lessons-2026-05-24` (sibling doctrine on persistent /loop — yet another empirical confirmation 28 iters in)
+
+**Files touched:**
+- EDIT `automations/telemetry-rollup.ps1` (one-line recurse fix)
+- EDIT `_shared-memory/PROGRESS/Sinister Sanctum.md` (this entry)
+
+**Bugs caught + fixed this iter:** 1 (telemetry heartbeats missed phones/).
+
+**Master plan:** unchanged 19/24 (~83%). Brain 154/125/29 APPROACHING.
+
+**Net value:** future per-device heartbeat additions (more phones, watches, etc.) automatically surface in telemetry without code changes.
+
+---
+
 ## 2026-05-24 11:40Z — /loop iter 27 — REAL FINDING: brain-orphan-check missed subdir entries; iter 8 regression discovered + fixed
 
 EVE on Sanctum. Probing for latent bugs paid off again — found a real subtle issue + a regression I'd caused 19 iters ago.
