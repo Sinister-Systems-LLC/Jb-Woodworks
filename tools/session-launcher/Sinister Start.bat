@@ -15,7 +15,11 @@ REM v5 (2026-05-23): step-by-step echoes + pause at end on error.
 REM v4 (2026-05-23): EVE.exe probe + PS1 fallback.
 REM v3 (2026-05-23 evening): First-run autonomy bootstrap via marker file.
 
-TITLE Sinister Sanctum :: Session Online
+REM RKOJ-ELENO :: 2026-05-24 — operator: "call it eve in the sessions start bat".
+REM The bat is a thin shim that probes for EVE.exe (auto-rebuilt by build-eve-exe.bat)
+REM and falls back to the PS1 picker only when EVE.exe is unavailable. Everything
+REM operator-facing should read "EVE" — bat itself is invisible plumbing.
+TITLE EVE :: Sinister Sanctum
 setlocal enableextensions
 
 REM ----- Explicit autonomy re-setup flag -----

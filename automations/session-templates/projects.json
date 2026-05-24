@@ -158,7 +158,7 @@
     {
       "key": "jkor",
       "display": "JKOR",
-      "tag": "JKOR brand surface (image-gen lane)",
+      "tag": "JKOR operator dashboard (control panel; not image-gen — that lives in sinister-generator)",
       "root": "D:\\Sinister Sanctum\\projects\\jkor",
       "session_start": "",
       "claude_md": "D:\\Sinister Sanctum\\projects\\jkor\\CLAUDE.md",
