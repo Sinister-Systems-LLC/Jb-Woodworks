@@ -7,6 +7,32 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T13:35Z — iteration 69 (corpus growth signal — top-3 stable, advantages shifted ~1pp)
+
+Operator: /loop. Detected change signal: brain corpus grew 149→150 docs since iter 68.
+
+### Test
+Re-ran `seraphim find-qbc --variant zzfm-r1 --top-n 3 --corpus pool`. Pool size still 129 (new doc fell into rkoj topic which is already over-capped at 16 docs / 4 in pool).
+
+### Result
+Top-3 triad **composition unchanged**:
+- #1: branch + index + verify (adv +0.2536 vs iter-49 +0.2673; −1.4pp shift)
+- #2: branch + coord + verify (adv +0.2488 vs iter-49 +0.2611; −1.2pp)
+- #3: branch + coord + index (adv +0.2338 vs iter-49 +0.2371; −0.3pp)
+
+Advantages decreased slightly across all 3 triads due to TF-IDF re-vocabularization with the wider doc-set. Compositions identical.
+
+### Confirms doctrine
+Iter-54 said "K=8 ANGLE / ZZ-FM r=1 are corpus-stable within 5pp". The 149→150 growth shows: production-recipe top-3 is even MORE stable than 5pp — it survives single-doc additions in over-capped topics with only 1-2pp advantage drift.
+
+### Cost
+Zero cloud burn; ~3s CPU.
+
+### Honest status
+No new doctrine. Confirming the corpus-stability claim under fresh data. Session remains at mature saturation.
+
+---
+
 ## 2026-05-24T13:00Z — iteration 68 (brain entry TL;DR consolidated for iters 51-67)
 
 Operator: /loop. Consolidation pass on the brain entry TL;DR (last refreshed iter 46).
