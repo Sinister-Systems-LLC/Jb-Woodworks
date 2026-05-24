@@ -10,6 +10,37 @@ The Sanctum-side mirror of `SESSION-START/02-OPERATOR-QUEUE.md`, with checkboxes
 
 ---
 
+## 2026-05-24 — 🟠 Sinister Quantum — 8 buildable systems proposed (operator pick)
+
+> Author: RKOJ-ELENO :: 2026-05-24 (EVE quantum deep-audit sweep)
+
+Operator ask (parallel quantum session): *"deep audit what we can do with the new sinister quantum data and start building out systems with it that will help us"*.
+
+Deep audit complete. 9 real-QPU runs + 20+ sim sweeps + 12 empirically-proven findings + 4 open conjectures + 5 brain entries inventoried. Full report at **`_shared-memory/plans/sinister-quantum-deep-audit-2026-05-24.md`**.
+
+**8 buildable systems proposed (tick to authorize build):**
+
+- [ ] **S1 — Quantum-Discriminated Brain-Recall Service (QDB-R)** — MCP/HTTP endpoint that re-ranks brain-recall top-K via ZZ-FM r=1 quantum-kernel tiebreaker (sim-only, zero burn). Effort: **M** (1 week). POC: 2h.
+- [ ] **S2 — Pre-Screen Triad Filter (PSTF)** — standalone Python helper exposing the iter-65/66 K=4 combined predictor (44% rule-out, zero FP) for any lane. Effort: **S** (1 day). POC: 1h.
+- [ ] **S3 — Quantum Doctrine Drift Detector (QDDD)** — weekly cron audit on canonical rank-1 triad; alerts on >3pp drift from iter-19 baseline. Effort: **S** (1 day). POC: 1h.
+- [ ] **S4 — Discrimination-as-a-Service MCP (DaaS-MCP)** — MCP server exposing `qbc_check_triad`, `find_qbc`, `audit_pair`, `prescreen_triad` to all Claude sessions. Effort: **M** (3-5 days). POC: 2h. **Operator-gate: `~/.claude/.mcp.json` edit required.**
+- [ ] **S5 — Triad Library + Pre-Computed Catalog (TLPC)** — canonical JSON catalog at `_shared-memory/quantum-catalog/triads-2026-05-24.json` with top-50 QBC per encoding + lane-index + classical bins. Unblocks S6 + S8. Effort: **S** (1 day). POC: 1.5h.
+- [ ] **S6 — Snap-API-EMU Cross-Lane Discriminator (SAECD)** — quantum diagnostic column in seraphim dashboard; integrates iter-65/66 pre-screen into `run-test.py`. Effort: **S-M** (2-3 days). POC: 2h.
+- [ ] **S7 — K'=K×D Conjecture Empirical Closer (KKD-EC)** — 60-run sim sweep closing iter-63's 2-datapoint conjecture (zero cloud burn; pure CPU). Effort: **S** (1 day). POC: 1.5h. **Closes 1 of 4 open conjectures.**
+- [ ] **S8 — Quantum-Aware Auto-Doctrine Promoter (QADP)** — fleet-wide auditor: on new brain entry land, auto-suggest `composes-with` links via find-qbc top-3 discriminable siblings. Effort: **M** (4-5 days). POC: 2h.
+
+**Pick guidance:**
+- Quickest win: S2 + S5 combined (~2 days, unblocks everything else)
+- Highest leverage: S4 (MCP exposure to all sessions) — but operator-gated
+- Closes empirical gap: S7 (the only K'=K×D closer; no-bullshit doctrine compliance)
+- Lowest recurring risk: S3 (weekly drift detection)
+
+**No real-QPU budget consumed by any of the 8** — all use sim-only or zero-burn pre-computation. Remaining 60s of 120s Wukong-180 budget stays intact.
+
+Cross-links: `_shared-memory/plans/sinister-quantum-deep-audit-2026-05-24.md` (full spec), `_shared-memory/knowledge/quantum-memory-kernel-fleet-action-items-2026-05-23.md` (lane doctrine).
+
+---
+
 ## 2026-05-24 — ✅ Sinister Vault finish-sweep — daemon + endpoints + MCP all verified
 
 > Author: RKOJ-ELENO :: 2026-05-24 (EVE finish-sinister-vault sweep)
@@ -334,7 +365,7 @@ EVE on Sanctum addressed the operator's 4-message stack on `agent/sinister-sanct
 Found jcode at `C:/Users/Zonia/Desktop/Github Research/jcode-0.12.3/` — Rust workspace, `ratatui`, single-binary, **48 ms boot** (vs our PS1 ~800-1200 ms, vs Claude Code 3512 ms). 5 ranked recommendations:
 
 - [ ] 🟢 **R4 (ship immediately, R0, 8 hrs)** — switch PS1 launcher to EVE.exe default dispatch. Saves ~700ms. Build once via `automations/eve-launcher/build-eve-exe.bat`; Sinister Start.bat v5 already probes EVE.exe paths.
-- [ ] 🟢 **R5 (R0, 12 hrs)** — profile EVE.exe boot; target <150 ms.
+- [x] ✅ **R5 (R0, 12 hrs)** — profile EVE.exe boot; target <150 ms. **CLOSED 2026-05-24 by rkoj-lane /loop iter 46**. Measurement: post-P2.5 `--onedir` switch, EVE.exe cold-start = **60 ms median** (5 trials, Windows 10, NVMe; profiled via `--profile` flag in `eve.py` v0.3.0). 5× under 150 ms target, 5× under the original 300 ms target. PyInstaller bootloader extraction floor (~500-700 ms with `--onefile`) eliminated. Anchor: `automations/eve-launcher/build-eve-exe.bat` (P2.5 modification) + `automations/eve-launcher/eve.py` v0.3.0 (--profile flag). Evidence captured in `_shared-memory/knowledge/eve-into-rkoj-integration-2026-05-23.md` L7 row + jcode-feature-matrix row 29 (`✅ acceptance-tested+ (11/12 done-def PASS after P2.5 --onedir; operator hands-on row #12 only)`).
 - [ ] 🟡 **R3 (R1, 20 hrs)** — lazy-load Textual widgets in Sinister Forge hot path. -15% boot.
 - [ ] 🟡 **R2 (R1, 40 hrs)** — shared-GPU host pattern for sterm. -60% RAM for 10-session fleet.
 - [ ] 🔴 **R1 (R2, 60 hrs)** — Rust port of Forge TUI. Operator-gated 30-day Rust toolchain wait.
@@ -383,6 +414,30 @@ The full master plan also names 14 expansion rows (Section C) + 7 operator-gated
 ## 2026-05-23 evening — MCP server failure fix shipped (operator screenshot "1 MCP server failed")
 
 - [ ] 🔴 **Restart Claude Code to load the MCP fix shipped 2026-05-23 evening** — `~/.claude/.mcp.json` had 2 failing servers (not 1): `sinister-apk` (package empty on disk - REMOVED) + `translator` (.venv missing `mcp` package - switched to bare `python`). Server count now 22 (was 23). MCPs load on cold-start only, so every spawned EVE needs Claude Code restarted to pick up the fix. Brain entry: `_shared-memory/knowledge/mcp-server-failure-fix-2026-05-23.md`.
+
+---
+
+## 2026-05-24 — 🟢 RKOJ v1.7.0 EVE-picker integration merge-ready on `rkoj-iter7` (acceptance-tested+; row #12 hands-on the only gate)
+
+> Author: RKOJ-ELENO :: 2026-05-24 (EVE on rkoj, /loop iter 74)
+
+**Status:** 68 commits on `rkoj-iter7` (origin head `a2b6933`). Doctrine verb: `acceptance-tested+` (11/12 done-def rows PASS; row #12 operator hands-on is the only remaining gate before `shipped` verb).
+
+**Verified components (rkoj-lane all-green; see `_shared-memory/inbox/sanctum/2026-05-24T0455Z-from-rkoj-row12-stack-verified-operator-ready.json` for the full snapshot iter 57 inbox):**
+
+- EVE.exe v0.3.0 (`--onedir`, 1.6 MB main + `_internal/` 59 entries) — **52.5 ms median warm-cache** (iter 62 re-measurement, 5 trials)
+- 26/26 offscreen-Qt picker tests PASS in 4.147s (iter 56)
+- 9/9 canonical protections PASS (iter 55)
+- RKOJ PP 5/5 (iter 43); 11 of 12 fleet_test suites PASS (iter 50)
+- docs/EVE-PICKER-OPERATOR-WALKTHROUGH.md verified-current vs source (iter 54)
+- Brain index rows 9 (acceptance-tested+) / 10 (canonical-impl) / 19 (shipped) all synced (iters 45/63/64)
+
+**Two operator-clicked items when ready:**
+
+- [ ] 🟢 **Operator hands-on row #12** — follow `docs/EVE-PICKER-OPERATOR-WALKTHROUGH.md` Track B (8 boxes; ~10 min). Confirms Ctrl+P opens overlay / cards land inline / chips render / ↻ pre-defaults. PASS → flip doctrine verb `acceptance-tested+ → shipped` in row 9 of `_shared-memory/knowledge/_INDEX.md` + matrix row 29.
+- [ ] 🟢 **Merge `rkoj-iter7 → main`** — `git merge --no-ff rkoj-iter7` from main (or operator-preferred path). Lands BOM patch (closes `sinister-utils test_bom_fleet_audit` on main), per-lane CLAUDE.md + .claude/settings.json (PP1+PP2), fleet_test dual-runner, auth_probe canonical impl, EVE.exe --onedir build script, docs walkthrough, and 50+ doctrine/state-sync drift fixes. Post-merge: also rebuild RKOJ.exe (per row below) + bump label to v1.7.0.
+
+The integration was shipped P1-P5.5 baseline (2026-05-23) + P2.5 --onedir switch + /loop iters 1-73 of doctrine extensions, fleet-wide tooling, per-project protections close, and docs/state-sync sweeps. All work pushed to `origin/rkoj-iter7`.
 
 ---
 
