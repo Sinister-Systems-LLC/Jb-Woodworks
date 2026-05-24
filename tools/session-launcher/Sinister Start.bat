@@ -38,6 +38,20 @@ if /I "%~1"=="--account" (
 if /I "%~1"=="--account-status" goto :run_account_status
 :continue_after_account
 
+REM ----- Swarm / Loop autonomy flags (RKOJ-ELENO :: 2026-05-24) -----
+REM Operator: "make sure the swarm and loop functions work in the bat file"
+REM --swarm     -- pre-enable swarm mode (parallel sub-agents on multi-file work)
+REM --loop      -- pre-enable loop mode (keep iterating until task verifiably complete)
+REM --both      -- enable both
+REM Without these flags the PS1 picker prompts interactively (existing behavior).
+REM These set env vars that start-sinister-session.ps1 + Prompt-AgentModes honor.
+:autonomy_flag_loop
+if /I "%~1"=="--swarm" ( set "SINISTER_DEFAULT_SWARM=1" & set "SINISTER_SKIP_MODES_PROMPT=1" & shift & goto :autonomy_flag_loop )
+if /I "%~1"=="--loop"  ( set "SINISTER_DEFAULT_LOOP=1"  & set "SINISTER_SKIP_MODES_PROMPT=1" & shift & goto :autonomy_flag_loop )
+if /I "%~1"=="--both"  ( set "SINISTER_DEFAULT_SWARM=1" & set "SINISTER_DEFAULT_LOOP=1" & set "SINISTER_SKIP_MODES_PROMPT=1" & shift & goto :autonomy_flag_loop )
+if /I "%~1"=="--no-swarm" ( set "SINISTER_DEFAULT_SWARM=0" & set "SINISTER_SKIP_MODES_PROMPT=1" & shift & goto :autonomy_flag_loop )
+if /I "%~1"=="--no-loop"  ( set "SINISTER_DEFAULT_LOOP=0"  & set "SINISTER_SKIP_MODES_PROMPT=1" & shift & goto :autonomy_flag_loop )
+
 REM ----- Optional wt.exe redirect (off by default after v4 silent-close bug) -----
 if defined SINISTER_USE_WT (
     if not defined WT_SESSION (
