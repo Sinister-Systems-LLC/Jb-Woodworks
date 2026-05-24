@@ -480,31 +480,50 @@ def banner(state) -> None:
 
 
 def render_picker(state) -> None:
-    """ANSI-render the picker rows using fields from PickerState."""
-    print(f"  {WHITE}{BOLD}Pick a project{RESET}")
-    print(f"  {DARKP}{'-' * 68}{RESET}")
-    for r in state.rows:
-        marker = f"{BRIGHTP}*{RESET}" if r.is_default else " "
-        line = (f"  {marker} {PURPLE}{r.index:2}){RESET} "
-                f"{WHITE}{r.display:<22}{RESET} "
-                f"{SOFT}{r.tag:<34}{RESET}")
-        if r.customized:
-            line += f" {DIM}[{r.agent_name} / {r.accent}]{RESET}"
-        print(line)
+    """ANSI-render the picker rows using fields from PickerState.
+
+    v3 spacing (RKOJ-ELENO :: 2026-05-24): widened to 88 cols, display column
+    bumped to 28, tag truncated to 46 with ellipsis, blank divider every 5 rows
+    for visual grouping. Picker is the operator's most-used surface — readability
+    matters more than terminal economy.
+    """
     print()
-    print(f"  {DARKP}{'-' * 68}{RESET}")
-    print(f"  {PURPLE}G){RESET} General      "
-          f"{PURPLE}A){RESET} Auto-Resume  "
-          f"{PURPLE}N){RESET} New Project  "
-          f"{PURPLE}R){RESET} Rename + Color")
-    print(f"  {PURPLE}K){RESET} Clear ctx    "
-          f"{PURPLE}S){RESET} Autonomy     "
-          f"{PURPLE}F){RESET} Full picker  "
-          f"{PURPLE}Q){RESET} Quit")
-    print(f"  {PURPLE}T){RESET} Quantum tools     "
+    print(f"  {WHITE}{BOLD}Pick a project{RESET}")
+    print(f"  {DARKP}{'-' * 88}{RESET}")
+    print()
+    for i, r in enumerate(state.rows):
+        marker = f"{BRIGHTP}*{RESET}" if r.is_default else " "
+        # Truncate tag with ellipsis if too long; keeps row to one terminal line.
+        tag = r.tag if len(r.tag) <= 46 else r.tag[:43] + "..."
+        line = (f"  {marker} {PURPLE}{r.index:2}){RESET}  "
+                f"{WHITE}{r.display:<28}{RESET}  "
+                f"{SOFT}{tag:<46}{RESET}")
+        if r.customized:
+            line += f"  {DIM}[{r.agent_name} / {r.accent}]{RESET}"
+        print(line)
+        # Visual grouping: blank line every 5 rows so the eye can scan.
+        if (i + 1) % 5 == 0 and (i + 1) < len(state.rows):
+            print()
+    print()
+    print(f"  {DARKP}{'-' * 88}{RESET}")
+    print()
+    print(f"  {PURPLE}G){RESET}  General         "
+          f"{PURPLE}A){RESET}  Auto-Resume     "
+          f"{PURPLE}N){RESET}  New Project     "
+          f"{PURPLE}R){RESET}  Rename + Color")
+    print()
+    print(f"  {PURPLE}K){RESET}  Clear ctx       "
+          f"{PURPLE}S){RESET}  Autonomy        "
+          f"{PURPLE}F){RESET}  Full picker     "
+          f"{PURPLE}Q){RESET}  Quit")
+    print()
+    print(f"  {PURPLE}T){RESET}  Quantum tools     "
           f"{DIM}// PSTF / QDDD / TLPC / qbc-recall / summary{RESET}")
-    print(f"  {DIM}    multi-select: 1,3,5 or 1-3{RESET}")
-    print(f"  {DARKP}{'-' * 68}{RESET}")
+    print()
+    print(f"  {DIM}     multi-select: 1,3,5 or 1-3     |     "
+          f"loop/swarm modes prompted after pick{RESET}")
+    print(f"  {DARKP}{'-' * 88}{RESET}")
+    print()
 
 
 # ---------------------------------------------------------------------------
@@ -578,7 +597,7 @@ def run_account_status() -> int:
 # Arg parsing (must run BEFORE banner + picker so probe flags exit fast)
 # ---------------------------------------------------------------------------
 
-EVE_VERSION = "0.4.1"  # v0.4.1 :: quantum-tools sub-menu (T) + jcode heartbeat ticker
+EVE_VERSION = "0.4.2"  # v0.4.2 :: picker spacing v3 (88-col layout, blank-line groups) + sinister-os row + loop/swarm hint
 
 
 def _print_help() -> None:

@@ -19,7 +19,8 @@
       "letstext",
       "sinister-generator",
       "jkor",
-      "sinister-snap-api-quantum"
+      "sinister-snap-api-quantum",
+      "sinister-os"
     ],
     "special_keys": [
       "general",
@@ -171,6 +172,15 @@
       "root": "D:\\Sinister Sanctum\\projects\\sinister-snap-api-quantum",
       "session_start": "",
       "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-snap-api-quantum\\CLAUDE.md",
+      "github": ""
+    },
+    {
+      "key": "sinister-os",
+      "display": "Sinister OS",
+      "tag": "Linux PC OS replacement :: EVE-controlled + gaming (P0 plan ready)",
+      "root": "D:\\Sinister Sanctum\\projects\\sinister-os",
+      "session_start": "",
+      "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-os\\CLAUDE.md",
       "github": ""
     },
     {
