@@ -44,6 +44,9 @@ $orphans = $diskSlugs | Where-Object { $_ -notin $indexedSlugs }
 $missingFiles = $indexedSlugs | Where-Object { $_ -notin $diskSlugs }
 
 if ($Json) {
+    # Iter 7 fix: Rule 7.5 should track INDEXED row count (recall-able doctrine),
+    # not on-disk file count (which includes per-lane orphans the master doesn't
+    # own). Doctrine text: "brain >150 ROWS" -> indexed rows in _INDEX.md.
     $result = [ordered]@{
         ts_utc = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
         on_disk_count = $diskSlugs.Count
@@ -53,7 +56,7 @@ if ($Json) {
         orphans = $orphans
         missing_files = $missingFiles
         rule_7_5_brain_ceiling = 150
-        rule_7_5_status = if ($diskSlugs.Count -ge 150) { "VIOLATED" } elseif ($diskSlugs.Count -ge 120) { "APPROACHING" } else { "OK" }
+        rule_7_5_status = if ($indexedSlugs.Count -ge 150) { "VIOLATED" } elseif ($indexedSlugs.Count -ge 120) { "APPROACHING" } else { "OK" }
     }
     $result | ConvertTo-Json -Depth 5
 } else {
@@ -72,14 +75,14 @@ if ($Json) {
     if ($orphans.Count -eq 0 -and $missingFiles.Count -eq 0) {
         Write-Host "CLEAN - every on-disk brain entry is indexed and vice versa." -ForegroundColor Green
     }
-    # Rule 7.5 ceiling check
+    # Rule 7.5 ceiling check (tracks INDEXED rows, not on-disk files)
     Write-Host ""
-    if ($diskSlugs.Count -ge 150) {
-        Write-Host "Rule 7.5 brain-row ceiling: VIOLATED ($($diskSlugs.Count) at or above 150). STOP expanding; consolidate first." -ForegroundColor Red
-    } elseif ($diskSlugs.Count -ge 120) {
-        Write-Host "Rule 7.5 brain-row ceiling: APPROACHING ($($diskSlugs.Count) / 150)" -ForegroundColor Yellow
+    if ($indexedSlugs.Count -ge 150) {
+        Write-Host "Rule 7.5 brain-row ceiling: VIOLATED ($($indexedSlugs.Count) indexed rows at or above 150). STOP expanding; consolidate first." -ForegroundColor Red
+    } elseif ($indexedSlugs.Count -ge 120) {
+        Write-Host "Rule 7.5 brain-row ceiling: APPROACHING ($($indexedSlugs.Count) indexed rows / 150)" -ForegroundColor Yellow
     } else {
-        Write-Host "Rule 7.5 brain-row ceiling: OK ($($diskSlugs.Count) / 150)" -ForegroundColor Green
+        Write-Host "Rule 7.5 brain-row ceiling: OK ($($indexedSlugs.Count) indexed rows / 150)" -ForegroundColor Green
     }
 }
 

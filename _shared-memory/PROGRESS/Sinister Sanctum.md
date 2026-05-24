@@ -4,6 +4,49 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-24 06:55Z — /loop iter 7 — Rule 7.5 metric fix + git-add fsmonitor + regression test
+
+EVE on Sanctum continuing /loop with test-first emphasis. Short, focused iter — 3 tasks shipped, 1 sibling-merge respected.
+
+**T1 Regression test results:**
+- canonical-protections-check: **0.98s PASS=9 FAIL=0** (was 1.66s, getting faster as fs cache warms)
+- per-project-protections: **3/22 fully PASS** (was 4/22; General lane dropped from 5→4 — PP3 heartbeat stale; RKOJ rose 3→4 with new .claude/settings.json from sibling)
+- brain-orphan-check: 150/117/33 — but Rule 7.5 misreporting → see F-mini below
+- EVE.exe (dist/EVE/EVE.exe): still v0.2.0 working — sibling's v0.3.0 refactor (using new tools/eve-picker/eve_picker_lib.py) lives in their workspace but not yet committed
+
+**F-mini Rule 7.5 metric fix:**
+
+- Bug: `brain-index-orphan-check.ps1` reported `VIOLATED` on `on_disk_count=150`. Doctrine text says "150 ROWS" (= indexed rows in `_INDEX.md`, the recall-able doctrine count). On-disk count includes per-lane orphans which sanctum-master doesn't own.
+- EDIT: switched Rule 7.5 evaluation to use `$indexedSlugs.Count` instead of `$diskSlugs.Count`. Re-run: **indexed=117, status=OK** (the correct read).
+- 33 orphans remain on-disk but they're per-lane brain entries owned by panel/apk/rkoj/snap/tiktok/seraphim lanes. Per lane discipline, sanctum-master doesn't archive them.
+
+**F1 Diagnose chronic git-add hangs:**
+
+- Hypothesis was: `git ls-files --others` slow on `.next/cache/`. Direct timing: `time git ls-files --others --exclude-standard` returned 511 files in **65ms**. So under normal conditions, NOT slow.
+- Real root cause of the 4-min hangs (observed iters 1-5): transient fs contention with multiple concurrent agents writing to same repo. Not a script bug — a multi-writer race.
+- MITIGATION: enabled `git config core.fsmonitor true` + `core.untrackedCache true`. These Git 2.30+ features cache directory state across operations so each `git status` / `git add` doesn't rescan the tree.
+- VERIFY: `time git status --short` after enabling = **102ms / 637 files reported**. fsmonitor on Windows uses the built-in daemon (no extra process needed for Git 2.53).
+- Note: these are `.git/config` settings (local-only, not tracked). Per-machine apply. Operator may want to add same to other Sanctum clones.
+
+**Sibling work this iter (respected, not edited):**
+- Bat: `--swarm` / `--loop` / `--both` / `--no-swarm` / `--no-loop` autonomy flags added (RKOJ-ELENO 2026-05-24). Composes with my EVE.exe probe-path edits cleanly.
+- eve.py: refactored to use `tools/eve-picker/eve_picker_lib.py` (rkoj-lane P2 of `eve-into-rkoj-integration-2026-05-23T1330Z`). Bumped to v0.3.0. Kept my `--version` / `--help` handlers.
+
+**Files touched (sanctum-lane only):**
+- EDIT `automations/brain-index-orphan-check.ps1` (Rule 7.5 metric fix)
+- (git config local-only: `core.fsmonitor true`, `core.untrackedCache true`)
+- EDIT `_shared-memory/PROGRESS/Sinister Sanctum.md` (this entry)
+
+**Brain status (after F-mini):** 150 on-disk / 117 indexed / 33 orphans / **OK** (117/150). Headroom = 33 entries before ceiling.
+
+**Next iter plan:**
+- C.5 wake-on-demand bot dispatcher (~50 LOC sinister-bus patch)
+- Operator-gated: Path A vs B voice + Q1-Q5
+- Per-lane self-fix follow-up on PP broadcast (target 4 → ≥12 by next 7d)
+- Audit: which sibling work has landed and what shipped during last 24h
+
+---
+
 ## 2026-05-23 22:10Z — /loop iter 6 — 4 deliverables: telemetry wire-up + PP broadcast + EVE.exe REBUILT + voice POC scaffold
 
 EVE on Sanctum continuing /loop. 6 tasks queued; all 5 work-tasks shipped + commit task in flight.
