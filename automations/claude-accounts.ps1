@@ -340,6 +340,77 @@ function Invoke-AccountRemove {
     return (Save-AccountsConfig -Config $cfg)
 }
 
+function Invoke-AccountSetKey {
+    # One-command slot setup: write the credentials JSON + enable the slot.
+    # RKOJ-ELENO :: 2026-05-24 (iter-9) -- operator hard-canonical
+    #   "i need multi account support ... round robin where i have 4 accounts logged in
+    #    and the agents disperse across them."
+    # Removes the friction of "create credentials.<name>.json by hand".
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true)][string]$Name,
+        [Parameter(Mandatory=$true)][string]$ApiKey,
+        [string]$Label = ''
+    )
+    $cfg = Get-AccountsConfig
+    $acct = _Find-Account -Config $cfg -Name $Name
+    if (-not $acct) { Write-Host "[ERROR] slot '$Name' not found. Use -Action List." -ForegroundColor Red; return $false }
+    if (-not $ApiKey -or $ApiKey.Length -lt 16) {
+        Write-Host "[ERROR] -ApiKey looks invalid (too short). Paste the full sk-ant-... key." -ForegroundColor Red
+        return $false
+    }
+    $credsPath = $acct.credentials_file
+    if (-not $credsPath) {
+        $credsPath = "$env:USERPROFILE\.claude\credentials.$Name.json"
+        $acct.credentials_file = $credsPath
+    }
+    $credsDir = Split-Path $credsPath -Parent
+    if ($credsDir -and -not (Test-Path $credsDir)) { New-Item -ItemType Directory -Path $credsDir -Force | Out-Null }
+    $payload = [ordered]@{
+        '_comment' = "Sinister Sanctum :: claude-accounts slot '$Name'. RKOJ-ELENO :: $((Get-Date).ToString('yyyy-MM-dd')). Operator-private; not committed."
+        api_key    = $ApiKey
+    } | ConvertTo-Json -Depth 3
+    Set-Content -Path $credsPath -Value $payload -Encoding UTF8
+    if ($Label) { $acct.label = $Label }
+    if ($acct.PSObject.Properties.Name -contains 'enabled') { $acct.enabled = $true }
+    else { $acct | Add-Member -MemberType NoteProperty -Name 'enabled' -Value $true -Force }
+    Write-AccountsLog "Invoke-AccountSetKey: '$Name' creds written to $credsPath + enabled" 'INFO'
+    $masked = $ApiKey.Substring(0, [Math]::Min(12, $ApiKey.Length)) + '...'
+    Write-Host "[OK] Slot '$Name' configured + enabled. Creds: $credsPath (api_key=$masked)." -ForegroundColor Green
+    return (Save-AccountsConfig -Config $cfg)
+}
+
+function Invoke-AccountStatus {
+    # Compact rotation summary: enabled count / total + per-slot one-liner + how to add more.
+    [CmdletBinding()]
+    param()
+    $cfg = Get-AccountsConfig
+    $accts = @($cfg.accounts)
+    $enabled = @($accts | Where-Object { $_.enabled -ne $false })
+    $disabled = @($accts | Where-Object { $_.enabled -eq $false })
+    $rl = @($accts | Where-Object { $_.rate_limited_until_utc })
+    Write-Host ''
+    Write-Host "  Multi-account rotation status (round-robin):" -ForegroundColor Cyan
+    Write-Host "    strategy:    $($cfg.rotation_strategy)" -ForegroundColor Gray
+    Write-Host "    enabled:     $($enabled.Count) / $($accts.Count)" -ForegroundColor Gray
+    Write-Host "    rate-limited:$($rl.Count)" -ForegroundColor Gray
+    Write-Host ''
+    foreach ($a in $accts) {
+        $en = if ($a.enabled -eq $false) { 'OFF ' } else { 'ON  ' }
+        $sess = "{0}/{1}" -f $a.current_sessions, $a.max_sessions_concurrent
+        $color = if ($a.enabled -eq $false) { 'DarkGray' } elseif ($a.rate_limited_until_utc) { 'Yellow' } else { 'Green' }
+        Write-Host ("    [{0}] {1,-10} sess={2,-7} spawns_today={3,-3} label={4}" -f $en, $a.name, $sess, $a.successful_spawns_today, $a.label) -ForegroundColor $color
+    }
+    Write-Host ''
+    if ($disabled.Count -gt 0) {
+        $first = $disabled[0].name
+        Write-Host "  To enable a slot in one command:" -ForegroundColor Cyan
+        Write-Host "    powershell -File automations\claude-accounts.ps1 -Action SetKey -Name $first -ApiKey sk-ant-... -Label 'Your label'" -ForegroundColor Gray
+        Write-Host ''
+    }
+    return $true
+}
+
 function Invoke-AccountTest {
     [CmdletBinding()]
     param([Parameter(Mandatory=$true)][string]$Name)
@@ -378,6 +449,7 @@ if ($MyInvocation.InvocationName -ne '.' -and $args.Count -gt 0) {
             '-Label'              { $Label  = $args[++$i] }
             '-CredentialsFile'    { $CredentialsFile = $args[++$i] }
             '-RetryAfterSeconds'  { $RetryAfterSeconds = [int]$args[++$i] }
+            '-ApiKey'             { $ApiKey = $args[++$i] }
         }
     }
     switch ($Action) {
@@ -385,11 +457,13 @@ if ($MyInvocation.InvocationName -ne '.' -and $args.Count -gt 0) {
         'Spawned'     { Mark-AccountSpawned      -Name $Name | Out-Null }
         'RateLimited' { Mark-AccountRateLimited  -Name $Name -RetryAfterSeconds $RetryAfterSeconds | Out-Null }
         'List'        { Invoke-AccountList }
+        'Status'      { Invoke-AccountStatus | Out-Null }
         'Add'         { Invoke-AccountAdd        -Name $Name -Label $Label -CredentialsFile $CredentialsFile | Out-Null }
+        'SetKey'      { Invoke-AccountSetKey     -Name $Name -ApiKey $ApiKey -Label $Label | Out-Null }
         'Enable'      { Invoke-AccountSetEnabled -Name $Name -Enabled $true  | Out-Null }
         'Disable'     { Invoke-AccountSetEnabled -Name $Name -Enabled $false | Out-Null }
         'Remove'      { Invoke-AccountRemove     -Name $Name | Out-Null }
         'Test'        { Invoke-AccountTest       -Name $Name | Out-Null }
-        default       { Write-Host "[claude-accounts] unknown -Action '$Action' (expected Release|Spawned|RateLimited|List|Add|Enable|Disable|Remove|Test)" }
+        default       { Write-Host "[claude-accounts] unknown -Action '$Action' (expected Release|Spawned|RateLimited|List|Status|Add|SetKey|Enable|Disable|Remove|Test)" }
     }
 }

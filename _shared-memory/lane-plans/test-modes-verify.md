@@ -11,6 +11,7 @@
 ## IN-PROGRESS
 
 ## DONE
+- [x] 2026-05-24T17:23:34Z :: high :: Add claude-accounts -Action SetKey + -Action Status for 1-cmd multi-account setup  // evidence: Smoke-tested: SetKey writes creds + enables slot; Status shows compact rotation table with copy-paste command; reverted fake creds cleanly
 - [x] 2026-05-24T17:17:06Z :: normal :: Add -AutoRestore self-heal flow for P13 (auto-runs seed-resume-points on gap detect)  // evidence: smoke-tested: gap created -> P13 FAIL detected; -AutoRestore run -> P13 PASS achieved
 - [x] 2026-05-24T17:13:31Z :: high :: Add P13 canonical-protection (lane resume-point coverage); flags lanes missing resume-points + offers seed-resume-points command  // evidence: canonical-protections-check now reports P13 OK with all 16 previously-gapped lanes covered
 - [x] 2026-05-24T17:04:03Z :: high :: Build seed-resume-points.ps1 + apply across fleet (16 lanes seeded, 0 gaps remain)  // evidence: 16 lanes seeded; gaps-after=0; operator directive 2026-05-24T17:01:09Z fulfilled
