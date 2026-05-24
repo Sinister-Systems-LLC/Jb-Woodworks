@@ -21,7 +21,7 @@ Prior audits (`Desktop\AUDIT-pilotos-2026-05-23.md`) concluded "no token-saving 
 ### Lane 1: Memory + audit (super-local agent)
 
 - `tools/sinister-seraphim/qrng.py` + `audit.py`: every fleet randomness call has a provenance sidecar at `_shared-memory/qrng-provenance/<UTC>.json`.
-- Quantum-kernel SVM experiment over `_shared-memory/knowledge/` embeddings — small-scale, mostly to validate that quantum-ML doesn't beat TF-IDF + Ruflo HNSW at our brain size (~80 entries).
+- Quantum-kernel discrimination over `_shared-memory/knowledge/` triads — **SUPERSEDED iter 19+: QUINTUPLE-verified to BEAT TF-IDF by 25-35pp** (mean 31pp; 15/15 pairs landed; run-to-run variance ~3pp) on real Wukong-180 when using K=4 ZZ-FM r=1 + algorithmically-selected QBC triads via `seraphim find-qbc --variant zzfm-r1 --corpus pool`. The "doesn't beat TF-IDF at ~80 entries" framing was based on naive triad selection; algorithmic discovery finds the rare ~0.13-0.28% of triads where quantum-kernel genuinely outperforms. **For sim-only brain-recall use case: keep TF-IDF as primary signal (alpha=1.0 default per iter 48), but quantum-kernel sim is a valid TIEBREAKER on top-3 cluster-similar TF-IDF results.** See `quantum-memory-kernel-fleet-action-items-2026-05-23.md` for production recipe + theorem + interaction-degree framework.
 - "Memory simulation" branch: simulate alt-history brain states using superposition for "what if" planning. Exploratory.
 
 ### Lane 2: Sinister Emulator environment (account-traffic sim)

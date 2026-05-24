@@ -551,6 +551,8 @@ def _brain_recall_cmd(args) -> int:
         k_qubits=args.k,
         alpha=args.alpha,
         corpus_mode=args.corpus,
+        tiebreaker=args.tiebreaker,
+        tiebreaker_window=args.tiebreaker_window,
     )
 
     if args.out:
@@ -564,6 +566,12 @@ def _brain_recall_cmd(args) -> int:
     print(f'[seraphim brain-recall] query: {result["query"]!r}')
     print(f'  encoding={result["encoding"]}  k_qubits={result["k_qubits"]}  alpha={result["alpha"]}  '
           f'corpus={result["corpus_mode"]} ({result["corpus_size"]} docs)')
+    tb = result.get('tiebreaker', {})
+    if tb.get('fired'):
+        print(f'  tiebreaker: FIRED — top-3 reordered by quantum-kernel triad discrimination')
+        print(f'              ({tb.get("reason", "")}; top-3 spread {tb.get("top3_spread", 0):.4f})')
+    elif args.tiebreaker != 'off':
+        print(f'  tiebreaker: not fired — {tb.get("reason", "?")}')
     print()
     print(f'  Top {args.top_k} results (ranked by alpha*tfidf + (1-alpha)*quantum):')
     for r in result['top_results']:
@@ -681,6 +689,13 @@ def main(argv: list[str] | None = None) -> int:
                            'pair-wise recall — the quantum kernel collapses to a few noise docs across diverse queries. '
                            'Override only after empirical validation for your use case.')
     p_br.add_argument('--corpus', default='full', choices=['full', 'pool'], help='Brain corpus mode (default full)')
+    p_br.add_argument('--tiebreaker', default='off', choices=['off', 'auto', 'always'],
+                      help='Iter 95: quantum-kernel sim tiebreaker for ambiguous top-3 TF-IDF. '
+                           'auto = fire when top-3 spread <= --tiebreaker-window. '
+                           'always = fire whenever 3+ results. off (default) = skip. '
+                           'Sim-only ZZ-FM r=1; pre-filters with iter-65/66 combined predictor.')
+    p_br.add_argument('--tiebreaker-window', dest='tiebreaker_window', type=float, default=0.05,
+                      help='TF-IDF spread threshold for tiebreaker=auto (default 0.05)')
     p_br.add_argument('--out', default=None, help='Optional output JSON path')
     p_br.set_defaults(fn=_brain_recall_cmd)
 

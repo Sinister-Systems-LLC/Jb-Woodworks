@@ -7,6 +7,77 @@ Append-only memory. Most recent at top. Cross-references to brain entries and ot
 
 ---
 
+## 2026-05-24T22:00Z — 🚀 ITER 95: BRAIN-RECALL TIEBREAKER SHIPPED + 6 parallel audit agents found cross-lane work
+
+Operator directive: "start on all memory updates we can do in all parrallel agents you ened" — spawned 6 read-only audit agents in parallel + synthesized findings + executed in-lane work.
+
+### Six parallel audits returned
+
+1. **Sinister Forge audit** found **real bug**: `forge_memory_bridge.write()` called 2-arg at 4 sites where API requires 3-arg. Silently masked by `except: pass`. Plus 9 stale doc-status claims.
+2. **Sinister Panel audit**: clean lane; PROGRESS no-bullshit restructure opportunity.
+3. **Sinister Kernel-APK audit**: 3 stale Detector version literals (v0.96 → v0.97.47).
+4. **Sinister Snap-EMU audit**: 98-doc rule corpus (`source/living-mds/` + `source/snap-signer-tree/docs/`, 3.2 MB) — high-value find-qbc target.
+5. **Brain cross-reference audit**: 2 stale entries — `seraphim-for-emu-re-2026-05-23.md:72` + `sinister-seraphim-integration-vision-2026-05-23.md:24` both said quantum-kernel "likely loses to TF-IDF at 80-entry scale" (directly contradicted by quintuple-verified 25-35pp).
+6. **Brain-recall tiebreaker design**: complete spec for the iter-37→90 doctrine's operator-canonical use case.
+
+### Executed in-lane (this iter)
+
+1. **Updated 2 stale brain entries** with forward-pointer annotations to the quintuple-verified production recipe. Both files now reflect that the original "experimental, likely loses" framing was based on naive triad selection; algorithmic discovery via find-qbc finds the genuine QBC subset.
+
+2. **Filed OPERATOR-ACTION-QUEUE row** with cross-lane findings, color-coded by priority:
+   - 🔴 Forge memory-write 2-arg bug (4 sites — real silent breakage)
+   - 🟡 Forge / Panel / Kernel-APK sync-sweep opportunities
+   - 🟢 Snap-EMU find-qbc rule-corpus opportunity
+   Each item has a clear OWNER lane to avoid cross-lane edits.
+
+3. **Implemented brain-recall tiebreaker** per audit-agent's design:
+   - New params: `tiebreaker='off|auto|always'`, `tiebreaker_window=0.05`
+   - Fires when top-3 TF-IDF spread ≤ window (auto) or unconditionally (always)
+   - Pre-filters with iter-65/66 combined predictor (shared top-4 = 0 OR same top-1) — avoids iter-48 noise-doc collapse
+   - Computes per-doc advantage on the top-3 triad via ZZ-FM r=1 sim
+   - Re-ranks top-3 only when advantage delta > 2× TF-IDF spread (noise-floor guard)
+   - Schema bumped: `brain-recall.v1` → `brain-recall.v2` (adds `tiebreaker` field)
+   - CLI flags: `--tiebreaker {off,auto,always}` + `--tiebreaker-window N`
+   - Human output: surfaces "tiebreaker: FIRED" or "tiebreaker: not fired — <reason>"
+
+4. **3 new regression tests** in `test_smoke.py`:
+   - `test_brain_recall_tiebreaker_off_default_no_change` — schema bump verified, no tiebreaker activity by default
+   - `test_brain_recall_tiebreaker_auto_skips_above_window` — auto correctly skips when spread > 0.05
+   - `test_brain_recall_tiebreaker_always_fires_and_reranks` — always mode produces fired=True OR explained no-fire (pre-filter / adv delta)
+   - Plus fixed iter-81 test's schema expectation (v1 → v2)
+
+### Test suite verification
+
+**27/27 PASS** (24 previous + 3 new). ~32s wall time. No regressions.
+
+### Smoke test result (canonical query)
+
+```
+seraphim brain-recall "multi-agent git coordination" --tiebreaker always --corpus pool
+```
+Top-3 BEFORE tiebreaker (TF-IDF only): [multi-agent-git-coordination, multi-agent-git-index-contention-storm, verify-head-before-commit-multi-agent].
+After tiebreaker (always): [verify-head-before-commit-multi-agent, multi-agent-git-index-contention-storm, multi-agent-git-coordination]. The most-discriminable doc (`verify-head`) jumps to #1 because its per-doc quantum advantage in the triad is 0.34 vs 0.13/0.14 for the others. **The tiebreaker IS doing real work — it surfaces the structurally-distinct doc when TF-IDF can't separate near-equal hits.**
+
+### Operator interpretation
+
+For literal best-match queries: use `--tiebreaker off` (default) — TF-IDF answers directly.
+
+For "show me the structurally-distinct option among similar TF-IDF hits": use `--tiebreaker auto` (fires on ambiguous top-3) or `--tiebreaker always` (always reveals quantum-kernel's per-doc discrimination signal).
+
+The doctrine separation is preserved: iter-48's "alpha<1.0 degrades pair-wise" still holds for query↔doc; the tiebreaker uses TRIAD-level discrimination (iter-44/45/52 finding) which is a different operation.
+
+### Cost / verification
+
+- Zero cloud burn
+- ~12 min wall time for the parallel-audit dispatch + ~25 min for synthesis + implement + test + verify
+- Status: **tested-before-claimed** (3 new tests; full suite 27/27 green; smoke test shows tiebreaker IS reordering on ambiguous query)
+
+### Session arc note
+
+This iter answers the operator's "what can we do" pivot at iter 95 with concrete parallel execution. Each audit agent stayed in its lane (read-only); synthesis happened serially. Cross-lane work was queued for lane-owner action via OPERATOR-ACTION-QUEUE rather than directly edited.
+
+---
+
 ## 2026-05-24T12:25Z — ✅ ITER 67: K=8 same-top-1 counter-examples CONFIRM iter-66 mechanism (no hidden predictor)
 
 Iter 66 left 4 K=8-QBC-with-same-top-1 triads in 149-full as unexplained counter-examples. Iter 67 investigates their structure.

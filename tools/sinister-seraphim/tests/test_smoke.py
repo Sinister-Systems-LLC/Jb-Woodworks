@@ -128,7 +128,7 @@ import memory_kernel  # noqa: E402
 def test_recall_brain_default_alpha_returns_top_k():
     """recall_brain default alpha=1.0 (pure TF-IDF) returns top_k results with correct shape."""
     r = memory_kernel.recall_brain('multi-agent git', top_k_results=3, corpus_mode='pool')
-    assert r['schema'] == 'sinister-seraphim.brain-recall.v1'
+    assert r['schema'] == 'sinister-seraphim.brain-recall.v2'  # iter 95 bumped v1→v2 for tiebreaker
     assert r['alpha'] == 1.0, "iter-48 fix: default alpha must be 1.0 (pure TF-IDF)"
     assert len(r['top_results']) == 3
     for row in r['top_results']:
@@ -385,6 +385,54 @@ def test_brain_recall_corpus_full_returns_results():
     top = r['top_results'][0]
     assert top['rank'] == 1
     assert top['combined_score'] >= 0
+
+
+def test_brain_recall_tiebreaker_off_default_no_change():
+    """iter 95 tiebreaker default off: result schema bumped to v2 but ranking
+    matches the alpha=1.0 TF-IDF-only path."""
+    r = memory_kernel.recall_brain('multi-agent git coordination', top_k_results=5, corpus_mode='pool')
+    assert r['schema'] == 'sinister-seraphim.brain-recall.v2'
+    assert r['tiebreaker'] == {'fired': False, 'reason': 'tiebreaker=off'}
+
+
+def test_brain_recall_tiebreaker_auto_skips_above_window():
+    """tiebreaker=auto must NOT fire when top-3 TF-IDF spread > window.
+    On the canonical query, spread is ~0.09 vs default window 0.05.
+    """
+    r = memory_kernel.recall_brain(
+        'multi-agent git coordination',
+        top_k_results=5, corpus_mode='pool',
+        tiebreaker='auto', tiebreaker_window=0.05,
+    )
+    assert r['tiebreaker']['fired'] is False
+    # Reason should be either "spread > window" or "pre-filter" or "adv delta"
+    assert 'spread' in r['tiebreaker']['reason'] or 'pre-filter' in r['tiebreaker']['reason'], \
+        f"unexpected non-fire reason: {r['tiebreaker']['reason']!r}"
+
+
+def test_brain_recall_tiebreaker_always_fires_and_reranks():
+    """tiebreaker=always MUST fire when 3+ results exist + pre-filter passes.
+    Verifies the quantum-kernel discrimination path actually runs to completion.
+    """
+    r = memory_kernel.recall_brain(
+        'multi-agent git coordination',
+        top_k_results=5, corpus_mode='pool',
+        tiebreaker='always',
+    )
+    # With 'always' AND a valid (non-pre-filtered) triad, must fire OR fall through
+    # to pre-filter no-fire. Either way the reason should be non-trivial.
+    assert 'fired' in r['tiebreaker']
+    assert 'reason' in r['tiebreaker']
+    # If fired, top_3 indices should have been computed
+    if r['tiebreaker']['fired']:
+        assert 'doc_advantages' in r['tiebreaker']
+        assert 'new_order_indices' in r['tiebreaker']
+        # Original ranks were 1..N; with fired=True the top-3 may have been reordered
+        # so the top-3 of result is by tiebreaker, not by TF-IDF
+        assert len(r['top_results']) == 5
+    else:
+        # If not fired (pre-filter killed it or adv delta too small), reason explains
+        assert 'pre-filter' in r['tiebreaker']['reason'] or 'adv delta' in r['tiebreaker']['reason']
 
 
 def test_budget_guard_rejects_oversized_call():

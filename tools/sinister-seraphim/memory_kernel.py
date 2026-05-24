@@ -403,6 +403,8 @@ def recall_brain(
     k_qubits: int = 8,
     alpha: float = 1.0,
     corpus_mode: str = 'full',
+    tiebreaker: str = 'off',
+    tiebreaker_window: float = 0.05,
 ) -> dict[str, Any]:
     """Hybrid TF-IDF + quantum-kernel brain-entry recall.
 
@@ -538,13 +540,99 @@ def recall_brain(
             'combined_score': float(combined),
         })
     rows.sort(key=lambda r: r['combined_score'], reverse=True)
+
+    # Iter 95 (2026-05-24): quantum-kernel tiebreaker for ambiguous top-3 TF-IDF
+    # results. Fires when top-3 spread <= tiebreaker_window. Pre-filters with the
+    # iter-65/66 combined predictor (shared top-4 = 0 OR same top-1 across all 3)
+    # to avoid the iter-48 noise-doc collapse failure mode.
+    # SIM-ONLY by design (cloud-Wukong-180 burn is forbidden per project CLAUDE.md).
+    tiebreaker_info = {'fired': False, 'reason': 'tiebreaker=off'}
+    if tiebreaker in ('auto', 'always') and len(rows) >= 3:
+        top3 = rows[:3]
+        spread = top3[0]['tfidf_sim'] - top3[2]['tfidf_sim']
+        within_window = spread <= tiebreaker_window
+        should_fire = (tiebreaker == 'always') or within_window
+        if not should_fire:
+            tiebreaker_info = {
+                'fired': False,
+                'reason': f'spread {spread:.4f} > window {tiebreaker_window:.4f}',
+                'top3_spread': float(spread),
+            }
+        else:
+            # Combined-predictor pre-filter (iter 65/66): skip if guaranteed-anti-QBC
+            top3_filenames = [r['filename'] for r in top3]
+            top3_indices = [pool.index(f) for f in top3_filenames]
+            top3_tfidfs = [doc_tfidfs[i] for i in top3_indices]
+            top4_sets = []
+            for v in top3_tfidfs:
+                if v.size <= 4:
+                    top4_sets.append(set(range(v.size)))
+                else:
+                    top4_sets.append(set(np.argsort(np.abs(v))[-4:].tolist()))
+            shared_top4 = len(top4_sets[0] & top4_sets[1] & top4_sets[2])
+            top1s = [int(np.argmax(np.abs(v))) for v in top3_tfidfs]
+            all_same_top1 = (top1s[0] == top1s[1] == top1s[2])
+            if shared_top4 == 0 or all_same_top1:
+                tiebreaker_info = {
+                    'fired': False,
+                    'reason': f'pre-filter: shared_top4={shared_top4}, all_same_top1={all_same_top1}',
+                    'top3_spread': float(spread),
+                }
+            else:
+                # Fire: compute pairwise quantum-kernel sim for the top-3 as a triad
+                tri_thetas = [_thetas_for_inversion(top3_tfidfs[i], 4) for i in range(3)]
+                pair_sims = {
+                    (0, 1): _sim_inversion_overlap(tri_thetas[0], tri_thetas[1], 'zzfm', 4, 1),
+                    (0, 2): _sim_inversion_overlap(tri_thetas[0], tri_thetas[2], 'zzfm', 4, 1),
+                    (1, 2): _sim_inversion_overlap(tri_thetas[1], tri_thetas[2], 'zzfm', 4, 1),
+                }
+                # Per-doc advantage = mean(pair_classical) - mean(pair_sim) for pairs containing doc i.
+                # Pair classical = TF-IDF cosine.
+                pair_cls = {
+                    (0, 1): _classical_cosine(top3_tfidfs[0], top3_tfidfs[1]),
+                    (0, 2): _classical_cosine(top3_tfidfs[0], top3_tfidfs[2]),
+                    (1, 2): _classical_cosine(top3_tfidfs[1], top3_tfidfs[2]),
+                }
+                pair_adv = {k: pair_cls[k] - pair_sims[k] for k in pair_sims}
+                # Doc-i advantage = mean of advantages on the 2 pairs containing i
+                doc_adv = {
+                    0: (pair_adv[(0, 1)] + pair_adv[(0, 2)]) / 2,
+                    1: (pair_adv[(0, 1)] + pair_adv[(1, 2)]) / 2,
+                    2: (pair_adv[(0, 2)] + pair_adv[(1, 2)]) / 2,
+                }
+                # Re-rank top-3 by descending doc_adv. Only swap if advantage delta
+                # exceeds 2x TF-IDF spread (avoids noisy flips on tight inputs).
+                ordering = sorted(range(3), key=lambda i: doc_adv[i], reverse=True)
+                rerank_threshold = 2 * spread
+                top_adv = doc_adv[ordering[0]]
+                second_adv = doc_adv[ordering[1]]
+                if abs(top_adv - second_adv) > rerank_threshold or tiebreaker == 'always':
+                    # Apply re-ranking
+                    new_top3 = [top3[i] for i in ordering]
+                    rows = new_top3 + rows[3:]
+                    tiebreaker_info = {
+                        'fired': True,
+                        'reason': 'rerank applied',
+                        'top3_spread': float(spread),
+                        'doc_advantages': {str(i): float(doc_adv[i]) for i in range(3)},
+                        'new_order_indices': ordering,
+                    }
+                else:
+                    tiebreaker_info = {
+                        'fired': False,
+                        'reason': f'adv delta {abs(top_adv - second_adv):.4f} <= 2*spread {rerank_threshold:.4f}',
+                        'top3_spread': float(spread),
+                        'doc_advantages': {str(i): float(doc_adv[i]) for i in range(3)},
+                    }
+
     for rank, r in enumerate(rows[:top_k_results], 1):
         r['rank'] = rank
 
     return {
-        'schema': 'sinister-seraphim.brain-recall.v1',
+        'schema': 'sinister-seraphim.brain-recall.v2',
         'query': query,
         'encoding': encoding,
+        'tiebreaker': tiebreaker_info,
         'k_qubits': k_qubits,
         'alpha': alpha,
         'corpus_mode': corpus_mode,

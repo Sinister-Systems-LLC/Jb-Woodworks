@@ -69,7 +69,7 @@ Lane ledger lives at `_shared-memory/seraphim-snap-re-ledger.jsonl` (append-only
 
 The dashboard at `_shared-memory/dashboards/seraphim.html` already shows provenance ledger + budget bar. Next iteration:
 - **Memory simulation**: experimental sidecar that simulates brain-entry edit-history branches via superposition. Lets the operator ask "what if entry X had been archived 3 weeks earlier" without rewriting history.
-- **Quantum-kernel SVM** over `_shared-memory/knowledge/` embeddings for recall — exploratory; measurement-only. Likely loses to TF-IDF at 80-entry scale but operator wants the data.
+- **Quantum-kernel discrimination** over `_shared-memory/knowledge/` triads — **SUPERSEDED iter 19+ (2026-05-23 evening): QUINTUPLE-verified to BEAT TF-IDF by 25-35pp (mean 31pp) on real Wukong-180** when using K=4 ZZ-FM r=1 + `seraphim find-qbc`-selected QBC triads + `--corpus pool`. Bidirectional scope rule: quantum WINS when classical TF-IDF > 0.4 (cluster-similar docs); LOSES when classical < 0.3 (top-K compression hurts). The original "likely loses at 80-entry scale" framing was wrong because it assumed naive triad selection — algorithmic discovery via find-qbc finds the rare 0.13-0.28% of triads where quantum-kernel genuinely outperforms. See `quantum-memory-kernel-fleet-action-items-2026-05-23.md` for the production recipe + theorem + combined-predictor pre-screen.
 - **Brain entry provenance backfill**: every NEW brain entry gets a Seraphim sidecar on write (which agent / commit / context).
 
 ## Anti-patterns (operator-confirmed)
