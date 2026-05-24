@@ -7,6 +7,28 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T04:35Z — iteration 49 (audit-pipeline + brain-recall verification — no new bugs)
+
+Operator: /loop. The "testing all of this" mandate prompted a verification pass on CLI features that hadn't been systematically tested end-to-end since their ship dates.
+
+### Verified
+
+- `audit-pipeline --top-n 3 --skip-real-qpu --corpus pool` — clean output, phase markers, summary table; sim advantages match what find-qbc directly returns (+0.2673, +0.2611, +0.2371)
+- `audit-pipeline --top-n 1 --out PATH` — schema=`sinister-seraphim.audit-pipeline.v1`, results contain `{rank, docs, sim_advantage, real_qpu_off_diag_mean, phase}`
+- `brain-recall "memory" --top-k 2 --out PATH` — schema=`sinister-seraphim.brain-recall.v1`, top_results list shape correct
+
+### Observation (not a bug, but worth noting)
+
+`audit-pipeline --top-n 3 --corpus pool` (without --skip-real-qpu) WOULD attempt real-QPU on triads #2 and #3 which both contain `multi-agent-git-coordination-2026-05-23.md` — the known Origin queue-staller (5 historical stalls per brain entry). If/when budget resets, the operator should be aware that running the default pipeline could stall on triads #2-3. Not a defect of the pipeline — it correctly surfaces find-qbc's top-3. The doctrine handles this via brain-entry guidance.
+
+### Cost
+Zero cloud burn; <5s CPU for the verification suite.
+
+### Status
+No new findings. Tools stable. Doctrine stable. Session continues to converge.
+
+---
+
 ## 2026-05-24T04:15Z — iteration 48 (brain-recall STRESS-TEST → alpha=0.5 BROKEN, fixed to alpha=1.0)
 
 Operator: /loop. Stress-tested iter-47 `brain-recall` on 10 diverse queries — single smoke test was insufficient. Discovered: alpha=0.5 default produced same noise-docs (`lukeprivacy-kpm-at-rest-safe.md` etc.) as #1 for 5+ unrelated queries.
