@@ -50,7 +50,8 @@
 
 ## Audit corrections
 
-- **2026-05-24T16:39Z (jcode-parity-probe v0.3, test-modes-verify lane):** Row 29 cites `projects/rkoj/source/sinister_rkoj_qt/picker_overlay.py` as shipped, but the file does NOT exist + grep for class `QPickerOverlay` returns 0 matches anywhere under `projects/rkoj/source/sinister_rkoj_qt/` (only `__init__.py / __main__.py / agent_window.py / agents_tab.py / api_server.py / app.py / build/` present). The picker overlay class was either renamed, inlined into one of those modules, or the matrix row is stale. rkoj lane: confirm actual class location + update Row 29 path. Probe at `automations/jcode-parity-probe.ps1` flags this as REAL-FAIL until corrected.
+- **2026-05-24T16:39Z (jcode-parity-probe v0.3, test-modes-verify lane):** Row 29 cites `projects/rkoj/source/sinister_rkoj_qt/picker_overlay.py` as shipped, but the file does NOT exist on the current HEAD + grep for class `QPickerOverlay` returns 0 matches under `projects/rkoj/source/sinister_rkoj_qt/`.
+- **2026-05-24T16:42Z root-cause (test-modes-verify lane):** `git log --all -- "**/picker_overlay.py"` finds the file was shipped on branch `rkoj-iter7` (commits `eee6ef5` P3 + `89875ee` P5.5), but **rkoj-iter7 has never been merged into main**. This is a pending-merge state, not a stale matrix claim. Matrix row 29 is accurate ABOUT THE BRANCH; the probe correctly flags the missing-on-main state. Operator-action: `rkoj-iter7 → main` merge is already a known queue item per CLAUDE.md "current operator-actionable rows". Once merged, probe R29 will flip to PASS automatically.
 
 ## Composes-with map
 
