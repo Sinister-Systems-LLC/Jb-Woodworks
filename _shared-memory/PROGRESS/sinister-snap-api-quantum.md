@@ -7,6 +7,26 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T15:50Z — iteration 75 (final sync sweep — brain entry _INDEX + doc body for verification count)
+
+Operator: /loop after iter-74 found seraphim README + cli.py stale claims. Iter 75 finished the sweep across the rest of the brain.
+
+### Updated
+- `_shared-memory/knowledge/_INDEX.md` — quantum-memory-kernel row updated:
+  - "QUADRUPLE-VERIFIED" (×2 incl. tag) → "QUINTUPLE-VERIFIED"
+  - "25-34pp ... mean 30pp across 4 independent triads; 12/12 pairs landed" → "25-35pp ... mean 31pp across 5 ... ~3pp run-to-run variance; 15/15 pairs landed"
+  - tag "quadruple-verified" → "quintuple-verified" (×2)
+  - tag "25-34pp-quantum-advantage, mean-30pp" → "25-35pp-quantum-advantage, mean-31pp"
+- `quantum-memory-kernel-fleet-action-items-2026-05-23.md` line 256 — code-block comment "QUADRUPLE-verified pattern" → "QUINTUPLE-verified pattern (mean 31pp; ~3pp run-to-run variance)"
+
+### Sweep complete
+Grep for "quadruple|QUADRUPLE" across the repo returns only audit-trail mentions in MEMORY.md (intentional historical record) + PROGRESS (intentional iteration log) + auto-generated cross-agent canonical-impact files. All operator-facing surfaces now reflect quintuple-verified doctrine.
+
+### Cost
+Zero cloud burn; ~3 min wall time.
+
+---
+
 ## 2026-05-24T15:30Z — iteration 74 (verification count sync: quadruple → quintuple, 25-34pp → 25-35pp)
 
 Operator: /loop. Continued sync-gap hunt from iter 73. Found another stale claim still propagating from iter-18 era.

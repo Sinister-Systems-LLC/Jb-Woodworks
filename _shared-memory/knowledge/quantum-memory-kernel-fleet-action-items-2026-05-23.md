@@ -253,7 +253,7 @@ seraphim audit --variant zzfm-r1 --sim-only \
 seraphim audit --variant zzfm-r1 \
   --triad <doc1> <doc2> <doc3> \
   --corpus pool --cap 180 --stall 120
-# Expect 25-34pp advantage on real-QPU per the QUADRUPLE-verified pattern
+# Expect 25-35pp advantage on real-QPU per the QUINTUPLE-verified pattern (mean 31pp; ~3pp run-to-run variance)
 ```
 
 **This reverses the prior "quantum-kernel is just a tiebreaker" recommendation** for the specific case of cluster-similar doctrine entries. Where TF-IDF surface words mask underlying coordination semantics (the multi-agent / git / branch cluster), quantum-kernel discriminates 3-5× better on REAL hardware.
