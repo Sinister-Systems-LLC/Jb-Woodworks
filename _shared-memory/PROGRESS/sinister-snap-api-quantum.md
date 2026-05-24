@@ -7,6 +7,39 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T01:30Z — iteration 41 (find-qbc --rank-by ceiling SHIPPED + iters-37-41 cross-agent broadcast)
+
+Operator: /loop "keep working and dont stop until the memory system is fuckign great and told to the agents what to add and fixc". Addressed the "told to the agents" part — broadcast was overdue after iters 37-40 of pure research.
+
+### Shipped — `find-qbc --rank-by` extension
+
+Added to `tools/sinister-seraphim/cli.py` + `tools/sinister-seraphim/memory_kernel.py`:
+
+- `--rank-by r1` (default; current behavior)
+- `--rank-by ceiling` — sweeps top-N at r=2..6 sim, ranks by max advantage
+- `--rank-by headroom` — ranks by (ceiling - r=1); biggest error-mitigation payoff
+- `--rank-by classical` — re-sort top-N by classical baseline (iter-40 r=+0.95)
+- `--ceiling-reps "2 3 4 5 6"` — customize the sweep (default applies when --rank-by ceiling/headroom)
+
+Smoke-tested all 3 new modes. **`--rank-by ceiling` confirms iter-39 doctrine: ranking inverts.** Triad A (iter-37 #1 by r=1) drops to #5 by ceiling; Triad C (iter-21 verified, #3 by r=1) jumps to #1 by ceiling (51.03pp).
+
+Schema bumped: `find-qbc-triads.v1` → `v2`. Adds `ceiling_pp`, `ceiling_rep`, `headroom_pp`, `pct_of_ceiling_at_base_reps`, `per_rep` fields to each top-N entry.
+
+### Shipped — cross-agent broadcast
+
+`_shared-memory/cross-agent/2026-05-24T0125Z-sanctum-broadcast-ceiling-work-doctrine-iters-37-41.md`:
+
+- TL;DR table of iter-37→40 findings
+- Refined fleet doctrine: classical TF-IDF baseline is the single best predictor of quantum advantage (r=+0.95 with ceiling)
+- New tool announcement: `find-qbc --rank-by ceiling/headroom/classical`
+- Per-lane action items (add + fix sections) for all 10+ fleet lanes
+- Honesty section: don't claim error-mitigation potential without flagging "untested on real-QPU"
+
+### Cost
+Zero cloud burn. ~30s CPU total this iter (smoke tests).
+
+---
+
 ## 2026-05-24T01:10Z — iteration 40 (CONJECTURE test — classical↔ceiling r=+0.95 STRONG)
 
 Operator: /loop again. Tested iter-39's 3-point conjecture across 12 triads spanning classical 0.16-0.58.

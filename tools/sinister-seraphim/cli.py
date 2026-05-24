@@ -473,9 +473,29 @@ def _find_qbc_cmd(args) -> int:
             return 2
         encoding, k, reps = v_map[args.variant]
 
+    # Parse --ceiling-reps (space- or comma-separated) and auto-enable for
+    # ceiling/headroom ranking when not explicitly provided.
+    ceiling_reps_list: list[int] | None = None
+    if args.ceiling_reps:
+        raw = args.ceiling_reps.replace(',', ' ').split()
+        try:
+            ceiling_reps_list = [int(x) for x in raw if x]
+        except ValueError:
+            print(f'[seraphim find-qbc] invalid --ceiling-reps {args.ceiling_reps!r}; '
+                  f'use space- or comma-separated integers (e.g. "2 3 4 5 6")', file=sys.stderr)
+            return 2
+    if args.rank_by in ('ceiling', 'headroom') and ceiling_reps_list is None:
+        ceiling_reps_list = [2, 3, 4, 5, 6]
+    if args.rank_by in ('ceiling', 'headroom') and encoding != 'zzfm':
+        print(f"[seraphim find-qbc] --rank-by {args.rank_by} requires zzfm encoding "
+              f"(reps parameter is ignored by {encoding!r}); use --variant zzfm-r1 or --encoding zzfm",
+              file=sys.stderr)
+        return 2
+
     result = find_qbc_triads(
         encoding=encoding, k=k, reps=reps,
         top_n=args.top_n, corpus_mode=args.corpus,
+        ceiling_reps=ceiling_reps_list, rank_by=args.rank_by,
     )
 
     if args.out:
@@ -492,10 +512,22 @@ def _find_qbc_cmd(args) -> int:
     print(f'  quantum-beats-classical: {result["qbc_count"]:,} ({result["qbc_pct"]:.3f}%)')
     print(f'  max advantage: +{result["max_advantage"]:.4f}')
     print(f'  median advantage: {result["median_advantage"]:+.4f}')
+    if ceiling_reps_list:
+        print(f'  ceiling sweep: reps {ceiling_reps_list}  ranking: {args.rank_by}')
     print()
-    print(f'  Top {args.top_n} QBC triads (ranked by classical - sim):')
+
+    rank_desc = {
+        'r1': 'classical - sim at r=1',
+        'ceiling': 'best advantage across ceiling sweep (= max headroom + r=1)',
+        'headroom': 'ceiling - r=1 (biggest error-mitigation payoff)',
+        'classical': 'classical TF-IDF baseline (iter 40: predicts ceiling with r=+0.95)',
+    }[args.rank_by]
+    print(f'  Top {args.top_n} QBC triads (ranked by {rank_desc}):')
     for t in result['top_n_triads']:
         print(f'    #{t["rank"]:>2}  adv=+{t["advantage"]:.4f}  sim={t["sim_off_diag_mean"]:.4f}  classical={t["classical_off_diag_mean"]:.4f}')
+        if 'ceiling_pp' in t:
+            print(f'         ceiling=+{t["ceiling_pp"]:.2f}pp@r{t["ceiling_rep"]}  '
+                  f'headroom=+{t["headroom_pp"]:.2f}pp  ({t["pct_of_ceiling_at_base_reps"]:.1f}% at r={reps})')
         for d in t['docs']:
             print(f'         {d}')
         if t['audit_cmd']:
@@ -593,6 +625,12 @@ def main(argv: list[str] | None = None) -> int:
     p_fq.add_argument('--top-n', dest='top_n', type=int, default=10, help='How many top-N QBC triads to return (default 10)')
     p_fq.add_argument('--corpus', default='pool', help='Corpus mode (pool=124-doc balanced / full=145+ entries)')
     p_fq.add_argument('--out', default=None, help='Optional output JSON path')
+    p_fq.add_argument('--rank-by', dest='rank_by', default='r1', choices=['r1', 'ceiling', 'headroom', 'classical'],
+                      help='How to rank top-N triads (default r1 = current behavior). ceiling/headroom require a ceiling sweep; '
+                           'auto-enables --ceiling-reps "2 3 4 5 6" if not set.')
+    p_fq.add_argument('--ceiling-reps', dest='ceiling_reps', default=None,
+                      help='Space- or comma-separated extra reps to sweep for ceiling/headroom computation (e.g. "2 3 4 5 6"). '
+                           'Only applies to zzfm encoding. Adds ~0.5s per triad at top-N=10.')
     p_fq.set_defaults(fn=_find_qbc_cmd)
 
     p_ver = sub.add_parser('version', help='Print package version')

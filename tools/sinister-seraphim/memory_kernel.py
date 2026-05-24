@@ -402,6 +402,8 @@ def find_qbc_triads(
     reps: int = 1,
     top_n: int = 10,
     corpus_mode: str = 'pool',
+    ceiling_reps: list[int] | None = None,
+    rank_by: str = 'r1',
 ) -> dict[str, Any]:
     """Search the brain corpus for triads where quantum kernel beats classical TF-IDF.
 
@@ -410,6 +412,17 @@ def find_qbc_triads(
     No cloud burn.
 
     Production-validated default: encoding='zzfm', k=4, reps=1, corpus_mode='pool'.
+
+    Ceiling-work ranking (added iter 41 2026-05-24):
+      ceiling_reps: extra reps to sweep for each top-N triad after the primary
+        rank. Used to compute per-triad ceiling and headroom (= ceiling - r=`reps`).
+        Default None = no ceiling sweep.
+      rank_by: 'r1' (= rank by advantage at requested reps; default; current behavior),
+        'ceiling' (rank by best advantage across all swept reps),
+        'headroom' (rank by ceiling - r=requested-reps; biggest error-mitigation
+        payoff), 'classical' (rank by classical TF-IDF baseline; iter 40 r=+0.95
+        with ceiling). Only takes effect when ceiling_reps is provided (otherwise
+        rank_by must be 'r1' or 'classical').
     """
     from itertools import combinations as _combinations
 
@@ -527,8 +540,49 @@ def find_qbc_triads(
             'audit_cmd': cmd,
         })
 
+    # Optional ceiling-sweep enrichment (iter 41 2026-05-24)
+    # For each top-N triad, run sim at additional reps and tag with ceiling info.
+    # Only meaningful for zzfm encoding (reps parameter is ignored by angle).
+    if ceiling_reps and encoding == 'zzfm':
+        for t in top_results:
+            tri_thetas = []
+            for d in t['docs']:
+                i = pool.index(d)
+                tri_thetas.append(_thetas_for_inversion(tfidf[i], k))
+            # Always include the base reps in the per-rep sweep so headroom math is correct
+            sweep_reps = sorted(set([reps] + list(ceiling_reps)))
+            per_rep = []
+            for rr in sweep_reps:
+                # Compute sim off-diag at reps=rr
+                pair_sim = []
+                for ii in range(3):
+                    for jj in range(ii + 1, 3):
+                        pair_sim.append(_sim_inversion_overlap(tri_thetas[ii], tri_thetas[jj], encoding, k, rr))
+                sim_at_rr = float(sum(pair_sim) / len(pair_sim))
+                adv_at_rr = float(t['classical_off_diag_mean'] - sim_at_rr)
+                per_rep.append({'reps': rr, 'sim_off_diag': sim_at_rr, 'advantage_pp': adv_at_rr * 100})
+            best = max(per_rep, key=lambda r: r['advantage_pp'])
+            t['per_rep'] = per_rep
+            t['ceiling_pp'] = best['advantage_pp']
+            t['ceiling_rep'] = best['reps']
+            t['headroom_pp'] = best['advantage_pp'] - (t['advantage'] * 100)
+            t['pct_of_ceiling_at_base_reps'] = (
+                (t['advantage'] * 100) / best['advantage_pp'] * 100 if best['advantage_pp'] > 0 else float('nan')
+            )
+
+        # Re-rank if requested
+        if rank_by == 'ceiling':
+            top_results.sort(key=lambda x: x['ceiling_pp'], reverse=True)
+        elif rank_by == 'headroom':
+            top_results.sort(key=lambda x: x['headroom_pp'], reverse=True)
+        elif rank_by == 'classical':
+            top_results.sort(key=lambda x: x['classical_off_diag_mean'], reverse=True)
+        # Re-assign rank numbers after the sort
+        for new_rank, t in enumerate(top_results, 1):
+            t['rank'] = new_rank
+
     return {
-        'schema': 'sinister-seraphim.find-qbc-triads.v1',
+        'schema': 'sinister-seraphim.find-qbc-triads.v2',
         'encoding': encoding, 'k': k, 'reps': reps,
         'corpus_mode': corpus_mode, 'pool_size': n_pool,
         'triads_evaluated': len(scores),
@@ -538,6 +592,8 @@ def find_qbc_triads(
         'median_advantage': float(scores[len(scores) // 2][0]),
         'top_n_triads': top_results,
         'cli_variant_matched': cli_variant,
+        'rank_by': rank_by,
+        'ceiling_reps_swept': list(ceiling_reps) if ceiling_reps else None,
     }
 
 
