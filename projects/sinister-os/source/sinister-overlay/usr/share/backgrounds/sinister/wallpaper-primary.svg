@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Sinister OS primary wallpaper. Author: RKOJ-ELENO :: 2026-05-24 -->
-<!-- Derived from sinister-theme-tokens.css: --bg #0e0a1f, --accent-strong #8b5cf6, --accent #c084fc -->
+<!-- Derived from sinister-theme-tokens.css. bg=0e0a1f accent-strong=8b5cf6 accent=c084fc -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
   <defs>
     <radialGradient id="core" cx="50%" cy="55%" r="70%">
