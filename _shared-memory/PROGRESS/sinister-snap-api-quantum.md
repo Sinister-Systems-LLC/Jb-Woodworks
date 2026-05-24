@@ -7,6 +7,32 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T13:00Z — iteration 68 (brain entry TL;DR consolidated for iters 51-67)
+
+Operator: /loop. Consolidation pass on the brain entry TL;DR (last refreshed iter 46).
+
+### Updated
+- Session summary line updated from "iters 1-46" → "iters 1-67" with theorem + conjecture mentioned
+- Encoding-choice table now includes ZZ-FM r=2 (highest sim QBC at 86%) + K=4 ANGLE universal-QBC row
+- Triad-selection cheat sheet has 5 numbered commands (production, wide-sim, ceiling, classical, brain-recall)
+- **NEW: Operator pre-screen Python snippet for K=4 ANGLE** — combined predictor (shared=0 OR same-top-1) — 44% rule-out on 149-full corpus
+- Key structural facts now mention:
+  - iter 51 K=4 anti-QBC 84% caveat
+  - iter 52 universal-QBC nesting
+  - iter 53 per-encoding thresholds
+  - iter 57 ZZ-FM r=2 86% sim ceiling
+
+### Verification
+Re-read the brain entry top-to-bottom. Internal consistency confirmed; no claim drift detected. The iter-50 saturation declaration (since retracted) doesn't appear in the brain entry. Each citation matches its iter source.
+
+### Cost
+Zero cloud burn; ~10min wall time for consolidation.
+
+### Honest status
+Doctrine framework is now mature + internally consistent. Next iter will probe for genuine new signal (corpus growth, operator direction) before adding more detail.
+
+---
+
 ## 2026-05-24T12:25Z — iteration 67 (K=8 same-top-1 counter-examples confirm iter-66 mechanism)
 
 Operator: /loop. Investigated the 4 K=8-QBC-with-same-top-1 triads from iter 66.

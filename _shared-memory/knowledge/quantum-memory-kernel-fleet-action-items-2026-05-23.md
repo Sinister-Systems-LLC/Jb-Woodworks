@@ -5,34 +5,51 @@
 >
 > **Origin:** operator 2026-05-23 evening, after the loop directive *"keep working and dont stop until the memory system is fuckign great and told to the agents what to add and fixc"*.
 >
-> **Session summary:** 9 real-QPU audits + 14+ sim sweeps + 2 mathematical anchors completed across 2026-05-23 → 2026-05-24 (iters 1-46). Establishes the working production recipe, hardware noise model, encoding cancellation theorem, corpus-consistency requirement, classical↔ceiling correlation, encoding-preference structure. See `_shared-memory/knowledge/seraphim-cloud-qpu-real-first-fire-2026-05-23.md` for the empirical-anchor log and `projects/sinister-snap-api-quantum/MEMORY.md` for the audit-grade detail.
+> **Session summary:** 9 real-QPU audits + 20+ sim sweeps + 2 mathematical anchors + 1 empirical theorem (Shared-Top-K Necessary Condition) + 1 refined conjecture (K' = K × D) completed across 2026-05-23 → 2026-05-24 (iters 1-67). Establishes the working production recipe, hardware noise model, encoding cancellation theorem, corpus-consistency requirement, classical↔ceiling correlation, encoding-preference structure, per-encoding QBC thresholds, K=4 anti-QBC 84% caveat, encoding nesting K=4 ⊂ K=8 ⊂ ZZ-FM, structural theorem + interaction-degree framework, K=4 combined predictor (44% rule-out). See `_shared-memory/knowledge/seraphim-cloud-qpu-real-first-fire-2026-05-23.md` for the empirical-anchor log and `projects/sinister-snap-api-quantum/MEMORY.md` for the audit-grade detail.
 
-## 🧭 Doctrine TL;DR (added 2026-05-24 iter 46 — read this first)
+## 🧭 Doctrine TL;DR (added iter 46, refreshed iter 68 — read this first)
 
-**Three encoding choices, three use cases:**
+**Encoding choice by use case (iter 44/57/66 measurements):**
 
 | Context | Encoding | Status |
 |---|---|---|
-| **Real-QPU production on Wukong-180** | `--variant zzfm-r1` | ✅ Quintuple-verified 25-35pp advantage; mean 31pp; ~3pp run-to-run variance |
-| **Sim-only general** (brain-recall, drift-detection, audit gate) | `--variant k8-angle` | 65× more QBC than K=4 ANGLE; wide net across classical 0.31-0.58 |
-| **Sim-only when classical > 0.5 known** | `--variant zzfm-r1` | Tends to win at high classical (Pearson r=+0.59 classical↔adv) |
+| **Real-QPU production on Wukong-180** | `--variant zzfm-r1` | ✅ Quintuple-verified 25-35pp advantage; mean 31pp |
+| **Sim-only — max QBC coverage** | `--variant zzfm-r2` (sim only) | 86% QBC on top-50; depth-68 noise-walls on real-QPU |
+| **Sim-only — speed + wide coverage** | `--variant k8-angle` | 46% QBC; depth 8 vs r=2's depth 68 |
+| **Cross-encoding transferable (rare-but-robust)** | `--variant k4-angle` | 16% QBC; all also K=8 and ZZ-FM QBC (universal) |
 
-**Triad selection cheat sheet:**
+**Triad-selection cheat sheet:**
 
 1. `seraphim find-qbc --variant zzfm-r1 --top-n 10 --corpus pool` — production triads (real-QPU candidates)
 2. `seraphim find-qbc --variant k8-angle --top-n 10 --corpus pool` — wider sim QBC search
 3. `seraphim find-qbc --variant zzfm-r1 --rank-by ceiling --top-n 10 --corpus pool` — error-mitigation targets
-4. `seraphim find-qbc --variant zzfm-r1 --rank-by classical --top-n 10 --corpus pool` — high-classical triads (iter-43 fix enumerates full pool)
+4. `seraphim find-qbc --variant zzfm-r1 --rank-by classical --top-n 10 --corpus pool` — high-classical triads
+5. `seraphim brain-recall "<query>" --top-k 5` — brain-entry recall (default alpha=1.0 pure TF-IDF; quantum-kernel mixing DEGRADES pair-wise per iter 48)
 
-**Daily brain recall** (iter 47, fixed iter 48):
+**Operator pre-screen for K=4 ANGLE candidate triads (iter 65/66 combined predictor — 44% rule-out on 149-full corpus, zero false positives):**
 
-5. `seraphim brain-recall "<query>" --top-k 5` — brain-entry recall. **Default is alpha=1.0 (pure TF-IDF) per iter-48 finding.** Quantum-kernel mixing (alpha<1.0) was found to DEGRADE pair-wise recall — the iter-44 "K=8 ANGLE wider net" doctrine applies to TRIAD (3-doc) discrimination, NOT pair-wise (query vs doc). For pair-wise, K=8 ANGLE collapses to a few noise-docs (e.g. lukeprivacy-kpm-at-rest-safe.md) that score high quantum similarity against any query. Use alpha=1.0 unless you've empirically validated quantum contribution for your use case.
+```python
+# Skip triad iff EITHER condition holds (saves running the encoding):
+top4_sets = [set(top4_features(doc.tfidf)) for doc in triad]
+top1_features = [argmax(abs(doc.tfidf)) for doc in triad]
+
+if len(top4_sets[0] & top4_sets[1] & top4_sets[2]) == 0:
+    skip  # condition 1: zero shared top-4 features (Shared-Top-K Necessary Condition iter 60)
+elif top1_features[0] == top1_features[1] == top1_features[2]:
+    skip  # condition 2: all 3 docs have same #1 feature (iter 65)
+# else: run the encoding to verify (might be QBC)
+```
+
+For K=5/K=6 on 129-pool: combined predictor still safe (28%/12% rule-out). K=7+ ANGLE: combined predictor unsafe; use only condition 1 (shared=0). ZZ-FM at any reps: no useful pre-screen; use find-qbc enumeration.
 
 **Key structural facts:**
 
 - **classical TF-IDF ↔ sim ceiling Pearson r = +0.9537** (iter 40). Single best predictor of theoretical quantum advantage.
-- **Production recipe captures 48-82% of theoretical ceiling per triad.** The 18-52% headroom is what error-mitigation could theoretically unlock.
-- **K=8 ANGLE and ZZ-FM r=1 are COMPLEMENTARY** (iter 45). K=8 wins 58.6% of triads; ZZ-FM wins 41.4%. Encodings disagree often (per-triad r=+0.14). Compute both for specific triads.
+- **K=4 ANGLE is anti-QBC on 84% of high-classical triads** (iter 51). The "classical > 0.4 → quantum helps" rule is AGGREGATE-true but PER-RANDOM-TRIAD wrong 54-84% of the time. Always run find-qbc to verify; don't pick by classical alone.
+- **K=4 QBC ⊂ K=8 QBC ⊂ ZZ-FM QBC (universal-QBC nesting, iter 52).** K=4 QBC triads are guaranteed to work under any encoding; inverse not true.
+- **Per-encoding 50% QBC threshold (iter 53):** K=4 ANGLE ~0.55, K=8 ANGLE ~0.45, ZZ-FM r=1 ~0.50. Below classical 0.30: essentially never QBC for any encoding.
+- **Production recipe captures 48-82% of theoretical ceiling per triad** (iter 39). Remaining 18-52% is what error-mitigation could theoretically unlock at ZZ-FM r=2 (86% sim QBC ceiling per iter 57).
+- **K=8 ANGLE and ZZ-FM r=1 are COMPLEMENTARY** (iter 45). K=8 wins 58.6% of triads; ZZ-FM wins 41.4%. Encodings disagree often (per-triad r=+0.14). For specific triads compute both.
 - **Cancellation theorem:** ANGLE-CNOT == K=4 ANGLE (verified iters 16, 22, 43). Parameter-free entangling layers cancel in U_B† · U_A.
 
 **Shared-Top-K Necessary Condition (iter 58/59 — universal for K=4..K=8 ANGLE):**
