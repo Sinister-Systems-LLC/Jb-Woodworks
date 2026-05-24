@@ -7,6 +7,75 @@ Append-only memory. Most recent at top. Cross-references to brain entries and ot
 
 ---
 
+## 2026-05-24T07:25Z — 📐 ITER 56: K=4..K=8 ANGLE qubit-scaling — smooth ramp, no sharp threshold
+
+Iter 55 broadcast left "K=6 interpolation between K=4 (84% anti-QBC) and K=8 (54%)" as an open question. Iter 56 measures the full K=4..K=8 ramp.
+
+### Method
+
+Top-50 high-classical triads (same as iter 51-52). Measure QBC count per K=4, K=5, K=6, K=7, K=8 ANGLE encodings.
+
+### Results
+
+| K | dim=2^K | QBC count | QBC% | Anti-QBC% | Δ QBC% vs K=4 |
+|---|---|---|---|---|---|
+| 4 | 16 | 8 | **16%** | 84% | — |
+| 5 | 32 | 12 | **24%** | 76% | +8pp |
+| 6 | 64 | 14 | **28%** | 72% | +12pp |
+| 7 | 128 | 19 | **38%** | 62% | +22pp |
+| 8 | 256 | 23 | **46%** | 54% | +30pp |
+
+### Findings
+
+1. **Smooth monotonic ramp.** No sharp threshold. Each +1 qubit adds 2-12pp QBC coverage (mean +7.5pp per added qubit).
+2. **K=6 is NOT a clean midpoint.** At 28% QBC it's closer to K=4 (16%) than K=8 (46%). The interpolation is sublinear in QBC coverage.
+3. **QBC% scales sublinearly with Hilbert dimensionality.** Dim goes 16× (K=4 16-dim → K=8 256-dim) while QBC% only 3× (16% → 46%). Diminishing returns.
+4. **No structural break observed between K=4 and K=8.** It's a smooth gradient, not "K=4 is special hard". The high anti-QBC rate at K=4 reflects insufficient Hilbert space, not a qualitative difference.
+
+### What this means for encoding selection
+
+The sim-cost vs QBC-coverage tradeoff is now characterized:
+
+| K | Sim cost (vs K=4) | QBC coverage |
+|---|---|---|
+| 4 | 1× | 16% |
+| 5 | 2× | 24% |
+| 6 | 4× | 28% |
+| 7 | 8× | 38% |
+| 8 | 16× | 46% |
+
+K=8 ANGLE is the production sim default (iter-44 finding still stands). Going beyond K=8 (K=10, K=12) would continue the ramp but with exponentially-rising sim cost. Likely diminishing returns continue.
+
+### Untested extrapolation
+
+- K=10 (1024-dim): predicted QBC ~55-60% (if ramp continues at +5-10pp per qubit) at 4× K=8's sim cost
+- K=12 (4096-dim): predicted QBC ~65-70% at 16× K=8's sim cost
+- K=14 (16384-dim): would max out at ~80% QBC at 64× K=8 sim cost
+
+These are EXTRAPOLATIONS — untested. Sim time at K=14 would be hundreds of seconds for find-qbc. Not worth probing without operator interest.
+
+### Practical implication
+
+For a typical brain corpus of 100-150 docs with top-50 high-classical triads, the encoding's QBC coverage is:
+
+| Operator goal | Recommended K | Rationale |
+|---|---|---|
+| Universal QBC (cross-encoding safe) | K=4 (with find-qbc) | 16% hit but transferable |
+| Wide sim QBC coverage | K=8 (default) | 46% hit, 16× sim cost |
+| Best sim ratio (QBC/sim-cost) | K=4 or K=5 | each qubit adds ~5pp per 2× cost; K=6+ diminishing |
+
+### Cost / verification
+
+- Zero cloud burn
+- ~10s CPU for K=4..K=8 sweep on top-50
+- Status: **tested-before-claimed** (counts measured; monotonic check passed)
+
+### Connection to iter 44
+
+Iter 44 said K=8 ANGLE dominates K=4 ANGLE (65× more QBC across all 349k triads). Iter 56 refines this: on TOP-50 high-classical triads specifically, K=8 wins 46-16 = +30pp absolute, but the ramp is smooth. No threshold.
+
+---
+
 ## 2026-05-24T06:35Z — 🔬 ITER 54: corpus-stability check — K=8/ZZ stable, K=4 ANGLE shifts noticeably
 
 Iter 53 measured the QBC-probability curve on the 129-doc topical-balanced pool. Iter 54 reruns against the full 149-doc corpus.

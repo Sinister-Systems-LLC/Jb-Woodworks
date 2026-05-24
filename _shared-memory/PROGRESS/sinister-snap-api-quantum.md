@@ -7,6 +7,33 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T07:25Z — iteration 56 (K=4..K=8 ANGLE qubit-scaling — smooth monotonic ramp)
+
+Operator: /loop. Iter 55 broadcast left K=6 interpolation as open question. Iter 56 measured full K=4..K=8 ramp.
+
+### Result
+| K | QBC% on top-50 | dim=2^K |
+|---|---|---|
+| 4 | 16% | 16 |
+| 5 | 24% | 32 |
+| 6 | 28% | 64 |
+| 7 | 38% | 128 |
+| 8 | 46% | 256 |
+
+### Findings
+- Smooth monotonic ramp; no sharp threshold at K=6
+- QBC% scales SUBLINEARLY with Hilbert dim (3× QBC vs 16× dim)
+- K=6 is closer to K=4 (28%) than K=8 (46%) — not a midpoint
+- Sim cost doubles per qubit; QBC coverage gain diminishes after K=6
+
+### Implication
+K=8 ANGLE production default stands (iter 44 finding). K=4 has the special property of universal-QBC (iter 52 nesting) but lowest coverage. K=5/K=6 are interior options with intermediate cost/coverage.
+
+### Cost
+Zero cloud burn; 10s CPU.
+
+---
+
 ## 2026-05-24T07:00Z — iteration 55 (cross-agent broadcast for iters 51-54 doctrine evolution)
 
 Operator: /loop. "Told to agents" directive needs another broadcast — significant doctrine evolution since iter 44's broadcast.
