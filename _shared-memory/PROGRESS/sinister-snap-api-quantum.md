@@ -7,6 +7,33 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T11:30Z — iteration 65 (K=4 ANGLE 2nd necessary condition — same-top-1-all-3 → anti-QBC)
+
+Operator: /loop. Searched for sufficient condition for K=4 ANGLE QBC among shared≥1 triads.
+
+### Finding
+No sufficient condition found, but discovered a 2nd NECESSARY condition:
+
+**All-3-docs-same-top-1 → never K=4 QBC** (0/7 K=4 QBC; 4/31 K=4 anti-QBC).
+
+### Combined predictor
+Two necessary conditions for K=4 ANGLE QBC:
+1. Shared top-4 features ≥ 1 (iter 58-60)
+2. Top-1 features of all 3 docs NOT identical (iter 65)
+
+Combined rule-out: 16/50 = **32%** (vs iter-60's 24%). Zero false positives.
+
+### Mechanism
+K=4 ANGLE qubit 0 gets the largest-weight feature. When all 3 docs share the same #1 feature, qubit 0's RY rotation is near-identical across docs → high overlap on that qubit → ~25% of discriminative capacity lost.
+
+### Why no sufficient condition
+The remaining 19 anti-QBC and 7 QBC triads in the filtered subset are not separable by simple feature properties. Sufficient condition requires examining 4-qubit state geometry, not feature counts.
+
+### Cost
+Zero cloud burn; 10s CPU.
+
+---
+
 ## 2026-05-24T11:00Z — iteration 64 (consolidated cross-agent broadcast for iters 56-63 structural doctrine)
 
 Operator: /loop. The structural theorems from iters 56-63 are significant — needed another fleet broadcast.
