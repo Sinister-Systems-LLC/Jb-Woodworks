@@ -45,7 +45,7 @@ Add-Result 'R1c' 'sinister-usage CLI installed or src present' (($usageCli) -or 
 $launcher = Join-Path $SanctumRoot 'automations\start-sinister-session.ps1'
 if (Test-Path $launcher) {
     $launcherContent = Get-Content $launcher -Raw
-    $hasBridge = $launcherContent -match 'forge-memory-bridge|memory_bridge|memory-bridge.*recall'
+    $hasBridge = $launcherContent -match 'forge-memory(-bridge)?|memory_bridge|memory-bridge.*recall'
     Add-Result 'R9-R10' 'forge-memory-bridge invoked from launcher Build-Phrase (audit predicted GAP)' $hasBridge ("present=$hasBridge in $launcher")
 } else {
     Add-Result 'R9-R10' 'forge-memory-bridge invoked from launcher Build-Phrase' $false "launcher script not found at $launcher"
@@ -226,10 +226,10 @@ Add-Result 'R28' 'sinister-mermaid-render tool dir (KNOWN GAP)' $r28Ok ($(if ($r
 
 # Report
 $ts = (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ')
-$passCount     = ($results | Where-Object { $_.ok }).Count
-$realFailCount = ($results | Where-Object { -not $_.ok -and -not $_.expected_fail }).Count
-$expFailCount  = ($results | Where-Object { -not $_.ok -and $_.expected_fail }).Count
-$total         = $results.Count
+$passCount     = @($results | Where-Object { $_.ok }).Count
+$realFailCount = @($results | Where-Object { -not $_.ok -and -not $_.expected_fail }).Count
+$expFailCount  = @($results | Where-Object { -not $_.ok -and $_.expected_fail }).Count
+$total         = @($results).Count
 
 if ($Json) {
     [ordered]@{

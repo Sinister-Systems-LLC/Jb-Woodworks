@@ -58,15 +58,12 @@ if (-not $python) {
 }
 
 Write-Output "starting: $python $daemonPy"
-$psi = New-Object System.Diagnostics.ProcessStartInfo
-$psi.FileName = $python
-$psi.Arguments = "`"$daemonPy`""
-$psi.UseShellExecute = $false
-$psi.WorkingDirectory = Join-Path $SanctumRoot 'automations\window-manager'
-$psi.WindowStyle = 'Hidden'
-$psi.CreateNoWindow = $true
+# Detached spawn via Start-Process so the daemon survives THIS process exit.
+# Hidden window + WMI-style invocation so no console attached. Equivalent pattern to
+# automations/hidden-spawn.ps1.
+$workdir = Join-Path $SanctumRoot 'automations\window-manager'
 try {
-    $p = [System.Diagnostics.Process]::Start($psi)
+    $p = Start-Process -FilePath $python -ArgumentList "`"$daemonPy`"" -WorkingDirectory $workdir -WindowStyle Hidden -PassThru
     Write-Output "spawned-pid: $($p.Id)"
 } catch {
     Write-Output "spawn-failed: $_"

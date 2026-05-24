@@ -1,0 +1,43 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-24T16:48:36.4074411Z",
+    "project":  "sinister-os-mobile",
+    "agent_name":  "sinister-os-mobile",
+    "mode":  "resume",
+    "focus_intent":  "Skeleton handoff + kernel spec drafted. Next P0-autonomous: clone bluejay tree read-only (~6-8 GB) for grep + surface Q1-Q10 to operator queue + update branding-spec § 4.",
+    "git":  {
+                "branch":  "agent/sinister-os-mobile/p0-spec-2026-05-24",
+                "head":  "bffedc600e6ab873f750fc2cb7dce141a7f83522",
+                "head_msg":  "sanctum: matrix R29 correction - root cause is unmerged rkoj-iter7 branch",
+                "recent_commits":  [
+                                       "bffedc6 sanctum: matrix R29 correction - root cause is unmerged rkoj-iter7 branch",
+                                       "d4389a1 sanctum: ensure-rkoj-daemon-up.ps1 - fixes R21 systematically",
+                                       "fe6341b sanctum: jcode-parity-probe v0.3 (31 rows) + matrix row 29 correction",
+                                       "d8c8370 sinister-os-mobile: PATTERNS.md mobile gap audit (Turn 2)",
+                                       "c5552c9 sanctum: jcode-parity-probe.ps1 v0.1 + audit hypothesis empirically confirmed",
+                                       "f0be8fe sinister-os-mobile: P0 branding lock (operator hard-canonical 2026-05-24T16:09:10Z)",
+                                       "4196b28 sanctum: jcode parity audit + ensure-docker-up helper (iter-2)",
+                                       "d4cd1a0 sanctum: counter-argument.ps1 + sinister-os-mobile spawn",
+                                       "a1c9a98 sanctum: bootstrap sinister-os-mobile lane + P11 + idea-intake",
+                                       "68e43db sanctum(broadcast): fan-out UI-base + EXPAND doctrine to 37 lanes"
+                                   ]
+            },
+    "progress_top3":  [
+
+                      ],
+    "latest_plan":  {
+                        "dir":  null,
+                        "artifact":  null
+                    },
+    "inbox_unread_count":  2,
+    "last_5_files_touched_24h":  [
+                                     "_shared-memory\\canonical-protections-violations.log",
+                                     "projects\\sinister-os\\source\\iso-build\\packages.x86_64.slim.tmp.16208.1779641298895",
+                                     "projects\\sinister-os\\build\\_work\\x86_64\\airootfs\\usr\\share\\terminfo\\A\\addrinfo",
+                                     "projects\\sinister-os\\source\\sinister-overlay\\etc\\calamares\\branding\\sinister\\branding.desc",
+                                     "_shared-memory\\heartbeats\\sinister-os-mobile.json"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}

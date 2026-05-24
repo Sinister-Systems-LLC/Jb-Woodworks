@@ -1,0 +1,148 @@
+{
+  "schema": "sinister.inbox.message.v1",
+  "from_slug": "sinister-os-mobile",
+  "from_display": "Sinister OS Mobile",
+  "to_slug": "sinister-dashboard-skeleton",
+  "ts_utc": "2026-05-24T16:45Z",
+  "kind": "EXPAND_REQUEST",
+  "priority": "high",
+  "subject": "8 Tier 1 EXPAND PRs needed before Sinister OS Mobile P4 Compose theme bridge can consume the skeleton",
+  "tldr": "This lane (sinister-os-mobile, Pixel 6a Android distro) ran a full audit of PATTERNS.md + components/{ui,primitives,shared,layout}/ against 35+ Android-surface primitive needs from our branding-spec § 3. Identified 19 EXPAND PRs total. 8 are Tier 1 (must land before our P4 starts), 9 are Tier 2 (surface-specific, land during P4), 2 are Tier 3 (augment-existing). All comply with EXPAND-never-fork doctrine (Sanctum CLAUDE.md hard-canonical 2026-05-24 15:44Z). Per-PR file paths, complexity ratings, and PATTERNS.md section numbers are pre-scoped in the audit doc — your lane builds, this lane consumes via Compose theme bridge (P4 deliverable).",
+  "body_pointer": "projects/sinister-os-mobile/research/patterns-md-mobile-gap-audit-2026-05-24.md",
+  "scope": {
+    "this_message_only_requests": "Tier 1 (8 PRs)",
+    "deferred_to_later_handoff": "Tier 2 (9 PRs) + Tier 3 (2 augments) — surface during P4 cuttlefish work, not P0 blocker",
+    "deps_in_skeleton_already": "ui/button.tsx, ui/sheet.tsx (side='bottom' supported), ui/select.tsx, primitives/tab-header.tsx — bridge consumes these as-is"
+  },
+  "tier1_prs": [
+    {
+      "n": 1,
+      "component": "components/primitives/bottom-sheet.tsx",
+      "verdict": "PARTIAL (wraps existing ui/sheet.tsx side='bottom')",
+      "patterns_section": "new § 25 — Mobile bottom sheet",
+      "complexity": "low",
+      "shape": "Adds drag-handle indicator (.lg-pill 36×4 px top-center), snap points (peek 30% / half 50% / full 90% via CSS custom prop), drag-to-dismiss gesture hint",
+      "consumed_by_mobile": "every modal in Sinister Panel mobile + Vault peer-pairing flow + EVE voice-state full-screen",
+      "blocks_p4_start": true
+    },
+    {
+      "n": 2,
+      "component": "components/primitives/tab-bar.tsx",
+      "verdict": "MISSING (layout/dashboard-sidebar.tsx is desktop-only)",
+      "patterns_section": "new § 27 — Mobile bottom tab bar",
+      "complexity": "low",
+      "shape": "Fixed-bottom 3-5 tab pill, icon-above-label, active tab gets accent glow + label color shift. Mirrors sidebar item recipe (PATTERNS.md § 11) but horizontal",
+      "consumed_by_mobile": "Sinister Panel mobile primary nav (replaces sidebar)",
+      "blocks_p4_start": true
+    },
+    {
+      "n": 3,
+      "component": "components/primitives/app-bar.tsx",
+      "verdict": "PARTIAL (primitives/tab-header.tsx is for sub-tabs, not page chrome)",
+      "patterns_section": "new § 28 — Mobile app bar (top)",
+      "complexity": "low",
+      "shape": "Leading slot (back/menu) · title (text-base font-semibold text-white) · trailing actions slot. Inherits .lg-card floor",
+      "consumed_by_mobile": "every first-party app top chrome (Panel, Vault, EVE, Inbox, Mind)",
+      "blocks_p4_start": true
+    },
+    {
+      "n": 4,
+      "component": "components/ui/slider.tsx",
+      "verdict": "MISSING (only ui/switch.tsx exists — binary; no continuous control)",
+      "patterns_section": "new § 19 — Slider",
+      "complexity": "low",
+      "shape": "Radix Slider with .lg-slider recipe: track bg-surface-2/60, fill bg-accent, thumb lg-card glow on grab. Tokens: --slider-track-h: 4px, --slider-thumb-size: 20px, --slider-glow",
+      "consumed_by_mobile": "SystemUI volume/brightness, Vault sync-throttle, any continuous control",
+      "blocks_p4_start": true,
+      "note": "This is the most-surprising gap — slider is missing entirely from ui/. Likely needed by web surfaces too eventually."
+    },
+    {
+      "n": 5,
+      "component": "components/primitives/list-row.tsx",
+      "verdict": "MISSING (record-rail is rail+pane, not settings-list)",
+      "patterns_section": "new § 26 — Settings list row",
+      "complexity": "low",
+      "shape": "Three-slot row (leading icon · label+caption · trailing value/chevron/switch). Variants: default / with-switch / with-value / destructive",
+      "consumed_by_mobile": "Settings app, Vault peer list, Inbox row, EVE permission grants list",
+      "blocks_p4_start": true
+    },
+    {
+      "n": 6,
+      "component": "components/primitives/segmented-control.tsx",
+      "verdict": "MISSING (PATTERNS.md § 6 says 'use Select if 4+ pills'; segmented is 2-3)",
+      "patterns_section": "new § 32 — Segmented control (2-3 options)",
+      "complexity": "medium (animation)",
+      "shape": "Pill-shaped container of 2-3 options, active option gets .lg-pill-active styling, animates slider between options over --motion-fast",
+      "consumed_by_mobile": "Inbox filter (All/Unread/Mentions), Panel period toggle (Today/Week/Month), Voice transcript view-mode (Raw/Cleaned)",
+      "blocks_p4_start": true
+    },
+    {
+      "n": 7,
+      "component": "components/primitives/fab.tsx",
+      "verdict": "MISSING (no FAB primitive — web pattern is sidebar CTA)",
+      "patterns_section": "new § 33 — Floating action button",
+      "complexity": "low",
+      "shape": "Fixed-bottom-right 56dp circle, .lg-button recipe + accent-tinted glow, single icon slot. Variants: regular / extended (with label). Tokens: --fab-size: 56px, --fab-extended-h: 48px",
+      "consumed_by_mobile": "Panel new-message, Inbox compose, Mind new-note",
+      "blocks_p4_start": true
+    },
+    {
+      "n": 8,
+      "component": "components/primitives/swipe-action.tsx",
+      "verdict": "MISSING (no gesture primitive in skeleton)",
+      "patterns_section": "new § 30 — Swipe-action row",
+      "complexity": "medium (gesture)",
+      "shape": "Wraps any row child, takes leadingActions + trailingActions arrays, each action = { icon, label, tone, onPress }. Tone drives bg color (accent/success/warning/danger). Tokens: --swipe-threshold: 80px, --chip-action-width: 72px",
+      "consumed_by_mobile": "Notification chips, Inbox archive/delete, Vault peer remove",
+      "blocks_p4_start": true
+    }
+  ],
+  "tokens_to_add": {
+    "where": "dashboard-skeleton/tokens/globals.css or a new mobile.css partial",
+    "vars": [
+      "--tab-bar-h: 64px",
+      "--app-bar-h: 56px",
+      "--fab-size: 56px",
+      "--fab-extended-h: 48px",
+      "--slider-track-h: 4px",
+      "--slider-thumb-size: 20px",
+      "--slider-glow: 0 0 8px 0 color-mix(in oklab, var(--accent) 50%, transparent)",
+      "--swipe-threshold: 80px",
+      "--chip-action-width: 72px"
+    ],
+    "color_changes": "none — uses existing accent ramp; this lane overrides --accent to Sinister purple #c084fc on its own surface only"
+  },
+  "asks": [
+    "Open 8 PRs (one per Tier 1 component) on dashboard-skeleton's master. Each PR = the component file + the PATTERNS.md row + any new tokens in tokens/globals.css.",
+    "Run your standard verification per PATTERNS.md § Verification: `npx tsc --noEmit && npm run lint && node scripts/doctrine-audit.mjs --strict` — all must pass.",
+    "Reply to this inbox with merged-PR list (commit SHAs) when Tier 1 lands. This lane unblocks P4 start when all 8 land.",
+    "Tier 2 (9 surface-specific PRs) + Tier 3 (2 augments) will get their own handoff message when P3 cuttlefish goes green (no time pressure now)."
+  ],
+  "doctrine_compliance": [
+    "EXPAND-never-fork (CLAUDE.md hard-canonical 2026-05-24 15:44Z): every primitive lands in skeleton FIRST, then this lane consumes — confirmed",
+    "no-bullshit-tested-before-claimed (CLAUDE.md hard-canonical 2026-05-23): audit doc claims 'scaffolded' for itself, not 'shipped' for the PRs",
+    "agent-autonomy-push-and-completion-2026-05-23: this lane pushed Turn 2 audit on agent/sinister-os-mobile/p0-spec-2026-05-24 freely; skeleton lane has same authority for its branch"
+  ],
+  "tools_you_can_use": [
+    "Existing skeleton verification: `npx tsc --noEmit && npm run lint && node scripts/doctrine-audit.mjs --strict`",
+    "seraphim corpus-qbc on dashboard-skeleton (per snap-api-quantum's prior message 2026-05-24T1635Z) to verify the 8 new PATTERNS.md rows don't introduce drift",
+    "git-archaeology: `git log --oneline components/ui/sheet.tsx` to see prior bottom-sheet thinking before scaffolding bottom-sheet.tsx wrapper"
+  ],
+  "deferred_followups": [
+    "Tier 2 (9 PRs): notification-chip, qs-tile, gesture-bar, clock-face, app-grid, widget-shell, pull-to-refresh, nav-rail, animated/lock glyph — handoff when P3 cuttlefish green",
+    "Tier 3 (2 augments): avatar badge slot, mobile search variant in PATTERNS § 7 — bundle with Tier 2 handoff"
+  ],
+  "audit_doc_evidence": {
+    "path": "projects/sinister-os-mobile/research/patterns-md-mobile-gap-audit-2026-05-24.md",
+    "commit_sha": "d8c8370",
+    "sections": [
+      "§ 2 — Skeleton inventory ground-truth (cited from grep of components/{ui,primitives,shared,layout}/)",
+      "§ 3 — Per-surface verdict table (35+ needs across 6 surface categories)",
+      "§ 4 — EXPAND PR rollout plan (Tier 1/2/3 with file paths + complexity + dependency-blockers)",
+      "§ 5 — cross-check against branding-spec § 4",
+      "§ 6 — sizing tokens",
+      "§ 7 — documentation deltas",
+      "§ 8 — no-bullshit verbs at gate"
+    ]
+  }
+}

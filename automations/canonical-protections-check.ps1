@@ -225,6 +225,16 @@ Test-Protection -Id 'P10' -Description 'github-first sourcing doctrine present (
     return ($coldStartOk -and $indexOk)
 } | Out-Null
 
+# P12 -- jcode parity probe (real-fails only). Composes with jcode-parity-probe.ps1.
+# Probe exits N where N = REAL-FAIL count (expected-gaps don't fail the gate).
+# This protection passes when there are 0 real failures.
+Test-Protection -Id 'P12' -Description 'jcode-parity-probe real-fails = 0' -Check {
+    $probe = Join-Path $SanctumRoot 'automations\jcode-parity-probe.ps1'
+    if (-not (Test-Path $probe)) { return $false }
+    & $probe -SanctumRoot $SanctumRoot 2>$null | Out-Null
+    return ($LASTEXITCODE -eq 0)
+} | Out-Null
+
 # P11 -- UI base = dashboard-skeleton inheritance doctrine (operator hard-canonical 2026-05-24 15:44Z).
 # Origin: operator verbatim "update memory everything that makes a ui needs to base off our dsahboard
 # skeleton so we have the same uniform clean look across projects and each time we make a dahsbaord

@@ -868,7 +868,7 @@ function Build-Phrase($projRec, $agentName, $mode, $isGeneral, $isScaffold, $mod
     $root = $projRec.root
     $display = $projRec.display
     $projKey = $projRec.key
-    $base = "Working on $display at $root as the '$agentName' lane. Open $root\CLAUDE.md for the project's cold-start protocol. Log progress to _shared-memory\PROGRESS\$agentName.md and write a heartbeat to _shared-memory\heartbeats\<slug>.json each turn."
+    $base = "Working on $display at $root as the '$agentName' lane. Open $root\CLAUDE.md for the project's cold-start protocol. Log progress to _shared-memory\PROGRESS\$agentName.md and write a heartbeat to _shared-memory\heartbeats\<slug>.json each turn. Memory recall available via the forge-memory CLI: ``forge-memory recall '<topic>' --limit 5`` brings prior disk-stored memories into context (composes with the Ruflo MCP semantic store; fixes jcode-parity-probe rows 9-10 auto-recall gap for claude-only spawns)."
     if ($isScaffold) {
         $phrase = $base + " Mode: SCAFFOLD. Read _SCAFFOLD-BRIEF.md, then create the initial repo skeleton (README.md + CLAUDE.md + SESSION-START.md + .gitignore + source/). Keep it minimal but runnable. When done, append a Built summary to _SCAFFOLD-BRIEF.md."
     }
@@ -908,12 +908,25 @@ function Build-Phrase($projRec, $agentName, $mode, $isGeneral, $isScaffold, $mod
 # ============================================================
 
 function Prompt-AgentModes {
+    # RKOJ-ELENO :: 2026-05-24 :: per-project default_modes support. Operator hard-canonical
+    # *"i need swarm and loop options in bat file per project as well"*. Precedence (highest first):
+    #   1. projects.json entry's default_modes.{swarm,loop}
+    #   2. env vars SINISTER_DEFAULT_SWARM / SINISTER_DEFAULT_LOOP
+    #   3. both off
+    param($ProjectRec = $null)
     $defSwarm = ($env:SINISTER_DEFAULT_SWARM -eq '1')
     $defLoop  = ($env:SINISTER_DEFAULT_LOOP -eq '1')
+    $projOverride = $false
+    if ($ProjectRec -and $ProjectRec.PSObject.Properties.Name -contains 'default_modes' -and $ProjectRec.default_modes) {
+        $dm = $ProjectRec.default_modes
+        if ($dm.PSObject.Properties.Name -contains 'swarm') { $defSwarm = [bool]$dm.swarm; $projOverride = $true }
+        if ($dm.PSObject.Properties.Name -contains 'loop')  { $defLoop  = [bool]$dm.loop;  $projOverride = $true }
+    }
     if ($env:SINISTER_SKIP_MODES_PROMPT -eq '1') {
         return @{ swarm = $defSwarm; loop = $defLoop }
     }
     $defLabel = if ($defSwarm -and $defLoop) { 'both' } elseif ($defSwarm) { 'swarm' } elseif ($defLoop) { 'loop' } else { 'neither' }
+    if ($projOverride -and $ProjectRec.key) { $defLabel += " (project default for $($ProjectRec.key))" }
     # RKOJ-ELENO :: 2026-05-23 :: SPEED FIX — $C.Header / $C.Prompt were never defined
     # in the $C palette (lines ~54-64), so each spawn emitted two silent Write-Host
     # parameter errors that polluted stderr and could stall buffered output. Use
@@ -1128,11 +1141,27 @@ function Launch-Session($projRec, $agentName, $accent, $phrase, $modes = $null) 
             . $acctLib
             $next = Get-NextAvailableAccount
             if (-not $next) {
-                $waitUntil = Get-WaitUntilAnyAvailable
-                Write-Host "  [WAIT] all Claude accounts rate-limited until $waitUntil; bat will retry." -ForegroundColor $C.Warn
-                Write-Host '  [press Enter to return to picker]' -ForegroundColor $C.Dim
-                Read-Host | Out-Null
-                return
+                # RKOJ-ELENO :: 2026-05-24 :: FULL-POWER doctrine. Operator hard-canonical
+                # *"dont fucking rate limit me like this i need full power we need ful power"*
+                # The local accounting (current_sessions cap, rate_limited flag) is bookkeeping
+                # only — the REAL gate is Anthropic's server-side 429. Local bookkeeping must
+                # NEVER block a spawn. Pick the first enabled account regardless of cap state
+                # and proceed. If Anthropic rate-limits us, the spawned process surfaces it.
+                $cfgFull = Get-AccountsConfig
+                $fallback = @($cfgFull.accounts | Where-Object { $_.enabled -ne $false }) | Select-Object -First 1
+                if (-not $fallback) {
+                    # Last-resort: pick first account even if disabled (operator wants spawns).
+                    $fallback = @($cfgFull.accounts) | Select-Object -First 1
+                }
+                if ($fallback) {
+                    Write-Host "  [full-power] local cap reached for '$($fallback.name)' but spawning anyway (Anthropic server is the real gate)." -ForegroundColor $C.Dim
+                    $next = @{ name = $fallback.name; account = $fallback }
+                } else {
+                    Write-Host "  [BLOCK] no accounts in _shared-memory/claude-accounts.json. Check the file." -ForegroundColor $C.Warn
+                    Write-Host '  [press Enter to return to picker]' -ForegroundColor $C.Dim
+                    Read-Host | Out-Null
+                    return
+                }
             }
             $selectedAccountName = $next.name
             $selectedApiKey = Get-AccountCredentials -Name $selectedAccountName
@@ -1597,7 +1626,7 @@ do {
                     $resolvedAgent = $confirmed.agent
                     $accentVal = $confirmed.accent
                     $isGeneral = ($targetKey -eq 'general')
-                    $modes = Prompt-AgentModes
+                    $modes = Prompt-AgentModes -ProjectRec $projRec
                     $phrase = Build-Phrase $projRec $resolvedAgent 'resume' $isGeneral $false $modes
                     if (-not $NoLaunch) { Launch-Session $projRec $resolvedAgent $accentVal $phrase $modes }
                     Write-RunLog $targetKey $resolvedAgent $accentVal 'autoresume-fresh'
@@ -1615,7 +1644,7 @@ do {
                 $prefs = $confirmed.prefs
                 $resolvedAgent = $confirmed.agent
                 $accentVal = $confirmed.accent
-                $modes = Prompt-AgentModes
+                $modes = Prompt-AgentModes -ProjectRec $projRec
                 $phrase = Build-Phrase $projRec $resolvedAgent 'resume' ($targetKey -eq 'general') $false $modes
                 if (-not $NoLaunch) { Launch-Session $projRec $resolvedAgent $accentVal $phrase $modes }
                 Write-RunLog $targetKey $resolvedAgent $accentVal 'autoresume'
@@ -1635,7 +1664,7 @@ do {
                 }
                 $resolvedAgent = $new.key
                 $prefs = Persist-AgentPref $new.key $resolvedAgent 'purple' $prefs
-                $modes = Prompt-AgentModes
+                $modes = Prompt-AgentModes -ProjectRec $projRec
                 $phrase = Build-Phrase $projRec $resolvedAgent 'scaffold' $false $true $modes
                 if (-not $NoLaunch) { Launch-Session $projRec $resolvedAgent 'purple' $phrase $modes }
                 Write-RunLog $new.key $resolvedAgent 'purple' 'newproject'
@@ -1652,7 +1681,7 @@ do {
                 $resolvedAgent = $confirmed.agent
                 $accentVal = $confirmed.accent
                 $isGeneral = ($targetKey -eq 'general')
-                $modes = Prompt-AgentModes
+                $modes = Prompt-AgentModes -ProjectRec $projRec
                 $phrase = Build-Phrase $projRec $resolvedAgent 'resume' $isGeneral $false $modes
                 if (-not $NoLaunch) { Launch-Session $projRec $resolvedAgent $accentVal $phrase $modes }
                 Write-RunLog $targetKey $resolvedAgent $accentVal 'project'

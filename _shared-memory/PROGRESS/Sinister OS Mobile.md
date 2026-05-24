@@ -5,6 +5,63 @@
 
 ---
 
+## 2026-05-24T16:50Z — Turn 3 (skeleton handoff drafted + kernel spec drafted)
+
+Operator directive Turn 3: *"draft the cross-lane handoff to skeleton and kee wokring and testing the custom kernel. where ware we at with that"*. Two-track turn.
+
+### Shipped (verified — files exist + parse-clean)
+
+- **`_shared-memory/inbox/sinister-dashboard-skeleton/2026-05-24T1645Z-from-sinister-os-mobile-tier1-expand-prs-for-compose-bridge.json`** — structured inbox handoff (sinister.inbox.message.v1 schema), `kind=EXPAND_REQUEST`, `priority=high`. Enumerates the 8 Tier 1 PRs with: component path, verdict, PATTERNS.md § number, complexity, shape (recipe), what-mobile-consumes-it, blocks_p4_start. Includes tokens to add, doctrine-compliance pins, asks (open 8 PRs + run verification + reply when merged), deferred Tier 2/3 followups, body pointer to audit-doc + commit SHA d8c8370.
+- **`projects/sinister-os-mobile/research/kernel-spec-2026-05-24.md`** (~13 KB, 10 sections)
+  - § 1 Honest status table (no code built, no cvd booted, no Pixel touched — verbs at gate = scaffolded)
+  - § 2 Canonical kernel tree pin: bluejay 5.10 LTS `android13-gs-pixel-5.10`, ACK, kleaf, vendor blobs policy
+  - § 3 Tensor G1 hardware blocks (TPU / GXP / AOC / Mali / modem / display / power HAL / Trusty / USB) — what each block means for EVE
+  - § 4 EVE-control kernel hooks — ~180 LOC sepolicy + init.bluejay.rc deltas, NO C-level kernel patches in v1
+  - § 5 Cuttlefish kernel divergence — explicit "70% validates on cvd, 30% only on metal" breakdown
+  - § 6 Patch budget + maintenance burden (~1-2h per monthly Google security patch on Graphene base)
+  - § 7 Root strategy decision (Path A `system_app`+sepolicy / Path B KernelSU / Path C Magisk-on-Lineage) — recommended default Path A subject to operator Q9
+  - § 8 Prior-art shortlist (with honest non-find documentation — github-prior-art returned zero due to GPL-2.0 license filter)
+  - § 9 What CAN be done now at P0 — 7-item autonomous queue including read-only kernel clone, sepolicy delta draft, cvd-rendering-budget, Dockerfile draft, OPERATOR-ACTION-QUEUE Q1-Q10 surface
+  - § 10 composes-with
+
+### Verification
+
+| Check | Evidence | Result |
+|---|---|---|
+| Skeleton inbox dir exists | `ls _shared-memory/inbox/sinister-dashboard-skeleton/` returned prior message from snap-api-quantum | ✅ |
+| Handoff JSON parse-clean | sinister.inbox.message.v1 schema; structurally mirrors snap-api-quantum's 2026-05-24T1635Z message | ✅ |
+| 8 Tier 1 PRs enumerated | tier1_prs array has 8 entries (1=bottom-sheet … 8=swipe-action) | ✅ |
+| Kernel spec § 1 status honest | "No / No / No" answers for built/booted/touched + verb=scaffolded | ✅ |
+| github-prior-art ran | 3 invocations (pixel 6a bluejay kernel, kernelsu pixel tensor, grapheneos kernel pixel 6a) all returned zero due to GPL-2.0 license filter; documented in spec § 8 | ✅ (non-find documented) |
+| Canonical kernel URL cited | android.googlesource.com/kernel/private/devices/google/bluejay + android13-gs-pixel-5.10 branch pin | ✅ (general knowledge; verify-on-clone deferred to § 9 item #2) |
+
+### Honest answer to operator "where we are at with the custom kernel"
+
+**P0 spec. Zero kernel code built. No cuttlefish booted. No Pixel touched.** Master-plan gates: P0 → P1 needs operator Q1-Q10 answers, P1 → P2 needs ROM-select after seraphim audit, P2 → P3 needs `repo sync` + `m otatools` green, P3 → P4 needs cvd boot + adb shell + wifi up. Kernel-side patches (~180 LOC sepolicy + init.rc) don't START until P3. **What I can do RIGHT NOW autonomously** (kernel-spec § 9, no operator gate): clone the bluejay tree read-only for grep, draft sepolicy deltas on paper, scaffold the build Dockerfile spec, surface Q1-Q10 to OPERATOR-ACTION-QUEUE, and update branding-spec § 4 per the audit recommendation.
+
+### Open (next autonomous turn or operator-gate)
+
+- **Clone bluejay tree read-only** — kernel-spec § 9 item #2; ~6-8 GB; ~10-20 min on NVMe; not committed. Most-material toward "keep testing kernel" — gives this lane local grep on real upstream symbols.
+- **Surface Q1-Q10 to OPERATOR-ACTION-QUEUE** — kernel-spec § 9 item #7; until operator answers, P1 stays gated.
+- **Branding-spec § 4 update** (still queued from Turn 2).
+- **Brain `_INDEX.md`** row for Turn 2 audit + Turn 3 kernel-spec + handoff JSON (3 entries batchable).
+- **Skeleton lane reply** — wait for sinister-dashboard-skeleton to ack the inbox handoff with merged-PR SHAs.
+
+### No-bullshit ledger
+
+- Claimed only: handoff JSON exists with schema-correct fields, kernel spec exists with cited sections. NOT claimed: "skeleton lane is building" / "kernel code written" / "Pixel tested" — none happened.
+- `github-prior-art.ps1` ran 3 times, returned zero each time due to license filter (kernel sources are GPL-2.0, script filters to MIT/Apache/BSD). This is a real script limitation, documented as a non-find in kernel-spec § 8 + here. NOT spun as success.
+- Verb at gate for kernel spec: **scaffolded** (paper exercise, no source pulled, no symbol verified, no patch compiled).
+- Verb at gate for handoff: **shipped** (the inbox JSON exists on disk + will commit; the EXPAND PRs themselves remain **pending** for the skeleton lane to execute).
+- Quality-degradation signals: PROGRESS file grew from ~7 KB to ~10 KB (under 300 KB cap). 3 research docs in `projects/sinister-os-mobile/research/` (under any reasonable cap). Brain row count unchanged.
+
+### Lane discipline notes
+
+- This lane authored handoff for skeleton lane to execute. Did NOT touch skeleton repo. Did NOT touch sibling kernel-APK lane (which is the Detector APK lane, unrelated to OS kernel work — clarified in answer to operator).
+- Lane discipline maintained.
+
+---
+
 ## 2026-05-24T16:35Z — Turn 2 (PATTERNS.md mobile gap audit)
 
 Operator directive Turn 2: *"audit PATTERNS.md for mobile primitive gaps"* — direct ask, no /loop.
