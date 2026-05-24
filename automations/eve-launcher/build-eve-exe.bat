@@ -19,8 +19,15 @@ if errorlevel 1 (
     )
 )
 
-echo  [build] packaging eve.py -^> dist\EVE.exe ...
-pyinstaller --onefile --name EVE ^
+echo  [build] packaging eve.py -^> dist\EVE\EVE.exe (--onedir)...
+REM v0.2 (iter 6 2026-05-23): switched from --onefile to --onedir. --onefile
+REM extracts python312.dll to %%TEMP%%\_MEI<random> on each launch which fails
+REM on Windows boxes with strict AV / missing VC++ runtime (operator hit this
+REM 2026-05-23 - EVE.exe spawned a console then immediately closed because
+REM `LoadLibrary: python312.dll: module could not be found`). --onedir keeps
+REM the DLL next to EVE.exe so no extraction is needed; output is a folder
+REM (~20MB) instead of a single exe (~8MB) but it actually launches.
+pyinstaller --onedir --name EVE ^
     --distpath dist ^
     --workpath build ^
     --specpath build ^
@@ -32,15 +39,15 @@ if errorlevel 1 (
     exit /b 3
 )
 
-if exist dist\EVE.exe (
+if exist dist\EVE\EVE.exe (
     echo.
-    echo  [OK] built dist\EVE.exe
-    for %%I in (dist\EVE.exe) do echo       size = %%~zI bytes
+    echo  [OK] built dist\EVE\EVE.exe
+    for %%I in (dist\EVE\EVE.exe) do echo       size = %%~zI bytes
     echo.
-    echo  Test: dist\EVE.exe
-    echo  Install: copy dist\EVE.exe to a folder on PATH, or have Sinister Start.bat probe for it.
+    echo  Test: dist\EVE\EVE.exe --version
+    echo  Install: Sinister Start.bat already probes dist\EVE\EVE.exe (v6.5+).
 ) else (
-    echo  [WARN] dist\EVE.exe missing after build. Check pyinstaller output.
+    echo  [WARN] dist\EVE\EVE.exe missing after build. Check pyinstaller output.
     exit /b 3
 )
 endlocal

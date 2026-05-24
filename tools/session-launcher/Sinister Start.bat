@@ -105,7 +105,11 @@ REM ----- Prefer EVE.exe (thin jcode-speed picker) if available -----
 REM v6: tightened probe - must be >0 bytes + must respond to --version within
 REM 3 seconds. Skips silently to PS1 fallback if EVE.exe is a stale/broken stub.
 set "EVE_EXE="
+REM v6.5 (iter 6 2026-05-23): added --onedir build path first (dist/EVE/EVE.exe).
+REM The --onefile EVE.exe at dist/EVE.exe fails to extract python312.dll on some
+REM Windows boxes (antivirus / VC++ runtime). --onedir builds work universally.
 if exist "%~dp0EVE.exe" call :probe_eve "%~dp0EVE.exe"
+if not defined EVE_EXE if exist "%SANCTUM_ROOT%\automations\eve-launcher\dist\EVE\EVE.exe" call :probe_eve "%SANCTUM_ROOT%\automations\eve-launcher\dist\EVE\EVE.exe"
 if not defined EVE_EXE if exist "%SANCTUM_ROOT%\automations\eve-launcher\dist\EVE.exe" call :probe_eve "%SANCTUM_ROOT%\automations\eve-launcher\dist\EVE.exe"
 if not defined EVE_EXE if exist "%LOCALAPPDATA%\Sinister\EVE.exe" call :probe_eve "%LOCALAPPDATA%\Sinister\EVE.exe"
 

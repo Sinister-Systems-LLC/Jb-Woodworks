@@ -118,6 +118,34 @@ if (Test-Path $progressDir) {
 }
 $rollup.bot_adoption = $botAdoption
 
+# --- per_project_protections (iter 6 wire-up) ---
+$ppScript = Join-Path $SanctumRoot 'automations\per-project-protections-check.ps1'
+$ppData = [ordered]@{ lane_count = 0; full_pass_count = 0; per_lane = @{} }
+if (Test-Path $ppScript) {
+    try {
+        $ppJson = & $ppScript -SanctumRoot $SanctumRoot -Json 2>$null | Out-String
+        if ($ppJson) {
+            $pp = $ppJson | ConvertFrom-Json
+            $ppData.lane_count = $pp.lane_count
+            $ppData.full_pass_count = $pp.full_pass_count
+            $perLane = @{}
+            foreach ($r in $pp.results) {
+                $perLane[$r.display] = [ordered]@{
+                    score = "$($r.pass_count)/$($r.total)"
+                    pp1 = $r.pp1_claude_md
+                    pp2 = $r.pp2_settings_json
+                    pp3 = $r.pp3_heartbeat_fresh
+                    pp3_hb_age_h = $r.pp3_heartbeat_age_hours
+                    pp4 = $r.pp4_progress_log
+                    pp5_brain_hits = $r.pp5_brain_hits
+                }
+            }
+            $ppData.per_lane = $perLane
+        }
+    } catch { }
+}
+$rollup.per_project_protections = $ppData
+
 # --- recent_commits ---
 Push-Location $SanctumRoot
 $recentCommits = & git log --oneline -10 2>$null

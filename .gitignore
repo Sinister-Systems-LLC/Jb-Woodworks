@@ -298,3 +298,6 @@ _archive/d-sinister-01_projects-pointers-2026-05-21/Sinister/*/source/
 _archive/d-sinister-01_projects-pointers-2026-05-21/Sinister/*/_vault/
 _archive/**/_git_archive.tar
 _archive/**/*.tar
+
+# Voice prompting POC - audio + transcripts are operator-private (per voice-prompting-poc spec 2026-05-23)
+_shared-memory/voice-inbox/
