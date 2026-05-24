@@ -44,9 +44,10 @@ function _Get-DefaultAccountsConfig {
     param()
     return [pscustomobject]@{
         _comment              = 'Auto-generated default (no claude-accounts.json on disk). RKOJ-ELENO :: 2026-05-24.'
-        version               = 2
+        version               = 3
         default               = 'operator'
-        rotation_strategy     = 'round-robin'
+        rotation_strategy     = 'load-balance'
+        last_rotation_index   = 0
         max_concurrent_global = 8
         accounts              = @()
     }
@@ -390,7 +391,7 @@ function Invoke-AccountStatus {
     $disabled = @($accts | Where-Object { $_.enabled -eq $false })
     $rl = @($accts | Where-Object { $_.rate_limited_until_utc })
     Write-Host ''
-    Write-Host "  Multi-account rotation status (round-robin):" -ForegroundColor Cyan
+    Write-Host "  Multi-account rotation status:" -ForegroundColor Cyan
     Write-Host "    strategy:    $($cfg.rotation_strategy)" -ForegroundColor Gray
     Write-Host "    enabled:     $($enabled.Count) / $($accts.Count)" -ForegroundColor Gray
     Write-Host "    rate-limited:$($rl.Count)" -ForegroundColor Gray

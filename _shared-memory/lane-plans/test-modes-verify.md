@@ -5,12 +5,14 @@
 > Each row: `- [ ] <ts_utc> :: <priority> :: <task>`  (status moves between sections; never delete)
 
 ## TODO
+- [ ] 2026-05-24T17:31:59Z :: normal :: Investigate why RKOJ daemon dies after ensure-rkoj-daemon-up spawn (Win32 service? scheduled task?)
 - [ ] 2026-05-24T16:59:12Z :: normal :: Investigate sinister-chatbot pollution (200/307/401/502 files at repo root); surface root-cause script to chatbot lane
 - [ ] 2026-05-24T16:59:12Z :: high :: Resolve R29 by triggering rkoj-iter7 -> main merge (0 conflicts confirmed; 74 ahead / 18 behind)
 
 ## IN-PROGRESS
 
 ## DONE
+- [x] 2026-05-24T17:31:57Z :: normal :: Ship fleet-health.ps1 (single-command full-fleet snapshot)  // evidence: smoke-tested; surfaces P12 FAIL + R21 recurring drop + 27 stale heartbeats as real findings
 - [x] 2026-05-24T17:23:34Z :: high :: Add claude-accounts -Action SetKey + -Action Status for 1-cmd multi-account setup  // evidence: Smoke-tested: SetKey writes creds + enables slot; Status shows compact rotation table with copy-paste command; reverted fake creds cleanly
 - [x] 2026-05-24T17:17:06Z :: normal :: Add -AutoRestore self-heal flow for P13 (auto-runs seed-resume-points on gap detect)  // evidence: smoke-tested: gap created -> P13 FAIL detected; -AutoRestore run -> P13 PASS achieved
 - [x] 2026-05-24T17:13:31Z :: high :: Add P13 canonical-protection (lane resume-point coverage); flags lanes missing resume-points + offers seed-resume-points command  // evidence: canonical-protections-check now reports P13 OK with all 16 previously-gapped lanes covered
