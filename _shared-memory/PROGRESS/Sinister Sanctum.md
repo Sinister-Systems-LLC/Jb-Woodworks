@@ -4,6 +4,49 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-24 08:35Z — /loop iter 14 — brain-archive-orphans helper + Fleet-Tour demo bat
+
+EVE on Sanctum continuing /loop. Two operator-friendly tools shipped + 1 em-dash bug fix.
+
+**T1 Regression PASS:** sinister-doctor unchanged (YELLOW status / P1-P9 PASS=9 / 4-22 weak / brain OK / 87 inbox). Latest HTML report from iter 13 still 6991 bytes + ends with `</body></html>`.
+
+**X1 brain-archive-orphans.ps1 SHIPPED:**
+- NEW `automations/brain-archive-orphans.ps1` — moves 33 orphan brain entries (on-disk but not indexed) to `_shared-memory/knowledge/_archive/`
+- Conservative: `-DryRun` by default; requires `-Yes` to apply (or interactive y/N prompt)
+- Reversible: `git mv` back + add row to `_INDEX.md`
+- Smoke (dry-run): correctly identifies all 33 orphans; reports the target archive path
+- **Bug found + fixed mid-iter:** em-dash (`—`) in Write-Host string caused PowerShell parse failure (same iter 5 doctrine — PowerShell 5.1 + UTF-8-no-BOM + non-ASCII = parse fail). Replaced with `--`. Verified.
+
+**X2 Fleet-Tour.bat SHIPPED:**
+- NEW `automations/Fleet-Tour.bat` — one-click operator demo of the full stack
+- Steps: (1) sinister-doctor console summary → (2) sinister-doctor HTML → (3) open report in browser → (4) per-project autofix preview (dry-run) → (5) brain-orphans archive preview (dry-run)
+- READ-ONLY; no state changes
+- Closes with copy-paste apply commands for each opt-in action
+- Operator double-clicks for a fleet health tour without remembering 5 different script paths
+
+**Composes with:**
+- All iter 1-13 tooling (sinister-doctor / per-project-protections-autofix / brain-archive-orphans / install-sinister-doctor-task)
+- `no-bullshit-tested-before-claimed-doctrine-2026-05-23` (test-found-fixed cycle on em-dash bug)
+- `powershell-out-file-bom-bites-python-readers-2026-05-23` orphan brain entry — same gotcha-family as the em-dash one
+
+**Files touched:**
+- NEW `automations/brain-archive-orphans.ps1` (X1)
+- NEW `automations/Fleet-Tour.bat` (X2)
+- EDIT `_shared-memory/PROGRESS/Sinister Sanctum.md` (this entry)
+
+**Bugs caught + fixed this iter:** 1 (em-dash parse fail; canonical gotcha).
+
+**Brain status:** 150/117/33 OK. No new doctrines. X1 makes the path to clean those 33 down operator-trivial.
+
+**Next iter plan:**
+- Monitor for operator running Fleet-Tour or any of the apply commands
+- Continue waiting on Q1-Q5 voice / C.3 L3 guard / C.7 browser / C.8 mermaid Rust / C.12 context impl
+- Self-paced: maybe sinister-doctor --watch mode for live monitoring (operator opens once, leaves running)
+- Maybe: bulk-update OPERATOR-ACTION-QUEUE to consolidate stale rows
+- Maybe: per-project-protections autofix is currently `-DryRun` only when no -Yes; consider adding `-Lane <key>` to apply to one lane at a time
+
+---
+
 ## 2026-05-24 08:30Z — /loop iter 13 — sinister-doctor polish: HTML body bug + per-lane PP table
 
 EVE on Sanctum continuing /loop. Test-found-fixed cycle on the freshly-shipped sinister-doctor.
