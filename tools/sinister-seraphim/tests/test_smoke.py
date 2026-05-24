@@ -341,6 +341,52 @@ def test_encoding_nesting_k4_subset_of_zzfm_r1():
             f"iter-52 nesting broken: K=4 QBC but ZZ-FM r=1 anti-QBC on {triad}"
 
 
+def test_audit_variants_catalog_intact():
+    """cli._AUDIT_VARIANTS must contain the 5 production variants with
+    expected encoding/k/reps. Breaks if someone removes zzfm-r1 or
+    changes a variant's parameters silently.
+    """
+    import cli
+    expected = {
+        'k4-angle':   ('angle', 4, 1),
+        'k8-angle':   ('angle', 8, 1),
+        'angle-cnot': ('angle-cnot', 4, 1),
+        'zzfm-r1':    ('zzfm', 4, 1),
+        'zzfm-r2':    ('zzfm', 4, 2),
+    }
+    assert set(cli._AUDIT_VARIANTS.keys()) == set(expected.keys()), \
+        f"variant catalog mismatch: {set(cli._AUDIT_VARIANTS.keys())} vs {set(expected.keys())}"
+    for name, (encoding, k, reps) in expected.items():
+        v = cli._AUDIT_VARIANTS[name]
+        assert v['encoding'] == encoding, f"{name} encoding={v['encoding']!r} expected {encoding!r}"
+        assert v['k'] == k, f"{name} k={v['k']} expected {k}"
+        assert v['reps'] == reps, f"{name} reps={v['reps']} expected {reps}"
+        assert 'notes' in v and 'depth_est' in v and 'budget_est_s' in v
+    # zzfm-r1 must call out the production recipe + quintuple verification
+    zz = cli._AUDIT_VARIANTS['zzfm-r1']
+    assert 'PRODUCTION RECIPE' in zz['notes']
+    assert 'QUINTUPLE' in zz['notes'], "iter 74 fix: must say QUINTUPLE-verified"
+
+
+def test_brain_recall_corpus_full_returns_results():
+    """brain-recall --corpus full returns top-K matches across the full
+    149+ doc corpus (not the topical-balanced pool). Smoke-test the
+    iter-48 default + iter-47 corpus_mode option together.
+    """
+    r = memory_kernel.recall_brain(
+        'quantum kernel inversion overlap',
+        top_k_results=3,
+        corpus_mode='full',
+    )
+    assert r['corpus_mode'] == 'full'
+    assert r['corpus_size'] > 100, "full corpus should have 100+ docs"
+    assert len(r['top_results']) == 3
+    # alpha=1.0 default → quantum_sim weight is 0 → top result driven by TF-IDF
+    top = r['top_results'][0]
+    assert top['rank'] == 1
+    assert top['combined_score'] >= 0
+
+
 def test_audit_pipeline_skip_real_qpu_produces_summary():
     """iter-41 audit-pipeline with --skip-real-qpu does not touch cloud and
     produces a phase-summary table. This is the primary operator-facing

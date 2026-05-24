@@ -7,6 +7,33 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T19:20Z — iteration 85 (2 protection tests: variants catalog + brain-recall corpus=full)
+
+Operator: /loop. Brain corpus grew 151→152 (over-capped topic; doctrine stable). Added 2 more protection-tests.
+
+### Added to `tools/sinister-seraphim/tests/test_smoke.py`
+1. **`test_audit_variants_catalog_intact`** — protects the 5-variant catalog from silent breakage. Verifies each variant's (encoding, k, reps) matches expected + presence of notes/depth_est/budget_est_s fields. **Specifically asserts 'QUINTUPLE' appears in zzfm-r1 notes** (the iter-74 sync), catching regressions on the production-recipe verification count.
+2. **`test_brain_recall_corpus_full_returns_results`** — exercises the iter-47 `--corpus full` option (vs 'pool' default tested earlier). Verifies corpus_size > 100, ranks 1..top_k, combined_score >= 0.
+
+### Test results
+- 21/21 total seraphim suite PASS (no regressions; 10 memory-kernel tests total)
+- ~29s wall time (slightly slower with corpus='full' on 152-doc full set)
+
+### Coverage tally (10 memory-kernel tests)
+- iter 16/22/43: cancellation theorem bit-for-bit
+- iter 39/41: rank-by ceiling + rank-inversion
+- iter 41: find-qbc + audit-pipeline orchestration
+- iter 47/48: brain-recall corpus_mode='pool' (default) + corpus_mode='full'
+- iter 52: universal-QBC nesting (corpus-aware)
+- iter 59: Shared-Top-K Necessary Condition
+- iter 65/66: K=4 combined predictor safety
+- iter 74: zzfm-r1 variant catalog has QUINTUPLE annotation
+
+### Cost
+Zero cloud burn; ~4 min wall time.
+
+---
+
 ## 2026-05-24T18:55Z — iteration 84 (2 more tests: K=4⊂ZZ nesting + audit-pipeline orchestration; FAILURE caught corpus-mismatch nuance)
 
 Operator: /loop. Added 2 more regression tests. The nesting test FAILED initially — surfaced a real corpus-context nuance from iter 42.
