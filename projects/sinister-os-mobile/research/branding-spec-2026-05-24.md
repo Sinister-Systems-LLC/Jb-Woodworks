@@ -132,7 +132,9 @@ Brief shape (passed to `nano_banana.generate`): *"Adaptive icon, 432x432 px, geo
 
 ## § 4 The EXPAND principle applied to mobile
 
-Whenever this lane needs a primitive the skeleton doesn't have yet (likely candidates: `<BottomSheet>`, `<TabBar>` mobile variant, `<SegmentedControl>`, `<SwipeAction>`, `<Sheet>` modal, gesture-driven primitives) — the order is hard:
+This section's full per-primitive inventory + EXPAND PR rollout lives in **`patterns-md-mobile-gap-audit-2026-05-24.md`** (Turn 2 deliverable, sibling research doc). That audit enumerates 19 EXPAND PRs across 3 tiers: **Tier 1** (8 PRs, must-land-before-P4 Compose theme bridge) · **Tier 2** (9 surface-specific PRs that land during P4 cuttlefish work) · **Tier 3** (2 augments to existing primitives). Tier 1 was handed off to the `sinister-dashboard-skeleton` lane via `_shared-memory/inbox/sinister-dashboard-skeleton/2026-05-24T1645Z-...-tier1-expand-prs.json` (Turn 3).
+
+The EXPAND principle order (hard rule, per Sanctum CLAUDE.md hard-canonical 2026-05-24 15:44Z) is:
 
 1. **First commit** lands in `projects/sinister-dashboard-skeleton/dashboard-skeleton/components/` with the new primitive in CSS/HTML reference form
 2. **Second commit** lands in `dashboard-skeleton/PATTERNS.md` documenting the new row + its token recipe
@@ -140,6 +142,21 @@ Whenever this lane needs a primitive the skeleton doesn't have yet (likely candi
 4. Then — and only then — this lane consumes it
 
 NEVER write the primitive only in Compose. NEVER ship a one-off Compose component without the skeleton having authored it first. That's what produces the "different feel across projects" the operator is preventing.
+
+### § 4.1 Tier 1 quick-reference (8 mobile-essential primitives blocking P4)
+
+| # | Component | Audit-doc § 4.1 verdict |
+|---|---|---|
+| 1 | `bottom-sheet.tsx` | PARTIAL (wraps existing `ui/sheet.tsx side='bottom'`) |
+| 2 | `tab-bar.tsx` | MISSING (sidebar is desktop-only) |
+| 3 | `app-bar.tsx` | PARTIAL (tab-header is for sub-tabs, not page chrome) |
+| 4 | `ui/slider.tsx` | MISSING (only `ui/switch.tsx` exists — most-surprising gap) |
+| 5 | `list-row.tsx` | MISSING (record-rail is rail+pane, not settings-list) |
+| 6 | `segmented-control.tsx` | MISSING |
+| 7 | `fab.tsx` | MISSING |
+| 8 | `swipe-action.tsx` | MISSING (no gesture primitive in skeleton) |
+
+See `patterns-md-mobile-gap-audit-2026-05-24.md` § 4 for per-PR shape, tokens, complexity, and consumed-by-mobile mappings.
 
 ## § 5 What the operator's branding utterance forecloses
 

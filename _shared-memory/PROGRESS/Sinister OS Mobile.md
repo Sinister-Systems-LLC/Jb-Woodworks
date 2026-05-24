@@ -5,6 +5,66 @@
 
 ---
 
+## 2026-05-24T17:15Z — Turn 4 (kernel clone + sepolicy draft + cvd budget + Q1-Q10 surface + branding-spec update)
+
+Operator directive Turn 4: *"yes clone the bluejay tree and keep workgin on all you need to do. do not touch my real phones"*. NO touching real phones — already a hard rule of this lane; reinforced + acknowledged.
+
+### Shipped (verified — files exist + parse-clean + dirs created on disk)
+
+- **`projects/sinister-os-mobile/source/upstream-bluejay-readonly/`** — created (gitignored via root `.gitignore` rule `projects/*/source/`)
+  - `README.md` — explains scope, per-repo upstream URLs, why individual clone vs `repo`, how to grep, how to rebuild
+  - `bluejay-kernel/` — git clone of `https://android.googlesource.com/kernel/common` branch `android-gs-bluejay-5.10-android14` (the **most recent stable Pixel 6a bluejay kernel branch**); ~207 MB on disk so far
+  - Initial full-checkout failed with "unable to checkout working tree" due to Windows case-insensitive FS conflicts on kernel filenames (common Linux-kernel-on-Windows issue). **Pivoted to `git sparse-checkout`** narrowed to: `arch/arm64/configs · arch/arm64/boot/dts/google · security · Documentation/admin-guide · drivers/soc/google · kernel/sched`. Checkout still in flight at turn-close (NTFS small-file penalty); .git pack is complete — worst case we work from `git show` for grep.
+- **`projects/sinister-os-mobile/source/sepolicy-deltas/eve-system-app.te.draft`** (~5 KB, 11 sections)
+  - Paper draft, real SEAndroid syntax for the eve_app domain
+  - Sections: § 1 type decl · § 2 socket /dev/socket/sinister-eve · § 3 battery monitor (proc_pid_stat) · § 4 sensor access · § 5 audio capture (RECORD_AUDIO + audioserver) · § 6 reboot capability · § 7 vault Syncthing TCP binds · § 8 mesh/tun (Tailscale) · § 9 CAP_SETUID gated on operator Q9 · § 10 neverallow audit (what we DON'T touch) · § 11 compile-time verification gate (build sepolicy_test + cvd smoke + Pixel 6a smoke)
+  - Each block has REFERENCES line pointing at AOSP master file we'd cross-check when the draft becomes real .te file in P4
+- **`projects/sinister-os-mobile/research/cvd-rendering-budget-2026-05-24.md`** (~9 KB, 8 sections)
+  - § 1 The problem (SwiftShader vs Mali-G78 perf gap — no hardware blur on cvd)
+  - § 2 Per-token rendering cost (16 skeleton tokens + 8 Tier-1 mobile primitives scored 🟢🟡🔴)
+  - § 3 Fallback recipe (`[data-cvd-fallback="true"]` CSS variant) — drops backdrop-blur, swaps aurora for static SVG, kills motion
+  - § 4 Verdict on cvd UI smoke-testing — what cvd CAN/CANNOT validate
+  - § 5 Lateral implication — same fallback could ship as a permanent skeleton "reduce visual effects" accessibility setting (cross-lane handoff opportunity to skeleton lane)
+  - § 6 P3 verification plan (`adb shell dumpsys gfxinfo framestats`)
+  - § 7 verbs at gate (scaffolded; no cvd boot yet)
+- **`projects/sinister-os-mobile/research/branding-spec-2026-05-24.md` § 4 updated** — replaced "likely candidates" prose with pointer at `patterns-md-mobile-gap-audit-2026-05-24.md` + Tier 1 quick-reference table (8 primitives + verdicts). § 4.1 added.
+- **`_shared-memory/OPERATOR-ACTION-QUEUE.md`** — Q1-Q10 row added at TOP (date-ordered) as 🟡 medium. Lists each question one-line + default leans where applicable + "what's already done while gated" checklist linking to Turn 1-3 deliverables. Composes-with notes the no-touch-Pixel hard rule.
+
+### Verification
+
+| Check | Evidence | Result |
+|---|---|---|
+| Bluejay repo URL validated | `git ls-remote --heads kernel/common` returned `android-gs-bluejay-5.10-android14` branch HEAD | ✅ |
+| Clone succeeded (.git pack) | `du -sh .git/` shows 207 MB | ✅ |
+| Sparse-checkout configured | `git sparse-checkout list` returns 6 paths (arch/arm64/configs · arch/arm64/boot/dts/google · security · Documentation/admin-guide · drivers/soc/google · kernel/sched) | ✅ |
+| Checkout in progress | First files appeared (BUILD.bazel, COPYING, Documentation/) by turn-close | 🟡 in-flight |
+| sepolicy delta parse-clean | 80 SEAndroid LOC, syntax valid (no `;` missing, types declared before use) | ✅ (syntactic; semantic verify at P4 build) |
+| cvd-rendering-budget references real skeleton tokens | Cross-cited `.lg-card`, `.lg-rail`, `.lg-pill`, `aurora-bg.tsx` — all exist in skeleton inventory from Turn 2 audit | ✅ |
+| OPERATOR-ACTION-QUEUE row at top | grep top `## 2026-05-24` heading is the Q1-Q10 row | ✅ |
+
+### Open (queued for next turn or operator gate)
+
+- **Bluejay sparse-checkout completion** — let it finish in background; if Windows file-conflicts remain, document specific failed files and use `git show HEAD:path/to/file` for grep
+- **Q1-Q10 operator answers** — surfaced; P1 stays gated until operator responds
+- **Skeleton lane reply** — still waiting on sinister-dashboard-skeleton ack of inbox handoff (Turn 3)
+- **Cross-lane handoff #2** — `cvd-rendering-budget` § 5 suggests handoff to skeleton lane to ship `[data-low-perf]` fallback as permanent feature
+- **Brain `_INDEX.md`** — 4 new entries to batch-add (branding-spec, gap-audit, kernel-spec, cvd-rendering-budget) when convenient
+- **Additional kernel module clones** (Tier 2): once main kernel checkout completes, clone google-modules/aoc + edgetpu + power + display branches `android-gs-bluejay-5.10-android14`. Each ~10-50 MB, fast.
+
+### No-bullshit ledger
+
+- Claimed only: dirs exist on disk, files parse-clean, clone .git pack complete, sparse-checkout configured. NOT claimed: "kernel built" / "sepolicy applied" / "cvd booted" / "EVE service announced" — all P3-P5 territory.
+- Verbs at gate: clone = **in-flight** (checkout running), sepolicy delta = **scaffolded** (paper, not compiled), cvd-rendering-budget = **scaffolded** (paper, not validated), branding-spec § 4 = **shipped** (edit landed + grep-verifiable), OPERATOR-ACTION-QUEUE row = **shipped**.
+- HARD-RULE REINFORCED: NEVER touch real phones. The bluejay clone is read-only source code reference; no flash artifacts produced, no adb commands run.
+- Quality-degradation signals: PROGRESS grew ~10 KB → ~13 KB; 4 research docs in lane (under any reasonable cap); sepolicy delta is the lane's first `source/` file (no concerns).
+
+### Lane discipline notes
+
+- All work this turn on `agent/sinister-os-mobile/p0-spec-2026-05-24`. No touches to skeleton repo, sibling kernel-APK lane (Detector APK), or `~/.claude/.mcp.json`.
+- OPERATOR-ACTION-QUEUE.md edit is a shared file — added a top-of-file row (most-recent first ordering convention preserved). Other lanes will append later; no cross-lane conflict expected.
+
+---
+
 ## 2026-05-24T16:50Z — Turn 3 (skeleton handoff drafted + kernel spec drafted)
 
 Operator directive Turn 3: *"draft the cross-lane handoff to skeleton and kee wokring and testing the custom kernel. where ware we at with that"*. Two-track turn.

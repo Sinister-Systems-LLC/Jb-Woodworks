@@ -1,0 +1,196 @@
+# eve-system-app.te.draft
+#
+# Author: RKOJ-ELENO :: 2026-05-24
+# Status: PAPER DRAFT — not compiled, not applied. References AOSP master
+#         system/sepolicy/private/system_app.te + bluejay-specific deltas.
+# Composes with: research/kernel-spec-2026-05-24.md § 4 (EVE-control kernel hooks).
+#
+# PURPOSE — declare the minimal sepolicy delta needed to host EVE
+# (com.sinister.eve) as a privileged system_app on Sinister OS Mobile (bluejay).
+# Path A (kernel-spec § 7.1): system_app + minimal sepolicy + locked AVB.
+# Goal: ~80 LOC across 4-5 .te files, NO C-level kernel patches.
+#
+# NEVER applied until P3 cuttlefish boots green. NEVER applied to physical
+# Pixel 6a until P5 operator-hands-on gate. Currently a research artifact
+# for reasoning about what we'll need.
+#
+# Convention for this draft: each block has a HEADER comment with rationale
+# + a REFERENCES line pointing at AOSP master files we'd cross-check against
+# when this becomes a real .te file. The actual SEAndroid syntax is real,
+# but the type names (eve_app, eve_socket) are our own.
+
+###############################################################################
+# § 1 — EVE app type declaration
+###############################################################################
+# Rationale: EVE runs in /system/priv-app/SinisterEVE/ with sharedUserId
+# android.uid.system (system_app domain). We tag its data dir + socket
+# distinctly so other system_apps can't access them.
+# References:
+#   - AOSP master system/sepolicy/public/system_app.te (system_app domain decl)
+#   - AOSP master system/sepolicy/private/app_neverallow.te (audit unmoved by us)
+
+type eve_app, domain;
+type eve_app_data_file, file_type, data_file_type, core_data_file_type;
+type eve_socket, file_type;
+app_domain(eve_app)
+
+# Bind eve_app to system_app permission set (EVE inherits system_app
+# capabilities; we narrow further below).
+typeattribute eve_app coredomain;
+typeattribute eve_app system_app;
+
+###############################################################################
+# § 2 — Unix socket /dev/socket/sinister-eve (master-plan § 7.1 IPC surface)
+###############################################################################
+# Rationale: native callers (whisper-cpp child, future C++ helpers) need a
+# unix-socket path under /dev/socket/. The init.bluejay.rc delta declares it;
+# this .te grants r/w access.
+# References:
+#   - device/google/bluejay/init.bluejay.rc (we ADD socket line in P4)
+#   - AOSP master system/sepolicy/private/init.te (init domain creates sockets)
+
+allow eve_app eve_socket:sock_file { read write open };
+allow eve_app eve_socket:unix_stream_socket { connectto write read shutdown };
+# Allow native helpers (whisper-cpp child, runs as eve_app UID) to bind:
+allow eve_app self:unix_stream_socket { create bind listen accept };
+
+###############################################################################
+# § 3 — Battery monitor capability (kernel-spec § 4 row 1)
+###############################################################################
+# Rationale: EVE's battery monitor reads /proc/<pid>/stat for any process to
+# decide when to throttle voice surface. AOSP grants this to system_server
+# only; we extend to eve_app (which is still in system_app domain).
+# References:
+#   - AOSP master system/sepolicy/public/domain.te (proc_pid_stat decl)
+#   - AOSP master system/sepolicy/private/system_server.te (existing allow)
+
+allow eve_app proc_pid_stat:file { read open getattr };
+allow eve_app proc_pid_status:file { read open getattr };
+
+###############################################################################
+# § 4 — Sensor access (motion / light / proximity / magnetic for context)
+###############################################################################
+# Rationale: EVE uses motion + light for "is operator looking at phone right
+# now" context detection (relevant to voice surface gating). system_app
+# already gets sensorservice access; we add explicit sensor types per
+# bluejay's sensors HAL.
+# References:
+#   - device/google/bluejay/sepolicy/sensors_hal.te (bluejay-specific HAL)
+#   - AOSP master system/sepolicy/private/sensorservice.te
+
+allow eve_app sensorservice_service:service_manager { find };
+allow eve_app hal_sensors_service:service_manager { find };
+binder_call(eve_app, hal_sensors_default)
+
+###############################################################################
+# § 5 — Audio capture (whisper-cpp on-device voice surface)
+###############################################################################
+# Rationale: voice surface runs always-on (Q5 wake-word-gated default). EVE
+# needs RECORD_AUDIO + access to audioserver. No HAL changes — userspace
+# AudioRecord with our manifest permission is sufficient. .te entries below
+# are for the IPC binding only.
+# References:
+#   - AOSP master system/sepolicy/private/system_app.te (existing audio bind)
+#   - device/google/bluejay/sepolicy/audio.te (codec-specific allows)
+
+allow eve_app audioserver_service:service_manager { find };
+binder_call(eve_app, audioserver)
+# AOC offload (Tensor G1 always-on compute): future enhancement once we wire
+# hotword detection there. Placeholder — not enabled in v1.
+# allow eve_app hal_aoc_service:service_manager { find };
+
+###############################################################################
+# § 6 — Reboot capability (factory-reset confirmation flow)
+###############################################################################
+# Rationale: operator confirms destructive actions via fingerprint or in-
+# Sinister-Panel PIN; if confirmed, EVE triggers reboot via power_service.
+# system_app on most ROMs gets this; we declare explicitly for audit clarity.
+# References:
+#   - AOSP master system/sepolicy/private/power.te (power_service decl)
+
+allow eve_app power_service:service_manager { find };
+binder_call(eve_app, system_server)
+
+###############################################################################
+# § 7 — Vault Syncthing daemon (master-plan § 7.3) — runs under eve_app UID
+###############################################################################
+# Rationale: vault on-device is a Syncthing-fork compiled with gomobile bind.
+# Runs as a child process under eve_app to leverage system_app network
+# capabilities. Needs internet + tcp listen on the syncthing protocol port.
+# References:
+#   - AOSP master system/sepolicy/public/net.te
+#   - AOSP master system/sepolicy/private/system_app.te (existing net binds)
+
+allow eve_app self:tcp_socket { create bind listen accept connect setopt };
+allow eve_app self:udp_socket { create bind connect setopt };
+allow eve_app fs_type:filesystem associate;
+allow eve_app port:tcp_socket name_bind;
+# Specific syncthing default port range (22000-22010); enforce in init.rc
+
+###############################################################################
+# § 8 — Mesh participation (master-plan § 7.4 + Q10 — Tailscale)
+###############################################################################
+# Rationale: Tailscale on-device makes the Pixel a fleet node. Tailscale
+# binary runs as eve_app child; needs tun/tap (which requires CAP_NET_ADMIN
+# already granted to system_app on AOSP). Confirm on bluejay (some Google
+# device .te files restrict tun further).
+# References:
+#   - AOSP master system/sepolicy/public/system_app.te
+#   - device/google/bluejay/sepolicy/system_app.te (if any device-specific
+#     restriction; cross-check on P3)
+
+allow eve_app self:capability { net_admin net_raw };
+allow eve_app tun_device:chr_file { read write open ioctl getattr };
+
+###############################################################################
+# § 9 — CAP_SETUID for sub-EVE spawn (gated on operator Q9)
+###############################################################################
+# Rationale: master-plan § 7.4 mentions EVE can spawn off-device sub-agents
+# via mesh; for ON-device sub-agents (e.g. a sandboxed sub-EVE doing voice
+# transcription under its own UID for isolation), we'd need CAP_SETUID.
+# This is the hardening trade-off — if operator Q9 = "banking apps must
+# work", we DROP this block (Path A is conservative). If Q9 = "banking
+# doesn't matter", we ADD it.
+# References:
+#   - AOSP master system/sepolicy/public/domain.te (CAP_SETUID neverallow on
+#     untrusted apps; system_app exempt but conservative ROMs revoke)
+#
+# Conservative default (Q9=banking-matters) — block OUT:
+# allow eve_app self:capability setuid;
+#
+# Aggressive default (Q9=banking-doesnt-matter) — block IN:
+# allow eve_app self:capability { setuid setgid };
+
+###############################################################################
+# § 10 — neverallow audit — what we explicitly do NOT touch
+###############################################################################
+# These are NEVERALLOW rules from AOSP master that we MUST preserve. If our
+# edits accidentally relax them, the kernel build's sepolicy compile will
+# error out — which is the verification gate we want.
+# References:
+#   - AOSP master system/sepolicy/private/app_neverallow.te
+#   - AOSP master system/sepolicy/private/kernel_neverallow.te
+
+# We DO NOT allow eve_app to:
+# - Read /data of other apps' sandboxes (preserved AOSP neverallow)
+# - ptrace other untrusted apps (preserved AOSP neverallow)
+# - Mount filesystems at runtime (preserved AOSP neverallow)
+# - Modify /system at runtime (preserved AOSP neverallow; locked AVB protects)
+# - Disable AVB or selinux enforcement (preserved; tampering = bricked)
+
+###############################################################################
+# § 11 — Compile-time verification gate
+###############################################################################
+# When this draft becomes a real .te file in P4:
+#   1. Place at: device/google/bluejay/sepolicy/eve_system_app.te
+#   2. Add to file_contexts: /system/priv-app/SinisterEVE(/.*)? u:object_r:eve_app:s0
+#   3. Add to seapp_contexts: user=_app seinfo=platform name=com.sinister.eve domain=eve_app type=eve_app_data_file
+#   4. Build: `m sepolicy_test` — must pass with zero neverallow violations
+#   5. Cuttlefish smoke: `cvd start && adb logcat -s SELinux | grep avc.*denied` — zero denials for eve_app on first 30s of boot
+#   6. Pixel 6a (P5 only): same smoke test on metal
+#
+# Estimated LOC of this delta: ~80 SEAndroid lines (matches kernel-spec § 6 budget).
+
+###############################################################################
+# END OF DRAFT
+###############################################################################
