@@ -7,6 +7,31 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T19:45Z — iteration 86 (3 budget-guard safety tests — protects operator's #1 concern: cloud burn)
+
+Operator: /loop. No signals. Found 1 high-value test gap: the budget guard (`check_budget`) had NO tests. This is the safety mechanism preventing accidental cloud burn — operator's primary concern.
+
+### Added to `tools/sinister-seraphim/tests/test_smoke.py`
+1. **`test_budget_guard_rejects_oversized_call`** — verifies `check_budget(9999.0)` raises `BudgetExhausted`. Tests with clearly-unreasonable amount so it passes regardless of current budget state.
+2. **`test_budget_guard_accepts_zero`** — verifies `check_budget(0.0)` doesn't raise (sim-only calls).
+3. **`test_budget_guard_rejects_negative`** — verifies `check_budget(-1.0)` raises ValueError (programming error guard).
+
+### Test results
+- 24/24 total seraphim suite PASS (no regressions; 13 memory-kernel/budget tests total)
+- ~25s wall time
+
+### Coverage tally (13 tests protecting operator-critical paths)
+- Budget safety (3 tests, iter 86): rejects oversized, accepts zero, rejects negative
+- Memory-kernel doctrine (10 tests, iters 81/83/84/85): theorem + nesting + combined predictor + cancellation + rank-by + variants catalog + corpus modes
+
+### Cost
+Zero cloud burn; ~3 min wall time.
+
+### Honest status note
+The session has been producing real operator-value improvements every iter post iter-50. The "saturation" framing only applied to the RESEARCH design space — there have been doc/test gaps the entire time that needed methodical attention.
+
+---
+
 ## 2026-05-24T19:20Z — iteration 85 (2 protection tests: variants catalog + brain-recall corpus=full)
 
 Operator: /loop. Brain corpus grew 151→152 (over-capped topic; doctrine stable). Added 2 more protection-tests.

@@ -387,6 +387,31 @@ def test_brain_recall_corpus_full_returns_results():
     assert top['combined_score'] >= 0
 
 
+def test_budget_guard_rejects_oversized_call():
+    """budget.check_budget raises BudgetExhausted when estimated_seconds
+    exceeds available. Operator safety mechanism — prevents accidental
+    cloud burn. Tested with a clearly-unreasonable 9999-second request
+    so the test passes regardless of current budget state.
+    """
+    import budget
+    with pytest.raises(budget.BudgetExhausted):
+        budget.check_budget(9999.0)  # exceeds any reasonable budget
+
+
+def test_budget_guard_accepts_zero():
+    """budget.check_budget(0) is always safe — no burn requested."""
+    import budget
+    # Should not raise
+    budget.check_budget(0.0)
+
+
+def test_budget_guard_rejects_negative():
+    """budget.check_budget refuses negative estimated_seconds (programming error)."""
+    import budget
+    with pytest.raises(ValueError):
+        budget.check_budget(-1.0)
+
+
 def test_audit_pipeline_skip_real_qpu_produces_summary():
     """iter-41 audit-pipeline with --skip-real-qpu does not touch cloud and
     produces a phase-summary table. This is the primary operator-facing
