@@ -6,6 +6,7 @@ import Image from "next/image";
 import { portfolio } from "@/lib/content";
 import { PortfolioFilter } from "@/components/sections/portfolio-filter";
 import { Icon } from "@/components/ui/icon";
+import { BackLink } from "@/components/ui/back-link";
 import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -48,16 +49,7 @@ export default async function PortfolioPage({ searchParams }: Props) {
         </div>
 
         <div className="container-site relative pt-32 pb-20 md:pt-40 md:pb-24 md:pl-16">
-          {/* Top breadcrumb — small but with intentional weight */}
-          <Link
-            href="/"
-            className="inline-flex items-center gap-3 text-gold text-[0.7rem] font-bold tracking-[0.22em] uppercase mb-10 hover:text-gold-light transition-colors group"
-          >
-            <Icon name="arrow-right" size={12} className="rotate-180 transition-transform duration-300 group-hover:-translate-x-1" />
-            <span>Back to home</span>
-            <span className="h-px w-6 bg-gold/40" aria-hidden />
-            <span className="text-cream-30 font-mono tracking-[0.32em]">Portfolio</span>
-          </Link>
+          <BackLink href="/" label="Back to home" section="Portfolio" />
 
           {/* Editorial 2-column: headline left, bento right (desktop) */}
           <div className="grid lg:grid-cols-[1.15fr_1fr] gap-12 lg:gap-16 items-start">

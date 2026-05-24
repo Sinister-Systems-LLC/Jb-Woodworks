@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { blogPosts, getBlogPost } from "@/lib/content/blog/posts";
 import { SITE } from "@/lib/site";
 import { Icon } from "@/components/ui/icon";
+import { BackLink } from "@/components/ui/back-link";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -110,13 +111,16 @@ export default async function BlogPostPage({ params }: Props) {
           <div aria-hidden className="absolute -top-24 -right-24 w-[400px] h-[400px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(201,168,76,0.10), transparent 70%)" }} />
 
           <div className="container-site relative max-w-[840px]">
-            <nav aria-label="Breadcrumb" className="mb-6">
-              <ol className="flex items-center gap-2 text-[0.7rem] tracking-[0.18em] uppercase text-cream-30 font-semibold">
-                <li><Link href="/" className="hover:text-gold transition-colors">Home</Link></li>
-                <li aria-hidden>·</li>
-                <li><Link href="/blog" className="hover:text-gold transition-colors">Blog</Link></li>
-                <li aria-hidden>·</li>
-                <li className="text-cream-50 truncate max-w-[28ch]" aria-current="page">{post.title}</li>
+            <BackLink href="/blog" label="Back to Field Notes" section={post.category} />
+
+            {/* Hidden semantic breadcrumb for SEO + screen-readers (JSON-LD
+                handles SERP rendering; this is the a11y / browser-history
+                fallback) */}
+            <nav aria-label="Breadcrumb" className="sr-only">
+              <ol>
+                <li><Link href="/">Home</Link></li>
+                <li><Link href="/blog">Blog</Link></li>
+                <li aria-current="page">{post.title}</li>
               </ol>
             </nav>
 

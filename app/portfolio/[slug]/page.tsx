@@ -5,6 +5,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Reveal } from "@/components/ui/reveal";
 import { Icon } from "@/components/ui/icon";
+import { BackLink } from "@/components/ui/back-link";
 import { BeforeAfter } from "@/components/sections/before-after";
 import { getPortfolioItem, portfolio } from "@/lib/content";
 
@@ -34,6 +35,7 @@ export default async function PortfolioItemPage({ params }: Props) {
       <section className="pt-40 pb-16 bg-gradient-to-b from-ink-2 to-ink border-b border-line relative overflow-hidden">
         <div aria-hidden className="absolute -top-24 -right-24 w-[400px] h-[400px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(201,168,76,0.10), transparent 70%)" }} />
         <div className="container-site relative">
+          <BackLink href="/portfolio" label="Back to portfolio" section={item.category} />
           <span className="section-tag">
             {item.category}
             {item.subcategory && (
@@ -45,12 +47,6 @@ export default async function PortfolioItemPage({ params }: Props) {
           </span>
           <h1 className="mb-5"><em>{item.title}.</em></h1>
           <p className="section-subheadline">{item.blurb}</p>
-          <p>
-            <Link href="/portfolio" className="link-arrow">
-              <Icon name="arrow-right" size={14} className="rotate-180" />
-              Back to portfolio
-            </Link>
-          </p>
         </div>
       </section>
 

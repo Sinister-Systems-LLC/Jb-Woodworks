@@ -92,8 +92,8 @@ export const blogPosts: readonly BlogPost[] = [
     tags: ["outdoor-furniture", "teak", "ipe", "cypress", "cedar", "white-oak", "florida", "humidity"],
     publishedAt: "2026-05-24",
     author: "JB Woodworks",
-    cover: "/img/projects/Custom Furniture/IMG_1132.jpg",
-    ogImage: "/img/projects/Custom Furniture/IMG_1132.jpg",
+    cover: "/img/projects/Custom Furniture/IMG_1248_00.jpg",
+    ogImage: "/img/projects/Custom Furniture/IMG_1248_00.jpg",
     readingTimeMinutes: 7,
     bodyHtml: `
 <p class="lead">In Florida the question is not "what wood looks good?" — it is "what wood is still here in 2035?" Humidity, UV, and salt air pick the winners. Here is the honest ranking we give every outdoor-furniture customer in Orlando.</p>
@@ -505,8 +505,8 @@ export const blogPosts: readonly BlogPost[] = [
     tags: ["kitchen-island", "custom-furniture", "cabinetry", "interior", "orlando"],
     publishedAt: "2026-05-11",
     author: "JB Woodworks",
-    cover: "/img/projects/Custom Furniture/IMG_1132.jpg",
-    ogImage: "/img/projects/Custom Furniture/IMG_1132.jpg",
+    cover: "/img/projects/Custom Furniture/IMG_1248_00.jpg",
+    ogImage: "/img/projects/Custom Furniture/IMG_1248_00.jpg",
     readingTimeMinutes: 7,
     bodyHtml: `
 <p class="lead">"Custom kitchen island" covers a spread from $4,500 to $40,000. Here is what each tier actually includes, what features drive the upcharge, and which ones we tell our customers to skip.</p>

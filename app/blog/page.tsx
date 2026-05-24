@@ -5,6 +5,7 @@ import Image from "next/image";
 import { blogPostsByDate } from "@/lib/content/blog/posts";
 import { SITE } from "@/lib/site";
 import { Icon } from "@/components/ui/icon";
+import { BackLink } from "@/components/ui/back-link";
 
 export const metadata: Metadata = {
   title: "Blog & Field Notes",
@@ -70,13 +71,7 @@ export default function BlogIndex() {
         <div aria-hidden className="absolute -top-24 -right-24 w-[400px] h-[400px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(201,168,76,0.10), transparent 70%)" }} />
 
         <div className="container-site relative">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-gold text-[0.72rem] font-bold tracking-[0.18em] uppercase mb-6 hover:text-gold-light transition-colors group"
-          >
-            <Icon name="arrow-right" size={14} className="rotate-180 transition-transform duration-300 group-hover:-translate-x-1" />
-            Back to home
-          </Link>
+          <BackLink href="/" label="Back to home" section="Field Notes" />
           <span className="section-tag">Field Notes</span>
           <h1 className="mb-5">Notes from<br /><em>the shop.</em></h1>
           <p className="section-subheadline">
