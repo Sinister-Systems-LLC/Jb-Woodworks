@@ -53,6 +53,7 @@ Output is JSON at `outputs/<name>.json` with top-5 QBC + top-3 highest-classical
 
 ## Composes with
 
+- `modular-fleet-cross-lane-integration-2026-05-21` (parent architecture: "everything connects to everything in a forever-expanding modular approach"; this tool is the concrete implementation of Rule 5 — "every cross-lane fix, every architectural finding, every reusable pattern gets a knowledge entry" — applied to dup-write detection)
 - `quantum-memory-kernel-fleet-action-items-2026-05-23` (parent doctrine; the K=4 ZZ-FM r=1 recipe used here)
 - `loop-driven-sessions-meta-lessons-2026-05-24` (meta-lesson #1: don't declare saturation prematurely; iter 99 is iter 49 past the alleged "convergence point")
 - `no-bullshit-tested-before-claimed-doctrine-2026-05-23` (status verb: smoke-tested — single-corpus run on real PROGRESS data with verified findings; not yet "acceptance-tested" because it hasn't been re-run weekly)
