@@ -7,6 +7,31 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T11:55Z — iteration 66 (combined predictor is K=4-ANGLE-specific; 44% rule-out on 149-full)
+
+Operator: /loop. Tested iter-65 combined predictor on (a) 149-doc full corpus + (b) K=5..K=8 extension.
+
+### Result summary
+**129-pool combined safe:** K=4 (32%), K=5 (28%), K=6 (12%). K=7-8: UNSAFE.
+**149-full combined safe:** K=4 (44%) only. K=5-8: UNSAFE.
+
+### Best operator pre-screen
+**K=4 ANGLE + `--corpus full` + combined predictor = 44% rule-out, zero false positives.**
+
+### Mechanism for K-specificity
+Same-top-1 anti-pattern is a K-relative loss. K=4 loses 25% capacity (1/4 qubits "stuck"); K=5 20%; K=8 only 12.5%. At K=8 the remaining 7 qubits compensate enough to find QBC anyway.
+
+### Doctrine update
+The combined predictor is K=4-ANGLE-specific (with mild extension to K=5/K=6 on 129-pool). For K≥7 ANGLE or any ZZ-FM, only the original shared=0 predictor applies (and that's only useful at K=4-5).
+
+### Practical
+K=4 ANGLE with `--corpus full` is the operator sweet spot for pre-screening — 44% of candidate triads ruled out before running the encoding.
+
+### Cost
+Zero cloud burn; 15s CPU.
+
+---
+
 ## 2026-05-24T11:30Z — iteration 65 (K=4 ANGLE 2nd necessary condition — same-top-1-all-3 → anti-QBC)
 
 Operator: /loop. Searched for sufficient condition for K=4 ANGLE QBC among shared≥1 triads.

@@ -7,6 +7,86 @@ Append-only memory. Most recent at top. Cross-references to brain entries and ot
 
 ---
 
+## 2026-05-24T11:55Z — 🔬 ITER 66: combined predictor IS K=4-ANGLE-specific; 44% rule-out on 149-full
+
+Iter 65 found 2nd necessary condition at K=4. Iter 66 tests its (a) corpus stability and (b) extension to K=5..K=8.
+
+### Results
+
+**129-pool combined predictor (shared=0 OR same-top-1):**
+
+| K | QBC | Combined rule-out | Combined FP | Safe? |
+|---|---|---|---|---|
+| 4 | 7 | 32% | 0 | YES |
+| 5 | 12 | 28% | 0 | YES |
+| 6 | 14 | 12% | 0 | YES |
+| 7 | 18 | 12% | **2** | NO |
+| 8 | 22 | 10% | **2** | NO |
+
+**149-full combined predictor:**
+
+| K | QBC | Combined rule-out | Combined FP | Safe? |
+|---|---|---|---|---|
+| **4** | 8 | **44%** | **0** | **YES** |
+| 5 | 13 | 34% | 1 | NO |
+| 6 | 18 | 20% | 2 | NO |
+| 7 | 23 | 20% | 3 | NO |
+| 8 | 27 | 16% | 4 | NO |
+
+### Findings
+
+1. **K=4 ANGLE combined predictor is safe in BOTH corpora.** 149-full gives 44% rule-out (the best operator-pre-screen this session has produced).
+2. **The same-top-1 anti-pattern does NOT generalize past K=4.** Higher K has more qubits available to compensate for qubit 0's lost discrimination. At K=8 with 149-full, 4 QBC triads have all-same-top-1.
+3. **In 129-pool: predictor holds up to K=6** (12% rule-out, 0 FP). Breaks at K=7+.
+4. **In 149-full: predictor only safe at K=4.** Wider corpus → more diverse high-classical triads → more counter-examples where same-top-1 doesn't kill QBC potential.
+5. **Best operator-usable predictor: K=4 ANGLE + `--corpus full` + combined filter = 44% rule-out.**
+
+### Mechanism for why same-top-1 fails at higher K
+
+K=4 ANGLE uses qubits 0-3 with feature priorities 1st-4th. Qubit 0 = most important feature. When all 3 docs share the same #1 feature, qubit 0 contributes ~0 discrimination (~25% of K=4's capacity lost).
+
+K=8 ANGLE uses qubits 0-7 with feature priorities 1st-8th. Even if qubit 0 is "stuck", qubits 1-7 still carry distinct rotations (~87.5% of capacity remains usable). The encoding can find QBC anyway.
+
+So same-top-1 is a **K-relative loss-fraction**:
+- K=4: loses 25% → critical → reliably anti-QBC
+- K=5: loses 20% → significant → mostly anti-QBC (28% rule-out safe on 129-pool)
+- K=6: loses 17% → marginal → 12% rule-out safe
+- K=8: loses 12.5% → not enough to kill QBC → predictor breaks
+
+### Doctrine update
+
+The combined predictor is the OPERATOR-CANONICAL pre-screen for K=4 ANGLE:
+
+```python
+# K=4 ANGLE combined pre-screen (iter 65/66, verified on 2 corpora):
+# Rule-out: 32% (129-pool) / 44% (149-full). Zero false positives.
+
+def is_k4_angle_candidate(triad_tfidfs):
+    top4 = [set(top_K_indices(v, 4)) for v in triad_tfidfs]
+    if len(top4[0] & top4[1] & top4[2]) == 0:
+        return False  # shared top-4 = 0 → guaranteed anti-QBC
+    top1 = [argmax(abs(v)) for v in triad_tfidfs]
+    if top1[0] == top1[1] == top1[2]:
+        return False  # same #1 feature → guaranteed anti-QBC
+    return True  # might be QBC, run audit to verify
+```
+
+For K≥5 ANGLE: use only the shared=0 predictor (no same-top-1 condition). For K=8: 2% rule-out (weak).
+
+For ZZ-FM at any reps: no useful pre-screen; use find-qbc.
+
+### Cost / verification
+
+- Zero cloud burn
+- ~15s CPU for 2-corpus × 5-K × 50-triad sweep
+- Status: **tested-before-claimed** (500 classifications across both corpora; combined predictor FP counts measured exactly)
+
+### Connection to iter 65
+
+Iter 65 found the same-top-1 anti-pattern at K=4 only. Iter 66 confirms it's K=4-specific (with mild extension to K=5 in 129-pool). The iter-65 doctrine update — combined predictor at K=4 — is correct as stated. Iter 66 adds the encoding's scope is K=4 ANGLE specifically.
+
+---
+
 ## 2026-05-24T11:30Z — 🎯 ITER 65: K=4 ANGLE 2nd necessary condition — same-top-1-all-3 → anti-QBC
 
 Iter 58-60 established: K=4 ANGLE QBC requires shared top-4 features ≥ 1. Iter 65 searches for a sufficient condition or additional necessary condition among the 38 shared≥1 triads (7 QBC, 31 anti-QBC).

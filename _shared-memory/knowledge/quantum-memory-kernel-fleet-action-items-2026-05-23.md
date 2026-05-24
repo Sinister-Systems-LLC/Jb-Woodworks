@@ -47,15 +47,19 @@ For K-ANGLE encoding at any K∈{4..8}, **if the top-K TF-IDF features have zero
 
 Mechanism: ZZ-FM's repeated CNOT-RZ-CNOT layers compound — each rep propagates correlations one hop further, building effective r-body+ interactions. ANGLE has no entangling layer (D=1; only individual features).
 
-**Operator-utility table:**
+**Operator-utility table (iter 66 added combined predictor):**
 
-| Encoding | D | Safe K' | Rule-out rate | Operator-useful pre-screen? |
-|---|---|---|---|---|
-| ANGLE K=4 | 1 | 4 | 24% | YES |
-| ANGLE K=8 | 1 | 8 | 2% | weak |
-| ZZ-FM r=1 | 2 | 8 | 2% | weak/no |
-| ZZ-FM r=2 | 3 | 12 | 0% | no |
-| ZZ-FM r≥3 | r+1 | (r+1)×K | 0% (predicted) | no |
+| Encoding | D | Safe K' | Single predictor rule-out | Combined predictor (K=4 only) | Operator-useful? |
+|---|---|---|---|---|---|
+| ANGLE K=4 (129-pool) | 1 | 4 | 24% | **32%** | YES (combined) |
+| **ANGLE K=4 (149-full)** | 1 | 4 | **30%** | **44%** | **YES (best)** |
+| ANGLE K=5 | 1 | 5 | 20% | (combined safe up to K=6 on 129-pool) | partial |
+| ANGLE K=8 | 1 | 8 | 2% | n/a (combined breaks at K=7+) | weak |
+| ZZ-FM r=1 | 2 | 8 | 2% | — | weak/no |
+| ZZ-FM r=2 | 3 | 12 | 0% | — | no |
+| ZZ-FM r≥3 | r+1 | (r+1)×K | 0% (predicted) | — | no |
+
+**Combined K=4 ANGLE predictor (iter 65/66):** shared top-4 = 0 OR top-1 features all identical → anti-QBC. Safe in BOTH corpora; 32% rule-out (pool) / 44% rule-out (full). Why same-top-1 fails at higher K: K=8 has 7 other qubits to compensate when qubit 0 is "stuck"; K=4 only has 3, so the loss is ~25% (critical).
 
 For ZZ-FM at any reps, `find-qbc` enumeration is required for candidate selection. No useful pre-screen exists.
 
