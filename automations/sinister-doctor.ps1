@@ -154,20 +154,56 @@ if ($Json) {
 } elseif ($Html) {
     $reportPath = Join-Path $SanctumRoot ("_shared-memory\sinister-doctor-" + (Get-Date -Format 'yyyyMMdd-HHmmss') + ".html")
     $statusColor = @{ GREEN = '#7ee787'; YELLOW = '#ffb454'; RED = '#ff6b6b' }[$globalStatus]
-    $html = @"
-<!doctype html>
-<html><head><title>Sinister Doctor :: $($results.ts_utc)</title>
-<style>body{background:#0e0a14;color:#e8e4f0;font-family:ui-monospace,monospace;padding:24px}
-h1{color:$statusColor;font-size:18px}h2{color:#79c0ff;font-size:13px;margin-top:18px;text-transform:uppercase}
-table{width:100%;border-collapse:collapse;margin-top:8px}td{padding:3px 6px;font-size:12px;border-bottom:1px solid #2a2238}
-td:first-child{color:#8a82a0}.pass{color:#7ee787}.warn{color:#ffb454}.fail{color:#ff6b6b}pre{background:#0a0710;padding:8px;font-size:11px;color:#8a82a0}
-</style></head><body>
-<h1>Sinister Doctor :: $globalStatus :: $($results.ts_utc)</h1>
-<pre>$($results | ConvertTo-Json -Depth 8)</pre>
-</body></html>
-"@
-    [System.IO.File]::WriteAllText($reportPath, $html, [System.Text.UTF8Encoding]::new($false))
+    # Iter 13 fix: build JSON OUTSIDE here-string (pipeline inside $(...) inside @"..."@ failed parser).
+    $jsonDump = $results | ConvertTo-Json -Depth 8
+    # Build structured table rows so the report is actually readable (iter 13 X1).
+    $sb = New-Object System.Text.StringBuilder
+    [void]$sb.Append("<!doctype html>`n<html><head><title>Sinister Doctor :: $globalStatus</title>`n")
+    [void]$sb.Append("<style>body{background:#0e0a14;color:#e8e4f0;font-family:ui-monospace,monospace;padding:24px}`n")
+    [void]$sb.Append("h1{color:$statusColor;font-size:18px}h2{color:#79c0ff;font-size:13px;margin-top:18px;text-transform:uppercase}`n")
+    [void]$sb.Append("table{width:100%;border-collapse:collapse;margin-top:8px}td{padding:4px 8px;font-size:12px;border-bottom:1px solid #2a2238}`n")
+    [void]$sb.Append("td:first-child{color:#8a82a0}.pill{display:inline-block;padding:1px 8px;border-radius:10px;font-size:10px;font-weight:600}`n")
+    [void]$sb.Append(".green{background:rgba(126,231,135,0.15);color:#7ee787}.amber{background:rgba(255,180,84,0.15);color:#ffb454}.red{background:rgba(255,107,107,0.15);color:#ff6b6b}`n")
+    [void]$sb.Append("pre{background:#0a0710;padding:8px;font-size:10px;color:#8a82a0;overflow-x:auto}</style></head><body>`n")
+    [void]$sb.Append("<h1>Sinister Doctor :: $globalStatus :: $($results.ts_utc)</h1>`n")
+    [void]$sb.Append("<h2>Summary</h2><table>`n")
+    if ($cp) {
+        $kind = if ($cp.fail -eq 0) { 'green' } else { 'red' }
+        [void]$sb.Append("<tr><td>P1-P9 protections</td><td><span class='pill $kind'>PASS=$($cp.pass) FAIL=$($cp.fail)</span></td></tr>`n")
+    }
+    if ($pp) {
+        $kind = if ($pp.full_pass_count -ge $pp.lane_count / 2) { 'green' } else { 'amber' }
+        [void]$sb.Append("<tr><td>Per-project PP1-PP5</td><td><span class='pill $kind'>$($pp.full_pass_count) / $($pp.lane_count) PASS</span>  ($($pp.weak_lanes) weak)</td></tr>`n")
+    }
+    if ($brain) {
+        $kind = if ($brain.rule_7_5_status -eq 'OK') { 'green' } elseif ($brain.rule_7_5_status -eq 'APPROACHING') { 'amber' } else { 'red' }
+        [void]$sb.Append("<tr><td>Brain (Rule 7.5)</td><td><span class='pill $kind'>$($brain.indexed_count) indexed / 150</span> · $($brain.orphan_count) orphans</td></tr>`n")
+    }
+    if ($inbox) {
+        $kind = if ($inbox.total_unread -le 75) { 'green' } elseif ($inbox.total_unread -le 150) { 'amber' } else { 'red' }
+        [void]$sb.Append("<tr><td>Inbox unread</td><td><span class='pill $kind'>$($inbox.total_unread)</span> across $($inbox.lane_count) lanes</td></tr>`n")
+    }
+    if ($tel) {
+        $kind = if ($tel.queue_open -le 75) { 'green' } elseif ($tel.queue_open -le 100) { 'amber' } else { 'red' }
+        [void]$sb.Append("<tr><td>Operator queue</td><td><span class='pill $kind'>$($tel.queue_open) open</span> · $($tel.queue_closed) closed</td></tr>`n")
+    }
+    if ($rs) {
+        [void]$sb.Append("<tr><td>Resume-search index</td><td><span class='pill green'>$($rs.entry_count) entries</span></td></tr>`n")
+    }
+    [void]$sb.Append("</table>`n")
+    [void]$sb.Append("<h2>Elapsed</h2><table>`n")
+    foreach ($k in $elapsed.Keys) {
+        [void]$sb.Append("<tr><td>$k</td><td>$($elapsed[$k])</td></tr>`n")
+    }
+    [void]$sb.Append("</table>`n")
+    [void]$sb.Append("<h2>Raw JSON</h2><pre>$([System.Web.HttpUtility]::HtmlEncode($jsonDump))</pre>`n")
+    [void]$sb.Append("</body></html>`n")
+    # NOTE iter 13: $html shadows [switch]$Html param case-insensitively, breaking the
+    # assignment. Use $htmlBody instead (same lesson as the iter 5 $lane/$Lane bug).
+    $htmlBody = $sb.ToString()
+    [System.IO.File]::WriteAllText($reportPath, $htmlBody, [System.Text.UTF8Encoding]::new($false))
     Write-Host "[sinister-doctor] HTML report -> $reportPath"
+    Write-Host "  size: $((Get-Item $reportPath).Length) bytes"
     Write-Host "  status: $globalStatus"
 } else {
     # Console-friendly summary
@@ -183,6 +219,19 @@ td:first-child{color:#8a82a0}.pass{color:#7ee787}.warn{color:#ffb454}.fail{color
     if ($pp) {
         $kind = if ($pp.full_pass_count -ge $pp.lane_count / 2) { 'Green' } else { 'Yellow' }
         Write-Host ("  Per-project PP1-PP5    {0}/{1} fully PASS ({2} weak)" -f $pp.full_pass_count, $pp.lane_count, $pp.weak_lanes) -ForegroundColor $kind
+        # Iter 13 F1: show top 5 weakest lanes inline (operator sees what needs attention)
+        if ($pp.weak_lanes -gt 0) {
+            $jsonOut = & "$auto\per-project-protections-check.ps1" -Json 2>$null | Out-String
+            if ($jsonOut) {
+                $ppDetail = $jsonOut | ConvertFrom-Json
+                $top5 = $ppDetail.results | Sort-Object pass_count | Select-Object -First 5
+                Write-Host '    weakest 5 lanes:' -ForegroundColor DarkGray
+                foreach ($r in $top5) {
+                    $col = if ($r.pass_count -eq 0) { 'Red' } elseif ($r.pass_count -le 2) { 'Yellow' } else { 'DarkGray' }
+                    Write-Host ("      {0,-26} {1}/5" -f $r.display, $r.pass_count) -ForegroundColor $col
+                }
+            }
+        }
     }
     if ($brain) {
         $kind = if ($brain.rule_7_5_status -eq 'OK') { 'Green' } elseif ($brain.rule_7_5_status -eq 'APPROACHING') { 'Yellow' } else { 'Red' }

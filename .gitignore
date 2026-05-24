@@ -304,3 +304,6 @@ _shared-memory/voice-inbox/
 
 # Resume-point search index (regenerated nightly; ~1MB; not source of truth)
 _shared-memory/resume-search-index.json
+
+# sinister-doctor HTML reports (timestamped; regenerated on each run)
+_shared-memory/sinister-doctor-*.html

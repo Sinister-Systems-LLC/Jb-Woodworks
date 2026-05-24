@@ -4,6 +4,50 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-24 08:30Z — /loop iter 13 — sinister-doctor polish: HTML body bug + per-lane PP table
+
+EVE on Sanctum continuing /loop. Test-found-fixed cycle on the freshly-shipped sinister-doctor.
+
+**T1 Full 3-mode regression on sinister-doctor:**
+- Default mode: WORKS — clean console output with summary
+- `-Html` mode: **BUG FOUND** — report was 4 bytes (empty) on first test
+- `-Json` mode: WORKS
+
+**Bug 1 root cause (Html mode):** Same case-insensitive variable shadowing as iter 5 — local `$html = $sb.ToString()` shadowed `[switch]$Html` param. PowerShell tried to coerce the string to SwitchParameter and threw. Iter 5 lesson: PowerShell vars are case-INSENSITIVE; `$lane`/`$Lane` and `$html`/`$Html` are the same identifier.
+- FIX: renamed `$html` → `$htmlBody`. Verified: report now **6991 bytes**.
+- Added a comment referencing the iter 5 doctrine so future EVE doesn't re-hit.
+
+**X1 HTML report polish (from JSON-dump → structured tables):**
+- EDIT `automations/sinister-doctor.ps1` — replaced raw JSON-dump body with proper structured tables
+- Summary table: P1-P9 / per-project / brain / inbox / queue / resume-search — each with colored status pill (green/amber/red)
+- Elapsed table: per-script timing
+- Raw JSON kept at bottom in `<pre>` (HTML-encoded for safety) for debugging
+- Uses StringBuilder instead of here-string (avoids the pipeline-in-interpolation gotcha)
+
+**F1 Console per-lane breakdown:**
+- EDIT same script — when per-project shows weak lanes, console now lists the **weakest 5** inline with color (red 0/5, yellow 1-2/5)
+- Verified output: shows `Bumble Emulator API 0/5`, `Sinister Mind 0/5`, `Sinister Emulator 0/5`, `JKOR 1/5`, `LetsText 1/5`
+
+**Gitignore added:** `_shared-memory/sinister-doctor-*.html` — reports are timestamped + regenerated nightly; no need to commit.
+
+**Files touched:**
+- EDIT `automations/sinister-doctor.ps1` (Html bug fix + StringBuilder rewrite + console per-lane breakdown)
+- EDIT `.gitignore` (HTML reports gitignored)
+- EDIT `_shared-memory/PROGRESS/Sinister Sanctum.md` (this entry)
+
+**Master plan status:** unchanged at 19/24 shipped + B.8 no-op (~83%). This iter is polish + bug-fix on iter 11's C.1 ship.
+
+**Bugs caught + fixed this iter:** 1 (variable shadowing in Html mode).
+
+**Brain status:** 150/117/33 OK. No new doctrines.
+
+**Next iter plan:**
+- Continue polish: maybe a `--watch` mode for sinister-doctor (re-run every N min, live update)
+- Fleet-tour demo: one script that runs sinister-doctor + EVE.exe build check + per-project autofix preview as a "show me everything" demo
+- Wait on operator for Q1-Q5 voice / C.7 / C.8 / C.12
+
+---
+
 ## 2026-05-24 08:05Z — /loop iter 12 — install-sinister-doctor-task + B.2 + B.8 sweeps (19/24 master-plan)
 
 EVE on Sanctum continuing /loop. Closing out remaining master plan low-value items.
