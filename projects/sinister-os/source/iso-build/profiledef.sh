@@ -34,6 +34,9 @@ file_permissions=(
   ["/root"]="0:0:750"
   ["/root/.automated_script.sh"]="0:0:755"
   ["/usr/local/bin/sinister-first-boot.sh"]="0:0:755"
+  ["/usr/local/bin/sinister-first-boot-install-yay.sh"]="0:0:755"
+  ["/usr/local/bin/sinister-first-boot-install-deferred.sh"]="0:0:755"
   ["/usr/local/bin/sinister-panel-kiosk.sh"]="0:0:755"
   ["/etc/sudoers.d/sinister"]="0:0:440"
+  ["/etc/sinister/first-boot-deferred.list"]="0:0:644"
 )

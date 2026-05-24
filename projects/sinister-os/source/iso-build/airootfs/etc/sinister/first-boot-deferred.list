@@ -1,0 +1,36 @@
+# first-boot-deferred.list — packages installed on first boot, NOT on the base ISO
+# Author: RKOJ-ELENO :: 2026-05-24
+#
+# Format: one row per package, "<repo>:<pkg>".
+#   repo = pacman  -> sudo pacman -S --noconfirm --needed <pkg>
+#   repo = aur     -> yay -S --noconfirm --needed <pkg>   (yay bootstrapped by sinister-first-boot-install-yay.sh)
+# Lines starting with # are comments. Blank lines ignored.
+#
+# Source: packages.x86_64.removed Categories 12 (deferred comms/media) +
+# 13 (AUR-only operator-pinned tools). 17 rows total, matching the
+# PACKAGE-AUDIT-2026-05-24.md FIRST-BOOT-DEFERRED set.
+
+# --- Category 12: comms + media (heavy multilib pulls — defer for ISO size) ---
+pacman:discord
+pacman:obs-studio
+pacman:spotify-launcher
+pacman:lutris
+
+# --- Category 13: AUR-only operator-pinned tools (yay required) ---
+aur:zen-browser-bin
+aur:rustdesk-bin
+aur:tresorit-cli
+aur:proton-ge-custom
+aur:obsidian
+aur:openrgb
+
+# --- VM / containers (operator runs Docker Desktop on Windows + occasional VMs) ---
+pacman:qemu-desktop
+pacman:virt-manager
+pacman:libvirt
+pacman:edk2-ovmf
+pacman:docker
+pacman:docker-compose
+
+# --- Phone / android tooling (operator has platform-tools for QPilotos work) ---
+pacman:android-tools

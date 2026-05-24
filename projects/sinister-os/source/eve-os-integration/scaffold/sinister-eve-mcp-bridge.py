@@ -312,7 +312,8 @@ class EVEHandler(BaseHTTPRequestHandler):
                 result = self.daemon.registry.call(body["tool"], body.get("args", {}))
                 self._send_json(HTTPStatus.OK, result)
             elif self.path == "/v1/memory/set":
-                self.daemon.memory.set(body["key"], body["value"])
+                v = body["value"]
+                self.daemon.memory.set(body["key"], v if isinstance(v, str) else json.dumps(v, ensure_ascii=False))
                 self._send_json(HTTPStatus.OK, {"ok": True, "key": body["key"]})
             elif self.path == "/v1/intent/dispatch":
                 intent = body.get("intent", "")

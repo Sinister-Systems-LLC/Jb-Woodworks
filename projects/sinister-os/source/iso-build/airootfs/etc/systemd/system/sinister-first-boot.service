@@ -1,14 +1,24 @@
 # Author: RKOJ-ELENO :: 2026-05-24
 # One-shot first-boot init for Sinister OS. Disabled after first successful run.
+#
+# Safety fix 2026-05-24 (RKOJ-ELENO): SLIM-WIRING — sinister-first-boot.sh
+# already calls sinister-first-boot-install-yay.sh inline. The deferred
+# package installer must run AFTER yay is bootstrapped, so we declare it as
+# ExecStartPost on this unit (runs only if ExecStart succeeded). Failures in
+# the deferred installer must NOT roll back the first-boot state, hence the
+# leading "-" (ignore non-zero exit). The script itself is internally
+# resilient (per-package trap) and idempotent (marker file).
 
 [Unit]
 Description=Sinister OS first-boot initialization
 ConditionPathExists=!/var/lib/sinister/.first-boot-done
-After=network.target
+After=network-online.target
+Wants=network-online.target
 
 [Service]
 Type=oneshot
 ExecStart=/usr/local/bin/sinister-first-boot.sh
+ExecStartPost=-/usr/local/bin/sinister-first-boot-install-deferred.sh
 RemainAfterExit=yes
 
 [Install]
