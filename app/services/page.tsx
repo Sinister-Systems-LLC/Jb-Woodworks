@@ -7,7 +7,7 @@ import { services } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "Services",
-  description: "Docks, custom decks, furniture and tables, interior trim and millwork, outdoor living spaces, repairs and staining. JB Woodworks in Orlando, FL."
+  description: "Decks, docks, pergolas, custom furniture, millwork, plus commercial fabrication and branded displays. Custom woodworking in Orlando, FL."
 };
 
 export default function ServicesPage() {
@@ -19,7 +19,7 @@ export default function ServicesPage() {
           <span className="section-tag">Services</span>
           <h1 className="mb-5">What we<br /><em>build.</em></h1>
           <p className="section-subheadline">
-            Six lanes of work. Pick one to read details, or send a message and we will figure out where your project fits.
+            Residential and commercial. Pick a category for details, or send a photo and we&apos;ll figure out where it fits.
           </p>
         </div>
       </section>

@@ -191,7 +191,73 @@ def main() -> None:
     print(f"[gen] favicon.ico (16/32/48/64)")
     write_ico(mono, IMG_DIR / "favicon.ico")
 
+    print(f"[gen] og-image.png (1200x630, monogram on ink + tagline)")
+    write_og_image(mono, IMG_DIR / "og-image.png")
+
+    print(f"[gen] email-signature.png (horizontal wordmark + contact line)")
+    write_email_signature(horiz, ROOT / "branding" / "logos" / "email-signature.png")
+
     print("[ok] done")
+
+
+def write_og_image(mark: Image.Image, path: Path) -> None:
+    from PIL import ImageDraw, ImageFont
+    W, H = 1200, 630
+    out = Image.new("RGBA", (W, H), (INK[0], INK[1], INK[2], 255))
+    glow = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    gdraw = ImageDraw.Draw(glow)
+    for r in range(420, 0, -8):
+        a = int(40 * (r / 420.0) ** 2)
+        gdraw.ellipse([W - 80 - r, -200 - r, W - 80 + r, -200 + r], fill=(GOLD[0], GOLD[1], GOLD[2], a))
+    out = Image.alpha_composite(out, glow)
+    mw, mh = mark.size
+    target_h = 380
+    scale = target_h / mh
+    nw, nh = int(mw * scale), int(mh * scale)
+    resized = mark.resize((nw, nh), Image.LANCZOS)
+    out.paste(resized, (90, (H - nh) // 2), resized)
+    draw = ImageDraw.Draw(out)
+    try:
+        font_serif = ImageFont.truetype("georgia.ttf", 50)
+        font_serif_it = ImageFont.truetype("georgiai.ttf", 50)
+        font_sans = ImageFont.truetype("arial.ttf", 22)
+        font_sans_bold = ImageFont.truetype("arialbd.ttf", 18)
+    except Exception:
+        font_serif = ImageFont.load_default()
+        font_serif_it = font_serif
+        font_sans = font_serif
+        font_sans_bold = font_serif
+    text_x = 90 + nw + 60
+    draw.text((text_x, 200), "Premium Craftsmanship.", fill=(255, 255, 255, 255), font=font_serif)
+    draw.text((text_x, 268), "Built to Last.", fill=(GOLD[0], GOLD[1], GOLD[2], 255), font=font_serif_it)
+    draw.line([(text_x, 360), (text_x + 260, 360)], fill=(GOLD[0], GOLD[1], GOLD[2], 200), width=2)
+    draw.text((text_x, 390), "ORLANDO, FL  -  CUSTOM WOODWORKING", fill=(220, 220, 220, 200), font=font_sans_bold)
+    draw.text((text_x, 430), "Decks  -  Docks  -  Pergolas  -  Furniture", fill=(180, 180, 180, 180), font=font_sans)
+    draw.text((text_x, 462), "Branded Displays  -  Event Builds  -  Fabrication", fill=(GOLD[0], GOLD[1], GOLD[2], 200), font=font_sans)
+    out.convert("RGB").save(path, "PNG", optimize=True)
+
+
+def write_email_signature(horiz_wordmark: Image.Image, path: Path) -> None:
+    from PIL import ImageDraw, ImageFont
+    W, H = 560, 160
+    out = Image.new("RGBA", (W, H), (INK[0], INK[1], INK[2], 255))
+    mw, mh = horiz_wordmark.size
+    target_h = 64
+    scale = target_h / mh
+    nw, nh = int(mw * scale), int(mh * scale)
+    resized = horiz_wordmark.resize((nw, nh), Image.LANCZOS)
+    out.paste(resized, (24, 26), resized)
+    draw = ImageDraw.Draw(out)
+    draw.line([(24, 108), (W - 24, 108)], fill=(GOLD[0], GOLD[1], GOLD[2], 120), width=1)
+    try:
+        font_sans = ImageFont.truetype("arial.ttf", 14)
+        font_sans_dim = ImageFont.truetype("arial.ttf", 12)
+    except Exception:
+        font_sans = ImageFont.load_default()
+        font_sans_dim = font_sans
+    draw.text((24, 118), "(407) 561-1453  -  jbwoodworks8@gmail.com", fill=(230, 230, 230, 255), font=font_sans)
+    draw.text((24, 138), "Orlando, FL  -  Custom Woodworking + Commercial Fabrication", fill=(160, 160, 160, 180), font=font_sans_dim)
+    out.convert("RGB").save(path, "PNG", optimize=True)
 
 
 if __name__ == "__main__":

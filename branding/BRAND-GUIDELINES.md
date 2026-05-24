@@ -1,10 +1,36 @@
 # JB Woodworks - Brand Guidelines
 
-> **Author:** RKOJ-ELENO :: 2026-05-23
-> **Status:** Codifies the canonical v1 identity and extends it.
+> **Author:** RKOJ-ELENO :: 2026-05-24
+> **Status:** v2 - owner-supplied JBW logo system (monogram + horizontal + stacked wordmarks) now canonical. Replaces the v1 hand-drawn text wordmark.
 
-Single-rule version: **white-and-gold wordmark on deep black, DM Serif
-Display + Inter, italic for emphasis. Nothing else.**
+Single-rule version: **gold-on-ink JBW monogram + wordmarks, DM Serif Display + Inter, italic for emphasis. Nothing else.**
+
+## The three canonical marks (owner spec 2026-05-24)
+
+| Mark | File | Use for |
+| --- | --- | --- |
+| **Primary Monogram** | `public/img/branding/jbw-monogram.png` | Social profile pictures, favicon, watermarks, mobile/small branding, minimal placements |
+| **Horizontal Wordmark** | `public/img/branding/jbw-wordmark-horizontal.png` | Website header / top-left corner, email signatures, invoices, business documents |
+| **Stacked Wordmark** | `public/img/branding/jbw-wordmark-stacked.png` | Website footer, presentation graphics, portfolio section branding, signage, larger branded placements |
+
+All three are recolored from the owner's source PNGs to brand gold `#c9a84c` on **transparent** backgrounds (so the same files drop cleanly over any surface in the ink palette).
+
+### Pipeline
+
+`scripts/recolor-logos.py` re-derives every output from sources in `scripts/_logo-src/jbw-{monogram,horizontal,stacked}-src.png`. If the owner ships an updated source mark, replace the matching file in `_logo-src/` and re-run:
+
+```bash
+python scripts/recolor-logos.py
+```
+
+Outputs (auto-replace in place):
+- `public/img/branding/jbw-monogram.png` - icon only, gold/transparent
+- `public/img/branding/jbw-wordmark-horizontal.png` - icon + name, gold/transparent
+- `public/img/branding/jbw-wordmark-stacked.png` - icon over name + tagline
+- `public/img/branding/jbw-monogram-on-ink.png` - mark centered on #080808 (square, social use)
+- `public/img/favicon-{16,32,48,180,192,512}.png` + `favicon.ico`
+- `public/img/og-image.png` (1200x630 social card)
+- `branding/logos/email-signature.png` (560x160 email block)
 
 ## Voice and tone
 
@@ -42,45 +68,41 @@ Greens, blues, etc. - not in scope.
 ## Wordmark do / do not
 
 **Do:**
-- Use `wordmark-primary.svg` for header, business cards, invoices.
-- Use `wordmark-stacked.svg` for vertical placements (square stamps, social avatars).
-- Use `wordmark-mono-dark.svg` on photography over a `rgba(8,8,8,0.7)` plate.
-- Keep the gold-underline accent visible whenever space permits.
+- Use `jbw-wordmark-horizontal.png` for header, business cards, invoices, email sigs.
+- Use `jbw-wordmark-stacked.png` for footer, presentation graphics, signage, larger placements.
+- Use `jbw-monogram.png` for favicon, social profile pics, watermarks, mobile.
+- Use `jbw-monogram-on-ink.png` when you need the mark already on a black plate (social cards).
 
 **Do not:**
-- Add shadow, glow, bevel, outline, or any 3D effect.
-- Replace Inter with a similar sans (Roboto, Helvetica) - they kern differently.
-- Recolor outside the gold ramp.
+- Add shadow, glow, bevel, outline, or any 3D effect (subtle drop-shadow over busy photography is the one exception - see hero).
+- Recolor outside brand gold `#c9a84c`. Don't tint it warmer/cooler.
 - Stretch, rotate, or skew.
-- Put the wordmark on busy photography without the black plate.
+- Combine multiple marks in one placement (pick one).
+- Re-add the old text-only "JB / WOODWORKS" lockup anywhere - the owner's monogram is canonical now.
 
 ## Asset selection guide
 
 | You need a logo for... | Reach for |
 | --- | --- |
-| Website navbar | `wordmark-primary.svg` (or inline HTML in `base.html`) |
-| Footer | inline HTML wordmark |
-| Social avatar (IG, FB, TT, X) | `wordmark-stacked.svg` (renders well at small sizes) |
-| Invoice / letterhead | `wordmark-horizontal.svg` |
-| Vehicle decal / signage | `wordmark-horizontal.svg` (or mono variant for 1-color budget) |
-| Email signature | `email-signature.svg` |
-| Social share / OG image | `social-card.svg` (1200x630) |
-| Business card | `wordmark-stacked.svg` centered, generous clear space |
-| Branded stamp / iron-on | `wordmark-mono-light.svg` (gold on white) or `wordmark-mono-dark.svg` |
+| Website navbar | `/img/branding/jbw-wordmark-horizontal.png` (wired in `components/sections/nav.tsx`) |
+| Website footer | `/img/branding/jbw-wordmark-stacked.png` (wired in `components/sections/footer.tsx`) |
+| Splash / loading screens | `/img/branding/jbw-monogram.png` (wired in `splash.tsx` + `loading.tsx`) |
+| Favicon / browser tab | `/img/favicon-*.png` + `favicon.ico` (all regenerated from monogram) |
+| Apple touch icon | `/img/favicon-180.png` |
+| Android home screen | `/img/favicon-192.png` + `/img/favicon-512.png` via `site.webmanifest` |
+| Social avatar (IG, FB, TT, X) | `/img/branding/jbw-monogram-on-ink.png` (square, ready to upload) |
+| Social share / OG card | `/img/og-image.png` (1200x630, wired in `app/layout.tsx`) |
+| Email signature | `/branding/logos/email-signature.png` (560x160 PNG, renders consistently in Gmail/Outlook) |
+| Invoice / letterhead | `jbw-wordmark-horizontal.png` top-left, 1.6in wide |
+| Business card | `jbw-wordmark-stacked.png` centered on black, generous clear space |
+| Vehicle decal / signage | `jbw-wordmark-stacked.png` or `jbw-wordmark-horizontal.png` |
+| Yard sign | `jbw-wordmark-stacked.png` at 18in tall, contact set in DM Serif Display below |
 
-## Print specs
+## Clear space + minimum sizes
 
-- Business cards: 3.5 x 2in, black ground, `wordmark-stacked.svg` centered, contact set in Inter 500 8pt below.
-- Letterhead: `wordmark-horizontal.svg` top-left at 1.6in wide, address bottom-right.
-- Invoice: `wordmark-horizontal.svg` top-left, line items in Inter tabular-nums.
-- Yard sign: `wordmark-stacked.svg` at 18in tall, with `(407) 561-1453` set in DM Serif Display 96pt italic below.
-
-## Web specs (already wired)
-
-- All assets ship in `/static/img/icons.svg` (UI icons) and `/branding/logos/` (brand wordmarks).
-- Wordmark renders inline as text in `base.html` for sharpness at any zoom level.
-- Favicon: `/static/img/favicon.svg` (also at `/branding/logos/favicon.svg`).
-- OG image: `/static/img/og-image.svg` (mirrors `/branding/logos/social-card.svg`).
+- **Monogram:** clear space = 0.25× icon width on all sides. Minimum display size: 24px (favicon-16 is hand-tuned).
+- **Horizontal wordmark:** clear space = height of the JBW icon on each side. Minimum: 120px wide on screen.
+- **Stacked wordmark:** clear space = height of the icon on top + sides. Minimum: 96px tall on screen.
 
 ## Pending enhancements
 

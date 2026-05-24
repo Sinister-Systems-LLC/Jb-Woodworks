@@ -15,7 +15,7 @@ const display = DM_Serif_Display({ subsets: ["latin"], weight: "400", style: ["n
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
   title: { default: `${SITE.name} - Custom Woodworking and Construction`, template: `%s - ${SITE.name}` },
-  description: `${SITE.tagline} Custom woodworking in Orlando, FL: decks, boat docks, pergolas, pool tables, and furniture.`,
+  description: `${SITE.tagline} Custom woodworking and commercial fabrication in Orlando, FL: decks, docks, pergolas, furniture, branded displays.`,
   applicationName: SITE.name,
   authors: [{ name: "RKOJ-ELENO" }],
   openGraph: {
@@ -24,9 +24,9 @@ export const metadata: Metadata = {
     siteName: SITE.name,
     title: SITE.name,
     description: SITE.tagline,
-    images: [{ url: "/img/og-image.svg" }]
+    images: [{ url: "/img/og-image.png", width: 1200, height: 630, alt: `${SITE.name} - Premium Craftsmanship. Built to Last.` }]
   },
-  twitter: { card: "summary_large_image", title: SITE.name, description: SITE.tagline, images: ["/img/og-image.svg"] },
+  twitter: { card: "summary_large_image", title: SITE.name, description: SITE.tagline, images: ["/img/og-image.png"] },
   manifest: "/site.webmanifest",
   icons: {
     icon: [

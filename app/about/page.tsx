@@ -8,7 +8,7 @@ import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "About / FAQ",
-  description: "JB Woodworks is a custom woodworking shop in Orlando, Florida. Decks, docks, pergolas, furniture, custom pool tables. Free quotes. Answers to common questions."
+  description: "Custom woodworking + commercial fabrication in Orlando, FL. Decks, docks, pergolas, furniture, branded displays. Free quotes."
 };
 
 const blocks = [
@@ -17,11 +17,11 @@ const blocks = [
     body: (
       <ol className="pl-6 space-y-3">
         {[
-          ["Reach out.", "Phone, email, or the form. Tell us what you need. Free estimate."],
-          ["Site visit + sketch.", "Measurements, photos, and a rough sketch so we are quoting the actual job."],
-          ["Honest quote.", "Fixed-bid where possible, with a stated material spec."],
-          ["Build.", "Photos at major milestones. On-site daily until walk-through."],
-          ["Walk-through.", "We do not call it done until you do."]
+          ["Reach out.", "Phone, email, or the form. Free estimate."],
+          ["Site visit.", "Measurements + photos so we quote the actual job."],
+          ["Honest quote.", "Fixed-bid where possible, with the material spec stated."],
+          ["Build.", "Photos at every milestone. On-site daily until walk-through."],
+          ["Walk-through.", "Not done until you say it's done."]
         ].map(([k, v], i) => (
           <li key={i} className="text-cream-50">
             <strong className="text-white mr-1">{k}</strong>{v}
@@ -34,14 +34,14 @@ const blocks = [
     title: "What we use.",
     body: (
       <>
-        <p>Pressure-treated pine, cedar, and composite (Trex, TimberTech) for outdoor work. Hardwoods (oak, walnut, cherry, maple) for furniture and trim. Marine-grade hardware on docks. Stain and seal chosen to outlast the Florida sun.</p>
-        <p>We do not cut corners on hardware or wood grade. You will see what we used on the invoice.</p>
+        <p>Cedar, pressure-treated pine, and composite (Trex, TimberTech) outdoors. Hardwoods (oak, walnut, cherry, maple) for furniture, millwork, and feature builds. Marine-grade hardware on docks. Stain + seal chosen for Florida sun.</p>
+        <p>No corner-cutting on grade or hardware. Every line item is on the invoice.</p>
       </>
     )
   },
   {
     title: "Service area.",
-    body: <p>Based in {SITE.serviceArea}. For larger custom builds we travel further - just tell us where.</p>
+    body: <p>Based in {SITE.serviceArea}. We travel for the right project &mdash; tell us where.</p>
   }
 ];
 
@@ -61,7 +61,7 @@ export default function AboutPage() {
           <span className="section-tag">About</span>
           <h1 className="mb-5">Built in<br /><em>Orlando, Florida.</em></h1>
           <p className="section-subheadline">
-            JB Woodworks is a custom woodworking shop based in Orlando. We build docks, decks, pergolas, custom pool tables, furniture, and interior trim - and we travel for the right project anywhere in the surrounding areas and across the USA.
+            Custom woodworking + commercial fabrication. Decks, docks, pergolas, furniture, millwork &mdash; plus branded displays, event builds, and feature walls for brands.
           </p>
         </div>
       </section>
