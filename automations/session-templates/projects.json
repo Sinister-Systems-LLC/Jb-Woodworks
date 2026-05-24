@@ -1,5 +1,5 @@
 {
-  "_comment": "Persistent project registry. v6 (2026-05-23): added picker block driving the launcher's concise 11-entry visible list + ordering. Non-launcher consumers (RKOJ Qt agents_tab, sinister-eve, forge picker) continue to iterate the full projects array. v7 (2026-05-23 evening): appended letstext lane (operator-private messaging-app venture at D:\\LetsText; cyan accent per agent-prefs).",
+  "_comment": "Persistent project registry. v6 (2026-05-23): added picker block driving the launcher's concise 11-entry visible list + ordering. Non-launcher consumers (RKOJ Qt agents_tab, sinister-eve, forge picker) continue to iterate the full projects array. v7 (2026-05-23 evening): appended letstext lane (operator-private messaging-app venture at D:\\Personal\\LetsText; cyan accent per agent-prefs).",
   "version": 7,
   "default": "sanctum",
   "picker": {
@@ -21,6 +21,7 @@
       "jkor",
       "sinister-snap-api-quantum",
       "sinister-os",
+      "sinister-os-mobile",
       "sinister-imessage-bridge"
     ],
     "special_keys": [
@@ -37,7 +38,8 @@
       "root": "D:\\Sinister Sanctum",
       "session_start": "D:\\Sinister Sanctum\\SESSION-START\\README.md",
       "claude_md": "D:\\Sinister Sanctum\\CLAUDE.md",
-      "github": "Sinister-Systems-LLC/Sinister-Sanctum"
+      "github": "Sinister-Systems-LLC/Sinister-Sanctum",
+      "default_modes": { "swarm": true, "loop": true }
     },
     {
       "key": "sinister-panel",
@@ -46,7 +48,8 @@
       "root": "D:\\Sinister Sanctum\\projects\\sinister-panel\\source",
       "session_start": "",
       "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-panel\\source\\CLAUDE.md",
-      "github": "Sinister-Systems-LLC/Sinister-Panel"
+      "github": "Sinister-Systems-LLC/Sinister-Panel",
+      "default_modes": { "swarm": true, "loop": true }
     },
     {
       "key": "kernel-apk",
@@ -55,7 +58,8 @@
       "root": "D:\\Sinister Sanctum\\projects\\sinister-kernel-apk\\source",
       "session_start": "",
       "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-kernel-apk\\source\\CLAUDE.md",
-      "github": "Sinister-Systems-LLC/Sinister-Kernel-APK"
+      "github": "Sinister-Systems-LLC/Sinister-Kernel-APK",
+      "default_modes": { "swarm": true, "loop": true }
     },
     {
       "key": "sinister-emulator",
@@ -143,9 +147,9 @@
       "key": "letstext",
       "display": "LetsText",
       "tag": "messaging UI / design system (operator-private venture)",
-      "root": "D:\\LetsText",
-      "session_start": "D:\\LetsText\\SESSION-START.md",
-      "claude_md": "D:\\LetsText\\CLAUDE.md",
+      "root": "D:\\Personal\\LetsText",
+      "session_start": "D:\\Personal\\LetsText\\SESSION-START.md",
+      "claude_md": "D:\\Personal\\LetsText\\CLAUDE.md",
       "github": ""
     },
     {
@@ -183,6 +187,16 @@
       "session_start": "",
       "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-os\\CLAUDE.md",
       "github": ""
+    },
+    {
+      "key": "sinister-os-mobile",
+      "display": "Sinister OS Mobile",
+      "tag": "Pixel 6a custom Android :: EVE-controlled + Sinister fleet preinstalled (P0 spec lock)",
+      "root": "D:\\Sinister Sanctum\\projects\\sinister-os-mobile",
+      "session_start": "D:\\Sinister Sanctum\\projects\\sinister-os-mobile\\SESSION-START.md",
+      "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-os-mobile\\CLAUDE.md",
+      "github": "",
+      "default_modes": { "swarm": true, "loop": true }
     },
     {
       "key": "sinister-imessage-bridge",

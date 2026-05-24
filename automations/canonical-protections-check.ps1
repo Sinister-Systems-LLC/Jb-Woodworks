@@ -225,6 +225,27 @@ Test-Protection -Id 'P10' -Description 'github-first sourcing doctrine present (
     return ($coldStartOk -and $indexOk)
 } | Out-Null
 
+# P11 -- UI base = dashboard-skeleton inheritance doctrine (operator hard-canonical 2026-05-24 15:44Z).
+# Origin: operator verbatim "update memory everything that makes a ui needs to base off our dsahboard
+# skeleton so we have the same uniform clean look across projects and each time we make a dahsbaord
+# and such we need to expand on that". Verifies brain entry + index row + CLAUDE.md hard-canonical
+# block + skeleton path on disk. Composes with sinister-ui-canonical-dashboard-skeleton-inheritance-2026-05-24.
+Test-Protection -Id 'P11' -Description 'UI base = dashboard-skeleton doctrine + skeleton path present' -Check {
+    $brain = Join-Path $KnowledgeDir 'sinister-ui-canonical-dashboard-skeleton-inheritance-2026-05-24.md'
+    $skeleton = Join-Path $SanctumRoot 'projects\sinister-dashboard-skeleton\dashboard-skeleton'
+    $themeDoctrine = Join-Path $skeleton 'THEME-DOCTRINE.md'
+    if (-not (Test-Path $brain)) { return $false }
+    if (-not (Test-Path $skeleton)) { return $false }
+    if (-not (Test-Path $themeDoctrine)) { return $false }
+    if (-not (Test-Path $ClaudeMd)) { return $false }
+    if (-not (Test-Path $IndexMd)) { return $false }
+    $c = Get-Content $ClaudeMd -Raw
+    $idx = Get-Content $IndexMd -Raw
+    $coldStartOk = $c -match 'UI BASE.*dashboard-skeleton' -and $c -match 'sinister-ui-canonical-dashboard-skeleton-inheritance-2026-05-24'
+    $indexOk = $idx -match 'sinister-ui-canonical-dashboard-skeleton-inheritance-2026-05-24'
+    return ($coldStartOk -and $indexOk)
+} | Out-Null
+
 # Report
 $ts = (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ')
 $fails = $results | Where-Object { -not $_.ok }
