@@ -7,6 +7,65 @@ Append-only memory. Most recent at top. Cross-references to brain entries and ot
 
 ---
 
+## 2026-05-24T12:25Z — ✅ ITER 67: K=8 same-top-1 counter-examples CONFIRM iter-66 mechanism (no hidden predictor)
+
+Iter 66 left 4 K=8-QBC-with-same-top-1 triads in 149-full as unexplained counter-examples. Iter 67 investigates their structure.
+
+### The 4 counter-examples
+
+| # | Classical | K=8 adv | K=4 ANGLE QBC? | Shared top-4 | Theme |
+|---|---|---|---|---|---|
+| 15 | 0.4342 | +2.29pp | **NO** | 1 | multi-agent-git + parallel + windows-case-folding (top1=4691) |
+| 16 | 0.4296 | +2.29pp | **NO** | 1 | multi-agent-git + parallel + windows-case-folding (top1=4691) |
+| 37 | 0.3851 | +10.98pp | **NO** | 1 | rkoj-cluster-vocab (top1=10579) |
+| 48 | 0.3704 | +10.06pp | **NO** | 1 | rkoj-cluster-vocab (top1=10579) |
+
+### Critical observation
+
+**ALL 4 K=8 same-top-1 counter-examples are K=4 ANGLE anti-QBC.** The K=4 combined predictor correctly rules them out (via the same-top-1 condition). K=8 ANGLE has enough additional qubits (4-7) to find QBC anyway.
+
+### Mechanism confirmed (iter 66 prediction validated)
+
+```
+The iter-66 K-relative-loss argument predicted:
+  K=4 same-top-1 loses 25% of qubit capacity → critical → anti-QBC
+  K=8 same-top-1 loses only 12.5% → not enough → QBC potentially survives
+
+The 4 K=8 counter-examples confirm: they ARE K=4 anti-QBC (the rule works there)
+but K=8 rescues them via the extra qubits.
+```
+
+This is a CONFIRMING result, not new doctrine. The combined K=4 ANGLE predictor's K-specificity is mechanically explained.
+
+### Two thematic clusters in the counter-examples
+
+1. **Theme 1 (top1=4691):** multi-agent-git triads with a 3rd doc from outside the git-coord cluster (parallel-agent / windows-case-folding). Three docs all share some surface vocabulary (multi-agent / parallel) → top-4 has 1 overlap → K=8 finds 2-3 shared top-8 → adequate cross-qubit discrimination.
+2. **Theme 2 (top1=10579):** rkoj-{polish, ergonomics, introspection} cluster triads. All share rkoj-vocab → 1 top-4 overlap → 1 top-8 overlap → still enough K=8 discrimination at high classical.
+
+Both themes are "borderline" — classical 0.37-0.43, K=8 adv 2-11pp. The encoding is barely-QBC; K=8's extra capacity is what makes the difference.
+
+### No new predictor
+
+The 4 counter-examples don't reveal a clean K=8 predictor beyond the existing shared-top-K = 0 condition. They confirm that K=8 ANGLE's larger Hilbert space resists the K=4 same-top-1 rule but doesn't open a new structural shortcut.
+
+### Doctrine status
+
+The combined K=4 ANGLE predictor (44% rule-out on 149-full) is the operator-canonical pre-screen. K=8 ANGLE has the universal shared-top-K = 0 predictor (2% rule-out at K=8 — weak). No further useful predictor at K=8 exists.
+
+### Cost / verification
+
+- Zero cloud burn
+- ~3s CPU for counter-example structural analysis
+- Status: **tested-before-claimed** (4 specific triads identified + their K=4 vs K=8 QBC verdicts measured + theme clusters extracted from doc names)
+
+### Honest assessment
+
+This iter is a confirming negative result. The mechanism for K=4-vs-K=8 same-top-1 asymmetry is exactly as iter 66 predicted (K-relative loss fraction). No surprises.
+
+The session is approaching saturation again — each iter is adding finer-grained structural details rather than headline doctrine. The operator's persistence has produced ~16 iterations of post-iter-50 deep doctrine; we're now in fine-grained territory.
+
+---
+
 ## 2026-05-24T11:55Z — 🔬 ITER 66: combined predictor IS K=4-ANGLE-specific; 44% rule-out on 149-full
 
 Iter 65 found 2nd necessary condition at K=4. Iter 66 tests its (a) corpus stability and (b) extension to K=5..K=8.

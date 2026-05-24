@@ -7,6 +7,29 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T12:25Z — iteration 67 (K=8 same-top-1 counter-examples confirm iter-66 mechanism)
+
+Operator: /loop. Investigated the 4 K=8-QBC-with-same-top-1 triads from iter 66.
+
+### Finding
+All 4 counter-examples are K=4 ANGLE anti-QBC. K=8 rescues them via qubits 4-7. Exactly as iter 66 predicted (K-relative loss: K=4 loses 25%/critical; K=8 loses 12.5%/survivable).
+
+### No new predictor
+K=8 ANGLE doesn't have a hidden useful pre-screen. The shared-top-K=0 rule (2% rule-out) is the only safe filter at K=8. The K=4 combined predictor remains the operator-canonical pre-screen.
+
+### Two themes in counter-examples
+1. multi-agent-git + parallel/windows-case-folding (top1=4691)
+2. rkoj-cluster vocabulary triads (top1=10579)
+Both borderline (classical 0.37-0.43); K=8's extra qubits provide just enough discrimination.
+
+### Honest assessment
+Confirming result — iter 66's mechanism is validated. Session is approaching saturation in fine-grained territory.
+
+### Cost
+Zero cloud burn; 3s CPU.
+
+---
+
 ## 2026-05-24T11:55Z — iteration 66 (combined predictor is K=4-ANGLE-specific; 44% rule-out on 149-full)
 
 Operator: /loop. Tested iter-65 combined predictor on (a) 149-doc full corpus + (b) K=5..K=8 extension.
