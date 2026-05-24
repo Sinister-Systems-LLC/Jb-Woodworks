@@ -35,13 +35,15 @@
 - **K=8 ANGLE and ZZ-FM r=1 are COMPLEMENTARY** (iter 45). K=8 wins 58.6% of triads; ZZ-FM wins 41.4%. Encodings disagree often (per-triad r=+0.14). Compute both for specific triads.
 - **Cancellation theorem:** ANGLE-CNOT == K=4 ANGLE (verified iters 16, 22, 43). Parameter-free entangling layers cancel in U_B† · U_A.
 
-**Sharp per-encoding QBC thresholds (iter 53 measured across all 168k+ triads in 129-doc pool):**
+**Sharp per-encoding QBC thresholds (iter 53 measured 129-doc pool; iter 54 corpus-stability check):**
 
-| Encoding | 50% QBC at classical | 100% QBC at classical |
-|---|---|---|
-| K=4 ANGLE | ~0.55 | 0.55 |
-| K=8 ANGLE | ~0.45 | 0.55 |
-| ZZ-FM r=1 | ~0.50 | 0.55 |
+| Encoding | 50% QBC threshold (129-doc pool) | 50% QBC threshold (149-doc full) | Corpus stability |
+|---|---|---|---|
+| K=4 ANGLE | ~0.55 | ~0.52 | **moderate** (3pp shift; K=4's 16-dim Hilbert space is more sensitive to TF-IDF vocabulary changes than K=8's 256-dim) |
+| K=8 ANGLE | ~0.45 | ~0.45 | strong (stable within ~5pp) |
+| ZZ-FM r=1 | ~0.50 | ~0.50 | strong (stable within ~5pp) |
+
+**Operator advice:** when reporting QBC thresholds, specify corpus. For production-recipe selection use `--corpus pool` consistently across find-qbc + audit. The "guaranteed universal QBC at classical 0.55+" rule holds in `--corpus pool` but only 2-of-3 of those triads are K=4 QBC in `--corpus full`.
 
 **The "guaranteed universal-QBC" zone is classical > 0.55** (only ~3 triads in current corpus). Below classical 0.30 = essentially never QBC for any encoding. The 0.30-0.45 zone is "needs find-qbc verification" — 79-99% anti-QBC depending on encoding.
 

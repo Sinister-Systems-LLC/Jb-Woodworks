@@ -7,6 +7,33 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T06:35Z — iteration 54 (corpus-stability check — K=8/ZZ stable, K=4 ANGLE shifts)
+
+Operator: /loop. Re-ran iter-53 curve against full 149-doc corpus to see if thresholds shift vs 129-doc topical-balanced pool.
+
+### Stability per encoding
+| Encoding | 129-pool threshold | 149-full threshold | Stability |
+|---|---|---|---|
+| K=4 ANGLE | ~0.55 | ~0.52 | moderate (3pp shift) |
+| K=8 ANGLE | ~0.45 | ~0.45 | strong |
+| ZZ-FM r=1 | ~0.50 | ~0.50 | strong |
+
+### Specific shifts (K=4 ANGLE corpus-sensitive)
+- 0.35-0.40 bucket: 1.2% → 3.2% (2.7× higher)
+- 0.50-0.55 bucket: 25% → 50% (2× higher)
+- 0.55+ bucket: 100% → 66.7% (one triad flipped from K=4 QBC to K=4 anti-QBC)
+
+### Mechanism
+K=4 uses only top-4 TF-IDF features. With wider vocabulary, top-4 shift → projected RY angles change → inversion-overlap geometry changes. K=4's 16-dim Hilbert space is more sensitive than K=8's 256-dim.
+
+### Doctrine refinement
+Brain entry threshold table now annotated with corpus + stability column. Operator advice: specify `--corpus pool` or `--corpus full` consistently across find-qbc + audit.
+
+### Cost
+Zero cloud burn; 15.7s CPU.
+
+---
+
 ## 2026-05-24T06:10Z — iteration 53 (classical-vs-QBC-probability curve; sharp per-encoding thresholds)
 
 Operator: /loop. Bucketed all 168k+ triads (classical > 0.10) by classical and measured QBC% per encoding per bucket.
