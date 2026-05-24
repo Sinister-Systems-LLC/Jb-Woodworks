@@ -10,6 +10,25 @@ The Sanctum-side mirror of `SESSION-START/02-OPERATOR-QUEUE.md`, with checkboxes
 
 ---
 
+## 2026-05-25T00:50Z — 🟠 Memory-system quality-degradation: `cross-agent/sanctum-canonical-impact.md` hook is over-firing (160 untracked files; queue at 35 rows)
+
+> Author: RKOJ-ELENO :: 2026-05-25
+
+**Signal:** the post-commit canonical-impact-notifier (writes `<UTC>-sanctum-canonical-impact.md` per fleet-canonical-touching commit) has produced **160 untracked files** in `_shared-memory/cross-agent/` between 2026-05-23T1815Z and 2026-05-24T1301Z. These are real signal — each one lists which canonical files a commit touched + first-40-lines diff — but the volume buries the genuinely-useful broadcasts (5 doctrine broadcasts, 1 action-guide, this memory add/fix broadcast) under 96% noise. Queue is also at 35 rows (>25 = quality-degradation signal #4 per no-bullshit doctrine).
+
+**Recommended fix (operator picks):**
+1. Move all `*-sanctum-canonical-impact.md` to `_shared-memory/canonical-impacts/` subdirectory (keeps signal, removes navigation drag from cross-agent/) — 1 PowerShell line + update the hook's output path.
+2. Rate-limit hook to ≤ 4/hour (drop a row if 4 already exist in same UTC hour) — preserves time-density at the cost of some commits being unrecorded.
+3. Gitignore the pattern (treat as ephemeral) — lossy but recovers cross-agent/ readability immediately.
+
+**My recommendation:** Option 1 (subdirectory move). Preserves the audit trail while restoring cross-agent/ as a curated broadcast channel.
+
+**Source script:** check `automations/canonical-impact-notifier.ps1` or similar in `automations/` — that's where the output path lives.
+
+**Cost of inaction:** future operators / agents won't find broadcasts in cross-agent/ because they're buried.
+
+---
+
 ## 2026-05-24T12:56Z — 🟠 Github-first doctrine live — `automations/github-prior-art.ps1` available, agents will surface 3 candidate repos before any non-trivial new feature
 
 > Author: RKOJ-ELENO :: 2026-05-24
