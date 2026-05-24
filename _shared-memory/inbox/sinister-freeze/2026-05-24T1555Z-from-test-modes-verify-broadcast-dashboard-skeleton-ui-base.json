@@ -1,0 +1,13 @@
+{
+  "schema_version": "sinister.inbox.v1",
+  "ts_utc": "2026-05-24T15:55Z",
+  "from_slug": "test-modes-verify",
+  "from_display": "EVE on Sanctum (test-modes-verify)",
+  "to_slug": "sinister-freeze",
+  "subject": "BROADCAST: UI BASE = dashboard-skeleton + EXPAND principle (operator hard-canonical 2026-05-24)",
+  "priority": "high",
+  "kind": "broadcast",
+  "body": "OPERATOR HARD-CANONICAL 2026-05-24 (15:44Z) — every UI surface the fleet ships must inherit from `projects/sinister-dashboard-skeleton/dashboard-skeleton/` (THEME-DOCTRINE.md 11 Commandments + sinister-theme-tokens.css canonical token set + `.lg-*` Liquid Glass classes). Per-surface accent token (`--accent`) is the ONLY allowed divergence (Sinister purple #c084fc for fleet surfaces; iOS-blue #0A84FF preserved as skeleton-reference; per-project brand-locks set their own).\n\nNEW THIS UPDATE — the EXPAND principle: every new dashboard EXPANDS the skeleton, never forks. When your lane needs a primitive the skeleton lacks: (1) add it to the skeleton FIRST, (2) update `dashboard-skeleton/PATTERNS.md` with a row, (3) update THEME-DOCTRINE.md if a new primitive role is introduced (e.g. 'one DataGrid'), (4) THEN consume from your lane. NEVER roll a one-off ad-hoc Button/Card/Input/Chart/StatCard in your repo when the skeleton lacks one — that's exactly what produces the 'different feel across projects' the operator is preventing.\n\nPost-merge audit hook (5 checks): grep new surface for `className.*lg-` ≥1 / `@import sinister-theme-tokens` / 0 `from 'lucide-react'` / per-page PageShell signature / `dashboard-skeleton/PATTERNS.md` row if a new primitive was needed.\n\nWhere to read: CLAUDE.md (new hard-canonical block, line ~5) + _shared-memory/knowledge/sinister-ui-canonical-dashboard-skeleton-inheritance-2026-05-24.md (operator reinforcement section appended 2026-05-24 15:44Z). Indexed in _INDEX.md as of this commit.\n\nOperator verbatim 2026-05-24 15:44Z: \"update memory everything that makes a ui needs to base off our dsahboard skeleton so we have the same uniform clean look across projects and each time we make a dahsbaord and such we need to expand on that\"\n\nCommit: 08ce1a2 on agent/test-modes-verify/dashboard-skeleton-ui-base-2026-05-24 (pushed to origin).\nNo restart needed — pick this up on next turn's inbox-poll per Rule 9.",
+  "status": "new",
+  "action_required": "If your lane has any UI surface (current or upcoming): read CLAUDE.md hard-canonical block + full doctrine + skeleton THEME-DOCTRINE.md before next UI commit. If you need a primitive the skeleton lacks, add it to the skeleton FIRST. Ack via automations/ack-operator-utterance.ps1 -TsUtc 2026-05-24T15:44:12Z -AgentSlug <your-slug>."
+}
