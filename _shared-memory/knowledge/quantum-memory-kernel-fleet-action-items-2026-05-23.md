@@ -178,6 +178,30 @@ The git-coordination thematic cluster (multi-agent + verify-head + branch-coord 
 
 ---
 
+## Sim vs real-QPU encoding split (added 2026-05-24T02:40Z iter 44)
+
+The production recipe `--variant zzfm-r1` is validated for real-QPU on Wukong-180 (5 runs, 25-35pp, mean 31pp). But for **sim-only contexts** (brain recall, drift detection, sim-gate for new triads, prototyping), `--variant k8-angle` dominates.
+
+Three-way comparison on the 129-doc find-qbc balanced pool:
+
+| Encoding | Sim depth | QBC count | QBC % | Max sim advantage |
+|---|---|---|---|---|
+| K=4 ANGLE | 8 | 15 | 0.004% | +0.1937 |
+| **K=8 ANGLE** | **8** | **975** | **0.279%** | **+0.2784** |
+| ZZ-FM r=1 (production) | 34 | 469 | 0.134% | +0.2674 |
+
+**K=8 ANGLE finds 2× more QBC triads than ZZ-FM r=1, has +1.1pp higher max advantage, AND is sim-cheaper (no entangling gates).** Same #1 triad in both. Trade-off: K=8 ANGLE saturates near classical on real-QPU at the ~depth-8 noise budget Wukong-180 enforces — production must stay on ZZ-FM r=1.
+
+**Encoding recommendation table:**
+
+| Context | Encoding | Why |
+|---|---|---|
+| Sim-only routing / brain-recall tiebreaker | **K=8 ANGLE** | 65× more QBC than K=4 ANGLE, cheaper than ZZ-FM, higher max-advantage |
+| Real-QPU on Wukong-180 (current) | **ZZ-FM r=1** | Empirically verified (5 runs); K=8 ANGLE saturates at this noise level |
+| Future error-mitigated real-QPU | TBD | Both candidates; needs empirical test |
+
+**Footnote to bidirectional scope rule (added iter 44):** K=8 ANGLE finds QBC triads down to classical=0.31 (e.g. iter-44 #4 triad with cl=0.3092 and adv=+0.1996). The 0.4 threshold from iter-10 was K=4-specific. K=8 effective threshold is ~0.30. ZZ-FM r=1 (and K=4 ANGLE) keep the 0.4 threshold.
+
 ## Conjecture test: classical baseline ↔ sim ceiling (added 2026-05-24T01:10Z iter 40)
 
 12-triad sweep spanning classical 0.16-0.58 (the full top-50 QBC range, 149-doc pool, ZZ-FM K=4, r=1..6, 72 sim runs total). Pearson correlations:

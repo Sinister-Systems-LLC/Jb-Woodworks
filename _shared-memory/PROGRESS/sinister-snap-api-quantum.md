@@ -7,6 +7,35 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T02:40Z — iteration 44 (K=8 ANGLE SIM dominates ZZ-FM r=1 — sim/real-QPU encoding split discovered)
+
+Operator: /loop. K=8 ANGLE sim behavior had never been compared against the production recipe. Three-way head-to-head on the same 129-doc pool:
+
+| Encoding | depth | QBC count | QBC % | Max sim adv |
+|---|---|---|---|---|
+| K=4 ANGLE | 8 | 15 | 0.004% | +0.1937 |
+| **K=8 ANGLE** | **8** | **975** | **0.279%** | **+0.2784** |
+| ZZ-FM r=1 | 34 | 469 | 0.134% | +0.2674 |
+
+### Headline
+K=8 ANGLE finds 2× more QBC than ZZ-FM r=1, has +1.1pp higher max advantage, AND is sim-cheaper (depth 8, no entangling). Same #1 triad in sim. **But K=8 ANGLE saturates near classical on real-QPU (iter 16:08Z) — sim and real-QPU diverge.**
+
+### Doctrine update
+The production recipe (`zzfm-r1`) is the right choice for real-QPU on Wukong-180. But **`k8-angle` should be the default for sim-only contexts** (brain recall, drift detection, sim-gate). 65× more QBC = 65× more candidate triads where quantum-kernel beats TF-IDF.
+
+### Side-finding
+K=8 ANGLE finds a QBC triad at classical 0.3092 (`multi-agent-git-index + sibling-active-launch + verify-head`) — below the bidirectional scope rule's 0.4 threshold. The threshold is K=4-specific; K=8 effective threshold is ~0.30. Footnote added to brain entry.
+
+### Artifacts
+- MEMORY.md iter 44 entry with full three-way comparison + encoding recommendation table
+- Brain entry new section "Sim vs real-QPU encoding split" before the conjecture-test section
+- No new scripts (used inline `python -c` for the three-way compare)
+
+### Cost
+Zero cloud burn; ~12s CPU total.
+
+---
+
 ## 2026-05-24T02:15Z — iteration 43 (--rank-by classical bug fix + surfaces +38pp-headroom triad)
 
 Operator: /loop. Fixed the iter-41 bug where `--rank-by classical` only re-sorted top-N-by-r1 (missing high-classical triads outside that subset). Now enumerates the full QBC pool by classical baseline.

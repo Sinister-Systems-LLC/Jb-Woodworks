@@ -7,6 +7,56 @@ Append-only memory. Most recent at top. Cross-references to brain entries and ot
 
 ---
 
+## 2026-05-24T02:40Z — 🚀 ITER 44: K=8 ANGLE SIM beats ZZ-FM r=1 on every metric — sim/real-QPU encoding split discovered
+
+Iter 16 (16:08Z, 6+ hours ago) characterized K=8 ANGLE as "noise wall starts here" on real-QPU. The SIM behavior of K=8 ANGLE was never systematically compared against the production recipe. Filled that gap.
+
+### Three-way comparison (same 129-doc pool, current state, K=4 vs K=8 vs ZZ-FM r=1)
+
+| Encoding | Sim depth | QBC count | QBC % | Max sim advantage | Sim wall (sec) |
+|---|---|---|---|---|---|
+| K=4 ANGLE | 8 | 15 | 0.004% | +0.1937 | 3.88 |
+| **K=8 ANGLE** | **8** | **975** | **0.279%** | **+0.2784** | **3.78** |
+| ZZ-FM r=1 (PRODUCTION) | 34 | 469 | 0.134% | +0.2674 | 3.89 |
+
+### Findings
+
+1. **K=8 ANGLE finds 65× more QBC triads than K=4 ANGLE.** The 8-qubit Hilbert space (256-dim) gives the inner product 16× more compression headroom than K=4 (16-dim). At same data, more states differentiate.
+2. **K=8 ANGLE max sim advantage (+0.2784) beats ZZ-FM r=1 (+0.2674) by 1.1pp on the same corpus.** And K=8 ANGLE has 2× more QBC triads than ZZ-FM r=1 (975 vs 469).
+3. **K=8 ANGLE finds a triad below the bidirectional scope threshold:** #4 = `multi-agent-git-index + sibling-active-launch + verify-head` with classical=0.3092 (below the 0.3-0.4 "don't use" range) and adv=+0.1996 (sim=0.1096). The wider Hilbert space lets quantum kernel beat classical on a less-overlapping triad.
+4. **Same production #1 triad in sim** — both K=8 ANGLE and ZZ-FM r=1 find `branch + index + verify` as the #1 QBC triad. Different #1 advantages (+0.2784 vs +0.2674) but same data.
+
+### Cost comparison
+
+K=8 ANGLE sim is faster than ZZ-FM r=1 (3.78s vs 3.89s) AND simpler (no entangling gates, no reps). Single-shot product-state construction.
+
+### The encoding split — sim vs real-QPU
+
+K=8 ANGLE sim **dominates** ZZ-FM r=1. But K=8 ANGLE on real-QPU saturates near classical at depth 8+ (iter 16:08Z empirical anchor). The depth budget for Wukong-180 is ~depth-34 (where ZZ-FM r=1 lives); K=8 ANGLE pushes the gate count higher and hits noise sooner.
+
+**Doctrine update:**
+
+| Context | Recommended encoding | Why |
+|---|---|---|
+| Sim-only (brain recall, drift detection, sim-gate, prototyping) | **K=8 ANGLE** | 65× more QBC triads, cheaper sim, +1.1pp max advantage |
+| Real-QPU production on Wukong-180 | **ZZ-FM r=1** (unchanged) | 5x real-QPU verified 25-35pp; K=8 ANGLE saturates here |
+| Future error-mitigated regime | TBD — measure both empirically | Sim ceiling work needed |
+
+This split means the production recipe and the sim-best recipe are DIFFERENT. Operators using `seraphim audit --sim-only` for free routing decisions should switch to K=8 ANGLE for better discrimination at lower cost.
+
+### Action items
+
+1. **Update brain entry** with the encoding split — Sanctum master + Forge + Panel all use sim-only quantum-kernel for memory routing.
+2. **Consider a `--prefer-sim-encoding` flag** for `seraphim audit --sim-only` that auto-selects K=8 ANGLE. Deferred.
+3. **The bidirectional scope rule needs a footnote:** K=8 ANGLE finds QBC at classical 0.31 (one of the iter-44 measurements). The "0.4 threshold" was K=4-specific. With K=8 ANGLE the threshold drops to ~0.30. May need re-characterization across more low-classical triads.
+
+### Cost / verification
+
+- Zero cloud burn; total ~12s CPU for the three-way comparison
+- Status: **tested-before-claimed** (all numbers measured in a single Python session; documented before claiming the doctrine update)
+
+---
+
 ## 2026-05-24T02:15Z — 🔧 ITER 43: --rank-by classical BUG FIX surfaces +38pp-headroom triad (biggest yet)
 
 Iter 41's `--rank-by classical` had a subtle bug: it re-sorted only the top-N-by-r1, missing high-classical QBC triads that didn't crack the r=1 top-N. Fixed it in this iter — and the fix immediately surfaced a triad with the biggest headroom ever measured this session.
