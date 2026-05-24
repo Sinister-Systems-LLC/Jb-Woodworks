@@ -1,0 +1,51 @@
+{
+  "_comment": "Author: RKOJ-ELENO :: 2026-05-24 — wake-on-demand bot dispatcher config (C.5)",
+  "global_idle_ttl_sec": 300,
+  "hot_bots": ["custodian", "sinister-bus"],
+  "bots": {
+    "sentinel": {
+      "idle_ttl_sec": 600,
+      "_note": "alarm bot — operator may poll periodically; longer TTL"
+    },
+    "librarian": {
+      "idle_ttl_sec": 180,
+      "_note": "RAG search — typically one-shot recall; shorter TTL"
+    },
+    "translator": {
+      "idle_ttl_sec": 600
+    },
+    "watcher": {
+      "idle_ttl_sec": 300
+    },
+    "auditor": {
+      "idle_ttl_sec": 120,
+      "_note": "secret scan — fast bursts then idle"
+    },
+    "triage": {
+      "idle_ttl_sec": 300
+    },
+    "researcher": {
+      "idle_ttl_sec": 300
+    },
+    "scribe": {
+      "idle_ttl_sec": 120,
+      "_note": "Haiku-backed; cheaper to cold-start than keep warm"
+    },
+    "curator": {
+      "idle_ttl_sec": 120
+    },
+    "custodian": {
+      "_note": "HOT — always-on (in hot_bots above); TTL irrelevant"
+    },
+    "stealth-browser": {
+      "idle_ttl_sec": 600,
+      "_note": "browser cold-start is expensive (~5s Chrome launch); long TTL"
+    },
+    "vault": {
+      "idle_ttl_sec": 600
+    },
+    "sinister-bus": {
+      "_note": "HOT — the dispatcher itself"
+    }
+  }
+}

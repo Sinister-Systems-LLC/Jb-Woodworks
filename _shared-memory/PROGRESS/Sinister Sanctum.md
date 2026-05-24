@@ -4,6 +4,79 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-24 07:30Z — /loop iter 8 — C.5 wake-on-demand + per-project autofix + voice POC + 9-script regression
+
+EVE on Sanctum continuing /loop with operator emphasis "do not stop until everything is done and tested. check yourself to fix things and expand in all directions". Self-audit + 4 expand-items shipped end-to-end.
+
+**T1 Comprehensive 9-script regression test — ALL PASS:**
+
+| # | Script | Result |
+|---|---|---|
+| T1.1 | canonical-protections-check | **0.43s PASS=9 FAIL=0** (was 0.98s iter 7; 1.66s iter 5; ~60s+ pre-fix) |
+| T1.2 | brain-orphan-check | 150/117/33 **OK** (Rule 7.5 fix holding) |
+| T1.3 | telemetry-rollup | per_project_protections field present + parses |
+| T1.4 | per-project-protections | 3/22 fully PASS (baseline; 15 weak) |
+| T1.5 | inbox-manifest-build | 75 unread / 35 lanes |
+| T1.6 | cross-lane-impact-diff | dry-run clean (last commit non-canonical) |
+| T1.7 | clone-missing-sources | 0 candidates (operator-box correct) |
+| T1.8 | EVE.exe `dist/EVE/EVE.exe --version` | v0.2.0 exit 0 |
+| T1.9 | grant-autonomy step 4 | **2/14 MCPs Connected** (ruflo + vault; 12 bot MCPs NOT registered) |
+
+**Self-audit finding:** 12 bot MCPs (sentinel/translator/watcher/auditor/sinister-bus/custodian/stealth-browser/triage/librarian/researcher/scribe/curator) are NOT in `claude mcp list`. They're in `~/.claude/.mcp.json` but never actually loaded. C.5 wake-on-demand (shipped this iter) is exactly the right intervention.
+
+**X1 C.5 wake-on-demand bot dispatcher SHIPPED:**
+
+- NEW `tools/sinister-wake/wake_dispatcher.py` — `WakeDispatcher` class implementing the doctrine (lazy-spawn / idle-kill / hot-set / health-peek). Thread-safe; stdlib only.
+- NEW `tools/sinister-wake/bot-config.json` — per-bot `idle_ttl_sec` config (HOT_BOTS={custodian,sinister-bus}; per-bot TTL 120-600s based on usage pattern).
+- NEW `tools/sinister-wake/README.md` — integration path for bus lane (~30 LOC patch + 3 new MCP tools to expose).
+- Smoke PASS: `python wake_dispatcher.py` reports 13 configured bots, all peek as `state=cold` (correct).
+- Standalone (no edits to bots/agents/sinister-bus/ — respects lane discipline). Bus lane can wire in when ready.
+
+**X2 per-project-protections autofix script SHIPPED:**
+
+- NEW `automations/per-project-protections-autofix.ps1` — runs PP check + creates stubs for weak lanes (CLAUDE.md / .claude/settings.json / heartbeat / PROGRESS log). Conservative: never overwrites; PP5 (brain entry) flagged for operator/lane action.
+- Bug fixed during smoke: array-splat for `-Json` flag was positional; switched to hashtable splat.
+- Smoke PASS (-DryRun): identified 15 weak lanes, 47 stubs would be created.
+- **NOT auto-applied to other lanes** — per lane discipline, ship-only. Operator runs when ready: `pwsh automations\per-project-protections-autofix.ps1 -DryRun` to preview; remove -DryRun to apply.
+
+**X3 voice prompting Path A POC stubs SHIPPED:**
+
+- NEW `tools/sinister-voice/voice_recorder.py` — push-to-record hotkey daemon (3 modes: `--selftest` / `--record-once` / `--daemon`).
+- Safe defaults: daemon REFUSES to start without `SINISTER_VOICE_ENABLED=1`. record-once requires explicit invocation. No autostart.
+- Dep gating: deps (`keyboard`, `sounddevice`, `soundfile`) are operator-installed; selftest reports missing.
+- Smoke PASS (`--selftest`): config dump + per-dep status (3 missing as expected; daemon would refuse).
+- Voice-inbox dir gitignored from iter 6.
+- Operator Q1-Q5 (transcription provider / hotkey / dispatch target / retention / Path B) still pending — script handles whichever path operator picks via env vars.
+
+**Composes with:**
+
+- `wake-on-demand-bot-dispatcher-2026-05-23` (now has implementation, status: proposed → ready-for-bus-lane-wire)
+- `no-bullshit-tested-before-claimed-doctrine-2026-05-23` (every X-item has same-turn smoke evidence)
+- `multi-agent-branch-contention-isolation-pattern` (X1 + X2 are standalone; don't touch sibling lanes' files)
+- `forge-memory-usage-2026-05-23` (orthogonal: wake-on-demand is fleet-service dispatch; forge-memory is per-agent working memory)
+- `voice-prompting-poc-2026-05-23/spec.md` (now has implementation stub matching the spec)
+
+**Files touched (sanctum-lane only):**
+
+- NEW `tools/sinister-wake/wake_dispatcher.py` (X1)
+- NEW `tools/sinister-wake/bot-config.json` (X1)
+- NEW `tools/sinister-wake/README.md` (X1)
+- NEW `automations/per-project-protections-autofix.ps1` (X2)
+- NEW `tools/sinister-voice/voice_recorder.py` (X3)
+- EDIT `_shared-memory/PROGRESS/Sinister Sanctum.md` (this entry)
+
+**Brain status:** 150 on-disk / 117 indexed / 33 orphans / **OK** (117/150 ceiling — 33 entries of headroom). No new doctrines added (per Rule 7.5 conservative posture; X1 implementation matches existing wake-on-demand doctrine).
+
+**Next iter plan:**
+
+- Bus lane wire-in for C.5 (operator-gated; one PR/commit on bus side to import WakeDispatcher)
+- Operator answers voice POC Q1-Q5 → ship transcribe.py + dispatch.py
+- EVE.exe rebuild with sibling's v0.3.0 source (after they commit the lib refactor)
+- Per-lane PP autofix opt-in (operator runs the script)
+- Continue master plan Section C expansion (C.7 browser bridge, C.8 mermaid Stage-3, C.9 EVE.exe full)
+
+---
+
 ## 2026-05-24 06:55Z — /loop iter 7 — Rule 7.5 metric fix + git-add fsmonitor + regression test
 
 EVE on Sanctum continuing /loop with test-first emphasis. Short, focused iter — 3 tasks shipped, 1 sibling-merge respected.
