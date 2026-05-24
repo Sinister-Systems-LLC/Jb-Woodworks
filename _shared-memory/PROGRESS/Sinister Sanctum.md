@@ -4,6 +4,30 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-24 10:30Z — /loop iter 21 — audit-only iter (canonical-protections-reference still current)
+
+Quick health check. No file changes needed.
+
+**T1 Audit canonical-protections-reference snapshots:**
+- iter 5 snapshots at `_shared-memory/canonical-protections-reference/{user,sanctum}-settings.json.canonical`
+- Compared via `diff -q` against live `~/.claude/settings.json` + `D:\Sinister Sanctum\.claude\settings.json`
+- Result: **byte-identical** — no drift since iter 5
+- Auto-restore (C.4) would correctly splice good keys from this snapshot if a protection ever fails
+
+**Note:** Initial `head -5 + diff` falsely reported drift (different alphabetical prefixes truncated). Full `diff -q` confirmed identical. No changes committed.
+
+**T1 Sibling activity:** 2 seraphim test commits (iters 85/86 budget-guard + protection tests). No sanctum-lane work needed.
+
+**Brain status:** 152/123/29 APPROACHING (unchanged from iter 20).
+
+**Master plan:** unchanged 19/24 (~83%).
+
+**Files touched:** none (audit-only).
+
+**Net value:** confirmed reference snapshots are still operator-canonical baseline. C.4 auto-restore remains safe.
+
+---
+
 ## 2026-05-24 10:25Z — /loop iter 20 — codified PowerShell named-param splat doctrine (3 empirical hits)
 
 EVE on Sanctum. Saw a recurring pattern across iters 4/5/16 — array-splat + case-insensitive var-shadowing — codified as brain doctrine to prevent future EVE recursion.
