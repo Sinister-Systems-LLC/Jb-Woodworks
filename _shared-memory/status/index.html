@@ -140,6 +140,11 @@
     <div id="inboxes-body">loading…</div>
   </div>
 
+  <div class="card" id="card-protections-per-project">
+    <h2>Per-project protections (PP1-PP5)</h2>
+    <div id="ppp-body">loading…</div>
+  </div>
+
   <div class="card" id="card-progress">
     <h2>Recent ships (last 5)</h2>
     <div id="progress-body">loading…</div>
@@ -336,6 +341,40 @@ async function loadInboxes() {
 }
 
 // ---- Recent ships (PROGRESS log) -----------------------------------------
+// ---- Per-project protections (iter 10 X1) --------------------------------
+async function loadPerProjectProtections() {
+  // Sourced from telemetry-rollup _latest.json -> per_project_protections.
+  const data = await fetchJSON(ROOT + '/telemetry/_latest.json');
+  if (data === null) {
+    el('ppp-body').innerHTML = '<div class="err">_latest.json not readable (run automations/telemetry-rollup.ps1)</div>';
+    return;
+  }
+  const ppp = data.per_project_protections;
+  if (!ppp || !ppp.per_lane) {
+    el('ppp-body').innerHTML = '<div style="color:var(--dim)">no per_project_protections field — re-run telemetry-rollup.ps1 (iter 6+ output)</div>';
+    return;
+  }
+  let html = '';
+  html += row('Full PASS (5/5)', pill(`${ppp.full_pass_count} / ${ppp.lane_count}`, ppp.full_pass_count >= ppp.lane_count / 2 ? 'green' : 'amber'));
+  html += '<table style="margin-top:8px"><tr style="color:var(--dim);font-size:10px"><td>Lane</td><td style="text-align:center">PP1</td><td style="text-align:center">PP2</td><td style="text-align:center">PP3</td><td style="text-align:center">PP4</td><td style="text-align:center">PP5</td><td style="text-align:right">Score</td></tr>';
+  // Sort: weak first (so operator sees what needs attention)
+  const lanes = Object.entries(ppp.per_lane).map(([name, info]) => {
+    const score = parseInt((info.score || '0/5').split('/')[0], 10);
+    return { name, info, score };
+  }).sort((a, b) => a.score - b.score);
+  for (const { name, info, score } of lanes) {
+    const cellOK = '<td style="text-align:center;color:var(--green)">✓</td>';
+    const cellNo = '<td style="text-align:center;color:var(--dim)">·</td>';
+    const cells = [info.pp1, info.pp2, info.pp3, info.pp4, (info.pp5_brain_hits || 0) > 0]
+      .map(b => b ? cellOK : cellNo).join('');
+    const scoreKind = score === 5 ? 'green' : score >= 3 ? 'amber' : 'red';
+    html += `<tr><td>${name}</td>${cells}<td style="text-align:right">${pill(info.score, scoreKind)}</td></tr>`;
+  }
+  html += '</table>';
+  html += '<div style="margin-top:8px;font-size:11px;color:var(--dim)">Source: <code>telemetry-rollup.ps1 per_project_protections</code></div>';
+  el('ppp-body').innerHTML = html;
+}
+
 async function loadProgress() {
   const md = await fetchText(ROOT + '/PROGRESS/Sinister Sanctum.md');
   if (md === null) {
@@ -367,6 +406,7 @@ function nowISO() { return new Date().toISOString().replace(/\.\d{3}/, ''); }
     loadQueue(),
     loadBrain(),
     loadInboxes(),
+    loadPerProjectProtections(),
     loadProgress()
   ]);
 })();

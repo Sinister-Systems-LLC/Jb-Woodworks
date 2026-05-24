@@ -301,3 +301,6 @@ _archive/**/*.tar
 
 # Voice prompting POC - audio + transcripts are operator-private (per voice-prompting-poc spec 2026-05-23)
 _shared-memory/voice-inbox/
+
+# Resume-point search index (regenerated nightly; ~1MB; not source of truth)
+_shared-memory/resume-search-index.json

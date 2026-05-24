@@ -4,6 +4,52 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-24 08:25Z — /loop iter 10 — dashboard PP card + C.11 resume-search index + regression
+
+EVE on Sanctum continuing /loop. Test-first emphasis maintained.
+
+**T1 Regression test — all PASS:**
+- EVE.exe v0.3.0 (built iter 9): `--version` returns clean
+- C.5 wake smoke: PASS=15 FAIL=0
+- Voice selftest: 3 deps missing as expected; daemon refuses
+- Telemetry: brain 150/117 OK / per_project 4/22 PASS / inbox 75 unread
+- 15 weak lanes (<4) — same as iter 9 (sibling work hasn't moved scores)
+
+**X1 Dashboard polish — PP card SHIPPED:**
+- EDIT `_shared-memory/status/index.html` — new `card-protections-per-project` card.
+- JS `loadPerProjectProtections()` reads `per_project_protections.per_lane` from `_latest.json`, renders a sortable table: Lane / PP1✓✗ / PP2 / PP3 / PP4 / PP5 / Score-pill (red <3, amber 3-4, green 5).
+- Sorts weak lanes first (operator sees what needs attention).
+- Wired into the `Promise.all` bootstrap.
+
+**X2 C.11 resume-point search index SHIPPED:**
+- NEW `automations/index-resume-search.ps1` — builds `_shared-memory/resume-search-index.json` from 4 sources: resume-points (188), PROGRESS sections (465), git commits (200), brain entries (117). Total 970 entries.
+- Each entry: `{source, lane, key, ts, snippet, path}` — feeds launcher's `Pick-ResumeRow` scorer.
+- Smoke: built 970 entries; sample search "wake-on-demand" returned 8 hits across resume + progress.
+- Gitignored: file regenerated nightly via SinisterCustodian or on-demand.
+
+**Composes with:**
+- `launcher-v6.1-jcode-style-directives-2026-05-23` (resume-search-index feeds the existing free-text scorer)
+- `bot-fleet-quick-reference-2026-05-23` (search index includes brain row for it)
+- `no-bullshit-tested-before-claimed-doctrine-2026-05-23` (every claim verified same-turn)
+
+**Files touched:**
+- EDIT `_shared-memory/status/index.html` (X1 PP card)
+- NEW `automations/index-resume-search.ps1` (X2 indexer)
+- EDIT `.gitignore` (X2 search-index output gitignored)
+- EDIT `_shared-memory/PROGRESS/Sinister Sanctum.md` (this entry)
+- NOT-COMMITTED (gitignored): `_shared-memory/resume-search-index.json` (970 entries)
+
+**Brain status:** 150 on-disk / 117 indexed / 33 orphans / OK. No new doctrines.
+
+**Next iter plan:**
+- Wire `index-resume-search.ps1` into launcher (replace inline scorer with index lookup)
+- Wire `index-resume-search.ps1` into nightly cron (SinisterCustodian)
+- C.7 browser bridge Layer B (proposed; operator-gated XPI install)
+- Telemetry: add `per_project_protections` trend graph (need historical samples first)
+- Operator-side: PP autofix opt-in / voice POC Q1-Q5 / EVE.exe Desktop deploy
+
+---
+
 ## 2026-05-24 07:55Z — /loop iter 9 — EVE.exe v0.3.0 REBUILT + C.5 wake e2e PASS + brain status bump
 
 EVE on Sanctum continuing /loop. Heavy test focus per operator directive.
