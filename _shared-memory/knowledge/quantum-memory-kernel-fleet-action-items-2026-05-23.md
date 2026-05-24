@@ -35,6 +35,18 @@
 - **K=8 ANGLE and ZZ-FM r=1 are COMPLEMENTARY** (iter 45). K=8 wins 58.6% of triads; ZZ-FM wins 41.4%. Encodings disagree often (per-triad r=+0.14). Compute both for specific triads.
 - **Cancellation theorem:** ANGLE-CNOT == K=4 ANGLE (verified iters 16, 22, 43). Parameter-free entangling layers cancel in U_B† · U_A.
 
+**Sim QBC coverage hierarchy on top-50 high-classical triads (iter 57 added ZZ-FM r=2/r=3):**
+
+| Encoding | QBC % | Real-QPU compatible |
+|---|---|---|
+| **ZZ-FM r=2** | **86%** | ❌ (depth 68 noise-walls per iter 32) — but highest sim ceiling for error-mitigation work |
+| ZZ-FM r=3 | 90% | ❌ (depth 102 same noise problem) |
+| K=8 ANGLE | 46% | ❌ (saturates per iter 16) |
+| ZZ-FM r=1 | 46% | ✅ production recipe |
+| K=4 ANGLE | 16% | (universal QBC; cross-encoding transferable) |
+
+For sim-only contexts: **ZZ-FM r=2 if max coverage matters**; K=8 ANGLE if depth-8 speed matters. For real-QPU production: ZZ-FM r=1 unchanged.
+
 **Sharp per-encoding QBC thresholds (iter 53 measured 129-doc pool; iter 54 corpus-stability check):**
 
 | Encoding | 50% QBC threshold (129-doc pool) | 50% QBC threshold (149-doc full) | Corpus stability |

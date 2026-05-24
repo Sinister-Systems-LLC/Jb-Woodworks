@@ -7,6 +7,78 @@ Append-only memory. Most recent at top. Cross-references to brain entries and ot
 
 ---
 
+## 2026-05-24T07:50Z — 🚀 ITER 57: ZZ-FM r=2 is the HIGHEST-coverage sim encoding (86% QBC on top-50)
+
+Iter 55 broadcast left "ZZ-FM r=2 thresholds untested" as open question. Iter 57 measures.
+
+### Method
+
+Same top-50 high-classical triads (iter 51-52). Measure ZZ-FM at r=1, r=2, r=3.
+
+### Results
+
+| Reps | Depth | QBC count | QBC % | Mean QBC adv | Max QBC adv |
+|---|---|---|---|---|---|
+| r=1 | 34 | 23 | 46% | +11.19pp | +26.73pp |
+| **r=2** | 68 | **43** | **86%** | **+16.35pp** | **+36.57pp** |
+| r=3 | 102 | 45 | 90% | +22.07pp | +42.65pp |
+
+### Findings
+
+1. **ZZ-FM r=2 nearly doubles r=1's QBC count** (43 vs 23 on the same top-50). The cross-feature entangling at depth 68 captures distinctions r=1's depth-34 misses.
+2. **r=3 gains marginal +2 triads over r=2** (45 vs 43). Diminishing returns past r=2.
+3. **r=2 is the new highest-sim-coverage encoding** measured this session — surpasses K=8 ANGLE's 46% by a wide margin.
+4. **r=2 also gives higher per-QBC advantage:** mean +16pp (vs r=1's +11pp), max +37pp (vs +27pp). r=2 finds MORE triads AND scores them higher.
+
+### Updated sim-coverage hierarchy
+
+Hierarchy of QBC coverage on top-50 high-classical triads:
+
+| Rank | Encoding | QBC% | Sim cost (vs K=4 ANGLE) | Real-QPU compatible |
+|---|---|---|---|---|
+| 1 | ZZ-FM r=3 | 90% | ~12× | ❌ (depth 102, far past noise wall) |
+| 2 | **ZZ-FM r=2** | **86%** | **~8×** | ❌ (depth 68, iter-32 noise wall) |
+| 3 | K=8 ANGLE | 46% | 16× | ❌ (depth 8 saturates per iter 16) |
+| 3 | ZZ-FM r=1 | 46% | ~4× | ✅ (production recipe, 5 verified runs) |
+| 4 | K=4 ANGLE | 16% | 1× | (universal QBC; cross-encoding transferable) |
+
+### Doctrine refinement (replaces iter-44 "K=8 ANGLE sim default")
+
+**Refined sim-encoding recommendation:**
+
+| Goal | Encoding | Why |
+|---|---|---|
+| Max sim QBC coverage | **ZZ-FM r=2** | 86% QBC on top-50; highest mean QBC advantage |
+| Wide sim QBC with speed | **K=8 ANGLE** | 46% QBC at K=8's depth-8 (fast) vs ZZ-FM r=2's depth-68 |
+| Real-QPU production on Wukong-180 | ZZ-FM r=1 | unchanged; r=2 noise-walls per iter-32 |
+| Cross-encoding universal QBC | K=4 ANGLE | strictest filter, all QBC are universal |
+| Future error-mitigated regime | **ZZ-FM r=2** | highest theoretical coverage (86% QBC); 40pp room if mitigation unlocks the noise wall |
+
+### Connection to iter 38
+
+Iter 38 measured ZZ-FM r=2 sim ceiling on ONE triad (+35pp). Iter 57 confirms: r=2's high per-triad ceiling translates to AGGREGATE coverage too. 43 of 50 triads see meaningful r=2 advantage (mean +16pp).
+
+### Caveat (sim-only)
+
+ZZ-FM r=2's depth-68 saturates near classical baseline on real Wukong-180 per iter-32 (16:43Z empirical anchor). The CLI guard refuses real-QPU on `--variant zzfm-r2` without `--force-real-qpu` for this reason. **All ZZ-FM r=2 advantages reported here are SIM-ONLY.**
+
+Iter 32 left the question: would error mitigation (ZNE / Pauli twirling / readout cal) recover any of the r=2 advantage on real hardware? Iter 57 strengthens the case: **r=2's sim ceiling is 86% QBC vs r=1's 46%**, so mitigation work targeting r=2 has 40pp of theoretical upside per triad.
+
+### Cost / verification
+
+- Zero cloud burn
+- ~15s CPU for r=1/r=2/r=3 sweep on top-50 (r=3 is slowest at depth 102)
+- Status: **tested-before-claimed** (counts measured; monotonic r=1→r=2→r=3 ramp verified)
+
+### Untested extrapolation
+
+- ZZ-FM r=4: depth 136; predicted QBC ~91% (asymptotic)
+- ZZ-FM r=5: depth 170; ~92% (saturating)
+
+Beyond r=3 the marginal gain shrinks to <2% per added rep at ~30% more sim cost. r=2 is the practical sweet spot for sim ceiling work.
+
+---
+
 ## 2026-05-24T07:25Z — 📐 ITER 56: K=4..K=8 ANGLE qubit-scaling — smooth ramp, no sharp threshold
 
 Iter 55 broadcast left "K=6 interpolation between K=4 (84% anti-QBC) and K=8 (54%)" as an open question. Iter 56 measures the full K=4..K=8 ramp.

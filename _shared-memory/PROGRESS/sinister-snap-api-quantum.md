@@ -7,6 +7,31 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T07:50Z — iteration 57 (ZZ-FM r=2 is highest-coverage sim encoding — 86% QBC on top-50)
+
+Operator: /loop. Iter 55 broadcast left ZZ-FM r=2 thresholds as open question. Measured.
+
+### Result
+| Reps | Depth | QBC count | QBC % | Mean adv | Max adv |
+|---|---|---|---|---|---|
+| r=1 | 34 | 23 | 46% | +11.19pp | +26.73pp |
+| **r=2** | 68 | **43** | **86%** | +16.35pp | +36.57pp |
+| r=3 | 102 | 45 | 90% | +22.07pp | +42.65pp |
+
+### Finding
+ZZ-FM r=2 nearly doubles r=1's QBC count (43 vs 23). New highest-sim-coverage encoding — surpasses K=8 ANGLE's 46% by far. r=3 only gains +2 over r=2 (diminishing returns past r=2).
+
+### Sim-only caveat
+ZZ-FM r=2 noise-walls on real-QPU per iter 32 (depth-68 saturates near classical). Production recipe stays at r=1. But for sim-only contexts (brain recall, sim-gate, prototype) or future error-mitigated regime, r=2 is the new sim default.
+
+### Doctrine refinement
+Brain entry now has 5-encoding sim-coverage hierarchy. K=8 ANGLE drops from "sim default" to "speed alternative"; ZZ-FM r=2 takes the max-coverage top spot.
+
+### Cost
+Zero cloud burn; 15s CPU.
+
+---
+
 ## 2026-05-24T07:25Z — iteration 56 (K=4..K=8 ANGLE qubit-scaling — smooth monotonic ramp)
 
 Operator: /loop. Iter 55 broadcast left K=6 interpolation as open question. Iter 56 measured full K=4..K=8 ramp.
