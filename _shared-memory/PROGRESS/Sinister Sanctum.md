@@ -4,6 +4,63 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-24 08:05Z — /loop iter 12 — install-sinister-doctor-task + B.2 + B.8 sweeps (19/24 master-plan)
+
+EVE on Sanctum continuing /loop. Closing out remaining master plan low-value items.
+
+**T1 sinister-doctor regression (new baseline):** Status YELLOW (per-project 4/22 < 50%); P1-P9 PASS=9 FAIL=0; brain 117 indexed OK; inbox 84/35. Elapsed 0.36s quick-mode.
+
+**X1 install-sinister-doctor-task.ps1 SHIPPED:**
+- NEW `automations/install-sinister-doctor-task.ps1` — registers Windows Scheduled Task `SinisterDoctorTask` running daily at 03:30 local
+- Action: `powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File sinister-doctor.ps1 -Html`
+- Writes HTML report to `_shared-memory/sinister-doctor-<UTC>.html` daily
+- Idempotent: `/F` force-overwrite on re-run
+- Reversible: `schtasks /Delete /TN SinisterDoctorTask /F`
+- `-DryRun` flag for preview
+- Smoke PASS (dry-run shows correct schtasks command)
+- Operator install: `pwsh automations\install-sinister-doctor-task.ps1` (no elevation needed for /RL omitted; add `-RL HIGHEST` if needed)
+
+**B.2 Resume-point chain cleanup DONE:**
+- Was: 22 entries in `_shared-memory/resume-points/Sinister Sanctum/` (over 20 ceiling)
+- Moved 2 oldest (`2026-05-21T181202Z.json`, `2026-05-23T023236Z.json`) to `_shared-memory/resume-points/Sinister Sanctum/_archive/`
+- Now: **20 entries** (at ceiling)
+- Future: `resume-point-write.ps1` already prunes to 20 on each write (per iter 1 brain entry); manual sweep was for the existing accumulation
+
+**B.8 Sanctum inbox sweep DONE (no-op):**
+- Inventory: 5 messages, all 0 days old (fresh)
+- 5 messages already in `_archive/` from prior sweeps
+- No action needed — inbox is healthy
+
+**Master plan after iter 12: 19/24 shipped (~79%):**
+
+| Status | Count | Items |
+|---|---|---|
+| ✅ Shipped | 19 | B.1, B.3-B.7, B.9, B.10 + C.1, C.2, C.4, C.5, C.6, C.9, C.10, C.11, C.13, C.14 |
+| ✅ Now shipped | 1 | B.2 (this iter) |
+| ✅ N/A this iter | 1 | B.8 (no action needed; inbox clean) |
+| 🟡 Operator-gated | 4 | C.3 L3 guard, C.7 browser, C.8 mermaid Rust, C.12 context-cleaner impl |
+
+**Only 4 items left** — all operator-gated. Master plan ~83% complete (counting B.8 no-op as done). Sanctum lane is essentially feature-complete on the original plan.
+
+**Composes with:**
+- `sinister-doctor.ps1` (X1 installs scheduled task running this)
+- `no-bullshit-tested-before-claimed-doctrine-2026-05-23` (B.2 verified by file count delta + dir listing; B.8 verified by age check)
+
+**Files touched:**
+- NEW `automations/install-sinister-doctor-task.ps1` (X1)
+- MOVED 2 resume-points to `_shared-memory/resume-points/Sinister Sanctum/_archive/` (B.2)
+- EDIT `_shared-memory/PROGRESS/Sinister Sanctum.md` (this entry)
+
+**Brain status:** 150/117/33 OK. No new doctrines.
+
+**Next iter plan:**
+- Operator-side install of `SinisterDoctorTask` (or `pwsh install-sinister-doctor-task.ps1` from elevated shell)
+- Operator answers: voice POC Q1-Q5 / C.3 L3 guard / C.7 browser / C.8 mermaid / C.12 context impl
+- Self-paced low-value items: stale brain-orphan cleanup, fix per-project autofix to handle the lane-display edge cases
+- Possibly: ship a "fleet-tour" demo script that runs sinister-doctor + EVE.exe + autofix preview as one demo for new operators
+
+---
+
 ## 2026-05-24 08:00Z — /loop iter 11 — C.1 sinister-doctor SHIPPED + master plan audit (17/24 shipped over 10 iters)
 
 EVE on Sanctum continuing /loop. Quick iter: regression + meta-CLI + audit.
