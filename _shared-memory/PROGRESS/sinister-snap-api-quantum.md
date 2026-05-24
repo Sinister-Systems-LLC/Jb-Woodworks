@@ -7,6 +7,35 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T03:00Z — iteration 45 (K=8 ANGLE and ZZ-FM r=1 are COMPLEMENTARY — iter 44 over-generalized)
+
+Operator: /loop. Iter 44 said K=8 ANGLE "dominates" ZZ-FM r=1 — that was aggregate-true but per-triad false. Tested with 157-triad union sweep.
+
+### Result
+| Bucket | Count | Mean Δ | Mean classical |
+|---|---|---|---|
+| K=8 wins | 92 (58.6%) | +0.088 | 0.224 |
+| ZZ wins | 65 (41.4%) | -0.051 | 0.288 |
+
+Pearson(classical, Δ(K8-ZZ)) = **-0.4237**. Higher classical → ZZ-FM more likely to win. K=8 is the wide net (r=+0.18 with classical); ZZ-FM is the high-classical specialist (r=+0.59 with classical).
+
+### Doctrine refinement
+Iter-44's single rule "K=8 ANGLE for sim, ZZ-FM for real-QPU" replaced with multi-rule table (5 use cases). Brain entry updated.
+
+### Artifacts
+- `sim-encoding-preference-sweep.py` (new)
+- `outputs/encoding-preference-sweep.json` (157-triad union data + correlations)
+- MEMORY.md iter 45 entry (5-table doctrine refinement)
+- Brain entry "K=8 ANGLE vs ZZ-FM r=1 are COMPLEMENTARY" section
+
+### Cost
+Zero cloud burn; 7.6s CPU for 157-triad sweep.
+
+### Iter-44 audit verdict
+Aggregate claim correct; per-triad generalization was wrong. Caught + corrected within one iter. No-bullshit doctrine satisfied.
+
+---
+
 ## 2026-05-24T02:40Z — iteration 44 (K=8 ANGLE SIM dominates ZZ-FM r=1 — sim/real-QPU encoding split discovered)
 
 Operator: /loop. K=8 ANGLE sim behavior had never been compared against the production recipe. Three-way head-to-head on the same 129-doc pool:

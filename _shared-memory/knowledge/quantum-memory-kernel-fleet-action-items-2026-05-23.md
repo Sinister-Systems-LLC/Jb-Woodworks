@@ -178,6 +178,30 @@ The git-coordination thematic cluster (multi-agent + verify-head + branch-coord 
 
 ---
 
+## K=8 ANGLE vs ZZ-FM r=1 are COMPLEMENTARY (added 2026-05-24T03:00Z iter 45)
+
+Iter 44 said K=8 ANGLE "dominates" ZZ-FM r=1 in sim. **That's aggregate-true but per-triad false.** Iter 45 measured 157 union top-100 triads under both encodings:
+
+- K=8 ANGLE wins 92/157 (58.6%); mean Δ +0.088
+- ZZ-FM r=1 wins 65/157 (41.4%); mean Δ -0.051
+- Pearson(classical, Δ(K8-ZZ)) = **-0.4237** (moderate negative): higher classical → ZZ-FM more likely to win
+- Pearson(classical, ZZ adv) = +0.5944 (strong)
+- Pearson(classical, K8 adv) = +0.1774 (weak)
+
+**Mechanism:** K=8 ANGLE is the wider net (finds QBC at all classical levels). ZZ-FM r=1 is the high-classical specialist (cross-feature gates leverage surface-vocabulary overlap).
+
+**Refined encoding selection rule (replaces iter-44 single rule):**
+
+| Goal | Best encoding |
+|---|---|
+| Wide exploratory QBC search | K=8 ANGLE |
+| Real-QPU on Wukong-180 (any classical) | ZZ-FM r=1 |
+| Brain-recall tiebreaker (general) | K=8 ANGLE |
+| Sim-only audit when classical > 0.5 known | ZZ-FM r=1 |
+| Specific-triad characterization | compute both (sim is cheap) |
+
+Reproducer: `projects/sinister-snap-api-quantum/sim-encoding-preference-sweep.py`. Data: `outputs/encoding-preference-sweep.json`.
+
 ## Sim vs real-QPU encoding split (added 2026-05-24T02:40Z iter 44)
 
 The production recipe `--variant zzfm-r1` is validated for real-QPU on Wukong-180 (5 runs, 25-35pp, mean 31pp). But for **sim-only contexts** (brain recall, drift detection, sim-gate for new triads, prototyping), `--variant k8-angle` dominates.

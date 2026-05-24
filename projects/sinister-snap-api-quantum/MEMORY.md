@@ -7,6 +7,85 @@ Append-only memory. Most recent at top. Cross-references to brain entries and ot
 
 ---
 
+## 2026-05-24T03:00Z — 🧩 ITER 45: K=8 ANGLE and ZZ-FM r=1 are COMPLEMENTARY, not redundant
+
+Iter 44 said K=8 ANGLE "dominates" ZZ-FM r=1 in sim. **That's true in aggregate but misses a structural nuance** — they're picking up DIFFERENT structural properties of triads. Iter 45 measured which triads favor which encoding.
+
+### Method
+
+- Computed top-100 QBC triads under K=8 ANGLE AND under ZZ-FM r=1
+- Took the union (157 unique triads)
+- For each triad: computed advantage under BOTH encodings
+- Bucketed by Δ = K8_adv - ZZ_adv (positive → K=8 wins; negative → ZZ wins)
+- Computed Pearson correlations between classical / K8 / ZZ / Δ
+
+Reproducer: `projects/sinister-snap-api-quantum/sim-encoding-preference-sweep.py`. Data: `outputs/encoding-preference-sweep.json`. Cost: 7.6s CPU.
+
+### Findings
+
+**Bucket summary** (157 union triads):
+
+| Bucket | Count | Mean Δ | Mean classical |
+|---|---|---|---|
+| K=8 wins | 92 (58.6%) | +0.088 | 0.224 |
+| ZZ-FM wins | 65 (41.4%) | -0.051 | 0.288 |
+| Ties | 0 | — | — |
+
+K=8 wins more often AND by a bigger margin when it wins. But ZZ-FM wins 41% of the union and its wins concentrate at higher classical baselines.
+
+**Pearson correlations across all 157 triads:**
+
+| Pair | r | Interpretation |
+|---|---|---|
+| classical ↔ Δ(K8-ZZ) | **-0.4237** | moderate negative: higher classical → ZZ-FM wins more |
+| classical ↔ K=8 advantage | +0.1774 | weak: K=8 advantage barely correlates with classical |
+| classical ↔ ZZ advantage | +0.5944 | strong: ZZ advantage strongly classical-driven |
+| K=8 vs ZZ advantage (per triad) | +0.1356 | weak: encodings disagree most of the time |
+
+### Three corrections / nuances to iter 44
+
+1. **iter-44's "K=8 ANGLE dominates ZZ-FM r=1" was an aggregate claim.** Per-triad, ZZ-FM wins 41.4% of the time. K=8 is the better default but ZZ-FM is the better tool for specific classes of triads.
+2. **K=8 finds QBC EVERYWHERE in classical range.** It's a wide net (r=+0.18 with classical = barely correlated). The "65× more QBC" finding from iter 44 = K=8 picking up many low/mid-classical triads that ZZ-FM doesn't see.
+3. **ZZ-FM is the high-classical specialist.** Its cross-feature entangling gates leverage surface-vocabulary overlap. r=+0.59 with classical. When classical > 0.5+, ZZ-FM typically wins.
+
+### Refined doctrine for encoding selection
+
+| Goal | Best encoding | Why |
+|---|---|---|
+| Wide exploratory QBC search | **K=8 ANGLE** | 65× more QBC; finds opportunities at all classical levels |
+| High-confidence production triad (classical > 0.5) | **ZZ-FM r=1** | Cross-feature gates leverage surface overlap; verified +30pp on Wukong-180 |
+| Real-QPU on Wukong-180 (any classical) | **ZZ-FM r=1** | K=8 ANGLE noise-walls; ZZ-FM r=1 verified |
+| Brain recall tiebreaker | **K=8 ANGLE** | Wider QBC coverage = more discriminative situations triggered |
+
+### Extreme examples (from top-3 of each bucket)
+
+**K=8 ANGLE wins biggest** (Δ = +0.2775):
+- `browser-bridge-integration-shape + jcode-feature-matrix + per-project-bot-adoption-playbook`
+- classical 0.1891 (LOW), K=8 adv +0.1027, ZZ adv -0.1747
+- Diverse-topic, low-classical → K=8's wider Hilbert space picks up subtle differentials ZZ misses
+
+**ZZ-FM r=1 wins biggest** (Δ = -0.2318):
+- `mcp-server-failure-fix + per-project-bot-adoption + spawned-window-capabilities`
+- classical 0.2860 (moderate), K=8 adv -0.1683 (anti-QBC), ZZ adv +0.0635
+- Here K=8 ANGLE actually HURTS (anti-QBC) while ZZ-FM helps
+
+### Implication for fleet doctrine
+
+The earlier rule "use K=8 ANGLE for sim-only, ZZ-FM r=1 for real-QPU" is **incomplete**. The corrected rule:
+
+- For sim-only contexts:
+  - **General case**: K=8 ANGLE (wider coverage, more QBC opportunities)
+  - **If classical > 0.5 known in advance**: ZZ-FM r=1 (often wins here even in sim)
+  - **For specific triad audit**: compute BOTH (sim is cheap; one inversion-overlap call per encoding)
+- For real-QPU on Wukong-180: ZZ-FM r=1 unchanged (K=8 ANGLE noise-walls)
+
+### Cost / verification
+
+- Zero cloud burn; 7.6s CPU for 157-triad union sweep
+- Status: **tested-before-claimed** (all numbers measured + JSON saved + table reproduces; iter 44 over-generalization caught + nuanced here)
+
+---
+
 ## 2026-05-24T02:40Z — 🚀 ITER 44: K=8 ANGLE SIM beats ZZ-FM r=1 on every metric — sim/real-QPU encoding split discovered
 
 Iter 16 (16:08Z, 6+ hours ago) characterized K=8 ANGLE as "noise wall starts here" on real-QPU. The SIM behavior of K=8 ANGLE was never systematically compared against the production recipe. Filled that gap.
