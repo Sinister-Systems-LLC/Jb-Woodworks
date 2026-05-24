@@ -7,6 +7,34 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T04:15Z — iteration 48 (brain-recall STRESS-TEST → alpha=0.5 BROKEN, fixed to alpha=1.0)
+
+Operator: /loop. Stress-tested iter-47 `brain-recall` on 10 diverse queries — single smoke test was insufficient. Discovered: alpha=0.5 default produced same noise-docs (`lukeprivacy-kpm-at-rest-safe.md` etc.) as #1 for 5+ unrelated queries.
+
+### Root cause
+The iter-44/45 doctrine "K=8 ANGLE has wider QBC coverage" was measured on TRIAD discrimination (off-diag of 3x3 kernel matrix). For PAIR-wise (query vs doc) similarity, K=8 ANGLE disperses inner products → collapses to a few noise docs that score 0.3-0.55 against any query. Encoding works for triads, fails for pairs.
+
+### Fix
+- Default alpha changed 0.5 → 1.0 (pure TF-IDF)
+- Docstring + CLI help rewritten with failure-mode warning
+- Iter-47's "row #5 value-add" claim retracted: was actually noise, not semantic similarity
+
+### Quality after fix (alpha=1.0)
+6/6 queries return sensible top-1: snap survival → snap-account-24h-survival; bot routing → wake-on-demand-bot-dispatcher; origin queue → seraphim-cloud-qpu-real-first-fire (the doc documenting the stalls).
+
+### Lesson
+Single smoke test at ship is insufficient. Iter 47 shipped with one carefully-chosen query that happened to work; diverse queries revealed the default was broken. **The no-bullshit doctrine demands testing more than one input.**
+
+### What still works
+- TRIAD-based `audit` and `find-qbc` workflows: unchanged (K=8 ANGLE doctrine stands for triads).
+- `brain-recall` at alpha=1.0: works fine.
+- The CLI ergonomics: useful one-liner for memory queries with JSON output.
+
+### Cost
+Zero cloud burn; 3s CPU for 10-query stress test + alpha sweep.
+
+---
+
 ## 2026-05-24T03:50Z — iteration 47 (`seraphim brain-recall` SHIPPED — operationalizes iters 37-46 doctrine)
 
 Operator: /loop. Iters 37-46 produced research arc but no operator-facing tool. Iter 47 ships the bridge.

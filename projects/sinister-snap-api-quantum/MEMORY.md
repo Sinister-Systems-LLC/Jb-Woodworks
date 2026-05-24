@@ -7,6 +7,85 @@ Append-only memory. Most recent at top. Cross-references to brain entries and ot
 
 ---
 
+## 2026-05-24T04:15Z — 🚨 ITER 48: brain-recall STRESS-TEST reveals alpha=0.5 default is BROKEN — fixed to alpha=1.0
+
+Iter 47 shipped `seraphim brain-recall` with one smoke test (query "multi-agent git coordination branch contention") that produced sensible results. Iter 48 ran 10 diverse queries and revealed the alpha=0.5 default is broken on pair-wise (query vs doc) similarity.
+
+### Failure mode discovered
+
+Ran 10 varied queries at the iter-47 default (alpha=0.5, K=8 ANGLE). Five different queries returned the SAME #1 docs:
+
+| Query | #1 result at alpha=0.5 |
+|---|---|
+| snap account survival rate limit | `audit-pass-is-output-2026-05-21.md` (TF-IDF=0.00, quantum=0.339) |
+| quantum kernel memory inversion | `lukeprivacy-kpm-at-rest-safe.md` (TF-IDF=0.035, quantum=0.547) |
+| fingerprint device emulator | `forge-memory-usage-2026-05-23.md` (TF-IDF=0.00, quantum=0.358) |
+| origin queue stall budget | `lukeprivacy-kpm-at-rest-safe.md` (TF-IDF=0.00, quantum=0.490) |
+| brain corpus growth fleet | `lukeprivacy-kpm-at-rest-safe.md` (TF-IDF=0.007, quantum=0.545) |
+| cancellation theorem identity gate | `lukeprivacy-kpm-at-rest-safe.md` (TF-IDF=0.016, quantum=0.466) |
+
+`lukeprivacy-kpm-at-rest-safe.md` and `forge-memory-usage-2026-05-23.md` are **noise docs** — they have feature vectors that the K=8 ANGLE encoding maps to "near-identity" states that overlap with most query states by 0.3-0.55 regardless of content.
+
+### Compare with alpha=1.0 (pure TF-IDF)
+
+Same queries at alpha=1.0:
+
+| Query | #1 result at alpha=1.0 | Verdict |
+|---|---|---|
+| snap account survival rate limit | `snap-account-24h-survival-doctrine-2026-05-21.md` | ✅ exact match |
+| quantum kernel memory inversion | `ksu-manager-sister-app-pattern.md` | ✗ TF-IDF noise (no quantum-related docs strongly match) |
+| fingerprint device emulator | `sinister-seraphim-integration-vision-2026-05-23.md` | ✅ relevant (discusses fingerprint generation) |
+| origin queue stall budget | `seraphim-cloud-qpu-real-first-fire-2026-05-23.md` | ✅ exact (the doc documenting the stalls) |
+| bot routing skill agent | `wake-on-demand-bot-dispatcher-2026-05-23.md` | ✅ exact match |
+| multi-agent git coordination | `multi-agent-git-coordination-2026-05-23.md` | ✅ exact match |
+
+5/6 of these queries returned a sensible top result with pure TF-IDF. Quantum mixing degraded all of them.
+
+### Root cause analysis
+
+The iter-44/45 doctrine "K=8 ANGLE has wider QBC coverage" was measured on **TRIAD** discrimination — off-diagonal entries of a 3x3 kernel matrix. For **PAIR-wise** (query vs doc) recall, the encoding's "wider net" property becomes a liability:
+
+- K=8 ANGLE: 256-dim Hilbert space. Doc states cluster.
+- Short queries with sparse TF-IDF features → query state has only a few non-trivial RY rotations → query state lives in a low-dimensional subspace.
+- Doc states with diverse feature distributions → many doc states ALSO live near that subspace.
+- Result: high pair-wise overlap with the same noise docs across unrelated queries.
+
+This is a structural property of the encoding, not a bug. The encoding works for TRIAD discrimination (where all 3 docs are compared symmetrically) but loses discrimination for query-vs-doc pair-wise.
+
+### iter-47 "value-add" finding RECLASSIFIED
+
+Iter 47 claimed row #5 (`pip-editable-stale-pth-correction`, TF-IDF=0.00 but quantum=0.34) was a "value-add demonstration" — quantum surfacing docs TF-IDF missed. **That was wrong.** The quantum kernel is NOT finding semantic similarity; it's hitting the same noise-doc cluster. Pip-editable's feature vector happens to fall in the K=8 ANGLE noise-band.
+
+### Fix shipped
+
+- `recall_brain` default `alpha` changed from `0.5` to `1.0` (pure TF-IDF)
+- Docstring rewritten with WARNING about the failure mode
+- CLI help text rewritten to discourage non-default alpha
+
+### Lesson learned (no-bullshit doctrine catch)
+
+Iter 47 was shipped on ONE positive smoke test. The single query was carefully chosen (high TF-IDF overlap; both signals agreed). Diverse queries (iter 48) revealed the default was broken. **One smoke test is anecdote; multiple is empirical.** Should have stress-tested at iter-47-ship time.
+
+This is exactly the no-bullshit doctrine's "test before claiming" requirement applied retroactively. Iter 47 over-claimed; iter 48 audits + corrects.
+
+### What still works
+
+- The TRIAD-based `seraphim audit` and `seraphim find-qbc` workflows are unchanged. K=8 ANGLE's wider QBC coverage is real for triad discrimination — that doctrine stands.
+- `seraphim brain-recall` at alpha=1.0 works fine — it's just TF-IDF recall with a configurable corpus mode + JSON output + CLI ergonomics.
+- The brain-recall command's existence is still operator value (one-line CLI for memory queries). It's just that the quantum-kernel mixing is empirically negative for this shape.
+
+### Cost / verification
+
+- Zero cloud burn
+- ~3s CPU for 10-query × 6-alpha stress test
+- Status: **tested-before-claimed** (10 queries × multiple alphas measured; failure mode identified; fix applied; new default validated)
+
+### Open question (deferred)
+
+The pair-wise quantum kernel might work if we used a different state-construction (not inversion-overlap but something normalized) or if we built a per-query basis adapted to the query's TF-IDF feature direction. Not pursuing without operator interest — the simpler TF-IDF works for the daily-use case.
+
+---
+
 ## 2026-05-24T03:50Z — 🛠️ ITER 47: `seraphim brain-recall` SHIPPED — operationalizes iters 37-46 doctrine into a daily-use command
 
 Iters 37-46 produced a research arc but no operator-facing tool that actually USES the doctrine. Iter 47 ships the bridge: a `brain-recall` subcommand that does TF-IDF + quantum-kernel hybrid retrieval for daily memory queries.

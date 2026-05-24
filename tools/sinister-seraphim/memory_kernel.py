@@ -401,7 +401,7 @@ def recall_brain(
     top_k_results: int = 5,
     encoding: str = 'angle',
     k_qubits: int = 8,
-    alpha: float = 0.5,
+    alpha: float = 1.0,
     corpus_mode: str = 'full',
 ) -> dict[str, Any]:
     """Hybrid TF-IDF + quantum-kernel brain-entry recall.
@@ -410,8 +410,7 @@ def recall_brain(
     scored by a weighted combination of classical TF-IDF cosine + sim
     quantum-kernel inner product.
 
-    Per iter-44 doctrine the default encoding is K=8 ANGLE (wider QBC
-    coverage than K=4 ANGLE or ZZ-FM r=1 in sim).
+    DEFAULT alpha=1.0 = pure TF-IDF (iter 48 finding — see warning below).
 
     Parameters
     ----------
@@ -420,12 +419,25 @@ def recall_brain(
     top_k_results : int
         How many top brain entries to return.
     encoding : 'angle' (default), 'angle-cnot', 'zzfm'
-        Quantum kernel encoding.
+        Quantum kernel encoding (only matters if alpha < 1.0).
     k_qubits : int
-        Number of qubits / top-K TF-IDF features used. Default 8 per iter-44.
+        Number of qubits / top-K TF-IDF features used. Default 8.
     alpha : float in [0, 1]
-        Weight on TF-IDF (1-alpha goes on quantum kernel). Default 0.5 =
-        equal mix.
+        Weight on TF-IDF (1-alpha goes on quantum kernel). Default 1.0 =
+        pure TF-IDF (recommended). Lower alpha mixes in quantum kernel
+        but EMPIRICALLY DEGRADES PAIR-WISE RECALL QUALITY (iter 48 finding):
+
+        The iter-44/45 doctrine "K=8 ANGLE has wider QBC coverage" applied
+        to TRIAD (3-doc) discrimination — measuring off-diagonal entries of
+        a 3x3 kernel matrix. For PAIR-wise (query vs doc) similarity, the
+        same K=8 ANGLE encoding disperses inner products such that several
+        "noise docs" (e.g. lukeprivacy-kpm-at-rest-safe.md, forge-memory-
+        usage-2026-05-23.md) score 0.34-0.55 quantum similarity against
+        nearly any query. This collapses to a small subspace where the
+        encoding loses discrimination.
+
+        Set alpha=1.0 unless you've empirically validated quantum-kernel
+        contribution for your specific use case.
     corpus_mode : 'full' (default) or 'pool'
         Which brain pool to scan. 'full' = all *.md in knowledge/ except
         README/INDEX/TEMPLATE. 'pool' = the topical-balanced subset.

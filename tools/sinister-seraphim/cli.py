@@ -676,7 +676,10 @@ def main(argv: list[str] | None = None) -> int:
     p_br.add_argument('--encoding', default='angle', choices=['angle', 'angle-cnot', 'zzfm'],
                       help='Quantum kernel encoding (default angle = K=8 ANGLE per iter-44 doctrine)')
     p_br.add_argument('-k', type=int, default=8, help='Qubits / top-K TF-IDF features (default 8 per iter-44)')
-    p_br.add_argument('--alpha', type=float, default=0.5, help='TF-IDF weight (default 0.5; 1.0=TF-IDF only, 0.0=quantum only)')
+    p_br.add_argument('--alpha', type=float, default=1.0,
+                      help='TF-IDF weight (default 1.0=pure TF-IDF). Iter 48 stress-test showed alpha<1.0 degrades '
+                           'pair-wise recall — the quantum kernel collapses to a few noise docs across diverse queries. '
+                           'Override only after empirical validation for your use case.')
     p_br.add_argument('--corpus', default='full', choices=['full', 'pool'], help='Brain corpus mode (default full)')
     p_br.add_argument('--out', default=None, help='Optional output JSON path')
     p_br.set_defaults(fn=_brain_recall_cmd)

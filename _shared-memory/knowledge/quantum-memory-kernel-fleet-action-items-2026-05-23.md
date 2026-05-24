@@ -24,9 +24,9 @@
 3. `seraphim find-qbc --variant zzfm-r1 --rank-by ceiling --top-n 10 --corpus pool` — error-mitigation targets
 4. `seraphim find-qbc --variant zzfm-r1 --rank-by classical --top-n 10 --corpus pool` — high-classical triads (iter-43 fix enumerates full pool)
 
-**Daily brain recall** (iter 47):
+**Daily brain recall** (iter 47, fixed iter 48):
 
-5. `seraphim brain-recall "<query>" --top-k 5` — TF-IDF + K=8 ANGLE quantum-kernel hybrid recall. Default alpha=0.5 (equal mix). Surfaces docs TF-IDF alone misses via the quantum-kernel "wider net" property.
+5. `seraphim brain-recall "<query>" --top-k 5` — brain-entry recall. **Default is alpha=1.0 (pure TF-IDF) per iter-48 finding.** Quantum-kernel mixing (alpha<1.0) was found to DEGRADE pair-wise recall — the iter-44 "K=8 ANGLE wider net" doctrine applies to TRIAD (3-doc) discrimination, NOT pair-wise (query vs doc). For pair-wise, K=8 ANGLE collapses to a few noise-docs (e.g. lukeprivacy-kpm-at-rest-safe.md) that score high quantum similarity against any query. Use alpha=1.0 unless you've empirically validated quantum contribution for your use case.
 
 **Key structural facts:**
 
