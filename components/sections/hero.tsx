@@ -1,7 +1,6 @@
 // Author: RKOJ-ELENO :: 2026-05-23
 "use client";
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { hero, type HeroSlide } from "@/lib/content";
@@ -143,7 +142,7 @@ export function Hero() {
           <span className="eyebrow-dot" /> ORLANDO, FLORIDA <span className="eyebrow-dot" /> EST. 2025 <span className="eyebrow-dot" />
         </motion.p>
 
-        {/* Lead lockup - owner's stacked JBW wordmark as the primary mark */}
+        {/* Lead lockup - owner's stacked JBW wordmark, centered, sole hero focus */}
         <motion.div
           custom={1}
           variants={stagger}
@@ -157,58 +156,8 @@ export function Hero() {
             width={971}
             height={733}
             priority
-            className="h-[clamp(7rem,18vw,12rem)] w-auto mx-auto drop-shadow-[0_4px_24px_rgba(0,0,0,0.45)]"
+            className="h-[clamp(8rem,22vw,15rem)] w-auto mx-auto drop-shadow-[0_4px_28px_rgba(0,0,0,0.55)]"
           />
-        </motion.div>
-
-        {/* Animated gold rule with shimmer */}
-        <motion.div
-          custom={2}
-          variants={stagger}
-          initial={reduced ? false : "hidden"}
-          animate="show"
-          className="relative h-px w-[clamp(140px,22vw,260px)] bg-gold-dim mt-8 mb-8 overflow-hidden origin-center"
-        >
-          {!reduced && (
-            <span
-              aria-hidden
-              className="absolute inset-y-0 w-1/2 jbw-rule-shimmer"
-              style={{ background: "linear-gradient(90deg, transparent, #e2c47a, transparent)" }}
-            />
-          )}
-        </motion.div>
-
-        {/* Italic tagline - the brand voice */}
-        <motion.p
-          custom={3}
-          variants={stagger}
-          initial={reduced ? false : "hidden"}
-          animate="show"
-          className="font-display text-[clamp(1.5rem,3.4vw,2.4rem)] text-white italic leading-tight mb-5"
-        >
-          Premium Craftsmanship. <em className="not-italic text-gold">Built to Last.</em>
-        </motion.p>
-
-        {/* Short description */}
-        <motion.p
-          custom={4}
-          variants={stagger}
-          initial={reduced ? false : "hidden"}
-          animate="show"
-          className="text-[1.02rem] text-cream-50 max-w-[520px] mb-10 leading-[1.7]"
-        >
-          Custom decks, docks, furniture, and outdoor builds — designed and built in Orlando, FL.
-        </motion.p>
-
-        <motion.div
-          custom={5}
-          variants={stagger}
-          initial={reduced ? false : "hidden"}
-          animate="show"
-          className="flex gap-3.5 flex-wrap justify-center"
-        >
-          <Link href="/contact" className="btn btn-primary btn-large">Start Your Project</Link>
-          <Link href="/portfolio" className="btn btn-ghost btn-large">View Our Work</Link>
         </motion.div>
       </div>
 
