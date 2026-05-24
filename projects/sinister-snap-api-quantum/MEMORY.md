@@ -7,6 +7,47 @@ Append-only memory. Most recent at top. Cross-references to brain entries and ot
 
 ---
 
+## 2026-05-24T03:25Z — ⚖️ ITER 46: iter-43 high-headroom triad audited under all three encodings — confirms iter-45 statistical-not-deterministic doctrine
+
+The iter-43 bug-fix surfaced a triad (`branch-checkout + git-coord + index`, classical 0.4939) with the biggest ZZ-FM r=1 headroom ever measured (+38pp). Iter 45 then established that K=8 ANGLE and ZZ-FM r=1 are COMPLEMENTARY (Pearson r=-0.42 classical ↔ Δ). This iter measured what happens on the iter-43 triad specifically — is it ZZ-FM-favored (per the statistical rule for classical > 0.4) or one of the overlap-zone exceptions?
+
+### Three-way measurement on iter-43 triad
+
+| Encoding | Sim off-diag | Advantage |
+|---|---|---|
+| K=4 ANGLE | 0.5845 | **-9.06pp** (anti-QBC; quantum HURTS) |
+| K=8 ANGLE | 0.4096 | **+8.43pp** |
+| ZZ-FM r=1 | 0.4252 | +6.87pp |
+
+**K=8 ANGLE wins this triad by +1.56pp** despite classical 0.4939 being in the range where iter-45 said ZZ-FM tends to win. This is the iter-45 "statistical, not deterministic" rule in action — the rule has Pearson r=-0.42, not -1.0. Triads in the classical 0.4-0.6 range can fall either way.
+
+**K=4 ANGLE is ANTI-QBC on this triad** — sim 0.5845 > classical 0.4939. This is the bidirectional scope rule's "use classical alone, quantum hurts" regime AT K=4. K=8 ANGLE turns it back into QBC (+8.43pp). **Same triad, opposite kernel direction depending on qubit count.** This is a fresh data point: K=8's larger Hilbert space rescues some K=4-anti-QBC triads.
+
+### Three corrections to prior memory
+
+1. **Iter-43's "+38.05pp headroom" claim** was for ZZ-FM only (r=1 6.87pp → r=6 44.92pp). The headroom is encoding-specific. K=8 ANGLE captures +8.43pp at r=1 — already higher than ZZ-FM r=1 — so K=8 ANGLE's effective headroom on this triad is smaller (its ceiling = single-rep advantage).
+2. **The bidirectional scope rule's "0.4 threshold"** is K=4-specific (per iter-44 footnote). On this triad, K=4 ANGLE shows it doesn't even cross zero (advantage = -9.06pp at classical 0.49). The threshold for K=4 ANGLE here is HIGHER than 0.4 — closer to 0.55+. K=8 ANGLE: threshold ~0.30. ZZ-FM r=1: threshold 0.40.
+3. **The iter-45 rule "ZZ-FM wins at high classical" was rough.** Real picture: the encodings have substantial overlap zones; specific-triad measurement is the only certain answer. Same as iter-45's "compute both" guidance.
+
+### Sub-doctrine: K=4 ANGLE has TWO failure modes on the same triad
+
+- **Sim mode**: K=4 ANGLE anti-QBC at classical 0.49 (sim > classical → quantum hurts)
+- **Real-QPU mode**: K=4 ANGLE was the PRODUCTION recipe per the iter-13 cross-encoding test — but at K=4, not K=8
+
+So K=4 ANGLE: sim says use ZZ-FM r=1 or K=8 ANGLE (K=4 hurts); real-QPU says K=4 ANGLE works on the canonical triads it was tested on. Specific-triad measurement needed.
+
+### Cost / verification
+
+- Zero cloud burn
+- ~2s CPU for the inline three-way measurement
+- Status: **tested-before-claimed** (all three sim values measured; the K=8>ZZ ranking is empirical not predicted)
+
+### Brain-entry consolidation status
+
+Brain entry now has 4 quantum-kernel doctrine sections (action items, conjecture test, sim-vs-real encoding split, K=8-vs-ZZ complementary). Approaching the no-bullshit doctrine's "doctrine with >5 composes with" quality-degradation signal. Iter 47 candidate: write a TL;DR header that ties all 4 sections together so external readers don't have to scroll through the full audit trail.
+
+---
+
 ## 2026-05-24T03:00Z — 🧩 ITER 45: K=8 ANGLE and ZZ-FM r=1 are COMPLEMENTARY, not redundant
 
 Iter 44 said K=8 ANGLE "dominates" ZZ-FM r=1 in sim. **That's true in aggregate but misses a structural nuance** — they're picking up DIFFERENT structural properties of triads. Iter 45 measured which triads favor which encoding.

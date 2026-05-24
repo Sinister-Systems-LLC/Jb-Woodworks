@@ -7,6 +7,38 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T03:25Z — iteration 46 (iter-43 triad audited under all encodings + brain-entry TL;DR added)
+
+Operator: /loop. Two deliverables:
+
+### 1. Smoke test on iter-43 triad
+
+Iter-43's +38pp-headroom triad (`branch-checkout + git-coord + index`, classical 0.4939) tested under all three encodings:
+
+| Encoding | Sim | Adv | Verdict |
+|---|---|---|---|
+| K=4 ANGLE | 0.5845 | -9.06pp | **anti-QBC** (quantum hurts) |
+| K=8 ANGLE | 0.4096 | +8.43pp | **wins this triad** |
+| ZZ-FM r=1 | 0.4252 | +6.87pp | second |
+
+K=8 ANGLE wins by +1.56pp despite classical 0.49 being in the iter-45 "ZZ tends to win" range. Confirms iter-45 doctrine is statistical (r=-0.42), not deterministic. K=4 ANGLE is ANTI-QBC on this triad — K=8's larger Hilbert space rescues it back to QBC.
+
+### 2. Brain-entry TL;DR consolidation
+
+Brain entry had grown 4 doctrine sections (action items, conjecture test, sim-vs-real encoding split, complementary encodings). Added a unified "Doctrine TL;DR" section at the TOP that:
+
+- 3-row encoding-choice table (real-QPU / sim-general / sim-high-classical)
+- 4-command triad-selection cheat sheet
+- 5 key structural facts (classical↔ceiling r=+0.95, headroom 48-82%, complementarity, cancellation theorem, bidirectional rule refined)
+- Honesty section flagging sim-only conjectures
+
+External readers can now grok the state in <60 seconds without scrolling through the audit trail.
+
+### Cost
+Zero cloud burn; ~2s CPU for smoke test.
+
+---
+
 ## 2026-05-24T03:00Z — iteration 45 (K=8 ANGLE and ZZ-FM r=1 are COMPLEMENTARY — iter 44 over-generalized)
 
 Operator: /loop. Iter 44 said K=8 ANGLE "dominates" ZZ-FM r=1 — that was aggregate-true but per-triad false. Tested with 157-triad union sweep.

@@ -5,7 +5,37 @@
 >
 > **Origin:** operator 2026-05-23 evening, after the loop directive *"keep working and dont stop until the memory system is fuckign great and told to the agents what to add and fixc"*.
 >
-> **Session summary:** 9 real-QPU audits + 4 sim sweeps + 2 mathematical anchors completed on 2026-05-23 establishing the working pattern, hardware noise model, encoding cancellation theorem, and corpus-consistency requirement. See `_shared-memory/knowledge/seraphim-cloud-qpu-real-first-fire-2026-05-23.md` for the empirical-anchor log and `projects/sinister-snap-api-quantum/MEMORY.md` for the audit-grade detail.
+> **Session summary:** 9 real-QPU audits + 14+ sim sweeps + 2 mathematical anchors completed across 2026-05-23 → 2026-05-24 (iters 1-46). Establishes the working production recipe, hardware noise model, encoding cancellation theorem, corpus-consistency requirement, classical↔ceiling correlation, encoding-preference structure. See `_shared-memory/knowledge/seraphim-cloud-qpu-real-first-fire-2026-05-23.md` for the empirical-anchor log and `projects/sinister-snap-api-quantum/MEMORY.md` for the audit-grade detail.
+
+## 🧭 Doctrine TL;DR (added 2026-05-24 iter 46 — read this first)
+
+**Three encoding choices, three use cases:**
+
+| Context | Encoding | Status |
+|---|---|---|
+| **Real-QPU production on Wukong-180** | `--variant zzfm-r1` | ✅ Quintuple-verified 25-35pp advantage; mean 31pp; ~3pp run-to-run variance |
+| **Sim-only general** (brain-recall, drift-detection, audit gate) | `--variant k8-angle` | 65× more QBC than K=4 ANGLE; wide net across classical 0.31-0.58 |
+| **Sim-only when classical > 0.5 known** | `--variant zzfm-r1` | Tends to win at high classical (Pearson r=+0.59 classical↔adv) |
+
+**Triad selection cheat sheet:**
+
+1. `seraphim find-qbc --variant zzfm-r1 --top-n 10 --corpus pool` — production triads (real-QPU candidates)
+2. `seraphim find-qbc --variant k8-angle --top-n 10 --corpus pool` — wider sim QBC search
+3. `seraphim find-qbc --variant zzfm-r1 --rank-by ceiling --top-n 10 --corpus pool` — error-mitigation targets
+4. `seraphim find-qbc --variant zzfm-r1 --rank-by classical --top-n 10 --corpus pool` — high-classical triads (iter-43 fix enumerates full pool)
+
+**Key structural facts:**
+
+- **classical TF-IDF ↔ sim ceiling Pearson r = +0.9537** (iter 40). Single best predictor of theoretical quantum advantage.
+- **Production recipe captures 48-82% of theoretical ceiling per triad.** The 18-52% headroom is what error-mitigation could theoretically unlock.
+- **K=8 ANGLE and ZZ-FM r=1 are COMPLEMENTARY** (iter 45). K=8 wins 58.6% of triads; ZZ-FM wins 41.4%. Encodings disagree often (per-triad r=+0.14). Compute both for specific triads.
+- **Cancellation theorem:** ANGLE-CNOT == K=4 ANGLE (verified iters 16, 22, 43). Parameter-free entangling layers cancel in U_B† · U_A.
+
+**Bidirectional scope rule (refined):** quantum kernel beats classical when classical > 0.30 (K=8 ANGLE) or > 0.40 (K=4 ANGLE / ZZ-FM r=1). Below those thresholds quantum hurts via top-K compression.
+
+**Honesty section (no-bullshit doctrine):** All ceiling/headroom numbers are sim-only. Real-QPU r=2+ saturates near classical baseline (noise wall at depth 68+). Error-mitigation pathways (ZNE / Pauli twirling / readout cal) are conjectured, not measured. **Don't claim K=8 ANGLE as future-production without empirical test.**
+
+Detailed sections below.
 
 ## 🎯🎯🎯🎯🎯🎯🎯🎯🎯 HEADLINE: Real-QPU quantum-kernel BEATS classical TF-IDF by 25-35pp (QUINTUPLE-verified 2026-05-23 19:15-21:38Z)
 
