@@ -19,6 +19,11 @@ if errorlevel 1 (
     )
 )
 
+REM v0.4 (2026-05-24): wipe dist/EVE + build/EVE first so PyInstaller never
+REM trips on "non-empty output directory" when a prior --onedir build exists.
+if exist dist\EVE rmdir /S /Q dist\EVE
+if exist build\EVE rmdir /S /Q build\EVE
+
 echo  [build] packaging eve.py -^> dist\EVE\EVE.exe (--onedir)...
 REM v0.2 (iter 6 2026-05-23): switched from --onefile to --onedir. --onefile
 REM extracts python312.dll to %%TEMP%%\_MEI<random> on each launch which fails

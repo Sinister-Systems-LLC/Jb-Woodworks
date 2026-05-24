@@ -1,25 +1,42 @@
-"""EVE :: Sinister Sanctum session launcher (thin fast picker)
+"""EVE :: Sinister Sanctum session launcher (jcode-style, single entry point)
 
-Author: RKOJ-ELENO :: 2026-05-23
+Author: RKOJ-ELENO :: 2026-05-24
 
-Goal: jcode-speed boot (target <300 ms cold-start) for the common case
-(operator wants to spawn a project agent). Stdlib only. PyInstaller --onefile
-yields a ~15-20 MB EVE.exe.
+v2 — operator directive 2026-05-24:
+    "i want eve exe to work like the jcode exe all features similar system in
+     our braning and colors but i want it to be combined in a sense with session
+     start and everythinng we have been working on"
 
-Architecture (P2 of eve-into-rkoj-integration-2026-05-23T1330Z):
+This file is now THE single entry point for a Sanctum session. The bat shim
+("Sinister Start.bat") is a ~20-line probe that just locates the repo and
+hands off to EVE.exe with all argv flags forwarded. Everything that used to
+live in the bat (autonomy bootstrap, plugin background install, shell preflight,
+account / swarm / loop flags, --diagnose, --setup-autonomy) now lives here.
+
+Architecture:
 
     eve_picker_lib (D:\\Sinister Sanctum\\tools\\eve-picker\\)
         - render-agnostic picker logic
         - read_projects / read_prefs / visible_projects
         - build_picker_state / resolve_pick / parse_multi
-        - banner_text / picker_text_rows  (plain text rows)
+        - banner_text / picker_text_rows
 
-This file (eve.py) is the EVE.exe surface:
-    - ANSI 256-color wrappers around the lib's text rows
-    - subprocess.call(PS1) dispatch for spawn (numeric / G / multi)
-    - subprocess.call(PS1 interactive) for A / N / R / K / S sub-flows
+This file (eve.py):
+    - SANCTUM_ROOT probe (env -> D:\\Sinister Sanctum -> C:\\... -> %USERPROFILE%)
+    - First-run autonomy bootstrap (~/.sanctum-autonomy-granted marker)
+    - Background plugin check (DETACHED_PROCESS, non-blocking)
+    - Spawn-shell preflight (mintty/git-bash/bash warning)
+    - CLI flags: --diagnose / --setup-autonomy / --account / --account-status
+                 --swarm / --loop / --both / --no-swarm / --no-loop
+                 --version / --help / --profile
+    - Animated jcode-style ASCII "C" banner (~8 frames, ~0.07s/frame, ~0.6s total)
+    - Polished jcode-feel picker UI with Sanctum purple accents
+    - Status line: [account: X] [swarm: on/off] [loop: on/off]
+    - "Recent ship" line showing last commit subject
+    - subprocess.call(PS1) dispatch for spawn / sub-flows
 
 Profile mode: `EVE.exe --profile` prints `boot=<N>ms` and exits 0.
+Honors SINISTER_SKIP_BANNER=1 (skip the animated banner).
 """
 from __future__ import annotations
 
@@ -30,33 +47,64 @@ import time
 from pathlib import Path
 
 
-def _setup_lib_path() -> None:
-    """Add tools/eve-picker to sys.path before importing eve_picker_lib.
+# ---------------------------------------------------------------------------
+# Sanctum root probe (must run BEFORE any lib import that reads SANCTUM_ROOT)
+# ---------------------------------------------------------------------------
 
-    When running from source: D:\\Sinister Sanctum\\tools\\eve-picker is added.
-    When running from a PyInstaller --onefile bundle: the lib is already bundled
-    via `--paths` so this is a no-op (but cheap).
-    """
-    here = Path(__file__).resolve().parent if "__file__" in globals() else Path.cwd()
-    candidates = [
-        Path(os.environ.get("SINISTER_SANCTUM_ROOT", r"D:\Sinister Sanctum")) / "tools" / "eve-picker",
-        here.parent.parent / "tools" / "eve-picker",
+def _probe_sanctum_root() -> Path | None:
+    """Try env var, then conventional locations. Set SINISTER_SANCTUM_ROOT for children."""
+    candidates: list[str] = []
+    env = os.environ.get("SINISTER_SANCTUM_ROOT")
+    if env:
+        candidates.append(env)
+    candidates += [
+        r"D:\Sinister Sanctum",
+        r"C:\Sinister Sanctum",
+        os.path.join(os.environ.get("USERPROFILE", ""), "Sinister Sanctum"),
     ]
+    for cand in candidates:
+        if not cand:
+            continue
+        p = Path(cand)
+        if (p / "automations" / "start-sinister-session.ps1").exists():
+            os.environ["SINISTER_SANCTUM_ROOT"] = str(p)
+            os.environ["SANCTUM_ROOT"] = str(p)
+            return p
+    return None
+
+
+SANCTUM_ROOT_PATH = _probe_sanctum_root()
+
+
+def _setup_lib_path() -> None:
+    """Add tools/eve-picker to sys.path before importing eve_picker_lib."""
+    here = Path(__file__).resolve().parent if "__file__" in globals() else Path.cwd()
+    candidates: list[Path] = []
+    if SANCTUM_ROOT_PATH is not None:
+        candidates.append(SANCTUM_ROOT_PATH / "tools" / "eve-picker")
+    candidates.append(here.parent.parent / "tools" / "eve-picker")
     for cand in candidates:
         if cand.exists() and str(cand) not in sys.path:
             sys.path.insert(0, str(cand))
 
 
 _setup_lib_path()
-import eve_picker_lib as lib  # noqa: E402
+try:
+    import eve_picker_lib as lib  # noqa: E402
+except ImportError:
+    lib = None  # noqa: E402 -- handled at runtime; some flags don't need the lib
 
 
-SANCTUM_ROOT = lib.SANCTUM_ROOT
-PS1_LAUNCHER = SANCTUM_ROOT / "automations" / "start-sinister-session.ps1"
+PS1_LAUNCHER = (SANCTUM_ROOT_PATH / "automations" / "start-sinister-session.ps1") if SANCTUM_ROOT_PATH else None
 
-# ANSI 256-color escapes (purple-everything)
-PURPLE = "\033[38;5;141m"
+
+# ---------------------------------------------------------------------------
+# ANSI 256-color palette (Sanctum purple-everything)
+# ---------------------------------------------------------------------------
+
+PURPLE = "\033[38;5;141m"     # Sanctum purple #A06EFF-ish (xterm 141)
 DARKP = "\033[38;5;91m"
+BRIGHTP = "\033[38;5;177m"
 WHITE = "\033[97m"
 SOFT = "\033[38;5;245m"
 DIM = "\033[38;5;240m"
@@ -69,6 +117,7 @@ BOLD = "\033[1m"
 PILL_G = "\033[48;5;22;38;5;15;1m"
 PILL_B = "\033[48;5;19;38;5;15;1m"
 PILL_R = "\033[48;5;52;38;5;15;1m"
+PILL_P = "\033[48;5;91;38;5;15;1m"
 PILL_Z = "\033[0m"
 
 
@@ -89,51 +138,326 @@ def enable_vt_on_windows() -> None:
         pass
 
 
-def banner(state: lib.PickerState) -> None:
-    """ANSI-render the picker banner using fields from PickerState."""
+# ---------------------------------------------------------------------------
+# Animated jcode-style ASCII banner (~0.6s total)
+# ---------------------------------------------------------------------------
+
+# Lifted from automations/sinister-banner.sh (image #3 jcode reference).
+_LOGO_LINES = [
+    "        =,,@@@@#,==",
+    "     ,@@@@@@@@@@@@-",
+    "   .@@@@@@@@@@@##@@@@@-",
+    "   .@@@@@@@.    -@@@@@-",
+    "   |@@@@@@@      @@@@@|",
+    "   .@@@@@@@%     @@@@@|",
+    "   @@@@@@@@@     @@@@@@-",
+    "   .@@@@@@@@@@,,@@@@@@@-",
+    "   -@@@@@@@@@@@@@@@@@@@-",
+    "    *@@@@@@@@@@@@@@@@@@@%",
+    "      ^@@@@@@@@@@@@@@@@%",
+    "         ^=@@@@@@@-",
+]
+
+# Sanctum-purple-leaning gradient (red->orange->pink->magenta->purple->indigo).
+_BANNER_COLORS = [196, 202, 208, 209, 210, 211, 212, 213, 207, 201, 200, 199, 198, 197, 165, 129, 93, 99]
+
+
+def play_banner(frames: int = 8, delay: float = 0.07) -> None:
+    """Render an animated color-cycling ASCII C glyph. Total ~frames*delay seconds.
+
+    Honors SINISTER_SKIP_BANNER=1 to bypass entirely.
+    Cursor is hidden during animation and restored at exit.
+    """
+    if os.environ.get("SINISTER_SKIP_BANNER", "").strip() == "1":
+        return
+    # Reserve vertical space, then redraw in place each frame.
+    sys.stdout.write("\033[?25l")  # hide cursor
+    for _ in _LOGO_LINES:
+        sys.stdout.write("\n")
+    sys.stdout.flush()
+    try:
+        for f in range(frames):
+            # Move cursor up over the reserved rows
+            sys.stdout.write(f"\033[{len(_LOGO_LINES)}A")
+            for i, line in enumerate(_LOGO_LINES):
+                cidx = (i + f) % len(_BANNER_COLORS)
+                color = _BANNER_COLORS[cidx]
+                sys.stdout.write(f"\033[2K\033[38;5;{color}m{line}\033[0m\n")
+            sys.stdout.flush()
+            time.sleep(delay)
+    finally:
+        sys.stdout.write("\033[?25h")  # restore cursor
+        sys.stdout.flush()
+
+
+# ---------------------------------------------------------------------------
+# First-run autonomy bootstrap
+# ---------------------------------------------------------------------------
+
+def _autonomy_marker() -> Path:
+    return Path(os.environ.get("USERPROFILE", str(Path.home()))) / ".sanctum-autonomy-granted"
+
+
+def run_autonomy_bootstrap(force: bool = False) -> int:
+    """Invoke grant-claude-autonomy.ps1 if marker missing (or force=True)."""
+    if SANCTUM_ROOT_PATH is None:
+        print(f"  {FAIL}[FAIL] Sanctum root not found — cannot run autonomy bootstrap{RESET}")
+        return 1
+    script = SANCTUM_ROOT_PATH / "automations" / "grant-claude-autonomy.ps1"
+    if not script.exists():
+        print(f"  {WARN}[warn] grant-claude-autonomy.ps1 not found at {script}{RESET}")
+        return 1
+    marker = _autonomy_marker()
+    if marker.exists() and not force:
+        return 0
+    print()
+    print(f"  {DARKP}{'=' * 68}{RESET}")
+    print(f"  {WHITE}{BOLD} Sinister Sanctum :: First-run autonomy bootstrap {RESET}")
+    print(f"  {DARKP}{'=' * 68}{RESET}")
+    print(f"  {SOFT}Running grant-claude-autonomy.ps1 once before launching.{RESET}")
+    print(f"  {SOFT}Re-run any time: EVE --setup-autonomy{RESET}")
+    print()
+    return subprocess.call([
+        "powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass",
+        "-File", str(script),
+    ])
+
+
+# ---------------------------------------------------------------------------
+# Background plugin check (DETACHED_PROCESS, non-blocking)
+# ---------------------------------------------------------------------------
+
+def fire_plugin_check_background() -> None:
+    """Fire-and-forget plugin install check. Returns immediately."""
+    if SANCTUM_ROOT_PATH is None:
+        return
+    script = SANCTUM_ROOT_PATH / "automations" / "check-required-plugins.ps1"
+    if not script.exists():
+        return
+    cmd = [
+        "powershell.exe", "-WindowStyle", "Hidden",
+        "-NoProfile", "-ExecutionPolicy", "Bypass",
+        "-File", str(script),
+        "-AutoInstall", "-Silent",
+    ]
+    creationflags = 0
+    if os.name == "nt":
+        # DETACHED_PROCESS (0x00000008) | CREATE_NEW_PROCESS_GROUP (0x00000200)
+        creationflags = 0x00000008 | 0x00000200
+    try:
+        subprocess.Popen(
+            cmd,
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            creationflags=creationflags,
+            close_fds=True,
+        )
+    except Exception:
+        pass  # fire-and-forget; never block the launcher
+
+
+# ---------------------------------------------------------------------------
+# Spawn-shell preflight (warn only)
+# ---------------------------------------------------------------------------
+
+_SHELL_CANDIDATES = [
+    r"C:\Program Files\Git\usr\bin\mintty.exe",
+    r"C:\Program Files\Git\git-bash.exe",
+    r"C:\Program Files\Git\bin\bash.exe",
+]
+
+
+def spawn_shell_preflight(verbose: bool = False) -> bool:
+    """Return True if any spawn-capable shell exists. Warn (but don't block) otherwise."""
+    found = [p for p in _SHELL_CANDIDATES if Path(p).exists()]
+    if found:
+        if verbose:
+            print(f"  {OK}[OK]{RESET}    spawn shell: {found[0]}")
+        return True
+    print()
+    print(f"  {WARN}[WARN]{RESET} no spawn-capable shell found.")
+    for c in _SHELL_CANDIDATES:
+        print(f"         tried: {c}")
+    print(f"         install Git for Windows: https://gitforwindows.org")
+    print(f"  {WARN}[WARN]{RESET} picker will still open but spawn may fail. Ctrl+C to abort.")
+    print()
+    time.sleep(2)
+    return False
+
+
+# ---------------------------------------------------------------------------
+# Diagnose flag (probe everything, exit)
+# ---------------------------------------------------------------------------
+
+def run_diagnose() -> int:
+    """Probe every prerequisite + report. No spawn."""
+    print()
+    print(f"  {DARKP}{'=' * 68}{RESET}")
+    print(f"  {WHITE}{BOLD} EVE :: --diagnose {RESET}")
+    print(f"  {DARKP}{'=' * 68}{RESET}")
+    print()
+
+    def row(ok: bool, label: str, detail: str = "") -> None:
+        tag = f"{OK}[OK]   {RESET}" if ok else f"{FAIL}[FAIL] {RESET}"
+        print(f"  {tag} {label}" + (f"  {SOFT}{detail}{RESET}" if detail else ""))
+
+    def info(label: str, detail: str = "") -> None:
+        print(f"  {DIM}[info] {RESET} {label}" + (f"  {SOFT}{detail}{RESET}" if detail else ""))
+
+    if SANCTUM_ROOT_PATH:
+        row(True, "SANCTUM_ROOT", str(SANCTUM_ROOT_PATH))
+    else:
+        row(False, "SANCTUM_ROOT not found in any known location")
+
+    for c in _SHELL_CANDIDATES:
+        row(Path(c).exists(), Path(c).name, c)
+
+    if SANCTUM_ROOT_PATH:
+        ps1 = SANCTUM_ROOT_PATH / "automations" / "start-sinister-session.ps1"
+        row(ps1.exists(), "start-sinister-session.ps1", str(ps1))
+        auto = SANCTUM_ROOT_PATH / "automations" / "grant-claude-autonomy.ps1"
+        row(auto.exists(), "grant-claude-autonomy.ps1", str(auto))
+        plug = SANCTUM_ROOT_PATH / "automations" / "check-required-plugins.ps1"
+        row(plug.exists(), "check-required-plugins.ps1", str(plug))
+
+    marker = _autonomy_marker()
+    if marker.exists():
+        row(True, "autonomy marker present", str(marker))
+    else:
+        info("no autonomy marker (will bootstrap on next normal launch)", str(marker))
+
+    eve_exe_paths = []
+    if SANCTUM_ROOT_PATH:
+        eve_exe_paths += [
+            SANCTUM_ROOT_PATH / "automations" / "eve-launcher" / "dist" / "EVE" / "EVE.exe",
+            SANCTUM_ROOT_PATH / "automations" / "eve-launcher" / "dist" / "EVE.exe",
+        ]
+    for ep in eve_exe_paths:
+        if ep.exists():
+            row(True, f"EVE.exe present", f"{ep} ({ep.stat().st_size} bytes)")
+        else:
+            info(f"EVE.exe NOT present at {ep}")
+
+    # Account / swarm / loop env
+    print()
+    print(f"  {SOFT}Environment:{RESET}")
+    for var in ("SINISTER_ACCOUNT", "SINISTER_DEFAULT_SWARM", "SINISTER_DEFAULT_LOOP",
+                "SINISTER_SKIP_MODES_PROMPT", "SINISTER_SKIP_BANNER",
+                "SINISTER_EVE_SWARM", "SINISTER_EVE_LOOP"):
+        val = os.environ.get(var, "")
+        if val:
+            print(f"    {DIM}{var}={RESET}{val}")
+        else:
+            print(f"    {DIM}{var}=(unset){RESET}")
+
+    if lib is not None:
+        print()
+        try:
+            t0 = time.monotonic()
+            state = lib.build_picker_state(boot_ms=0)
+            elapsed = int((time.monotonic() - t0) * 1000)
+            print(f"  {OK}[OK]{RESET}    picker assembly: {elapsed} ms, {len(state.rows)} rows, "
+                  f"mcp={state.mcp}, bots={state.bots}")
+        except Exception as e:
+            print(f"  {FAIL}[FAIL]{RESET} picker assembly failed: {e}")
+    else:
+        print(f"  {FAIL}[FAIL]{RESET} eve_picker_lib not importable")
+
+    print()
+    print(f"  {SOFT}Done. Run EVE.exe with no args to launch.{RESET}")
+    print()
+    return 0
+
+
+# ---------------------------------------------------------------------------
+# Recent ship / git helpers
+# ---------------------------------------------------------------------------
+
+def _recent_commit_subject() -> str:
+    """Best-effort one-line `git log -1 --format=%s`. Empty string on failure."""
+    if SANCTUM_ROOT_PATH is None:
+        return ""
+    try:
+        out = subprocess.check_output(
+            ["git", "log", "-1", "--format=%s"],
+            cwd=str(SANCTUM_ROOT_PATH),
+            stderr=subprocess.DEVNULL,
+            timeout=2,
+        ).decode("utf-8", errors="replace").strip()
+        return out
+    except Exception:
+        return ""
+
+
+# ---------------------------------------------------------------------------
+# Picker UI (jcode-feel polish)
+# ---------------------------------------------------------------------------
+
+def banner(state) -> None:
+    """ANSI-render the picker banner using fields from PickerState + status line."""
     now = time.strftime("%Y-%m-%d %H:%M")
+    account = os.environ.get("SINISTER_ACCOUNT", "operator")
+    swarm_on = os.environ.get("SINISTER_DEFAULT_SWARM", "").strip() == "1"
+    loop_on = os.environ.get("SINISTER_DEFAULT_LOOP", "").strip() == "1"
+    swarm_tag = f"{OK}on{RESET}" if swarm_on else f"{DIM}off{RESET}"
+    loop_tag = f"{OK}on{RESET}" if loop_on else f"{DIM}off{RESET}"
+
     print()
-    print(f'  {PURPLE}{BOLD}     E V E     {RESET}{DIM}// jcode-speed launcher{RESET}')
-    print(f'  {DARKP}{"-" * 60}{RESET}')
-    print(f'  {SOFT}server{RESET} Sanctum    {SOFT}client{RESET} EVE    {DIM}{now}{RESET}')
-    print(f'  {SOFT}model{RESET}  claude-opus-4-7[1m]   {SOFT}speed{RESET} turbo   {SOFT}token{RESET} compact')
-    print(f'  {SOFT}boot{RESET}   {OK}{state.boot_ms} ms{RESET}   '
-          f'{PILL_G} mcp:{state.mcp} {PILL_Z}  {PILL_B} bots:{state.bots} {PILL_Z}  '
-          f'{PILL_R} --skip-perms {PILL_Z}')
-    print(f'  {DARKP}{"-" * 60}{RESET}')
+    print(f"  {PURPLE}{BOLD}     E V E     {RESET}{DIM}// jcode-speed launcher :: Sinister Sanctum{RESET}")
+    print(f"  {DARKP}{'-' * 68}{RESET}")
+    print(f"  {SOFT}server{RESET} Sanctum    {SOFT}client{RESET} EVE    {DIM}{now}{RESET}")
+    print(f"  {SOFT}model{RESET}  claude-opus-4-7[1m]   {SOFT}speed{RESET} turbo   {SOFT}token{RESET} compact")
+    print(f"  {SOFT}boot{RESET}   {OK}{state.boot_ms} ms{RESET}   "
+          f"{PILL_G} mcp:{state.mcp} {PILL_Z}  {PILL_B} bots:{state.bots} {PILL_Z}  "
+          f"{PILL_R} --skip-perms {PILL_Z}")
+    print(f"  {DARKP}{'-' * 68}{RESET}")
+    # Status line
+    print(f"  {DIM}[{RESET}account: {BRIGHTP}{account}{RESET} {DIM}]{RESET}  "
+          f"{DIM}[{RESET}swarm: {swarm_tag}{DIM}]{RESET}  "
+          f"{DIM}[{RESET}loop: {loop_tag}{DIM}]{RESET}")
+    recent = _recent_commit_subject()
+    if recent:
+        if len(recent) > 64:
+            recent = recent[:61] + "..."
+        print(f"  {DIM}ship  {RESET}{SOFT}{recent}{RESET}")
+    print(f"  {DARKP}{'-' * 68}{RESET}")
     print()
 
 
-def render_picker(state: lib.PickerState) -> None:
+def render_picker(state) -> None:
     """ANSI-render the picker rows using fields from PickerState."""
-    print(f'  {WHITE}Pick a project{RESET}')
-    print(f'  {DARKP}{"-" * 60}{RESET}')
+    print(f"  {WHITE}{BOLD}Pick a project{RESET}")
+    print(f"  {DARKP}{'-' * 68}{RESET}")
     for r in state.rows:
-        marker = "*" if r.is_default else " "
-        line = (f'  {PURPLE}{marker} {r.index:2}){RESET} '
-                f'{WHITE}{r.display:<20}{RESET} '
-                f'{SOFT}{r.tag:<36}{RESET}')
+        marker = f"{BRIGHTP}*{RESET}" if r.is_default else " "
+        line = (f"  {marker} {PURPLE}{r.index:2}){RESET} "
+                f"{WHITE}{r.display:<22}{RESET} "
+                f"{SOFT}{r.tag:<34}{RESET}")
         if r.customized:
-            line += f' {DIM}[{r.agent_name} / {r.accent}]{RESET}'
+            line += f" {DIM}[{r.agent_name} / {r.accent}]{RESET}"
         print(line)
     print()
-    print(f'  {DARKP}{"-" * 60}{RESET}')
-    print(f'  {PURPLE}G){RESET} General      '
-          f'{PURPLE}A){RESET} Auto-Resume  '
-          f'{PURPLE}N){RESET} New Project  '
-          f'{PURPLE}R){RESET} Rename + Color')
-    print(f'  {PURPLE}K){RESET} Clear ctx    '
-          f'{PURPLE}S){RESET} Autonomy     '
-          f'{PURPLE}F){RESET} Full picker  '
-          f'{PURPLE}Q){RESET} Quit')
-    print(f'  {DIM}    multi-select: 1,3,5 or 1-3{RESET}')
-    print(f'  {DARKP}{"-" * 60}{RESET}')
+    print(f"  {DARKP}{'-' * 68}{RESET}")
+    print(f"  {PURPLE}G){RESET} General      "
+          f"{PURPLE}A){RESET} Auto-Resume  "
+          f"{PURPLE}N){RESET} New Project  "
+          f"{PURPLE}R){RESET} Rename + Color")
+    print(f"  {PURPLE}K){RESET} Clear ctx    "
+          f"{PURPLE}S){RESET} Autonomy     "
+          f"{PURPLE}F){RESET} Full picker  "
+          f"{PURPLE}Q){RESET} Quit")
+    print(f"  {DIM}    multi-select: 1,3,5 or 1-3{RESET}")
+    print(f"  {DARKP}{'-' * 68}{RESET}")
 
+
+# ---------------------------------------------------------------------------
+# Dispatch
+# ---------------------------------------------------------------------------
 
 def dispatch_project(key: str) -> int:
-    """Spawn the PS1 in headless project-mode (skips the PS1 picker)."""
-    if not PS1_LAUNCHER.exists():
-        print(f'{FAIL}  [FAIL] PS1 launcher not found at {PS1_LAUNCHER}{RESET}')
+    if PS1_LAUNCHER is None or not PS1_LAUNCHER.exists():
+        print(f"  {FAIL}[FAIL] PS1 launcher not found{RESET}")
         return 2
     cmd = [
         "powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass",
@@ -144,9 +468,8 @@ def dispatch_project(key: str) -> int:
 
 
 def dispatch_interactive() -> int:
-    """Hand off to the full PS1 picker for A/N/R/K/S sub-flows."""
-    if not PS1_LAUNCHER.exists():
-        print(f'{FAIL}  [FAIL] PS1 launcher not found at {PS1_LAUNCHER}{RESET}')
+    if PS1_LAUNCHER is None or not PS1_LAUNCHER.exists():
+        print(f"  {FAIL}[FAIL] PS1 launcher not found{RESET}")
         return 2
     cmd = [
         "powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass",
@@ -156,24 +479,130 @@ def dispatch_interactive() -> int:
 
 
 def dispatch_multi(keys: list[str]) -> int:
-    """Spawn multiple projects sequentially (400ms stagger)."""
     rc = 0
     for k in keys:
-        print(f'  {SOFT}[multi] spawning {WHITE}{k}{RESET}')
+        print(f"  {SOFT}[multi] spawning {WHITE}{k}{RESET}")
         rc = dispatch_project(k) or rc
         time.sleep(0.4)
     return rc
 
 
+# ---------------------------------------------------------------------------
+# Account status
+# ---------------------------------------------------------------------------
+
+def run_account_status() -> int:
+    if SANCTUM_ROOT_PATH is None:
+        print(f"  {FAIL}[FAIL] Sanctum root not found{RESET}")
+        return 1
+    accounts_ps = SANCTUM_ROOT_PATH / "automations" / "claude-accounts.ps1"
+    if not accounts_ps.exists():
+        print(f"  {FAIL}[FAIL] claude-accounts.ps1 not found at {accounts_ps}{RESET}")
+        return 1
+    print()
+    print(f"  {DARKP}{'=' * 68}{RESET}")
+    print(f"  {WHITE}{BOLD} EVE :: Multi-account status {RESET}")
+    print(f"  {DARKP}{'=' * 68}{RESET}")
+    cmd = [
+        "powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass",
+        "-Command",
+        f". '{accounts_ps}'; "
+        "$cfg = Get-AccountsConfig; "
+        'Write-Host \"Default: $($cfg.default)\"; '
+        'Write-Host \"Strategy: $($cfg.rotation_strategy)\"; '
+        'Write-Host \"Accounts:\"; '
+        '$cfg.accounts | ForEach-Object { '
+        "$rl = if ($_.rate_limited_until_utc) { 'RATE-LIMITED until ' + $_.rate_limited_until_utc } else { 'available' }; "
+        'Write-Host \"  - $($_.name) [$($_.plan_tier)] sessions=$($_.current_sessions)/$($_.max_sessions_concurrent) $rl\" }',
+    ]
+    return subprocess.call(cmd)
+
+
+# ---------------------------------------------------------------------------
+# Arg parsing (must run BEFORE banner + picker so probe flags exit fast)
+# ---------------------------------------------------------------------------
+
+EVE_VERSION = "0.4.0"  # v2 :: absorbed bat prereq flow + animated banner + status line
+
+
+def _print_help() -> None:
+    print(f"EVE.exe {EVE_VERSION} - Sinister Sanctum session launcher (jcode-style)")
+    print()
+    print("Usage: EVE.exe [flags]")
+    print()
+    print("Probe flags (exit immediately, no picker):")
+    print("  --version, -v        Print version + exit 0.")
+    print("  --help, -h           Print this help + exit 0.")
+    print("  --profile            Print 'boot=<N>ms rows=N mcp=N bots=N' + exit 0.")
+    print("  --diagnose           Probe every prerequisite + exit 0.")
+    print("  --account-status     Print multi-account state + exit 0.")
+    print()
+    print("Setup flags:")
+    print("  --setup-autonomy     Re-run grant-claude-autonomy.ps1 + exit 0.")
+    print()
+    print("Session flags (forwarded to picker via env):")
+    print("  --account <name>     Pin a specific account (sets SINISTER_ACCOUNT).")
+    print("  --swarm              Pre-enable swarm mode.")
+    print("  --loop               Pre-enable loop mode.")
+    print("  --both               Enable both swarm + loop.")
+    print("  --no-swarm           Disable swarm.")
+    print("  --no-loop            Disable loop.")
+    print()
+    print("Env:")
+    print("  SINISTER_SANCTUM_ROOT   Path to Sanctum repo (defaults to D:\\Sinister Sanctum).")
+    print("  SINISTER_SKIP_BANNER=1  Skip the animated banner intro.")
+    print()
+
+
+def _parse_session_flags(argv: list[str]) -> list[str]:
+    """Mutate os.environ based on swarm/loop/account flags. Return remaining argv."""
+    out: list[str] = []
+    i = 0
+    while i < len(argv):
+        a = argv[i]
+        al = a.lower()
+        if al == "--account":
+            if i + 1 < len(argv):
+                os.environ["SINISTER_ACCOUNT"] = argv[i + 1]
+                i += 2
+                continue
+            i += 1
+            continue
+        if al == "--swarm":
+            os.environ["SINISTER_DEFAULT_SWARM"] = "1"
+            os.environ["SINISTER_SKIP_MODES_PROMPT"] = "1"
+            i += 1
+            continue
+        if al == "--loop":
+            os.environ["SINISTER_DEFAULT_LOOP"] = "1"
+            os.environ["SINISTER_SKIP_MODES_PROMPT"] = "1"
+            i += 1
+            continue
+        if al == "--both":
+            os.environ["SINISTER_DEFAULT_SWARM"] = "1"
+            os.environ["SINISTER_DEFAULT_LOOP"] = "1"
+            os.environ["SINISTER_SKIP_MODES_PROMPT"] = "1"
+            i += 1
+            continue
+        if al == "--no-swarm":
+            os.environ["SINISTER_DEFAULT_SWARM"] = "0"
+            os.environ["SINISTER_SKIP_MODES_PROMPT"] = "1"
+            i += 1
+            continue
+        if al == "--no-loop":
+            os.environ["SINISTER_DEFAULT_LOOP"] = "0"
+            os.environ["SINISTER_SKIP_MODES_PROMPT"] = "1"
+            i += 1
+            continue
+        out.append(a)
+        i += 1
+    return out
+
+
 def _profile_and_exit() -> int:
-    """`EVE.exe --profile`: measure boot, print one machine-parsable line, exit 0.
-
-    Captures lib import + projects.json read + prefs read + state assembly +
-    count_mcp/bots. This is the L7 acceptance gate (target <300 ms cold-start).
-
-    The lib's import time is captured by the harness (process start -> now);
-    file I/O happens inside build_picker_state.
-    """
+    if lib is None:
+        print("boot=0ms rows=0 mcp=0 bots=0 (lib_missing)")
+        return 1
     t0 = time.monotonic()
     state = lib.build_picker_state(boot_ms=0)
     boot_ms = int((time.monotonic() - t0) * 1000)
@@ -181,34 +610,59 @@ def _profile_and_exit() -> int:
     return 0
 
 
-EVE_VERSION = "0.3.0"  # /loop iter 25 :: ported --version + --help on top of P2 lift-shift refactor
-
+# ---------------------------------------------------------------------------
+# Main
+# ---------------------------------------------------------------------------
 
 def main(argv: list[str] | None = None) -> int:
     argv = argv if argv is not None else sys.argv[1:]
-    # Probe-style flags: handle BEFORE any heavy work so Sinister Start.bat
-    # can sanity-check EVE.exe without spawning the picker UI (which blocks
-    # on input()). /loop iter 25 merge: kept --version + --help from main
-    # branch's v0.2.0, kept --profile from P2 refactor.
+
+    # Probe flags first — these must exit fast without rendering anything heavy.
     if argv:
         arg0 = argv[0].lower()
         if arg0 in ("--version", "-v", "/version"):
             print(f"EVE.exe {EVE_VERSION} :: Sinister Sanctum session launcher")
             return 0
         if arg0 in ("--help", "-h", "/help", "/?"):
-            print(f"EVE.exe {EVE_VERSION} - Sinister Sanctum session launcher (jcode-speed picker)")
-            print("Usage: EVE.exe [--version | --help | --profile]")
-            print("  --version  Print version + exit 0 (probe-friendly; no picker).")
-            print("  --help     Print this help + exit 0.")
-            print("  --profile  Print 'boot=<N>ms rows=N mcp=N bots=N' + exit 0 (L7 gate).")
-            print("  (no args)  Open interactive picker (1-N / G / A / N / R / K / S / F / Q + multi).")
-            print("  Sub-flows (A/N/R/K/S) hand off to start-sinister-session.ps1.")
+            _print_help()
             return 0
     if "--profile" in argv:
         return _profile_and_exit()
+    if any(a.lower() in ("--diagnose", "-diagnose", "/diagnose") for a in argv):
+        enable_vt_on_windows()
+        return run_diagnose()
+    if any(a.lower() in ("--setup-autonomy", "-setup-autonomy", "/setup-autonomy") for a in argv):
+        enable_vt_on_windows()
+        return run_autonomy_bootstrap(force=True)
+    if any(a.lower() in ("--account-status", "-account-status", "/account-status") for a in argv):
+        enable_vt_on_windows()
+        return run_account_status()
 
-    t0 = time.monotonic()
+    # Parse session-config flags (mutate env for child PS1)
+    argv = _parse_session_flags(argv)
+
+    # Bail early if Sanctum root never resolved.
+    if SANCTUM_ROOT_PATH is None or lib is None:
+        enable_vt_on_windows()
+        print()
+        print(f"  {FAIL}[FAIL] Sinister Sanctum repo not found.{RESET}")
+        print(f"  {SOFT}Set SINISTER_SANCTUM_ROOT or place repo at D:\\Sinister Sanctum{RESET}")
+        print()
+        try:
+            input("  press Enter to exit ")
+        except (EOFError, KeyboardInterrupt):
+            pass
+        return 1
+
+    # Prereq flow
     enable_vt_on_windows()
+    play_banner()
+    run_autonomy_bootstrap(force=False)
+    fire_plugin_check_background()
+    spawn_shell_preflight(verbose=False)
+
+    # Build picker state
+    t0 = time.monotonic()
     state = lib.build_picker_state(boot_ms=0)
     state.boot_ms = int((time.monotonic() - t0) * 1000)
 
@@ -217,8 +671,8 @@ def main(argv: list[str] | None = None) -> int:
         render_picker(state)
         try:
             raw = input(
-                f'  {WHITE}Selection [1-{len(state.rows)} / G / A / N / R / K / S / F / Q, '
-                f'default={state.default_key}] {PURPLE}>{RESET} '
+                f"  {WHITE}Selection [1-{len(state.rows)} / G / A / N / R / K / S / F / Q, "
+                f"default={state.default_key}] {PURPLE}>{RESET} "
             ).strip()
         except (EOFError, KeyboardInterrupt):
             print()
@@ -227,7 +681,7 @@ def main(argv: list[str] | None = None) -> int:
         result = lib.resolve_pick(raw, state)
 
         if result.verb == "quit":
-            print(f'  {SOFT}bye.{RESET}')
+            print(f"  {SOFT}bye.{RESET}")
             return 0
         elif result.verb == "multi":
             dispatch_multi(result.keys)
@@ -236,17 +690,16 @@ def main(argv: list[str] | None = None) -> int:
         elif result.verb == "general":
             dispatch_project("general")
         elif result.verb in ("auto-resume", "new", "rename", "clear", "autonomy", "full"):
-            # All these sub-flows live in the full PS1 picker
             return dispatch_interactive()
         else:
-            print(f'  {WARN}  unknown selection: {raw}{RESET}')
+            print(f"  {WARN}unknown selection: {raw}{RESET}")
             time.sleep(1)
             continue
 
         # Refresh state so prefs changes via R) show on next iteration
         state = lib.build_picker_state(boot_ms=state.boot_ms)
         try:
-            ans = input(f'  {DIM}> press Enter for picker, Q to quit:{RESET} ').strip().lower()
+            ans = input(f"  {DIM}> press Enter for picker, Q to quit:{RESET} ").strip().lower()
         except (EOFError, KeyboardInterrupt):
             print()
             return 0
