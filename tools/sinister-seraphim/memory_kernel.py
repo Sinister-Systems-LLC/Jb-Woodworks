@@ -546,6 +546,23 @@ def recall_brain(
     # iter-65/66 combined predictor (shared top-4 = 0 OR same top-1 across all 3)
     # to avoid the iter-48 noise-doc collapse failure mode.
     # SIM-ONLY by design (cloud-Wukong-180 burn is forbidden per project CLAUDE.md).
+    #
+    # ⚠️ ITER 96 STRESS-TEST FAILURE MODE (2026-05-24):
+    # 10-query stress test caught that triad-discrimination is the WRONG metric
+    # for query↔doc retrieval. Example: query "snap account survival rate limit"
+    # had spread 0.0475 (within auto window). Tiebreaker reordered the correct
+    # top-1 (snap-account-24h-survival-doctrine, tfidf 0.1334) BEHIND an unrelated
+    # apk-leak-surface-audit. The quantum-kernel triad-discrimination metric
+    # answers "which doc is most structurally distinct in this cluster" — that's
+    # the iter-44/45/52 finding for FIND-QBC selection. For query↔doc recall the
+    # user wants "best-matching" not "most-distinct" — different question.
+    #
+    # USE THE TIEBREAKER ONLY FOR:
+    #   - Investigative queries ("show me the structurally distinct option")
+    #   - When you've empirically verified the reorder is operator-useful for
+    #     your specific query class
+    #
+    # DEFAULT REMAINS tiebreaker='off'. Auto-mode is opt-in and risky.
     tiebreaker_info = {'fired': False, 'reason': 'tiebreaker=off'}
     if tiebreaker in ('auto', 'always') and len(rows) >= 3:
         top3 = rows[:3]

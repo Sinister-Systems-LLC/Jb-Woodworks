@@ -7,6 +7,72 @@ Append-only memory. Most recent at top. Cross-references to brain entries and ot
 
 ---
 
+## 2026-05-24T22:30Z — 🚨 ITER 96: STRESS-TEST CAUGHT TIEBREAKER FAILURE MODE — applies iter-48 lesson to iter 95
+
+Per iter-48's "one smoke test is anecdote, multiple is empirical" lesson, ran a 10-query stress test on the iter-95 tiebreaker. Caught a real failure mode.
+
+### Stress-test result (10 diverse queries on the 129-doc pool)
+
+| Query | Spread | Auto fired? |
+|---|---|---|
+| multi-agent git coordination | 0.0921 | NO (>0.05) |
+| **snap account survival rate limit** | **0.0475** | **YES** |
+| quantum kernel memory inversion | 0.0537 | NO |
+| fingerprint device emulator | 0.0398 | NO (pre-filter killed) |
+| origin queue stall budget | 0.0692 | NO |
+| bot routing skill agent | 0.0986 | NO |
+| cloud submission stall | 0.0422 | NO (pre-filter) |
+| brain corpus growth fleet | 0.0126 | NO (pre-filter) |
+| cancellation theorem identity gate | 0.0162 | NO (pre-filter) |
+| detection rule classifier evasion | 0.1737 | NO |
+
+### The one auto-fire was BAD
+
+- Original TF-IDF #1: `snap-account-24h-survival-doctrine-2026-05-21.md` (tfidf 0.1334) — **correct match**
+- Tiebreaker reordered to #1: `apk-leak-surface-audit-2026-05-23.md` — **unrelated to snap account survival**
+
+### Why the failure happened
+
+The tiebreaker is built on the iter-44/45/52 doctrine that quantum kernel can discriminate triads at higher rates than TF-IDF. But that doctrine is about **find-qbc selection** — "of all possible triads in the corpus, which ones are quantum-discriminable?" That's a DIFFERENT question than "for this query, which 3 docs are the best match?"
+
+For query↔doc recall, the user wants **best-matching** docs. The tiebreaker measures **structural distinctness** within an ambiguous TF-IDF cluster. When all 3 docs are near-tied on TF-IDF, picking the "structurally distinct" one is sometimes correct (interesting outlier) but often wrong (off-topic doc that happens to be discriminable from the cluster).
+
+The iter-48 finding (alpha<1.0 degrades pair-wise) is the same structural truth in different clothing: **quantum-kernel triad discrimination ≠ query↔doc retrieval quality.**
+
+### Honest fixes applied (iter 96)
+
+1. **Docstring warning** in `recall_brain()` documents the iter-96 stress-test failure mode at length. Lists the snap-survival case as concrete example. Recommends use only for "investigative queries" or after empirical validation per query class.
+2. **Default stays `tiebreaker='off'`** (already correct). Auto-mode is opt-in.
+3. **New regression test** `test_brain_recall_tiebreaker_documented_failure_mode` asserts:
+   - Default (off) returns the correct snap-survival doc as top-1
+   - This test DOCUMENTS the failure mode rather than asserting a "correct" reorder
+   - Future contributors editing the tiebreaker get a fast-feedback signal if they accidentally enable auto by default
+4. **MEMORY.md entry** (this one) preserves the empirical evidence
+
+### What stays
+
+- The tiebreaker code stays. Operators can opt-in with `--tiebreaker always` for investigative use cases (e.g., "show me the structurally distinct option among these similar TF-IDF hits") if they've empirically validated for their query class.
+- All other tests still pass (28/28).
+- Schema v2 stays — adds `tiebreaker.fired/reason/spread/doc_advantages` for transparency even when not fired.
+
+### The iter-48 → iter-96 doctrine line is now complete
+
+Both findings (iter-48 alpha<1.0 + iter-96 tiebreaker) confirm: **quantum-kernel metrics designed for triad selection (iter-44/45/52/57) do NOT map cleanly to query↔doc retrieval.** This is an ENCODING-SCOPE doctrine point worth its own brain entry if we wanted; for now, it's captured in MEMORY.md + docstrings.
+
+### Cost / verification
+
+- Zero cloud burn; ~8 min wall time (stress test + edit + test + verify)
+- Status: **tested-before-claimed** (28/28 pass; failure mode reproduced + documented)
+
+### Iter 96 = a textbook iter-48 lesson application
+
+iter-48: caught alpha=0.5 default failure via diverse-query stress test.
+iter-96: caught tiebreaker=auto false-fire via diverse-query stress test.
+
+Same pattern, different feature. The meta-lessons brain entry (iter 90) lesson 2 ("Test failures catch corpus-context nuances") generalizes to "DIVERSE-QUERY stress tests catch quality failures that single smoke tests miss." Worth reinforcing in the next iter's brain entry update.
+
+---
+
 ## 2026-05-24T22:00Z — 🚀 ITER 95: BRAIN-RECALL TIEBREAKER SHIPPED + 6 parallel audit agents found cross-lane work
 
 Operator directive: "start on all memory updates we can do in all parrallel agents you ened" — spawned 6 read-only audit agents in parallel + synthesized findings + executed in-lane work.

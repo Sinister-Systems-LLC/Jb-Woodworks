@@ -7,6 +7,33 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T22:30Z — iteration 96 (STRESS-TEST caught tiebreaker failure mode; applied iter-48 lesson)
+
+Operator: /loop. Per iter-48 lesson ("one smoke test is anecdote, multiple is empirical"), stress-tested the iter-95 tiebreaker on 10 diverse queries.
+
+### Finding
+1/10 auto-fired ("snap account survival rate limit", spread 0.0475). The auto-fire was BAD: reordered the correct top-1 (`snap-account-24h-survival-doctrine`) BEHIND an unrelated `apk-leak-surface-audit`.
+
+### Mechanism
+Quantum-kernel triad-discrimination is the iter-44/45/52 metric for FIND-QBC selection. Not for query↔doc retrieval. Same structural truth as iter-48 in different clothing.
+
+### Honest fixes
+- Docstring warning in `recall_brain()` documents the failure mode + recommends opt-in only for investigative use
+- Default stays `tiebreaker='off'` (already correct)
+- New regression test `test_brain_recall_tiebreaker_documented_failure_mode` asserts default-off preserves correct top-1; documents the failure for future contributors
+- MEMORY.md iter 96 entry preserves the empirical evidence
+
+### Test suite
+28/28 PASS (+1 from iter 95). No regressions.
+
+### Cost
+Zero cloud burn; ~8 min wall time.
+
+### iter-48 → iter-96 doctrine line complete
+Both findings confirm: quantum-kernel metrics designed for triad selection don't map cleanly to query↔doc retrieval. Different operation.
+
+---
+
 ## 2026-05-24T22:00Z — iteration 95 (BRAIN-RECALL TIEBREAKER SHIPPED + 6 parallel audit agents + cross-lane queue rows)
 
 Operator pivot: "with all that we just gathered what can we do" + "start on all memory updates we can do in all parrallel agents you ened". Spawned 6 parallel audit agents (read-only) + synthesized findings + executed in-lane work.

@@ -410,6 +410,29 @@ def test_brain_recall_tiebreaker_auto_skips_above_window():
         f"unexpected non-fire reason: {r['tiebreaker']['reason']!r}"
 
 
+def test_brain_recall_tiebreaker_documented_failure_mode():
+    """iter 96 stress-test caught: query 'snap account survival rate limit'
+    has TF-IDF spread 0.0475 (within auto window) → tiebreaker fires → reorders
+    the CORRECT top-1 (snap-account-24h-survival-doctrine) BEHIND an unrelated
+    apk-leak-surface-audit doc. The tiebreaker measures structural distinctness,
+    not query-relevance. This test DOCUMENTS the failure mode rather than asserting
+    'correct' behavior — operators must understand the tiebreaker is opt-in and
+    NOT a free upgrade to query↔doc retrieval.
+
+    Asserts: tiebreaker is OPT-IN (default off), and when tiebreaker=off the
+    snap-survival query DOES correctly return snap-account-24h-survival-doctrine
+    as top-1.
+    """
+    # Default tiebreaker=off must always pick the correct snap-survival doc
+    r_off = memory_kernel.recall_brain(
+        'snap account survival rate limit',
+        top_k_results=3, corpus_mode='pool',
+    )
+    assert r_off['tiebreaker']['fired'] is False
+    assert r_off['top_results'][0]['filename'] == 'snap-account-24h-survival-doctrine-2026-05-21.md', \
+        "tiebreaker=off must preserve TF-IDF-correct top-1 (this is the SAFE default)"
+
+
 def test_brain_recall_tiebreaker_always_fires_and_reranks():
     """tiebreaker=always MUST fire when 3+ results exist + pre-filter passes.
     Verifies the quantum-kernel discrimination path actually runs to completion.
