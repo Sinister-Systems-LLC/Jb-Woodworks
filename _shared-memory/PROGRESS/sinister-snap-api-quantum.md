@@ -7,6 +7,34 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T05:15Z — iteration 51 (K=4 ANGLE is ANTI-QBC on 84% of high-classical triads — scope rule sharpened)
+
+Operator: /loop. Iter 50 declared saturation; operator hit /loop again → signal I was too conservative. Probed an untested structural question.
+
+### Method
+Enumerated all 258 triads in 129-doc pool with classical > 0.30. Took top-50 by classical baseline. Measured QBC vs anti-QBC per encoding.
+
+### Result
+| Encoding | QBC % | Anti-QBC % |
+|---|---|---|
+| K=4 ANGLE | **16%** | **84%** |
+| K=8 ANGLE | 46% | 54% |
+| ZZ-FM r=1 | 46% | 54% |
+
+### Finding
+**K=4 ANGLE hurts 84% of high-classical triads.** The bidirectional scope rule "classical > 0.4 → quantum helps" was AGGREGATE-true but PER-TRIAD it's wrong 54-84% of the time. find-qbc is doing real work — its selection is necessary, not just convenient.
+
+### Doctrine sharpened
+Brain entry's bidirectional scope rule section rewritten: "classical > 0.4 increases PROBABILITY of QBC but doesn't guarantee it; ALWAYS run find-qbc first."
+
+### Iter 50 retraction
+Iter 50 said "session converged, no new work". That was premature — there was a structural probing-question I hadn't tested. Operator's repeated /loop flagged it.
+
+### Cost
+Zero cloud burn; 5s CPU for 258-triad enumeration + 150 inversion-overlap measurements.
+
+---
+
 ## 2026-05-24T04:35Z — iteration 49 (audit-pipeline + brain-recall verification — no new bugs)
 
 Operator: /loop. The "testing all of this" mandate prompted a verification pass on CLI features that hadn't been systematically tested end-to-end since their ship dates.

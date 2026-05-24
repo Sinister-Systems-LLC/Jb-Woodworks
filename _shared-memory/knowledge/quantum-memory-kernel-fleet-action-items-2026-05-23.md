@@ -35,7 +35,15 @@
 - **K=8 ANGLE and ZZ-FM r=1 are COMPLEMENTARY** (iter 45). K=8 wins 58.6% of triads; ZZ-FM wins 41.4%. Encodings disagree often (per-triad r=+0.14). Compute both for specific triads.
 - **Cancellation theorem:** ANGLE-CNOT == K=4 ANGLE (verified iters 16, 22, 43). Parameter-free entangling layers cancel in U_B† · U_A.
 
-**Bidirectional scope rule (refined):** quantum kernel beats classical when classical > 0.30 (K=8 ANGLE) or > 0.40 (K=4 ANGLE / ZZ-FM r=1). Below those thresholds quantum hurts via top-K compression.
+**Bidirectional scope rule (sharpened iter 51):** classical > 0.4 increases the PROBABILITY of QBC but does NOT guarantee it. On the top-50 highest-classical triads:
+
+- K=4 ANGLE: **16% QBC** / 84% anti-QBC (quantum hurts most of the time)
+- K=8 ANGLE: 46% QBC / 54% anti-QBC (under coin flip)
+- ZZ-FM r=1: 46% QBC / 54% anti-QBC (under coin flip)
+
+**Conclusion: ALWAYS run `seraphim find-qbc` to identify the specific QBC triads.** Don't pick triads by classical alone — even at high classical, the encoding-specific anti-QBC rate is 54-84%. find-qbc is doing real work (only 0.13-0.28% of all triads are QBC) — its selection is necessary, not just convenient.
+
+The 5 verified real-QPU runs (25-35pp) used find-qbc-selected triads — they're in the 16-46% that work, not random high-classical picks.
 
 **Honesty section (no-bullshit doctrine):** All ceiling/headroom numbers are sim-only. Real-QPU r=2+ saturates near classical baseline (noise wall at depth 68+). Error-mitigation pathways (ZNE / Pauli twirling / readout cal) are conjectured, not measured. **Don't claim K=8 ANGLE as future-production without empirical test.**
 

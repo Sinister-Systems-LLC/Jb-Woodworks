@@ -7,6 +7,67 @@ Append-only memory. Most recent at top. Cross-references to brain entries and ot
 
 ---
 
+## 2026-05-24T05:15Z — 🚨 ITER 51: K=4 ANGLE is ANTI-QBC on 84% of high-classical triads — bidirectional scope rule needs sharpening
+
+Iter 50 declared saturation. Operator hit /loop twice more → signal I was too conservative. Iter 51 probed an untested structural question: **is K=4 ANGLE anti-QBC on most triads, or just iter-43's?**
+
+### Method
+
+Enumerated all triads in the 129-doc find-qbc balanced pool with classical off-diag > 0.30 (the bidirectional scope rule's "quantum can help" threshold) → **258 triads**. Took the top-50 ranked by classical baseline (most-similar-doc triads). Measured QBC vs anti-QBC for each encoding.
+
+### Results (top-50 highest-classical triads)
+
+| Encoding | QBC count | QBC % | Anti-QBC count | Anti-QBC % |
+|---|---|---|---|---|
+| K=4 ANGLE | 8 | **16%** | 42 | **84%** |
+| K=8 ANGLE | 23 | 46% | 27 | 54% |
+| ZZ-FM r=1 | 23 | 46% | 27 | 54% |
+
+### Findings
+
+1. **K=4 ANGLE hurts 84% of high-classical triads.** The bidirectional scope rule's "classical > 0.4 → quantum helps" was AGGREGATE-true (it works for find-qbc-selected triads which are the 16% K=4 QBC ones) but PER-RANDOM-TRIAD it's FALSE 84% of the time at K=4 ANGLE.
+2. **K=8 ANGLE and ZZ-FM r=1 tie at 46% QBC — under coin flip.** Even with the wider Hilbert space, more than half of high-classical triads see quantum kernel HURT discrimination.
+3. **find-qbc is doing real work.** It's not picking random triads — it's specifically finding the rare ones where quantum helps. Iter 41's "0.279% QBC" K=8 ANGLE = 975 / 349k triads is selecting the genuine 0.279%, not a fluke.
+
+### Sharpened doctrine
+
+OLD bidirectional scope rule (iter 10):
+> classical > 0.4 → quantum helps; classical < 0.3 → quantum hurts
+
+REFINED (iter 51 correction):
+> classical > 0.4 increases the PROBABILITY of QBC but doesn't guarantee it.
+> - K=4 ANGLE: ~16% of high-classical triads are QBC
+> - K=8 ANGLE: ~46% of high-classical triads are QBC
+> - ZZ-FM r=1: ~46% of high-classical triads are QBC
+>
+> **Conclusion: ALWAYS run `seraphim find-qbc` to find the specific QBC triads.** Don't pick triads by classical alone and assume quantum helps. The "wider net" property of K=8 ANGLE / ZZ-FM r=1 just means MORE of the top-50 happen to be QBC, not that any specific one is QBC.
+
+### Real-QPU production-recipe impact
+
+This finding does NOT invalidate the production recipe. The 5 real-QPU runs (25-35pp on Wukong-180) were on triads that find-qbc had explicitly identified as QBC. They're in the 16-46% that work. The doctrine just clarifies: **don't apply the recipe to a random high-classical triad without find-qbc verification first.**
+
+### Why this wasn't caught earlier
+
+Iters 38-45 measured sim ceilings, headrooms, classical correlations — all on triads that were ALREADY QBC by find-qbc. The "anti-QBC at high classical" population was never explicitly enumerated until this iter.
+
+### What the agents need to know (fleet update needed)
+
+The brain entry should add a footnote: "the bidirectional scope rule is necessary but NOT sufficient — find-qbc verification is required." This would prevent operators from manually picking 'looks good' triads and assuming quantum helps.
+
+Cross-agent broadcast worth posting if operator considers this important enough to interrupt other lanes.
+
+### Cost / verification
+
+- Zero cloud burn
+- ~5s CPU for the 258-triad enumeration + 3-encoding × 50-triad measurement
+- Status: **tested-before-claimed** (raw counts: K=4 8/50, K=8 23/50, ZZ 23/50; each measured by inversion-overlap)
+
+### Iter 50 retraction
+
+Iter 50 said "session converged, no new work to do." That was wrong — there was a structural question I hadn't probed. Operator's persistence flagged my premature saturation declaration. The no-bullshit doctrine works both ways: don't pad with low-value work BUT don't prematurely declare saturation when probing-questions remain.
+
+---
+
 ## 2026-05-24T04:15Z — 🚨 ITER 48: brain-recall STRESS-TEST reveals alpha=0.5 default is BROKEN — fixed to alpha=1.0
 
 Iter 47 shipped `seraphim brain-recall` with one smoke test (query "multi-agent git coordination branch contention") that produced sensible results. Iter 48 ran 10 diverse queries and revealed the alpha=0.5 default is broken on pair-wise (query vs doc) similarity.
