@@ -93,7 +93,12 @@ export function CommercialFeature() {
           style={{ y: headlineY, opacity: headlineOpacity }}
           className="container-site relative z-[2] py-20 sm:py-24"
         >
-          <div className="max-w-[640px]">
+          <div className="max-w-[680px]">
+            {/* Eyebrow */}
+            <p className="font-mono text-[0.62rem] tracking-[0.42em] uppercase text-gold mb-4">
+              Commercial &amp; Event Fabrication
+            </p>
+
             {/* Headline with staggered word reveal */}
             <motion.h2
               initial={reduced ? false : "hidden"}
@@ -118,19 +123,19 @@ export function CommercialFeature() {
               </motion.em>
             </motion.h2>
 
-            <p className="text-cream-50 text-[1.1rem] leading-[1.7] max-w-[440px] mb-9 font-display italic">
-              Retail reveals, pop-ups, brand activations — built to land photographable on day one.
+            <p className="text-cream-50 text-[1.1rem] leading-[1.7] max-w-[520px] mb-9 font-display italic">
+              Custom fabrication, branded displays, retail installations, event builds, feature walls &mdash; designed and built in-house, photographable from day one.
             </p>
 
             <div className="flex flex-wrap items-center gap-6">
               <Link
-                href="/contact?service=commercial"
+                href="/contact?service=commercial-event-fabrication"
                 className="btn btn-primary btn-large jbw-magnetic"
               >
                 Discuss your project
               </Link>
               <Link
-                href="/portfolio?category=commercial-builds"
+                href="/portfolio?category=commercial-event-fabrication"
                 className="link-arrow"
               >
                 See more builds

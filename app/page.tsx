@@ -12,10 +12,12 @@ import { Icon } from "@/components/ui/icon";
 import { services, portfolio, faq } from "@/lib/content";
 
 export default function Home() {
-  // Avoid duplication: CommercialFeature already showcases New Balance + the
-  // category. The "Recent builds, up close" preview pulls from non-commercial
-  // items so visitors see a fresh slice on the main page.
-  const previewItems = portfolio.filter((p) => p.category !== "Commercial Builds").slice(0, 4);
+  // Avoid duplication: CommercialFeature already showcases the New Balance +
+  // SKU Snipers commercial work. The "Recent builds, up close" preview pulls
+  // from non-commercial items so visitors see a fresh slice on the main page.
+  const previewItems = portfolio
+    .filter((p) => p.category !== "Commercial & Event Fabrication")
+    .slice(0, 4);
 
   return (
     <>
@@ -56,21 +58,21 @@ export default function Home() {
           <div className="md:pl-16">
             {/* Eyebrow + giant statement (no italic kicker, intentionally different) */}
             <p className="font-mono text-[0.65rem] tracking-[0.42em] uppercase text-gold mb-8">
-              <span className="tabular-nums">06</span>
+              <span className="tabular-nums">{String(services.length).padStart(2, "0")}</span>
               <span className="mx-3 text-cream-30">·</span>
               <span>What we build</span>
               <span className="mx-3 text-cream-30">·</span>
-              <span className="text-cream-30">What we don&apos;t</span>
+              <span className="text-cream-30">Custom-focused</span>
             </p>
             <h2 className="font-display text-[clamp(2.4rem,5.5vw,4.4rem)] leading-[1.05] text-white m-0 max-w-[920px]">
-              Six lanes we take seriously. The rest we&apos;ll send you to a friend for.
+              Residential craftsmanship and commercial fabrication &mdash; <em className="text-gold">all built custom, in-house.</em>
             </h2>
-            <div className="mt-8 flex flex-col sm:flex-row gap-4 sm:gap-12 items-start max-w-[760px] text-cream-50 text-[0.95rem] leading-[1.8]">
+            <div className="mt-8 flex flex-col sm:flex-row gap-4 sm:gap-12 items-start max-w-[820px] text-cream-50 text-[0.95rem] leading-[1.8]">
               <p className="flex-1">
-                We are deliberate about what we take on. No upsells, no salespeople, no &ldquo;premium tier.&rdquo;
+                Decks, docks, pergolas, outdoor living, hardwoods, and custom furniture &mdash; plus <em className="text-gold not-italic font-semibold">custom fabrication, branded displays, commercial &amp; event builds, and specialty installations</em> for brands and retailers.
               </p>
               <p className="flex-1 italic font-display">
-                Pick a lane to start the conversation — or just call.
+                Premium. Modern. Made for your space &mdash; not pulled from a catalog.
               </p>
             </div>
           </div>

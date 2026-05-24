@@ -34,7 +34,15 @@ export default async function PortfolioItemPage({ params }: Props) {
       <section className="pt-40 pb-16 bg-gradient-to-b from-ink-2 to-ink border-b border-line relative overflow-hidden">
         <div aria-hidden className="absolute -top-24 -right-24 w-[400px] h-[400px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(201,168,76,0.10), transparent 70%)" }} />
         <div className="container-site relative">
-          <span className="section-tag">{item.category}</span>
+          <span className="section-tag">
+            {item.category}
+            {item.subcategory && (
+              <>
+                <span aria-hidden className="mx-2 text-cream-30">·</span>
+                <span className="text-cream-50">{item.subcategory}</span>
+              </>
+            )}
+          </span>
           <h1 className="mb-5"><em>{item.title}.</em></h1>
           <p className="section-subheadline">{item.blurb}</p>
           <p>

@@ -9,6 +9,15 @@ import heroData from "./hero_media.json";
 export type ServiceIcon =
   | "dock" | "deck" | "table" | "trim" | "pergola" | "wrench";
 
+/** Optional sub-classification on a portfolio item for finer-grained
+ *  filtering inside a category. Currently used by Commercial & Event
+ *  Fabrication to differentiate Event Builds / Custom Displays / Commercial
+ *  Fabrication on the portfolio page. */
+export type PortfolioSubcategory =
+  | "Event Builds"
+  | "Custom Displays"
+  | "Commercial Fabrication";
+
 export type Service = {
   slug: string;
   title: string;
@@ -43,6 +52,8 @@ export type PortfolioItem = {
   slug: string;
   title: string;
   category: string;
+  /** Optional finer-grained type within the parent category. */
+  subcategory?: PortfolioSubcategory;
   blurb: string;
   cover: string;
   is_raw_cover?: boolean;
@@ -69,7 +80,12 @@ export function portfolioCategories(): string[] {
 }
 
 export function categorySlug(cat: string): string {
-  return cat.toLowerCase().replace(/\s+/g, "-");
+  // URL-safe slug: lowercase, strip every non-alphanumeric (handles `&`, `+`,
+  // punctuation, etc), collapse runs of dashes, trim leading/trailing dashes.
+  return cat
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 }
 
 export function mediaUrl(rel: string, raw = false): string {

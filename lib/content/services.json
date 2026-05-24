@@ -52,5 +52,14 @@
     "icon": "wrench",
     "exampleHref": "/contact?service=repairs-staining",
     "ctaLabel": "Get a quote"
+  },
+  {
+    "slug": "commercial-event-fabrication",
+    "title": "Commercial & Event Fabrication",
+    "blurb": "Custom branded displays, feature walls, event fabrication, locker displays, specialty installations, and custom commercial builds.",
+    "details": "Brand launch displays, retail merchandising fixtures, pop-up event builds, photo-day-ready installations, feature walls, locker/cubby systems, and one-off commercial commissions. Built in-shop, installed on-site, photographable from day one. New Balance and SKU Snipers are recent examples.",
+    "icon": "table",
+    "exampleHref": "/portfolio?category=commercial-event-fabrication",
+    "ctaLabel": "See examples"
   }
 ]

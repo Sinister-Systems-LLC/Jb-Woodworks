@@ -140,6 +140,12 @@ export function PortfolioCard({
         <div className="px-6 pt-6 pb-7">
           <span className="block text-[0.62rem] font-bold tracking-[0.22em] uppercase text-gold mb-2">
             {item.category}
+            {item.subcategory && (
+              <>
+                <span aria-hidden className="mx-2 text-cream-30">·</span>
+                <span className="text-cream-50">{item.subcategory}</span>
+              </>
+            )}
           </span>
           <h3 className="font-display text-[1.4rem] mb-2">{item.title}</h3>
           <p className="text-cream-50 text-[0.92rem] leading-[1.6] mb-3.5">{item.blurb}</p>
