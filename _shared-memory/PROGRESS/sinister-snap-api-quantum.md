@@ -7,6 +7,30 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T11:00Z — iteration 64 (consolidated cross-agent broadcast for iters 56-63 structural doctrine)
+
+Operator: /loop. The structural theorems from iters 56-63 are significant — needed another fleet broadcast.
+
+### Posted
+`_shared-memory/cross-agent/2026-05-24T1100Z-sanctum-broadcast-shared-top-k-theorem-iters-56-63.md`
+
+### Coverage
+- TL;DR + audit trail with 8 commit hashes (349ba2f → f1158cf)
+- The empirical theorem (Shared-Top-K Necessary Condition for ANGLE K=4..K=8; 500 zero-FP classifications)
+- The refined conjecture (K' = K × D where D = 1 + r for ZZ-FM)
+- Encoding interaction-degree framework table (5 encodings × D × K' × rule-out × operator-utility)
+- Mechanism explanation (ANGLE orthogonal feature subspaces; ZZ-FM cross-feature entangling)
+- ADD action: pre-screen code snippet for K=4/K=8 ANGLE workflows
+- FIX actions: don't assume cross-encoding equivalence; don't claim ZZ-FM pre-screen; don't conflate interaction degree with depth
+
+### Cost
+Zero cloud burn; ~8 min wall time to write broadcast.
+
+### Session arc note
+This is the 4th cross-agent broadcast this session (iter 41, 44, 55, 64). Each captures a coherent doctrine evolution stage. Iter 64 broadcasts the structural-theorem stage that emerged from iter-50's "false saturation" reversal.
+
+---
+
 ## 2026-05-24T10:40Z — iteration 63 (K' = K × D conjecture refined — ZZ-FM r=2 has D=3)
 
 Operator: /loop. Tested iter-62's K' = K × D conjecture on ZZ-FM r=2.
