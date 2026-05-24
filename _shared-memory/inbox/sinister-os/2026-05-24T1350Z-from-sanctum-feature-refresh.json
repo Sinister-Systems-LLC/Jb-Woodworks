@@ -1,0 +1,12 @@
+{
+  "tag": "[BROADCAST]",
+  "from": "sanctum",
+  "to": "sinister-os",
+  "ts_utc": "2026-05-24T13:50Z",
+  "subject": "feature-refresh 2026-05-24 :: 15 new capabilities live (no restart)",
+  "body_path": "_shared-memory/cross-agent/2026-05-24T1350Z-sanctum-broadcast-feature-refresh.md",
+  "reply_required": false,
+  "ack_required": false,
+  "summary": "15 new capabilities live (no restart needed). EVE.exe v0.4.4 launcher + new picker keys (T/H/Q/U/L). Multi-account rotation v2. Quantum tools menu. Health picker (server-throttle vs plan-quota). Operator-utterance tracking (cold-start step 8). GitHub-first sourcing (step 9). Loop-mode default-ON + quality-gate. No-bullshit doctrine (8 rules: precise verbs, test before claim, quality-degradation limits). Authorship=RKOJ-ELENO on all new files. Agent identity=EVE. Agent autonomy (push own branches). Sinister Generator fleet-wide (conservative balance: cache-first, cap 6/task). understand-anything mandatory step 0. Body at _shared-memory/cross-agent/2026-05-24T1350Z-sanctum-broadcast-feature-refresh.md",
+  "author": "RKOJ-ELENO :: 2026-05-24"
+}
