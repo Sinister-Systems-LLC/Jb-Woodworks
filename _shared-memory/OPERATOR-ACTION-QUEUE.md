@@ -10,6 +10,88 @@ The Sanctum-side mirror of `SESSION-START/02-OPERATOR-QUEUE.md`, with checkboxes
 
 ---
 
+## 2026-05-24 — 🟠 Sinister OS master plan READY for operator review (P0 → P1 gate)
+
+> Author: RKOJ-ELENO :: 2026-05-24
+
+The Sinister OS project (Linux-based, EVE-controlled, gaming-capable full-PC OS replacement) has P0 spec lock SHIPPED. Master plan at `projects/sinister-os/plans/master-plan-2026-05-24.md` is end-to-end coherent (17 numbered sections + P1 row-level acceptance + Q1-Q10 operator-gate questions + risks + references + P0 acceptance checklist).
+
+**Operator action to unlock P1 (build the bootable ISO in VM):**
+
+- [ ] Read `projects/sinister-os/plans/master-plan-2026-05-24.md` (read time ~15 min for full plan; § 0 + § 1 + § 12 + § 14 alone covers decision-grade summary in ~3 min).
+- [ ] Answer Q1-Q10 in § 14 (10 short picks; defaults are listed if operator wants to accept all defaults):
+  - Q1 distro: Arch + linux-cachyos? (default: yes)
+  - Q2 compositor: Hyprland (Wayland)? (default: yes; KDE Plasma 6 / GNOME / XFCE are alternatives)
+  - Q3 default browser: LibreWolf? (default: yes; Brave / Firefox / Chromium also installed)
+  - Q4 voice provider: local Whisper? (default: yes; cloud Whisper / Deepgram are alternatives)
+  - Q5 LUKS2 disk encryption? (default: yes, but operator-tunable)
+  - Q6 Secure Boot enabled? (default: no — simpler; MOK enrollment friction otherwise)
+  - Q7 dual-boot during P2-P4 soak? (default: yes — full reversibility until P5)
+  - Q8 which spare partition for P2 install? (operator picks; likely D: or a new SSD)
+  - Q9 anti-cheat games operator cares about? (esp. Vanguard-protected titles — Valorant won't work on Linux)
+  - Q10 if Q9 has Vanguard titles, keep Windows VM via VFIO GPU passthrough? (defer until Q9)
+- [ ] On answer, EVE opens `agent/sinister-os/p1-iso-build-<date>` and builds the bootable ISO in QEMU/KVM (operator never touches their real disk until P5 explicit cutover command).
+
+**Reminder:** P5 (cutover from Windows) is the only irreversible phase. Through P4 the operator's Windows install is untouched.
+
+---
+
+## 2026-05-24 — 🟠 Cross-lane findings from parallel memory-audit sweep (EVE on snap-api-quantum, iter 95)
+
+> Author: RKOJ-ELENO :: 2026-05-24
+
+Six parallel audit agents spawned to find memory-system improvement opportunities across the fleet. Cross-lane findings flagged for per-lane agent action (Sanctum master lane / snap-api-quantum lane cannot edit per-project source directories per lane discipline):
+
+### 🔴 Sinister Forge — REAL BUG: `forge_memory_bridge.write()` 2-arg-API mismatch
+
+**Owner:** `agent/sinister-forge/*` (per-project Forge agent)
+
+The 2026-05-23 brain entry `forge-memory-usage-2026-05-23.md` documents that `forge_memory_bridge.write(namespace, key, value)` requires 3 args. Forge code calls it with 2 args at 4 sites — bug masked by bare `except: pass`:
+
+- `projects/sinister-forge/source/forge/commands.py:1333` — `forge_memory_bridge.write(ns, body)` (2-arg)
+- `projects/sinister-forge/source/forge/commands.py:1299` — help text says `/memory write <ns> <data>` (should be `write <ns> <key> <data>`)
+- `projects/sinister-forge/source/forge/commands.py:4100` — same help-text issue
+- `projects/sinister-forge/source/forge/spawn/anthropic_direct.py:791` — `_mem.write("rkoj-shell", prompt)` (2-arg); post-turn memory write silently fails
+
+Impact: post-turn memory persistence is silently broken; `/memory write` command crashes. Estimated fix time: 30 min. **Forge agent should claim + fix on `agent/sinister-forge/memory-write-2arg-fix-2026-05-24` branch.**
+
+### 🟡 Sinister Forge — stale doc claims (status table, file tree, Ruflo)
+
+**Owner:** `agent/sinister-forge/*`
+
+- `projects/sinister-forge/README.md:46-56` — Phase table marks PH1-PH8 as "pending"; code already exists for those phases. Sync-sweep needed (iter 73-79 pattern).
+- `projects/sinister-forge/source/PLAN.md:36-44, 130-145` — "next push" for shipped phases + file tree omits 7 shipped files.
+- `projects/sinister-forge/source/README.md:5` — "Status: PH0 scaffold (PH1 minimal TUI lands next push)" — PH1+ shipped.
+- `projects/sinister-forge/README.md:17` — "Ruflo `agentdb_*` (38+ tools available)" cited as memory layer — actual code uses `forge_memory_bridge` (BM25+TF-IDF); MCP calls in `forge/memory/graph.py` are commented out. Downgrade to "fallback-only, Ruflo path stub" OR wire it.
+
+### 🟡 Sinister Panel — PROGRESS no-bullshit restructure
+
+**Owner:** `agent/sinister-panel/*`
+
+`_shared-memory/PROGRESS/Sinister Panel.md` mixes verified-on-prod commits and proposed actions in the same flow — exactly the no-bullshit R0-R1 drift the iter-37-90 doctrine targets. Restructure end-of-turn entries into `Shipped (verified) / In-flight (unverified) / Open (queued)` sections.
+
+### 🟢 Sinister Kernel-APK — stale Detector version literals (3 sites)
+
+**Owner:** `agent/sinister-kernel-apk/*` (operator-private hub: `D:\Sinister\Sinister Skills\01_MEMORY\sinister-apk\`)
+
+- `SESSION-START.md:63` — `librarian.search "Detector v0.96"` (current ship is v0.97.47)
+- `TODO.md:96` — same example
+- `TODO.md:57` — "Detector v0.95.0 shipped 2026-05-17" (5 ships behind)
+
+Recommend version-agnostic queries (`"Detector ship-state"`) to prevent recurring drift on each ship.
+
+### 🟢 Sinister Snap-EMU — find-qbc on 98-doc rule corpus (high-value opportunity)
+
+**Owner:** `agent/sinister-snap-emu/*` (read-only audit; outputs land in snap-emu's outputs/)
+
+The combined `source/living-mds/` (46 files / 1.19 MB) + `source/snap-signer-tree/docs/` (52 files / 1.99 MB) is 2× larger than the Sanctum brain and dense with discriminable detection-doctrine triads (SS03/SS06/SS07 gates, Path-A/B/C lane verdicts, attestation signals). **Run `seraphim find-qbc --corpus <snap-emu-rule-corpus>` to surface candidate detection-rule triads.** Useful for testing rule-overlap drift. Cross-reference output against `snap-emu-doctrine-drift-2026-05-23.md`.
+
+### Snap-EMU + Forge — minor (eleno authorship lines)
+
+Stale `Author: Sinister Sanctum master agent (test, Claude)` lines in `projects/sinister-snap-emu/eleno/README.md:11` + `me/README.md`. Per 2026-05-21 RKOJ-ELENO doctrine these apply to NEW files only; historical preservation is fine. Optional cleanup.
+
+---
+
 ## 2026-05-24 — 🟠 Sinister Quantum — 8 buildable systems proposed (operator pick)
 
 > Author: RKOJ-ELENO :: 2026-05-24 (EVE quantum deep-audit sweep)

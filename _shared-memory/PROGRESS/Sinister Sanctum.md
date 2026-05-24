@@ -4,6 +4,56 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-24 ~12:30Z — Sinister OS project SCAFFOLDED + master plan SHIPPED (P0 lock)
+
+**Trigger:** operator verbatim 2026-05-24 (mid /loop iter 29 prep): *"i need oyu to add to the sessions start and complie into a proejct folder with memory etc the sinister operating system we started that is like a linux based that i can use to replace the current operating system i have on my pc so that eve can have complete control with no nonsense. i can still play games etc and have all features i want because we will build them. complie all you need now and deep resaerch all this and make a super detailed plan for it and let me know once ready in the session start"*.
+
+**Scope decoded:** Linux-based daily-driver replacement; EVE has full system control with no UAC-style friction; operator retains every game + creative + productivity capability he has today; deep-research the stack before writing code; surface readiness in SESSION-START.
+
+**Shipped (verified) on `agent/sinister-sanctum/grant-autonomy-followup-2026-05-23`:**
+
+| Path | What | Verb |
+|---|---|---|
+| `projects/sinister-os/README.md` | Project orientation, fleet integration map, phased delivery summary | scaffolded |
+| `projects/sinister-os/CLAUDE.md` | Lane discipline (branch namespace `agent/sinister-os/*`, hard rules, EVE-as-shell constraints from operator directive) | scaffolded |
+| `projects/sinister-os/plans/master-plan-2026-05-24.md` | **Super-detailed master plan** (17 sections): goals, non-goals, distro decision matrix (Arch + linux-cachyos picked over NixOS/Ubuntu/Fedora/Bazzite/Gentoo with explicit scoring), system architecture (L0-L7 layer cake), sudoers NOPASSWD allowlist draft (`/etc/sudoers.d/eve`), Hyprland (Wayland) compositor + i3 fallback, branding deliverables (plymouth + GRUB + SDDM + wallpapers + cursor + icons + sound), app stack (browser/terminal/editor/files/office/media/image/audio/video/comms/dev), **gaming stack** (Steam + Proton-GE + Lutris + Heroic + Bottles + MangoHud + Gamemode), anti-cheat compat table (BE/EAC opt-in, Vanguard NOT supported, Hyperion NOT supported, Punkbuster works), GPU strategy (nvidia-open-dkms primary, mesa/vulkan-radeon/vulkan-intel fallback), controller support (Steam Input + xpadneo/xone/dualsensectl), streaming (OBS + Sunshine/Moonlight), productivity/creative compat map (PS/Premiere/AutoCAD/FL Studio etc → Linux equivalents), EVE daemon spec (`sinister-eve.service` listening on `/run/sinister/eve.sock`, intent classification, escalation ladder, log at `/var/log/sinister/eve.jsonl`), `eve` CLI sketch, voice surface (openWakeWord + Whisper/cloud + piper-tts), GTK4 hotkey overlay, btrfs subvol layout with snapper, recovery + rollback path, security model (nftables + opensnitch + AppArmor + LUKS2 + Secure Boot operator-gated + zero distro-level telemetry), **5-phase delivery board** with operator-gates between each, **P1 row-level acceptance table**, build/dev workflow for EVE in QEMU/KVM, **10 operator-gate questions Q1-Q10** that unlock P1, open risks + mitigations, references reading list, P0 acceptance checklist. | acceptance-tested (P0 scope; future phases scaffold-only) |
+| `projects/sinister-os/docs/architecture.md` | Layer cake (L0-L7), EVE-cross-layer call examples, on-disk layout, systemd unit summary, DBus name reservations, boot sequence, operator cheat-sheet | scaffolded |
+| `projects/sinister-os/memory/_README.md` + `decisions.md` + `gotchas.md` | Per-lane memory home with 5 architectural decisions D-001..D-005 logged + gotcha template | scaffolded |
+| `projects/sinister-os/build/.gitignore` | Build artifacts excluded | scaffolded |
+| `projects/sinister-os/source/{iso-build,eve-control,branding}/README.md` | Placeholder folders explaining what each populates with at which phase | scaffolded |
+| `SESSION-START/README.md` | New 🟣 NEW 2026-05-24 block highlighting Sinister OS readiness + pointing at master plan | shipped |
+| `SESSION-START/05-PROJECT-OVERVIEW.md` | New row: Sinister OS · 🔵 P0 spec lock SHIPPED · pointer to master plan + Q1-Q10 gate | shipped |
+| `_shared-memory/knowledge/sinister-os-doctrine-2026-05-24.md` | Fleet-wide doctrine entry summarizing base stack + EVE control model + phase board + reversibility wall + composes-with | shipped |
+| `_shared-memory/knowledge/_INDEX.md` | sinister-os-doctrine-2026-05-24 row added at top | shipped |
+
+**Verifications:**
+- Brain index hygiene: `on_disk=155 indexed=126 orphans=29 missing=0 status=APPROACHING` (29 orphans are pre-existing other-lane entries; status went from 125 to 126; no new orphans added by this work; missing=0 preserved).
+- Canonical protections: PASS=9 FAIL=0 (all 9 protections green after edits).
+- Plan section count: 17 numbered sections + § 12.1 P1 row-level acceptance table + § 14 Q1-Q10 operator-gate table + § 15 risks + § 16 references + § 17 P0 done-criteria checklist. End-to-end coherent on re-read.
+
+**Operator-action emerging (Q1-Q10, to unlock P1):**
+- Q1 distro pick (default: Arch + linux-cachyos)
+- Q2 compositor pick (default: Hyprland)
+- Q3 default browser (default: LibreWolf)
+- Q4 voice provider local vs cloud (default: local Whisper)
+- Q5 LUKS2 encryption yes/no
+- Q6 Secure Boot yes/no (default: off)
+- Q7 dual-boot during P2-P4 soak (default: yes)
+- Q8 spare partition pick for P2 install
+- Q9 anti-cheat title list (esp. Vanguard-protected titles)
+- Q10 optional Windows VM via VFIO GPU passthrough (post-Q9 decision)
+
+These are added to `OPERATOR-ACTION-QUEUE.md` in next commit.
+
+**Doctrine adherence:**
+- No-bullshit verbs: scaffolded (project skeleton + memory) / acceptance-tested (master plan re-read end-to-end) / shipped (SESSION-START + INDEX + brain entry). NOT claiming P1 done (it isn't).
+- Rule 7.5: brain at 126/150 still APPROACHING; one row added this turn (high-value major-project doctrine); next turn will consolidate before next addition.
+- Lane discipline: only sanctum-owned files staged; per-project lane edits left to per-project agents.
+
+**Branch:** `agent/sinister-sanctum/grant-autonomy-followup-2026-05-23` (continues; no new branch cut).
+
+---
+
 ## 2026-05-24 11:45Z — /loop iter 28 — subdir-blindness audit complete + telemetry recurses heartbeats
 
 Continuing iter 27's bug-class probe across all sanctum scripts.

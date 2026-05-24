@@ -35,6 +35,21 @@ That loads this folder's 7 files (rules, network, queue, gotchas, recovery, proj
 | 7 | `05-PROJECT-OVERVIEW.md` | All Sinister LLC projects with status (neutral language) |
 | 8 | `06-LAUNCHER.md` | How the Start-Sinister-Session bat composes the phrase |
 
+## 🟣 NEW 2026-05-24 :: Sinister OS master plan is READY for operator review
+
+A super-detailed master plan for **Sinister OS** — the Linux-based, EVE-controlled, gaming-capable full-PC OS replacement — is now committed at:
+
+- **`projects/sinister-os/plans/master-plan-2026-05-24.md`** (the plan — read this first)
+- **`projects/sinister-os/README.md`** (project orientation)
+- **`projects/sinister-os/CLAUDE.md`** (lane discipline)
+- **`projects/sinister-os/docs/architecture.md`** (system-layer view)
+
+**P0 (spec lock) is complete.** The plan covers: Arch + linux-cachyos base, Hyprland (Wayland) compositor, EVE-as-OS-shell via sudoers NOPASSWD allowlist, btrfs + snapper rollback, full gaming stack (Steam/Proton-GE/Lutris/Heroic/Bottles), Windows-app compat strategy, branded ISO build via archiso, 5-phase delivery path (P1 ISO → P2 dual-boot soak → P3 EVE shell daemon → P4 stack proof → P5 cutover from Windows).
+
+**Operator action required to advance to P1:** Answer Q1-Q10 in master plan § 14 (10 short questions covering distro pick, compositor pick, browser default, voice provider, encryption, secure boot, dual-boot strategy, partition pick, anti-cheat titles, optional Windows VM via VFIO).
+
+Once P0 is signed off, EVE opens `agent/sinister-os/p1-iso-build-<date>` and builds the bootable ISO in a VM.
+
 ## After the overview, you pick
 
 ```

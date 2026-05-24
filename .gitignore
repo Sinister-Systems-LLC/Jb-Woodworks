@@ -155,6 +155,15 @@ projects/rkoj/source/**/__pycache__/
 projects/rkoj/source/**/*.tmp
 projects/rkoj/source/**/pyinstaller-*.log
 
+# v18 (RKOJ-ELENO 2026-05-24): Sinister OS source is REAL code (ISO build scripts,
+# EVE control daemon, branding artifacts) — not a junction. Track it. Build artifacts
+# (ISOs / packages) go in projects/sinister-os/build/ which has its own .gitignore.
+!projects/sinister-os/source/
+!projects/sinister-os/source/**
+projects/sinister-os/source/**/__pycache__/
+projects/sinister-os/source/**/target/
+projects/sinister-os/source/**/*.iso
+
 # v17 (RKOJ-ELENO 2026-05-23): Sinister Generator source is REAL code (the
 # application layer on top of tools/nano-banana/) — not a junction. Track it.
 # Per CLAUDE.md "The repo is the Sanctum monorepo — no separate GitHub remote

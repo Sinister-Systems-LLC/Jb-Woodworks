@@ -18,6 +18,7 @@ needing to read 14 individual project memories. Operator picks one + we dive in.
 | **library-of-alexandria** | Cross-project knowledge mirror / aggregation | 🟢 Stable — UA graph 27 days stale; optional rebuild |
 | **Sinister Bumble EMU** | Bumble platform API automation | 🟡 Blocked — operator needs to fetch v5.465.0 APK from APKMirror |
 | **Sinister RKA** | Backend service for distributing root attestation credentials | 🔴 Yurikey51 cert expires 2026-05-24 — operator must source Yurikey52 by 2026-05-23 |
+| **Sinister OS** | Linux-based, EVE-controlled, gaming-capable full-PC OS replacement (Arch + linux-cachyos + Hyprland + EVE-as-shell) | 🔵 P0 spec lock SHIPPED 2026-05-24 — master plan at `projects/sinister-os/plans/master-plan-2026-05-24.md`; awaiting operator Q1-Q10 to unlock P1 |
 
 ## Out-of-scope for Sinister LLC (operator-private; never in GitHub)
 
@@ -31,7 +32,7 @@ needing to read 14 individual project memories. Operator picks one + we dive in.
 
 - 🔴 **Yurikey52 sourcing by 2026-05-23** — gates the entire phone-stack track for Snap, TikTok, Bumble, RKA, Kernel APK
 - 🔴 **PI 0/3 on phones P1 + P2** — interactive Google re-auth needed (Settings → Passwords → Sync now)
-- 🟠 **Restart Claude Code** — picks up the 12 Sinister Bots + 28 bus tools
+- 🟠 **Restart Claude Code** — picks up the 13 Sinister Bots + 28 bus tools (+ vault, 12 `mcp__vault__*` tools, operator-merge pending per `OPERATOR-ACTION-QUEUE.md`)
 - 🟠 **Install Custodian 24/7 daemon** — `install-task.ps1` (now uses Register-ScheduledTask; should work)
 - 🟡 **First git push of Sanctum** — pick LICENSE, set remote, `git-toolkit safe-push`
 
