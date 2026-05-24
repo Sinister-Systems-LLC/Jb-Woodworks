@@ -27,12 +27,20 @@ REM 2026-05-23 - EVE.exe spawned a console then immediately closed because
 REM `LoadLibrary: python312.dll: module could not be found`). --onedir keeps
 REM the DLL next to EVE.exe so no extraction is needed; output is a folder
 REM (~20MB) instead of a single exe (~8MB) but it actually launches.
+REM v0.3 (iter 9 2026-05-24): eve_picker_lib.py refactor moved core logic to
+REM tools/eve-picker/. PyInstaller can't auto-discover that dir, so we pass
+REM --paths to add it to sys.path during analysis. Also hidden-import colorsys
+REM (stdlib but PyInstaller missed it on a v0.3.0 build attempt).
+set "SANCTUM_ROOT=%~dp0..\..\"
 pyinstaller --onedir --name EVE ^
     --distpath dist ^
     --workpath build ^
     --specpath build ^
     --clean ^
     --noupx ^
+    --paths "%SANCTUM_ROOT%tools\eve-picker" ^
+    --hidden-import colorsys ^
+    --hidden-import eve_picker_lib ^
     eve.py
 if errorlevel 1 (
     echo  [FAIL] pyinstaller build failed.

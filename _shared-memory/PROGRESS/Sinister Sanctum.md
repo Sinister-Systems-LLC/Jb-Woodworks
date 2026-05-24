@@ -4,6 +4,58 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-24 07:55Z — /loop iter 9 — EVE.exe v0.3.0 REBUILT + C.5 wake e2e PASS + brain status bump
+
+EVE on Sanctum continuing /loop. Heavy test focus per operator directive.
+
+**T1 Regression test:**
+- canonical-protections 4.30s (slower than iter 8's 0.43s; fs cache cooled)
+- per-project: **4/22 fully PASS** (rose from 3 — RKOJ now 5/5 with new .claude/settings.json)
+- brain 150/117/33 OK
+- EVE.exe (built) v0.2.0 / source v0.3.0 — **source updated but EXE stale → rebuild needed**
+
+**X1 EVE.exe v0.3.0 REBUILT:**
+- Sibling rkoj-lane committed P2 refactor: eve.py now imports from `tools/eve-picker/eve_picker_lib.py`
+- First rebuild attempt FAILED: `ModuleNotFoundError: No module named 'colorsys'` — eve_picker_lib in different dir; PyInstaller couldn't auto-discover
+- FIX: EDIT `automations/eve-launcher/build-eve-exe.bat` — added `--paths "$SANCTUM_ROOT/tools/eve-picker"` + `--hidden-import colorsys` + `--hidden-import eve_picker_lib`
+- VERIFY: rebuild succeeds; `time EVE.exe --version` returns in **310ms** with `EVE.exe 0.3.0 :: Sinister Sanctum session launcher`
+
+**T2 C.5 wake-on-demand end-to-end test — 15/15 PASS:**
+- NEW `tools/sinister-wake/test_smoke.py` — covers peek-without-wake, _wait_ready stderr detection, idle_sweep cleanup, hot_bots immortality, shutdown_all
+- Lifecycle verified: spawn mock subprocess → _wait_ready detects "ready" → register in alive_until → idle_sweep with expired timestamp → process terminated + tracking maps cleaned
+- Hot-bot path verified: custodian-marked subprocess retained even when "expired"
+- Result: **PASS=15 FAIL=0**
+
+**X2 Brain entry status bumped:**
+- EDIT `_shared-memory/knowledge/_INDEX.md` row for `wake-on-demand-bot-dispatcher-2026-05-23`
+- Was: status=`doctrine, proposed` / tag `cross-lane-defer`
+- Now: status=`doctrine, shipped` / tag `sanctum-wake-tools-impl, iter-9-shipped, smoke-15-15-pass`
+- Updated date 2026-05-23 → 2026-05-24
+- Description updated to reference `tools/sinister-wake/` + integration path
+
+**Composes with:**
+- `wake-on-demand-bot-dispatcher-2026-05-23` (status bumped this iter)
+- `no-bullshit-tested-before-claimed-doctrine-2026-05-23` (15/15 smoke evidence in same turn)
+- `bot-fleet-quick-reference-2026-05-23` (wake reduces idle RAM for the 13 bots documented there)
+- `multi-agent-branch-contention-isolation-pattern` (sibling P2 refactor merged cleanly)
+
+**Files touched:**
+- EDIT `automations/eve-launcher/build-eve-exe.bat` (--paths + hidden-imports)
+- NEW `tools/sinister-wake/test_smoke.py` (15-test suite)
+- EDIT `_shared-memory/knowledge/_INDEX.md` (wake-on-demand status bump)
+- EDIT `_shared-memory/PROGRESS/Sinister Sanctum.md` (this entry)
+- REBUILT (gitignored): `automations/eve-launcher/dist/EVE/EVE.exe` v0.3.0 + `_internal/`
+
+**Brain status:** 150 on-disk / 117 indexed / 33 orphans / OK. No new doctrines this iter (per Rule 7.5 — status bump only).
+
+**Next iter plan:**
+- Operator-side: PP autofix opt-in / voice POC Q1-Q5 / EVE.exe deploy to Desktop
+- Bus-lane: C.5 wire-in (operator-gated decision)
+- Master plan Section C continuation: C.7 browser bridge / C.8 mermaid Stage-3 / C.9 EVE.exe full surface
+- Telemetry dashboard polish: render per_project_protections in status/index.html
+
+---
+
 ## 2026-05-24 07:30Z — /loop iter 8 — C.5 wake-on-demand + per-project autofix + voice POC + 9-script regression
 
 EVE on Sanctum continuing /loop with operator emphasis "do not stop until everything is done and tested. check yourself to fix things and expand in all directions". Self-audit + 4 expand-items shipped end-to-end.
