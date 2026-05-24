@@ -84,6 +84,11 @@ seraphim dashboard                                     # regenerate the dashboar
 
 seraphim find-qbc --top-n 10                           # PHASE 1: discover quantum-beats-classical triads
                                                        # (sim sweep across 300k+ triads in ~5s, zero cloud burn)
+seraphim find-qbc --top-n 10 --rank-by ceiling         # PHASE 1.b: re-rank by sim ceiling (sweeps r=2..6
+                                                       #  for top-N; ~5s extra). Reveals error-mitigation
+                                                       #  targets (see iters 39-41 doctrine).
+seraphim find-qbc --top-n 10 --rank-by headroom        # PHASE 1.c: rank by (ceiling - r=1) = biggest
+                                                       #  payoff if real-QPU ever exits depth-34 noise wall.
 
 seraphim audit --variant zzfm-r1 --sim-only \         # PHASE 2: sim-gate the chosen triad
   --triad doc1.md doc2.md doc3.md --corpus pool       # (confirm sim < classical before real-QPU)
@@ -115,6 +120,10 @@ seraphim summarize --since 24h                         # provenance + ledger agg
 - classical > 0.4 → quantum helps (use the recipe)
 - classical < 0.3 → classical wins (quantum hurts by 15-60pp; **don't** use)
 - 0.3-0.4 → run sim-gate first
+
+**Sim-ceiling characterization** (added iter 40, 2026-05-24): a 12-triad reps-sweep established **`classical ↔ sim ceiling` Pearson r=+0.9537** (very strong). Classical TF-IDF baseline is the single best predictor of theoretical quantum-kernel advantage. Higher classical → higher ceiling, almost monotonically. Production recipe r=1 captures 48-82% of the ceiling depending on triad — the 18-52% gap is what error-mitigation work (ZNE / twirling / readout cal) could theoretically unlock at r=2..r=5 on a quieter QPU. Today's Wukong-180 noise saturates real-QPU at r=2+, so r=1 is optimal for production today.
+
+Use `--rank-by ceiling` to surface high-ceiling triads (highest theoretical ZZ-FM advantage). Use `--rank-by headroom` to surface triads with biggest `ceiling - r=1` gap (= error-mitigation payoff targets). Use `--rank-by classical` to re-sort the top-N by classical baseline.
 
 Full doctrine: `_shared-memory/knowledge/quantum-memory-kernel-fleet-action-items-2026-05-23.md`.
 

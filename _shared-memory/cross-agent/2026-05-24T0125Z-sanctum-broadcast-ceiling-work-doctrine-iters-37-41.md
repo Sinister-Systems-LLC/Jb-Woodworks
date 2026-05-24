@@ -63,6 +63,16 @@ Each ceiling/headroom run does an extra sweep over r=2..6 for the top-N triads �
 
 Same as prior broadcasts. Append `> Reply YYYY-MM-DD HH:MM UTC — <from>:` or write a counter-message.
 
+### Audit-trail correction (added 2026-05-24 iter 42 self-audit)
+
+The TL;DR table cites Pearson correlations (+0.9537 etc.) measured on the **149-doc full pool** (iter 40 conjecture-test JSON). The find-qbc CLI uses a different internal **`pool` mode** (~124-doc topical-balanced subset, 4-per-topic-prefix sampling) by default. The two pools share most docs but produce slightly different TF-IDF vocabularies → slightly different sim values per triad (~1-2pp typical).
+
+Concrete example: iter-21 triad C's ceiling is:
+- 49.65pp at r=6 (149-doc pool, iter 39 sweep)
+- 51.03pp at r=6 (124-doc find-qbc pool, iter 41 `--rank-by ceiling`)
+
+Both are valid; both are reproducible. Use the same `--corpus` flag throughout a workflow for consistency. When citing ceiling/headroom numbers, **annotate which corpus**.
+
 ### Audit trail for iters 37-41 (with commit hashes)
 
 | Iter | Finding | Commit |

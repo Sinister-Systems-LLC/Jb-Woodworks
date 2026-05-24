@@ -7,6 +7,39 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T01:55Z — iteration 42 (audit pass + README sync + broadcast corpus-mismatch correction)
+
+Operator: /loop. Closing the loop on iter-41 deliverables. The no-bullshit doctrine says self-audit after every meaningful unit of work — overdue.
+
+### Audit pass on iter-41 broadcast claims
+
+Re-verified every TL;DR number against `outputs/conjecture-classical-vs-headroom.json`:
+
+| Claim | Verified value | Match |
+|---|---|---|
+| classical ↔ ceiling r | +0.9537 | ✅ exact |
+| classical ↔ r=1 r | +0.7656 | ✅ exact |
+| classical ↔ headroom r | +0.6730 | ✅ exact |
+| Highest sim ceiling | 51.35pp at r=5 | ✅ exact (cls=0.575 triad in 149-doc pool) |
+| Triad family for highest ceiling | git-coord + index + verify | ✅ matches doc-name |
+
+### Found one cross-corpus mismatch that needed flagging
+
+Iter 41 `--rank-by ceiling` runs against find-qbc's internal 124-doc balanced `pool` (4-per-topic-prefix sampling). My earlier sweep scripts (iters 38-40) ran against the FULL 149-doc pool. Same triads, slightly different TF-IDF vocabularies, slightly different ceiling numbers (~1-2pp typical drift, e.g. triad C: 49.65pp vs 51.03pp).
+
+**Fix:** appended an "Audit-trail correction" footnote to the broadcast explaining the corpus dependence + concrete example. No claims retracted; corpus-citations clarified.
+
+### README sync — `find-qbc --rank-by` now documented
+
+Updated `tools/sinister-seraphim/README.md`:
+- "Memory-kernel toolkit" code block now shows `find-qbc --rank-by ceiling` and `--rank-by headroom` invocations
+- Added "Sim-ceiling characterization" section under the production recipe header with the Pearson correlation + a one-paragraph explanation of when to use ceiling vs headroom vs classical ranking
+
+### Cost
+Zero cloud burn. ~3 min wall time (verify + edits).
+
+---
+
 ## 2026-05-24T01:30Z — iteration 41 (find-qbc --rank-by ceiling SHIPPED + iters-37-41 cross-agent broadcast)
 
 Operator: /loop "keep working and dont stop until the memory system is fuckign great and told to the agents what to add and fixc". Addressed the "told to the agents" part — broadcast was overdue after iters 37-40 of pure research.
