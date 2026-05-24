@@ -178,22 +178,32 @@ The git-coordination thematic cluster (multi-agent + verify-head + branch-coord 
 
 ---
 
-## Sim-ceiling characterization (added 2026-05-24T00:25Z iter 38 — error-mitigation headroom)
+## Sim-ceiling characterization (added 2026-05-24T00:25Z iter 38; CORRECTED + expanded 00:45Z iter 39)
 
-Sim-only sweep of ZZ-FM reps on the new top-QBC triad (`branch-contention + index-storm + verify-head`), 149-doc pool TF-IDF:
+**Iter 38 single-triad observation (kept for audit trail):** ZZ-FM r=1..6 sweep on the new top-QBC triad showed r=2..r=5 plateau at ~36pp, suggesting "6-7pp headroom above r=1".
 
-| reps | sim off-diag | sim advantage |
-|---|---|---|
-| 1 | 0.1926 | **+29.33pp** (production recipe) |
-| 2 | 0.1286 | **+35.72pp** (real-QPU breaks here per iter-32 noise wall) |
-| 3 | 0.1320 | +35.38pp |
-| 4 | 0.1384 | +34.75pp |
-| 5 | 0.1262 | **+35.97pp** (ceiling) |
-| 6 | 0.1599 | +32.59pp (regression) |
+**Iter 39 cross-triad correction:** sweeping the same r=1..6 across all three top-QBC triads (149-doc pool, ZZ-FM K=4) reveals headroom is triad-dependent, NOT universal:
 
-**Headline:** **r=2..r=5 plateau ~36pp; r=1 leaves 6-7pp on the table.** The production recipe ZZ-FM r=1 is optimal *for the current Wukong-180 noise regime* (depth 34 stays inside the noise budget). The 6-7pp gap is **the ceiling that error-mitigation work (ZNE / Pauli twirling / readout cal) could unlock** at r=2 (depth 68).
+| Triad | classical | r=1 adv | ceiling | headroom | % of ceiling at r=1 |
+|---|---|---|---|---|---|
+| A (new #1, branch + index + verify) | 0.486 | 29.33pp | 35.97pp (r=5) | +6.64pp | 82% |
+| B (iter-19 verified, branch + coord + verify) | 0.531 | 27.88pp | 40.45pp (r=5) | +12.57pp | 69% |
+| C (iter-21 verified, branch + coord + index) | 0.554 | 23.75pp | **49.65pp (r=6)** | **+25.90pp** | **48%** |
 
-Reproducer: `projects/sinister-snap-api-quantum/sim-reps-ceiling-sweep.py` (zero cloud burn, 1.06s CPU).
+**Headlines (revised):**
+
+1. **Ceiling varies 36-50pp depending on triad.** Triad C's 49.65pp is the highest sim advantage measured to date.
+2. **r=1 fraction-of-ceiling varies 48-82%.** Triad A is near-saturated at r=1; Triad C captures less than half its potential.
+3. **Rank order INVERTS at r=5+.** find-qbc ranks A>B>C by r=1; at r=5 with error-mitigation, C>B>A. The "best triad" depends on whether you're in current-noise-regime (r=1) or future-mitigated-regime (r=5).
+4. **Conjecture (untested across more triads):** higher classical baseline → more sim headroom. If true, the ceiling-work QBC ranking should weight `classical` as a separate signal.
+
+**Implications for memory system improvement direction:**
+
+- Current Wukong-180 noise regime: **r=1 is optimal** for triads A/B; triad C's r=1 leaves the most on the table.
+- Error-mitigation work (ZNE / Pauli twirling / readout cal) targeting r=5: **triad C is the highest-payoff target** (48% → 100% would be a +25pp jump).
+- Open question: a new `find-qbc --rank-by ceiling --reps-target 5` mode would identify ceiling-work targets. Deferred until operator decides to pursue ceiling-work direction.
+
+Reproducer: `projects/sinister-snap-api-quantum/sim-reps-ceiling-sweep.py` v2 (zero cloud burn, 4s CPU for 18 sim runs).
 
 ## TL;DR — what's now usable across the fleet
 

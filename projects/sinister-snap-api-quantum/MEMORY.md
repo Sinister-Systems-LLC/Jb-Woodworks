@@ -7,6 +7,63 @@ Append-only memory. Most recent at top. Cross-references to brain entries and ot
 
 ---
 
+## 2026-05-24T00:45Z — 🎯 ITER 39: CROSS-TRIAD SWEEP CORRECTS ITER 38 — headroom varies 6-26pp; ranking INVERTS at high reps
+
+Iter 38 measured the sim-ceiling on the iter-37 new top-QBC triad (triad A) and claimed "6-7pp headroom above r=1, generalize across triads". **That generalization was wrong.** Cross-triad sweep across all three top-QBC triads at r=1..6, same 149-doc pool, same encoding:
+
+### Headline table
+
+| Triad | r=1 adv | ceiling (rep) | headroom above r=1 |
+|---|---|---|---|
+| A (new #1, branch + index + verify) | 29.33pp | 35.97pp (r=5) | **+6.64pp** |
+| B (iter-19, branch + coord + verify) | 27.88pp | 40.45pp (r=5) | **+12.57pp** |
+| C (iter-21, branch + coord + index) | 23.75pp | **49.65pp (r=6)** | **+25.90pp** |
+
+### Three corrections to iter-38
+
+1. **Iter-38's "6-7pp universal headroom" claim was a single-triad observation, not a doctrine.** Headroom is triad-dependent: 6.64pp / 12.57pp / 25.90pp.
+2. **Triad C has the highest theoretical ceiling of any QBC triad measured: 49.65pp at r=6.** Iter-38 only saw triad A's ceiling and missed this.
+3. **The rank-order inverts at r=5+.** find-qbc ranks by r=1 advantage and puts C at #3 (23.75pp). At r=5+ with error-mitigation, C would be #1 (48.28pp at r=5).
+
+### What this means for the memory system
+
+The production recipe ZZ-FM r=1 captures different fractions of the theoretical ceiling per triad:
+
+- Triad A: 29.33 / 35.97 = **82% of ceiling** ← near-optimal at r=1
+- Triad B: 27.88 / 40.45 = **69% of ceiling**
+- Triad C: 23.75 / 49.65 = **48% of ceiling** ← LESS than half
+
+Triad C is the "winning lottery ticket" if anyone ever invests in error-mitigation work. r=1 sees just 23.75pp; r=5 with mitigation could see 48pp. That's a ~25pp jump from the same physical triad just by going deeper. Triad A is the "boring sure thing" — already 82% saturated.
+
+### Why this happens (mechanism guess)
+
+The sim ZZ-FM dynamics on highly-correlated triads (classical > 0.5) have *more room to differentiate* via cross-feature entangling than triads where the classical baseline is already lower. Triad C's classical is 0.5544 (highest of the three); its sim drops monotonically from 0.32 at r=1 to 0.06 at r=6. The ZZ entangling gates accumulate cross-feature phase that compresses the inner product hard. Triad A's classical is 0.4859 (lowest); it bottoms out at 0.13 around r=2 and oscillates from there.
+
+**Heuristic** (untested across more triads — flagged as conjecture, not doctrine): *higher-classical-baseline triads have more sim headroom*. If true, this would mean the optimal QBC search for error-mitigated regimes should weight classical baseline as a separate signal, not just (classical - sim).
+
+### Action items
+
+1. **Correct iter-38 in PROGRESS** — the "6-7pp leaves on table" line generalized prematurely. Use "varies 6-26pp" or "median 12pp".
+2. **Brain entry should reference cross-triad data**, not iter-38's single-triad table.
+3. **Future operator decision** — if cloud budget reset:
+   - r=1 verification of triad A (cheap, already queued, predicted 24-30pp)
+   - **OR** if interested in ceiling-work direction: characterize triad C's r=2 noise wall (does it saturate even worse because the sim was already so low?)
+4. **A new find-qbc ranking mode** — `--rank-by ceiling --reps-target 5` — to surface triads worth ceiling-work. Deferred to next iteration / operator decision.
+
+### Cost
+
+- Zero cloud burn
+- 4.0s total CPU (18 sim runs at ~0.11-0.20s each)
+- Triad C added 0.65s; data are saved to `outputs/sim-reps-ceiling-sweep.json`
+
+### Audit trail
+
+- Script `sim-reps-ceiling-sweep.py` — extended to sweep all three triads in one run
+- JSON schema bumped: `v1` (single triad) → `v2` (per-triad dict)
+- Status: **tested-before-claimed** (all 18 sim values measured, JSON dumped, table reproduces from JSON, cross-triad summary printed cleanly)
+
+---
+
 ## 2026-05-24T00:25Z — 📐 ITER 38: SIM-CEILING SWEEP — r=2..5 plateau at ~36pp (6-7pp HEADROOM above r=1)
 
 Sim-only characterization of the ZZ-FM reps ceiling. Real-QPU at r≥2 was already known to saturate near classical baseline (iter-32 noise wall), but the **sim ceiling above r=1 was never measured**. Filling that gap.

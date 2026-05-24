@@ -7,6 +7,45 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T00:45Z — iteration 39 (CROSS-TRIAD sweep — CORRECTS iter 38; ceiling varies 36-50pp, headroom 6-26pp)
+
+Operator: /loop again. Generalized the iter-38 single-triad finding to all three top-QBC triads. **The "6-7pp universal headroom" claim was wrong.**
+
+### Cross-triad result (149-doc pool, ZZ-FM K=4, r=1..6)
+
+| Triad | r=1 adv | ceiling | headroom | r=1/ceiling |
+|---|---|---|---|---|
+| A (new #1) | 29.33pp | 35.97pp (r=5) | +6.64pp | 82% |
+| B (iter-19) | 27.88pp | 40.45pp (r=5) | +12.57pp | 69% |
+| C (iter-21) | 23.75pp | **49.65pp (r=6)** | **+25.90pp** | 48% |
+
+### Three corrections to iter 38
+
+1. Headroom varies 6-26pp, NOT a constant 6-7pp.
+2. Triad C's ceiling (49.65pp) is the highest measured to date.
+3. Rank order inverts at r=5: find-qbc puts A>B>C; ceiling-work would put C>B>A.
+
+### What it means
+
+- Production recipe r=1 captures 48-82% of theoretical ceiling depending on triad.
+- Triad C is the highest-payoff target for error-mitigation work (potential +25pp at r=5).
+- Triad A is near-saturated at r=1 — little to gain from ceiling-work even with mitigation.
+- Operator decision (deferred): does cloud-budget reset go to (a) triad A r=1 verification, or (b) triad C r=2 noise-wall characterization to validate the ceiling-work direction?
+
+### Artifacts
+- `sim-reps-ceiling-sweep.py` v2 (extended to 3 triads in single run)
+- `outputs/sim-reps-ceiling-sweep.json` v2 (per-triad dict schema)
+- MEMORY.md iter 39 entry (includes mechanism conjecture about classical-baseline correlation)
+- Brain entry section corrected + expanded
+
+### Cost
+Zero cloud burn; 4s total CPU for 18 sim runs.
+
+### Sub-correction
+Iter 38's PROGRESS row line "production r=1 leaves 6-7pp on the table" was an overgeneralization. Reads correctly for triad A only.
+
+---
+
 ## 2026-05-24T00:25Z — iteration 38 (sim-ceiling sweep — 6-7pp r=1→r=2 headroom characterized)
 
 Operator: /loop "keep working and testing all of this to get the memory as good as we can get it". Real-QPU still budget-gated; did sim-only ZZ-FM reps sweep on the iter-37 new top-QBC triad to characterize the ceiling that real-QPU r=1 leaves on the table.
