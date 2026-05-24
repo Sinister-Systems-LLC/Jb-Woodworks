@@ -1239,17 +1239,73 @@ printf '  project: $projDisplay\n'
 printf '  root:    $bashPath\n'
 printf '\n'
 cd "$bashPath" || { echo '[FAIL] could not cd to project root'; exec bash; }
+# RKOJ-ELENO :: 2026-05-24 :: fleet-burst dampener. When SINISTER_FLEET_BURST_LIMIT=N
+# is set, count claude.exe spawns logged in spawned-windows.jsonl within the last 60s.
+# If count >= N, sleep (60 - oldest_age) seconds before launching. Prevents the
+# operator from accidentally triggering Anthropic's GLOBAL server-side throttle by
+# spawning many EVE sessions at once (per-account rotation does NOT help here).
+# Default: unset → no delay → original behaviour preserved.
+if [ -n "`${SINISTER_FLEET_BURST_LIMIT:-}" ]; then
+    _spawn_log='$bashSanctumRoot/_shared-memory/spawned-windows.jsonl'
+    if [ -f "`$_spawn_log" ]; then
+        _now_epoch=`$(date -u +%s 2>/dev/null)
+        # Tail last 50 lines, parse "started" ISO-8601, count entries within last 60s.
+        _recent_count=0
+        _oldest_age=60
+        while IFS= read -r _line; do
+            _started=`$(printf '%s' "`$_line" | sed -n 's/.*"started":"\([^"]*\)".*/\1/p')
+            if [ -n "`$_started" ]; then
+                _started_epoch=`$(date -u -d "`$_started" +%s 2>/dev/null)
+                if [ -n "`$_started_epoch" ]; then
+                    _age=`$((_now_epoch - _started_epoch))
+                    if [ "`$_age" -ge 0 ] && [ "`$_age" -le 60 ]; then
+                        _recent_count=`$((_recent_count + 1))
+                        if [ "`$_age" -lt "`$_oldest_age" ]; then
+                            _oldest_age=`$_age
+                        fi
+                    fi
+                fi
+            fi
+        done < <(tail -n 50 "`$_spawn_log" 2>/dev/null)
+        if [ "`$_recent_count" -ge "`${SINISTER_FLEET_BURST_LIMIT}" ]; then
+            _wait=`$((60 - _oldest_age))
+            if [ "`$_wait" -gt 0 ] && [ "`$_wait" -le 60 ]; then
+                printf '\n  > [BURST-DAMPEN] %s recent spawns >= limit %s ; sleeping %ss to avoid server throttle...\n' "`$_recent_count" "`${SINISTER_FLEET_BURST_LIMIT}" "`$_wait"
+                sleep "`$_wait"
+            fi
+        fi
+    fi
+fi
 claude --dangerously-skip-permissions '$bashPhrase'
 # RKOJ-ELENO :: 2026-05-23 :: detect rate-limit + mark account
-# Claude doesn't always exit non-zero on 429, but writes telltale text to its run log.
-# We grep the recent ~/.claude session log for 429 markers + call back into PS1 library.
+# RKOJ-ELENO :: 2026-05-24 :: split into plan-quota (per-account) vs server-throttle (global).
+# Plan-quota signals → Mark-AccountRateLimited (rotate accounts).
+# Server-throttle signals (Anthropic global limiter) → log to anthropic-throttle-events.jsonl
+#   ONLY; do NOT mark account (rotating won't help — limiter is global, not per-account).
 _session_log_dir="`$HOME/.claude/projects"
 if [ -d "`$_session_log_dir" ]; then
     _recent_log=`$(find "`$_session_log_dir" -name "*.jsonl" -mmin -10 -type f 2>/dev/null | head -1)
-    if [ -n "`$_recent_log" ] && grep -qE 'rate.?limit|429|too many requests|retry.?after' "`$_recent_log" 2>/dev/null; then
-        printf '\n  > [WARN] rate-limit signal detected in session log - marking account "%s" throttled\n' "`$_account_name"
-        # Default 60s retry-after if not parseable. Watchdog handles recovery.
-        powershell -NoProfile -ExecutionPolicy Bypass -File '$SanctumRoot\automations\claude-accounts.ps1' -Action RateLimited -Name "`$_account_name" -RetryAfterSeconds 60 2>/dev/null
+    if [ -n "`$_recent_log" ]; then
+        # Server-throttle pattern (global limiter) — log + skip account-mark.
+        # Original error string: "Server is temporarily limiting requests (not your usage limit)".
+        if grep -qE 'Server is temporarily limiting requests|not your usage limit|server.?side.?(rate|throttle)|Churned for' "`$_recent_log" 2>/dev/null; then
+            _excerpt=`$(grep -oE '.{0,40}(Server is temporarily limiting requests|not your usage limit|Churned for [0-9]+[ms 0-9]*).{0,40}' "`$_recent_log" 2>/dev/null | head -1 | tr -d '\r\n' | head -c 200)
+            _ts=`$(date -u +%Y-%m-%dT%H:%M:%SZ 2>/dev/null)
+            _evt_file='$bashSanctumRoot/_shared-memory/anthropic-throttle-events.jsonl'
+            # JSON escape minimal: backslash + double-quote.
+            _esc_excerpt=`$(printf '%s' "`$_excerpt" | sed 's/\\/\\\\/g; s/"/\\"/g')
+            _esc_acct=`$(printf '%s' "`$_account_name" | sed 's/\\/\\\\/g; s/"/\\"/g')
+            _esc_proj=`$(printf '%s' "$projKey" | sed 's/\\/\\\\/g; s/"/\\"/g')
+            printf '{"ts_utc":"%s","account":"%s","project":"%s","excerpt":"%s"}\n' "`$_ts" "`$_esc_acct" "`$_esc_proj" "`$_esc_excerpt" >> "`$_evt_file" 2>/dev/null
+            printf '\n  > [INFO] Anthropic server-throttle (global, NOT your account) — logged to anthropic-throttle-events.jsonl\n'
+        # Plan-quota pattern (per-account) — mark account + rotate.
+        # Tightened to NOT match the server-throttle phrases above.
+        elif grep -qE '(rate.?limit|429|too many requests|retry.?after)' "`$_recent_log" 2>/dev/null \
+             && ! grep -qE 'Server is temporarily limiting requests|not your usage limit' "`$_recent_log" 2>/dev/null; then
+            printf '\n  > [WARN] plan-quota rate-limit detected - marking account "%s" throttled\n' "`$_account_name"
+            # Default 60s retry-after if not parseable. Watchdog handles recovery.
+            powershell -NoProfile -ExecutionPolicy Bypass -File '$SanctumRoot\automations\claude-accounts.ps1' -Action RateLimited -Name "`$_account_name" -RetryAfterSeconds 60 2>/dev/null
+        fi
     fi
 fi
 printf '\n  > Claude exited. Writing close-time resume-point...\n'

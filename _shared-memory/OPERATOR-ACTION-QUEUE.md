@@ -10,6 +10,32 @@ The Sanctum-side mirror of `SESSION-START/02-OPERATOR-QUEUE.md`, with checkboxes
 
 ---
 
+## 2026-05-24 — 🟠 Anthropic server-throttle mitigation SHIPPED — new `H` picker key + `SINISTER_FLEET_BURST_LIMIT` env knob
+
+> Author: RKOJ-ELENO :: 2026-05-24
+
+**Pain (operator image #16, 2026-05-24):** spawned EVE sessions periodically show `API Error: Server is temporarily limiting requests (not your usage limit) · Rate limited · Churned for 1m 5s`. This is Anthropic's GLOBAL server-side throttle, NOT a plan-quota 429 — the existing per-account rotation (`claude-accounts.ps1 Mark-AccountRateLimited`) does **not** help because the limiter is fleet-wide.
+
+**What shipped (no operator action required to enable; defaults preserve original behaviour):**
+
+1. **Split detection** in `automations/start-sinister-session.ps1` (~L1280-1310) — server-throttle phrase is matched FIRST and logged to `_shared-memory/anthropic-throttle-events.jsonl` WITHOUT marking the account rate-limited. Plan-quota detection tightened with `AND NOT server-throttle-phrase` guard.
+
+2. **Fleet-burst dampener** (~L1242-1278) — new env var `SINISTER_FLEET_BURST_LIMIT=N` (default unset = no limit). When set, the spawn .sh counts recent (≤60s) entries in `spawned-windows.jsonl` and sleeps `60 - oldest_age` seconds if count ≥ N. Prevents accidental 5+-session bursts that trigger the global limiter.
+
+3. **New `H` picker key (Health)** — `tools/eve-picker/health_tools.py` renders one-screen status: plan-quota today / server-throttle today / avg "Churned for Xs" wait / rolling 24h rate / current burst-limit / auto-recommends `SINISTER_FLEET_BURST_LIMIT=2` when server-throttle rate > 1/hr.
+
+4. **Brain doctrine** at `_shared-memory/knowledge/anthropic-server-throttle-vs-plan-quota-2026-05-24.md` (indexed) with the verbatim error string for grep-ability and the rationale for why account rotation actively HURTS on server-throttle (burns the pool, wrong signal, doesn't fix it).
+
+**Operator click-test:**
+
+- [ ] Open EVE picker, press `H` → see one-screen health surface (works even with zero events — shows `[healthy] no throttle events today`)
+- [ ] To enable burst dampening: set env var `SINISTER_FLEET_BURST_LIMIT=2` (Windows: `setx SINISTER_FLEET_BURST_LIMIT 2` for persistence). Default unset preserves zero-delay behaviour.
+- [ ] Recommendation: leave unset for now; flip on if `H` shows server-throttle rate > 1/hr.
+
+**Files touched:** `automations/start-sinister-session.ps1` · `automations/eve-launcher/eve.py` (827 lines, under 1000) · `tools/eve-picker/health_tools.py` (new, 247 lines, stdlib-only) · `_shared-memory/knowledge/anthropic-server-throttle-vs-plan-quota-2026-05-24.md` (new) · `_shared-memory/knowledge/_INDEX.md` (new row).
+
+---
+
 ## 2026-05-24 — 🟢 Sinister Chatbot A6: Local LLM probe LIVE on `/chatter` — ready to click-test
 
 > Author: RKOJ-ELENO :: 2026-05-24

@@ -99,6 +99,11 @@ try:
 except ImportError:
     quantum_tools = None  # noqa: E402  -- T sub-menu disabled if module missing
 
+try:
+    import health_tools  # noqa: E402  -- stdlib-only Anthropic-throttle health (RKOJ-ELENO 2026-05-24)
+except ImportError:
+    health_tools = None  # noqa: E402  -- H sub-menu disabled if module missing
+
 
 PS1_LAUNCHER = (SANCTUM_ROOT_PATH / "automations" / "start-sinister-session.ps1") if SANCTUM_ROOT_PATH else None
 
@@ -519,6 +524,8 @@ def render_picker(state) -> None:
     print()
     print(f"  {PURPLE}T){RESET}  Quantum tools     "
           f"{DIM}// PSTF / QDDD / TLPC / qbc-recall / summary{RESET}")
+    print(f"  {PURPLE}H){RESET}  Health            "
+          f"{DIM}// Anthropic throttle status :: plan-quota vs server-throttle{RESET}")
     print()
     print(f"  {DIM}     multi-select: 1,3,5 or 1-3     |     "
           f"loop/swarm modes prompted after pick{RESET}")
@@ -760,7 +767,7 @@ def main(argv: list[str] | None = None) -> int:
         render_picker(state)
         try:
             raw = input(
-                f"  {WHITE}Selection [1-{len(state.rows)} / G / A / N / R / K / S / F / T / Q, "
+                f"  {WHITE}Selection [1-{len(state.rows)} / G / A / N / R / K / S / F / T / H / Q, "
                 f"default={state.default_key}] {PURPLE}>{RESET} "
             ).strip()
         except (EOFError, KeyboardInterrupt):
@@ -774,6 +781,16 @@ def main(argv: list[str] | None = None) -> int:
                 time.sleep(1)
             else:
                 quantum_tools.menu_loop()
+            state = lib.build_picker_state(boot_ms=state.boot_ms)
+            continue
+
+        # H shortcut :: health sub-menu (Anthropic throttle status :: RKOJ-ELENO 2026-05-24)
+        if raw.lower() in ("h", "health"):
+            if health_tools is None:
+                print(f"  {WARN}health_tools module not importable.{RESET}")
+                time.sleep(1)
+            else:
+                health_tools.menu_loop()
             state = lib.build_picker_state(boot_ms=state.boot_ms)
             continue
 
