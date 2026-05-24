@@ -1,0 +1,4 @@
+# Generated behavioral profiles (regenerable via `python generate.py`)
+# Each profile is ~7700 lines (1500 gyro samples + typing + dwell + swipes)
+# RKOJ-ELENO :: 2026-05-24
+profiles/*.json
