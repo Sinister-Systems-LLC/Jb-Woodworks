@@ -4,6 +4,31 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-24 10:40Z — /loop iter 23 — JSON output audit (3 scripts + 3 generated files all PASS)
+
+Spot-check sweep extending iter 22's bug-find pattern across all JSON surfaces.
+
+**T1 Audit results — all 6 JSON surfaces PASS Python json.load:**
+
+| Source | Bytes | Status |
+|---|---|---|
+| `per-project-protections-check.ps1 -Json` (stdout) | 6786 | PASS |
+| `brain-index-orphan-check.ps1 -Json` (stdout) | 1394 | PASS |
+| `sinister-doctor.ps1 -Quick -Json` (stdout) | 2010 | PASS (post-iter-22 fix) |
+| `_shared-memory/telemetry/_latest.json` (file) | 9429 | PASS |
+| `_shared-memory/inbox/_manifest.json` (file) | 806 | PASS |
+| `_shared-memory/resume-search-index.json` (file) | 551324 | PASS |
+
+**Conclusion:** iter 1-22 toolset is solid. No latent JSON contamination beyond what iter 22 caught + fixed.
+
+**Files touched:** none (audit-only).
+
+**Master plan:** unchanged 19/24 (~83%). Brain 152/123/29 APPROACHING.
+
+**Net value:** confidence that downstream consumers (CI pipelines, dashboards, the SinisterDoctorTask cron) all get valid JSON from every script that claims to emit JSON.
+
+---
+
 ## 2026-05-24 10:35Z — /loop iter 22 — REAL BUG FIXED: sinister-doctor -Json contaminated by sub-script Write-Host
 
 EVE on Sanctum. Spot-check found a genuine regression — `-Json` mode emitted invalid JSON.
