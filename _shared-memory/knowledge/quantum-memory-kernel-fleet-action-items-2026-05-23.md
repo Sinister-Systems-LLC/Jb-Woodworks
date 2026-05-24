@@ -178,6 +178,23 @@ The git-coordination thematic cluster (multi-agent + verify-head + branch-coord 
 
 ---
 
+## Sim-ceiling characterization (added 2026-05-24T00:25Z iter 38 — error-mitigation headroom)
+
+Sim-only sweep of ZZ-FM reps on the new top-QBC triad (`branch-contention + index-storm + verify-head`), 149-doc pool TF-IDF:
+
+| reps | sim off-diag | sim advantage |
+|---|---|---|
+| 1 | 0.1926 | **+29.33pp** (production recipe) |
+| 2 | 0.1286 | **+35.72pp** (real-QPU breaks here per iter-32 noise wall) |
+| 3 | 0.1320 | +35.38pp |
+| 4 | 0.1384 | +34.75pp |
+| 5 | 0.1262 | **+35.97pp** (ceiling) |
+| 6 | 0.1599 | +32.59pp (regression) |
+
+**Headline:** **r=2..r=5 plateau ~36pp; r=1 leaves 6-7pp on the table.** The production recipe ZZ-FM r=1 is optimal *for the current Wukong-180 noise regime* (depth 34 stays inside the noise budget). The 6-7pp gap is **the ceiling that error-mitigation work (ZNE / Pauli twirling / readout cal) could unlock** at r=2 (depth 68).
+
+Reproducer: `projects/sinister-snap-api-quantum/sim-reps-ceiling-sweep.py` (zero cloud burn, 1.06s CPU).
+
 ## TL;DR — what's now usable across the fleet
 
 Real quantum-kernel discrimination on Origin Wukong-180 IS achievable today with the `sinister-seraphim` wrapper. Key working points:

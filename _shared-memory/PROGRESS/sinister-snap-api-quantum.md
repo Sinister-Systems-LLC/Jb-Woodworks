@@ -7,6 +7,38 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T00:25Z — iteration 38 (sim-ceiling sweep — 6-7pp r=1→r=2 headroom characterized)
+
+Operator: /loop "keep working and testing all of this to get the memory as good as we can get it". Real-QPU still budget-gated; did sim-only ZZ-FM reps sweep on the iter-37 new top-QBC triad to characterize the ceiling that real-QPU r=1 leaves on the table.
+
+### Result
+Sim off-diag at r=1..6 on the (branch-contention + index-storm + verify-head) triad, 149-doc pool TF-IDF:
+
+| reps | sim adv | note |
+|---|---|---|
+| 1 | +29.33pp | production recipe |
+| 2 | **+35.72pp** | jump (+6.39pp) — real-QPU saturates here (iter-32 noise wall) |
+| 3 | +35.38pp | plateau |
+| 4 | +34.75pp | plateau |
+| 5 | **+35.97pp** | **ceiling** |
+| 6 | +32.59pp | regression (unitary wraps) |
+
+### Key insight
+The production r=1 recipe is leaving **6-7pp of theoretical advantage on the table** — recoverable only with error mitigation OR a quieter QPU. Current Wukong-180 noise regime: r=1 is optimal. Future ceiling work: r=2 + zero-noise extrapolation / Pauli twirling.
+
+### Side-finding
+Pool grew 129→149 (+20 docs) in ~15min — fleet brain corpus is high-velocity right now. Classical baseline only shifted -0.32pp; production recipe predictions remain valid.
+
+### Artifacts
+- `sim-reps-ceiling-sweep.py` (re-runnable, sim-only)
+- `outputs/sim-reps-ceiling-sweep.json` (the data)
+- `MEMORY.md` entry with full table + operator decision points + improvement direction analysis
+
+### Cost
+Zero cloud burn; 1.06s total wall time for 6 sim runs (CPU only).
+
+---
+
 ## 2026-05-24T00:10Z — iteration 37 (self-audit pass — NEW QBC candidate surfaced)
 
 Operator: /loop dynamic mode wakeup. Budget tracker still at 0s; real-QPU gated. Did a sim-only self-audit pass.

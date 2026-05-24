@@ -7,6 +7,61 @@ Append-only memory. Most recent at top. Cross-references to brain entries and ot
 
 ---
 
+## 2026-05-24T00:25Z — 📐 ITER 38: SIM-CEILING SWEEP — r=2..5 plateau at ~36pp (6-7pp HEADROOM above r=1)
+
+Sim-only characterization of the ZZ-FM reps ceiling. Real-QPU at r≥2 was already known to saturate near classical baseline (iter-32 noise wall), but the **sim ceiling above r=1 was never measured**. Filling that gap.
+
+### Method
+
+- Triad: new top-QBC (`branch-contention` + `index-storm` + `verify-head`) from iter 37
+- Encoding: ZZ-FM (the production-recipe encoding), K=4
+- Corpus: 149-doc pool (grew from 129→149 in the 15 minutes between iter 37 and this iter — other lanes adding brain entries in parallel)
+- Tool: `run_kernel_audit(..., sim_only=True, reps=R)` from `tools/sinister-seraphim/memory_kernel.py`
+- Script: `projects/sinister-snap-api-quantum/sim-reps-ceiling-sweep.py` (writes `outputs/sim-reps-ceiling-sweep.json`)
+- Cost: zero cloud burn; total 1.06s wall time across 6 reps values
+
+### Results (classical baseline 0.4858 for this triad in the 149-doc pool)
+
+| reps | sim off-diag | sim advantage | Δ vs r=1 |
+|---|---|---|---|
+| 1 | 0.1926 | +29.33pp | — |
+| 2 | 0.1286 | **+35.72pp** | **+6.39pp** |
+| 3 | 0.1320 | +35.38pp | +6.05pp |
+| 4 | 0.1384 | +34.75pp | +5.42pp |
+| 5 | 0.1262 | **+35.97pp** ← ceiling | +6.64pp |
+| 6 | 0.1599 | +32.59pp | +3.27pp (regression) |
+
+### Findings
+
+1. **Sim ceiling ~36pp.** The maximum theoretical quantum advantage on this triad / encoding family is ≈36pp, hit at r=2 and stable through r=5.
+2. **r=1 leaves 6-7pp on the table.** Production recipe ZZ-FM r=1 (29pp sim → 25-35pp real-QPU verified) caps below the sim ceiling because depth-34 is sub-optimal for sim quality, not just budget-friendly.
+3. **r=2 is the sim sweet spot.** Doubles the depth (34→68), captures basically all of the available sim advantage. Real-QPU breaks here per iter-32.
+4. **r=6 mild regression.** Past r=5, the unitary starts wrapping in its own phase space; advantage drops 3.27pp from the peak. Bounded encoding — more is not always more.
+5. **Pool grew 129→149 (+20 docs) in 15 min** — fleet brain corpus is high-velocity right now. Classical baseline shifted -0.32pp (0.4890→0.4858), basically stable. Production recipe predictions remain valid.
+
+### What this implies for memory-system improvement direction
+
+The 6-7pp r=1→r=2 sim gap is **the ceiling for error-mitigation or future-quieter-QPU work**:
+
+- **If** zero-noise extrapolation, Pauli twirling, or readout mitigation could recover even half of the depth-68 noise loss, **real-QPU at r=2 could outperform r=1 by ~3-4pp** (29pp→32-33pp realized).
+- **Without mitigation**, depth-68 saturates to ~0pp (classical-equivalent) per the iter-32 anchor. No improvement available.
+- The production recipe (r=1) is therefore **optimal for the current Wukong-180 noise regime**. The ceiling work is r=2 + mitigation.
+
+### Operator decision points
+
+1. Should the next real-QPU budget go to **verifying the new top-QBC triad at r=1** (predicted 24-30pp, builds confidence) — already queued in OPERATOR-ACTION-QUEUE.md 2026-05-24 row?
+2. Or to **probing r=2 + error mitigation** (high-risk, high-ceiling — could open the 6-7pp headroom)?
+
+Both have merit; (1) is cheaper and consolidates the existing finding, (2) is exploratory and could move the ceiling. **Recommendation: (1) first** (the QBC #2 triad's iter-19 success suggests #1 will also land cleanly), then (2) only after the corpus stabilizes (the +20 docs in 15min volatility makes any expensive cloud run a moving target).
+
+### Cost / verification
+
+- Zero cloud burn
+- Verified-by: actual stdout from `sim-reps-ceiling-sweep.py` + JSON saved to `outputs/sim-reps-ceiling-sweep.json` (parses clean)
+- Status: **tested-before-claimed** (all 6 sim values measured + JSON dumped + table reproduces from JSON)
+
+---
+
 ## 2026-05-23T22:50Z — 📋 ITERATIONS 19-26 CONSOLIDATION ENTRY (MEMORY.md catch-up)
 
 MEMORY.md hadn't been updated since iter 18 (19:55Z). The 7 intermediate iterations landed in PROGRESS + brain entry + cross-agent broadcasts. Consolidating their substantive outputs here for the audit log:
