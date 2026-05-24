@@ -7,6 +7,33 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T18:35Z — iteration 83 (2 more regression tests: rank-by ceiling + cancellation theorem)
+
+Operator: /loop. Corpus grew 150→151 but pool still 129 (over-capped). Focus on test coverage gaps instead.
+
+### Added to `tools/sinister-seraphim/tests/test_smoke.py`
+1. **`test_find_qbc_rank_by_ceiling_reorders_top_n`** — verifies iter-41 `--rank-by ceiling` feature: enriched fields present (ceiling_pp, headroom_pp, per_rep), top-3 triads same set but DIFFERENT ORDER vs r=1 (iter-39 rank-inversion doctrine).
+2. **`test_cancellation_theorem_angle_cnot_equals_k4_angle`** — verifies the mathematical anchor (iters 16, 22, 43, 59): ANGLE-CNOT == K=4 ANGLE bit-for-bit. Checks max_advantage, QBC count, and top-3 (docs + advantage + sim) all match within 1e-9.
+
+### Test results
+- 2/2 new tests PASS
+- 17/17 total seraphim suite PASS (no regressions in existing 15 tests)
+- ~22s total wall time (slower because rank-by ceiling does ceiling sweep)
+
+### Doctrine protection now
+The regression suite enforces:
+- iter-48 brain-recall default alpha=1.0 (test 12)
+- iter-41 find-qbc shape + top-1 QBC (test 13)
+- iter-59 Shared-Top-K Necessary Condition (test 14)
+- iter-65/66 combined predictor safety on universal-QBC set (test 15)
+- iter-41/39 rank-by ceiling enrichment + rank-inversion (test 16)
+- iters 16/22/43 cancellation theorem bit-for-bit (test 17)
+
+### Cost
+Zero cloud burn; ~8 min wall time.
+
+---
+
 ## 2026-05-24T18:05Z — iteration 82 (seraphim README — add test-run instructions)
 
 Operator: /loop. README has no mention of how to run the tests. Small addition for operator-discoverability of the regression suite.

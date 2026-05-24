@@ -220,3 +220,69 @@ def test_k4_combined_predictor_safety_on_top_qbc_triads():
         # The combined predictor must NOT skip these (they're K=4 QBC)
         assert not combined_predictor_says_skip(tfidf), \
             f"iter-65 combined predictor false-positive on known K=4 QBC triad: {triad}"
+
+
+def test_find_qbc_rank_by_ceiling_reorders_top_n():
+    """iter-41 find-qbc --rank-by ceiling reorders top-N differently than rank-by r1.
+
+    Verifies the iter-39 doctrine: rank-order inverts at r=5+. Triad C
+    (iter-21 verified) goes from #3 by r=1 to #1 by ceiling.
+    """
+    r_r1 = memory_kernel.find_qbc_triads(
+        encoding='zzfm', k=4, reps=1, top_n=3, corpus_mode='pool',
+    )
+    r_ceiling = memory_kernel.find_qbc_triads(
+        encoding='zzfm', k=4, reps=1, top_n=3, corpus_mode='pool',
+        ceiling_reps=[2, 3, 4, 5, 6], rank_by='ceiling',
+    )
+
+    # ceiling-ranked results must have ceiling_pp and per_rep fields
+    for t in r_ceiling['top_n_triads']:
+        assert 'ceiling_pp' in t and 'ceiling_rep' in t and 'headroom_pp' in t
+        assert 'per_rep' in t and len(t['per_rep']) >= 5
+        # Ceiling must be >= r1 advantage (ZZ-FM r>=2 has higher sim QBC)
+        assert t['ceiling_pp'] >= t['advantage'] * 100 - 0.01  # numerical slop
+
+    # The ceiling-ranking top-3 set should overlap with but differ in ORDER
+    # from the r1-ranking top-3 — the rank-inversion property from iter 39.
+    r1_docs = [tuple(sorted(t['docs'])) for t in r_r1['top_n_triads']]
+    ceiling_docs = [tuple(sorted(t['docs'])) for t in r_ceiling['top_n_triads']]
+    # Both lists should contain the same triads (top-3 by r1 enriched and re-sorted)
+    assert set(r1_docs) == set(ceiling_docs), \
+        "top-3 triads should be the same set (different order)"
+    # The order should differ in at least one position (iter-39 rank-inversion)
+    assert r1_docs != ceiling_docs, \
+        "iter-39 rank-inversion broken: ceiling order matches r1 order"
+
+
+def test_cancellation_theorem_angle_cnot_equals_k4_angle():
+    """iter-16/22/43 cancellation theorem: ANGLE-CNOT == K=4 ANGLE bit-for-bit.
+
+    Parameter-free entanglement self-cancels in U_B† · U_A protocols
+    because C†·C = I. The two encodings produce identical pair-overlap
+    matrices and identical QBC top-N rankings.
+    """
+    r_angle = memory_kernel.find_qbc_triads(
+        encoding='angle', k=4, reps=1, top_n=3, corpus_mode='pool',
+    )
+    r_angle_cnot = memory_kernel.find_qbc_triads(
+        encoding='angle-cnot', k=4, reps=1, top_n=3, corpus_mode='pool',
+    )
+
+    # Max advantage must match bit-for-bit
+    assert abs(r_angle['max_advantage'] - r_angle_cnot['max_advantage']) < 1e-9, \
+        f"cancellation theorem broken: angle max_adv={r_angle['max_advantage']!r} " \
+        f"!= angle-cnot max_adv={r_angle_cnot['max_advantage']!r}"
+
+    # QBC count must match
+    assert r_angle['qbc_count'] == r_angle_cnot['qbc_count'], \
+        "cancellation theorem broken: QBC counts differ"
+
+    # Top-3 entries must match bit-for-bit
+    for t_a, t_ac in zip(r_angle['top_n_triads'], r_angle_cnot['top_n_triads']):
+        assert t_a['docs'] == t_ac['docs'], \
+            f"cancellation theorem broken: top-{t_a['rank']} docs differ"
+        assert abs(t_a['advantage'] - t_ac['advantage']) < 1e-9, \
+            f"cancellation theorem broken: top-{t_a['rank']} advantage differs"
+        assert abs(t_a['sim_off_diag_mean'] - t_ac['sim_off_diag_mean']) < 1e-9, \
+            f"cancellation theorem broken: top-{t_a['rank']} sim differs"
