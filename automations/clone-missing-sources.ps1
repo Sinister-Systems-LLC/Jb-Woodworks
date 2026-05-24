@@ -54,7 +54,7 @@ foreach ($p in $proj.projects) {
 }
 
 if ($candidates.Count -eq 0) {
-    Write-Host "[clone-missing-sources] nothing to clone (every project with a github remote already has a .git/ at its root)" -ForegroundColor Green
+    Write-Host "[clone-missing-sources] nothing to clone -- every project with a github remote either has its own .git/ OR has content already (integrated into monorepo)" -ForegroundColor Green
     exit 0
 }
 

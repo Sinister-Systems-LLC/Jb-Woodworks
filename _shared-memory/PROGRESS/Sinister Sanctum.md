@@ -4,6 +4,40 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-24 09:00Z — /loop iter 15 — deep regression sweep + 1 misleading message fix
+
+EVE on Sanctum. Short focused iter — 7-script regression sweep + 1 nit fix.
+
+**T1 Deep regression — all 7 scripts PASS:**
+- sinister-doctor default/-Html/-Json all output correctly
+- per-project-protections-autofix dry-run shows 15 weak lanes / 47 stubs
+- brain-archive-orphans dry-run shows 33 orphans to archive
+- clone-missing-sources dry-run shows nothing to clone (operator box correct)
+- install-sinister-doctor-task dry-run shows correct schtasks command
+- Fleet-Tour.bat parses cleanly
+- HTML report still 6991 bytes + valid
+
+**F1 Bug fix (cosmetic):**
+- `clone-missing-sources.ps1` message was misleading: said "every project with a github remote already has a .git/ at its root" but actually means "either has .git/ OR has content (integrated into monorepo)".
+- Updated message to be accurate.
+
+**No new bugs found in iter 1-14 ships.** The systematic regression sweep confirms the toolset is stable.
+
+**Note:** Per-project-protections returned slightly different `Sinister Snap API Quantum` scores (3/5 vs 2/5) across two consecutive calls — heartbeat aged below 24h threshold between calls (normal time-window jitter, not a bug).
+
+**Files touched:**
+- EDIT `automations/clone-missing-sources.ps1` (cosmetic message fix)
+- EDIT `_shared-memory/PROGRESS/Sinister Sanctum.md` (this entry)
+
+**Master plan:** unchanged at 19/24 (~83%).
+
+**Next iter plan:**
+- Continue self-paced polish (running low on master-actionable items)
+- Wait on operator: voice POC Q1-Q5 / per-project autofix apply / brain orphan archive / SinisterDoctorTask install
+- Self-audit candidate: cross-lane impact diff currently only triggers on canonical files; could expand to surface telemetry deltas
+
+---
+
 ## 2026-05-24 08:35Z — /loop iter 14 — brain-archive-orphans helper + Fleet-Tour demo bat
 
 EVE on Sanctum continuing /loop. Two operator-friendly tools shipped + 1 em-dash bug fix.
