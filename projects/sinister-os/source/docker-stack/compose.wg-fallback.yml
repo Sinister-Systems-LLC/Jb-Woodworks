@@ -1,0 +1,88 @@
+# compose.wg-fallback.yml — Sinister Mesh M5 WireGuard direct-peer fallback overlay
+# Author: RKOJ-ELENO :: 2026-05-24
+#
+# Status: SCAFFOLDED (yaml parses; no live tunnel rollout — needs operator-generated keys).
+#
+# Why this exists (contradiction-expansion vs prior plan):
+#   Prior plan ("Tailscale is V1, WG is V2 deferred") leaves the mesh single-vendor-fragile:
+#     - Tailscale control-plane outage = no NEW peer joins (existing tunnels survive ~24h).
+#     - Free-tier device cap is 100 — the fleet already runs ~7 nodes + Leo + 3+ phone APK
+#       builds + each docker container, putting cap proximity closer than assumed.
+#     - Single-corp dependency: any future Tailscale policy / pricing / acquisition shift
+#       impacts the entire mesh.
+#   This overlay provides a zero-trust direct-peer fallback using vanilla WireGuard so the
+#   fleet can re-converge mesh connectivity without depending on the Tailscale control plane.
+#
+# Composes with:
+#   compose.mesh.yml  (Tailscale primary; can run alongside via separate interfaces)
+#   compose.doh.yml   (DNS-over-HTTPS per-node; survives WG-only mode)
+#   compose.hardened.yml  (security baseline)
+#
+# Profile-gated:
+#   docker compose -f docker-compose.yml -f compose.wg-fallback.yml --profile wg-fallback up -d
+#   The `--profile wg-fallback` gate prevents accidental dual-mesh activation; ops opt in.
+#
+# Operator-side prep (NOT done by this overlay):
+#   1. Generate keypair on each node:
+#        wg genkey | tee privatekey | wg pubkey > publickey
+#   2. Distribute public keys via vault (vault://mesh/wg/<hostname>.pub).
+#   3. Set WG_PRIVATE_KEY (this node) + WG_PEERS_INI (concatenated [Peer] blocks) in env.
+#   4. Choose an address from the 10.42.0.0/24 fallback subnet (avoid Tailscale 100.x).
+#
+# Honest scope ledger:
+#   - This overlay starts the wireguard tool container with a config rendered from env.
+#   - It does NOT manage key rotation. Operator runs `wg-rotate.sh` quarterly (NOT yet written).
+#   - It does NOT replace Tailscale; both can be active for "belt-and-suspenders" mode.
+#   - It does NOT do NAT traversal. UDP port 51820 must be reachable on the wg-fallback peer
+#     (most home routers need a port-forward; cloud nodes need a security-group rule).
+
+services:
+
+  wg-fallback:
+    image: linuxserver/wireguard:latest
+    container_name: sinister-wg-fallback
+    restart: unless-stopped
+
+    profiles:
+      - wg-fallback
+
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+      - net.ipv6.conf.all.disable_ipv6=0
+
+    ports:
+      # UDP port for direct-peer WG handshakes. Operator port-forwards or SG-allows.
+      - "${WG_LISTEN_PORT:-51820}:51820/udp"
+
+    environment:
+      PUID: "${PUID:-1000}"
+      PGID: "${PGID:-1000}"
+      TZ: "${TZ:-Etc/UTC}"
+      SERVERURL: "${WG_SERVER_URL:-auto}"
+      SERVERPORT: "${WG_LISTEN_PORT:-51820}"
+      INTERNAL_SUBNET: "${WG_INTERNAL_SUBNET:-10.42.0.0/24}"
+      ALLOWEDIPS: "${WG_ALLOWED_IPS:-10.42.0.0/24}"
+      PEERS: "${WG_PEERS:-0}"
+      PEERDNS: "${WG_PEER_DNS:-auto}"
+      # If WG_PRIVATE_KEY is unset, the linuxserver image generates one and warns.
+      # In production, operator generates once via `wg genkey` and pins here.
+      WG_PRIVATE_KEY: "${WG_PRIVATE_KEY:-}"
+
+    volumes:
+      - wg-fallback-config:/config
+      - /lib/modules:/lib/modules:ro
+
+    healthcheck:
+      test: ["CMD-SHELL", "wg show 2>/dev/null | grep -q 'interface:' || exit 1"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  wg-fallback-config:
+    name: sinister-wg-fallback-config

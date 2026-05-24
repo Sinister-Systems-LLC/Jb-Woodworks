@@ -1,0 +1,113 @@
+# compose.panel-shell.yml — Sinister OS panel-as-shell scaffold overlay
+# Author: RKOJ-ELENO :: 2026-05-24
+#
+# Status: SCAFFOLDED (yaml parses; live container build deferred — see PANEL-SHELL-DEPLOY.md).
+#
+# Why this exists (operator-direct ask 2026-05-24T12:47:52Z, verbatim):
+#   "get this working how i want so we have a perfect operating system to run claude on
+#    and be my own open source operating system that i can forever expand that i have
+#    complete control of and ai is complete integrated. review github and see what all
+#    you can compile from other repos. and complete the entire thing and lets get to
+#    testing in docker to all this for me and make everything look like my sinister
+#    panel here. grab the exact code from the sinister panel project folder and lets
+#    use that and the lets text look as the main OS look. call everything SINISTER
+#    and have all our systems direct in the operating system."
+#
+# Contradiction-expansion vs prior plans:
+#   Prior master-plan-2026-05-24.md / mesh-os-master-plan-2026-05-24.md build the OS
+#   bottom-up (kernel → compositor → eve daemon → shell, with P3 the "EVE shell" phase
+#   ~weeks 4-6 of the roadmap). Operator's verbatim ask inverts this: start from
+#   the existing Sinister Panel app + Let's Text look, dockerize it as the OS shell
+#   right now, iterate inside docker. The OS becomes "a hardened Linux that boots
+#   into Sinister Panel as the shell." Massively faster to operator-test.
+#   Counter-arg row at _shared-memory/counter-arguments.jsonl.
+#
+# What this overlay does:
+#   - Starts a `sinister-panel-shell` service that wraps the existing sinister-panel
+#     source as a container. Source path is mounted from the host (not COPY-baked)
+#     so panel edits in projects/sinister-panel/source/ are live-reloaded.
+#   - Exposes the panel UI on host port 8088 (configurable via PANEL_SHELL_PORT).
+#   - Joins the same sinister-mesh network so the panel can talk to other stack
+#     services (yjs-server, vault-api, etc.) by container name.
+#
+# What this overlay does NOT do (operator-action gates):
+#   - Build a real OS image. This is a browser-served-panel scaffold so the operator
+#     can SEE what the shell will look like; turning it into a Wayland-compositor
+#     replacement is P3+ work.
+#   - Fold in Let's Text styling. The PANEL-SHELL-DEPLOY.md runbook documents the
+#     CSS-token alignment with `sinister-dashboard-skeleton` (UI canonical 2026-05-24).
+#   - Pull from sinister-panel/source/ if the path doesn't exist on the host — the
+#     compose `build` context fails fast so operator knows what's missing.
+#   - Wire Steam / gaming integration — that's P4 in master-plan.md.
+#
+# How to bring up (when ready):
+#   cd projects/sinister-os/source/docker-stack
+#   docker compose -f docker-compose.yml \
+#                  -f compose.hardened.yml \
+#                  -f compose.panel-shell.yml \
+#                  --profile panel-shell \
+#                  up -d sinister-panel-shell
+#   then open http://localhost:8088 in the operator's browser.
+#
+# Compose-with-other-overlays gate:
+#   Run validate-merge.sh against the full overlay set before deploying.
+
+services:
+
+  sinister-panel-shell:
+    container_name: sinister-panel-shell
+    restart: unless-stopped
+
+    profiles:
+      - panel-shell
+
+    # Use Node base; the panel-shell-entry.sh script handles install + dev-server start.
+    # Pinned to node:20-alpine to match sinister-panel's package.json `engines.node` >= 20.
+    image: node:20-alpine
+
+    working_dir: /app
+
+    volumes:
+      # Live-mount sinister-panel/source so panel edits hot-reload.
+      # Operator runs `npm install` once on first up; subsequent edits don't need rebuild.
+      - ../../../sinister-panel/source:/app:cached
+      # Cache node_modules across container restarts.
+      - sinister-panel-shell-modules:/app/node_modules
+
+    environment:
+      NODE_ENV: "${PANEL_SHELL_NODE_ENV:-development}"
+      PANEL_SHELL_PORT: "${PANEL_SHELL_PORT:-8088}"
+      # Sinister-purple accent token (per UI-canonical 2026-05-24).
+      VITE_ACCENT: "#c084fc"
+
+    ports:
+      - "${PANEL_SHELL_PORT:-8088}:8088"
+
+    # entrypoint: a thin install-then-dev wrapper. If sinister-panel doesn't have
+    # an `npm run dev:os-shell` script yet, this falls back to `npm run dev`.
+    # The runbook (PANEL-SHELL-DEPLOY.md) documents adding the script properly.
+    command: >-
+      sh -c "
+      if [ ! -d node_modules ]; then npm install --no-audit --no-fund || exit 1; fi;
+      if [ -f package.json ] && grep -q 'dev:os-shell' package.json; then
+        exec npm run dev:os-shell;
+      elif [ -f package.json ]; then
+        exec npm run dev;
+      else
+        echo 'FATAL: no package.json mounted at /app — check the volume mount path'; exit 1;
+      fi
+      "
+
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O- http://localhost:8088/ >/dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+
+    depends_on:
+      - vault-api
+
+volumes:
+  sinister-panel-shell-modules:
+    name: sinister-panel-shell-modules

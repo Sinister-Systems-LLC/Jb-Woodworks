@@ -1,0 +1,71 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-24T20:42Z",
+    "project": "sinister-os",
+    "agent_name": "sinister-os",
+    "mode": "resume",
+    "focus_intent": "M5-EXPAND + PANEL-AS-SHELL SCAFFOLDED — WG-fallback + DNS-split-horizon + validate-merge.sh + panel-shell overlay + eve wg/panel CLI subcommands. Operator utterance 2026-05-24T12:47:52Z acknowledged. 2 counter-arg rows logged. validate-merge.sh smoke: 0 WARN, 0 FAIL across 6 overlays.",
+    "git": {
+        "branch": "agent/sinister-os-mobile/p0-spec-2026-05-24",
+        "branch_note": "Cross-lane state from sanctum auto-push; sinister-os scoped work only.",
+        "head": "8bd3529",
+        "head_msg": "sinister-os: M5 mesh SCAFFOLDED — Tailscale overlay + ACL + runbook + eve mesh CLI"
+    },
+    "progress_top3": [
+        "2026-05-24 ~20:40Z — M5-EXPAND + PANEL-AS-SHELL SCAFFOLDED (WG-fallback + DNS-split-horizon + validate-merge.sh + panel-shell + eve wg/panel CLI; 7 files; 0 WARN 0 FAIL deep-merge)",
+        "2026-05-24 ~17:30Z — M5 mesh SCAFFOLDED (Tailscale overlay + ACL + runbook + eve mesh CLI)",
+        "2026-05-24 ~12:20Z — P0 (spec lock) SHIPPED — master plan ready for operator review"
+    ],
+    "last_7_files_touched_24h": [
+        "projects/sinister-os/source/docker-stack/compose.wg-fallback.yml (NEW)",
+        "projects/sinister-os/source/docker-stack/WG-FALLBACK.md (NEW)",
+        "projects/sinister-os/source/docker-stack/DNS-SPLIT-HORIZON.md (NEW)",
+        "projects/sinister-os/source/docker-stack/validate-merge.sh (NEW)",
+        "projects/sinister-os/source/docker-stack/compose.panel-shell.yml (NEW)",
+        "projects/sinister-os/source/docker-stack/PANEL-SHELL-DEPLOY.md (NEW)",
+        "projects/sinister-os/source/docker-stack/eve (PATCH: wg + panel subcommands)"
+    ],
+    "pre_warm_reads": [
+        "D:\\Sinister Sanctum\\CLAUDE.md",
+        "D:\\Sinister Sanctum\\projects\\sinister-os\\CLAUDE.md",
+        "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Sinister OS.md",
+        "D:\\Sinister Sanctum\\_shared-memory\\plans\\sinister-os-m5-expand-panel-shell-2026-05-24T2034Z\\plan.md",
+        "D:\\Sinister Sanctum\\projects\\sinister-os\\source\\docker-stack\\PANEL-SHELL-DEPLOY.md",
+        "D:\\Sinister Sanctum\\projects\\sinister-os\\source\\docker-stack\\WG-FALLBACK.md",
+        "D:\\Sinister Sanctum\\projects\\sinister-os\\source\\docker-stack\\DNS-SPLIT-HORIZON.md"
+    ],
+    "swarm_mode": {
+        "enabled": true,
+        "loop_enabled": true,
+        "set_at_utc": "2026-05-24T18:05:13Z",
+        "set_reason": "operator 17:35Z: activate swarm mode",
+        "mode_file": "_shared-memory/agent-modes/sinister-os.json"
+    },
+    "open_queue_next": [
+        "GitHub-prior-art sweep for 'open-source OS shells based on web apps' (cold-start step 9; composes with operator 12:47Z verbatim 'review github and see what all you can compile from other repos')",
+        "Let's Text styling extraction into dashboard-skeleton tokens (operator 12:47Z verbatim 'the lets text look as the main OS look')",
+        "WG-fallback key-rotation script `wg-rotate.sh` (deferred from WG-FALLBACK.md operator-action gates)",
+        "Live `eve panel up` smoke + browser-test of http://localhost:8088 (blocked on docker daemon up + sinister-panel/source/package.json existing at expected junction)",
+        "Bake real Panel image via bake-panel.sh (queue item #1 from SESSION-HANDOFF-2026-05-24T1442Z.md; blocked on docker daemon)",
+        "Tailscaled systemd unit smoke inside QEMU airootfs boot (blocked on building ISO)",
+        "nftables/netns enforcement for `eve proxy` (PROXY-DESIGN.md § 5)",
+        "Steam-on-Linux compat audit (master-plan.md § 5; P3+ work)"
+    ],
+    "open_for_next_iter": [
+        "Commit this turn's shipped artifacts on agent/sinister-os-mobile/p0-spec-2026-05-24 (cross-lane branch; commit only sinister-os scoped paths)",
+        "If docker daemon comes up: `eve panel up` smoke + `eve mesh up` (with operator-provided TS_AUTHKEY) smoke",
+        "Run automations/github-prior-art.ps1 -Topic 'OS shell web panel kiosk' and surface top 3-5 candidates"
+    ],
+    "scaffolded_this_turn": [
+        "compose.wg-fallback.yml (yaml.safe_load PASS; profile-gated wg-fallback service)",
+        "WG-FALLBACK.md (6-section operator runbook + honesty ledger + operator-action gates)",
+        "DNS-SPLIT-HORIZON.md (DoH × MagicDNS coexistence doctrine; 3 config recipes; failure-mode table)",
+        "validate-merge.sh (deep-merge collision checker; tested 0 WARN 0 FAIL across 6 overlays)",
+        "compose.panel-shell.yml (yaml.safe_load PASS; sinister-panel live-mount profile-gated)",
+        "PANEL-SHELL-DEPLOY.md (runbook + operator 12:47Z utterance ack + scope ledger)",
+        "eve wg subcommand (status/verify; bash -n PASS; verify exit 0)",
+        "eve panel subcommand (up/down/status/verify; bash -n PASS; verify exit 0)",
+        "Operator utterance 2026-05-24T12:47:52Z status flipped new -> acknowledged",
+        "2 counter-arg rows appended to _shared-memory/counter-arguments.jsonl"
+    ]
+}

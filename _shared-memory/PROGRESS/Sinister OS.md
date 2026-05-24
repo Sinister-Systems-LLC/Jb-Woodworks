@@ -5,6 +5,63 @@
 
 ---
 
+## 2026-05-24 ~20:40Z — M5-EXPAND + PANEL-AS-SHELL **SCAFFOLDED** — WG-fallback + DNS-split-horizon + validate-merge + panel-shell + `eve wg/panel` CLI
+
+RESUME+REVIEW+PLAN+LOOP cold-start iter (loop=on, swarm=on per operator 18:05:13Z mode-flip). Verified prior plan's iters 2-4 were written-but-not-shipped on disk; shipped them this turn plus contradiction-expansion item (panel-as-shell) that addresses operator's 2026-05-24T12:47:52Z verbatim ask.
+
+**Files added (all parse/syntax-verified, 0 WARN / 0 FAIL via validate-merge.sh across all 6 overlays):**
+
+| Path | Verification |
+|---|---|
+| `source/docker-stack/compose.wg-fallback.yml` | `python yaml.safe_load` exit 0; service `wg-fallback` profile-gated |
+| `source/docker-stack/WG-FALLBACK.md` | 6-section runbook (keypair gen → vault stash → subnet assign → env → bring-up → smoke) + honesty ledger |
+| `source/docker-stack/DNS-SPLIT-HORIZON.md` | DoH ↔ MagicDNS coexistence doctrine; 3 concrete config recipes (systemd-resolved / dnsmasq / cloudflared); flow chart + failure-mode table |
+| `source/docker-stack/validate-merge.sh` | `bash -n` exit 0; smoke-tested against 6-overlay merge → `0 WARN, 0 FAIL` |
+| `source/docker-stack/compose.panel-shell.yml` | `python yaml.safe_load` exit 0; live-mounts `projects/sinister-panel/source/` |
+| `source/docker-stack/PANEL-SHELL-DEPLOY.md` | Runbook acks operator 12:47Z utterance with explicit scope ledger (5 NOT-shipped items operator-gated) |
+| `source/docker-stack/eve` (patch) | `bash -n` exit 0; new subcommands `wg status/verify` + `panel up/down/status/verify`; all 5 `eve verify` (mesh/doh/proxy/wg/panel) exit 0 |
+
+**Verification gates (all exit 0):**
+```
+bash -n eve
+python -c "import yaml; yaml.safe_load(open('compose.wg-fallback.yml'))"
+python -c "import yaml; yaml.safe_load(open('compose.panel-shell.yml'))"
+bash validate-merge.sh docker-compose.yml compose.hardened.yml compose.mesh.yml compose.doh.yml compose.wg-fallback.yml compose.panel-shell.yml   # 0 WARN, 0 FAIL
+bash eve wg verify
+bash eve panel verify
+bash eve mesh verify && bash eve doh verify && bash eve proxy verify   # regression-test existing
+```
+
+**Operator utterance acked:** `2026-05-24T12:47:52Z` (slug `test-os`, tags include `sinister-os`,`priority`,`ship-now`,`panel-as-shell`,`docker-test`). Status flipped `new → acknowledged` via `ack-operator-utterance.ps1`.
+
+**Counter-arg log rows added (2):**
+
+1. WG-fallback challenges prior "Tailscale-only V1, WG deferred" stance (single-vendor-fragility + free-tier device cap + control-plane outage risk).
+2. Panel-as-shell challenges prior "bottom-up OS build" stance (operator's verbatim ask demands same-day docker-test of "make everything look like my sinister panel here").
+
+Both logged in `_shared-memory/counter-arguments.jsonl`.
+
+**Honest scope of this turn (no-bullshit ledger):**
+
+- ✅ Shipped (verified by parse/syntax/exec checks): 7 files listed above; all gates exit 0.
+- ⏳ In-flight (deferred to docker-up turn): live `docker compose up` of panel-shell + wg-fallback overlays; first-time `npm install` inside panel-shell container.
+- ❌ NOT done (explicitly operator-action OR daemon-blocked):
+  - Generate WireGuard keypairs on each node (operator runs `wg genkey` per node).
+  - Stash WG public keys to vault (operator runs `curl -X POST .../vault/kv/put`).
+  - Open UDP/51820 on NY + FL public endpoints (operator router/SG config).
+  - Run `eve panel up` and visit `http://localhost:8088` (docker daemon was down at session-start).
+  - Let's Text styling token-extraction into `dashboard-skeleton` (queued).
+  - GitHub-prior-art sweep for "open-source OS shells based on web apps" (queued — composes with cold-start step 9).
+- Words not used: "deployed" / "live" / "shipped to fleet" — none of those is true for the new overlays yet.
+
+**Branch state:** HEAD remains `agent/sinister-os-mobile/p0-spec-2026-05-24` (cross-lane artifact from sanctum auto-push; cannot clean-switch without losing mobile lane's `M` files). All work-product paths are sinister-os scoped.
+
+**Plan path:** `_shared-memory/plans/sinister-os-m5-expand-panel-shell-2026-05-24T2034Z/plan.md`.
+
+**Next action for this lane:** (loop continues) — write fresh resume-point reflecting current truth + commit; then either pick next open-queue item (GitHub-prior-art sweep / Let's Text styling extraction / docker-daemon-gated smoke when daemon up) or end-turn-cleanly per LOOP MODE rule 6.
+
+---
+
 ## 2026-05-24 ~17:30Z — M5 mesh **SCAFFOLDED** — Tailscale overlay + ACL + runbook + `eve mesh` CLI
 
 EVE session resumed on `agent/sinister-os-mobile/p0-spec-2026-05-24` (cross-lane state from sanctum auto-push; sinister-os scoped work only). Docker daemon was down at session-start (smoke-test: 0/10 services HTTP 200) — chose authoring work that does not require live containers.

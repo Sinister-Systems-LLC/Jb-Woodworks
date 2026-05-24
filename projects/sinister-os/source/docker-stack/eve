@@ -32,8 +32,15 @@ readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly COMPOSE_FILE="docker-compose.yml"
 readonly HARDENED_OVERLAY="compose.hardened.yml"
 readonly MESH_OVERLAY="compose.mesh.yml"
+readonly DOH_OVERLAY="compose.doh.yml"
+readonly DOH_CONFIG="config/cloudflared/config.yml"
+readonly DOH_CONTAINER="sinister-cloudflared"
 readonly OVERRIDE_LINK="docker-compose.override.yml"
 readonly SMOKE_SCRIPT="smoke-test.sh"
+readonly PROXY_ROUTES_FILE="config/proxy/routes.json"
+readonly PROXY_VALID_ROUTES="direct ny fl tor"
+readonly WG_FALLBACK_OVERLAY="compose.wg-fallback.yml"
+readonly PANEL_SHELL_OVERLAY="compose.panel-shell.yml"
 
 # ---------------------------------------------------------------------------
 # Color helpers (degrade gracefully when piped)
@@ -506,6 +513,503 @@ EOF
     esac
 }
 
+cmd_doh() {
+    local action="${1:-}"; shift || true
+    case "${action}" in
+        up)
+            goto_stack_dir
+            require_docker
+            if [ ! -f "${DOH_OVERLAY}" ]; then
+                err "${DOH_OVERLAY} not found in ${SCRIPT_DIR}"
+                return 1
+            fi
+            header "Bringing up cloudflared DoH sidecar"
+            docker compose -f "${COMPOSE_FILE}" -f "${DOH_OVERLAY}" up -d cloudflared
+            ok "cloudflared started. Run 'eve doh status' to verify."
+            ;;
+        down)
+            goto_stack_dir
+            require_docker
+            header "Stopping cloudflared DoH sidecar"
+            if [ -f "${DOH_OVERLAY}" ]; then
+                docker compose -f "${COMPOSE_FILE}" -f "${DOH_OVERLAY}" down cloudflared 2>/dev/null \
+                    || docker stop "${DOH_CONTAINER}" 2>/dev/null \
+                    || warn "cloudflared not running"
+            else
+                docker stop "${DOH_CONTAINER}" 2>/dev/null \
+                    || warn "cloudflared not running"
+            fi
+            ok "cloudflared down."
+            ;;
+        status)
+            goto_stack_dir
+            require_docker
+            header "Cloudflared DoH container status"
+            docker ps --filter "name=${DOH_CONTAINER}"
+            ;;
+        verify)
+            goto_stack_dir
+            header "DoH artifacts — syntax verification (no docker required)"
+            if [ ! -f "${DOH_OVERLAY}" ]; then
+                printf "%seve doh verify: SKIPPED — %s not found%s\n" "${C_YELLOW}" "${DOH_OVERLAY}" "${C_RESET}"
+                return 0
+            fi
+            local rc=0
+            printf "  %s ........ " "${DOH_OVERLAY}"
+            if python -c "import yaml; yaml.safe_load(open('${DOH_OVERLAY}'))" >/dev/null 2>&1; then
+                printf "%sparse OK%s\n" "${C_GREEN}" "${C_RESET}"
+            else
+                printf "%sPARSE FAIL%s\n" "${C_RED}" "${C_RESET}"; rc=1
+            fi
+            printf "  %s ........ " "${DOH_CONFIG}"
+            if [ -f "${DOH_CONFIG}" ]; then
+                if python -c "import yaml; yaml.safe_load(open('${DOH_CONFIG}'))" >/dev/null 2>&1; then
+                    printf "%sparse OK%s\n" "${C_GREEN}" "${C_RESET}"
+                else
+                    printf "%sPARSE FAIL%s\n" "${C_RED}" "${C_RESET}"; rc=1
+                fi
+            else
+                printf "%smissing (will be created on first up)%s\n" "${C_YELLOW}" "${C_RESET}"
+            fi
+            if [ "${rc}" = "0" ]; then
+                printf "%seve doh verify: PASS%s\n" "${C_GREEN}" "${C_RESET}"
+            else
+                printf "%seve doh verify: FAIL%s\n" "${C_RED}" "${C_RESET}"
+            fi
+            return "${rc}"
+            ;;
+        test)
+            goto_stack_dir
+            if command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then
+                if ! docker ps --format '{{.Names}}' | grep -q "^${DOH_CONTAINER}$"; then
+                    info "eve doh test: SKIPPED — ${DOH_CONTAINER} not running"
+                    return 0
+                fi
+            else
+                info "eve doh test: SKIPPED — docker daemon not reachable"
+                return 0
+            fi
+            header "DoH resolver smoke test (127.0.0.1:5053)"
+            local resp=""
+            if command -v dig >/dev/null 2>&1; then
+                resp=$(dig @127.0.0.1 -p 5053 example.com +short 2>/dev/null || true)
+            elif command -v nslookup >/dev/null 2>&1; then
+                resp=$(nslookup example.com 127.0.0.1 2>/dev/null | grep -E '^Address' | tail -n +2 || true)
+            else
+                err "neither dig nor nslookup available"
+                return 1
+            fi
+            if [ -n "${resp}" ]; then
+                printf "%seve doh test: PASS%s\n" "${C_GREEN}" "${C_RESET}"
+                printf "  response: %s\n" "${resp}"
+                return 0
+            else
+                printf "%seve doh test: FAIL%s (empty response)\n" "${C_RED}" "${C_RESET}"
+                return 1
+            fi
+            ;;
+        ""|-h|--help|help)
+            cat <<EOF
+${C_PURPLE}${C_BOLD}eve doh${C_RESET} — Cloudflared DNS-over-HTTPS sidecar management
+
+${C_BOLD}USAGE${C_RESET}
+  eve doh <subcommand> [args]
+
+${C_BOLD}SUBCOMMANDS${C_RESET}
+  up                  Start the cloudflared DoH sidecar.
+  down                Stop and remove the cloudflared sidecar.
+  status              Show 'docker ps' filtered on ${DOH_CONTAINER}.
+  verify              Syntax-check DoH artifacts (no docker daemon required).
+                      Cleanly skips with exit 0 if ${DOH_OVERLAY} not yet present.
+  test                dig (or nslookup) example.com against 127.0.0.1:5053.
+                      Exits 0 on PASS or if container not running; exit 1 only on hard error.
+  help                This help.
+
+${C_DIM}Author: RKOJ-ELENO :: 2026-05-24${C_RESET}
+EOF
+            ;;
+        *)
+            err "unknown subcommand: doh ${action}"
+            info "run 'eve doh help' for usage"
+            return 1
+            ;;
+    esac
+}
+
+cmd_proxy() {
+    local action="${1:-}"; shift || true
+    case "${action}" in
+        list)
+            goto_stack_dir
+            header "Per-app proxy routes (Layer 3 of geo-mesh anonymity model)"
+            if [ ! -f "${PROXY_ROUTES_FILE}" ]; then
+                warn "${PROXY_ROUTES_FILE} not found — no routes configured yet"
+                info "Run 'eve proxy set <app> <route>' to seed a row."
+                return 0
+            fi
+            if ! python -c "import json; json.load(open('${PROXY_ROUTES_FILE}'))" >/dev/null 2>&1; then
+                err "${PROXY_ROUTES_FILE} is not valid JSON"
+                return 1
+            fi
+            local default_route
+            default_route=$(python -c "import json; print(json.load(open('${PROXY_ROUTES_FILE}')).get('default','direct'))")
+            printf "  %sdefault%s ........ %s\n" "${C_BOLD}" "${C_RESET}" "${default_route}"
+            echo
+            local row_count
+            row_count=$(python -c "import json; print(len(json.load(open('${PROXY_ROUTES_FILE}')).get('routes',{})))")
+            if [ "${row_count}" = "0" ]; then
+                info "  (no per-app overrides; everything follows default route)"
+            else
+                printf "  %sapp                       route%s\n" "${C_BOLD}" "${C_RESET}"
+                printf "  %s---                       -----%s\n" "${C_DIM}" "${C_RESET}"
+                python -c "
+import json
+data = json.load(open('${PROXY_ROUTES_FILE}'))
+for app, route in sorted(data.get('routes', {}).items()):
+    print('  {:<25} {}'.format(app, route))
+"
+            fi
+            echo
+            info "Honest status: this CLI manages the routes.json file. Actual traffic"
+            info "routing (nftables / netns wrap) is NOT yet implemented. See"
+            info "PROXY-DESIGN.md for the design + deferred work."
+            ;;
+        set)
+            local app="${1:-}"
+            local route="${2:-}"
+            if [ -z "${app}" ] || [ -z "${route}" ]; then
+                err "usage: eve proxy set <app> <route>"
+                info "valid routes: ${PROXY_VALID_ROUTES}"
+                return 1
+            fi
+            # Validate route value
+            local valid=0
+            for r in ${PROXY_VALID_ROUTES}; do
+                if [ "${r}" = "${route}" ]; then valid=1; break; fi
+            done
+            if [ "${valid}" = "0" ]; then
+                err "invalid route: ${route}"
+                info "valid routes: ${PROXY_VALID_ROUTES}"
+                return 1
+            fi
+            if [ "${route}" = "tor" ]; then
+                warn "route 'tor' accepted into config, but Tor exit is NOT implemented yet."
+                warn "Traffic will continue to follow whatever default is in effect until the Tor wrapper lands."
+            fi
+            goto_stack_dir
+            if [ ! -f "${PROXY_ROUTES_FILE}" ]; then
+                err "${PROXY_ROUTES_FILE} not found; create the seed file first"
+                return 1
+            fi
+            python - "${app}" "${route}" "${PROXY_ROUTES_FILE}" <<'PYEOF'
+import json, sys
+app, route, path = sys.argv[1], sys.argv[2], sys.argv[3]
+with open(path) as f:
+    data = json.load(f)
+data.setdefault("routes", {})[app] = route
+with open(path, "w") as f:
+    json.dump(data, f, indent=2, sort_keys=True)
+    f.write("\n")
+PYEOF
+            ok "set ${app} -> ${route}"
+            info "Note: config-only update. No traffic re-routing happens until the netns/nftables layer ships."
+            ;;
+        show)
+            local app="${1:-}"
+            if [ -z "${app}" ]; then
+                err "usage: eve proxy show <app>"
+                return 1
+            fi
+            goto_stack_dir
+            if [ ! -f "${PROXY_ROUTES_FILE}" ]; then
+                err "${PROXY_ROUTES_FILE} not found"
+                return 1
+            fi
+            local route
+            route=$(python - "${app}" "${PROXY_ROUTES_FILE}" <<'PYEOF'
+import json, sys
+app, path = sys.argv[1], sys.argv[2]
+with open(path) as f:
+    data = json.load(f)
+routes = data.get("routes", {})
+if app in routes:
+    print(routes[app])
+else:
+    print(data.get("default", "direct") + " (default)")
+PYEOF
+)
+            printf "  %s -> %s\n" "${app}" "${route}"
+            ;;
+        verify)
+            goto_stack_dir
+            header "Proxy artifacts — syntax verification (no daemon required)"
+            local rc=0
+            printf "  routes.json present ..... "
+            if [ -f "${PROXY_ROUTES_FILE}" ]; then
+                printf "%syes%s\n" "${C_GREEN}" "${C_RESET}"
+            else
+                printf "%sMISSING%s\n" "${C_RED}" "${C_RESET}"; rc=1
+            fi
+            printf "  routes.json parses ...... "
+            if [ -f "${PROXY_ROUTES_FILE}" ] && python -c "import json; json.load(open('${PROXY_ROUTES_FILE}'))" >/dev/null 2>&1; then
+                printf "%sparse OK%s\n" "${C_GREEN}" "${C_RESET}"
+            else
+                printf "%sPARSE FAIL%s\n" "${C_RED}" "${C_RESET}"; rc=1
+            fi
+            if [ "${rc}" = "0" ]; then
+                local row_count
+                row_count=$(python -c "import json; print(len(json.load(open('${PROXY_ROUTES_FILE}')).get('routes',{})))")
+                printf "  row count ............... %s\n" "${row_count}"
+                printf "  routes valid check ...... "
+                local bad
+                bad=$(python - "${PROXY_ROUTES_FILE}" "${PROXY_VALID_ROUTES}" <<'PYEOF'
+import json, sys
+path, valid_str = sys.argv[1], sys.argv[2]
+valid = set(valid_str.split())
+with open(path) as f:
+    data = json.load(f)
+bad = []
+default = data.get("default", "direct")
+if default not in valid:
+    bad.append("default=" + default)
+for app, route in data.get("routes", {}).items():
+    if route not in valid:
+        bad.append(app + "=" + route)
+print(",".join(bad))
+PYEOF
+)
+                if [ -z "${bad}" ]; then
+                    printf "%sall valid%s\n" "${C_GREEN}" "${C_RESET}"
+                else
+                    printf "%sINVALID: %s%s\n" "${C_RED}" "${bad}" "${C_RESET}"; rc=1
+                fi
+            fi
+            printf "  PROXY-DESIGN.md ......... "
+            if [ -f "PROXY-DESIGN.md" ]; then
+                printf "%spresent%s\n" "${C_GREEN}" "${C_RESET}"
+            else
+                printf "%smissing%s\n" "${C_YELLOW}" "${C_RESET}"
+            fi
+            if [ "${rc}" = "0" ]; then
+                ok "proxy scaffold verified."
+            else
+                err "proxy scaffold has issues."
+            fi
+            return "${rc}"
+            ;;
+        ""|-h|--help|help)
+            cat <<EOF
+${C_PURPLE}${C_BOLD}eve proxy${C_RESET} — Per-app proxy routing (Layer 3 of geo-mesh anonymity model)
+
+${C_BOLD}USAGE${C_RESET}
+  eve proxy <subcommand> [args]
+
+${C_BOLD}SUBCOMMANDS${C_RESET}
+  list                     Print routes.json: default route + per-app overrides.
+  set <app> <route>        Add/update a route for <app>. Routes: direct|ny|fl|tor.
+  show <app>               Print the current route for <app> (falls back to default).
+  verify                   JSON parse + valid-route check. Exits 0 on clean.
+  help                     This help.
+
+${C_BOLD}ROUTES${C_RESET}
+  direct   No proxy; traffic exits via local default gateway.
+  ny       Exit via sinister-mesh-ny tailscale node (when implemented).
+  fl       Exit via sinister-mesh-fl tailscale node (when implemented).
+  tor      Tor SOCKS5 (placeholder; not implemented).
+
+${C_BOLD}HONEST STATUS${C_RESET}
+  This CLI manages a JSON file. Actual traffic routing (nftables --mark /
+  network namespaces / per-app cgroup classifiers) is NOT yet implemented.
+  See PROXY-DESIGN.md for the design + deferred work + per-platform paths.
+
+${C_DIM}Author: RKOJ-ELENO :: 2026-05-24${C_RESET}
+EOF
+            ;;
+        *)
+            err "unknown subcommand: proxy ${action}"
+            info "run 'eve proxy help' for usage"
+            return 1
+            ;;
+    esac
+}
+
+cmd_wg() {
+    local action="${1:-}"; shift || true
+    case "${action}" in
+        status)
+            goto_stack_dir
+            require_docker
+            if ! docker ps --format '{{.Names}}' | grep -q '^sinister-wg-fallback$'; then
+                err "sinister-wg-fallback not running"
+                info "Bring up with: docker compose --profile wg-fallback up -d wg-fallback"
+                info "(see WG-FALLBACK.md for key-gen + port-forward prereqs)"
+                return 1
+            fi
+            header "WireGuard fallback status"
+            docker exec sinister-wg-fallback wg show 2>/dev/null \
+                || warn "wg show returned non-zero (no peers configured?)"
+            ;;
+        verify)
+            goto_stack_dir
+            header "WG-fallback artifacts — syntax verification (no docker required)"
+            local rc=0
+            printf "  compose.wg-fallback.yml . "
+            if python -c "import yaml; yaml.safe_load(open('${WG_FALLBACK_OVERLAY}'))" >/dev/null 2>&1; then
+                printf "%sparse OK%s\n" "${C_GREEN}" "${C_RESET}"
+            else
+                printf "%sPARSE FAIL%s\n" "${C_RED}" "${C_RESET}"; rc=1
+            fi
+            printf "  WG-FALLBACK.md .......... "
+            if [ -f "WG-FALLBACK.md" ]; then
+                printf "%spresent%s\n" "${C_GREEN}" "${C_RESET}"
+            else
+                printf "%sMISSING%s\n" "${C_RED}" "${C_RESET}"; rc=1
+            fi
+            printf "  DNS-SPLIT-HORIZON.md .... "
+            if [ -f "DNS-SPLIT-HORIZON.md" ]; then
+                printf "%spresent%s\n" "${C_GREEN}" "${C_RESET}"
+            else
+                printf "%smissing%s\n" "${C_YELLOW}" "${C_RESET}"
+            fi
+            if [ "${rc}" = "0" ]; then
+                ok "wg-fallback scaffold verified."
+            else
+                err "wg-fallback scaffold has issues."
+            fi
+            return "${rc}"
+            ;;
+        ""|-h|--help|help)
+            cat <<EOF
+${C_PURPLE}${C_BOLD}eve wg${C_RESET} — WireGuard direct-peer fallback (zero-control-plane mesh escape hatch)
+
+${C_BOLD}USAGE${C_RESET}
+  eve wg <subcommand>
+
+${C_BOLD}SUBCOMMANDS${C_RESET}
+  status              Show wg interface state inside the sidecar (peers + handshakes).
+  verify              Syntax-check WG-fallback artifacts (no docker daemon required).
+  help                This help.
+
+${C_BOLD}HONEST STATUS${C_RESET}
+  up/down deferred to docker-live operator turn — needs key-gen + port-forward
+  per WG-FALLBACK.md runbook. This CLI exposes status + verify only today.
+
+${C_DIM}See WG-FALLBACK.md for keypair generation, vault stashing, and bring-up steps.${C_RESET}
+EOF
+            ;;
+        *)
+            err "unknown subcommand: wg ${action}"
+            info "run 'eve wg help' for usage"
+            return 1
+            ;;
+    esac
+}
+
+cmd_panel() {
+    local action="${1:-}"; shift || true
+    case "${action}" in
+        up)
+            goto_stack_dir
+            require_docker
+            if [ ! -f "${PANEL_SHELL_OVERLAY}" ]; then
+                err "${PANEL_SHELL_OVERLAY} not found in ${SCRIPT_DIR}"
+                return 1
+            fi
+            if [ ! -f "../../../sinister-panel/source/package.json" ]; then
+                err "sinister-panel source/package.json not found at expected mount path"
+                info "Check projects/sinister-panel/source/ exists relative to docker-stack/"
+                return 1
+            fi
+            header "Bringing up panel-as-shell scaffold (port ${PANEL_SHELL_PORT:-8088})"
+            docker compose -f "${COMPOSE_FILE}" -f "${HARDENED_OVERLAY}" -f "${PANEL_SHELL_OVERLAY}" \
+                --profile panel-shell up -d sinister-panel-shell
+            ok "panel-shell up. Browse http://localhost:${PANEL_SHELL_PORT:-8088}"
+            info "First-up: npm install runs once; tail logs with: docker logs -f sinister-panel-shell"
+            ;;
+        down)
+            goto_stack_dir
+            require_docker
+            header "Stopping panel-shell scaffold (node_modules cache preserved)"
+            docker compose -f "${COMPOSE_FILE}" -f "${PANEL_SHELL_OVERLAY}" \
+                --profile panel-shell stop sinister-panel-shell 2>/dev/null \
+                || warn "sinister-panel-shell not running"
+            docker compose -f "${COMPOSE_FILE}" -f "${PANEL_SHELL_OVERLAY}" \
+                --profile panel-shell rm -f sinister-panel-shell 2>/dev/null || true
+            ok "panel-shell down."
+            ;;
+        status)
+            goto_stack_dir
+            require_docker
+            if ! docker ps --format '{{.Names}}' | grep -q '^sinister-panel-shell$'; then
+                err "sinister-panel-shell not running"
+                info "Bring up with: eve panel up"
+                return 1
+            fi
+            header "panel-shell status"
+            docker ps --filter 'name=sinister-panel-shell' --format '{{.Names}}\t{{.Status}}\t{{.Ports}}'
+            ;;
+        verify)
+            goto_stack_dir
+            header "panel-shell artifacts — syntax verification (no docker required)"
+            local rc=0
+            printf "  compose.panel-shell.yml . "
+            if python -c "import yaml; yaml.safe_load(open('${PANEL_SHELL_OVERLAY}'))" >/dev/null 2>&1; then
+                printf "%sparse OK%s\n" "${C_GREEN}" "${C_RESET}"
+            else
+                printf "%sPARSE FAIL%s\n" "${C_RED}" "${C_RESET}"; rc=1
+            fi
+            printf "  PANEL-SHELL-DEPLOY.md ... "
+            if [ -f "PANEL-SHELL-DEPLOY.md" ]; then
+                printf "%spresent%s\n" "${C_GREEN}" "${C_RESET}"
+            else
+                printf "%sMISSING%s\n" "${C_RED}" "${C_RESET}"; rc=1
+            fi
+            printf "  validate-merge.sh ....... "
+            if [ -x "validate-merge.sh" ]; then
+                printf "%spresent (executable)%s\n" "${C_GREEN}" "${C_RESET}"
+            elif [ -f "validate-merge.sh" ]; then
+                printf "%spresent (not executable)%s\n" "${C_YELLOW}" "${C_RESET}"
+            else
+                printf "%smissing%s\n" "${C_YELLOW}" "${C_RESET}"
+            fi
+            if [ "${rc}" = "0" ]; then
+                ok "panel-shell scaffold verified."
+            else
+                err "panel-shell scaffold has issues."
+            fi
+            return "${rc}"
+            ;;
+        ""|-h|--help|help)
+            cat <<EOF
+${C_PURPLE}${C_BOLD}eve panel${C_RESET} — Sinister Panel as OS shell (docker-test scaffold)
+
+${C_BOLD}USAGE${C_RESET}
+  eve panel <subcommand>
+
+${C_BOLD}SUBCOMMANDS${C_RESET}
+  up        Start the panel-as-shell container (port \${PANEL_SHELL_PORT:-8088}).
+            Mounts sinister-panel/source/ live; first-up runs npm install.
+  down      Stop and remove the container (node_modules volume preserved).
+  status    Show running container state.
+  verify    Syntax-check panel-shell artifacts (no docker daemon required).
+  help      This help.
+
+${C_BOLD}HONEST STATUS${C_RESET}
+  This is a browser-served scaffold so the operator can SEE what the OS shell
+  will look like. Turning it into a real boot-into-panel shell is P3+ work
+  (kiosk-mode compositor + airootfs integration). See PANEL-SHELL-DEPLOY.md.
+
+${C_DIM}Acks operator utterance 2026-05-24T12:47:52Z. See PANEL-SHELL-DEPLOY.md for full runbook.${C_RESET}
+EOF
+            ;;
+        *)
+            err "unknown subcommand: panel ${action}"
+            info "run 'eve panel help' for usage"
+            return 1
+            ;;
+    esac
+}
+
 cmd_help() {
     cat <<EOF
 ${C_PURPLE}${C_BOLD}eve${C_RESET} ${EVE_VERSION} — Sinister Mesh docker-stack manager
@@ -526,6 +1030,12 @@ ${C_BOLD}COMMANDS${C_RESET}
   theme apply <name>     Symlink docker-compose.override.yml -> compose.<name>.yml.
   mesh <subcommand>      Tailscale mesh management (up/down/status/peers/ping/verify).
                          Requires TS_AUTHKEY env var. See MESH-DEPLOY.md.
+  doh <subcommand>       Cloudflared DNS-over-HTTPS sidecar (up/down/status/verify/test).
+  proxy <subcommand>     Per-app proxy routing config (list/set/show/verify/help).
+                         Layer 3 of geo-mesh anonymity model. See PROXY-DESIGN.md.
+  wg <subcommand>        WireGuard direct-peer fallback (status/verify). See WG-FALLBACK.md.
+  panel <subcommand>     Sinister Panel as OS shell scaffold (up/down/status/verify).
+                         See PANEL-SHELL-DEPLOY.md. Acks operator 12:47Z utterance.
   doctor                 Health-check report: daemon / compose files / images / volumes / ports.
   --help, -h             This help.
   --version              Print version string and exit.
@@ -568,6 +1078,10 @@ main() {
         clean)          cmd_clean "$@" ;;
         theme)          cmd_theme "$@" ;;
         mesh)           cmd_mesh "$@" ;;
+        doh)            cmd_doh "$@" ;;
+        proxy)          cmd_proxy "$@" ;;
+        wg)             cmd_wg "$@" ;;
+        panel)          cmd_panel "$@" ;;
         doctor)         cmd_doctor "$@" ;;
         -h|--help|help) cmd_help ;;
         --version|-v)   cmd_version ;;
