@@ -150,7 +150,9 @@
       "root": "D:\\Personal\\LetsText",
       "session_start": "D:\\Personal\\LetsText\\SESSION-START.md",
       "claude_md": "D:\\Personal\\LetsText\\CLAUDE.md",
-      "github": ""
+      "github": "",
+      "external_root": true,
+      "external_root_reason": "Operator-private venture outside Sanctum tree; not present on collaborator (Leo) machines"
     },
     {
       "key": "sinister-generator",

@@ -107,6 +107,10 @@ Test-Protection -Id 'P7' -Description '00-RULES.md Rule 11 mandates understand-a
 } | Out-Null
 
 # P8 -- every project root in projects.json exists on disk (caught the freeze archived-but-in-picker bug)
+# 2026-05-24 (test-modes-verify iter-6): added 3-retry loop because sibling lanes
+# mkdir/rmdir project dirs rapidly during cross-lane churn (jcode-parity-probe + branch-hygiene
+# crisis evidence). Single Test-Path can land in a delete window; retry collapses transient
+# flakes. Documented in PROGRESS/test-modes-verify.md turn 10 finding 1.
 Test-Protection -Id 'P8' -Description 'projects.json: every project root exists on disk' -Check {
     $projectsPath = Join-Path $SanctumRoot 'automations\session-templates\projects.json'
     if (-not (Test-Path $projectsPath)) { return $false }
@@ -115,7 +119,16 @@ Test-Protection -Id 'P8' -Description 'projects.json: every project root exists 
     foreach ($p in $proj.projects) {
         $root = $p.root
         if (-not $root) { continue }
-        if (-not (Test-Path $root)) { $missing += "$($p.key) -> $root" }
+        # Skip rows marked external_root (operator-private paths outside Sanctum tree,
+        # e.g. letstext at D:\Personal\LetsText; not present on collaborator machines).
+        if ($p.external_root) { continue }
+        # 3-retry loop: only flag missing if ALL 3 attempts (100ms apart) fail.
+        $stillMissing = $true
+        for ($i = 0; $i -lt 3; $i++) {
+            if (Test-Path $root) { $stillMissing = $false; break }
+            Start-Sleep -Milliseconds 100
+        }
+        if ($stillMissing) { $missing += "$($p.key) -> $root" }
     }
     if ($missing.Count -gt 0) {
         $script:p8Missing = $missing
