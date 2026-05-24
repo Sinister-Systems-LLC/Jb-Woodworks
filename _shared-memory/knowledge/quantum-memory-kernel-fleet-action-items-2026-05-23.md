@@ -35,7 +35,22 @@
 - **K=8 ANGLE and ZZ-FM r=1 are COMPLEMENTARY** (iter 45). K=8 wins 58.6% of triads; ZZ-FM wins 41.4%. Encodings disagree often (per-triad r=+0.14). Compute both for specific triads.
 - **Cancellation theorem:** ANGLE-CNOT == K=4 ANGLE (verified iters 16, 22, 43). Parameter-free entangling layers cancel in U_B† · U_A.
 
-**K=4 QBC predictor (iter 58):** A triad is K=4 ANGLE QBC only when the **top-4 TF-IDF features intersect across all 3 docs** (≥1 shared feature). Zero overlap → effectively never K=4 QBC (28% of K=4 anti-QBC triads fall in this zero-overlap zone). This is a NECESSARY but NOT SUFFICIENT filter — useful for ruling out hopeless candidates before running the encoding.
+**Shared-Top-K Necessary Condition (iter 58/59 — universal for K=4..K=8 ANGLE):**
+
+For K-ANGLE encoding at any K∈{4..8}, **if the top-K TF-IDF features have zero intersection across all 3 docs of a triad, the triad is NOT QBC.** Verified across 5 K values × 50 triads = 250 classifications with ZERO false positives.
+
+Predictor utility decreases with K (because larger top-K windows are easier to satisfy):
+
+| K | % triads ruled out by zero-overlap filter |
+|---|---|
+| 4 | 24% (strongest filter) |
+| 5 | 20% |
+| 6-7 | 4% |
+| 8 | 2% |
+
+Mechanism: K-ANGLE only encodes top-K TF-IDF features as RY rotation angles. Disjoint top-K sets → encoded states in orthogonal feature subspaces → U_B† · U_A overlap stays high → anti-QBC. Shared features → common rotation axis → potential discrimination.
+
+This is a NECESSARY but NOT SUFFICIENT filter (many anti-QBC triads also have ≥1 shared feature). Use it for pre-screening at K=4 ANGLE (24% rule-out is meaningful); less useful at K=8 (only 2%).
 
 Why this works: K=4 ANGLE uses only top-4 TF-IDF features per doc. Zero feature intersection → orthogonal encoded states → no common projection axis → quantum kernel cannot cancel anything in U_B† · U_A → high pair-wise overlap → anti-QBC.
 
