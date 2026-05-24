@@ -138,7 +138,11 @@ elseif ($brain -and $brain.rule_7_5_status -eq 'APPROACHING' -and $globalStatus 
 
 # Check 4: inbox manifest
 $inbox = Run-Check 'inbox_manifest' {
-    & "$auto\inbox-manifest-build.ps1" 2>&1 | Out-Null
+    # Iter 22 fix: Write-Host writes to Info stream (6), 2>&1 only catches stderr.
+    # *>&1 catches all streams (output + error + warning + info + verbose + debug).
+    # Critical for -Json mode so sub-script's `Write-Host "[inbox-manifest-build] wrote..."`
+    # doesn't contaminate stdout-JSON.
+    & "$auto\inbox-manifest-build.ps1" *>&1 | Out-Null
     $manifestPath = "$SanctumRoot\_shared-memory\inbox\_manifest.json"
     if (Test-Path $manifestPath) {
         $m = Get-Content $manifestPath -Raw | ConvertFrom-Json
@@ -151,7 +155,7 @@ if ($inbox -and $inbox.total_unread -gt 100 -and $globalStatus -eq 'GREEN') { $g
 
 # Check 5: telemetry rollup (slow-skippable)
 $tel = Run-Check 'telemetry_rollup' -SlowSkippable {
-    & "$auto\telemetry-rollup.ps1" 2>&1 | Out-Null
+    & "$auto\telemetry-rollup.ps1" *>&1 | Out-Null
     $latestPath = "$SanctumRoot\_shared-memory\telemetry\_latest.json"
     if (Test-Path $latestPath) {
         $t = Get-Content $latestPath -Raw | ConvertFrom-Json
@@ -169,7 +173,7 @@ if ($tel -and $tel.queue_open -gt 100 -and $globalStatus -eq 'GREEN') { $globalS
 
 # Check 6: resume-search index (slow-skippable)
 $rs = Run-Check 'resume_search_index' -SlowSkippable {
-    & "$auto\index-resume-search.ps1" 2>&1 | Out-Null
+    & "$auto\index-resume-search.ps1" *>&1 | Out-Null
     $idxPath = "$SanctumRoot\_shared-memory\resume-search-index.json"
     if (Test-Path $idxPath) {
         $i = Get-Content $idxPath -Raw -Encoding UTF8 | ConvertFrom-Json

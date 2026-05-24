@@ -4,6 +4,45 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-24 10:35Z — /loop iter 22 — REAL BUG FIXED: sinister-doctor -Json contaminated by sub-script Write-Host
+
+EVE on Sanctum. Spot-check found a genuine regression — `-Json` mode emitted invalid JSON.
+
+**T1 Bug found via test:** `powershell ... sinister-doctor.ps1 -Quick -Json | python -c "json.load(sys.stdin)"` → `JSONDecodeError: Expecting value: line 1 column 1 (char 0)`.
+
+Output preview revealed:
+```
+[inbox-manifest-build] wrote D:\Sinister Sanctum\_shared-memory\inbox\_manifest.json (total unread = 100 across 35 lanes)
+{
+    "ts_utc": ...
+```
+
+**ROOT CAUSE:** `inbox-manifest-build.ps1` writes its "wrote ..." message via `Write-Host`, which goes to PowerShell's **Information stream (6)**. The wrapper used `2>&1 | Out-Null` which only redirects **Error stream (2)**. Info stream leaked to stdout, contaminating JSON.
+
+**FIX:** changed `2>&1 | Out-Null` → `*>&1 | Out-Null` in all 3 sub-script invocations (inbox-manifest-build, telemetry-rollup, index-resume-search). `*>&1` catches all streams (output + error + warning + info + verbose + debug).
+
+**VERIFY:** `json.load(sys.stdin)` now succeeds:
+```
+global_status: YELLOW
+pp: 4/22
+brain: APPROACHING
+JSON PARSE PASS
+```
+
+**Impact:** any CI / automation consuming `sinister-doctor.ps1 -Json` (e.g. the install-sinister-doctor-task cron + future dashboard updates) was getting unparseable JSON. Latent for ~11 iterations until this spot-check.
+
+**New brain doctrine candidate:** "PowerShell Write-Host writes to Info stream not stdout; use `*>&1` not `2>&1` when piping to JSON consumers". Adding to existing `powershell-named-param-splat-2026-05-24` doctrine as a related sibling pattern... actually, since brain is APPROACHING ceiling (123/150), inline note here suffices. If the bug recurs, promote.
+
+**Files touched:**
+- EDIT `automations/sinister-doctor.ps1` (3 lines: `2>&1` → `*>&1`)
+- EDIT `_shared-memory/PROGRESS/Sinister Sanctum.md` (this entry)
+
+**Master plan:** unchanged 19/24 (~83%). This is a bug-fix on iter 11's C.1 ship.
+
+**Bugs caught + fixed this iter:** 1 (PowerShell stream-redirect; latent ~11 iters).
+
+---
+
 ## 2026-05-24 10:30Z — /loop iter 21 — audit-only iter (canonical-protections-reference still current)
 
 Quick health check. No file changes needed.
