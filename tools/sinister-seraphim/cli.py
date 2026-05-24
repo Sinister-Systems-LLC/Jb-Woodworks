@@ -145,7 +145,7 @@ _AUDIT_VARIANTS = {
     'angle-cnot': {'encoding': 'angle-cnot', 'k': 4, 'reps': 1, 'depth_est': 12, 'budget_est_s': 20,
                    'notes': 'ANGLE + linear-CNOT chain. Parameter-free entanglement self-cancels (cancellation theorem); sim == plain ANGLE.'},
     'zzfm-r1':    {'encoding': 'zzfm',       'k': 4, 'reps': 1, 'depth_est': 34, 'budget_est_s': 45,
-                   'notes': 'PRODUCTION RECIPE: Truncated ZZ-FM r=1. QUADRUPLE-verified 25-34pp quantum advantage over classical on real WK_C180 (4 QBC triads, mean 30pp). Find candidate triads via find-zzfm-qbc-triads.py. Noise pushes overlap DOWN below sim at depth 34 (helps, not hurts).'},
+                   'notes': 'PRODUCTION RECIPE: Truncated ZZ-FM r=1. QUINTUPLE-verified 25-35pp quantum advantage over classical on real WK_C180 (5 QBC triads, mean 31pp, run-to-run variance ~3pp). Find candidate triads via `seraphim find-qbc --variant zzfm-r1 --corpus pool` (iter 41 SHIPPED). Noise pushes overlap DOWN below sim at depth 34 (helps, not hurts).'},
     'zzfm-r2':    {'encoding': 'zzfm',       'k': 4, 'reps': 2, 'depth_est': 68, 'budget_est_s': 80,
                    'notes': 'Sim breaks plateau dramatically (3.076% QBC rate vs r=1 0.142%); but real-QPU at depth 68 noise-saturates near classical baseline. Use r=1 for real-QPU; r=2 sim-only.'},
 }

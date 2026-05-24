@@ -7,6 +7,25 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T15:30Z — iteration 74 (verification count sync: quadruple → quintuple, 25-34pp → 25-35pp)
+
+Operator: /loop. Continued sync-gap hunt from iter 73. Found another stale claim still propagating from iter-18 era.
+
+### Updated
+- `tools/sinister-seraphim/README.md`: 3 occurrences of "Quadruple-verified 25-34pp" → "Quintuple-verified 25-35pp" (+ mean 31pp + run-to-run variance ~3pp annotation)
+- `tools/sinister-seraphim/cli.py` (line 148, _AUDIT_VARIANTS zzfm-r1 notes): same update + reference to `seraphim find-qbc --variant zzfm-r1 --corpus pool` (iter 41 SHIPPED)
+
+### Stale-claim origin
+The iter-18 → iter-19 transition added the 5th verification (mean 31pp). The brain entry headline was updated immediately; the seraphim README + cli.py docstring/variant-notes were one iteration behind.
+
+### Operator-facing impact
+`seraphim audit --list-variants` now displays the quintuple-verified count + 31pp mean in the variant catalog. Operators reading `--list-variants` get the current doctrine.
+
+### Cost
+Zero cloud burn; 2 min for find + 4 edits.
+
+---
+
 ## 2026-05-24T15:00Z — iteration 73 (seraphim README sync — brain-recall default + combined predictor)
 
 Operator: /loop. Found two genuine README sync gaps that the iter-42/iter-47 README updates didn't cover:
