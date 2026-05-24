@@ -148,7 +148,30 @@ Until 10/10 answered, P0 stays open. Once locked, P1 ROM-selection runs the sera
 | P4 EVE integration | ⏳ pending P3 | — | — | 7 consecutive green smoke runs |
 | P5 physical flash | ⏳ pending P4 | — | — | operator types `sinister-os-mobile flash-pixel` |
 
-## § 13 Composes with
+## § 14 Branding lock (operator hard-canonical 2026-05-24T16:09:10Z)
+
+Operator utterance 2026-05-24T16:09:10Z (Turn 1 of this lane): *"take note this needs the sinister branding and look"*. Binding for the entire ROM, not just first-party apps.
+
+**Inheritance:** every chrome surface in the OS inherits from `projects/sinister-dashboard-skeleton/dashboard-skeleton/` via a Jetpack Compose theme bridge (P4 deliverable). Per-surface accent override: Sinister purple `#c084fc` (purple-400) replaces the skeleton's iOS-blue `#0A84FF` reference — the ONLY allowed divergence per Sanctum CLAUDE.md hard-canonical 2026-05-24.
+
+**Surfaces covered** (full enumeration in `research/branding-spec-2026-05-24.md`):
+
+1. Bootloader unlock warning + fastboot chrome (custom AVB-signed images, P5 gate)
+2. Boot animation — Sinister crystal stroke-in over purple-950 → purple-400 glow at `BOOT_COMPLETED`
+3. Lock screen — wallpaper, clock font, lock glyph, notification chips (`.lg-card` recipe)
+4. SystemUI — status bar icons, quick-settings tiles (`.lg-pill`), nav bar, sliders
+5. Launcher (Trebuchet fork or `Sinister-Launcher.apk` in `/system/priv-app/`)
+6. Settings app (theme retint first, full Compose port deferred to P4.5 polish)
+7. Recovery (TWRP custom theme JSON — purple accent + fake-blur stripes)
+8. First-party apps — Panel, Vault, EVE, Inbox, Mind — all use the Compose theme bridge
+
+**EXPAND principle hard rule:** if a Compose-mobile primitive is needed and skeleton doesn't have it (likely candidates: `<BottomSheet>`, mobile `<TabBar>`, `<SegmentedControl>`, `<SwipeAction>`, `<Sheet>` modal), the new primitive lands in `projects/sinister-dashboard-skeleton/dashboard-skeleton/components/` FIRST, gets a `PATTERNS.md` row SECOND, then is consumed by this lane. Never write a one-off here.
+
+**Image budget on P0 → P1 unlock:** 8 generated assets total (3 wallpapers + 5 first-party app glyphs) via `sinister-generator` brand-lock helper. Well under the conservative-balance 6-per-task cap (one batch task = wallpapers, second batch task = icons).
+
+**Verbs at gate for this section:** SPEC IS **scaffolded** (`research/branding-spec-2026-05-24.md` exists + parse-clean). Will move to **shipped** when § 6 deliverables in branding-spec.md land in `source/` with cuttlefish screenshot evidence (purple accent visible on boot).
+
+## § 15 Composes with
 
 - `sinister-os-doctrine-2026-05-24` (PC sister project)
 - `sinister-ui-canonical-dashboard-skeleton-inheritance-2026-05-24` (UI inheritance + EXPAND)
@@ -158,4 +181,5 @@ Until 10/10 answered, P0 stays open. Once locked, P1 ROM-selection runs the sera
 - `agent-identity-eve` (persona)
 - `agent-autonomy-push-and-completion-2026-05-23` (push agent/sinister-os-mobile/* freely)
 - `do-not-revert-operator-canonical-protections-2026-05-23` (P11 protects UI inheritance)
-- `operator-utterance-tracking-doctrine-2026-05-24` (originating utterance ts 2026-05-24T15:56:34Z)
+- `operator-utterance-tracking-doctrine-2026-05-24` (originating utterances ts 2026-05-24T15:56:34Z scaffold + 2026-05-24T16:09:10Z branding lock)
+- `research/branding-spec-2026-05-24.md` (this lane's full per-surface branding enumeration)

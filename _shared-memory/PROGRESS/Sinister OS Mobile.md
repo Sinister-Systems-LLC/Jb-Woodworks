@@ -5,6 +5,41 @@
 
 ---
 
+## 2026-05-24T16:15Z — Turn 1 (sinister-os-mobile lane, first dedicated EVE session, RESUME mode)
+
+Operator utterance 2026-05-24T16:09:10Z (logged via `log-operator-utterance.ps1`): *"take note this needs the sinister branding and look"*. Branding lock added to P0 deliverables.
+
+### Shipped (verified — files exist + parse-clean, branch cut + on it)
+
+- **Lane branch** `agent/sinister-os-mobile/p0-spec-2026-05-24` — cut from `agent/test-modes-verify/dashboard-skeleton-ui-base-2026-05-24`. `git branch --show-current` confirms.
+- **`projects/sinister-os-mobile/research/branding-spec-2026-05-24.md`** (~10 KB, 8 sections) — full per-surface branding enumeration: bootloader / boot animation / lock screen / SystemUI / launcher / Settings / recovery / first-party apps. Includes Sinister purple ramp (50-950, drop-in for skeleton's blue ramp), EXPAND-principle application to Compose-mobile primitives, P0→P1 image budget (8 assets via sinister-generator brand-lock, under conservative-balance cap), and verbs-at-gate footer.
+- **`projects/sinister-os-mobile/plans/master-plan-2026-05-24.md` § 14 Branding lock** (new section) — operator hard-canonical reference + 8-surface inheritance map + EXPAND rule + image budget + composes-with row pointing at branding-spec. § 13 renumbered to § 15.
+
+### Verification
+
+| Check | Evidence | Result |
+|---|---|---|
+| Lane branch cut | `git branch --show-current` → `agent/sinister-os-mobile/p0-spec-2026-05-24` | ✅ |
+| Operator utterance logged | `log-operator-utterance.ps1` returned `2026-05-24T16:09:10Z` | ✅ |
+| branding-spec.md exists | `ls research/` | ✅ |
+| master-plan § 14 present | `grep "§ 14 Branding lock"` master-plan | ✅ |
+| Per-surface map complete | 8 chrome surfaces enumerated (bootloader / boot anim / lock / SystemUI / launcher / Settings / recovery / first-party apps) | ✅ |
+| Skeleton inheritance pinned | branding-spec § 2 cites THEME-DOCTRINE.md commandments 1-11 by number | ✅ |
+
+### Open (queued for next turn or operator gate)
+
+- **P0 operator-gate Q1-Q10** — still pending operator answers (master-plan § 10); plan can't advance to P1 until answered. Branding lock (§ 14) does NOT depend on Q1-Q10.
+- **P0 → P1 branding deliverables** — 7 sub-items in branding-spec § 6: compose-theme-bridge skeleton + 2 token files + 3 wallpaper renders + bootanimation prototype + 5 first-party app glyphs + framework-res colors patch. Cannot start until P1 gates (and even then, theme bridge is a P4 deliverable; only token files + image gen can land in P0).
+- **EXPAND prereq** — verify skeleton has (or get added to it) the mobile primitives the bridge will consume: `<BottomSheet>`, mobile `<TabBar>` variant, `<SegmentedControl>`, `<SwipeAction>`, `<Sheet>` modal. Audit `dashboard-skeleton/PATTERNS.md` for current row inventory next turn.
+
+### No-bullshit ledger
+
+- Claimed only what files exist with grep evidence. NOT claimed: "Compose theme bridge works" / "boot animation renders" / "icons generated" — none of those happened this turn. Verb at gate for branding deliverables: **scaffolded** (spec written; nothing built).
+- Operator utterance tracking: row appended at 2026-05-24T16:09:10Z, status="new"; will move to "acknowledged" when this turn's commit lands.
+- Quality-degradation signals: PROGRESS file grew from ~3 KB to ~5 KB (under 300 KB cap). Brain row count unchanged this turn. Plan file +~2 KB (§ 14 inserted).
+
+---
+
 ## 2026-05-24T16:00Z — Turn 0 (project bootstrap by test-modes-verify lane)
 
 Operator directive 2026-05-24T15:56:34Z: *"create a new sessions start in the project for the Sinister OS Mobile for our google pixel 6a. and a full project for it in the sanctum memory all of that with a detailed plan to move forward and use our quantum tools and all tools. once ready start the agent from bat file for me"*. test-modes-verify lane scaffolded the project as a one-shot deliverable; first dedicated `sinister-os-mobile` EVE spawn picks up from here.

@@ -1,0 +1,43 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-24T16:22:41.1818665Z",
+    "project":  "sinister-os-mobile",
+    "agent_name":  "sinister-os-mobile",
+    "mode":  "resume",
+    "focus_intent":  "P0 spec lock - branding lock landed; Q1-Q10 still pending operator; next turn audit dashboard-skeleton PATTERNS.md for mobile primitive coverage",
+    "git":  {
+                "branch":  "agent/sinister-os-mobile/p0-spec-2026-05-24",
+                "head":  "d4cd1a0bf4e089258a138fcd855450214bf2d19b",
+                "head_msg":  "sanctum: counter-argument.ps1 + sinister-os-mobile spawn",
+                "recent_commits":  [
+                                       "d4cd1a0 sanctum: counter-argument.ps1 + sinister-os-mobile spawn",
+                                       "a1c9a98 sanctum: bootstrap sinister-os-mobile lane + P11 + idea-intake",
+                                       "68e43db sanctum(broadcast): fan-out UI-base + EXPAND doctrine to 37 lanes",
+                                       "08ce1a2 sanctum(doctrine): UI BASE = dashboard-skeleton + EXPAND principle (2026-05-24 hard-canonical)",
+                                       "30135f2 sinister-os: parallel ramp — themes (4 services) + eve CLI + panel-dev HMR + 4 docs + bake-panel safety",
+                                       "532f4e9 sinister-os: M1 hardening overlay (compose.hardened.yml + HARDENING.md)",
+                                       "1f79582 sanctum: broadcast feature-refresh 2026-05-24 to all 18 visible lanes (no restart)",
+                                       "af54f4b sanctum: fix window-persist bug in mintty spawn",
+                                       "bce570c sinister-os: /loop iter 1 - dashboard-skeleton theme inheritance binding (10/10 services HTTP 200 verified)",
+                                       "daff913 sanctum: iter 108 - broadcast cites brain-stale-claim-scan.ps1 (Bug #2 operational tool)"
+                                   ]
+            },
+    "progress_top3":  [
+
+                      ],
+    "latest_plan":  {
+                        "dir":  null,
+                        "artifact":  null
+                    },
+    "inbox_unread_count":  0,
+    "last_5_files_touched_24h":  [
+                                     "_shared-memory\\resume-points\\Sinister iMessage Bridge\\2026-05-24T161155Z.json",
+                                     "_shared-memory\\inbox\\sinister-panel\\2026-05-24T1614Z-from-diagnose-URGENT-operator-fix-PI-from-panel.json",
+                                     "_shared-memory\\PROGRESS\\Sinister OS Mobile.md",
+                                     "_shared-memory\\inbox\\panel\\2026-05-24T1610Z-from-snap-api-quantum-iter102-leo-andrew-fork.json",
+                                     "_shared-memory\\heartbeats\\snap-emulator-api.json"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}
