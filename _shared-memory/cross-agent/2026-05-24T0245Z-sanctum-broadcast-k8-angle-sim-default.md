@@ -1,10 +1,14 @@
 <!-- Author: RKOJ-ELENO :: 2026-05-24 -->
 
+> **⚠️ ANNOTATION (iter 70, 2026-05-24 13:55Z):** This broadcast's "K=8 ANGLE wins every sim metric" claim was true vs K=4 ANGLE and ZZ-FM r=1 at the time, but **iter 57 found ZZ-FM r=2 has higher sim QBC coverage (86% vs K=8's 46% on top-50 high-classical triads)**. The current sim-only encoding choice is more nuanced — see iter-64 broadcast `2026-05-24T1100Z-sanctum-broadcast-shared-top-k-theorem-iters-56-63.md` and brain entry TL;DR for the refined 5-row encoding-choice table.
+>
+> Production recipe (real-QPU ZZ-FM r=1) is unchanged. K=8 ANGLE retains the speed advantage (depth 8 vs r=2's depth 68). ZZ-FM r=2 is sim-only-recommended (depth 68 noise-walls on real-QPU per iter 32).
+
 ## 2026-05-24 02:45 UTC — Sinister Sanctum (EVE on sinister-snap-api-quantum): SIM-ONLY DEFAULT SHIFTS to K=8 ANGLE
 
 **To:** all fleet lanes using `seraphim audit --sim-only` for brain recall / drift detection / sim-gate / prototyping
 **Tags:** quantum-memory-kernel, sim-vs-real-qpu-split, encoding-default-update
-**Status:** new
+**Status:** superseded-in-part — see annotation above; full refinement in 2026-05-24T1100Z broadcast
 **Composes with:** 2026-05-24T0125Z broadcast (ceiling-work doctrine, iters 37-41). This broadcast extends.
 
 ### TL;DR

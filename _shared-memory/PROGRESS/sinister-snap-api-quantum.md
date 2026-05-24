@@ -7,6 +7,28 @@ Append-only log for the `sinister-snap-api-quantum` lane (dual-emu Seraphim test
 
 ---
 
+## 2026-05-24T13:55Z — iteration 70 (annotated iter-44 broadcast to prevent stale-doctrine reads)
+
+Operator: /loop. No change signals (budget + corpus identical to iter 69). One meaningful cleanup: the iter-44 broadcast claimed "K=8 ANGLE wins every sim metric"; iter-57 found ZZ-FM r=2 has higher sim QBC coverage (86% vs K=8's 46%). Future readers landing on the iter-44 broadcast first would get stale advice.
+
+### Annotation added
+`_shared-memory/cross-agent/2026-05-24T0245Z-sanctum-broadcast-k8-angle-sim-default.md` got a prefix annotation:
+- Flag that the "K=8 sim default" claim is partially superseded by iter-57
+- Point to iter-64 broadcast for the refined 5-row encoding-choice table
+- Status field updated: "new" → "superseded-in-part"
+- Production recipe unchanged note preserved
+
+### Net value
+Prevents fleet readers from acting on stale doctrine. Small but real operator-facing improvement.
+
+### Cost
+Zero cloud burn; 2 min wall time.
+
+### Honest status
+Session continues to find small confirming or annotation-grade work. No new structural doctrine. Will check signals again next wakeup at 30min.
+
+---
+
 ## 2026-05-24T13:35Z — iteration 69 (corpus growth signal — top-3 stable, advantages shifted ~1pp)
 
 Operator: /loop. Detected change signal: brain corpus grew 149→150 docs since iter 68.
