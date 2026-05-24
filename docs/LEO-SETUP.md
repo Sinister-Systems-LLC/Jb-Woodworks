@@ -61,7 +61,9 @@ Optional sibling keys (skip unless you need them): `GEMINI_API_KEY` (image-gen),
 
 ### Multi-account rotation (optional — recommended for heavy fleet use)
 
-The launcher supports rotating between multiple Claude accounts so fleet sessions don't all hit one account's rate-limit cap. Adding your own account:
+The launcher supports rotating between up to **4 Claude accounts** so fleet sessions don't all hit one account's rate-limit cap. The schema (v2 as of 2026-05-24) seeds 4 named slots (`operator`, `leo`, `slot3`, `slot4`) — operator fills the slots via the `claude-accounts.ps1` CLI instead of hand-editing JSON.
+
+Adding your own account:
 
 1. **Create a private credentials file** at `C:\Users\<you>\.claude\credentials.leo.json` with:
    ```json
@@ -69,20 +71,31 @@ The launcher supports rotating between multiple Claude accounts so fleet session
    ```
    This file is operator-private — never enters the repo.
 
-2. **Register your account** in `_shared-memory/claude-accounts.json`:
-   ```json
-   {
-     "name": "leo",
-     "label": "Leo (collaborator)",
-     "env_key": "ANTHROPIC_API_KEY",
-     "credentials_file": "C:\\Users\\<you>\\.claude\\credentials.leo.json",
-     "plan_tier": "max",
-     "max_sessions_concurrent": 5,
-     "current_sessions": 0,
-     "rate_limited_until_utc": null,
-     "fleet_share": 0.4
-   }
+2. **Configure the slot via the management CLI** (instead of hand-editing JSON):
+   ```powershell
+   $ps1 = "D:\Sinister Sanctum\automations\claude-accounts.ps1"
+
+   # See all 4 slots (which are filled / enabled):
+   powershell -ExecutionPolicy Bypass -File $ps1 -Action List
+
+   # Fill the leo slot (auto-enables on add):
+   powershell -ExecutionPolicy Bypass -File $ps1 -Action Add `
+       -Name leo `
+       -Label "Leo (collaborator)" `
+       -CredentialsFile "C:\Users\<you>\.claude\credentials.leo.json"
+
+   # Verify the credentials file is readable + has an api_key:
+   powershell -ExecutionPolicy Bypass -File $ps1 -Action Test -Name leo
+
+   # Toggle enable/disable without losing config:
+   powershell -ExecutionPolicy Bypass -File $ps1 -Action Disable -Name leo
+   powershell -ExecutionPolicy Bypass -File $ps1 -Action Enable  -Name leo
+
+   # Blank a slot back to (unconfigured) + enabled:false (does NOT delete the slot):
+   powershell -ExecutionPolicy Bypass -File $ps1 -Action Remove  -Name leo
    ```
+
+   Available `-Action` values: `List`, `Add`, `Enable`, `Disable`, `Remove`, `Test` (mgmt), plus the spawn-trailer actions `Spawned`, `Released`, `RateLimited`.
 
 3. **Optional — install the watchdog** so the fleet auto-resumes after a rate-limit clears:
    ```powershell
@@ -90,13 +103,13 @@ The launcher supports rotating between multiple Claude accounts so fleet session
    ```
    Registers `SinisterAccountWatchdog` scheduled task (runs every 5 min, hidden).
 
-4. **Smoke-test the rotation library:**
+4. **Smoke-test the rotation library + CLI:**
    ```powershell
    powershell -ExecutionPolicy Bypass -File "D:\Sinister Sanctum\automations\test-claude-accounts.ps1"
    ```
-   Should print 8/8 PASS.
+   Should print 23/23 PASS (v2 schema + mgmt CLI coverage).
 
-Once registered, EVE.exe / PS1 picker → spawn flow automatically picks the next available account via round-robin, injects its `ANTHROPIC_API_KEY` into the spawned shell, marks rate-limits on 429 detection, and releases the slot on session-end. See `_shared-memory/plans/multi-account-rotation-2026-05-23.md` for full architecture.
+Once a slot is configured + enabled, EVE.exe / PS1 picker → spawn flow automatically picks the next available enabled account via round-robin, injects its `ANTHROPIC_API_KEY` into the spawned shell, marks rate-limits on 429 detection, and releases the slot on session-end. Slots with `enabled: false` are skipped entirely. See `_shared-memory/plans/multi-account-rotation-2026-05-23.md` for full architecture.
 
 ---
 

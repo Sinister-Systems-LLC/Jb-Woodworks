@@ -1,5 +1,8 @@
-# RKOJ-ELENO :: 2026-05-23
+# RKOJ-ELENO :: 2026-05-23 (v1) :: 2026-05-24 (v2 - 4-slot expansion + mgmt CLI)
 # claude-accounts.ps1 - Multi-Claude account rotation manager library.
+#
+# v2 (2026-05-24): 4-slot operator-curated allowlist + enabled flag + CLI actions
+# (List/Add/Enable/Disable/Remove/Test). Backward compatible with v1.
 #
 # Phase 1 of the multi-account rotation system. Dot-source this file to get
 # account lookup, lease, rate-limit marking, and credential reading.
@@ -40,23 +43,25 @@ function _Get-DefaultAccountsConfig {
     [CmdletBinding()]
     param()
     return [pscustomobject]@{
-        _comment           = 'Auto-generated default (no claude-accounts.json on disk). RKOJ-ELENO :: 2026-05-23.'
-        version            = 1
-        default            = 'operator'
-        rotation_strategy  = 'round-robin'
-        accounts           = @()
+        _comment              = 'Auto-generated default (no claude-accounts.json on disk). RKOJ-ELENO :: 2026-05-24.'
+        version               = 2
+        default               = 'operator'
+        rotation_strategy     = 'round-robin'
+        max_concurrent_global = 8
+        accounts              = @()
     }
 }
 
 function _Acquire-AccountsLock {
     [CmdletBinding()]
-    param([int]$MaxRetries = 10, [int]$SleepMs = 200)
+    param([int]$MaxRetries = 30, [int]$SleepMs = 150)
     for ($i = 0; $i -lt $MaxRetries; $i++) {
         try {
             $fs = [System.IO.File]::Open($script:AccountsLockFile, 'CreateNew', 'Write', 'None')
             $fs.Close()
             return $true
         } catch {
+            # Windows file-handle release can lag; brief wait + retry handles back-to-back ops.
             Start-Sleep -Milliseconds $SleepMs
         }
     }
@@ -123,6 +128,8 @@ function _Is-AccountAvailable {
     [CmdletBinding()]
     param([Parameter(Mandatory=$true)]$Account)
     $now = (Get-Date).ToUniversalTime()
+    # v2: enabled gate. Missing field treated as enabled=$true (v1 compat).
+    if ($Account.PSObject.Properties.Name -contains 'enabled' -and $Account.enabled -eq $false) { return $false }
     if ($Account.current_sessions -ge $Account.max_sessions_concurrent) { return $false }
     if ($Account.rate_limited_until_utc) {
         try {
@@ -243,15 +250,118 @@ function Get-AccountCredentials {
     }
 }
 
-# CLI shim for spawn .sh trailer:
+# ---------------------------------------------------------------------------
+# v2 Management functions (List/Add/Enable/Disable/Remove/Test).
+# Each operation flows through Get-AccountsConfig + Save-AccountsConfig which
+# uses the existing lock-file pattern.
+# ---------------------------------------------------------------------------
+
+function Invoke-AccountList {
+    [CmdletBinding()]
+    param()
+    $cfg = Get-AccountsConfig
+    Write-Host ''
+    Write-Host ("{0,-10} {1,-8} {2,-6} {3,-10} {4,-22} {5}" -f 'NAME','ENABLED','TIER','SESSIONS','RATE_LIMITED_UNTIL','LABEL')
+    Write-Host ("{0,-10} {1,-8} {2,-6} {3,-10} {4,-22} {5}" -f '----','-------','----','--------','------------------','-----')
+    foreach ($a in $cfg.accounts) {
+        $en = if ($a.PSObject.Properties.Name -contains 'enabled') { $a.enabled } else { $true }
+        $sess = "$($a.current_sessions)/$($a.max_sessions_concurrent)"
+        $rl = if ($a.rate_limited_until_utc) { $a.rate_limited_until_utc } else { '-' }
+        Write-Host ("{0,-10} {1,-8} {2,-6} {3,-10} {4,-22} {5}" -f $a.name, $en, $a.plan_tier, $sess, $rl, $a.label)
+    }
+    Write-Host ''
+}
+
+function Invoke-AccountAdd {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true)][string]$Name,
+        [Parameter(Mandatory=$true)][string]$Label,
+        [Parameter(Mandatory=$true)][string]$CredentialsFile
+    )
+    $cfg = Get-AccountsConfig
+    $acct = _Find-Account -Config $cfg -Name $Name
+    if (-not $acct) { Write-Host "[ERROR] slot '$Name' not found. Use List to see available slots." -ForegroundColor Red; return $false }
+    $acct.label = $Label
+    $acct.credentials_file = $CredentialsFile
+    if ($acct.PSObject.Properties.Name -contains 'enabled') { $acct.enabled = $true }
+    else { $acct | Add-Member -MemberType NoteProperty -Name 'enabled' -Value $true -Force }
+    Write-AccountsLog "Invoke-AccountAdd: configured '$Name' label='$Label' creds='$CredentialsFile'" 'INFO'
+    Write-Host "[OK] Slot '$Name' configured + enabled." -ForegroundColor Green
+    return (Save-AccountsConfig -Config $cfg)
+}
+
+function Invoke-AccountSetEnabled {
+    [CmdletBinding()]
+    param([Parameter(Mandatory=$true)][string]$Name, [Parameter(Mandatory=$true)][bool]$Enabled)
+    $cfg = Get-AccountsConfig
+    $acct = _Find-Account -Config $cfg -Name $Name
+    if (-not $acct) { Write-Host "[ERROR] account '$Name' not found." -ForegroundColor Red; return $false }
+    if ($acct.PSObject.Properties.Name -contains 'enabled') { $acct.enabled = $Enabled }
+    else { $acct | Add-Member -MemberType NoteProperty -Name 'enabled' -Value $Enabled -Force }
+    $state = if ($Enabled) { 'ENABLED' } else { 'DISABLED' }
+    Write-AccountsLog "Invoke-AccountSetEnabled: '$Name' -> $state" 'INFO'
+    Write-Host "[OK] Account '$Name' $state." -ForegroundColor Green
+    return (Save-AccountsConfig -Config $cfg)
+}
+
+function Invoke-AccountRemove {
+    [CmdletBinding()]
+    param([Parameter(Mandatory=$true)][string]$Name)
+    $cfg = Get-AccountsConfig
+    $acct = _Find-Account -Config $cfg -Name $Name
+    if (-not $acct) { Write-Host "[ERROR] slot '$Name' not found." -ForegroundColor Red; return $false }
+    $acct.label = '(unconfigured)'
+    $acct.credentials_file = "C:\Users\Zonia\.claude\credentials.$Name.json"
+    $acct.current_sessions = 0
+    $acct.rate_limited_until_utc = $null
+    $acct.last_429_at_utc = $null
+    $acct.successful_spawns_today = 0
+    if ($acct.PSObject.Properties.Name -contains 'last_spawn_at_utc') { $acct.last_spawn_at_utc = $null }
+    if ($acct.PSObject.Properties.Name -contains 'enabled') { $acct.enabled = $false }
+    else { $acct | Add-Member -MemberType NoteProperty -Name 'enabled' -Value $false -Force }
+    Write-AccountsLog "Invoke-AccountRemove: blanked '$Name'" 'INFO'
+    Write-Host "[OK] Slot '$Name' reset to unconfigured + disabled." -ForegroundColor Green
+    return (Save-AccountsConfig -Config $cfg)
+}
+
+function Invoke-AccountTest {
+    [CmdletBinding()]
+    param([Parameter(Mandatory=$true)][string]$Name)
+    $cfg = Get-AccountsConfig
+    $acct = _Find-Account -Config $cfg -Name $Name
+    if (-not $acct) { Write-Host "[FAIL] account '$Name' not found." -ForegroundColor Red; return $false }
+    if (-not $acct.credentials_file) { Write-Host "[FAIL] '$Name' has no credentials_file." -ForegroundColor Red; return $false }
+    if (-not (Test-Path $acct.credentials_file)) { Write-Host "[FAIL] credentials_file missing: $($acct.credentials_file)" -ForegroundColor Red; return $false }
+    try {
+        $raw = Get-Content -Path $acct.credentials_file -Raw -ErrorAction Stop
+        $creds = $raw | ConvertFrom-Json -ErrorAction Stop
+        if (-not $creds.api_key) { Write-Host "[FAIL] '$Name' credentials_file has no api_key field." -ForegroundColor Red; return $false }
+        $masked = $creds.api_key.Substring(0, [Math]::Min(12, $creds.api_key.Length)) + '...'
+        Write-Host "[PASS] '$Name' credentials valid (api_key=$masked)" -ForegroundColor Green
+        return $true
+    } catch {
+        Write-Host "[FAIL] '$Name' credentials_file unreadable: $_" -ForegroundColor Red; return $false
+    }
+}
+
+# CLI shim for spawn .sh trailer + management actions:
 #   powershell -File claude-accounts.ps1 -Action Release -Name operator
+#   powershell -File claude-accounts.ps1 -Action List
+#   powershell -File claude-accounts.ps1 -Action Add -Name slot3 -Label "Alice" -CredentialsFile C:\path\creds.json
+#   powershell -File claude-accounts.ps1 -Action Enable -Name slot3
+#   powershell -File claude-accounts.ps1 -Action Disable -Name slot3
+#   powershell -File claude-accounts.ps1 -Action Remove -Name slot3
+#   powershell -File claude-accounts.ps1 -Action Test -Name operator
 if ($MyInvocation.InvocationName -ne '.' -and $args.Count -gt 0) {
     # script-mode CLI parser (only fires when invoked, not dot-sourced)
-    $Action = $null; $Name = $null; $RetryAfterSeconds = 0
+    $Action = $null; $Name = $null; $Label = $null; $CredentialsFile = $null; $RetryAfterSeconds = 0
     for ($i = 0; $i -lt $args.Count; $i++) {
         switch ($args[$i]) {
             '-Action'             { $Action = $args[++$i] }
             '-Name'               { $Name   = $args[++$i] }
+            '-Label'              { $Label  = $args[++$i] }
+            '-CredentialsFile'    { $CredentialsFile = $args[++$i] }
             '-RetryAfterSeconds'  { $RetryAfterSeconds = [int]$args[++$i] }
         }
     }
@@ -259,6 +369,12 @@ if ($MyInvocation.InvocationName -ne '.' -and $args.Count -gt 0) {
         'Release'     { Mark-AccountReleased     -Name $Name | Out-Null }
         'Spawned'     { Mark-AccountSpawned      -Name $Name | Out-Null }
         'RateLimited' { Mark-AccountRateLimited  -Name $Name -RetryAfterSeconds $RetryAfterSeconds | Out-Null }
-        default       { Write-Host "[claude-accounts] unknown -Action '$Action' (expected Release|Spawned|RateLimited)" }
+        'List'        { Invoke-AccountList }
+        'Add'         { Invoke-AccountAdd        -Name $Name -Label $Label -CredentialsFile $CredentialsFile | Out-Null }
+        'Enable'      { Invoke-AccountSetEnabled -Name $Name -Enabled $true  | Out-Null }
+        'Disable'     { Invoke-AccountSetEnabled -Name $Name -Enabled $false | Out-Null }
+        'Remove'      { Invoke-AccountRemove     -Name $Name | Out-Null }
+        'Test'        { Invoke-AccountTest       -Name $Name | Out-Null }
+        default       { Write-Host "[claude-accounts] unknown -Action '$Action' (expected Release|Spawned|RateLimited|List|Add|Enable|Disable|Remove|Test)" }
     }
 }
