@@ -152,6 +152,18 @@ OK = _c("\033[38;5;46m")        # success
 WARN = _c("\033[38;5;220m")     # mid / warning
 RESET = _c("\033[0m")
 
+# Sinister Sleight palette (operator hard-canonical 2026-05-25, based on
+# banner-hero-statement.png -- purple jester w/ neon ring). Doctrine:
+# _shared-memory/knowledge/sinister-sleight-color-palette-doctrine-2026-05-25.md
+SLEIGHT_DEEP_PURPLE = _c("\033[38;5;55m")    # background-tier deep purple
+SLEIGHT_PURPLE      = _c("\033[38;5;99m")    # mid-tier
+SLEIGHT_JESTER      = _c("\033[38;5;141m")   # foreground (aliases PURPLE)
+SLEIGHT_NEON_MAG    = _c("\033[38;5;201m")   # neon magenta glow
+SLEIGHT_NEON_PINK   = _c("\033[38;5;205m")   # highlights
+SLEIGHT_RUNE_VIO    = _c("\033[38;5;177m")   # rune border (aliases BRIGHTP)
+SLEIGHT_TAROT_CYAN  = _c("\033[38;5;87m")    # card swirl accent
+SLEIGHT_CROWN_GOLD  = _c("\033[38;5;220m")   # crown accent -- use SPARINGLY
+
 
 # ---------------------------------------------------------------------------
 # Term-width helpers (ANSI-aware centering)
@@ -693,7 +705,7 @@ _TITLE_WIDTH = 26  # title-start to description-start gap
 #   55 = #5f00af  deep-bright violet
 # RKOJ-ELENO :: 2026-05-25 :: bumped palette from (53,54) to (54,92,55)
 # for stronger visibility + arrow indicator added per v2 polish pass.
-_GLOW_BG_PALETTE = (54, 92, 55)
+_GLOW_BG_PALETTE = (54, 99, 55, 141, 99)   # breathes through Sleight purples
 _EDGE_GLOW_FG = "\033[38;5;177m"  # BRIGHTP for edge bar glyphs
 _EDGE_GLYPH_L = "▌"  # LEFT HALF BLOCK -- left-edge accent
 _EDGE_GLYPH_R = "▐"  # RIGHT HALF BLOCK -- right-edge accent
