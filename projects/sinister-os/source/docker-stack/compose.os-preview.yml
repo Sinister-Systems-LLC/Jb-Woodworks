@@ -1,0 +1,112 @@
+# compose.os-preview.yml — Sinister OS VM preview overlay
+# Author: RKOJ-ELENO :: 2026-05-25
+#
+# Phase 1A deliverable from EXECUTION-PLAN-2026-05-25/plan.md.
+# Spins up a Hyprland-in-browser preview the operator can interact with via
+# noVNC at http://localhost:6080. Includes EVE daemon stub + mock panel
+# (canned chat replies) so the EVE-LLM bridge can be exercised end-to-end.
+#
+# Compose this overlay alongside the base docker-compose.yml:
+#   docker compose -f docker-compose.yml -f compose.os-preview.yml up -d --build os-preview mock-panel
+# (the eve-vm.py launcher does this automatically)
+
+services:
+
+  # ===== OS PREVIEW (Phase 1A) =====
+  #
+  # Hyprland-in-browser via noVNC. NOT a real ISO — that lands Phase 1B.
+  # This is operator-facing review surface so feedback can flow on Day 0.
+
+  os-preview:
+    build:
+      context: .
+      dockerfile: Containerfile.os-preview
+    image: sinister/os-preview:dev
+    container_name: sinister-os-preview
+    hostname: sinister-os
+    restart: unless-stopped
+    # Privileged container is FINE for the preview (sandbox = the operator's
+    # Docker Desktop VM). Production OS uses the full Block M containment.
+    privileged: true
+    environment:
+      - DISPLAY=:0
+      - SINISTER_PREVIEW=1
+      - SINISTER_OPERATOR=ezekiel
+      - SINISTER_ACCENT=purple
+      - EVE_DAEMON_URL=http://eve-daemon-stub:7331
+      - EVE_LLM_PANEL_URL=http://mock-panel:8090
+    volumes:
+      # Read-only mount of the operator's Sanctum tree so EVE daemon stub
+      # can show real PROGRESS / brain entries / projects list.
+      - "${SINISTER_SANCTUM_ROOT:-../../../..}:/srv/sinister-sanctum:ro"
+      # State + scratch
+      - sinister-preview-home:/home/eve
+      - sinister-preview-state:/var/lib/sinister
+      - sinister-preview-logs:/var/log/sinister
+    ports:
+      - "6080:6080"    # noVNC web client
+      - "5900:5900"    # raw VNC (operator can also use TigerVNC/RealVNC if preferred)
+      - "7331:7331"    # EVE daemon stub HTTP
+    networks: [mesh]
+    depends_on:
+      - mock-panel
+      - eve-daemon-stub
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:6080/ > /dev/null || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+
+  # ===== EVE DAEMON STUB =====
+  #
+  # Python HTTP shim implementing the state-machine doc 2026-05-25 subset.
+  # Returns canned replies so the wofi sheet + waybar pill have something
+  # to render. Real Rust EVE daemon lands Phase 2 (Block C-N integration).
+
+  eve-daemon-stub:
+    build:
+      context: ./preview-stubs
+      dockerfile: Containerfile.eve-daemon-stub
+    image: sinister/eve-daemon-stub:dev
+    container_name: sinister-eve-daemon-stub
+    restart: unless-stopped
+    environment:
+      - SINISTER_STUB=1
+      - EVE_LLM_PANEL_URL=http://mock-panel:8090
+    volumes:
+      - sinister-preview-logs:/var/log/sinister
+      - sinister-preview-state:/var/lib/sinister
+    networks: [mesh]
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:7331/health || exit 1"]
+      interval: 15s
+      timeout: 3s
+      retries: 5
+
+  # ===== MOCK PANEL =====
+  #
+  # Replaces the Hetzner panel (snap.sinijkr.com) with canned local responses
+  # so EVE-LLM bridge can be exercised without operator's real license key.
+
+  mock-panel:
+    build:
+      context: ./preview-stubs
+      dockerfile: Containerfile.mock-panel
+    image: sinister/mock-panel:dev
+    container_name: sinister-mock-panel
+    restart: unless-stopped
+    environment:
+      - SINISTER_STUB=1
+    ports:
+      - "8090:8090"
+    networks: [mesh]
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8090/health || exit 1"]
+      interval: 15s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  sinister-preview-home:
+  sinister-preview-state:
+  sinister-preview-logs:

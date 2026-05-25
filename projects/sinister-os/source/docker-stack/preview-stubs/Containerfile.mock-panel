@@ -1,0 +1,21 @@
+# Containerfile.mock-panel — canned-reply panel for EVE-LLM bridge preview
+# Author: RKOJ-ELENO :: 2026-05-25
+#
+# Phase 1A stub. Stand-in for snap.sinijkr.com/chatter so the operator can
+# exercise the EVE-LLM bridge UI surfaces without burning Anthropic tokens
+# or needing a real license key.
+#
+# Build:    docker build -t sinister/mock-panel:dev -f Containerfile.mock-panel .
+
+FROM python:3.12-alpine
+
+WORKDIR /opt/mock-panel
+
+COPY mock-panel.py /opt/mock-panel/mock-panel.py
+
+EXPOSE 8090
+
+HEALTHCHECK --interval=15s --timeout=3s --retries=5 \
+    CMD wget -qO- http://localhost:8090/health || exit 1
+
+CMD ["python", "/opt/mock-panel/mock-panel.py"]

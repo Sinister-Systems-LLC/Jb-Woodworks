@@ -1,0 +1,19 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Sinister Panel
+GenericName=Fleet Control Panel
+Comment=Sinister Panel — operator's fleet/projects/chatbot/MCP control surface
+Exec=eve-launcher panel --pwa
+TryExec=eve-launcher
+Icon=sinister-panel
+Terminal=false
+Categories=Network;Development;System;
+StartupNotify=true
+StartupWMClass=sinister-panel
+Keywords=Sinister;panel;fleet;agents;chatbot;MCP;dashboard;
+MimeType=x-scheme-handler/sinisterpanel;
+X-GNOME-UsesNotifications=true
+X-Sinister-Lane=sinister-os
+X-Sinister-Author=RKOJ-ELENO :: 2026-05-25
+X-Sinister-Notes=PWA wrapper around the Hetzner-hosted Sinister Panel

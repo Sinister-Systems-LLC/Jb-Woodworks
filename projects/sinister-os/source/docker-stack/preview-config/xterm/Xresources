@@ -1,0 +1,32 @@
+! Sinister OS preview — xterm theme
+! Author: RKOJ-ELENO :: 2026-05-25
+
+xterm*background:        #100820
+xterm*foreground:        #e8d6ff
+xterm*cursorColor:       #c084fc
+xterm*selectBackground:  #6366f1
+xterm*selectForeground:  #ffffff
+
+xterm*color0:   #181028
+xterm*color1:   #ef4444
+xterm*color2:   #22c55e
+xterm*color3:   #facc15
+xterm*color4:   #818cf8
+xterm*color5:   #c084fc
+xterm*color6:   #22d3ee
+xterm*color7:   #e8d6ff
+
+xterm*color8:   #1d152c
+xterm*color9:   #f87171
+xterm*color10:  #4ade80
+xterm*color11:  #fde047
+xterm*color12:  #a5b4fc
+xterm*color13:  #d8b4fe
+xterm*color14:  #67e8f9
+xterm*color15:  #ffffff
+
+xterm*faceName: Cascadia Code
+xterm*faceSize: 11
+xterm*scrollBar: false
+xterm*saveLines: 10000
+xterm*allowBoldFonts: true

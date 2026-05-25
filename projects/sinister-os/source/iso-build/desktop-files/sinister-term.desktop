@@ -1,0 +1,18 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Sinister Term
+GenericName=Sinister-themed Terminal
+Comment=Sinister Term — kitty-based terminal with Sinister theme + per-agent identity header
+Exec=sinister-term-launcher
+TryExec=sinister-term-launcher
+Icon=sinister-term
+Terminal=false
+Categories=System;TerminalEmulator;Utility;
+StartupNotify=true
+StartupWMClass=sinister-term
+Keywords=terminal;Sinister;kitty;shell;tty;
+X-GNOME-UsesNotifications=false
+X-Sinister-Lane=sinister-os
+X-Sinister-Author=RKOJ-ELENO :: 2026-05-25
+X-Sinister-Notes=Wraps kitty with Cascadia Code + purple ANSI palette + permanent agent-identity title bar header

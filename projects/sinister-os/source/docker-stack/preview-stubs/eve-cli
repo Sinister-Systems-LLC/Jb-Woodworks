@@ -1,0 +1,137 @@
+#!/usr/bin/env python3
+"""eve — minimal preview CLI client for the EVE daemon stub.
+
+Author: RKOJ-ELENO :: 2026-05-25
+
+Inside the preview container the operator types `eve <verb>` and this script
+talks to the eve-daemon-stub HTTP API. Real production uses /run/sinister/eve.sock
+UDS — that lands Phase 2 with the Rust daemon.
+
+Usage:
+    eve status                           # daemon state + game-mode state
+    eve chat "hello"                     # send to EVE-LLM bridge
+    eve chat "hello" --persona slack-tone
+    eve game-mode {arm,disarm,status}
+    eve intent launch_app firefox        # exec_intent stub
+    eve actions [--limit 10]             # recent action log
+    eve info                             # daemon info
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import sys
+import urllib.request
+import urllib.error
+
+DAEMON = os.environ.get("EVE_DAEMON_URL", "http://eve-daemon-stub:7331")
+
+PURPLE = "\033[95m"
+BRIGHTP = "\033[94m"
+WHITE = "\033[97m"
+DIM = "\033[2m"
+OK = "\033[92m"
+WARN = "\033[93m"
+RESET = "\033[0m"
+
+
+def call(method: str, path: str, payload: dict | None = None) -> dict:
+    url = f"{DAEMON}{path}"
+    data = json.dumps(payload).encode("utf-8") if payload is not None else None
+    headers = {"Content-Type": "application/json"} if data else {}
+    req = urllib.request.Request(url, data=data, headers=headers, method=method)
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            return json.loads(resp.read().decode("utf-8", errors="replace"))
+    except urllib.error.URLError as e:
+        return {"error": "daemon_unreachable", "detail": str(e), "url": url}
+
+
+def fmt(d: dict) -> str:
+    return json.dumps(d, indent=2)
+
+
+def cmd_status(args):
+    state = call("GET", "/v1/state")
+    gm = call("GET", "/v1/game-mode")
+    print(f"{PURPLE}daemon{RESET}    {state.get('current', '?')}  (epoch {state.get('epoch', '?')})")
+    print(f"{PURPLE}game-mode{RESET} {gm.get('current', '?')}  ({gm.get('reason') or '-'})")
+    return 0
+
+
+def cmd_chat(args):
+    payload = {"persona": args.persona, "message": args.message}
+    r = call("POST", "/v1/chat/send", payload)
+    if "error" in r:
+        print(f"{WARN}error:{RESET} {r['error']} {r.get('detail', '')}", file=sys.stderr)
+        return 1
+    print(f"{BRIGHTP}{r.get('persona_used', '?')}{RESET}: {r.get('reply', '')}")
+    print(f"  {DIM}model={r.get('model')} latency_ms={r.get('latency_ms')} tokens={r.get('tokens')}{RESET}")
+    return 0
+
+
+def cmd_game_mode(args):
+    if args.action == "status":
+        gm = call("GET", "/v1/game-mode")
+        print(fmt(gm))
+        return 0
+    r = call("POST", f"/v1/game-mode/{args.action}", {"reason": "operator-cli"})
+    print(fmt(r))
+    return 0
+
+
+def cmd_intent(args):
+    r = call("POST", "/v1/intent/exec", {"intent": args.intent, "args": {"arg": args.arg} if args.arg else {}, "source": "cli"})
+    print(fmt(r))
+    return 0
+
+
+def cmd_actions(args):
+    r = call("GET", f"/v1/actions/recent?limit={args.limit}")
+    print(fmt(r))
+    return 0
+
+
+def cmd_info(args):
+    r = call("GET", "/v1/info")
+    print(fmt(r))
+    return 0
+
+
+def build_parser():
+    p = argparse.ArgumentParser(prog="eve", description="Sinister OS EVE CLI (preview)")
+    sub = p.add_subparsers(dest="cmd", required=True)
+
+    sub.add_parser("status", help="daemon + game-mode state").set_defaults(func=cmd_status)
+
+    p_chat = sub.add_parser("chat", help="send to EVE-LLM bridge")
+    p_chat.add_argument("message")
+    p_chat.add_argument("--persona", default="default")
+    p_chat.set_defaults(func=cmd_chat)
+
+    p_gm = sub.add_parser("game-mode", help="game mode arm/disarm/status")
+    p_gm.add_argument("action", choices=["arm", "disarm", "status"])
+    p_gm.set_defaults(func=cmd_game_mode)
+
+    p_int = sub.add_parser("intent", help="exec_intent stub")
+    p_int.add_argument("intent")
+    p_int.add_argument("arg", nargs="?")
+    p_int.set_defaults(func=cmd_intent)
+
+    p_act = sub.add_parser("actions", help="recent action log")
+    p_act.add_argument("--limit", type=int, default=10)
+    p_act.set_defaults(func=cmd_actions)
+
+    sub.add_parser("info", help="daemon info").set_defaults(func=cmd_info)
+    return p
+
+
+def main():
+    args = build_parser().parse_args()
+    return args.func(args)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

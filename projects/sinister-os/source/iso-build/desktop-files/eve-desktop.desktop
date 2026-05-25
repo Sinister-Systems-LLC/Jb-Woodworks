@@ -1,0 +1,19 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=EVE Desktop
+GenericName=Sinister OS Control Center
+Comment=EVE — operator-controlled OS shell, voice + chat + system control
+Exec=eve-desktop %U
+TryExec=eve-desktop
+Icon=eve
+Terminal=false
+Categories=System;Settings;Utility;
+StartupNotify=true
+StartupWMClass=eve-desktop
+Keywords=EVE;Sinister;OS;control;voice;agent;workspace;
+MimeType=x-scheme-handler/eve;
+X-GNOME-UsesNotifications=true
+X-KDE-StartupNotify=true
+X-Sinister-Lane=sinister-os
+X-Sinister-Author=RKOJ-ELENO :: 2026-05-25
