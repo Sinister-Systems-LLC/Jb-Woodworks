@@ -141,6 +141,14 @@ class Interpreter:
                 self.env.define(nm, fn, constant=False)
         except Exception:
             pass  # sim is optional; corpus still parses + interpreter runs without
+        # RKOJ-ELENO :: 2026-05-25 (iter-17) :: Phase 8b bridge to the desktop
+        # python_simulator (ZMQ quantum server). Same pattern as sim wiring.
+        try:
+            from .bridge_python_sim import builtins as _qsim_builtins
+            for nm, fn in _qsim_builtins().items():
+                self.env.define(nm, fn, constant=False)
+        except Exception:
+            pass
 
     def run(self, prog: Program, args: Optional[List[str]] = None) -> int:
         self.env.define("argv", list(args or []))

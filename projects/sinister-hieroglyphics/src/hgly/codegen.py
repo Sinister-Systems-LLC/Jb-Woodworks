@@ -170,6 +170,12 @@ try:
         _BUILTINS.setdefault(_name, _fn)
 except Exception:
     pass
+try:
+    from .bridge_python_sim import builtins as _hgly_qsim_builtins
+    for _name, _fn in _hgly_qsim_builtins().items():
+        _BUILTINS.setdefault(_name, _fn)
+except Exception:
+    pass
 
 
 def _binop(op: str, a: Any, b: Any) -> Any:

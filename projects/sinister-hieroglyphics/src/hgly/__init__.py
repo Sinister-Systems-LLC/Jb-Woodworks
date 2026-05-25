@@ -24,8 +24,14 @@ try:
     _HAS_SIM = True
 except Exception:
     _HAS_SIM = False
+try:
+    from .bridge_python_sim import (qsubmit, qstatus, is_live as qsim_is_live,
+                                    builtins as qsim_builtins)  # noqa: F401
+    _HAS_QSIM = True
+except Exception:
+    _HAS_QSIM = False
 
-__version__ = "0.0.6"
+__version__ = "0.0.7"
 
 __all__ = ["parse", "parse_file", "ParseError", "Module", "Function", "Block",
            "Effect", "Type", "TInt", "TFloat", "TBool", "TStr", "TUnit",
