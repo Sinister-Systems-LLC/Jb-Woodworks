@@ -95,6 +95,7 @@ Sinister Term commands:
   /find <glob> [--sanctum --type d|f] [N]   Recursive name search (skips .git/venv/etc)
   /doctrine [--sanctum --search X]   List operator hard-canonicals from CLAUDE.md
   /crashlog [N --mine --module X]   Read eve-crash-log.jsonl (alias /crashes)
+  /grep <pattern> [path] [--glob X] [-i] [N]   Content search (skips .git/venv/binaries)
   /alias [name=val|remove n] List aliases, define one, or remove one
   /clear                    Clear the screen
   /help                     This message
@@ -532,6 +533,141 @@ _UTTERANCES_PATH = SANCTUM_ROOT / "_shared-memory" / "operator-utterances.jsonl"
 
 
 _CRASH_LOG_PATH = SANCTUM_ROOT / "_shared-memory" / "eve-crash-log.jsonl"
+
+
+def cmd_grep(args: list[str]) -> CommandResult:
+    """iter-66: content search across files under cwd or a sub-path.
+
+    Pure-Python re.search; honors the same SKIP_DIRS as /find. Cap: scans
+    up to 2000 files, returns up to 50 matches (configurable via N arg).
+    Binary files (anything with NUL in first 4 KiB) silently skipped.
+
+    Usage:
+      /grep <pattern>                          search under cwd
+      /grep <pattern> <relpath>                search under cwd/<relpath>
+      /grep <pattern> --glob *.py              only files matching glob
+      /grep <pattern> --ignore-case            case-insensitive (-i alias)
+      /grep <pattern> -i                       case-insensitive
+      /grep <pattern> N                        cap matches at N (1..500)
+    """
+    if not args:
+        return CommandResult(True,
+            "usage: /grep <pattern> [<relpath>] [--glob *.py] [-i] [N]\n"
+            "  e.g. /grep 'def cmd_' --glob *.py\n"
+            "       /grep TODO _shared-memory")
+    pattern_str = args[0]
+    sub_path: str | None = None
+    glob_pat: str | None = None
+    ignore_case = False
+    limit = 50
+    SCAN_CAP = 2000
+
+    i = 1
+    while i < len(args):
+        a = args[i]
+        if a == "--glob" and i + 1 < len(args):
+            glob_pat = args[i + 1]
+            i += 2
+            continue
+        if a in ("-i", "--ignore-case"):
+            ignore_case = True
+            i += 1
+            continue
+        if a.startswith("-"):
+            return CommandResult(True,
+                f"unknown flag: {a}. Try /grep with no args for usage.")
+        # Numeric → limit; otherwise → relpath
+        try:
+            limit = max(1, min(500, int(a)))
+        except ValueError:
+            if sub_path is None:
+                sub_path = a
+            else:
+                return CommandResult(True,
+                    f"unexpected arg: {a} (already have sub-path {sub_path!r})")
+        i += 1
+
+    import re as _re
+    try:
+        flags = _re.IGNORECASE if ignore_case else 0
+        rx = _re.compile(pattern_str, flags)
+    except _re.error as e:
+        return CommandResult(True, f"bad regex: {e}")
+
+    root = Path.cwd() if sub_path is None else (Path.cwd() / sub_path)
+    if not root.exists():
+        return CommandResult(True, f"path does not exist: {root}")
+
+    SKIP_DIRS = {".git", "node_modules", "__pycache__", ".pytest_cache",
+                 "venv", ".venv", "dist", "build", ".idea", ".vscode"}
+
+    # Use either glob iterator or rglob("*")
+    if glob_pat:
+        iterator = root.rglob(glob_pat)
+    elif root.is_file():
+        iterator = iter([root])
+    else:
+        iterator = root.rglob("*")
+
+    matches: list[tuple[str, int, str]] = []  # (rel-path, line-no, text)
+    scanned = 0
+    files_scanned = 0
+    overflow = False
+    try:
+        for p in iterator:
+            scanned += 1
+            if scanned > SCAN_CAP:
+                overflow = True
+                break
+            if any(part in SKIP_DIRS for part in p.parts):
+                continue
+            try:
+                if not p.is_file():
+                    continue
+            except OSError:
+                continue
+            files_scanned += 1
+            try:
+                with p.open("rb") as fh:
+                    head = fh.read(4096)
+                    if b"\x00" in head:
+                        continue  # binary
+                    rest = fh.read()
+                full_bytes = head + rest
+                text = full_bytes.decode("utf-8", errors="replace")
+            except OSError:
+                continue
+            for lineno, ln in enumerate(text.splitlines(), start=1):
+                if rx.search(ln):
+                    try:
+                        rel = p.relative_to(root).as_posix()
+                    except ValueError:
+                        rel = str(p)
+                    matches.append((rel, lineno, ln.rstrip()))
+                    if len(matches) >= limit + 1:
+                        break
+            if len(matches) >= limit + 1:
+                overflow = True
+                break
+    except (OSError, ValueError) as e:
+        return CommandResult(True, f"/grep failed: {e}")
+
+    if not matches:
+        scope = f"{root}"
+        if glob_pat:
+            scope += f" (glob={glob_pat})"
+        return CommandResult(True, f"(no matches for /{pattern_str}/ in {scope})")
+
+    shown = matches[:limit]
+    truncated = " (capped)" if overflow else ""
+    suffix = f" — {files_scanned} files scanned"
+    lines = [f"Grep: {len(shown)} hit{'s' if len(shown) != 1 else ''}"
+             f" for /{pattern_str}/ in {root}{suffix}{truncated}"]
+    for rel, lineno, text in shown:
+        # Truncate long lines
+        body = text if len(text) <= 100 else text[:97] + "..."
+        lines.append(f"  {rel}:{lineno}: {body}")
+    return CommandResult(True, "\n".join(lines))
 
 
 def cmd_crashlog(args: list[str]) -> CommandResult:
@@ -1787,6 +1923,7 @@ COMMANDS: dict[str, Callable[[list[str]], CommandResult]] = {
     "doctrine": cmd_doctrine,      # iter-64 — list operator hard-canonicals from CLAUDE.md
     "crashlog": cmd_crashlog,      # iter-65 — read eve-crash-log.jsonl
     "crashes": cmd_crashlog,       # alias
+    "grep": cmd_grep,              # iter-66 — content search across files
 }
 
 
