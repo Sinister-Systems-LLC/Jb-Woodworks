@@ -98,7 +98,8 @@ services:
     environment:
       - SINISTER_STUB=1
     ports:
-      - "8090:8090"
+      # Port 8090 already used by sinister-filebrowser; map to 8091 on host.
+      - "8091:8090"
     networks: [mesh]
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://localhost:8090/health || exit 1"]

@@ -9,26 +9,31 @@
 
 FROM archlinux:base-devel
 
-# Layer 1: package install (cacheable). xorg + tigervnc + novnc + websockify
-# give us a browser-reachable desktop without needing real GPU passthrough
-# (Wayland-only in a container is fiddly; XWayland under TigerVNC is simpler
-# for the preview tier).
-RUN pacman -Syu --noconfirm && \
+# Layer 1: package install (cacheable). xorg + tigervnc give us a VNC desktop;
+# noVNC + websockify ship from upstream tarball + pip (NOT in Arch official
+# repos — only AUR — and we don't want an AUR helper in the base image).
+# i3 + xterm + dmenu = the preview compositor (real Hyprland lands Phase 1B
+# real ISO; Wayland-only in a container needs real GPU + heavier setup).
+RUN pacman -Sy --noconfirm archlinux-keyring && \
+    pacman -Syu --noconfirm && \
     pacman -S --noconfirm \
-        # display + remote
-        tigervnc novnc websockify xorg-server-xvfb \
-        # compositor + WM (XWayland-friendly fallback uses i3 if hyprland needs Wayland)
-        i3-wm xterm dmenu \
-        # waybar + bar tooling (waybar handles X11 via XWayland but Hyprland needs Wayland)
-        # We ship i3bar for the preview; full Hyprland lands when we ship the real ISO.
-        # CLI surfaces
-        bash curl wget jq git python python-requests sudo \
-        # font + theme
+        x11vnc xorg-server-xvfb xorg-xdpyinfo xorg-xrdb xorg-xsetroot \
+        i3-wm i3status xterm dmenu \
+        bash curl wget jq git python python-pip python-requests sudo \
         ttf-cascadia-code noto-fonts \
-        # editor for operator's terminal
         vim \
-        # systemd not available in container; use runit-style entrypoint script
+        zenity \
         && pacman -Scc --noconfirm
+
+# Layer 1b: noVNC static files + websockify daemon (pip handles --break-system-packages
+# for global install since this is a single-purpose container)
+RUN pip install --no-cache-dir --break-system-packages websockify==0.12.0 && \
+    mkdir -p /usr/share/novnc && \
+    curl -fsSL https://github.com/novnc/noVNC/archive/refs/tags/v1.5.0.tar.gz \
+        | tar xz -C /tmp && \
+    mv /tmp/noVNC-1.5.0/* /usr/share/novnc/ && \
+    rm -rf /tmp/noVNC-1.5.0 && \
+    ln -sf /usr/share/novnc/vnc.html /usr/share/novnc/index.html
 
 # Layer 2: create the eve user (matches production OS user model)
 RUN useradd -m -G wheel -s /bin/bash eve && \

@@ -17,6 +17,9 @@ export HOME="${HOME:-/home/eve}"
 mkdir -p /var/log/sinister /var/lib/sinister /run/sinister
 chown -R eve:eve /var/log/sinister /var/lib/sinister /run/sinister 2>/dev/null || true
 
+# Clean stale X locks (container restart leaves /tmp/.X*-lock behind)
+rm -f /tmp/.X0-lock /tmp/.X11-unix/X0 2>/dev/null || true
+
 echo "[preview] starting Xvfb on :0"
 Xvfb :0 -screen 0 1600x900x24 -nolisten tcp &
 XVFB_PID=$!

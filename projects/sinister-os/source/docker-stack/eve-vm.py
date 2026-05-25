@@ -174,7 +174,7 @@ def preflight() -> bool:
         return False
     ok(f"docker {d['version']} + compose plugin OK")
 
-    for p in (6080, 7331, 8030, 8443):
+    for p in (6080, 7331, 8091):
         if port_free(p):
             ok(f"port {p} free")
         else:
