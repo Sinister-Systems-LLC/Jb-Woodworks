@@ -1,4 +1,36 @@
-﻿## 2026-05-25 06:56 UTC — sanctum iter-23 EXECUTION swarm: 3 sub-agents on top of 06:51Z research + fleet-updates 80MB→18KB rotation + crash-detector smoke + 06:14Z ack
+﻿## 2026-05-25 07:28 UTC — sanctum iter-23 master plan EXECUTION: 7/7 items shipped + Sub-G Sinister Link UX + 27 utterance acks
+
+**Author:** RKOJ-ELENO :: 2026-05-25 (sanctum lane, RESEARCH+SWEEP track parallel to EXECUTION lane on iter-24)
+
+**Operator verbatim 2026-05-25T07:00Z:** *"start executing the plan and dont stop working"* (responding to /loop master-plan write).
+
+**Master plan items completed this turn (all 7 of `_shared-memory/plans/sanctum-master-finish-everything-2026-05-25T0700Z/plan.md`):**
+
+| # | Item | Commit | Verdict |
+|---|---|---|---|
+| 1 | Utterance-tracker sweep | `1b47c38` | SHIPPED — 27 acks landed (23 bulk via `automations/utterance_bulk_ack.py` + 4 individual for 07:00/07:08/07:10/07:19). `new` count 47→22; remaining 22 are non-sanctum-slug, owned by other lanes per scope-discipline. |
+| 2 | Version-snapshot P0 scaffold | `cc48eac` | SHIPPED — `EXCLUDE.txt` (32 globs) + `README.md` (schema) + `version-snapshot-system-doctrine-2026-05-25.md` (TL;DR + 5 pass criteria + binding rules) + `_INDEX.md` row. No code edits. |
+| 3 | Command-center P0 plumbing | (already-shipped by parallel lane) | RESOLVED — verified `agent-prefs.json` v4 lines 122-132 + `projects.json` `default_modes` per-project + `start-sinister-session.ps1:1404` `$defSwarm=$true` already in place from operator hard-canonical 06:30Z. |
+| 4 | EVE-bat-ps1 audit 9 DELETE candidates | (already-shipped by parallel lane) | RESOLVED — 4 obvious Desktop-copy .bat files already gone from disk (only historical refs in audit/PROGRESS/plans remain). |
+| 5 | EVE-UI 5 minor fixes inbox handoff | `1b47c38` | SHIPPED — `_shared-memory/inbox/sanctum/2026-05-25T0722Z-from-sanctum-ui-5-fixes-handoff.json` with file:line + patch + rationale per fix. |
+| 6 | Forever-improve checkpoint | `aeff2d4` then HEAD review | SHIPPED — `forever-improve.ps1 -Action ReviewCommit -Sha HEAD` ran on `2776590` (parallel lane). 3 minor findings, none on my commits. |
+| 7 | Stale resume-points cap check | (verification) | PASS — exactly 20 entries in `_shared-memory/resume-points/Sinister Sanctum/` (at the cap; auto-pruner keeping it clean). |
+
+**Bonus Sub-G shipped this turn (`aeff2d4`):** Sinister LINK invite UX fix — `automations/sinister-link.ps1:340-357` writes state stub `state='invited'` on GenerateInvite (was previously silent), guarded against overwriting `paired`. `tools/eve-picker/main_menu.py:325-332` renders new "Sinister LINK :: invited (awaiting acceptance)" branch. Live smoke: `powershell -File sinister-link.ps1 -Action GenerateInvite -PeerName leo-laptop -ExpiresMin 60` → invite issued AND `sinister-link-state.json` written with `state="invited" invite_id=inv-20260525032015-e7758b expires_utc=2026-05-25T08:20:15Z`. Resolves operator 07:08:40Z UX gap.
+
+**Cross-lane wins observed this turn:**
+- Sub-L (commit `63f3f2e`): GPU 4090 + rate-limit governor (`gpu_bot_fleet.py` + `resource_quota_governor.py` + `launch_rate_limit_governor.py`) — resolves operator 07:00:45Z.
+- Sub-N (commit `c29872f`): Vault ↔ GitHub bidirectional sync + backup retention — partially resolves operator 07:08:40Z.
+- Sub-O (commit `549bebc`): EVE.exe update over Sinister LINK + Leo update-available popup — resolves operator 07:10:36Z.
+- iter-24 (commit `2776590`): 5 governor schtasks runtime-installed + Ollama 0.5.7 + qwen2.5-coder pull in flight.
+
+**Commits this turn (sanctum master, in order):** `c5ec4c9` (master plan) → `cc48eac` (item #2 scaffold) → `aeff2d4` (Sub-G LINK UX fix) → `1b47c38` (items #1+#5 bulk-ack+handoff). All pushed to `agent/sinister-sanctum/iter23-eve-polish-icon-mintty-2026-05-25`.
+
+**Open queue (post-this-turn):** 22 non-sanctum-slug `new` utterances (route to their lanes); operator 07:19Z spawn-flow-faster (queued, requires picker rewrite); operator 07:10Z smoke-test-everything (broader pass next iter); Vault live deployment (B/C/D from Sinister Link audit § 4).
+
+---
+
+## 2026-05-25 06:56 UTC — sanctum iter-23 EXECUTION swarm: 3 sub-agents on top of 06:51Z research + fleet-updates 80MB→18KB rotation + crash-detector smoke + 06:14Z ack
 
 **Author:** RKOJ-ELENO :: 2026-05-25 (sanctum lane, parallel to 06:51Z research lane)
 

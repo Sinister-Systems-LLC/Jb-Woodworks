@@ -1,0 +1,47 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-25T07:29:56.4059587Z",
+    "project":  "sanctum",
+    "agent_name":  "sanctum",
+    "mode":  "resume",
+    "focus_intent":  "",
+    "git":  {
+                "branch":  "agent/sinister-sanctum/iter23-eve-polish-icon-mintty-2026-05-25",
+                "head":  "1b47c382f76cfe5f62c692d1dc977ee255e41ea9",
+                "head_msg":  "sanctum iter-23: utterance-tracker bulk-ack sweep (master plan item #1)",
+                "recent_commits":  [
+                                       "1b47c38 sanctum iter-23: utterance-tracker bulk-ack sweep (master plan item #1)",
+                                       "2776590 sanctum iter-24: vault + rate-limit plans landed + 5 governor schtasks runtime-installed",
+                                       "aeff2d4 sanctum iter-23 Sub-G: Sinister LINK invite UX fix + Vault audit (operator 07:08Z)",
+                                       "e0e6181 kernel-apk iter-2 ACTUAL files: 14 deliverables (3 Python scripts + 4 inboxes + 2 plans + 1 audit + 1 design.md edit + PROGRESS + resume-point + att-sign-broadcast helper). Previous commit af2222d accidentally bundled sibling sanctum vault files due to multi-agent index race; this commit fixes the content alignment. source-v2 commit 02018bb (v0.97.45 cred scrub) shipped separately to Sinister-APK repo earlier this iter. Refs: _shared-memory/plans/kernel-apk-complete-and-harden-2026-05-25/plan.md + audit + Phase 2 sub-plan.",
+                                       "68d6a78 sanctum iter-23: place Sinister Start.bat in repo root + sha256 sidecar (operator hard-canonical 07:13Z)",
+                                       "549bebc sanctum iter-23 Sub-O: EVE.exe update over Sinister LINK + Leo update-available popup",
+                                       "af2222d kernel-apk iter-2: complete-and-harden plan (Phase 1 + Phase 2 helper + Phase 3 audit + CRITICAL cred scrub)",
+                                       "c29872f sanctum iter-23 Sub-N: vault \u003c-\u003e github bidirectional sync + backup retention",
+                                       "63f3f2e sanctum iter-23 Sub-L: 4090 GPU bot fleet + per-agent resource quotas + launch rate-limit governor (operator 07:00Z)",
+                                       "cc48eac sanctum iter-23 #2: version-snapshot P0 scaffold + 2 utterance acks"
+                                   ]
+            },
+    "progress_top3":  [
+                          "2026-05-25 07:28 UTC — sanctum iter-23 master plan EXECUTION: 7/7 items shipped + Sub-G Sinister Link UX + 27 utterance acks",
+                          "2026-05-25 06:56 UTC — sanctum iter-23 EXECUTION swarm: 3 sub-agents on top of 06:51Z research + fleet-updates 80MB→18KB rotation + crash-detector smoke + 06:14Z ack",
+                          "2026-05-25 06:51 UTC — sanctum iter-23 research swarm: 4 sub-agents -\u003e 2 audits + 2 plans (operator 06:33Z acknowledged)"
+                      ],
+    "latest_plan":  {
+                        "dir":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\sanctum-master-iter25-complete-everything-2026-05-25T0725Z",
+                        "artifact":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\sanctum-master-iter25-complete-everything-2026-05-25T0725Z\\plan.md"
+                    },
+    "inbox_unread_count":  128,
+    "last_5_files_touched_24h":  [
+                                     "tools\\eve-picker\\project_picker_multiselect.py",
+                                     "_shared-memory\\canonical-protections-violations.log",
+                                     "_shared-memory\\heartbeats\\sinister-vault.beat",
+                                     "_shared-memory\\PROGRESS\\Sinister Chatbot.md",
+                                     "_shared-memory\\PROGRESS\\Sinister Sanctum.md"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Sinister Sanctum.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\plans\\sanctum-master-iter25-complete-everything-2026-05-25T0725Z\\plan.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}
