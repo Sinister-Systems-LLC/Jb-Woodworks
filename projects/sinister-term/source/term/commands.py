@@ -84,6 +84,7 @@ Sinister Term commands:
   /swarm <sub> [args]       Fan-out: list / spawn / dm / broadcast (try /swarm)
   /events [N] [--cat C] [--name N] [--disk]  Tail cmux event_bus (ring or jsonl)
   /ascii [on|off|status|project K|list]  Control SA-PH6 living-entity overlay
+  /health                   Single-screen sterm dashboard (version/branch/agents/inbox/bridge/bus)
   /alias [name=val|remove n] List aliases, define one, or remove one
   /clear                    Clear the screen
   /help                     This message
@@ -515,6 +516,99 @@ def cmd_recall(args: list[str]) -> CommandResult:
     return CommandResult(True, "\n".join(lines))
 
 
+def cmd_health(_args: list[str]) -> CommandResult:
+    """iter-55: single-screen sterm health dashboard.
+
+    Composite read of: sterm version, live agent count + fresh marker,
+    inbox count, ascii bridge status, event_bus seq + boot id, git branch.
+    Pure local reads; all wrapped in try/except so a single broken source
+    doesn't take down the whole panel.
+    """
+    lines = ["Sinister Term health:"]
+
+    # version
+    try:
+        from term import __version__ as _v
+        lines.append(f"  version:        sinister-term {_v}")
+    except Exception as e:
+        lines.append(f"  version:        ? ({e})")
+
+    # branch
+    try:
+        from term.status import git_branch
+        b = git_branch()
+        lines.append(f"  git branch:     {b or '(not in a repo)'}")
+    except Exception as e:
+        lines.append(f"  git branch:     ? ({e})")
+
+    # heartbeats — count + freshest sibling
+    try:
+        if HEARTBEATS_DIR.exists():
+            hbs = list(HEARTBEATS_DIR.glob("*.json"))
+            import time as _t
+            fresh = 0
+            stale = 0
+            now = _t.time()
+            for hb in hbs:
+                try:
+                    age_min = (now - hb.stat().st_mtime) / 60
+                except OSError:
+                    continue
+                if age_min < 30:
+                    fresh += 1
+                else:
+                    stale += 1
+            lines.append(f"  fleet agents:   {len(hbs)} total  ({fresh} fresh <30m, {stale} stale)")
+        else:
+            lines.append("  fleet agents:   (no heartbeats dir)")
+    except Exception as e:
+        lines.append(f"  fleet agents:   ? ({e})")
+
+    # inbox
+    try:
+        inbox = INBOX_DIR / SELF_SLUG
+        n = sum(1 for _ in inbox.glob("*.json")) if inbox.exists() else 0
+        lines.append(f"  inbox:          {n} unread")
+    except Exception as e:
+        lines.append(f"  inbox:          ? ({e})")
+
+    # ascii bridge
+    try:
+        from term import ascii_bridge as _br
+        s = _br.default_bridge().status()
+        state = "ON" if s.running else "off"
+        lines.append(
+            f"  ascii bridge:   {state}  "
+            f"project={s.project_key}  frames={s.frames_rendered}"
+        )
+    except Exception as e:
+        lines.append(f"  ascii bridge:   ? ({e})")
+
+    # event_bus
+    try:
+        from term.event_bus import default_bus
+        bus = default_bus()
+        lines.append(
+            f"  event_bus:      seq={bus.current_seq}  ring={bus.ring_size}/4096  "
+            f"boot={bus.boot_id[:8]}"
+        )
+    except Exception as e:
+        lines.append(f"  event_bus:      ? ({e})")
+
+    # progress log existence
+    try:
+        if PROGRESS_FILE.exists():
+            import os as _os
+            size_kb = _os.path.getsize(PROGRESS_FILE) / 1024
+            lines.append(f"  PROGRESS log:   {PROGRESS_FILE.name}  ({size_kb:.1f} KiB)")
+        else:
+            lines.append(f"  PROGRESS log:   (none — {PROGRESS_FILE.name} missing)")
+    except Exception as e:
+        lines.append(f"  PROGRESS log:   ? ({e})")
+
+    return CommandResult(True, "\n".join(lines))
+
+
 def cmd_ascii(args: list[str]) -> CommandResult:
     """iter-54: operator-facing control of the SA-PH6 ascii_bridge.
 
@@ -809,6 +903,7 @@ COMMANDS: dict[str, Callable[[list[str]], CommandResult]] = {
     "swarm": cmd_swarm,    # P2-3 iter-51
     "events": cmd_events,  # iter-53 — read the cmux event_bus
     "ascii": cmd_ascii,    # iter-54 — control SA-PH6 ascii_bridge
+    "health": cmd_health,  # iter-55 — single-screen sterm dashboard
 }
 
 
