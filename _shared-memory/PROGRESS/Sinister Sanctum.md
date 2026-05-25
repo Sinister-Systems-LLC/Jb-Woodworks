@@ -1,4 +1,61 @@
-﻿## 2026-05-25 06:16 UTC — sanctum iter-22 LEO HANDOFF: deploy/ + UAC auto-install + EVE.exe auto-update + _internal P0 fix + tag pushed
+﻿## 2026-05-25 06:56 UTC — sanctum iter-23 EXECUTION swarm: 3 sub-agents on top of 06:51Z research + fleet-updates 80MB→18KB rotation + crash-detector smoke + 06:14Z ack
+
+**Author:** RKOJ-ELENO :: 2026-05-25 (sanctum lane, parallel to 06:51Z research lane)
+
+This iter-23 execution row composes with the 06:51Z research row immediately below. Sibling shipped audits + plans; this lane ships the implementation pass on non-overlapping concrete items from `_shared-memory/resume-points/Sinister Sanctum/2026-05-25T062725Z.json` open queue.
+
+Shipped this turn:
+- Cut policy-compliant branch `agent/sinister-sanctum/iter23-eve-polish-icon-mintty-2026-05-25` from iter-22 tip 2bd44f9.
+- 3 parallel sub-agents launched (non-overlapping files, no merge conflict risk with sibling 06:51Z research):
+  - sub-A → `automations/eve-launcher/eve.py` items 61+65+66+67 (centered menus + Enter binding + EVE.exe close + animations + "100% real" cleanup + jcode-inspired labeling). EXECUTION pass on sibling sub-2's UI-flow audit (5 minor fixes flagged).
+  - sub-B → `automations/spawn-setup-wizard.ps1` IMAGE-4 mintty exit 126 fix.
+  - sub-C → EVE.exe icon embed + AutoRebuild + sha256 sidecar + deploy/EVE.exe mirror.
+- `_shared-memory/fleet-updates.jsonl` ROTATED 80,547,949 B → 18,413 B (4400x). 2 corrupt rows isolated (line 6 = 29.9 MB / line 8 = 6 MB; both encoding-bloated BRAIN doctrine messages from iter-19); 10 oversized rows truncated to 320 chars + length pointer. Original gzip-archived at `_shared-memory/_archive/fleet-updates-pre-rotate-2026-05-25T0630Z.jsonl.gz` (2.2 MB). GitHub LFS warning resolved.
+- Acked operator utterance 06:14:17Z (Kill-Stuck-EVE.bat wiring) → RESOLVED: already shipped sub-E iter-22 (commit 0e72baf). Smoke `python automations/eve_crash_detector.py --status` PASS — 2 events logged 06:22Z scan + 06:54Z pre-compile-cleared (latter triggered live by sub-C rebuild attempt — proof the detector is working continuously).
+- Sub-K iter-21 (Leo MCP+Docker+bots+autonomy) VERIFIED COMPLETE per `_shared-memory/setup/leo-handoff-readiness-2026-05-25.md` lines 11-25.
+- Sub-L iter-21 (Overseer first-fire audit Sinister Term) VERIFIED COMPLETE per `_shared-memory/PROGRESS/Sinister Overseer.md` 02:00Z (6 findings / 2 applied / 4 proposals / 0 critical; pytest 3/3 PASS post-fix).
+
+Smoke this turn:
+- python script rotation: kept=27 truncated=10 size=18413 bytes — PASS.
+- ack-operator-utterance.ps1 ts=2026-05-25T06:14:17Z status=resolved deliverables=1 — PASS.
+- eve_crash_detector --status: Kill-bat OK, log accessible, last 5 events readable — PASS.
+
+Open for end-of-iter-23 (when 3 sub-agents return):
+- Aggregate sub-A/B/C findings; verify-eve-features.ps1 -AutoRebuild -SyncMirror if sub-C built but didn't sync.
+- Commit + push iter-23 branch; update PR #5 OR keep parallel PR.
+
+---
+
+## 2026-05-25 06:51 UTC — sanctum iter-23 research swarm: 4 sub-agents -> 2 audits + 2 plans (operator 06:33Z acknowledged)
+
+**Author:** RKOJ-ELENO :: 2026-05-25 (sanctum lane)
+
+**Operator verbatim 2026-05-25T06:33:48Z:** *"audit and clean the entire eve exe and bat files AFTER you set leo up... we need to satrt taking a versions appraoch to everything... audit and clean the entire ui... think of how i can control, open, manage multiple claude agents at once... make sure loop and swarm mode come on by deafult for each agent... complete as much of this as you can in parrallel."*
+
+**Swarm shipped (4 read-only research/plan agents, no live-code edits):**
+
+- **Sub-1** `_shared-memory/audits/eve-bat-ps1-audit-2026-05-25.md` (7.2 KB, 154 lines): 178 files audited; 27 KEEP / 145 MIGRATE / 9 DELETE / 2 UNSURE. All ~145 .ps1 in `automations/` are GRANDFATHERED per no-bat-no-ps1 doctrine (migrate on next non-trivial touch, not mass-delete). 9 high-confidence DELETE candidates flagged.
+- **Sub-2** `_shared-memory/audits/eve-ui-flow-audit-2026-05-25.md` (6.4 KB): 8 EVE TUI pages audited; 87.5% full compliance with eve-ui-uniformity-doctrine. 0 critical, 5 minor sub-5-LOC fixes (missing `clear_screen()` entry + DRY up duplicate `_clear_screen` impls).
+- **Sub-3** `_shared-memory/plans/version-snapshot-system-2026-05-25/plan.md` (15 KB): extends existing `automations/version_snapshot.py` with per-file `manifest.json`, executing `restore --verify`, hourly silent schtask, exclusion globs (`anthropic-usage-cache` + `projects/` junctions + OAuth secrets + `*.bak*`), per-lane scoping. 4 phases P0-P4, 5 binary pass-criteria including mutate-restore-SHA round-trip on EVE.exe.
+- **Sub-4** `_shared-memory/plans/multi-agent-control-center-2026-05-25/plan.md` (22 KB): Sinister Command Center fills W-key placeholder (`main_menu.py:1112`) with 10-column dashboard listing all 40 heartbeat slugs + 8 per-row hotkeys (P/R/K/V/M/F/S/L) + 6 bulk actions. Loop+swarm default-on plumbing: `agent-prefs.json` `default_modes` + `projects.json` `fleet_default_modes` + flip `start-sinister-session.ps1:1394` `defSwarm` `$false` → `$true`. 4 phases, reuses all existing fleet scripts via subprocess.
+
+**Smoke:** all 4 outputs are markdown (read-only research/plan); no code edits yet, so no functional smoke beyond `ls -la` size+date verification (4 files present, byte counts non-zero).
+
+**Refs:** `_shared-memory/audits/`, `_shared-memory/plans/version-snapshot-system-2026-05-25/`, `_shared-memory/plans/multi-agent-control-center-2026-05-25/`. Utterance `2026-05-25T06:33:48Z` flipped to `acknowledged` (not yet `resolved` — execution swarm pending).
+
+**Next iter open:** P0 of version-snapshot plan (4 file scaffolds, no code) + P0 of command-center plan (3 JSON edits + 1 PS1 hard-fallback flip). Both safe-quality bounded.
+
+---
+
+## 2026-05-25 06:33 UTC — sanctum iter-22 sub-G: smoke-audit EVE crash-detect + hot-update-while-running (operator 06:14Z resolved)
+
+**Operator verbatim 2026-05-25T06:14:17Z:** *"detect eve crashes and run [Kill-Stuck-EVE.bat] especially if they crash before you complie an exe. but take note you can still udpate while exe is running ... fully audit and smoke test it."*
+
+Both halves already shipped (commits 0e72baf + 2bd44f9). Smoke this turn: `eve_self_update.py --audit` detected AppData PID 26604 → would route to hot-swap rename-in-use; `--dry-run` clean; `eve_crash_detector.py --status` + `--scan --dry-run` triggered A+B+D signals. Utterance resolved.
+
+---
+
+## 2026-05-25 06:16 UTC — sanctum iter-22 LEO HANDOFF: deploy/ + UAC auto-install + EVE.exe auto-update + _internal P0 fix + tag pushed
 
 **Author:** RKOJ-ELENO :: 2026-05-25 (sanctum lane)
 

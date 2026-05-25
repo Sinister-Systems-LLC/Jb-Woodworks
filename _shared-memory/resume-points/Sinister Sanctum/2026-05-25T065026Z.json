@@ -1,0 +1,47 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-25T06:51:26.3513762Z",
+    "project":  "sanctum",
+    "agent_name":  "sanctum",
+    "mode":  "resume",
+    "focus_intent":  "",
+    "git":  {
+                "branch":  "agent/sinister-sanctum/iter23-eve-polish-icon-mintty-2026-05-25",
+                "head":  "2bd44f9f8d1358321defa40c55be3278f9a0a3a2",
+                "head_msg":  "sanctum iter-22: post-sub-E sweep (eve_self_update v2 + brain doctrine + housekeeping)",
+                "recent_commits":  [
+                                       "2bd44f9 sanctum iter-22: post-sub-E sweep (eve_self_update v2 + brain doctrine + housekeeping)",
+                                       "0e72baf sanctum sub-E iter22: EVE crash detector + auto-rescue + pre-compile guard",
+                                       "a99097c sanctum iter-22: utterance acks + watchdog state checkpoint",
+                                       "8e4ead3 sanctum iter-22 LEO HANDOFF: deploy/ folder + UAC auto-install + EVE.exe auto-update + _internal P0 fix (4 parallel sub-agents)",
+                                       "4c95e21 sanctum sub-C: EVE.exe auto-update (self-update + sidecar + launch wrapper)",
+                                       "e9e4379 sanctum iter22 sub-B: fresh-PC auto-installer with UAC self-elevation",
+                                       "5f8f3d5 sanctum iter-22: cold-start RESUME consolidation — locks cleared / branch fix / 26 watchdog pokes acked / 2 utterances acked / heartbeat",
+                                       "e090b40 sanctum iter-21: 9-subagent ship — custodian / CLAUDE.md trim / push-blockers cleared / Ancestral Remotion P0 / terminal identity header / accounts cleanup / EVE.exe at repo root / paste-back wizard / multi-select picker",
+                                       "be9d3ab sanctum: brain auto-annotate + per-agent branch push fan-out + doctrine",
+                                       "07f4519 sanctum-helper-beta: stage docs + brain + PROGRESS + resume-points (iter21-batch1)"
+                                   ]
+            },
+    "progress_top3":  [
+                          "2026-05-25 06:16 UTC — sanctum iter-22 LEO HANDOFF: deploy/ + UAC auto-install + EVE.exe auto-update + _internal P0 fix + tag pushed",
+                          "2026-05-25 05:53 UTC — sanctum iter-22: cold-start RESUME consolidation (locks cleared + branch fix + 26 watchdog pokes acked + 2 utterances acked + heartbeat)",
+                          "2026-05-25 02:38 UTC — sanctum iter-19: RELENTLESS LOOP SYSTEM SHIPPED (operator 02:18Z \"make it actually work aggressive\")"
+                      ],
+    "latest_plan":  {
+                        "dir":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\sanctum-master-plan-finish-everything-2026-05-25T0150Z",
+                        "artifact":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\sanctum-master-plan-finish-everything-2026-05-25T0150Z\\plan.md"
+                    },
+    "inbox_unread_count":  122,
+    "last_5_files_touched_24h":  [
+                                     "automations\\session-templates\\agent-prefs.json",
+                                     "_shared-memory\\heartbeats\\sanctum.json",
+                                     "_shared-memory\\resume-points\\Sinister Sanctum\\2026-05-23T063132Z.json",
+                                     "_shared-memory\\operator-utterances.jsonl",
+                                     "CLAUDE.md"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Sinister Sanctum.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\plans\\sanctum-master-plan-finish-everything-2026-05-25T0150Z\\plan.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}
