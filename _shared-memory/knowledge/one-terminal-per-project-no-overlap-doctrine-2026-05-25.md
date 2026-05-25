@@ -15,6 +15,14 @@
 > *"ok stop you idiots better not be fucking with each other and making 3 copies. this has to stop. clean this up and enure this shit dont happen again."*
 >
 > *"make sure we take note of that 1 termnal per project so taht no toes are stepped on. we need ot be concise for this and add failsafes for all thigns like this."*
+>
+> **CLARIFICATION (Image #16, 2026-05-25)**: *"you can use parrallel agents and full swarm . just 1 view like this per project but you can use all bots mcps servers, parralkle agents as you need."*
+
+## Authoritative rule (post-clarification)
+
+- **1 Claude WINDOW per project lane.** Don't open a second terminal for the same project slug.
+- **WITHIN that window, full swarm is ENCOURAGED**: spawn parallel `Agent` sub-agents, call MCP bots, run MCP servers concurrently, fan out across non-overlapping file slices.
+- "No overlap" applies to **file sets**: two parallel sub-agents must touch DISJOINT files. If they could touch the same file → serialize the work or split the slice.
 
 ## Binding rules (every Sanctum master agent)
 

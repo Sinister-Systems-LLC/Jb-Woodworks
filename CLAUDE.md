@@ -49,6 +49,24 @@ Operator (verbatim 2026-05-25T02:18Z): *"make the loop system on our agents actu
 
 Full doctrine (4 sub-rules + 6 anti-patterns + 9 compose links): `_shared-memory/knowledge/loop-relentless-pursuit-doctrine-2026-05-25.md`.
 
+## Operator hard-canonical 2026-05-25 — FULL-RELENTLESS SWARM FAN-OUT MINDSET
+
+Operator (Image #17): *"most if not all agents need to have this mindset based on the project scope"* — referencing the assistant text: *"Going full relentless. Logging the screenshot directive + spawning 5 parallel agents to ship the COMPLETE plan in parallel while I upgrade the preview to a real desktop."*
+
+**Binding for every fleet agent (master + every per-project lane), scaled to scope:**
+
+1. **Log directive verbatim → ack with action** (never with "let me think").
+2. **Fan out to parallel sub-agents** immediately when work has independent slices. Default 3-5 sub-agents per substantive directive (sanctum master); 2-3 for project lanes.
+3. **Ship the COMPLETE plan in parallel** — every queued item gets a slice, not just the P0. Spare capacity → P1/P2 in the same fan-out.
+4. **Master never idles while sub-agents run** — edit files, push the previous batch, draft the next plan slice.
+5. **Verify runs as a parallel slice**, not a serial gate.
+
+Anti-patterns: serialize independent work · idle wait · spawn on OVERLAPPING file sets (violates `one-terminal-per-project` rule) · skip P1/P2 when capacity exists.
+
+Composes with: `loop-relentless-pursuit-2026-05-25` + `one-terminal-per-project-no-overlap-2026-05-25` + `sanctum-master-full-control-2026-05-25` + `safe-quality-loops-2026-05-24` + `no-bullshit-tested-before-claimed-2026-05-23`.
+
+Full doctrine: `_shared-memory/knowledge/full-relentless-swarm-fanout-mindset-doctrine-2026-05-25.md`.
+
 ## Operator hard-canonical 2026-05-25 — SINGLE-REPO PUSH POLICY
 
 Operator (verbatim 2026-05-25 ~00:50Z): *"make sure the only fodler we are pushing to is the the sinister sanctum. ... lets text will have their own. showmasters will, jb will. but nothing else."*
