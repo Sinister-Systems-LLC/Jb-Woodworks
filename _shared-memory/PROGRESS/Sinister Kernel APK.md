@@ -6,6 +6,28 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-25 ~08:50Z — iter-7 of /loop: Phase 2 B.4 SHIPPED — SnapAttMethodResolver + setResolvedMethod JNI cache — commit 73bb0a1 v0.97.48
+
+**Author:** RKOJ-ELENO :: 2026-05-25 (kernel-apk lane; /loop dynamic-mode iter-7)
+
+### Shipped (verified, this iter)
+
+| # | Deliverable | Verification |
+|---|---|---|
+| 1 | `SnapAttMethodResolver.kt` — static dex analyser (3-step resolution + per-version JSON cache) | New file committed; root strings scan + atomic cache write pattern |
+| 2 | `AttSignNativeHook.kt`: `setResolvedMethod(classJni, methodName, methodSig)` external fun | New JNI function declared |
+| 3 | `att_sign_hook.cpp`: g_callback_* globals + `setResolvedMethod` JNI impl + `installNative` logs resolution state | C++ updated; still returns false (B.5 pending) |
+| 4 | `AttSignHook.installHook()`: runs resolver + setResolvedMethod before installNative | Kotlin updated |
+| 5 | versionCode 243→244, versionName 0.97.47→0.97.48 | build.gradle.kts updated |
+| 6 | commit 73bb0a1 pushed | git push exit 0 |
+
+### Open (queued next iter)
+
+- Phase 2 B.5: inject hook into Snap's process via KSU/KPatch-Next injection. Wire shadowhook (Prefab), dlopen into Snap's classloader, FindClass + GetMethodID using cached resolution, shadowhook_hook_func_addr() to swap entrypoint.
+- Phase 3 continued: any new sweep patterns
+
+---
+
 ## 2026-05-25 ~08:30Z — iter-6 of /loop: Phase 2 B.3 JNI scaffold SHIPPED — AttSignNativeHook.kt + att_sign_hook.cpp + CMakeLists.txt + NDK wired — commits 89a855f+4b63b77 v0.97.47
 
 **Author:** RKOJ-ELENO :: 2026-05-25 (kernel-apk lane; /loop dynamic-mode iter-6)

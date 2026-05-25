@@ -1,0 +1,48 @@
+{
+  "schema_version": "sinister.resume-point.v1",
+  "ts_utc": "2026-05-25T08:50:00Z",
+  "project": "Kernel APK",
+  "agent_name": "kernel-apk",
+  "mode": "loop-dynamic",
+  "iter": 7,
+  "focus_intent": "iter-7: Phase 2 B.4 SHIPPED — SnapAttMethodResolver (3-step resolution + dex scan + per-version JSON cache) + setResolvedMethod JNI cache in att_sign_hook.cpp. v0.97.48 commit 73bb0a1 pushed. Next iter: Phase 2 B.5 KSU injection + shadowhook entrypoint swap.",
+  "loop_directive_verbatim": "create a plan to complete everything you need to do and keep testing",
+  "git": {
+    "source_v2_HEAD": "73bb0a1 (v0.97.48)",
+    "source_v2_origin": "https://github.com/Sinister-Systems-LLC/Sinister-APK.git",
+    "sanctum_branch": "(varies; check on resume)"
+  },
+  "iter_7_source_v2_changes": [
+    "SnapAttMethodResolver.kt: new file — static dex analyser with 3-step resolution + per-version JSON cache",
+    "AttSignNativeHook.kt: setResolvedMethod(classJni, methodName, methodSig) external fun added",
+    "att_sign_hook.cpp: g_callback_* globals + setResolvedMethod JNI impl + installNative logs resolution state",
+    "AttSignHook.kt installHook(): runs resolver + setResolvedMethod before installNative",
+    "build.gradle.kts: versionCode 243->244, versionName 0.97.47->0.97.48"
+  ],
+  "phase_2_state": {
+    "B1": "DONE (lib selection: shadowhook 2.0.0)",
+    "B2": "DONE (shadowhook dep in build.gradle.kts)",
+    "B3": "DONE (JNI scaffold: att_sign_hook.cpp + CMakeLists.txt + AttSignNativeHook.kt + NDK wired)",
+    "B4": "DONE (SnapAttMethodResolver + setResolvedMethod JNI cache; resolution pipeline wired end-to-end)",
+    "B5": "NEXT — KSU process injection into Snap + shadowhook entrypoint swap using cached resolution",
+    "B6": "AHEAD — end-to-end verification"
+  },
+  "loop_condition_status": {
+    "signal_1": "OPERATIONAL",
+    "signal_2": "UNBLOCKED + future-proofed",
+    "signal_3": "PARTIAL",
+    "signal_4": "B.1-B.4 done. Method resolution pipeline complete. ATT_SIGN_CAPTURE manual-fill path fully wired. B.5 (KSU injection + shadowhook) is the remaining gap for automated capture.",
+    "signal_5": "HARNESS READY",
+    "all_5_satisfied": false
+  },
+  "next_iter_priority_queue": [
+    "Phase 2 B.5: KSU process injection into com.snapchat.android + shadowhook entrypoint swap. Steps: (1) CMakeLists.txt: add find_package(shadowhook REQUIRED CONFIG) + prefab=true in build.gradle.kts; (2) att_sign_hook.cpp: inject_into_snap() via KSU ptrace API or KPatch-Next hook_inject; (3) inside Snap's JVM: FindClass(g_callback_class_jni) + GetMethodID + shadowhook_hook_func_addr(); (4) hook fn captures headers Map -> calls back to AttSignHook.captureNow() via JNI.",
+    "Phase 3 continued: any new patterns"
+  ],
+  "wakeup_disposition": "ScheduleWakeup 270s (cache-warm); continues /loop",
+  "compose_links": [
+    "_shared-memory/plans/kernel-apk-complete-and-harden-2026-05-25/plan.md",
+    "_shared-memory/plans/kernel-apk-complete-and-harden-2026-05-25/phase-2-att-sign-hook-impl.md (B.4 done; B.5 next)",
+    "_shared-memory/audits/kernel-apk-leak-security-error-audit-2026-05-25.md"
+  ]
+}
