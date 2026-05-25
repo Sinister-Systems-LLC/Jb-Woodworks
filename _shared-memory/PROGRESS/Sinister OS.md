@@ -5,6 +5,59 @@
 
 ---
 
+## 2026-05-25 ~11:52Z — Iter 24: Phase 1B Day 1 build-infra — `build-in-wsl.py` Python launcher shipped + smoke-tested
+
+Resume-mode spawn picked up from iter-23 resume-point (10:33Z, branch `agent/sinister-os/eve-llm-bridge-spec-2026-05-25`). EXECUTION-PLAN-2026-05-25 § 2 Phase 1B Day 1 lists `build-in-wsl.py` as a NEW deliverable wrapping `build.sh` + `bake-panel.sh` for the Windows host. Shipped per no-bat-no-ps1 doctrine (Python 3 instead of `.ps1` wrapper).
+
+**Shipped this iter (verified):**
+
+| Path | Verb | Verification |
+|---|---|---|
+| `projects/sinister-os/source/iso-build/build-in-wsl.py` | shipped (Python launcher) | NEW; 5 subcommands `prereqs`/`panel`/`build`/`clean`/`iso-info`; auto-detects substrate (docker-desktop → wsl-docker → wsl-archiso → none); ANSI color w/ NO_COLOR honored; absolute-path bake of Windows → WSL2 path conversion; `--packages slim\|fat\|auto` flag passes through to `SINISTER_PACKAGES` env |
+| `_shared-memory/heartbeats/sinister-os.json` | M | iter 24 row; branch `agent/sinister-os/iso-build-py-launcher-2026-05-25`; ts=11:50Z; substrate=docker-desktop verified |
+| `_shared-memory/PROGRESS/Sinister OS.md` | M | This row |
+
+**Smoke-test (exact commands + outcomes):**
+
+```
+$ python -m py_compile build-in-wsl.py
+exit 0  (no SyntaxError, no NameError on stdlib import path)
+
+$ python build-in-wsl.py --help
+usage: build-in-wsl.py [-h] {prereqs,panel,build,clean,iso-info} ...
+... (5 subparsers listed with one-line help)
+
+$ python build-in-wsl.py prereqs
+==> Detecting build substrate...
+  substrate: docker-desktop
+  docker:    C:\Program Files\Docker\Docker\resources\bin\docker.exe
+==> Checking on-disk inputs...
+  panel bundle: OK  (airootfs/srv/sinister-panel/server.js)
+  build.sh:     OK
+  bake-panel.sh:OK
+  profiledef.sh:OK
+  output dir:   D:\Sinister Sanctum\projects\sinister-os\build
+==> Operator hint:
+  ready -> run:  python build-in-wsl.py build
+```
+
+**Why this matters (composes cleanly):**
+
+- EXECUTION-PLAN § 2 Phase 1B Day 1 lists `build-in-wsl.py` as a NEW deliverable; this iter ships it. Phase 1A (VM preview) was shipped iter 22; Phase 1B (real ISO) now has its Windows-host entry-point.
+- Composes with no-bat-no-ps1-do-it-for-me-doctrine-2026-05-25 (Python over .bat/.ps1) — operator runs `python build-in-wsl.py build` instead of a wrapper script.
+- Composes with automate-everything-no-operator-admin-2026-05-25 — the launcher reports an `Operator hint` line so operator doesn't have to read the existing 6 README files to figure out what to type next.
+- Substrate detection is graceful: docker-desktop > wsl-docker (docker inside a WSL2 distro) > wsl-archiso (last-resort archiso bind-mount in any WSL2 distro). Each tier transparent to the operator.
+
+**Cost register this turn (per expand+quantum doctrine):**
+
+- Routine-tier work (Python file scaffolding + Bash smoke). 0 parallel research agents. 2 Write + 8 Read + 8 Bash. No recursive spawns.
+
+**Next move (iter 25, queued):** ship Block A WINDOWS-PARITY-CANONICAL-2026-05-25 doc consolidating the 6 existing parity audits (no-function-loss-doctrine, pc-feature-audit, variants-design, integration-phasing, etc.) into single operator-facing canonical reference. Single-turn doc scope; no execution risk.
+
+**Push status:** new branch `agent/sinister-os/iso-build-py-launcher-2026-05-25` from current HEAD; local commit pending after this PROGRESS row write. Will use sanctum-auto-push PushNow.
+
+---
+
 ## 2026-05-25 ~10:05Z — Iter 22: EXECUTION plan + same-day VM preview (Phase 1A operator-bootable) + jcode-review addendum
 
 Operator (verbatim 09:54Z): *"create a plan to complete everything i have said to do then open the OS in VM so i can test things and tell you what to do then we can talk about pushing to laptop"* — followed by 10:00Z *"jcode-desktop.desktop review this and other things like it"*. Both addressed this iter.
