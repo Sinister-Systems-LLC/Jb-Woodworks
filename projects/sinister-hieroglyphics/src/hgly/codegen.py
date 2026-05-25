@@ -160,6 +160,17 @@ _BUILTINS: Dict[str, Callable[..., Any]] = {
     "panic": _builtin_panic,
 }
 
+# RKOJ-ELENO :: 2026-05-25 (iter-16) :: merge Phase-8 sim builtins into the
+# VM's call dispatch. Mirrors the interpreter wiring shipped iter-15 so
+# bytecode-compiled .shp programs ALSO trigger real World ops instead of
+# returning the lenient 0 sentinel. try/except keeps sim optional.
+try:
+    from .sim import builtins as _hgly_sim_builtins
+    for _name, _fn in _hgly_sim_builtins().items():
+        _BUILTINS.setdefault(_name, _fn)
+except Exception:
+    pass
+
 
 def _binop(op: str, a: Any, b: Any) -> Any:
     try:

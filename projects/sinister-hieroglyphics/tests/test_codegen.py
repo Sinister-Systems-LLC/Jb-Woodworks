@@ -87,6 +87,45 @@ def t_panic_returns_134():
     assert rv == 134, f"expected 134 panic exit, got {rv!r}"
 
 
+def t_vm_sim_dispatch():
+    """VM must dispatch sim ops to real World (iter-16). Compile a tiny
+    snapshot+step program; verify World advanced t > 0."""
+    from hgly.sim import reset_world, get_world
+    reset_world(init={"x": 1.0}, seed=99)
+    src = "let s0 := snapshot(0)\nlet s1 := step(s0, 0.5)"
+    compile_and_run(src)
+    w = get_world()
+    assert w.t > 0.0, f"expected world.t advanced after step, got t={w.t}"
+    assert len(w.snapshots) >= 2, f"expected >=2 snapshots, got {len(w.snapshots)}"
+
+
+def t_vm_interp_sim_parity():
+    """Interpreter and VM must observe the SAME world state evolution given
+    identical sim programs + seed. Operator-aligned monotonic-loop signal."""
+    from hgly.sim import reset_world, get_world
+    from hgly import Interpreter, parse
+    src = ("let s0 := snapshot(0)\n"
+           "let s1 := step(s0, 0.25)\n"
+           "let s2 := perturb(s1, 0.02)\n"
+           "let o := observe(s2, \"x\")")
+    # Run via interp
+    reset_world(init={"x": 5.0}, seed=7777)
+    Interpreter().run(parse(src))
+    w1 = get_world()
+    t_interp = w1.t; n_interp = len(w1.snapshots)
+    # Run via VM (fresh world, same seed)
+    reset_world(init={"x": 5.0}, seed=7777)
+    compile_and_run(src)
+    w2 = get_world()
+    t_vm = w2.t; n_vm = len(w2.snapshots)
+    assert abs(t_interp - t_vm) < 1e-9, (
+        f"world.t diverged: interp={t_interp} vm={t_vm}"
+    )
+    assert n_interp == n_vm, (
+        f"snapshot count diverged: interp={n_interp} vm={n_vm}"
+    )
+
+
 def main():
     tests = [
         ("const_arith", t_const_arith),
@@ -96,6 +135,8 @@ def main():
         ("vm_matches_interpreter", t_vm_matches_interpreter),
         ("lenient_unknown_call", t_lenient_unknown_call),
         ("panic_returns_134", t_panic_returns_134),
+        ("vm_sim_dispatch", t_vm_sim_dispatch),
+        ("vm_interp_sim_parity", t_vm_interp_sim_parity),
     ]
     passed = 0
     failed = 0
