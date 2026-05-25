@@ -26,12 +26,69 @@
       "sinister-sleight",
       "sinister-overseer",
       "sinister-term-themes",
-      "sinister-memory"
+      "sinister-memory",
+      "sinister-looper"
     ],
     "special_keys": [
       "general",
       "__autoresume__",
       "__newproject__"
+    ],
+    "categories": [
+      {
+        "label": "Sanctum + Core",
+        "keys": [
+          "sanctum",
+          "sinister-imessage-bridge",
+          "sinister-sleight",
+          "sinister-memory"
+        ]
+      },
+      {
+        "label": "Tooling + API",
+        "keys": [
+          "sinister-emulator",
+          "rkoj",
+          "snap-emulator-api",
+          "tiktok-emulator-api",
+          "bumble-emulator-api",
+          "sinister-snap-api-quantum"
+        ]
+      },
+      {
+        "label": "Client Sites",
+        "keys": [
+          "jb-woodworks",
+          "showmasters",
+          "letstext",
+          "eve-compliance"
+        ]
+      },
+      {
+        "label": "Sinister Term",
+        "keys": [
+          "sinister-term-themes"
+        ]
+      },
+      {
+        "label": "Overseer",
+        "keys": [
+          "sinister-overseer"
+        ]
+      },
+      {
+        "label": "Sinister Systems",
+        "keys": [
+          "sinister-panel",
+          "kernel-apk",
+          "sinister-freeze",
+          "sinister-generator",
+          "jkor",
+          "sinister-os",
+          "sinister-chatbot",
+          "sinister-looper"
+        ]
+      }
     ]
   },
   "projects": [
@@ -484,6 +541,21 @@
         "loop_relentless": true
       },
       "tier": 2
+    },
+    {
+      "key": "sinister-looper",
+      "display": "Sinister Looper",
+      "tag": "Loop quality monitor — contradict + expand + rehook save points across every project",
+      "root": "D:\\Sinister Sanctum\\projects\\sinister-looper",
+      "session_start": "",
+      "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-looper\\CLAUDE.md",
+      "github": "Sinister-Systems-LLC/Sinister-Sanctum",
+      "tier": 2,
+      "default_modes": {
+        "swarm": true,
+        "loop": "relentless",
+        "loop_relentless": true
+      }
     }
   ]
 }

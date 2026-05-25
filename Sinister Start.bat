@@ -1,10 +1,11 @@
 @echo off
 REM Sinister Start :: Sanctum entry point - hands off to EVE.exe
-REM Author: RKOJ-ELENO :: 2026-05-24 (v9 - 2x window per operator 19:50Z:
-REM   "have eve exe start in a window double the size it is now so we can see
-REM    the full thing". mode con sets the console buffer + window to 160x50.)
+REM Author: RKOJ-ELENO :: 2026-05-25 v11 - 2x WIDER window per operator
+REM   "even needs to open in the bigger 2x size window and all changes i said
+REM    to do". v9 was 160x50; this is 220x65 (2x area, well within standard
+REM    1920x1080 console rendering).
 TITLE EVE :: Sinister Sanctum
-mode con: cols=160 lines=50 >nul 2>&1
+mode con: cols=220 lines=65 >nul 2>&1
 setlocal enableextensions
 
 set "SANCTUM_ROOT="
