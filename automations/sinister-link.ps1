@@ -223,7 +223,15 @@ switch ($Action) {
         $s = Read-State
         $tag = Compute-State-Tag
         $stateWord = 'unlinked'
-        if ($s) { $stateWord = 'linked' }
+        # RKOJ-ELENO :: 2026-05-25 Sub-G-followup: honor the explicit state field
+        # written by the GenerateInvite stub (value 'invited') and AcceptInvite ('paired').
+        # Old behavior collapsed everything-but-missing into 'linked', which masked the
+        # invited state shipped by aeff2d4.
+        if ($s -and $s.state) {
+            $stateWord = [string]$s.state
+        } elseif ($s) {
+            $stateWord = 'linked'
+        }
         $health = $null
         if (Test-Path $HealthPath) {
             try { $health = Get-Content -LiteralPath $HealthPath -Raw -Encoding UTF8 | ConvertFrom-Json } catch {}
