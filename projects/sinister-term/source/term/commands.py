@@ -85,6 +85,7 @@ Sinister Term commands:
   /events [N] [--cat C] [--name N] [--disk]  Tail cmux event_bus (ring or jsonl)
   /ascii [on|off|status|project K|list]  Control SA-PH6 living-entity overlay
   /health                   Single-screen sterm dashboard (version/branch/agents/inbox/bridge/bus)
+  /uptime                   Session duration + event count + ascii frames + cache size
   /alias [name=val|remove n] List aliases, define one, or remove one
   /clear                    Clear the screen
   /help                     This message
@@ -516,6 +517,89 @@ def cmd_recall(args: list[str]) -> CommandResult:
     return CommandResult(True, "\n".join(lines))
 
 
+def _format_duration(seconds: float) -> str:
+    """Render a duration as a compact human-readable string.
+
+    Examples:
+      45.0   -> '45.0s'
+      90.0   -> '1m 30s'
+      3661.0 -> '1h 01m 01s'
+      90061.0 -> '1d 01h 01m'
+    """
+    seconds = max(0.0, float(seconds))
+    if seconds < 60:
+        return f"{seconds:.1f}s"
+    if seconds < 3600:
+        m, s = divmod(int(seconds), 60)
+        return f"{m}m {s:02d}s"
+    if seconds < 86400:
+        h, rem = divmod(int(seconds), 3600)
+        m, s = divmod(rem, 60)
+        return f"{h}h {m:02d}m {s:02d}s"
+    d, rem = divmod(int(seconds), 86400)
+    h, m = divmod(rem, 3600)
+    return f"{d}d {h:02d}h {m // 60:02d}m"
+
+
+# Module-level boot timestamp — captured on first import = effective sterm start.
+import time as _time_mod
+_STERM_BOOT_T = _time_mod.monotonic()
+_STERM_BOOT_WALL = _time_mod.time()
+
+
+def cmd_uptime(_args: list[str]) -> CommandResult:
+    """iter-56: sterm session duration + activity counters.
+
+    Composes with /health but focuses on the "how long has this shell been
+    alive and how much has it done" question. Cheap: just monotonic delta
+    + bus seq + bridge frame count.
+    """
+    import time as _t
+    monotonic_now = _t.monotonic()
+    wall_now = _t.time()
+    secs = monotonic_now - _STERM_BOOT_T
+    lines = [
+        f"Sinister Term uptime:",
+        f"  session:        {_format_duration(secs)}",
+        f"  booted at:      {_t.strftime('%Y-%m-%dT%H:%M:%SZ', _t.gmtime(_STERM_BOOT_WALL))}",
+        f"  now:            {_t.strftime('%Y-%m-%dT%H:%M:%SZ', _t.gmtime(wall_now))}",
+    ]
+
+    # Activity counters — what HAS happened since boot
+    try:
+        from term.event_bus import default_bus
+        bus = default_bus()
+        lines.append(
+            f"  events seen:    {bus.current_seq}  (ring {bus.ring_size}/4096)"
+        )
+    except Exception:
+        lines.append("  events seen:    (event_bus unavailable)")
+
+    try:
+        from term import ascii_bridge as _br
+        s = _br.default_bridge().status()
+        if s.running:
+            running_for = (wall_now - s.started_at) if s.started_at else 0
+            lines.append(
+                f"  ascii frames:   {s.frames_rendered}  "
+                f"(bridge ON for {_format_duration(running_for)})"
+            )
+        else:
+            lines.append(
+                f"  ascii frames:   {s.frames_rendered}  (bridge off)"
+            )
+    except Exception:
+        lines.append("  ascii frames:   (ascii_bridge unavailable)")
+
+    try:
+        from term import cache as _cache
+        lines.append(f"  cache entries:  {_cache.size()}")
+    except Exception:
+        pass
+
+    return CommandResult(True, "\n".join(lines))
+
+
 def cmd_health(_args: list[str]) -> CommandResult:
     """iter-55: single-screen sterm health dashboard.
 
@@ -904,6 +988,7 @@ COMMANDS: dict[str, Callable[[list[str]], CommandResult]] = {
     "events": cmd_events,  # iter-53 — read the cmux event_bus
     "ascii": cmd_ascii,    # iter-54 — control SA-PH6 ascii_bridge
     "health": cmd_health,  # iter-55 — single-screen sterm dashboard
+    "uptime": cmd_uptime,  # iter-56 — sterm session duration + activity counters
 }
 
 
