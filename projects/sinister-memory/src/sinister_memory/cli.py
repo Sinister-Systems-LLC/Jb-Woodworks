@@ -194,6 +194,62 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_v.add_argument("--model", default="claude-haiku-4-5-20251001")
 
+    # embed-index (kernel-vector pass over the FTS5 corpus)
+    p_ei = sub.add_parser(
+        "embed-index",
+        help="compute + store embeddings for every indexed memory (kernel-vector pass)",
+    )
+    p_ei.add_argument("--limit", type=int, default=None, help="cap rows for incremental runs")
+    p_ei.add_argument(
+        "--backend",
+        default="auto",
+        choices=("auto", "ruflo", "tfidf", "null"),
+    )
+
+    # vector-recall (cosine over embeddings.db)
+    p_vr = sub.add_parser(
+        "vector-recall",
+        help="cosine-similarity recall over the embeddings index",
+    )
+    p_vr.add_argument("query")
+    p_vr.add_argument("--limit", type=int, default=5)
+    p_vr.add_argument("--threshold", type=float, default=0.3)
+    p_vr.add_argument(
+        "--backend",
+        default="auto",
+        choices=("auto", "ruflo", "tfidf", "null"),
+    )
+
+    # prune (low confidence + age)
+    p_pr = sub.add_parser(
+        "prune",
+        help="hard-delete memories with confidence < threshold AND age >= hours",
+    )
+    p_pr.add_argument("--confidence", type=float, default=0.15)
+    p_pr.add_argument("--age-hours", type=float, default=24.0)
+    p_pr.add_argument("--apply", action="store_true", help="default is dry-run")
+
+    # consolidate (ambient mode)
+    p_co = sub.add_parser(
+        "consolidate",
+        help="orchestrated ambient consolidation pass (index + dedupe + prune + optional embed/verify)",
+    )
+    p_co.add_argument("--apply", action="store_true", help="default is dry-run")
+    p_co.add_argument("--with-embeddings", action="store_true")
+    p_co.add_argument("--with-verify", action="store_true")
+
+    # export-graph (for Sinister Mind D3 viz)
+    p_eg = sub.add_parser(
+        "export-graph",
+        help="export the memory node + edge graph as JSON (Sinister Mind compatible)",
+    )
+    p_eg.add_argument("--out", required=True, help="output JSON path")
+    p_eg.add_argument(
+        "--layer",
+        action="append",
+        choices=("brain", "progress", "heartbeat", "per-agent"),
+    )
+
     # version
     sub.add_parser("version", help="print version + exit")
 
@@ -382,6 +438,84 @@ def cmd_verify(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_embed_index(args: argparse.Namespace) -> int:
+    root, _ = _resolve_root_and_db(args)
+    from . import embed
+
+    db = embed.default_embedding_db(root)
+    stats = embed.build_embedding_index(root=root, db_path=db, backend=args.backend, limit=args.limit)
+    print(
+        f"scanned={stats['scanned']} written={stats['written']} "
+        f"skipped={stats['skipped']} errors={stats['errors']} backend={stats['backend']}"
+    )
+    print(f"db: {db}")
+    return 0
+
+
+def cmd_vector_recall(args: argparse.Namespace) -> int:
+    root, _ = _resolve_root_and_db(args)
+    from . import embed
+
+    db = embed.default_embedding_db(root)
+    hits = embed.recall_by_vector(
+        query_text=args.query,
+        db_path=db,
+        limit=args.limit,
+        threshold=args.threshold,
+        backend=args.backend,
+    )
+    if not hits:
+        print("_(no vector hits >= threshold)_")
+        return 0
+    for h in hits:
+        print(f"- score={h.score:.3f}  [{h.layer}] {h.path}:{h.line}  -- {h.snippet[:120]}")
+    return 0
+
+
+def cmd_prune(args: argparse.Namespace) -> int:
+    root, db = _resolve_root_and_db(args)
+    from . import prune
+
+    stats = prune.prune_low_confidence(
+        root=root,
+        db_path=db,
+        confidence_threshold=args.confidence,
+        age_hours=args.age_hours,
+        dry_run=not args.apply,
+    )
+    print(
+        f"scanned={stats['scanned']} candidates={stats['candidates']} "
+        f"pruned_fts={stats['pruned_fts']} pruned_embeddings={stats['pruned_embeddings']} "
+        f"pruned_edges={stats['pruned_edges']} dry_run={stats['dry_run']}"
+    )
+    return 0
+
+
+def cmd_consolidate(args: argparse.Namespace) -> int:
+    root, db = _resolve_root_and_db(args)
+    from . import consolidate as _co
+
+    stats = _co.consolidate(
+        root=root,
+        db_path=db,
+        dry_run=not args.apply,
+        with_embeddings=args.with_embeddings,
+        with_verify=args.with_verify,
+    )
+    import json as _json
+    print(_json.dumps(stats, indent=2, default=str))
+    return 0
+
+
+def cmd_export_graph(args: argparse.Namespace) -> int:
+    root, db = _resolve_root_and_db(args)
+    from . import export_graph as _eg
+
+    stats = _eg.export_graph(root=root, db_path=db, out_path=Path(args.out), layers=args.layer)
+    print(f"nodes={stats['nodes']} edges={stats['edges']} written_to={stats['written_to']}")
+    return 0
+
+
 DISPATCH = {
     "recall": cmd_recall,
     "save": cmd_save,
@@ -394,6 +528,11 @@ DISPATCH = {
     "decay-recall": cmd_decay_recall,
     "cluster-dedupe": cmd_cluster_dedupe,
     "verify": cmd_verify,
+    "embed-index": cmd_embed_index,
+    "vector-recall": cmd_vector_recall,
+    "prune": cmd_prune,
+    "consolidate": cmd_consolidate,
+    "export-graph": cmd_export_graph,
     "version": cmd_version,
 }
 

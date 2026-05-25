@@ -27,7 +27,7 @@ from __future__ import annotations
 import os
 import re
 from pathlib import Path
-from typing import NamedTuple, Optional
+from typing import NamedTuple, Optional, Sequence
 
 
 class Verdict(NamedTuple):
@@ -130,6 +130,193 @@ def _online_grade(memory_text: str, source_text: Optional[str], model: str) -> V
     cost = 0.000020  # ~2e-5 USD per call; tunable, NOT precise
 
     return Verdict(verdict=verdict, reason=reason, model=model, cost_estimate_usd=cost)
+
+
+_BATCH_PROMPT = (
+    "You are grading a BATCH of stored agent memories against a single source-of-truth. "
+    "Return a single JSON ARRAY on ONE line. Each element: "
+    '{"index": <int>, "verdict": "fresh"|"stale"|"wrong", "reason": "<=20 words"}.\n\n'
+    "fresh = memory accurately reflects source\n"
+    "stale = memory was once true but source has moved on\n"
+    "wrong = memory contradicts source / was never true\n"
+)
+
+_CONTRADICTION_PROMPT = (
+    "You are a contradiction detector. Answer in a single JSON object on ONE line: "
+    '{"contradicts": true|false, "reason": "<=20 words"}. '
+    "contradicts=true means the NEW memory directly negates / replaces / refutes the OLD one.\n"
+)
+
+
+def grade_batch(
+    candidates: Sequence[tuple],
+    source_text: str,
+    model: str = "claude-haiku-4-5-20251001",
+    prefer: str = "auto",
+) -> list:
+    """Batch-grade multiple memories with ONE Haiku call. Cherry-picked from
+    jcode batch pattern (recommendation from Sub-D audit, brain entry
+    jcode-memory-audit-and-cherry-picks-2026-05-25).
+
+    Args:
+      candidates  : sequence of (id, text) tuples
+      source_text : single shared source-of-truth
+      model       : Anthropic model id
+      prefer      : "auto" | "online" | "heuristic"
+
+    Returns: list of Verdict (same order as `candidates`).
+    Cost: ~1x Haiku call total instead of N x Haiku calls.
+    """
+    from .cluster import jaccard, tokenize
+
+    if not candidates:
+        return []
+
+    modes = available_modes()
+    use_online = (prefer == "online") or (prefer == "auto" and modes["online"])
+
+    if not use_online:
+        src_toks = tokenize(source_text)
+        out: list = []
+        for _id, text in candidates:
+            j = jaccard(tokenize(text), src_toks)
+            v = "fresh" if j >= 0.6 else ("stale" if j < 0.25 else "fresh")
+            out.append(Verdict(verdict=v, reason=f"jaccard={j:.2f}", model="heuristic-jaccard", cost_estimate_usd=0.0))
+        return out
+
+    try:
+        import anthropic
+    except ImportError:
+        return [Verdict("ungraded", "anthropic SDK not installed", "none", 0.0) for _ in candidates]
+
+    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    if not api_key:
+        return [Verdict("ungraded", "ANTHROPIC_API_KEY not set", "none", 0.0) for _ in candidates]
+
+    items: list[str] = []
+    for i, (_id, text) in enumerate(candidates):
+        snip = (text or "")[:500]
+        items.append(f"[{i}] {snip}")
+    user_block = "SOURCE:\n" + (source_text or "(no source)")[:6000] + "\n\nMEMORIES:\n" + "\n".join(items)
+    user_block = user_block[:12000]
+
+    try:
+        client = anthropic.Anthropic(api_key=api_key)
+        resp = client.messages.create(
+            model=model,
+            max_tokens=800,
+            system=_BATCH_PROMPT,
+            messages=[{"role": "user", "content": user_block}],
+        )
+    except Exception as exc:  # noqa: BLE001
+        return [Verdict("ungraded", f"haiku batch failed: {type(exc).__name__}", model, 0.0) for _ in candidates]
+
+    raw = ""
+    try:
+        for block in resp.content:
+            if getattr(block, "type", "") == "text":
+                raw += getattr(block, "text", "")
+    except Exception:  # noqa: BLE001
+        pass
+
+    import json
+    parsed: list = []
+    verdicts_by_idx: dict[int, dict] = {}
+    try:
+        start = raw.find("[")
+        end = raw.rfind("]")
+        if start >= 0 and end > start:
+            arr = json.loads(raw[start : end + 1])
+            for item in arr:
+                if isinstance(item, dict) and "index" in item:
+                    verdicts_by_idx[int(item["index"])] = item
+    except (json.JSONDecodeError, ValueError, KeyError):
+        pass
+
+    cost_total = 0.00005
+    cost_per_item = cost_total / max(1, len(candidates))
+    for i, _ in enumerate(candidates):
+        item = verdicts_by_idx.get(i)
+        if item:
+            parsed.append(Verdict(
+                verdict=str(item.get("verdict", "ungraded")).lower(),
+                reason=str(item.get("reason", ""))[:200],
+                model=model,
+                cost_estimate_usd=cost_per_item,
+            ))
+        else:
+            parsed.append(Verdict("ungraded", "no verdict in batch response", model, cost_per_item))
+    return parsed
+
+
+def check_contradiction(
+    new_text: str,
+    old_text: str,
+    model: str = "claude-haiku-4-5-20251001",
+    prefer: str = "auto",
+) -> tuple:
+    """Returns (contradicts: bool, reason: str). Used by supersede.mark_edge(check_contradiction=True).
+
+    HEURISTIC: jaccard >= 0.4 AND negation-token asymmetry -> True.
+    ONLINE: single Haiku call returning {"contradicts": bool, "reason": str}.
+    """
+    from .cluster import jaccard, tokenize
+
+    modes = available_modes()
+    use_online = (prefer == "online") or (prefer == "auto" and modes["online"])
+
+    if not use_online:
+        tn = tokenize(new_text)
+        to = tokenize(old_text)
+        j = jaccard(tn, to)
+        if j < 0.4:
+            return False, f"jaccard {j:.2f} too low; different topics"
+        neg = {"not", "no", "never", "stop", "remove", "removed", "deprecated", "disabled", "wrong", "ban", "banned", "deleted"}
+        new_neg = tn & neg
+        old_neg = to & neg
+        if (new_neg and not old_neg) or (old_neg and not new_neg):
+            return True, f"negation asymmetry: new={sorted(new_neg)} old={sorted(old_neg)}"
+        return False, f"jaccard {j:.2f}, no negation asymmetry"
+
+    try:
+        import anthropic
+    except ImportError:
+        return False, "anthropic SDK not installed (heuristic-skip)"
+
+    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    if not api_key:
+        return False, "ANTHROPIC_API_KEY not set (heuristic-skip)"
+
+    user = f"NEW:\n{(new_text or '')[:3000]}\n\nOLD:\n{(old_text or '')[:3000]}"
+    try:
+        client = anthropic.Anthropic(api_key=api_key)
+        resp = client.messages.create(
+            model=model,
+            max_tokens=120,
+            system=_CONTRADICTION_PROMPT,
+            messages=[{"role": "user", "content": user}],
+        )
+    except Exception as exc:  # noqa: BLE001
+        return False, f"haiku failed: {type(exc).__name__}"
+
+    raw = ""
+    try:
+        for block in resp.content:
+            if getattr(block, "type", "") == "text":
+                raw += getattr(block, "text", "")
+    except Exception:  # noqa: BLE001
+        pass
+
+    import json
+    try:
+        s = raw.find("{")
+        e = raw.rfind("}")
+        if s >= 0 and e > s:
+            obj = json.loads(raw[s : e + 1])
+            return bool(obj.get("contradicts")), str(obj.get("reason", ""))[:200]
+    except (json.JSONDecodeError, ValueError):
+        pass
+    return False, "no parseable verdict"
 
 
 def verify_memory(

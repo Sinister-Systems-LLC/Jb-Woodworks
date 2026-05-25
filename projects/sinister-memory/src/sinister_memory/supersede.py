@@ -202,12 +202,21 @@ def mark_edge(
     db_path: Path,
     weight: Optional[float] = None,
     reason: str = "",
+    check_contradiction: bool = False,
+    new_text: Optional[str] = None,
+    old_text: Optional[str] = None,
 ) -> None:
     """Generic typed-edge writer (cherry-picked from jcode memory_graph.rs:116-125).
 
     Kind must be one of EDGE_KINDS. Weight is optional (used by RelatesTo).
     For Supersedes, also writes to the legacy `supersedes` table for back-compat
     with chain_for / latest_of / superseded_set.
+
+    If `check_contradiction=True` and kind in {Supersedes, Contradicts} and
+    both new_text and old_text are provided, calls verify.check_contradiction
+    FIRST and raises ValueError if no contradiction is detected. Jcode-style
+    LLM-gated supersede (cherry-pick from iter-2 Sub-C audit, recommended
+    queue item shipped in iter-3).
     """
     src_id = (src_id or "").strip()
     dst_id = (dst_id or "").strip()
@@ -217,6 +226,14 @@ def mark_edge(
         raise ValueError(f"unknown edge kind {kind!r}; must be one of {sorted(EDGE_KINDS)}")
     if src_id == dst_id and kind in {"Supersedes", "Contradicts"}:
         raise ValueError(f"{kind}: a memory cannot {kind.lower()} itself")
+
+    if check_contradiction and kind in {"Supersedes", "Contradicts"} and new_text is not None and old_text is not None:
+        from . import verify as _verify
+
+        contradicts, gate_reason = _verify.check_contradiction(new_text, old_text)
+        if not contradicts:
+            raise ValueError(f"contradiction-gate REJECTED {kind}: {gate_reason}")
+        reason = (reason + f" [gated: {gate_reason}]") if reason else f"gated: {gate_reason}"
 
     conn = _connect(db_path)
     try:

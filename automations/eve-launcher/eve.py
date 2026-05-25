@@ -1105,8 +1105,20 @@ def _print_sub_page_header(title: str) -> None:
     # EVE feels alive between page changes (operator: "more animations + live").
     # 600ms / 12fps cap; gracefully skipped under NO_COLOR / EVE_QUIET / SKIP_BANNER.
     _shimmer_transition(label=title[:24] if title else "EVE")
+    # RKOJ-ELENO :: 2026-05-25 (eve-exe iter-2) :: Image #66 "more animations".
+    # Bump the global anim tick on every header render so the dashes drift hue
+    # between page changes (cheap, no background thread). Fall back to plain
+    # DARKP dashes when ANSI is off or animations didn't import.
+    global _EVE_ANIM_TICK
+    _EVE_ANIM_TICK += 1
+    if _ANSI_ON and animations is not None:
+        _dash_l = _shimmer_accent("---", _EVE_ANIM_TICK)
+        _dash_r = _shimmer_accent("---", _EVE_ANIM_TICK + 7)
+    else:
+        _dash_l = f"{DARKP}---{RESET}"
+        _dash_r = f"{DARKP}---{RESET}"
     print()
-    print(f"  {DARKP}---{RESET} {WHITE}{BOLD}{title}{RESET} {DARKP}---{RESET}")
+    print(f"  {_dash_l} {WHITE}{BOLD}{title}{RESET} {_dash_r}")
     print()
 
 
@@ -1276,8 +1288,14 @@ def _shimmer_transition(label: str = "EVE", duration_s: float = _EVE_SHIMMER_DUR
 def _print_sub_page_footer(extra_keys: str = "") -> None:
     """Canonical footer: DIM --- PURPLE B) Back   PURPLE H) Home   PURPLE X) Exit   DIM (extras)."""
     keys = f"{DIM}({extra_keys}){RESET}" if extra_keys else ""
+    # RKOJ-ELENO :: 2026-05-25 (eve-exe iter-2) :: Image #66 "more animations".
+    # Footer separator hue-drifts in sync with header (uses global tick + offset).
+    if _ANSI_ON and animations is not None:
+        _dash = _shimmer_accent("---", _EVE_ANIM_TICK + 13)
+    else:
+        _dash = f"{DIM}---{RESET}"
     line = (
-        f"  {DIM}---{RESET} {PURPLE}B){RESET} Back   "
+        f"  {_dash} {PURPLE}B){RESET} Back   "
         f"{PURPLE}H){RESET} Home   "
         f"{PURPLE}X){RESET} Exit"
     )
