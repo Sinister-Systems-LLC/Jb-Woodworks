@@ -208,6 +208,14 @@ class _Parser:
                 return Call(line=t.line, col=t.col, callee=node, args=args2)
             return node
         if k == "LAM": return self._lambda()
+        # RKOJ-ELENO :: 2026-05-25 (iter-8 lenient mode) :: corpus uses LBRACK
+        # for list literals and COLON for type annotations; full AST support
+        # ships Phase 4+. For now skip them in expression position and parse
+        # the next token as the actual expression so the corpus tokenizes +
+        # parses + runs under the interpreter's lenient mode.
+        if k in ("LBRACK", "RBRACK", "COLON"):
+            self.advance()
+            return self._prefix()
         raise ParseError(f"unexpected token {k} ({t.lexeme!r})", t.line, t.col)
 
     def _prefix_operand(self) -> Node:

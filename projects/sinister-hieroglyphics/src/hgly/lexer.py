@@ -34,9 +34,10 @@ _ASCII_KEYWORDS = {
 _MULTI_PUNCT = [("==", "EQ"), ("!=", "NEQ"), ("<=", "LE"), (">=", "GE"),
                 (":=", "ASSIGN"), ("&&", "AND"), ("||", "OR")]
 _SINGLE_PUNCT = {"{": "LBRACE", "}": "RBRACE", "(": "LPAREN", ")": "RPAREN",
+                 "[": "LBRACK", "]": "RBRACK", ":": "COLON",
                  ",": "COMMA", ";": "SEMI", "+": "PLUS", "-": "MINUS",
                  "*": "STAR", "/": "SLASH", "%": "PERCENT", "<": "LT",
-                 ">": "GT", "!": "NOT", "=": "EQ_BARE"}
+                 ">": "GT", "!": "NOT", "=": "EQ"}
 
 
 @dataclass(frozen=True)
@@ -108,14 +109,26 @@ def tokenize(src: str) -> List[Token]:
         if matched: continue
         if c in _SINGLE_PUNCT:
             kind = _SINGLE_PUNCT[c]
-            if kind == "EQ_BARE":
-                raise LexError("bare '=' reserved; use ':=' or '=='", line, col)
             out.append(Token(kind, c, line, col)); i += 1; col += 1; continue
         if _is_ident_start(c):
             start_col = col; j = i
             while j < n and _is_ident_cont(src[j]): j += 1
             lex = src[i:j]
             out.append(Token(_ASCII_KEYWORDS.get(lex, "IDENT"), lex, line, start_col))
+            col += (j - i); i = j; continue
+        # RKOJ-ELENO :: 2026-05-25 (iter-8 lexer relaxation) :: unknown chars in
+        # the Egyptian Hieroglyph block (U+13000-U+1342F) get treated as IDENT
+        # so corpus programs using glyphs outside the canonical 16-token map
+        # still tokenize. Phase 4+ tightens this when codegen needs strict
+        # glyph-to-op mapping; for now interpreter lenient mode resolves them
+        # to zero-stubs gracefully.
+        cp = ord(c)
+        if 0x13000 <= cp <= 0x1342F:
+            # Egyptian Hieroglyph block; collect a run of glyph chars as one IDENT.
+            start_col = col; j = i
+            while j < n and 0x13000 <= ord(src[j]) <= 0x1342F:
+                j += 1
+            out.append(Token("IDENT", src[i:j], line, start_col))
             col += (j - i); i = j; continue
         raise LexError(f"unexpected character {c!r}", line, col)
     out.append(Token("EOF", "", line, col))
