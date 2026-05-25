@@ -414,14 +414,43 @@ def render_account_info_block(detailed: bool = False) -> None:
 
     detailed=True   ->  Accounts page format (5 lines + spacer per enabled acct).
     detailed=False  ->  Resume page format (2 lines per enabled acct, compact).
+
+    RKOJ-ELENO :: 2026-05-25T12:00Z :: sub-agent B :: every line buffers into
+    `_buf` and renders via eve_ui.center_block per eve-ui-uniformity-doctrine
+    "centered menu each page" (operator image #61). The fallback (no eve_ui
+    available) preserves the previous 2-sp indent.
     """
+    _buf: list[str] = []
+
+    def _emit(line: str = "") -> None:
+        _buf.append(line)
+
+    def _flush() -> None:
+        if not _buf:
+            return
+        try:
+            import sys as _sys
+            from pathlib import Path as _P
+            _here = _P(__file__).resolve().parent
+            if str(_here) not in _sys.path:
+                _sys.path.insert(0, str(_here))
+            from eve_ui import center_block as _cb  # type: ignore
+            for ln in _cb(_buf, width=72):
+                print(ln)
+        except Exception:
+            for ln in _buf:
+                print(f"  {ln}")
+        _buf.clear()
+
     data = _load_accounts()
     if not data:
-        print(f"  {DIM}(no claude-accounts.json){RESET}")
+        _emit(f"{DIM}(no claude-accounts.json){RESET}")
+        _flush()
         return
     accts = data.get("accounts", [])
     if not accts:
-        print(f"  {DIM}(no accounts configured){RESET}")
+        _emit(f"{DIM}(no accounts configured){RESET}")
+        _flush()
         return
 
     now = datetime.now(timezone.utc)
@@ -446,15 +475,15 @@ def render_account_info_block(detailed: bool = False) -> None:
     unlinked = [a for a in enabled if not a.get("linked", False)]
 
     title = "Claude accounts" if detailed else "Accounts"
-    print()
+    _emit()
     # No-cap header: count of accounts, breakdown of enabled / linked /
     # unlinked. The old "N/M enabled" implied a fixed M-slot cap.
-    print(f"  {BRIGHTP}{title}{RESET}  "
+    _emit(f"{BRIGHTP}{title}{RESET}  "
           f"{WHITE}{len(accts)} accounts{RESET}  "
           f"{DIM}({len(enabled)} enabled, {len(linked)} linked, "
           f"{len(unlinked)} unlinked){RESET}  "
           f"{DIM}{data.get('rotation_strategy', '?')}{RESET}")
-    print()
+    _emit()
 
     # U+25CF black circle (cp1252/WGL4 safe).
     bullet = "●"
@@ -500,14 +529,14 @@ def render_account_info_block(detailed: bool = False) -> None:
         # Header line (both modes) -- LINKED / UNLINKED tag.
         link_tag = (f"{OK}LINKED{RESET}" if is_linked
                     else f"{WARN}UNLINKED{RESET}")
-        print(f"  {dot_col}{bullet}{RESET} {WHITE}{label}{RESET} "
+        _emit(f"{dot_col}{bullet}{RESET} {WHITE}{label}{RESET} "
               f"{DIM}[{RESET}{PURPLE}{tier}{RESET}{DIM}]{RESET}  "
               f"{DIM}[{RESET}{link_tag}{DIM}]{RESET}")
 
         # Window bar -- probe-first, never fake. Probe ok beats `linked` flag
         # (probe IS the truth source; linked flag may lag).
         if rate_lim and rate_lim > now:
-            bar_line = (f"    {SOFT}5h Window:{RESET} "
+            bar_line = (f"  {SOFT}5h Window:{RESET} "
                         f"{FAIL}[rate-limited {_fmt_dur(rate_lim - now)} left]{RESET}")
         elif probe_ok and isinstance(probe_5h, (int, float)):
             p_int = int(round(float(probe_5h) * 100.0))
@@ -526,23 +555,23 @@ def render_account_info_block(detailed: bool = False) -> None:
                 except Exception:
                     pass
             extras_str = ("  " + "  ".join(extras)) if extras else ""
-            bar_line = (f"    {SOFT}5h Window:{RESET} {_bar(p_int, 20)} "
+            bar_line = (f"  {SOFT}5h Window:{RESET} {_bar(p_int, 20)} "
                         f"{WHITE}{p_int}% used{RESET} {OK}[MEASURED]{RESET}{extras_str}")
         elif live and live.get("status", "").startswith("probe-failed"):
             why = "refresh needed" if live.get("refresh_needed") else live.get("status", "probe-failed")
             spawns_in_win = _spawns_in_5h(name, spawn_rows, now)
-            bar_line = (f"    {SOFT}5h Window:{RESET} "
+            bar_line = (f"  {SOFT}5h Window:{RESET} "
                         f"{DIM}spawns {spawns_in_win} in last 5h (raw){RESET}  "
                         f"{WARN}[probe: {why}]{RESET}")
         elif not is_linked:
-            bar_line = (f"    {SOFT}5h Window:{RESET} "
+            bar_line = (f"  {SOFT}5h Window:{RESET} "
                         f"{WARN}not logged in -- run claude login to enable probe{RESET}")
         else:
             spawns_in_win = _spawns_in_5h(name, spawn_rows, now)
-            bar_line = (f"    {SOFT}5h Window:{RESET} "
+            bar_line = (f"  {SOFT}5h Window:{RESET} "
                         f"{DIM}spawns {spawns_in_win} in last 5h (raw){RESET}  "
                         f"{DIM}(no probe){RESET}")
-        print(bar_line)
+        _emit(bar_line)
 
         running = running_map.get(name, [])
         running_count = len(running)
@@ -551,20 +580,20 @@ def render_account_info_block(detailed: bool = False) -> None:
             running_disp += f", +{running_count - 4}"
 
         if detailed:
-            print(f"    {SOFT}Today:{RESET}   {WHITE}{today}{RESET} spawns")
+            _emit(f"  {SOFT}Today:{RESET}   {WHITE}{today}{RESET} spawns")
             if running_count:
-                print(f"    {SOFT}Running:{RESET} {OK}{running_count}{RESET} "
+                _emit(f"  {SOFT}Running:{RESET} {OK}{running_count}{RESET} "
                       f"{('agent' if running_count == 1 else 'agents')}  "
                       f"{DIM}({running_disp}){RESET}")
             else:
-                print(f"    {SOFT}Running:{RESET} {DIM}0 agents{RESET}")
+                _emit(f"  {SOFT}Running:{RESET} {DIM}0 agents{RESET}")
             rl_24 = _rate_limit_24h(name)
             if rl_24:
-                print(f"    {SOFT}Recent:{RESET}  {WARN}{rl_24} rate-limit event"
+                _emit(f"  {SOFT}Recent:{RESET}  {WARN}{rl_24} rate-limit event"
                       f"{'s' if rl_24 != 1 else ''} in last 24h{RESET}")
             else:
-                print(f"    {SOFT}Recent:{RESET}  {DIM}no rate-limit events in last 24h{RESET}")
-            print()
+                _emit(f"  {SOFT}Recent:{RESET}  {DIM}no rate-limit events in last 24h{RESET}")
+            _emit()
         else:
             # Compact: one extra info line combining today + running
             today_str = f"{WHITE}{today}{RESET} {DIM}today{RESET}"
@@ -573,16 +602,17 @@ def render_account_info_block(detailed: bool = False) -> None:
                            f"{DIM}running ({running_disp}){RESET}")
             else:
                 run_str = f"{DIM}0 running{RESET}"
-            print(f"    {SOFT}Today:{RESET}   {today_str}  {SOFT}{bullet}{RESET}  {run_str}")
+            _emit(f"  {SOFT}Today:{RESET}   {today_str}  {SOFT}{bullet}{RESET}  {run_str}")
 
     # Disabled / empty slot summary
     if disabled_named:
         names = ", ".join(str(a.get("label") or a.get("name")) for a in disabled_named)
-        print(f"  {DIM}{bullet} {len(disabled_named)} disabled: {names}{RESET}")
+        _emit(f"{DIM}{bullet} {len(disabled_named)} disabled: {names}{RESET}")
     if empty_slots:
-        print(f"  {DIM}+ {empty_slots} empty slot{'s' if empty_slots != 1 else ''} "
+        _emit(f"{DIM}+ {empty_slots} empty slot{'s' if empty_slots != 1 else ''} "
               f"{bullet} press {RESET}{PURPLE}O{RESET}{DIM} to onboard{RESET}")
-    print()
+    _emit()
+    _flush()
 
 
 # ---------------------------------------------------------------------------

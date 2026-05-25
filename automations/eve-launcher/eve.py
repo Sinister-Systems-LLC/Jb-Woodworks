@@ -1624,6 +1624,15 @@ def _accounts_page_render_and_dispatch(_subprocess, _getpass) -> str:
     # Live slot status (re-runs every loop iter; "status refresh needs to
     # happen puto" per operator -- so it's ALWAYS at the top, not behind a key)
     status_body: list[str] = []
+    # RKOJ-ELENO :: 2026-05-25T11:50Z :: SUB-D fix -- surface the pinned
+    # in-process slot (SINISTER_FORCE_SLOT) at the top of the page so operator
+    # sees what the NEXT spawn from this EVE session will use. Before this
+    # fix, the pin set by handler #3 (Select active slot) was invisible until
+    # the next spawn -- easy to forget which slot was pinned.
+    _pinned = os.environ.get("SINISTER_FORCE_SLOT", "").strip()
+    if _pinned:
+        status_body.append(f"{OK}> Pinned for this EVE session: {BOLD}{_pinned}{RESET}{DIM} (SINISTER_FORCE_SLOT){RESET}")
+        status_body.append("")
     if SANCTUM_ROOT_PATH is not None:
         ps1 = SANCTUM_ROOT_PATH / "automations" / "claude-accounts.ps1"
         if ps1.exists():
@@ -1699,11 +1708,37 @@ def _accounts_page_render_and_dispatch(_subprocess, _getpass) -> str:
             time.sleep(2)
             return "loop"
         print(f"  {SOFT}> Claude Login wizard (interactive -- isolated sandbox per account){RESET}")
+        # RKOJ-ELENO :: 2026-05-25T11:50Z :: SUB-D fix -- isolate auth env at the
+        # wizard-spawn boundary too (defense in depth; the inner bash script also
+        # unsets these). If ANTHROPIC_API_KEY is set in the parent EVE process,
+        # PowerShell's child process inherits it and any inadvertent `claude`
+        # invocation inside the wizard logic would route to API-key path instead
+        # of OAuth. Composes with isolated-HOME sandbox for the bash login window.
+        _login_env = os.environ.copy()
+        for _ak in ("ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN", "ANTHROPIC_BASE_URL",
+                    "CLAUDE_CODE_USE_BEDROCK", "CLAUDE_CODE_USE_VERTEX"):
+            _login_env.pop(_ak, None)
         try:
             _subprocess.run(["powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass",
-                             "-File", str(wizard)], timeout=3600)
+                             "-File", str(wizard)], timeout=3600, env=_login_env)
         except Exception as e:
             print(f"  {FAIL}[!] Claude Login wizard exception: {e}{RESET}")
+        # RKOJ-ELENO :: 2026-05-25T11:50Z :: SUB-D fix -- post-login analytics
+        # placeholder. After the wizard returns (success OR bail), nudge the
+        # token-analytics cache so the next Status render picks up newly
+        # captured slots without a manual refresh. Best-effort; never blocks.
+        try:
+            _cache_f = SANCTUM_ROOT_PATH / "_shared-memory" / "anthropic-usage-cache.default.json"
+            if _cache_f.exists():
+                import json as _json, time as _t
+                try:
+                    _c = _json.loads(_cache_f.read_text(encoding="utf-8"))
+                except Exception:
+                    _c = {}
+                _c["_last_login_wizard_run_utc"] = _t.strftime("%Y-%m-%dT%H:%M:%SZ", _t.gmtime())
+                _cache_f.write_text(_json.dumps(_c, indent=2), encoding="utf-8")
+        except Exception:
+            pass
         _press_enter_or_x("Enter to return to Accounts")
         return "loop"
 
@@ -1714,6 +1749,22 @@ def _accounts_page_render_and_dispatch(_subprocess, _getpass) -> str:
             time.sleep(1.5)
             return "loop"
         oauth_ps1 = SANCTUM_ROOT_PATH / "automations" / "claude-oauth-accounts.ps1"
+        # RKOJ-ELENO :: 2026-05-25T11:50Z :: SUB-D fix -- list available slots
+        # BEFORE the prompt (parity with the Select-slot flow at handler #3).
+        # Operator no longer has to remember slug names.
+        if oauth_ps1.exists():
+            try:
+                lst = _subprocess.run(
+                    ["powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass",
+                     "-File", str(oauth_ps1), "-Action", "List"],
+                    capture_output=True, text=True, timeout=8, errors="replace"
+                )
+                print(f"  {SOFT}Available slots:{RESET}")
+                for line in (lst.stdout or "").splitlines()[:15]:
+                    print(f"    {line}")
+                print()
+            except Exception as e:
+                print(f"    {WARN}(List failed: {e}){RESET}")
         try:
             raw_slot = input(f"  {WHITE}> slot name to logout:{RESET} ").strip()
             confirm = input(f"  {WHITE}> type '{raw_slot}' to confirm:{RESET} ").strip()
@@ -2280,11 +2331,18 @@ def _sinister_link_invoke(args: list[str], timeout: int = 15) -> tuple[int, str]
 
 
 def _sinister_link_render_status() -> None:
-    """Render the LINK status block (4-7 lines). Used by main sub-page body."""
+    """Render the LINK status block (4-7 lines). Used by main sub-page body.
+
+    RKOJ-ELENO :: 2026-05-25T12:00Z :: sub-agent B :: block-center status rows
+    so they align with the LINK actions block + page header per
+    eve-ui-uniformity-doctrine (operator image #61 "centered menu each page").
+    """
     rc, out = _sinister_link_invoke(["-Action", "Status"], timeout=8)
     if rc != 0:
-        print(f"  {WARN}status failed (rc={rc}): {out.strip()[:120]}{RESET}")
+        body = [f"{WARN}status failed (rc={rc}): {out.strip()[:120]}{RESET}"]
+        _print_centered(body, width=72)
         return
+    body: list[str] = []
     for ln in out.splitlines():
         if not ln.strip():
             continue
@@ -2292,13 +2350,15 @@ def _sinister_link_render_status() -> None:
             continue  # header already rendered by sub-page
         # Color-code state field: green for linked, orange for unlinked.
         if "state:" in ln and "unlinked" in ln:
-            print(f"  {WARN}{ln.strip()}{RESET}")
+            body.append(f"{WARN}{ln.strip()}{RESET}")
         elif "state:" in ln and "linked" in ln:
-            print(f"  {OK}{ln.strip()}{RESET}")
+            body.append(f"{OK}{ln.strip()}{RESET}")
         elif "warning:" in ln:
-            print(f"  {WARN}{ln.strip()}{RESET}")
+            body.append(f"{WARN}{ln.strip()}{RESET}")
         else:
-            print(f"  {SOFT}{ln.strip()}{RESET}")
+            body.append(f"{SOFT}{ln.strip()}{RESET}")
+    if body:
+        _print_centered(body, width=72)
 
 
 def _sinister_link_show_peer_locks() -> None:
@@ -4305,6 +4365,57 @@ def main(argv: list[str] | None = None) -> int:
             print(f"  {FAIL}[L] sinister-link page failed: {e}{RESET}")
             time.sleep(1.2)
 
+    def _cb_quick_launch() -> None:
+        # Q-key: 1-keystroke replay of the last spawn (project + agent + modes).
+        # RKOJ-ELENO :: 2026-05-25T12:00Z :: sub-agent A (eve-exe lane) iter-1.
+        # Operator hard-canonical 2026-05-25T07:19Z: *"make this entire process
+        # way more efficient with the quickest way to open my terminals"*.
+        # Reuses _quick_launch_from_last_spawn() (defined ~line 2139) which
+        # reads _shared-memory/script-runs/last-spawn.json (written by
+        # Write-RunLog in start-sinister-session.ps1 after every spawn).
+        # Falls back to _cb_auto_resume when no prior spawn is recorded so the
+        # operator NEVER hits a dead-end on a fresh workstation.
+        try:
+            import json as _json
+            last_path = (SANCTUM_ROOT_PATH / "_shared-memory" / "script-runs"
+                         / "last-spawn.json") if SANCTUM_ROOT_PATH else None
+            mirror_path = (SANCTUM_ROOT_PATH / "_shared-memory"
+                           / ".eve-last-launch.json") if SANCTUM_ROOT_PATH else None
+            if last_path and last_path.exists():
+                try:
+                    row = _json.loads(last_path.read_text(encoding="utf-8"))
+                    pk = row.get("project_key") or row.get("lane") or "?"
+                    ag = row.get("agent") or row.get("agent_display") or "?"
+                    md = row.get("modes") or {}
+                    sw = md.get("swarm") if isinstance(md, dict) else "?"
+                    lp = md.get("loop") if isinstance(md, dict) else "?"
+                    print()
+                    print(f"  {BRIGHTP}[Q] Last launch:{RESET} "
+                          f"{WHITE}{pk}{RESET} {DIM}::{RESET} "
+                          f"{WHITE}{ag}{RESET} {DIM}::{RESET} "
+                          f"{SOFT}swarm={sw} loop={lp}{RESET}")
+                    # Mirror canonical row to .eve-last-launch.json so any tool
+                    # that prefers the operator-spec'd filename can read the
+                    # same content (idempotent; rewritten every Q press).
+                    if mirror_path is not None:
+                        try:
+                            mirror_path.write_text(
+                                _json.dumps(row, indent=2), encoding="utf-8"
+                            )
+                        except Exception:
+                            pass
+                    time.sleep(0.6)
+                except Exception:
+                    pass
+                _quick_launch_from_last_spawn()
+            else:
+                print(f"  {WARN}[Q] no prior spawn -- falling back to A) Auto-Resume{RESET}")
+                time.sleep(0.7)
+                _cb_auto_resume()
+        except Exception as e:
+            print(f"  {FAIL}[Q] quick-launch failed: {e}{RESET}")
+            time.sleep(1.2)
+
     show_main_menu(callbacks={
         "resume": _cb_resume,
         "auto_resume": _cb_auto_resume,
@@ -4314,6 +4425,7 @@ def main(argv: list[str] | None = None) -> int:
         "account_mgr": _cb_accounts,
         "agents": _cb_agents,
         "sinister_link": _cb_sinister_link,
+        "quick_launch": _cb_quick_launch,
         # back-compat key name for older main_menu builds
         "kill_fleet": _cb_agents,
     })

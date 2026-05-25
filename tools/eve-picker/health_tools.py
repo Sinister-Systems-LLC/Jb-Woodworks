@@ -301,9 +301,14 @@ def menu_loop() -> int:
         if resp in ("h", "home"):
             _route_home()
             return 0
-        if resp in ("x", "exit"):
+        if resp in ("x", "exit", "q", "quit"):
+            import os as _os
             import sys as _sys
-            _sys.exit(0)
+            try:
+                _sys.stdout.write("\n  [EVE] goodbye.\n"); _sys.stdout.flush()
+            except Exception:
+                pass
+            _os._exit(0)
         if resp == "r":
             continue
         return 0

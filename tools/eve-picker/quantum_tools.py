@@ -697,8 +697,13 @@ def menu_loop() -> int:
             _route_home()
             return 0
         if low in ("x", "exit", "q", "quit"):
+            import os as _os
             import sys as _sys
-            _sys.exit(0)
+            try:
+                _sys.stdout.write("\n  [EVE] goodbye.\n"); _sys.stdout.flush()
+            except Exception:
+                pass
+            _os._exit(0)
         # qbc-recall + triad-prescreen + brain-recall + saecd take optional query suffix
         parts = raw.split(maxsplit=1)
         cmd = parts[0]

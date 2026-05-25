@@ -684,6 +684,13 @@ _MENU_ITEMS: list[tuple[str, str, str]] = [
     # RKOJ-ELENO :: 2026-05-25T06:30Z :: Sub-agent G iter22 UI audit -- L key was
     # orphaned (eve.py wired `sinister_link` callback but no menu row). Surfaced.
     ("L", "Sinister LINK",             "cross-machine pairing (leo + operator)"),
+    # RKOJ-ELENO :: 2026-05-25T12:00Z :: Q) Quick Launch -- 1-keystroke replay of
+    # last spawn (project + agent + modes). Reads last-spawn.json written by
+    # Write-RunLog in start-sinister-session.ps1; falls back to Auto-Resume when
+    # no prior spawn. Operator hard-canonical 2026-05-25T07:19Z: *"make this
+    # entire process way more efficient with the quickest way to open my
+    # terminals"*. Wired in eve.py via callbacks['quick_launch'].
+    ("Q", "Quick Launch",              "respawn last project + agent + modes (1-Enter)"),
     ("X", "Exit",                      ""),
 ]
 
@@ -1480,6 +1487,9 @@ def show_main_menu(callbacks: Optional[dict[str, Callable[[], None]]] = None) ->
                                   K/R/M actions + Kill All; sister-B owns).
                                   Default = stub preview via -WhatIf.
         agents / kill_fleet     - back-compat keys; both route to W.
+        sinister_link           - L action (cross-machine pairing).
+        quick_launch            - Q action (1-keystroke replay of last spawn;
+                                  reads _shared-memory/script-runs/last-spawn.json).
 
     Returns the letter the operator last picked (lowercase). X / Ctrl-C / EOF
     return "x" and the caller is expected to sys.exit cleanly.
@@ -1506,6 +1516,10 @@ def show_main_menu(callbacks: Optional[dict[str, Callable[[], None]]] = None) ->
         # was wired in eve.py but unreachable. Now dispatched here so callbacks
         # injection from eve.main() actually fires the page.
         "l": cb.get("sinister_link") or _default_stub("Sinister LINK"),
+        # RKOJ-ELENO :: 2026-05-25T12:00Z :: Q) Quick Launch -- 1-keystroke
+        # replay of last spawn. eve.py injects `quick_launch` callback that
+        # reads last-spawn.json; default stub fires when callback missing.
+        "q": cb.get("quick_launch") or _default_stub("Quick Launch"),
     }
 
     highlight = 0

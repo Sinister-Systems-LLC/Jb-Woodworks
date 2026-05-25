@@ -54,7 +54,22 @@ from pathlib import Path
 # RKOJ-ELENO :: 2026-05-24T22:10Z :: install SIGINT -> sys.exit(0) so Ctrl-C
 # inside any input()/getpass()/subprocess wait is escapable instead of
 # silently swallowed. Operator: "i cannoot close eve exe. it wont close".
+# RKOJ-ELENO :: 2026-05-25T11:55Z (eve-exe lane iter-1) :: upgrade to two-strike
+# pattern matching main_menu.py:55-66. Single Ctrl-C tries sys.exit; double-tap
+# within 2s -> os._exit(0) (nuclear; bypasses hung daemons / subprocess waits).
+# Per eve-ui-flow-audit-2026-05-25.md fix #4.
+_LAST_SIGINT_AT_ACCT: list[float] = [0.0]
+
 def _acct_sigint(*_args) -> None:
+    try:
+        sys.stdout.write("\n  [EVE] Ctrl-C received - exiting cleanly. (press Ctrl-C again to force-kill)\n")
+        sys.stdout.flush()
+    except Exception:
+        pass
+    now = time.time()
+    if (now - _LAST_SIGINT_AT_ACCT[0]) < 2.0:
+        os._exit(0)
+    _LAST_SIGINT_AT_ACCT[0] = now
     sys.exit(0)
 
 
