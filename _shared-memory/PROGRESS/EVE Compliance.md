@@ -6,6 +6,154 @@ Append-only, most-recent at top.
 
 ---
 
+## 2026-05-25T13:03Z — R6+R7 SHIPPED: hash-match short-circuit + autonomous localhost training panel
+
+**Mode:** resume / loop=relentless / swarm=on · **Driver:** open follow-up #3 PhotoDNA hash short-circuit + 4 operator directives (12:35Z localhost panel · 12:42Z terminal-lag-route · 12:44Z github prior-art · 12:48Z full autonomous compliance).
+
+**Shipped (verified — both tsc + 90/90 vitest green + autonomous loop runs end-to-end):**
+
+### R6 — PhotoDNA hash-match short-circuit (open follow-up #3 ✅)
+- `backend/src/lib/image-moderation.ts` (+~170 LOC):
+  - `lookupKnownBadHash(prisma, hash)` — queries existing `ContentScan.perceptualHash` index for admin-confirmed CSAM via `wasGoodCatch=true` + `scanResult in [CSAM_HASH_MATCH, CSAM_CLASSIFIER]`. Returns `KnownBadHashMatch` with audit fields (priorScanId, priorScanDate, uploaderId, agencyName) or null. Refuses trivially-short hashes pre-DB.
+  - `precheckHashMatch(prisma, input)` — fetches+hashes the image, runs lookup, returns ready-to-persist `CSAM_HASH_MATCH` `ScanImageOutput` (confidence 1.0, categories `[minor, sexual, hash-match]`, scanProvider `PHOTODNA`, raw with `shortCircuitedClassifier=true`).
+  - `listKnownBadHashes(prisma, limit)` — groupBy aggregation. Returns distinct hash + hitCount + first/lastSeenAt for the admin Known-Hashes surface. Limit clamped [1,500], default 100.
+  - Wired `precheckHashMatch` into `queueImageScan` BEFORE `scanImage` — known-CSAM short-circuits the classifier, saving API cost + hardening against retry-after-block patterns. Self-bootstrapping: every admin good-catch automatically adds the hash to the known-bad set via the existing `@@index([perceptualHash])`.
+- `backend/src/routes/image-moderation.ts`:
+  - `GET /admin/image-moderation/known-hashes?limit=100`, role-gated SUPER_ADMIN/ADMIN/COMPLIANCE_AUDITOR.
+  - **Route-order fix (R7 follow-up):** moved `/known-hashes` ABOVE `/:id` because Express was matching `:id="known-hashes"` first (returned 404 "Not found"). Confirmed live via autonomous loop after restart.
+- `backend/src/lib/__tests__/image-moderation-analytics.test.ts` — +10 vitest (4 lookupKnownBadHash + 3 precheckHashMatch + 3 listKnownBadHashes). **90/90 fleet PASS** (was 80/80).
+- `dashboard/lib/api.ts` — `imageModerationApi.knownHashes()` typed client.
+- Commits: `9138c75` (initial route) + `4a48632` (route-order fix + admin/token/cooldown scripts) on `agent/eve-compliance/photodna-hash-2026-05-25`, both pushed to origin.
+
+### R7 — Autonomous localhost training panel + demo refresh
+- **Backend running:** `http://localhost:4000` with `MEDIA_MODERATION_MOCK_MODE=true`, all R4+R5+R6 endpoints live + 6/6 returning 200.
+- **Dashboard running:** `http://localhost:3000`, Next.js 15.5.18, `.env.local` pointed at local backend.
+- **Admin user:** `demo-admin@letstextapp.com` / `demo-only-2026` (SUPER_ADMIN, provisioned via `find-or-make-admin.ts`).
+- **Autonomous loop driver:** `projects/eve-compliance/scripts/autonomous-training-loop.sh` (220 LOC bash) — exercises the FULL CCBill compliance path WITHOUT operator interaction:
+  1. JWT mint via `mint-admin-token.ts` (bypasses 5/15min login rate-limit)
+  2. List pending queue (expect 5 from seed)
+  3. Click good-catch on all 5 — Alice ends 3 strikes, Bob 2 strikes
+  4. Force Alice to 5 strikes → apply 24h cooldown via `trigger-cooldown.ts`
+  5. Probe all 6 analytics endpoints (cooldowns/agencies / precision-rolling / per-agency / ncmec drafts / known-hashes / queue)
+  6. Mark the PASS nude-allowed row as bad-catch (false-positive feedback for training)
+  7. Export training JSONL via `export-moderation-training.ts` — got 38 lines
+- **Run verification (live):**
+  - `cooldowns/agencies` → `{"count":1,"agencies":["Demo Agency"]}`
+  - `precision-rolling?days=7` → `{"days":7,"goodCatch":5,"badCatch":0,"labeled":5,"precision":1}`
+  - `per-agency?days=30&limit=50` → `{"days":30,"limit":50,"rows":[{"agencyName":"Demo Agency","totalScans":6,"blockedScans":5,...}]}`
+  - `ncmec/drafts/count?status=DRAFT` → `{"status":"DRAFT","count":0}`
+  - `known-hashes?limit=100` → `{"limit":100,"rows":[{"hash":"demo-testcsamalphapng-sha256-placeholder","hitCount":1,...}]}`
+- **Demo script refresh:** `EVE-Compliance-Workstation/demo-script/recording-script.md` extended +3 scenes (2.5 KPI strip, 4.5 per-agency, 5.5 hash-match). Total length 5-7 min (was 4-6). Re-numbered scenes 4→4 with new bookends.
+- **TRAINING-SESSION.md:** new at `EVE-Compliance-Workstation/demo-script/` — 8-step "get good at it" guide covering KPI strip, queue review, per-agency drill-down, cooldown trigger, false-positive flow, hash-match short-circuit, scan-CLI regression, optional live Claude classifier. Includes folder-upload verification matrix (all 5 upload routes call queueImageScan).
+- **Scan-CLI regression check:** `scripts\run-scan.bat` → **10/10 matched, precision 1.00, P0=0/0, p95 19ms**. R5+R6 didn't regress the scanner.
+
+### Github prior-art research (parallel sub-agent)
+- Sub-agent `a51f4f5fc879dd966` returned `_shared-memory/inbox/eve-compliance/2026-05-25T1245Z-from-research-github-prior-art.md` (10 projects + cross-ref matrix + anti-patterns).
+- **Top 3 adoption recommendations:**
+  1. **(S) Meta PDQ** from `facebook/ThreatExchange/pdq/python` — proper perceptual hash to replace our sha256 placeholder. Unlocks NCMEC HashList import.
+  2. **(M) Osprey rules-engine pattern** (Discord-donated, 400M actions/day) — moves strike/cooldown from hard-coded TS to per-agency JSON DSL. Required for "stricter/looser per agency" + unlocks open follow-up #8 bulk admin tools.
+  3. **(S) Cleanlab review-queue prioritization** — wraps cleanlab around our training-feedback JSONL to detect contradictory admin clicks + sort queue by "information gain" instead of FIFO. Enables open follow-up #6 training automation.
+- **Big discovery:** ROOST ecosystem (Discord + Cove + OpenAI + Roblox, formed Jul 2025) is now the canonical home for production T&S tooling. `roostorg/awesome-safety-tools` is our bookmarked entry point.
+
+### Cross-lane work (out of compliance lane scope)
+- Operator 12:42Z "terminal-lag-route" routed to eve-exe inbox at `_shared-memory/inbox/eve-exe/2026-05-25T1243Z-from-eve-compliance-terminal-lag-route.md` (stale heartbeats noted: sanctum 57m, sinister-os 40m). Did NOT attempt to fix from this lane (sanctum-scope-discipline).
+- Fleet-update broadcast attempted but `fleet-update.ps1` OOM'd — another infra symptom for sanctum/sinister-os to chase.
+
+**Open queue (priority-ordered per CLAUDE.md):**
+1. ~~NCMEC auto-draft~~ (R1 ✅)
+2. ~~ChatArea cooldown UX~~ (R2 ✅)
+3. ~~PhotoDNA hash integration~~ (R6 ✅ — sha256-exact-match path; PDQ swap-in planned per research recommendation #1)
+4. ~~Per-agency moderation analytics~~ (R5 ✅)
+5. ~~EVE Compliance KPI widget on main admin~~ (R4 ✅)
+6. Training pipeline automation (cron + auto-deploy)  ← R8 candidate (research rec #3 cleanlab)
+7. NCII 48h takedown workflow
+8. Bulk-action admin tools  ← could route through Osprey rules-engine adoption (research rec #2)
+9. Per-employee strike trend graph
+10. Vision-provider failover
+
+**Next iter intent (R8):** open follow-up #6 training pipeline automation OR PDQ hash swap-in. Branch: `agent/eve-compliance/training-automation-2026-05-25` (off photodna R6).
+
+---
+
+## 2026-05-25T12:35Z — R5 per-agency analytics drill-down SHIPPED + jcode_wolf turn-loop retry wrapper
+
+**Mode:** resume post-mass-crash @ 08:13Z / loop=relentless / swarm=on · **Driver:** open follow-up #4 + jcode_wolf R5 plan (scanner batch retry).
+
+**Shipped (verified — both tsc + 80/80 vitest green):**
+
+- `backend/src/lib/image-moderation.ts` — two new helpers:
+  - `aggregatePerAgencyStats(prisma, {days?, limit?})` — 6 parallel Prisma groupBy queries (totalScans / blockedScans / goodCatch / badCatch on ContentScan; activeCooldowns / strikedUsers on User), merged by agencyName. Sort: blocked desc → total desc → alpha. Days clamped [1, 365], limit [1, 200]. Returns `PerAgencyStatsRow[]` with precision per-agency (null when zero labels — no NaN leak).
+  - `scanImageWithRetry(input, {maxAttempts?, baseDelayMs?, jitterMs?})` — jcode_wolf turn-loop adoption. Wraps `scanImage()` with bounded retries (default 3, exp backoff 200/600/1800ms + jitter) on transient failures (detected via the `scanner-error` fallback sentinel). Mock mode bypasses retry (deterministic). Returns full `attemptHistory` for observability.
+- `backend/src/routes/image-moderation.ts` — `GET /admin/image-moderation/analytics/per-agency?days=30&limit=50`, role-gated SUPER_ADMIN/ADMIN/COMPLIANCE_AUDITOR.
+- `backend/src/lib/__tests__/image-moderation-analytics.test.ts` — +13 vitest (7 per-agency cases: empty / single-agency / sort-precedence / null-empty filter / null-precision / cooldowns-without-scans / clamp + limit truncation. 5 retry cases: first-attempt success / mock-mode no-retry / clamp / recovers-on-attempt-3 / gives-up-after-3). File total: 22/22 PASS.
+- `dashboard/lib/api.ts` — `imageModerationApi.perAgency({days, limit})` typed client.
+- `dashboard/app/(dashboard)/admin/tabs/image-moderation-tab.tsx` — `PerAgencyPanel` component (sortable 8-col table: Agency / Scans / Blocked / Good / False+ / Precision / Cooldowns / Striked). 7/30/90d window pills (60s react-query refetch). Click-row → `setAgencyFilter(name) + setStatusFilter('all')` so the queue narrows to that agency. Active-filter chip with clear-X. Precision color-coded green ≥95 / amber 85-94 / red <85 / muted when null.
+
+**Verified:**
+- `backend npx tsc --noEmit`: PASS
+- `dashboard npx tsc --noEmit`: PASS
+- `backend npx vitest run`: 80/80 PASS across 5 files (was 67/67 — +13 in image-moderation-analytics.test.ts).
+- Commit `bbfe1fc` on `agent/eve-compliance/per-agency-analytics-2026-05-25` (off kpi-strip R4), pushed to origin. New branch URL: https://github.com/z0nian/LetsText/pull/new/agent/eve-compliance/per-agency-analytics-2026-05-25
+
+**Open queue (priority-ordered per CLAUDE.md):**
+1. ~~NCMEC auto-draft~~ (R1 ✅)
+2. ~~ChatArea cooldown UX~~ (R2 ✅)
+3. PhotoDNA hash integration  ← R6 candidate
+4. ~~Per-agency moderation analytics~~ (R5 ✅)
+5. ~~EVE Compliance KPI widget on main admin~~ (R4 ✅)
+6. Training pipeline automation (cron + auto-deploy)  ← R7 candidate
+7. NCII 48h takedown workflow
+8. Bulk-action admin tools
+9. Per-employee strike trend graph
+10. Vision-provider failover
+
+**jcode_wolf incorporation status:** R5 turn-loop adoption ✅ (scanImageWithRetry). Remaining: R6 swarm-bench / R7 reload (rules JSON hot-reload) / R8 optimize.
+
+**Next iter intent (R6):** open follow-up #3 PhotoDNA perceptual hash integration (~40 LOC + 4 vitest) — replace sha256-of-bytes placeholder with a real perceptual hash so CSAM_HASH_MATCH can fire on known-CSAM before classifier even runs. Compose with jcode_wolf swarm-bench (1/3/5 worker comparison on 100-image batch) for parallel-scan performance baseline. Branch: `agent/eve-compliance/photodna-hash-2026-05-25`.
+
+---
+
+## 2026-05-25T11:10Z — R4 KPI strip on main /admin page SHIPPED + jcode_wolf audit ack
+
+**Mode:** resume / loop=relentless / swarm=on (no fan-out needed — single-lane scope) · **Operator inbox driver:** sanctum jcode_wolf audit @ 2026-05-25T10:20Z (high-priority) + open follow-up #5 from CLAUDE.md.
+
+**Shipped (verified — both tsc + vitest green):**
+
+- `backend/src/lib/image-moderation.ts` — three new pure-logic helpers (`countAgenciesWithActiveCooldowns`, `computeScannerPrecisionRolling`, `countNcmecReportsByStatus`) + exported `NCMEC_COUNT_STATUSES` for route validation.
+- `backend/src/routes/image-moderation.ts` — three new GET endpoints under `/admin/image-moderation/analytics/cooldowns/agencies`, `/analytics/precision-rolling?days=7`, `/ncmec/drafts/count?status=DRAFT`. All gated SUPER_ADMIN/ADMIN/COMPLIANCE_AUDITOR. Routes just call the helpers + serialize.
+- `backend/src/lib/__tests__/image-moderation-analytics.test.ts` — NEW (9 cases). Same hand-rolled prisma-stub pattern as the strikes test file. Edge coverage: zero labels (null precision), distinct count + null/empty filter, day clamping (negative → 1, oversize → 90, zero → 7), every NCMEC enum status.
+- `dashboard/lib/api.ts` — extended `imageModerationApi` with `cooldownsByAgency` + `precisionRolling` + `ncmecDraftsCount` typed clients.
+- `dashboard/hooks/use-eve-compliance-kpis.ts` — NEW. `useQueries` driving 4 parallel react-query polls (60s refresh, 55s stale-time). Returns per-tile loading/error/value so a single backend hiccup doesn't blank the strip.
+- `dashboard/components/compliance/eve-compliance-kpi-strip.tsx` — NEW. 4 tiles in a responsive grid (1 col mobile, 2 col md, 4 col xl). Color-coded health: scans-pending green ≤5 / amber 6-20 / red >20; cooldowns green 0 / amber 1-3 / red >3; precision green ≥0.95 / amber 0.90-0.94 / red <0.90; NCMEC drafts green 0 / amber 1-3 / red >3. Click-through to image-moderation tab + /compliance route.
+- `dashboard/app/(dashboard)/admin/admin-page.tsx` — strip imported + rendered above the existing tab list. Role-gated to SUPER_ADMIN/ADMIN/COMPLIANCE_AUDITOR (matches backing endpoint requireRole, so AGENCY_OWNER/employees never see it).
+
+**Verified:**
+- `backend npx tsc --noEmit`: PASS
+- `dashboard npx tsc --noEmit`: PASS
+- `backend npx vitest run`: 67/67 PASS across 5 files (was 58 — 9 new tests in image-moderation-analytics.test.ts).
+- Commit `7b46fe9` on `agent/eve-compliance/kpi-strip-2026-05-25` (off cooldown-ui R2), pushed to origin.
+
+**jcode_wolf audit ack** (`_shared-memory/cross-agent/2026-05-25T1110Z-from-eve-compliance-jcode-wolf-ack.json`):
+- **OAuth contract P0 check: NOT_APPLICABLE.** Verified `backend/src/lib/image-moderation.ts:114-130` — only direct Anthropic API surface in lane. Uses standard API-key auth (`ANTHROPIC_API_KEY` env), not OAuth tokens. jcode_wolf OAuth contract headers / tool remap apply only to OAuth-token flows.
+- **Incorporation plan iters R5-R8:** turn-loop (scanner batch retry, R5) → swarm-bench (1/3/5 worker comparison on 100-image batch, R6) → reload (rules JSON hot-reload, R7) → optimize (Haiku 4.5 cost/latency baseline + 2 candidate optimizations, R8 — gated on ≥10% delta and accuracy unchanged). Skip term-check (backend-only lane).
+- Original sanctum inbox row moved to `_shared-memory/inbox/eve-compliance/_acked/`.
+
+**Open queue (priority-ordered per CLAUDE.md):**
+1. ~~NCMEC auto-draft~~ (R1 ✅)
+2. ~~ChatArea cooldown UX~~ (R2 ✅)
+3. PhotoDNA hash integration
+4. Per-agency moderation analytics aggregations (extension of R4 endpoints — natural R5 candidate alongside jcode_wolf turn-loop)
+5. ~~EVE Compliance KPI widget on main admin~~ (R4 ✅)
+6. Training pipeline automation (cron + auto-deploy)
+7. NCII 48h takedown workflow
+8. Bulk-action admin tools
+9. Per-employee strike trend graph
+10. Vision-provider failover
+
+**Next iter intent (R5):** open follow-up #4 per-agency moderation analytics drill-down (extends the R4 cooldowns/agencies endpoint into a full per-agency tab) PLUS jcode_wolf turn-loop adoption for scanner batch retry (~30 LOC + 4 vitest). Branch: `agent/eve-compliance/per-agency-analytics-2026-05-25`.
+
+---
+
 ## 2026-05-25T02:25Z — R3 CCBill test-prep package SHIPPED + Overseer activated
 
 **Mode:** resume / loop · **Operator directive:** *"setup a test so we can start testing this so we can be compliant for ccbill ... place folder on desktop as asatelite workstation ... prepare for the demo video and linking this to the main panel ... call up the sinister overseer ... full session start boot up of him"*
