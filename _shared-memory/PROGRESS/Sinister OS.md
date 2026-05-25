@@ -5,6 +5,46 @@
 
 ---
 
+## 2026-05-25 ~09:45Z — Iter 21: MASTER AUDIT + EXPANSION plan (14 blocks A-N) + 3 fleet doctrines + 4 parallel research returns
+
+Operator interrupted iter 20 close with three back-to-back directives spanning Block coverage A-L (09:25Z), Block M containment (09:36Z), Block N fleet-tools-port (09:41Z). All three operator utterances logged via `log-operator-utterance.ps1`. Dispatched 4 parallel research agents (Quantum-tier per the just-shipped expand-and-quantum-tools doctrine) covering niri / GPU sharing / game-mode / hardening — all 4 returned within ~3 min with cited findings; aggregated into the master plan.
+
+**Shipped this iter (verified):**
+
+| Path | Verb | Verification |
+|---|---|---|
+| `projects/sinister-os/plans/MASTER-AUDIT-EXPANSION-2026-05-25/plan.md` | shipped (master plan) | NEW; 14 blocks A-N; § 1 audit covers 24+ existing artifacts; § 2 expansion decomposes 3 operator utterances; § 3 block-by-block has full design for blocks C/D/M/N inline; § 4 phasing makes Docker → laptop → main-PC chain explicit; § 6 risk register 8+8+6 rows |
+| `_shared-memory/knowledge/expand-and-quantum-tools-authorized-2026-05-25.md` | shipped (brain entry, Block L) | NEW; 3-tier tool classification (Routine/Expand/Quantum); 7 cautious rules; 5 anti-patterns; pass criterion |
+| `_shared-memory/knowledge/agent-containment-failsafe-doctrine-2026-05-25.md` | shipped (brain entry, Block M) | NEW; 12-layer defense; per-agent rate limits; PANIC + watchdog meta-failsafe; Bell-LaPadula pattern explained; composes with sanctioned-bypasses + safe-quality-loops |
+| `_shared-memory/knowledge/fleet-tools-port-to-sinister-os-doctrine-2026-05-25.md` | shipped (brain entry, Block N) | NEW; port strategy table per category; Sinister Browser auto-relogin deep dive; preinstall-manifest format; state-migration wizard; binding rule for NEW tools |
+| `_shared-memory/knowledge/_INDEX.md` | M | 4 new rows added at top (most-recent first): master-audit-expansion + fleet-tools-port + agent-containment-failsafe + expand-and-quantum-tools |
+| `_shared-memory/operator-utterances.jsonl` | M | 3 rows logged 09:26Z + 09:36Z + 09:41Z, status=new, tagged sinister-os |
+| 4 parallel research agents | returned | niri (parallel variant verdict, 8 sources cited) + GPU sharing (consumer-RTX practical design, 16 sources) + game-mode (1100-word design, 10 acceptance tests) + hardening (Qubes-LITE spec, full source-list) — all aggregated into MASTER plan blocks C/D/E/F/G |
+| `_shared-memory/PROGRESS/Sinister OS.md` | M | This row |
+| `_shared-memory/heartbeats/sinister-os.json` | M | This iter (ts=09:45Z; branch + focus updated; cost_register added per Block L) |
+| `_shared-memory/resume-points/Sinister OS/<utc>.json` | written after commit | |
+
+**Why this matters (composes cleanly):**
+
+- Block B operationalized: ONE document at `plans/MASTER-AUDIT-EXPANSION-2026-05-25/plan.md` is the operator's single entry point for the next 30 days. Resume-points + brain entries + PROGRESS rows all point here.
+- Block C-D operationalize the operator's "intelligent GPU+CPU balance + game mode 5-10min safe-to-launch + 30min idle resume" using consumer-RTX-compatible primitives (cgroup.freeze + nvidia-smi -pl + MPS + gamemode D-Bus). No enterprise-only features assumed.
+- Block M operationalizes "complete control + failsafes + containers + rate limit" without contradiction: EVE daemon runs privileged-container with full sudoers allowlist; agents propose through EVE; Warden polices every agent (including EVE). Bell-LaPadula pattern.
+- Block N operationalizes "fleet tools come with the OS preinstalled" — preinstall-manifest.toml is single source of truth; first-boot wizard handles state migration; Sinister Browser auto-relogin works Day 1.
+- The expand+quantum doctrine (Block L) PERMITTED the 4-way parallel research spawn this turn — no operator gate, cost surfaced in heartbeat below.
+
+**Cost register this turn (per expand+quantum doctrine):**
+
+- 4 parallel general-purpose agents @ ~146s / ~192s / ~213s / ~97s wall-clock = ~650s of agent compute (each capped at ~800 words output + citation requirement)
+- 0 recursive spawns (1-layer-deep maintained)
+- ~3 WebFetch calls per agent in aggregate (niri wiki + Arch docs + NVIDIA docs + gamemode README + sbctl docs + arkenfox + KSPP)
+- Net token spend: within budget for "ONE master plan + 3 binding doctrines + 4 design inputs" turn deliverable
+
+**Next move (iter 22 candidate, queued):** ship Block A (Windows-parity merge doc consolidating 6 existing parity audits into single `docs/WINDOWS-PARITY-CANONICAL-2026-05-25.md`) + start Block I (test harness scaffolding for T0/T1/T2 acceptance suites). Then Blocks C-H design docs can ship in parallel via another swarm.
+
+**Push status:** local commits will be on `agent/sinister-os/eve-llm-bridge-spec-2026-05-25` (current branch from iter 19-20). Push to GitHub origin still blocked by historical fleet-updates.jsonl (494MB > 100MB cap); sanctum-auto-push retries when gitea returns or operator git-filter-repos.
+
+---
+
 ## 2026-05-25 ~09:10Z — Iter 20: ship sinister-voice user-service design doc
 
 Continued RELENTLESS (same turn as iter 19). The voice surface was queued from prior heartbeat as iter-19 candidate (a); shipped now as iter 20 to keep the design trilogy intact (EVE daemon state machine + EVE-LLM bridge + voice oracle).
