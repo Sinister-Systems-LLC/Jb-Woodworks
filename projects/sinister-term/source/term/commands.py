@@ -69,6 +69,7 @@ Sinister Term commands:
   /cross-agent [n]          List recent cross-agent messages or read one (alias /ca)
   /ask <agent> <message>    Drop an [ASK] in another agent's inbox
   /progress [add <msg>]     Show top 5 PROGRESS entries (or add a new one)
+  /recall <term> [term2...]  Search the brain at _shared-memory/knowledge/*.md
   /alias [name=val|remove n] List aliases, define one, or remove one
   /clear                    Clear the screen
   /help                     This message
@@ -426,6 +427,69 @@ def cmd_alias(args: list[str]) -> CommandResult:
     return CommandResult(True, f"alias {name} = {value}")
 
 
+def cmd_recall(args: list[str]) -> CommandResult:
+    """P2-1 (iter-50): search the brain at _shared-memory/knowledge/*.md
+    for entries matching the given query terms. Returns the top-N matches
+    with title + path + score. ALL local file-system work — no MCP, no
+    network. Operator can then `cat` the path or open in their editor.
+
+    Usage: /recall <term> [<term2> ...]
+    Examples:
+      /recall jcode logging
+      /recall paste handler
+      /recall sa-ph5 intensity
+    """
+    if not args:
+        return CommandResult(True,
+            "usage: /recall <term> [<term2> ...]\n"
+            "Searches _shared-memory/knowledge/*.md for matching entries.")
+    knowledge_dir = SANCTUM_ROOT / "_shared-memory" / "knowledge"
+    if not knowledge_dir.exists():
+        return CommandResult(True, f"(no knowledge dir at {knowledge_dir})")
+    terms = [t.lower() for t in args if t]
+    matches: list[tuple[int, Path, str]] = []  # (score, path, title)
+    try:
+        for md in knowledge_dir.glob("*.md"):
+            if md.name.startswith("_"):
+                continue
+            try:
+                # Read first 4 KiB — enough for title + lede + most context
+                with md.open("r", encoding="utf-8", errors="replace") as fh:
+                    head = fh.read(4096)
+            except OSError:
+                continue
+            head_low = head.lower()
+            name_low = md.name.lower()
+            score = 0
+            for t in terms:
+                score += head_low.count(t) * 1
+                score += name_low.count(t) * 5  # filename hits weighted higher
+            if score > 0:
+                # Pull title from first `# ` line, else use stem
+                title = md.stem
+                for ln in head.splitlines():
+                    if ln.startswith("# "):
+                        title = ln[2:].strip()
+                        break
+                matches.append((score, md, title))
+    except OSError as e:
+        return CommandResult(True, f"recall failed: {e}")
+    if not matches:
+        return CommandResult(True, f"(no matches for {' '.join(args)})")
+    matches.sort(key=lambda x: (-x[0], x[1].name))
+    top_n = matches[:8]
+    lines = [f"Recall: {len(matches)} match{'es' if len(matches) != 1 else ''}"
+             f" (showing top {len(top_n)}) for: {' '.join(args)}"]
+    for score, path, title in top_n:
+        try:
+            rel = path.relative_to(SANCTUM_ROOT)
+        except ValueError:
+            rel = path
+        lines.append(f"  [{score:>3}] {title}")
+        lines.append(f"        {rel.as_posix()}")
+    return CommandResult(True, "\n".join(lines))
+
+
 COMMANDS: dict[str, Callable[[list[str]], CommandResult]] = {
     "help": cmd_help,
     "?": cmd_help,
@@ -450,6 +514,7 @@ COMMANDS: dict[str, Callable[[list[str]], CommandResult]] = {
     "ask": cmd_ask,
     "progress": cmd_progress,
     "alias": cmd_alias,
+    "recall": cmd_recall,  # P2-1 iter-50
 }
 
 
