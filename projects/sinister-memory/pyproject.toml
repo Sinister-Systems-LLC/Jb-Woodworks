@@ -1,0 +1,40 @@
+# Author: RKOJ-ELENO :: 2026-05-25
+# Sinister Memory -- per-agent + per-project memory engine.
+# Status: P0 scaffolded -- stdlib-only (sqlite3 + pathlib + json + argparse); zero new deps required.
+
+[project]
+name = "sinister-memory"
+version = "0.1.0"
+description = "Sinister Memory :: unified per-agent + per-project memory engine (brain + PROGRESS + heartbeats + Ruflo MCP)"
+authors = [
+    { name = "RKOJ-ELENO" }
+]
+license = { text = "Proprietary" }
+readme = "README.md"
+requires-python = ">=3.11"
+
+# P0 is stdlib-only. Optional Ruflo MCP fallback is feature-detected at runtime.
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest >=7.4",
+]
+
+[project.scripts]
+sinister-memory = "sinister_memory.cli:main"
+
+[project.urls]
+"Project Root" = "file://D:/Sinister Sanctum/projects/sinister-memory"
+"Charter" = "file://D:/Sinister Sanctum/projects/sinister-memory/CHARTER.md"
+
+[build-system]
+requires = ["setuptools >=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
