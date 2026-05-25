@@ -94,6 +94,7 @@ Sinister Term commands:
   /agents [N --fresh --stale --slug X]   Richer heartbeats (mode + branch + note)
   /find <glob> [--sanctum --type d|f] [N]   Recursive name search (skips .git/venv/etc)
   /doctrine [--sanctum --search X]   List operator hard-canonicals from CLAUDE.md
+  /crashlog [N --mine --module X]   Read eve-crash-log.jsonl (alias /crashes)
   /alias [name=val|remove n] List aliases, define one, or remove one
   /clear                    Clear the screen
   /help                     This message
@@ -528,6 +529,101 @@ def cmd_recall(args: list[str]) -> CommandResult:
 _HEARTBEAT_PATH = SANCTUM_ROOT / "_shared-memory" / "heartbeats" / f"{SELF_SLUG}.json"
 _MESH_LOCKS_DIR = SANCTUM_ROOT / "_shared-memory" / "mesh-locks"
 _UTTERANCES_PATH = SANCTUM_ROOT / "_shared-memory" / "operator-utterances.jsonl"
+
+
+_CRASH_LOG_PATH = SANCTUM_ROOT / "_shared-memory" / "eve-crash-log.jsonl"
+
+
+def cmd_crashlog(args: list[str]) -> CommandResult:
+    """iter-65: read the fleet crash log so the operator can triage from sterm.
+
+    `_shared-memory/eve-crash-log.jsonl` is the fleet-wide crash sink that
+    iter-45 term/crash_recovery.py + many sanctum scripts write to. Each
+    row: {ts_utc, module, error, [context], [agent]}.
+
+    Usage:
+      /crashlog                       last 10 crashes
+      /crashlog N                     last N (1..500)
+      /crashlog --mine                only sinister-term-emitted entries
+      /crashlog --module foo          filter by module substring
+      /crashes ...                    alias
+    """
+    limit = 10
+    only_mine = False
+    module_filter: str | None = None
+    i = 0
+    while i < len(args):
+        a = args[i]
+        if a == "--mine":
+            only_mine = True
+            i += 1
+            continue
+        if a == "--module" and i + 1 < len(args):
+            module_filter = args[i + 1].lower()
+            i += 2
+            continue
+        try:
+            limit = max(1, min(500, int(a)))
+        except ValueError:
+            return CommandResult(True,
+                f"unknown arg: {a}. Try /crashlog with no args for usage.")
+        i += 1
+
+    if not _CRASH_LOG_PATH.exists():
+        try:
+            rel = _CRASH_LOG_PATH.relative_to(SANCTUM_ROOT).as_posix()
+        except ValueError:
+            rel = str(_CRASH_LOG_PATH)
+        return CommandResult(True, f"(no crash log at {rel})")
+
+    rows: list[dict] = []
+    try:
+        with _CRASH_LOG_PATH.open("r", encoding="utf-8", errors="replace") as fh:
+            for ln in fh:
+                ln = ln.strip()
+                if not ln:
+                    continue
+                try:
+                    obj = json.loads(ln)
+                    if isinstance(obj, dict):
+                        rows.append(obj)
+                except Exception:
+                    continue
+    except OSError as e:
+        return CommandResult(True, f"/crashlog failed: {e}")
+
+    if only_mine:
+        # term/* modules + sinister-term agent
+        def _is_mine(r: dict) -> bool:
+            mod = (r.get("module") or "").lower()
+            agent = (r.get("agent") or "").lower()
+            return mod.startswith("term.") or agent == SELF_SLUG
+        rows = [r for r in rows if _is_mine(r)]
+    if module_filter:
+        rows = [r for r in rows
+                if module_filter in (r.get("module") or "").lower()]
+
+    if not rows:
+        flt = []
+        if only_mine: flt.append("--mine")
+        if module_filter: flt.append(f"--module {module_filter}")
+        return CommandResult(True,
+            f"(no crashes{' (' + ' '.join(flt) + ')' if flt else ''})")
+
+    shown = rows[-limit:]
+    try:
+        rel = _CRASH_LOG_PATH.relative_to(SANCTUM_ROOT).as_posix()
+    except ValueError:
+        rel = str(_CRASH_LOG_PATH)
+    out = [f"Crashes: {len(shown)} of {len(rows)} in {rel}"]
+    for r in shown:
+        ts = (r.get("ts_utc") or "?")[:19] + "Z"
+        mod = (r.get("module") or "?")[:28]
+        err = (r.get("error") or r.get("err") or "?")
+        if len(err) > 70:
+            err = err[:67] + "..."
+        out.append(f"  {ts}  {mod:<28}  {err}")
+    return CommandResult(True, "\n".join(out))
 
 
 def cmd_doctrine(args: list[str]) -> CommandResult:
@@ -1689,6 +1785,8 @@ COMMANDS: dict[str, Callable[[list[str]], CommandResult]] = {
     "agents": cmd_agents,          # iter-62 — richer heartbeats with mode/branch/note
     "find": cmd_find,              # iter-63 — recursive name search under SANCTUM_ROOT
     "doctrine": cmd_doctrine,      # iter-64 — list operator hard-canonicals from CLAUDE.md
+    "crashlog": cmd_crashlog,      # iter-65 — read eve-crash-log.jsonl
+    "crashes": cmd_crashlog,       # alias
 }
 
 
