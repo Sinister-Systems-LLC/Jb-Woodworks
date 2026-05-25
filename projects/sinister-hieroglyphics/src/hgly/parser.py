@@ -195,6 +195,8 @@ class _Parser:
         if k == "IDENT":
             self.advance()
             node: Node = Ident(line=t.line, col=t.col, name=t.lexeme)
+            # iter-9 lenient mode: `xs[i]` -> just `xs` (postfix bracket skip).
+            self._skip_postfix_brackets()
             if self.check("LPAREN"):
                 self.advance(); args: List[Node] = []
                 while not self.check("RPAREN"):
@@ -215,7 +217,26 @@ class _Parser:
         # parses + runs under the interpreter's lenient mode.
         if k in ("LBRACK", "RBRACK", "COLON"):
             self.advance()
+            # Tight EOF handling: if the bracket/colon was the trailing
+            # punctuation of the source, fall back to Nil so a stray closing
+            # bracket doesn't crash the parse. Real expressions still recurse.
+            if self.check("EOF"):
+                return Literal(line=t.line, col=t.col, value=None, ltype="nil")
             return self._prefix()
+        # RKOJ-ELENO :: 2026-05-25 (iter-9 lenient mode) :: corpus has bare
+        # statement keywords (yld / brk / cnt / ret) appearing as the body of
+        # an inline block in expression position. Treat them as an IDENT call
+        # consuming same-line atoms (matches the IDENT path above semantics).
+        # Real Stmt nodes for these ship Phase 4+.
+        if k in ("YIELD", "BREAK", "CONT", "RET"):
+            self.advance()
+            node = Ident(line=t.line, col=t.col, name=t.lexeme)
+            args3: List[Node] = []
+            while self.peek().kind in _ATOM_KINDS and self.peek().line == t.line:
+                args3.append(self._call_atom())
+            if args3:
+                return Call(line=t.line, col=t.col, callee=node, args=args3)
+            return node
         raise ParseError(f"unexpected token {k} ({t.lexeme!r})", t.line, t.col)
 
     def _prefix_operand(self) -> Node:
@@ -230,13 +251,49 @@ class _Parser:
             return self._prefix()
         if k == "IDENT":
             self.advance()
-            return Ident(line=t.line, col=t.col, name=t.lexeme)
+            node = Ident(line=t.line, col=t.col, name=t.lexeme)
+            self._skip_postfix_brackets()
+            return node
+        # RKOJ-ELENO :: 2026-05-25 (iter-9 lenient mode) :: bare `[1 2 3]` list
+        # literal in operand position. Skip the bracket group + return a Nil
+        # placeholder; the interpreter treats it as zero in arithmetic.
+        if k == "LBRACK":
+            self._skip_bracket_group()
+            return Literal(line=t.line, col=t.col, value=None, ltype="nil")
+        if k == "EOF":
+            return Literal(line=t.line, col=t.col, value=None, ltype="nil")
         raise ParseError(f"expected operand, got {k} ({t.lexeme!r})", t.line, t.col)
+
+    def _skip_bracket_group(self) -> None:
+        """Consume a balanced [...] group, including nested brackets."""
+        if not self.check("LBRACK"):
+            return
+        depth = 0
+        while True:
+            t = self.peek()
+            if t.kind == "EOF":
+                return
+            self.advance()
+            if t.kind == "LBRACK":
+                depth += 1
+            elif t.kind == "RBRACK":
+                depth -= 1
+                if depth == 0:
+                    return
+
+    def _skip_postfix_brackets(self) -> None:
+        """If next token starts an [...] group, skip the whole group (and
+        repeat). Lets `xs[i]` parse as just `xs`; real index AST = Phase 4+."""
+        while self.check("LBRACK"):
+            self._skip_bracket_group()
 
     def _call_atom(self) -> Node:
         t = self.advance()
         if t.kind == "IDENT":
-            return Ident(line=t.line, col=t.col, name=t.lexeme)
+            node = Ident(line=t.line, col=t.col, name=t.lexeme)
+            # iter-9 lenient: skip `[...]` index sequence after a same-line atom.
+            self._skip_postfix_brackets()
+            return node
         return _mk_literal(t)
 
     def _lambda(self) -> Lambda:
