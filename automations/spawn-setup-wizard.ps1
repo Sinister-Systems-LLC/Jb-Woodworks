@@ -211,7 +211,7 @@ if ($DryRun) {
     Write-Host '  [DRY-RUN] Would write launch script to:' -ForegroundColor DarkCyan
     Write-Host ('    ' + $launchSh) -ForegroundColor Gray
     Write-Host '  [DRY-RUN] Would spawn mintty with:' -ForegroundColor DarkCyan
-    Write-Host ('    mintty --hold error -t "Sinister Setup Wizard -- ' + $OperatorName + '" -- /bin/bash <launch.sh>') -ForegroundColor Gray
+    Write-Host ('    mintty --hold error -t "Sinister Setup Wizard -- ' + $OperatorName + '" -- /bin/bash "<launch.sh>"  (path quoted to survive space in Sanctum root)') -ForegroundColor Gray
     Write-Host ''
     Write-Host '  [DRY-RUN] Skipping actual spawn.' -ForegroundColor DarkCyan
     exit 0
@@ -223,6 +223,17 @@ $launchShBash = if ($launchSh -match '^([A-Za-z]):(.*)$') {
 } else {
     $launchSh -replace '\\', '/'
 }
+
+# IMAGE-4 fix 2026-05-25 (sanctum iter-23 sub-B): mintty exit code 126 root-cause.
+# Sanctum root contains a space ("D:\Sinister Sanctum"), so $launchShBash becomes
+# "/d/Sinister Sanctum/_shared-memory/setup/wizard-spawn-<ts>.sh" -- a path with a
+# literal space. PowerShell 5.1's `Start-Process -ArgumentList @(...)` is well-known
+# to mis-quote array elements containing spaces, so mintty receives the script path
+# tokenized as two args ("/d/Sinister" + "Sanctum/_shared-memory/setup/...sh"). bash
+# then tries to execute "/d/Sinister" which is a directory -> exit 126
+# ("cannot execute: is a directory"). Wrap the path in embedded double-quotes so
+# Start-Process passes it as a single quoted token to mintty.
+$launchShBashQuoted = '"' + $launchShBash + '"'
 
 # --- Spawn the mintty window ----------------------------------------------
 
@@ -237,7 +248,7 @@ try {
     if (Test-Path $minttyExe) {
         $minttyArgs = @(
             '--hold', 'error',
-            '-t', $windowTitle,
+            '-t', "`"$windowTitle`"",
             '-o', 'ForegroundColour=200,132,252',   # Sinister purple foreground
             '-o', 'BackgroundColour=14,12,20',      # dark background
             '-o', 'CursorColour=200,132,252',
@@ -245,13 +256,13 @@ try {
             '-o', 'Term=xterm-256color',
             '-o', 'Transparency=off',
             '-o', 'OpaqueWhenFocused=yes',
-            '--', '/bin/bash', $launchShBash
+            '--', '/bin/bash', $launchShBashQuoted
         )
         $spawned = Start-Process -FilePath $minttyExe -ArgumentList $minttyArgs -PassThru -ErrorAction Stop
     } elseif (Test-Path $gitBash) {
-        $spawned = Start-Process -FilePath $gitBash -ArgumentList @($launchShBash) -PassThru -ErrorAction Stop
+        $spawned = Start-Process -FilePath $gitBash -ArgumentList @($launchShBashQuoted) -PassThru -ErrorAction Stop
     } elseif (Test-Path $bashExe) {
-        $spawned = Start-Process -FilePath $bashExe -ArgumentList @('-l', '-i', $launchShBash) -PassThru -ErrorAction Stop
+        $spawned = Start-Process -FilePath $bashExe -ArgumentList @('-l', '-i', $launchShBashQuoted) -PassThru -ErrorAction Stop
     } else {
         Write-Host '  [FAIL] No mintty / git-bash / bash found. Install Git for Windows.' -ForegroundColor Red
         exit 4
