@@ -21,3 +21,7 @@ from overseer.sensors.analyzer import (  # noqa: F401
     UsageHighEvent,
     RotInLogEvent,
 )
+from overseer.sensors.rate_limit import (  # noqa: F401
+    RateLimit429Event,
+    RateLimitSensor,
+)

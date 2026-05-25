@@ -1,0 +1,40 @@
+{
+  "schema_version": "sinister.resume-point.v1",
+  "slug": "sinister-overseer",
+  "display": "Sinister Overseer",
+  "ts_utc": "2026-05-25T09:16:00Z",
+  "mode": "resume",
+  "branch": "agent/sinister-overseer/chatbot-slice5-2026-05-25",
+  "loop_condition": "Ship the 4 P1 items routed from sanctum-consolidator (D3/D4/D5/D8) per sanctum-consolidate-stop-overlap plan; respect overlap-guard claims; commit + push after each slice",
+  "last_shipped": [
+    "ChatbotAdapter slice-5 (c120920): real collect_signals + observation_check + 2 new fix templates + 14 pytest",
+    "D3 slice-1 rate-limit adaptive learner: sensor + learner + CLI + 11 pytest + ledger persisted with live data"
+  ],
+  "next_actions": [
+    "Commit D3 slice-1 (rate_limit.py + rate_limit_learner.py + CLI + tests + PROGRESS)",
+    "D3 slice-2: auto-rotate apply gate (mesh-coord lock on oauth-slot-health.json, risk-aware action)",
+    "D4 slice-1: 4-account hive-mind round-robin radar mode (extend rate-limit-learner with hive-state)",
+    "D5: per-project ONE-CONSOLE discipline (max_claude_agents_per_project: 1 in projects.json + agent-overlap-guard hook)",
+    "D8: scan projects.json for projects with no live heartbeat -> spawn proposal list"
+  ],
+  "files_touched_this_iter": [
+    "projects/sinister-overseer/src/overseer/sensors/rate_limit.py (NEW)",
+    "projects/sinister-overseer/src/overseer/rate_limit_learner.py (NEW)",
+    "projects/sinister-overseer/src/overseer/sensors/__init__.py (re-export)",
+    "projects/sinister-overseer/src/overseer/__main__.py (new rate-limit-status subcommand)",
+    "projects/sinister-overseer/tests/test_rate_limit_learner.py (NEW, 11 cases)",
+    "_shared-memory/PROGRESS/Sinister Overseer.md (D3 slice-1 row)",
+    "_shared-memory/inbox/sanctum/20260525T0905Z-from-sinister-overseer-stop-overlap-acked.md",
+    "_shared-memory/overseer-rate-limit-learning.json (NEW ledger, live data)"
+  ],
+  "test_results": "python -m pytest tests/ -> 37/37 PASS (4 smoke + 14 chatbot + 11 rate-limit + 5 divergence/sensors + 3 contradictions)",
+  "live_smoke": "python -m overseer rate-limit-status --persist -> ingested 2 operator-b 429 events from real throttle log; ledger written; no recommendation fired (correct conservative behavior at count_1h=2 < threshold 3)",
+  "open_questions_for_operator": [],
+  "blockers": [
+    "Push to sanctum remote blocked: local Gitea at http://localhost:3000 is offline. Commit c120920 + this iter's commit will retry on 30-min auto-push schedule."
+  ],
+  "overlap_claims": [
+    "sinister-overseer -> overseer:rate-limit-learning (TTL 2h)"
+  ],
+  "fleet_updates_acked": ["fleet-headless-doctrine-2026-05-25 (read+adopted; PS ack OOMed)"]
+}

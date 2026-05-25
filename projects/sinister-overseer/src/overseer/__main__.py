@@ -51,6 +51,16 @@ def build_parser() -> argparse.ArgumentParser:
 
     sub.add_parser("version", help="Print version")
 
+    p_rl = sub.add_parser(
+        "rate-limit-status",
+        help="Poll throttle log + print learner output (D3 slice-1)",
+    )
+    p_rl.add_argument(
+        "--persist",
+        action="store_true",
+        help="Persist ledger to _shared-memory/overseer-rate-limit-learning.json",
+    )
+
     return parser
 
 
@@ -79,6 +89,46 @@ def main(argv: list[str] | None = None) -> int:
         print("Attached projects:")
         for a in attachments:
             print(f"  - {a['project_key']:<40s} status={a['status']:<10s} adapter={a.get('adapter','(auto)')}")
+        return 0
+
+    if args.command == "rate-limit-status":
+        from overseer.rate_limit_learner import RateLimitLearner
+        from overseer.sensors.rate_limit import RateLimitSensor
+        import json as _json
+        sensor = RateLimitSensor()
+        learner = RateLimitLearner()
+        events = sensor.poll()
+        learner.ingest(events)
+        stats = learner.compute_slot_stats()
+        recs = learner.recommendations(stats)
+        if args.persist:
+            learner.persist(stats, recs)
+        out = {
+            "events_ingested": len(events),
+            "slot_count": len(stats),
+            "slots": {
+                name: {
+                    "count_1h": s.count_1h,
+                    "count_24h": s.count_24h,
+                    "last_429_ts": s.last_429_ts,
+                    "mean_inter_arrival_s": s.mean_inter_arrival_s,
+                }
+                for name, s in stats.items()
+            },
+            "recommendations": [
+                {
+                    "from_slot": r.from_slot,
+                    "to_slot": r.to_slot,
+                    "reason": r.reason,
+                    "confidence": r.confidence,
+                    "risk": r.risk,
+                    "fix_template": r.fix_template,
+                }
+                for r in recs
+            ],
+            "ledger_persisted": args.persist,
+        }
+        print(_json.dumps(out, indent=2))
         return 0
 
     # P0: all other commands -- print not-yet-implemented

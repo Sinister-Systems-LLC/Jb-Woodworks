@@ -1,0 +1,18 @@
+{
+  "schema_version": "sinister.overseer.rate-limit-learner.v1",
+  "updated_utc": "2026-05-25T09:15:20Z",
+  "slots": {
+    "operator-b": {
+      "account": "operator-b",
+      "count_1h": 2,
+      "count_24h": 2,
+      "last_429_ts": "2026-05-25T08:42:52Z",
+      "mean_inter_arrival_s": 0.0,
+      "projects_429d_24h": [
+        "sinister-os",
+        "sinister-overseer"
+      ]
+    }
+  },
+  "recommendations": []
+}
