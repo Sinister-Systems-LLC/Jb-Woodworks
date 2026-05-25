@@ -74,7 +74,7 @@ except (ValueError, OSError):
 # Operator: "i need allow flows to allow for unlimited use. meaning i can keep
 # doing thigns here going to all pages etc". Now any sub-page lets operator
 # jump straight to another top-level surface without bouncing through main.
-NAV_LETTERS = {"r", "a", "g", "t", "n", "m", "w"}
+NAV_LETTERS = {"r", "a", "g", "t", "n", "m", "w", "l"}
 
 # RKOJ-ELENO :: 2026-05-24T22:30Z :: Windows cp1252 console choked on the
 # middle-dot (U+00B7) and bullet-operator (U+2219) glyphs the animation +
@@ -601,6 +601,9 @@ _MENU_ITEMS: list[tuple[str, str, str]] = [
     ("N", "New Project",               "scaffold a new lane"),
     ("M", "Account Manager",           "add / login / logout / usage"),
     ("W", "Agents I'm Working With",   "project-grouped multi-select fleet manager"),
+    # RKOJ-ELENO :: 2026-05-25T06:30Z :: Sub-agent G iter22 UI audit -- L key was
+    # orphaned (eve.py wired `sinister_link` callback but no menu row). Surfaced.
+    ("L", "Sinister LINK",             "cross-machine pairing (leo + operator)"),
     ("X", "Exit",                      ""),
 ]
 
@@ -1185,6 +1188,10 @@ def show_main_menu(callbacks: Optional[dict[str, Callable[[], None]]] = None) ->
             or cb.get("kill_fleet")
             or _agents_working_with_action
         ),
+        # RKOJ-ELENO :: 2026-05-25T06:30Z :: Sub-agent G iter22 -- L) Sinister LINK
+        # was wired in eve.py but unreachable. Now dispatched here so callbacks
+        # injection from eve.main() actually fires the page.
+        "l": cb.get("sinister_link") or _default_stub("Sinister LINK"),
     }
 
     highlight = 0

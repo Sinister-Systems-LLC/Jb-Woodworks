@@ -1018,7 +1018,7 @@ def show_account_manager() -> None:
         # Main-menu shortcut letters from this sub-page route straight to that
         # top-level surface (no bounce through main first). main_menu loop
         # pops _EVE_NAV_TO after this returns and re-dispatches the letter.
-        if resp in {"r", "a", "g", "t", "n", "w"}:
+        if resp in {"r", "a", "g", "t", "n", "w", "l"}:
             os.environ["_EVE_NAV_TO"] = resp
             return
         # 't' could route to main Tools but operator may also mean "stay here";

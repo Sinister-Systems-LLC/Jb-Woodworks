@@ -1,0 +1,35 @@
+{
+    "_comment": "Author: RKOJ-ELENO :: 2026-05-25. Named multi-agent swarm bundles consumed by automations/multi_agent_launcher.py. Each preset is a list of spawn descriptors. Spawn descriptor schema: { project, account_hint, modes:{loop,swarm,loop_relentless}, model, topic_suffix }. account_hint=\"auto\" => round-robin via claude-oauth-accounts.ps1 PickBest; explicit slot name pins the spawn. modes default to loop_relentless+swarm=on per operator hard-canonical 2026-05-25 ~06:30Z (Tony Stark command center brief).",
+    "_schema_version": 1,
+    "version": 1,
+    "presets": {
+        "sanctum-quad": {
+            "_doc": "4x Sanctum orchestration lane on 4 different OAuth slots. Pure parallel sanctum work; siblings auto-detect non-overlap via detect-similar-agents.ps1.",
+            "stagger_seconds": 2,
+            "spawns": [
+                { "project": "sanctum", "account_hint": "operator", "modes": { "loop": true, "swarm": true, "loop_relentless": true }, "model": "opus", "topic_suffix": "swarm-A" },
+                { "project": "sanctum", "account_hint": "leo",      "modes": { "loop": true, "swarm": true, "loop_relentless": true }, "model": "opus", "topic_suffix": "swarm-B" },
+                { "project": "sanctum", "account_hint": "auto",     "modes": { "loop": true, "swarm": true, "loop_relentless": true }, "model": "opus", "topic_suffix": "swarm-C" },
+                { "project": "sanctum", "account_hint": "auto",     "modes": { "loop": true, "swarm": true, "loop_relentless": true }, "model": "opus", "topic_suffix": "swarm-D" }
+            ]
+        },
+        "full-fleet": {
+            "_doc": "One agent per major lane (5 lanes). Spreads load across accounts via auto rotation.",
+            "stagger_seconds": 3,
+            "spawns": [
+                { "project": "sanctum",          "account_hint": "auto", "modes": { "loop": true, "swarm": true, "loop_relentless": true }, "model": "opus", "topic_suffix": "lane-sanctum" },
+                { "project": "sinister-os",      "account_hint": "auto", "modes": { "loop": true, "swarm": true, "loop_relentless": true }, "model": "opus", "topic_suffix": "lane-os" },
+                { "project": "sinister-chatbot", "account_hint": "auto", "modes": { "loop": true, "swarm": true, "loop_relentless": true }, "model": "opus", "topic_suffix": "lane-chatbot" },
+                { "project": "sinister-overseer","account_hint": "auto", "modes": { "loop": true, "swarm": true, "loop_relentless": true }, "model": "opus", "topic_suffix": "lane-overseer" },
+                { "project": "jb-woodworks",     "account_hint": "auto", "modes": { "loop": true, "swarm": true, "loop_relentless": true }, "model": "opus", "topic_suffix": "lane-jb" }
+            ]
+        },
+        "solo-deep": {
+            "_doc": "Single deep-work sanctum agent on opus, relentless loop. For long-form architecture / doctrine work.",
+            "stagger_seconds": 0,
+            "spawns": [
+                { "project": "sanctum", "account_hint": "operator", "modes": { "loop": true, "swarm": false, "loop_relentless": true }, "model": "opus", "topic_suffix": "deep-solo" }
+            ]
+        }
+    }
+}

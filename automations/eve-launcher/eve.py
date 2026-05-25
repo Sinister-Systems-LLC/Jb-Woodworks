@@ -464,12 +464,16 @@ def _prefs_path() -> Path | None:
 
 
 def _read_prefs_defaults() -> dict:
-    """Return {swarm,loop,skip_modes_prompt} from agent-prefs.json defaults block.
+    """Return {swarm,loop,loop_relentless,skip_modes_prompt} from agent-prefs.json defaults.
 
-    Silent fallback to all-False on any read/parse failure. Loop fleet-default is
-    True per operator hard-canonical 2026-05-24.
+    RKOJ-ELENO :: 2026-05-25T06:35Z :: per operator hard-canonical 06:30Z 'make sure loop
+    and swarm mode come on by deafult for each agent', fleet defaults are now swarm=True +
+    loop=True + loop_relentless=True. Read precedence:
+      1. defaults.modes.{swarm,loop}  (new schema; loop may be 'relentless'/'on'/'off' string)
+      2. defaults.{swarm_mode,loop_mode,loop_relentless}  (legacy boolean schema)
+      3. fallback (swarm=True, loop=True, loop_relentless=True)
     """
-    out = {"swarm_mode": False, "loop_mode": False, "skip_modes_prompt": False}
+    out = {"swarm_mode": True, "loop_mode": True, "loop_relentless": True, "skip_modes_prompt": False}
     p = _prefs_path()
     if p is None or not p.exists():
         return out
@@ -477,9 +481,31 @@ def _read_prefs_defaults() -> dict:
         import json as _json
         data = _json.loads(p.read_text(encoding="utf-8"))
         d = data.get("defaults") or {}
-        out["swarm_mode"] = bool(d.get("swarm_mode", False))
-        out["loop_mode"] = bool(d.get("loop_mode", False))
+        if "swarm_mode" in d:
+            out["swarm_mode"] = bool(d.get("swarm_mode", True))
+        if "loop_mode" in d:
+            out["loop_mode"] = bool(d.get("loop_mode", True))
+        if "loop_relentless" in d:
+            out["loop_relentless"] = bool(d.get("loop_relentless", True))
         out["skip_modes_prompt"] = bool(d.get("skip_modes_prompt", False))
+        m = d.get("modes") or {}
+        if "swarm" in m:
+            out["swarm_mode"] = bool(m.get("swarm", True))
+        if "loop" in m:
+            lv = m.get("loop", "relentless")
+            if isinstance(lv, str):
+                lvs = lv.strip().lower()
+                if lvs in ("off", "false", "0", "no", "n"):
+                    out["loop_mode"] = False
+                    out["loop_relentless"] = False
+                elif lvs == "relentless":
+                    out["loop_mode"] = True
+                    out["loop_relentless"] = True
+                else:
+                    out["loop_mode"] = True
+                    out["loop_relentless"] = False
+            else:
+                out["loop_mode"] = bool(lv)
     except Exception:
         pass
     return out
@@ -494,7 +520,14 @@ def _toggle_prefs_loop() -> bool | None:
         import json as _json
         data = _json.loads(p.read_text(encoding="utf-8"))
         if "defaults" not in data or not isinstance(data["defaults"], dict):
-            data["defaults"] = {"swarm_mode": False, "loop_mode": False, "skip_modes_prompt": True}
+            # RKOJ-ELENO :: 2026-05-25T06:35Z :: default-create loop+swarm ON.
+            data["defaults"] = {
+                "swarm_mode": True,
+                "loop_mode": True,
+                "loop_relentless": True,
+                "skip_modes_prompt": False,
+                "modes": {"swarm": True, "loop": "relentless"},
+            }
         cur = bool(data["defaults"].get("loop_mode", False))
         new = not cur
         data["defaults"]["loop_mode"] = new
@@ -1068,6 +1101,10 @@ def _print_sub_page_header(title: str) -> None:
             sys.stdout.flush()
         except Exception:
             pass
+    # RKOJ-ELENO :: 2026-05-25 :: Item 66. Short page-transition shimmer so
+    # EVE feels alive between page changes (operator: "more animations + live").
+    # 600ms / 12fps cap; gracefully skipped under NO_COLOR / EVE_QUIET / SKIP_BANNER.
+    _shimmer_transition(label=title[:24] if title else "EVE")
     print()
     print(f"  {DARKP}---{RESET} {WHITE}{BOLD}{title}{RESET} {DARKP}---{RESET}")
     print()
@@ -1131,6 +1168,111 @@ def _print_centered(lines, width: int | None = None) -> None:
         print(ln)
 
 
+# ---------------------------------------------------------------------------
+# Idle shimmer + page-transition shimmer (Item 66 — RKOJ-ELENO :: 2026-05-25)
+# Operator (image #66 + 22:45Z utterance "more animations"):
+#   *"more animations + live ... feel alive between pages."*
+#
+# Pattern is jcode-inspired (sinister HSV hue drift; see animations.py). NOT a
+# jcode parity claim -- the implementation is a stdlib-only port that biases
+# hue around Sinister purple 270 deg. No new dependencies; no background
+# thread (the picker input is blocking on getwch, and we don't want a race
+# between the ticker writing while the user types). Instead:
+#
+#   - `_shimmer_transition()` runs a SHORT one-shot animation (600ms total,
+#     12 fps cap = 8 frames) on a single accent line during page changes.
+#   - `_shimmer_accent(text, tick)` returns the input string with each non-
+#     space char wrapped in an HSV-rotated ANSI escape; cheap enough to call
+#     per banner render so accents subtly drift between page renders.
+#
+# Pauses on input: nothing runs in the background, so input is never blocked.
+# Disabled gracefully when ANSI is off (NO_COLOR / TERM=dumb on POSIX) or
+# when the animations module failed to import.
+# ---------------------------------------------------------------------------
+
+# Process-wide animation tick. Bumped each time banner() is called so accent
+# hue drifts subtly between page renders even without a background ticker.
+_EVE_ANIM_TICK = 0
+_EVE_ANIM_FPS_CAP = 12  # max frames per second for the transition shimmer
+_EVE_SHIMMER_DURATION_S = 0.6  # 600ms total per operator brief
+
+
+def _shimmer_accent(text: str, tick: int) -> str:
+    """Return text with HSV-rotated per-char accent. jcode-inspired (not parity).
+
+    Uses animations._hsv_to_rgb when available; falls back to plain text when
+    ANSI is off or the module didn't import. Cheap: O(len(text)) per call.
+    """
+    if not _ANSI_ON or animations is None or not text:
+        return text
+    try:
+        # Sinister-purple base hue 270deg, drift +/- 30deg over a slow cycle.
+        import math as _math
+        base_hue = (270.0 + _math.sin(tick / 25.0) * 30.0) % 360.0
+        out_parts: list[str] = []
+        col = 0
+        for ch in text:
+            if ch == " " or ch == "\t":
+                out_parts.append(ch)
+                col += 1
+                continue
+            hue = (base_hue + col * 4.5) % 360.0
+            r, g, b = animations._hsv_to_rgb(hue, 0.55, 0.95)
+            out_parts.append(f"\033[38;2;{r};{g};{b}m{ch}")
+            col += 1
+        out_parts.append(RESET)
+        return "".join(out_parts)
+    except Exception:
+        return text
+
+
+def _shimmer_transition(label: str = "EVE", duration_s: float = _EVE_SHIMMER_DURATION_S) -> None:
+    """One-shot 600ms shimmer animation. Renders on a single line and clears.
+
+    Called between page changes to make EVE feel alive (operator: "feel alive
+    between pages"). 12fps cap; bails immediately if ANSI is off or
+    SINISTER_SKIP_BANNER=1. Auto-skipped under EVE_QUIET=1.
+    """
+    global _EVE_ANIM_TICK
+    if not _ANSI_ON:
+        return
+    if os.environ.get("SINISTER_SKIP_BANNER", "").strip() == "1":
+        return
+    if os.environ.get("EVE_QUIET", "").strip() == "1":
+        return
+    if animations is None:
+        return
+    try:
+        frame_interval = 1.0 / float(_EVE_ANIM_FPS_CAP)
+        end_time = time.monotonic() + duration_s
+        # Compose a short shimmer string ~= label expanded with dots.
+        core = f"{label}    .  ..  ...  ....  .....  ......"
+        while time.monotonic() < end_time:
+            _EVE_ANIM_TICK += 1
+            painted = _shimmer_accent(core, _EVE_ANIM_TICK)
+            try:
+                # \r so the animation overwrites itself in place; \033[K clears
+                # the remainder of the line to avoid trailing artifacts.
+                sys.stdout.write(f"\r  {painted}\033[K")
+                sys.stdout.flush()
+            except Exception:
+                return
+            time.sleep(frame_interval)
+        # Clear the shimmer line cleanly so the next banner renders fresh.
+        try:
+            sys.stdout.write("\r\033[K")
+            sys.stdout.flush()
+        except Exception:
+            pass
+    except Exception:
+        # Animation must never break the launcher; swallow + return.
+        try:
+            sys.stdout.write("\r\033[K")
+            sys.stdout.flush()
+        except Exception:
+            pass
+
+
 def _print_sub_page_footer(extra_keys: str = "") -> None:
     """Canonical footer: DIM --- PURPLE B) Back   PURPLE H) Home   PURPLE X) Exit   DIM (extras)."""
     keys = f"{DIM}({extra_keys}){RESET}" if extra_keys else ""
@@ -1180,6 +1322,44 @@ def _sub_page_handle_nav(resp: str) -> str | None:
             pass
         _os._exit(0)
     return None
+
+
+# RKOJ-ELENO :: 2026-05-25 :: Item 65b "unlimited flows" helper. Operator
+# (verbatim 2026-05-25 image #65): "Allow unlimited flows pages". Prompts that
+# previously bailed back on empty input now re-loop until the operator supplies
+# a valid value OR explicitly types B/back (cancel) / X/exit (nuke EVE). Used
+# by sub-page secondary prompts (URL / lane / slug / tool / slot).
+def _prompt_unlimited(prompt: str, label: str = "value") -> str | None:
+    """Loop on input() until non-empty value OR B/X. Returns:
+      - str  : the entered value (always non-empty / stripped).
+      - None : operator cancelled (B / back / empty after warning) — caller
+               should NOT proceed (semantic "go back to caller's menu").
+    X/exit at ANY iteration calls os._exit(0) via _sub_page_handle_nav.
+    """
+    import os as _os
+    import sys as _sys
+    attempts = 0
+    while True:
+        try:
+            val = input(prompt).strip()
+        except (EOFError, KeyboardInterrupt):
+            return None
+        if val.lower() in ("x", "exit", "q", "quit"):
+            try:
+                _sys.stdout.write("\n  [EVE] goodbye.\n"); _sys.stdout.flush()
+            except Exception:
+                pass
+            _os._exit(0)
+        if val.lower() in ("b", "back"):
+            return None
+        if val:
+            return val
+        attempts += 1
+        # First empty Enter on the inner prompt = nudge, not cancel.
+        # Second empty Enter = treat as Back (operator clearly wants out).
+        if attempts >= 2:
+            return None
+        print(f"  {WARN}empty {label} -- press Enter again to cancel, or type a value (X=exit, B=back){RESET}")
 
 
 def _press_enter_or_x(label: str = "Enter to return") -> None:
@@ -1317,11 +1497,15 @@ def _account_onboarding_flow() -> None:
     """
     import subprocess as _subprocess
     import getpass as _getpass
+    import os as _os
     while True:
         rc = _accounts_page_render_and_dispatch(_subprocess, _getpass)
         if rc in ("back", "exit"):
             if rc == "exit":
-                sys.exit(0)
+                # RKOJ-ELENO :: 2026-05-25 :: Item 65c. Hard-kill via os._exit
+                # to match _sub_page_handle_nav (sys.exit can be swallowed by
+                # blocked subprocess / daemon thread).
+                _os._exit(0)
             return
 
 
@@ -1363,7 +1547,7 @@ def _token_analytics_submenu(_subprocess) -> None:
         # RKOJ-ELENO :: 2026-05-25 :: operator screenshot #61 "i want the
         # cenetered menu on each page". Body block-centered via _center_block.
         tk_body: list[str] = [
-            f"{SOFT}Pick a report -- scans ~/.claude/projects/**/*.jsonl in real-time.{RESET}",
+            f"{SOFT}Pick a report -- scans ~/.claude/projects/**/*.jsonl on demand (no cache; jcode-inspired).{RESET}",
             "",
         ]
         for key, title, _act, hint in actions:
@@ -1371,8 +1555,11 @@ def _token_analytics_submenu(_subprocess) -> None:
         _print_centered(tk_body, width=72)
         _print_sub_page_footer("R refresh")
 
+        # RKOJ-ELENO :: 2026-05-25 :: Item 65a fix. Empty Enter MUST route to
+        # back per eve-ui-uniformity-doctrine ("B/empty-Enter -> main picker").
+        # Previous `or "1"` default ate the Enter key and silently re-ran option 1.
         try:
-            resp = input(f"  {WHITE}> [1]:{RESET} ").strip().lower() or "1"
+            resp = input(f"  {WHITE}> [B/1-7]:{RESET} ").strip().lower()
         except (EOFError, KeyboardInterrupt):
             print()
             return
@@ -1476,8 +1663,11 @@ def _accounts_page_render_and_dispatch(_subprocess, _getpass) -> str:
     _print_centered(full_body, width=_DEFAULT_CENTER_WIDTH)
     _print_sub_page_footer("T tokens   L limited")
 
+    # RKOJ-ELENO :: 2026-05-25 :: Item 65a fix. Empty Enter routes to back via
+    # _sub_page_handle_nav (per eve-ui-uniformity-doctrine). Removed `or "1"`
+    # default that silently re-ran option 1 and ate the canonical back signal.
     try:
-        mode_pick = input(f"  {WHITE}> [1]:{RESET} ").strip().lower() or "1"
+        mode_pick = input(f"  {WHITE}> [B/1-4]:{RESET} ").strip().lower()
     except (EOFError, KeyboardInterrupt):
         print()
         return "back"
@@ -1736,41 +1926,36 @@ def _sanctum_automations_menu() -> None:
         if not script_path.exists():
             print(f"  {FAIL}[FAIL] script not found: {script_path}{RESET}")
             continue
+        # RKOJ-ELENO :: 2026-05-25 :: Item 65b "unlimited flows". Prompts now
+        # re-loop via _prompt_unlimited instead of silent-bail on empty input.
         resolved_args = list(args)
         if "__PROMPT_URL__" in resolved_args:
-            try:
-                url = input(f"  {DIM}> URL to ingest:{RESET} ").strip()
-            except (EOFError, KeyboardInterrupt):
-                continue
-            if not url:
-                print(f"  {WARN}empty url, cancelled{RESET}")
+            url = _prompt_unlimited(f"  {DIM}> URL to ingest (B=cancel, X=exit):{RESET} ", "url")
+            if url is None:
                 continue
             resolved_args = [url if a == "__PROMPT_URL__" else a for a in resolved_args]
         if "__PROMPT_LANE__" in resolved_args:
-            try:
-                lane = input(f"  {DIM}> lane slug (e.g. sinister-os, sanctum, kernel-apk):{RESET} ").strip()
-            except (EOFError, KeyboardInterrupt):
-                continue
-            if not lane:
-                print(f"  {WARN}empty lane, cancelled{RESET}")
+            lane = _prompt_unlimited(
+                f"  {DIM}> lane slug (e.g. sinister-os, sanctum, kernel-apk; B=cancel, X=exit):{RESET} ",
+                "lane",
+            )
+            if lane is None:
                 continue
             resolved_args = [lane if a == "__PROMPT_LANE__" else a for a in resolved_args]
         if "__PROMPT_SLUG__" in resolved_args:
-            try:
-                slug = input(f"  {DIM}> target agent slug (live agents shown via M-key):{RESET} ").strip()
-            except (EOFError, KeyboardInterrupt):
-                continue
-            if not slug:
-                print(f"  {WARN}empty slug, cancelled{RESET}")
+            slug = _prompt_unlimited(
+                f"  {DIM}> target agent slug (live agents shown via M-key; B=cancel, X=exit):{RESET} ",
+                "slug",
+            )
+            if slug is None:
                 continue
             resolved_args = [slug if a == "__PROMPT_SLUG__" else a for a in resolved_args]
         if "__PROMPT_TOOL__" in resolved_args:
-            try:
-                tool = input(f"  {DIM}> tool name (e.g. brain-decay-score, contradict, heartbeat-sweep):{RESET} ").strip()
-            except (EOFError, KeyboardInterrupt):
-                continue
-            if not tool:
-                print(f"  {WARN}empty tool, cancelled{RESET}")
+            tool = _prompt_unlimited(
+                f"  {DIM}> tool name (e.g. brain-decay-score, contradict, heartbeat-sweep; B=cancel, X=exit):{RESET} ",
+                "tool",
+            )
+            if tool is None:
                 continue
             resolved_args = [tool if a == "__PROMPT_TOOL__" else a for a in resolved_args]
         cmd = ["powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass",
@@ -1784,10 +1969,9 @@ def _sanctum_automations_menu() -> None:
             print(f"  {FAIL}[FAIL] script timed out after 180s{RESET}")
         except Exception as e:
             print(f"  {FAIL}[FAIL] script raised: {e}{RESET}")
-        try:
-            input(f"  {DIM}> press Enter to continue:{RESET} ")
-        except (EOFError, KeyboardInterrupt):
-            return
+        # RKOJ-ELENO :: 2026-05-25 :: Item 65c. Route through _press_enter_or_x
+        # so X here also nukes EVE cleanly (was a previously-silent input()).
+        _press_enter_or_x("Enter to continue")
 
 
 def _view_mesh_status() -> None:
@@ -2104,7 +2288,7 @@ def _sinister_link_page() -> None:
                     print(f"  {ln}")
             else:
                 print(f"  {FAIL}generate failed (rc={rc}): {out.strip()[:200]}{RESET}")
-            input(f"\n  {DIM}press Enter to return to LINK menu...{RESET}")
+            _press_enter_or_x("Enter to return to LINK menu")
             continue
         if resp == "c":
             print()
@@ -2127,7 +2311,7 @@ def _sinister_link_page() -> None:
                     print(f"  {ln}")
             else:
                 print(f"  {FAIL}accept failed (rc={rc}): {out.strip()[:200]}{RESET}")
-            input(f"\n  {DIM}press Enter to return to LINK menu...{RESET}")
+            _press_enter_or_x("Enter to return to LINK menu")
             continue
         if resp == "s":
             print()
@@ -2135,19 +2319,19 @@ def _sinister_link_page() -> None:
             rc, out = _sinister_link_invoke(["-Action", "Sync"], timeout=20)
             for ln in out.splitlines():
                 print(f"  {ln}")
-            input(f"\n  {DIM}press Enter to return...{RESET}")
+            _press_enter_or_x("Enter to return")
             continue
         if resp == "h":
             print()
             rc, out = _sinister_link_invoke(["-Action", "Health"], timeout=8)
             for ln in out.splitlines():
                 print(f"  {ln}")
-            input(f"\n  {DIM}press Enter to return...{RESET}")
+            _press_enter_or_x("Enter to return")
             continue
         if resp == "v":
             print()
             _sinister_link_show_peer_locks()
-            input(f"\n  {DIM}press Enter to return...{RESET}")
+            _press_enter_or_x("Enter to return")
             continue
         if resp == "u":
             print()
@@ -2162,7 +2346,7 @@ def _sinister_link_page() -> None:
             rc, out = _sinister_link_invoke(["-Action", "Unlink"], timeout=10)
             for ln in out.splitlines():
                 print(f"  {ln}")
-            input(f"\n  {DIM}press Enter to return...{RESET}")
+            _press_enter_or_x("Enter to return")
             continue
 
 
@@ -2304,6 +2488,94 @@ def _agents_run_action(action: str, slug: str, message: str = "") -> tuple[bool,
     return (cp.returncode == 0), (cp.stdout or cp.stderr or "")[:120].strip()
 
 
+def _agents_open_multi_launch() -> str:
+    """Mu-key: list swarm presets and prompt operator to launch one.
+
+    RKOJ-ELENO :: 2026-05-25 :: Tony Stark command center (operator 06:30Z).
+    Delegates to automations/multi_agent_launcher.py.
+    """
+    if SANCTUM_ROOT_PATH is None:
+        return f"{WARN}SANCTUM_ROOT unset{RESET}"
+    py = SANCTUM_ROOT_PATH / "automations" / "multi_agent_launcher.py"
+    if not py.exists():
+        return f"{WARN}multi_agent_launcher.py missing at {py}{RESET}"
+    try:
+        cp = subprocess.run(
+            [sys.executable, str(py), "--list-presets"],
+            timeout=15, capture_output=True, text=True,
+        )
+        print(cp.stdout)
+        if cp.returncode != 0:
+            return f"{WARN}list-presets failed rc={cp.returncode}{RESET}"
+    except Exception as e:
+        return f"{WARN}list failed: {e}{RESET}"
+    try:
+        name = input(f"  {WHITE}preset name (empty = cancel):{RESET} ").strip()
+    except (EOFError, KeyboardInterrupt):
+        name = ""
+    if not name:
+        return f"{DIM}multi-launch cancelled{RESET}"
+    try:
+        cp2 = subprocess.run(
+            [sys.executable, str(py), "--swarm", name],
+            timeout=60, capture_output=True, text=True,
+        )
+        print(cp2.stdout)
+        if cp2.returncode != 0:
+            return f"{WARN}swarm '{name}' rc={cp2.returncode}{RESET}"
+        return f"{OK}swarm '{name}' launched{RESET}"
+    except Exception as e:
+        return f"{WARN}swarm failed: {e}{RESET}"
+
+
+def _agents_open_dashboard() -> str:
+    """Db-key: run multi_agent_status.py --watch in the current terminal.
+
+    RKOJ-ELENO :: 2026-05-25 :: Tony Stark command center.
+    Returns when operator hits Ctrl-C inside the dashboard.
+    """
+    if SANCTUM_ROOT_PATH is None:
+        return f"{WARN}SANCTUM_ROOT unset{RESET}"
+    py = SANCTUM_ROOT_PATH / "automations" / "multi_agent_status.py"
+    if not py.exists():
+        return f"{WARN}multi_agent_status.py missing at {py}{RESET}"
+    try:
+        subprocess.call([sys.executable, str(py), "--watch", "--interval", "5"])
+    except KeyboardInterrupt:
+        pass
+    except Exception as e:
+        return f"{WARN}dashboard failed: {e}{RESET}"
+    return f"{DIM}dashboard exited{RESET}"
+
+
+def _agents_open_rate_limit() -> str:
+    """Rl-key: print one-table account-balancer recommendation.
+
+    RKOJ-ELENO :: 2026-05-25 :: Tony Stark command center (Image 1 reinforcement
+    'over seer track the rate limit rate and slowly adjust things').
+    """
+    if SANCTUM_ROOT_PATH is None:
+        return f"{WARN}SANCTUM_ROOT unset{RESET}"
+    py = SANCTUM_ROOT_PATH / "automations" / "account_balancer.py"
+    if not py.exists():
+        return f"{WARN}account_balancer.py missing at {py}{RESET}"
+    try:
+        cp = subprocess.run(
+            [sys.executable, str(py), "--recommend"],
+            timeout=15, capture_output=True, text=True,
+        )
+        print(cp.stdout)
+        if cp.returncode != 0:
+            return f"{WARN}recommend rc={cp.returncode}{RESET}"
+        try:
+            input(f"  {DIM}<enter to return>{RESET} ")
+        except (EOFError, KeyboardInterrupt):
+            pass
+        return f"{OK}rate-limit verdict shown{RESET}"
+    except Exception as e:
+        return f"{WARN}recommend failed: {e}{RESET}"
+
+
 def _agents_render(rows: list[dict], selected: set[int], page: int,
                    status_line: str = "") -> None:
     """Render one frame of the Agents page (header + grouped paginated body + footer)."""
@@ -2355,6 +2627,12 @@ def _agents_render(rows: list[dict], selected: set[int], page: int,
     body.append(f"{PURPLE}A){RESET} Select all            "
                 f"{PURPLE}N){RESET} Select none         "
                 f"{PURPLE}n/p){RESET} Next/prev page")
+    # RKOJ-ELENO :: 2026-05-25 :: Tony Stark command center (operator 06:30Z).
+    # M/D/Rl wire the multi-agent toolkit (multi_agent_launcher.py / status / balancer).
+    body.append(f"{BRIGHTP}{BOLD}--- Command Center ---{RESET}")
+    body.append(f"{PURPLE}Mu){RESET} Multi-Launch preset   "
+                f"{PURPLE}Db){RESET} Dashboard (live)     "
+                f"{PURPLE}Rl){RESET} Rate-Limit recommend")
     body.append(f"{DIM}Select by typing: 1,3,5  or  2-4  or  all  or  none{RESET}")
     if status_line:
         body.append("")
@@ -2583,11 +2861,24 @@ def banner(state) -> None:
     loop_env = os.environ.get("SINISTER_DEFAULT_LOOP", "").strip()
     swarm_on = (swarm_env == "1") if swarm_env in ("0", "1") else prefs_def["swarm_mode"]
     loop_on = (loop_env == "1") if loop_env in ("0", "1") else prefs_def["loop_mode"]
+    # RKOJ-ELENO :: 2026-05-25T06:35Z :: show 'relentless' when loop_relentless is set.
+    loop_relentless_on = loop_on and prefs_def.get("loop_relentless", True)
     swarm_tag = f"{OK}on{RESET}" if swarm_on else f"{DIM}off{RESET}"
-    loop_tag = f"{OK}on{RESET}" if loop_on else f"{DIM}off{RESET}"
+    if loop_relentless_on:
+        loop_tag = f"{OK}relentless{RESET}"
+    elif loop_on:
+        loop_tag = f"{OK}on{RESET}"
+    else:
+        loop_tag = f"{DIM}off{RESET}"
 
+    # RKOJ-ELENO :: 2026-05-25 :: Item 66. Bump the process-wide animation
+    # tick so HSV-shimmered accents drift between renders. The accent line
+    # below uses _shimmer_accent for jcode-inspired hue rotation.
+    global _EVE_ANIM_TICK
+    _EVE_ANIM_TICK += 1
+    eve_accent = _shimmer_accent("     E V E     ", _EVE_ANIM_TICK)
     print()
-    print(f"  {PURPLE}{BOLD}     E V E     {RESET}{DIM}// jcode-speed launcher :: Sinister Sanctum{RESET}")
+    print(f"  {BOLD}{eve_accent}{RESET}{DIM}// jcode-inspired launcher :: Sinister Sanctum{RESET}")
     print(f"  {DARKP}{'-' * 68}{RESET}")
     print(f"  {SOFT}server{RESET} Sanctum    {SOFT}client{RESET} EVE    {DIM}{now}{RESET}")
     print(f"  {SOFT}model{RESET}  claude-opus-4-7[1m]   {SOFT}speed{RESET} turbo   {SOFT}token{RESET} compact")
@@ -2636,10 +2927,16 @@ def render_picker(state, selected=None, highlight=None) -> None:
     """
     if selected is None:
         selected = set()
+    # RKOJ-ELENO :: 2026-05-25 :: Item 61. Operator (image #61) "i want the
+    # cenetered menu on each page". Picker body block-centered via
+    # _center_block so it visually aligns with the main_menu hero + every
+    # sub-page. Dividers stay full-width (graceful overflow when terminal <
+    # 88 cols -- max_visible drives the pad to 0).
     print()
     print(f"  {WHITE}{BOLD}Pick projects to start{RESET}")
     print(f"  {DARKP}{'-' * 88}{RESET}")
-    # RKOJ-ELENO :: 2026-05-25T03:10Z :: Selected pane at the TOP — operator's
+    body: list[str] = []
+    # RKOJ-ELENO :: 2026-05-25T03:10Z :: Selected pane at the TOP -- operator's
     # primary affordance. Multi-select is now visible-by-default, not a hidden
     # Space-key easter egg. Operator: *"start" affordance must be obvious*.
     _idx_to_row = {r.index: r for r in state.rows}
@@ -2654,27 +2951,26 @@ def render_picker(state, selected=None, highlight=None) -> None:
         chunks = []
         for k in range(0, len(names_parts), 3):
             chunks.append("   ".join(names_parts[k:k + 3]))
-        head = f"  {OK}{BOLD}Selected ({len(sel_sorted)}){RESET}  {SOFT}[ENTER to start all]{RESET}"
-        print(head)
+        body.append(f"{OK}{BOLD}Selected ({len(sel_sorted)}){RESET}  {SOFT}[ENTER to start all]{RESET}")
         for ln in chunks:
-            print(f"    {ln}")
+            body.append(f"  {ln}")
     else:
-        print(f"  {SOFT}Selected: {DIM}(none — type numbers to toggle, "
-              f"{RESET}{PURPLE}A{RESET}{DIM} for all, "
-              f"{RESET}{PURPLE}ENTER{RESET}{DIM} on empty starts default){RESET}")
-    print(f"  {DARKP}{'-' * 88}{RESET}")
+        body.append(f"{SOFT}Selected: {DIM}(none -- type numbers to toggle, "
+                    f"{RESET}{PURPLE}A{RESET}{DIM} for all, "
+                    f"{RESET}{PURPLE}ENTER{RESET}{DIM} on empty starts default){RESET}")
+    body.append(f"{DARKP}{'-' * 84}{RESET}")
     # RKOJ-ELENO 2026-05-24: fleet-default hint line. Loop is ON for the whole fleet;
     # per-session override via --no-loop, fleet-wide via agent-prefs.json defaults.loop_mode.
     prefs_def = _read_prefs_defaults()
     loop_word = f"{OK}ON{RESET}" if prefs_def["loop_mode"] else f"{DIM}OFF{RESET}"
-    print(f"  {DIM}fleet-default loop: {loop_word}{DIM}   override per-session: --no-loop  |  "
-          f"toggle this session: press {RESET}{PURPLE}L{RESET}{DIM}  |  "
-          f"persist: edit agent-prefs.json defaults.loop_mode{RESET}")
-    print(f"  {DIM}tier:{RESET} {BRIGHTP}T1{RESET}{DIM}=critical(reserves operator slot) {RESET}"
-          f"{PURPLE}T2{RESET}{DIM}=high {RESET}"
-          f"{SOFT}T3{RESET}{DIM}=normal {RESET}"
-          f"{DIM}T4=background   edit: projects.json project.tier field{RESET}")
-    print()
+    body.append(f"{DIM}fleet-default loop: {loop_word}{DIM}   override per-session: --no-loop  |  "
+                f"toggle this session: press {RESET}{PURPLE}L{RESET}{DIM}  |  "
+                f"persist: edit agent-prefs.json defaults.loop_mode{RESET}")
+    body.append(f"{DIM}tier:{RESET} {BRIGHTP}T1{RESET}{DIM}=critical(reserves operator slot) {RESET}"
+                f"{PURPLE}T2{RESET}{DIM}=high {RESET}"
+                f"{SOFT}T3{RESET}{DIM}=normal {RESET}"
+                f"{DIM}T4=background   edit: projects.json project.tier field{RESET}")
+    body.append("")
     # RKOJ-ELENO :: 2026-05-24 :: tier badge color map (operator 19:55Z importance system).
     # T1 = critical (BRIGHTP), T2 = high (PURPLE), T3 = normal (SOFT), T4 = background (DIM).
     _tier_colors = {1: BRIGHTP, 2: PURPLE, 3: SOFT, 4: DIM}
@@ -2695,15 +2991,19 @@ def render_picker(state, selected=None, highlight=None) -> None:
         tier_badge = f"{tier_color}T{getattr(r, 'tier', 3)}{RESET}"
         # Truncate tag (tighter to fit T-badge column).
         tag = r.tag if len(r.tag) <= 42 else r.tag[:39] + "..."
-        line = (f" {cursor}{select_mark} {PURPLE}{r.index:2}){RESET} {tier_badge}  "
+        line = (f"{cursor}{select_mark} {PURPLE}{r.index:2}){RESET} {tier_badge}  "
                 f"{WHITE}{r.display:<28}{RESET}  "
                 f"{SOFT}{tag:<42}{RESET}")
         if r.customized:
             line += f"  {DIM}[{r.agent_name} / {r.accent}]{RESET}"
-        print(line)
+        body.append(line)
         # Visual grouping: blank line every 5 rows so the eye can scan.
         if (i + 1) % 5 == 0 and (i + 1) < len(state.rows):
-            print()
+            body.append("")
+    # Block-center the assembled body so rows align with the main-menu hero.
+    # Width 88 matches the legacy hard-coded layout; _center_block clamps to
+    # terminal width on graceful overflow (small terms).
+    _print_centered(body, width=88)
     print()
     print(f"  {DARKP}{'-' * 88}{RESET}")
     print()
@@ -2837,7 +3137,7 @@ def _print_help() -> None:
     """jcode-style structured table of every flag + env var (operator directive 2026-05-24)."""
     H = WHITE + BOLD
     R = RESET
-    print(f"{H}EVE.exe {EVE_VERSION}{R}  {SOFT}Sinister Sanctum session launcher (jcode-parity){R}")
+    print(f"{H}EVE.exe {EVE_VERSION}{R}  {SOFT}Sinister Sanctum session launcher (jcode-inspired){R}")
     print()
     print(f"{H}USAGE{R}")
     print(f"  EVE.exe [flags]                 # interactive picker")
