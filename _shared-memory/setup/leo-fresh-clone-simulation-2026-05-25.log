@@ -1,0 +1,58 @@
+
+  EVE First-Run Check :: z0nian @ DESKTOP-LTO4LUS
+  [SIMULATING FRESH MACHINE]
+
+  [FIRST-RUN DETECTED - wizard MUST fire]
+  Hard blocks:
+    - sanctum-root-missing-or-incomplete (D:\Sinister Sanctum)
+    - git-for-windows-missing (install: https://gitforwindows.org)
+    - claude-cli-missing (install Node + npm i -g @anthropic-ai/claude-code)
+    - shared-memory-uninitialized (_shared-memory/ tree missing)
+    - no-auth (neither ~/.claude credentials nor ANTHROPIC_API_KEY env)
+  Warnings (non-blocking):
+    - node-missing (needed to install claude CLI if missing)
+    - python-missing (only needed to rebuild EVE.exe)
+    - network-unreachable (api.anthropic.com unreachable - check internet)
+    - ANTHROPIC_API_KEY env not set (claude CLI OAuth still works)
+    - vault not initialized (collaborative sync inactive; ok for solo bring-up)
+    - agent-prefs.json missing (first spawn will create defaults)
+    - docker-cli-missing (Docker Desktop not installed; bot Tier-2 LLM stack offline. winget install Docker.DockerDesktop)
+    - mcp-config-missing (~/.claude/.mcp.json absent; wizard will copy template from automations/templates/leo-mcp-config.json)
+    - task-auto-push-missing (SinisterSanctumAutoPush not registered; wizard will install)
+    - task-oauth-health-missing (SinisterOAuthHealthPoll not registered; wizard will install)
+    - task-link-poll-missing (SinisterLinkPoll not registered; wizard will install)
+    - task-account-watchdog-missing (SinisterAccountWatchdog not registered; wizard will install)
+    - bypass-permissions-off (~/.claude/settings.json missing bypassPermissions=true OR dangerously-skip in allow-list; wizard will fix via grant-claude-autonomy.ps1)
+    - understand-anything-plugin-disabled (cold-start step 0 requires it; wizard will enable via grant-claude-autonomy.ps1)
+    - eve-exe-mirror-missing (~/.eve/EVE.exe not present; non-blocking - run verify-eve-features.ps1 -SyncMirror)
+    - git-user-not-configured (set with: git config --global user.name + user.email; wizard agent will prompt)
+    - vault-daemon-unreachable (port :5078 not listening; optional - skip unless you want vault sync)
+
+  Checks:
+    [FAIL]  sanctum_root_exists
+    [FAIL]  marker_present
+    [FAIL]  git_bash_present
+    [FAIL]  claude_cli_present
+    [FAIL]  node_present
+    [FAIL]  python_present
+    [FAIL]  anthropic_api_key_present
+    [FAIL]  shared_memory_initialized
+    [FAIL]  projects_json_present
+    [FAIL]  prefs_json_present
+    [FAIL]  vault_setup
+    [FAIL]  claude_creds_present
+    [FAIL]  network_reachable
+    [FAIL]  docker_cli_present
+    [FAIL]  docker_daemon_reachable
+    [FAIL]  mcp_config_present
+    [FAIL]  mcp_servers_connected
+    [FAIL]  task_auto_push
+    [FAIL]  task_oauth_health
+    [FAIL]  task_link_poll
+    [FAIL]  task_account_watchdog
+    [FAIL]  bypass_permissions_on
+    [FAIL]  understand_anything_on
+    [FAIL]  eve_exe_mirrored
+    [FAIL]  git_user_configured
+    [FAIL]  vault_daemon_reachable
+

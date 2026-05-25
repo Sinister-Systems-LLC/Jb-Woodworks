@@ -1,0 +1,41 @@
+{
+  "schema_version": "sinister.resume-point.v1",
+  "ts_utc": "2026-05-25T02:25Z",
+  "project": "eve-compliance",
+  "agent_name": "eve-compliance",
+  "mode": "resume",
+  "focus_intent": "R3 CCBill test-prep package SHIPPED + Sinister Overseer activated. Satellite workstation at C:/Users/Zonia/Desktop/EVE-Compliance-Workstation/ ships (10+ files, smoke-tested 10/10 precision against real scanner). Overseer cold-start brief at _shared-memory/inbox/sinister-overseer/2026-05-25T0210Z-...-FULL-BRIEF.md. Operator-clickable spawn at C:/Users/Zonia/Desktop/Start-Overseer-EVE-Compliance.bat. Next iter: open follow-up #5 KPI widget for main admin panel per D:/Sinister Sanctum/projects/eve-compliance/PLAN-KPI-WIDGET-MAIN-PANEL.md.",
+  "git": {
+    "branch_local": "C:/Users/Zonia/Desktop/LetsText currently on agent/letstext/master-plan-resume-2026-05-24 (baseline; reset by operator/automation mid-turn)",
+    "branch_r2_preserved": "origin/agent/eve-compliance/cooldown-ui-2026-05-25 (commit 334a03b alive)",
+    "branch_r1_preserved": "origin/agent/eve-compliance/ncmec-auto-draft (commit 7ac12b1 alive)",
+    "head_letstext_local": "0667618 (baseline)",
+    "head_msg": "R3 deliverables live in Sanctum + Desktop NOT in LetsText git repo (workstation + Overseer brief are Sanctum-side files)"
+  },
+  "progress_top3": [
+    "R3 2026-05-25T02:25Z CCBill test-prep package shipped — workstation folder + 10/10 smoke-test + Overseer activation + KPI widget plan + fleet broadcast",
+    "R2 2026-05-25T01:45Z ChatArea cooldown friendly UI shipped (commit 334a03b) — 5-surface change, 58/58 vitest",
+    "R1 2026-05-24T22:15Z NCMEC auto-draft shipped (commit 7ac12b1) — 16 new vitest, 68/68 PASS"
+  ],
+  "last_5_files_touched_24h": [
+    "C:/Users/Zonia/Desktop/EVE-Compliance-Workstation/scripts/run-scan-cli.ts (NEW, 197 LOC)",
+    "C:/Users/Zonia/Desktop/EVE-Compliance-Workstation/ccbill-compliance/policy-map.md (NEW, 15-rule CCBill mapping)",
+    "C:/Users/Zonia/Desktop/EVE-Compliance-Workstation/demo-script/recording-script.md (NEW, 4-6 min talk-track)",
+    "D:/Sinister Sanctum/_shared-memory/inbox/sinister-overseer/2026-05-25T0210Z-from-eve-compliance-ccbill-test-prep-FULL-BRIEF.md (NEW, 171 lines)",
+    "C:/Users/Zonia/Desktop/Start-Overseer-EVE-Compliance.bat (NEW, operator-clickable spawn)"
+  ],
+  "pre_warm_reads": [
+    "D:/Sinister Sanctum/CLAUDE.md",
+    "D:/Sinister Sanctum/projects/eve-compliance/CLAUDE.md",
+    "D:/Sinister Sanctum/projects/eve-compliance/PLAN-KPI-WIDGET-MAIN-PANEL.md",
+    "D:/Sinister Sanctum/_shared-memory/PROGRESS/EVE Compliance.md",
+    "C:/Users/Zonia/Desktop/EVE-Compliance-Workstation/README.md",
+    "C:/Users/Zonia/Desktop/EVE-Compliance-Workstation/ccbill-compliance/policy-map.md"
+  ],
+  "operator_action_required": [
+    "Double-click C:/Users/Zonia/Desktop/Start-Overseer-EVE-Compliance.bat to spawn Sinister Overseer (cold-start brief already waiting in inbox)",
+    "Optionally: C:/Users/Zonia/Desktop/EVE-Compliance-Workstation/scripts/run-scan.bat for a smoke test (10/10 in mock; needs ANTHROPIC_API_KEY for live)",
+    "Read C:/Users/Zonia/Desktop/EVE-Compliance-Workstation/00-START-HERE.md (5 minutes)"
+  ],
+  "first_session_work_unit": "Iter R4: open follow-up #5 KPI widget. Plan is fully written at PLAN-KPI-WIDGET-MAIN-PANEL.md — 4 tiles on /admin (scans-pending, agencies-on-cooldown, scanner-precision-7d, NCMEC-drafts-pending), ~350 LOC, one focused turn, no operator-action required. Branch: agent/eve-compliance/kpi-strip-2026-05-26. First files: dashboard/app/(dashboard)/admin/admin-page.tsx + NEW components/admin/eve-compliance-kpi-strip.tsx + NEW hooks/use-eve-compliance-kpis.ts + backend/src/routes/image-moderation.ts (3 new analytics endpoints) + NEW vitest cases."
+}

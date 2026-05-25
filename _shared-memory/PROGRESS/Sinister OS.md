@@ -5,6 +5,44 @@
 
 ---
 
+## 2026-05-25 ~03:05Z — Iter 15 close-out + 4-doctrine adoption + iter-13/14 gap-fill (no-bullshit §4 audit catch)
+
+Resumed on `agent/sinister-sanctum/eve-exe-headless-jcode-audit-2026-05-25` (cross-lane working dir at session start); branched to `agent/sinister-os/iter15-doctrine-adopt-2026-05-25` per single-repo-push-policy canonical 2026-05-25.
+
+**Audit catch (no-bullshit doctrine rule 4 — re-read disk before claiming):** prior heartbeat (2026-05-25T01:35Z) claimed `docs/rollout-doctrine-2026-05-25.md`, `docs/no-function-loss-doctrine-2026-05-25.md`, `docs/integration-phasing-2026-05-25.md`, `research/feature-parity-audit-2026-05-25.md` shipped. Disk-verify result: only `rollout-doctrine-2026-05-24.md` + `feature-parity-audit-2026-05-24.md` existed (at `-24` paths, not `-25`). **no-function-loss + integration-phasing were missing entirely.** Filled the gap this turn with proper 2026-05-24 dated docs.
+
+**Files added (iter-13/14 gap-fill — 2 docs):**
+
+| Path | Content |
+|---|---|
+| `docs/no-function-loss-doctrine-2026-05-24.md` | 6-status taxonomy (superset/parity/degraded/quarantined/missing/waived) + per-category audit pointer + Phase 5 cutover criteria + 4 anti-patterns |
+| `docs/integration-phasing-2026-05-24.md` | Bazzite/Hyprland/archiso/kiosk-linux adoption tiers + per-phase prior-art consumption gate + 4 vendor rules + per-phase smoke commands |
+
+**4-doctrine adoption (fleet-update 2026-05-25T02:40Z from sanctum-master inbox):**
+
+1. `no-visible-powershell-windows-doctrine-2026-05-25` — audited sinister-os ps1 surfaces. Only 2 .ps1 files exist (`source/vm-boot/boot-virtualbox.ps1`, `source/vm-boot/install-helpers/install-virtualbox.ps1`); both are operator-clicked VM tools → EXEMPT per doctrine ("Operator-clicked = visible"). No scheduled tasks owned by this lane. **Zero violations to patch.**
+2. `jcode-condensed-log-discipline-2026-05-25` — sinister-os has no long-running progress emitters in Python/ps1 (`hot-reconfig-classifier.py` is a one-shot diff classifier with exit code; not a candidate). Discipline registered for future ship: any new long-running emitter MUST use `tools/eve-picker/status_line.py` (Python) or `automations/status-line.ps1` (planned PS counterpart).
+3. `operator-full-audit-directive-no-questions-2026-05-25` — adopted; future "full audit" trigger fires the 5-section template without clarification.
+4. `jcode-full-audit-2026-05-25` — read; informs sinister-os state-machine design (typed states BOOT / RUNNING / REBOOTING / HALTED / FAILED) when `sinister-eve.service` is implemented Phase 1.
+
+**Sister-coordination:** sanctum-master pushed the 4 doctrines + 2 tools (`status_line.py` + `sinister-headless.ps1`). This lane consumes them; no overlap on tool ownership.
+
+**Files added this turn — summary:**
+
+| Path | Verification |
+|---|---|
+| `docs/no-function-loss-doctrine-2026-05-24.md` | parse-clean markdown; ls+cat verified post-write |
+| `docs/integration-phasing-2026-05-24.md` | parse-clean markdown; ls+cat verified post-write |
+| `_shared-memory/heartbeats/sinister-os.json` | JSON parse OK; reflects post-audit current state |
+| `_shared-memory/PROGRESS/Sinister OS.md` | this row appended (most-recent at top) |
+| `_shared-memory/resume-points/Sinister OS/<utc>.json` | written via `resume-point-write.ps1` after commit |
+
+**Branch + commit:** `agent/sinister-os/iter15-doctrine-adopt-2026-05-25` created from sanctum's working HEAD; only sinister-os new files staged (sanctum WIP files remain unstaged for sanctum's own commit later). Push routes via `sanctum-auto-push` daemon (30-min schedule + post-spawn fire).
+
+**Loop continues:** next iter = Phase 0b prep (qemu/kvm boot of variant compose overlays) OR any operator utterance routed to this lane.
+
+---
+
 ## 2026-05-25 ~01:35Z — MASSIVE-EXPANSION iters 10-14 SHIPPED + classifier bug caught + branch routed
 
 Resumed massive-expansion plan from `2026-05-24T2110Z`. Iter 9 had landed in prior commit `99174f8` (variant overlays + hot-reconfig research); iters 10-14 were unshipped. Spawned was on `agent/showmasters/p1-secure-and-ship-2026-05-25` (contamination); `agent-branch-router.ps1` cleanly switched to `agent/sinister-os/p1-iter10-15-2026-05-25-2026-05-25` per SINGLE-REPO PUSH POLICY canonical 2026-05-25.

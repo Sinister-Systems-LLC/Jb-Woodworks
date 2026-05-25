@@ -10,6 +10,46 @@ The Sanctum-side mirror of `SESSION-START/02-OPERATOR-QUEUE.md`, with checkboxes
 
 ---
 
+## 2026-05-25T02:14Z -- 🟠 HIGH -- Leo handoff READY-WITH-CAVEATS -- 1 trivial caveat (auto-resolves)
+
+> Author: RKOJ-ELENO :: 2026-05-25 (sanctum-helper-gamma-leo-handoff lane)
+
+Sanctum Helper Gamma completed full Leo-readiness audit. **All 9 auto-setup scripts + 6 docs + 8 brain entries + EVE.exe (fresh build) + .claude/settings.json template are on GitHub.** Local HEAD `761d06b` == remote HEAD (zero diff). Fresh-clone simulation produces clean install report (5 hard blocks + ~17 wizard-auto-fixes). Full audit: `_shared-memory/setup/leo-handoff-readiness-2026-05-25.md` (simulation log: `_shared-memory/setup/leo-fresh-clone-simulation-2026-05-25.log`).
+
+**Send Leo:**
+1. `git clone https://github.com/Sinister-Systems-LLC/Sinister-Sanctum.git D:\Sinister-Sanctum`
+2. Double-click `automations/eve-launcher/dist/EVE/EVE.exe`
+3. First-run wizard fires automatically (installs Node + claude CLI + Docker + scheduled tasks + autonomy + MCP + git user config). Done.
+
+Caveat (NON-blocking for Leo): operator-side `~/.eve/EVE.exe` mirror is 35 min behind dist because operator's running EVE.exe holds the file. Auto-resolves on Leo's machine since he has no running instance. ETA-to-clear-for-operator: close + reopen EVE.exe windows.
+
+- [ ] Operator acknowledge handoff-ready; send Leo the clone URL + double-click instruction.
+
+---
+
+## 2026-05-25T02:00Z -- MEDIUM -- Sinister Overseer first-audit MEDIUM proposals (sinister-term lane)
+
+> Author: RKOJ-ELENO :: 2026-05-25 (sanctum-overseer-audit-sinister-term lane)
+
+Sinister Overseer's first-fire audit on `projects/sinister-term/` surfaced 4 MEDIUM findings the Overseer charter REQUIRES operator confirmation on (TRIVIAL/LOW auto-applied; MEDIUM/HIGH propose-only). Full audit: `_shared-memory/knowledge/overseer-audit-sinister-term-2026-05-25.md`. Lessons: `_shared-memory/knowledge/overseer-lessons-from-first-audit-2026-05-25.md`.
+
+- [ ] **M1 (HIGH-impact MEDIUM): Orphan entry-point divergence in sinister-term**
+  `projects/sinister-term/source/pyproject.toml:21-22` -- both `sterm` and `sinister-term` entry-points point to `term.__main__:run` which does `from term.app import run`. The entire `term/cli.py` argparse surface (`sinister run/resume/ctl/swarm/login/auth-test/provider/browser/serve/connect/dictate/version/help`) is UNREACHABLE from the installed binary. Operator typing `sterm swarm spawn rkoj` gets "no such command" because the binary boots straight into the interactive shell. Suggested fix: `sterm = "term.cli:main_compat"` (already handles interactive-default) + `sinister-term = "term.cli:main"`. 1-line revertible; needs operator OK on which behavior is canonical.
+- [ ] **M2: DRY -- extract `_utc_ts_*` and `SANCTUM_ROOT` to shared module**
+  `_utc_ts_filename`/`_utc_ts_iso` defined identically in `commands.py:244-251` AND `swarm.py:30-35`. `SANCTUM_ROOT = Path(os.environ.get("SANCTUM_ROOT") or "D:/Sinister Sanctum")` triple-defined in `commands.py:24`, `login_stub.py:24`, `swarm.py:24`. Suggested fix: new `term/_paths.py` exposing the three constants/functions; 3 modules switch to import. Trivial refactor; needs nod on slight API-surface widening.
+- [ ] **M3: IPC server scaffold is inert -- not started in `app.run()`**
+  `term/ipc.py` defines `serve_in_background()` (TCP server on 127.0.0.1:5081 with `secrets.token_urlsafe(32)` token auth + 12 RPC handlers) but `app.run()` never calls it. So `sinister ctl health` always fails with conn-refused on any live sterm. Suggested fix: opt-in via `SINISTER_TERM_ENABLE_IPC=1` env var (default OFF). Localhost-bound + token-gated = LOW network risk; needs operator OK on the opt-in.
+- [ ] **M4: Test coverage gaps in sinister-term (6 modules untested)**
+  `ipc.py` (351 LOC, 12 RPC handlers, security-sensitive) -- ZERO tests. `swarm.py` (135 LOC, multi-agent coord) -- ZERO. `cli.py` (309 LOC, 12 subcommands) -- ZERO. `login_stub.py` (210 LOC, credential-adjacent) -- ZERO. `keybindings.py` (84 LOC) -- ZERO. `ipc_client.py` (40 LOC) -- ZERO. Currently only `test_alias.py` (57 LOC) + `test_app_smoke.py` (8 LOC). Suggested fix: add `tests/test_ipc.py` (priority 1 -- security-critical), `tests/test_swarm.py` (P2), `tests/test_cli.py` (P3 argparse roundtrip). Test-debt = harmless to add; needs nod that lane-iter cost is worth it.
+
+LOW-risk fixes already applied this audit:
+- Done: `cli.py:303` hardcoded `C:\Users\Zonia\...` -> `SINISTER_FIREFOX_BRIDGE_PATH` env var (commit `e6dd82b`).
+- Pending-commit: `theme.py:52` BANNER expanded 8 -> 19 commands (working tree only -- stale sibling git PID29412 lock blocked commit; will land next clean turn or auto-push tick).
+
+Audit cost: ~$0.15-0.30 cost-eq (3-6% of $5/day Overseer cap). Next audit target: sinister-chatbot.
+
+---
+
 ## 2026-05-25T02:05Z -- HIGH -- Leo auto-setup v3 expanded (MCP + Docker + bots + autonomy + scheduled tasks)
 
 > Author: RKOJ-ELENO :: 2026-05-25 (sanctum-leo-setup-expand lane)
