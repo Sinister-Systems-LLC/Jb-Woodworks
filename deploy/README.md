@@ -17,17 +17,20 @@ If you only read three things in this folder, read this README, then
    - Extract the zip you were given into `D:\Sinister Sanctum\`, OR
    - `git clone https://github.com/Sinister-Systems-LLC/Sinister-Sanctum.git "D:\Sinister Sanctum"`
 
-2. **Run the bootstrapper.** Open PowerShell (any window — admin not required;
+2. **Run the bootstrapper.** Open a terminal (any window — admin not required;
    the installer auto-elevates UAC for the pieces that need it):
 
-   ```powershell
+   ```
    python "D:\Sinister Sanctum\deploy\setup.py"
    ```
 
    This auto-installs: Git for Windows · Node.js LTS · Claude Code CLI ·
-   Python 3.10+ deps · scheduled tasks (auto-push, account watchdog, doctor,
-   link poller) · config templates · MCP server seed (without overwriting
-   existing). Takes ~5-10 min on a normal connection.
+   Python 3.10+ deps · 3 scheduled tasks (`SinisterSanctumAutoPush` every
+   30 min, `SinisterLoopRelentlessWatchdog` every 5 min, `SinisterLinkPoller`
+   every 5 min) · `~/.claude/settings.json` autonomy seed · `~/.claude/.mcp.json`
+   MCP server seed (skipped if it already exists). Takes ~5-10 min on a
+   normal connection. Default is APPLY; pass `--dry-run` to preview without
+   touching the box.
 
 3. **Double-click `EVE.exe`** (this folder ships a copy; the canonical one
    lives at the repo root). The picker opens. Pick a project (`1`-`15`),
@@ -68,14 +71,15 @@ file carries `Author: RKOJ-ELENO :: <date>`, and every spawn ships with
 | Python 3.10+ + `pip install` for tools | EVE.exe rebuild + vault daemon + voice POC | recommended |
 | `~/.claude/settings.json` (autonomy grant) | `bypassPermissions: true` + plugin enables | yes |
 | `~/.claude/.mcp.json` (seed template) | 12 Sinister bots + 4 npm MCPs | yes (skipped if exists) |
-| Scheduled tasks (7) | auto-push, account watchdog, doctor, link poll, etc. | yes |
+| Scheduled tasks (3) | `SinisterSanctumAutoPush` (30 min push) · `SinisterLoopRelentlessWatchdog` (5 min loop nudge) · `SinisterLinkPoller` (5 min peer sync) | yes |
 | `claude-accounts.json` (4-slot starter) | multi-account rotation seed | yes |
 | Optional: Docker Desktop + Ollama | Tier-2 bots (librarian/triage/researcher) | optional |
 | Optional: Tailscale | Sinister LINK pairing with operator (Mode B) | optional |
 
 `setup.py` is **idempotent** — re-running it skips anything already present
-and only repairs what's missing or broken. The wizard always runs in
-`-DryRun` mode first; flip `--apply` to actually install.
+and only repairs what's missing or broken. **Default behaviour is APPLY** —
+the installer runs the real changes immediately. Pass `--dry-run` to preview
+without touching the box.
 
 ---
 

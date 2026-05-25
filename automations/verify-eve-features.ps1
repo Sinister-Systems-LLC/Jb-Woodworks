@@ -16,6 +16,7 @@ param(
 )
 
 $ErrorActionPreference = 'Continue'
+if ($AutoRebuild) { try { & python "D:\Sinister Sanctum\automations\eve_crash_detector.py" --pre-compile 2>&1 | Out-Null } catch { Write-Host "  [warn] eve_crash_detector pre-compile hook failed: $_" -ForegroundColor Yellow } }
 $exeDist = Join-Path $SanctumRoot 'automations\eve-launcher\dist\EVE\EVE.exe'
 $exeMirror = Join-Path $env:USERPROFILE '.eve\EVE.exe'
 $src       = Join-Path $SanctumRoot 'automations\eve-launcher\eve.py'

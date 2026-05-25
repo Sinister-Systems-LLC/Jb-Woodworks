@@ -56,11 +56,13 @@ WINGET_DEPS = [
     ("Anthropic.Claude.Code", "Claude Code CLI (may not be in winget yet)"),
 ]
 
-# (TaskName, ScheduleSpec, RelativePs1)
+# (TaskName, ScheduleSpec, RelativeScript, ExtraArgs, Runner)
+# Runner = "powershell" (legacy .ps1, allowed per no-bat-no-ps1 doctrine
+# when the file already exists) or "python" (canonical for new tasks).
 SCHTASKS = [
-    ("SinisterSanctumAutoPush", ("MINUTE", "30"), r"automations\sanctum-auto-push.ps1", ""),
-    ("SinisterLoopRelentlessWatchdog", ("MINUTE", "5"), r"automations\loop-relentless-watchdog.ps1", "-Action Scan"),
-    ("SinisterLinkPoller", ("MINUTE", "5"), r"automations\sinister-link-poller.ps1", ""),
+    ("SinisterSanctumAutoPush", ("MINUTE", "30"), r"automations\sanctum-auto-push.ps1", "", "powershell"),
+    ("SinisterLoopRelentlessWatchdog", ("MINUTE", "5"), r"automations\loop-relentless-watchdog.ps1", "-Action Scan", "powershell"),
+    ("SinisterLinkPoller", ("MINUTE", "5"), r"automations\sinister_link_poller.py", "", "python"),
 ]
 
 LOG_RELATIVE = Path("_shared-memory") / "first-time-setup-log.jsonl"
@@ -223,12 +225,16 @@ def ensure_winget_deps(dry_run: bool) -> dict[str, str]:
 def install_schtasks(sanctum_root: Path, dry_run: bool, elevated: bool) -> dict[str, str]:
     results: dict[str, str] = {}
     runas = "SYSTEM" if elevated else os.environ.get("USERNAME", "")
-    for task_name, (sc_unit, sc_mod), rel_ps1, extra_args in SCHTASKS:
-        ps1_full = sanctum_root / rel_ps1
-        if not ps1_full.exists():
-            results[task_name] = f"missing-script {rel_ps1}"
+    for task_name, (sc_unit, sc_mod), rel_script, extra_args, runner in SCHTASKS:
+        script_full = sanctum_root / rel_script
+        if not script_full.exists():
+            results[task_name] = f"missing-script {rel_script}"
             continue
-        tr = f'powershell -NoProfile -ExecutionPolicy Bypass -File "{ps1_full}" {extra_args}'.strip()
+        if runner == "python":
+            python_exe = shutil.which("python") or shutil.which("py") or "python"
+            tr = f'"{python_exe}" "{script_full}" {extra_args}'.strip()
+        else:
+            tr = f'powershell -NoProfile -ExecutionPolicy Bypass -File "{script_full}" {extra_args}'.strip()
         cmd = [
             "schtasks", "/Create", "/TN", task_name,
             "/SC", sc_unit, "/MO", sc_mod,
