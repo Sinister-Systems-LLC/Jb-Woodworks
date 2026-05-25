@@ -64,22 +64,23 @@ def _load_json(path: Path) -> dict[str, Any] | None:
 
 
 def _clear_screen() -> None:
-    """Wipe terminal + cursor home so a fresh sub-page renders on blank surface.
-
-    RKOJ-ELENO :: 2026-05-25T00:15Z :: operator "each menu needs to go to a
-    complete clean new menu that is clean and you cannot see the menu you
-    just came from". No-op when NO_COLOR / TERM=dumb on POSIX.
-    """
-    if "NO_COLOR" in os.environ:
-        return
-    if os.environ.get("TERM", "").lower() == "dumb" and os.name != "nt":
-        return
+    """Delegate to eve_ui.clear_screen (DRY per eve-ui-uniformity-doctrine).
+    RKOJ-ELENO :: 2026-05-25 :: UI fix 3 (audit 2026-05-25T07:22Z)."""
     try:
         import sys as _sys
-        _sys.stdout.write("\033[2J\033[H")
-        _sys.stdout.flush()
+        from pathlib import Path as _P
+        _here = _P(__file__).resolve().parent
+        if str(_here) not in _sys.path:
+            _sys.path.insert(0, str(_here))
+        from eve_ui import clear_screen  # type: ignore
+        clear_screen()
     except Exception:
-        pass
+        import sys as _sys
+        try:
+            _sys.stdout.write("\033[2J\033[H")
+            _sys.stdout.flush()
+        except Exception:
+            pass
 
 
 def _header(title: str) -> None:

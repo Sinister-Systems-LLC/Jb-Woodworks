@@ -1116,43 +1116,207 @@ def _kill_fleet_action() -> None:
     sys.exit(0)
 
 
-def _agents_working_with_action() -> None:
-    """RKOJ-ELENO :: 2026-05-25T00:20Z :: W-key stub for "Agents I'm Working With".
+def _load_agent_heartbeats() -> list[dict]:
+    """Load + sort all _shared-memory/heartbeats/*.json by ts_utc descending.
+    RKOJ-ELENO :: 2026-05-25 :: P1.10 Command Center data loader."""
+    hb_dir = SANCTUM_ROOT / "_shared-memory" / "heartbeats"
+    agents: list[dict] = []
+    if not hb_dir.exists():
+        return agents
+    from datetime import datetime, timezone, timedelta
+    now = datetime.now(timezone.utc)
+    for p in sorted(hb_dir.glob("*.json")):
+        try:
+            row = json.loads(p.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        slug = row.get("agent") or row.get("slug") or p.stem
+        display = (row.get("display") or row.get("agent_display") or slug)[:22]
+        ts_raw = row.get("ts_utc", "")
+        try:
+            ts = datetime.fromisoformat(ts_raw.replace("Z", "+00:00"))
+            age_s = int((now - ts).total_seconds())
+            if age_s < 60:
+                age = f"{age_s}s"
+            elif age_s < 3600:
+                age = f"{age_s//60}m"
+            elif age_s < 86400:
+                age = f"{age_s//3600}h"
+            else:
+                age = f"{age_s//86400}d"
+            fresh = age_s < 7200
+        except Exception:
+            age = "?"
+            fresh = False
+            ts = datetime.min.replace(tzinfo=timezone.utc)
+        event = (row.get("last_event") or row.get("focus_intent") or "")[:60]
+        agents.append({
+            "slug": slug, "display": display, "age": age, "fresh": fresh,
+            "event": event, "ts": ts,
+            "iter": row.get("iter") or row.get("loop_iter") or 0,
+            "branch": (row.get("branch") or "")[:30],
+            "path": str(p), "raw": row,
+        })
+    agents.sort(key=lambda a: a["ts"], reverse=True)
+    return agents
 
-    Sister B (sister-sanctum lane) owns the full sub-page: live PID list,
-    per-row K/R/M actions, bottom "Kill All". For now we ship a useful preview
-    by running `kill-fleet.ps1 -Mode Soft -WhatIf` which LISTS live agents
-    without killing -- operator-actionable visibility while sister wires the
-    full interactive sub-page.
 
-    Coord note: _shared-memory/cross-agent/2026-05-25T0020Z-sanctum-to-
-    sanctum-B-agents-im-working-with-spec.md
-    """
-    print(f"  {WARN}[W] agents-im-working-with: NOT YET IMPLEMENTED -- sister B owns;{RESET}")
-    print(f"  {WARN}    for now showing kill-fleet preview (-WhatIf, no kills){RESET}")
-    print()
-    ps1 = SANCTUM_ROOT / "automations" / "kill-fleet.ps1"
-    if not ps1.exists():
-        print(f"  {WARN}[W] kill-fleet.ps1 missing at {ps1}{RESET}")
-        time.sleep(1.5)
-        return
+def _cmd_center_render(agents: list[dict], show_all: bool, selected: int) -> None:
+    """Render the Command Center dashboard table.
+    RKOJ-ELENO :: 2026-05-25 :: P1.10."""
     try:
-        subprocess.run(
-            ["powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass",
-             "-File", str(ps1), "-Mode", "Soft", "-WhatIf"],
-            timeout=15,
-            check=False,
-        )
-    except subprocess.TimeoutExpired:
-        print(f"  {WARN}[W] kill-fleet.ps1 -WhatIf timed out after 15s.{RESET}")
-    except Exception as e:
-        print(f"  {WARN}[W] kill-fleet.ps1 -WhatIf failed: {e}{RESET}")
+        import sys as _sys
+        from pathlib import Path as _P
+        _here = _P(__file__).resolve().parent
+        if str(_here) not in _sys.path:
+            _sys.path.insert(0, str(_here))
+        from eve_ui import clear_screen, print_sub_page_header  # type: ignore
+        clear_screen()
+        print_sub_page_header("Command Center — Fleet Agents")
+    except Exception:
+        print("\033[2J\033[H", end="")
+        print(f"  {DARKP}---{RESET} {WHITE}{BOLD}Command Center — Fleet Agents{RESET} {DARKP}---{RESET}")
     print()
-    print(f"  {DIM}press Enter to return to menu...{RESET}")
+
+    visible = [a for a in agents if show_all or a["fresh"]]
+    if not visible:
+        print(f"  {WARN}No {'heartbeats' if show_all else 'fresh (< 2h) heartbeats'} found.{RESET}")
+    else:
+        hdr = f"  {'#':>2}  {'SLUG':<22}  {'AGE':>4}  {'ITER':>4}  {'LAST EVENT'}"
+        print(f"{DIM}{hdr}{RESET}")
+        print(f"  {DARKP}{'─'*76}{RESET}")
+        for i, a in enumerate(visible):
+            num = str(i + 1)
+            age_color = OK if a["fresh"] else WARN
+            row = (f"  {PURPLE}{num:>2}){RESET}  "
+                   f"{WHITE}{a['display']:<22}{RESET}  "
+                   f"{age_color}{a['age']:>4}{RESET}  "
+                   f"{DIM}{str(a['iter']):>4}{RESET}  "
+                   f"{SOFT}{a['event'][:55]}{RESET}")
+            if i == selected:
+                row = f"\033[7m{row}\033[0m"
+            print(row)
+
+    stale = len([a for a in agents if not a["fresh"]])
+    all_note = f" ({stale} stale hidden)" if not show_all and stale else ""
+    print()
+    print(f"  {DIM}{'─'*76}{RESET}")
+    print(f"  {DIM}#) select row · P)oke · V)iew progress · S)tatus "
+          f"· J)toggle stale{all_note} · B)ack · X)exit{RESET}")
+
+
+def _cmd_center_poke(agent: dict) -> None:
+    """Write a loop-poke inbox message to the selected agent."""
+    slug = agent["slug"]
+    inbox_dir = SANCTUM_ROOT / "_shared-memory" / "inbox" / slug
+    inbox_dir.mkdir(parents=True, exist_ok=True)
+    from datetime import datetime, timezone
+    ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H%MZ")
+    poke_path = inbox_dir / f"{ts}-from-command-center-poke.json"
+    poke_path.write_text(json.dumps({
+        "ts_utc": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "from": "command-center",
+        "kind": "loop-poke",
+        "message": "Operator poked via Command Center W-key dashboard.",
+        "priority": "normal",
+    }, indent=2), encoding="utf-8")
+    print(f"  {OK}[P] Poke written → _shared-memory/inbox/{slug}/{poke_path.name}{RESET}")
+    time.sleep(1.2)
+
+
+def _cmd_center_view_progress(agent: dict) -> None:
+    """Display last 30 lines of PROGRESS/<slug>.md for the agent."""
+    slug = agent["slug"]
+    display = agent["display"]
+    progress_candidates = [
+        SANCTUM_ROOT / "_shared-memory" / "PROGRESS" / f"{display}.md",
+        SANCTUM_ROOT / "_shared-memory" / "PROGRESS" / f"{slug}.md",
+    ]
+    for ppath in progress_candidates:
+        if ppath.exists():
+            lines = ppath.read_text(encoding="utf-8").splitlines()[-30:]
+            print(f"\n  {WHITE}{BOLD}PROGRESS: {ppath.name}{RESET}")
+            for ln in lines:
+                print(f"  {SOFT}{ln}{RESET}")
+            break
+    else:
+        print(f"  {WARN}No PROGRESS file found for {display} ({slug}){RESET}")
+    print(f"\n  {DIM}press Enter...{RESET}")
     try:
         input()
     except (EOFError, KeyboardInterrupt):
         pass
+
+
+def _cmd_center_status(agent: dict) -> None:
+    """Display full heartbeat JSON for the agent."""
+    print(f"\n  {WHITE}{BOLD}Heartbeat: {agent['slug']}{RESET}")
+    for k, v in agent["raw"].items():
+        if k in ("raw",):
+            continue
+        print(f"  {SOFT}{k}:{RESET} {str(v)[:80]}")
+    print(f"\n  {DIM}press Enter...{RESET}")
+    try:
+        input()
+    except (EOFError, KeyboardInterrupt):
+        pass
+
+
+def _agents_working_with_action() -> None:
+    """RKOJ-ELENO :: 2026-05-25 :: P1.10 Multi-agent Command Center (W-key).
+
+    Live fleet dashboard: reads all _shared-memory/heartbeats/*.json,
+    sorts by recency, renders table with per-row P/V/S actions.
+    """
+    agents = _load_agent_heartbeats()
+    show_all = False
+    selected = 0
+    visible: list[dict] = []
+
+    while True:
+        visible = [a for a in agents if show_all or a["fresh"]]
+        _cmd_center_render(agents, show_all, selected)
+
+        try:
+            raw = input(f"  {PURPLE}>{RESET} ").strip().lower()
+        except (EOFError, KeyboardInterrupt):
+            return
+
+        if not raw or raw == "b":
+            return
+        if raw == "x":
+            import os as _os
+            _os.kill(_os.getpid(), 9)
+        if raw == "j":
+            show_all = not show_all
+            selected = 0
+            continue
+        if raw == "r":
+            agents = _load_agent_heartbeats()
+            selected = 0
+            continue
+
+        # number selection
+        if raw.isdigit():
+            idx = int(raw) - 1
+            if 0 <= idx < len(visible):
+                selected = idx
+            continue
+
+        # per-row actions on selected
+        if raw == "p":
+            if visible and 0 <= selected < len(visible):
+                _cmd_center_poke(visible[selected])
+                agents = _load_agent_heartbeats()
+            continue
+        if raw == "v":
+            if visible and 0 <= selected < len(visible):
+                _cmd_center_view_progress(visible[selected])
+            continue
+        if raw == "s":
+            if visible and 0 <= selected < len(visible):
+                _cmd_center_status(visible[selected])
+            continue
 
 
 # ---------------------------------------------------------------------------

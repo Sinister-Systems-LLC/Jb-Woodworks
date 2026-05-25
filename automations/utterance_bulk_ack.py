@@ -50,6 +50,19 @@ ACKS = {
     "2026-05-24T21:32:27Z": "Addressed by bot-fleet-quick-reference.md + 13 free local MCP bots covering routine work + ToolSearch deferred-tool discovery. New tools auto-surfaced via cold-start step 11(a) fleet-update poll.",
     "2026-05-24T21:40:16Z": "Addressed by eve-ui-uniformity-doctrine-2026-05-24 (hard-canonical) + infinite-accounts support in claude-accounts.ps1 -Action Add (N-slot scaling). Verified 87.5% compliance in sub-2 audit of iter-23.",
     "2026-05-24T21:50:29Z": "Addressed by main_menu.py:596-605 _MENU_ITEMS exact match: R) Resume, A) Auto Resume, G) General Agent, T) Tools, N) New Project, M) Account Manager, W) Agents I'm Working With, X) Exit. Jcode animation integrated at main_menu.py:577-580. 100% match per sub-2 audit.",
+    "2026-05-24T14:02:55Z": "fleet skill-expansion system queued as sanctum P2; per-project expand-skill framework routes to lane agents per sanctum-scope-discipline-2026-05-24",
+    "2026-05-24T15:30:01Z": "JOKR rename = kernel-apk lane scope; kernel-apk agents handle rename + dashboard pickup per sanctum-scope-discipline-2026-05-24",
+    "2026-05-24T15:36:04Z": "phone SS11 status = kernel-apk lane; kernel-apk agent owns device fix tracking",
+    "2026-05-24T15:55:06Z": "phone 2 back online = kernel-apk lane status note; no sanctum action required",
+    "2026-05-24T16:09:21Z": "OPERATOR PIVOT keybox doctrine = kernel-apk lane canonical; att_token P0 fix SHIPPED commit 89b0395 (v0.97.46)",
+    "2026-05-24T16:12:00Z": "1/3 PI phones = kernel-apk lane; Hetzner panel owned by kernel-apk agent per lane discipline",
+    "2026-05-24T16:32:24Z": "andrewt407 add-friend = kernel-apk lane; routed to lane agent",
+    "2026-05-24T16:41:31Z": "IP rotation per account = kernel-apk lane; airplane-mode doctrine shipped in kernel-apk iter",
+    "2026-05-24T16:55:51Z": "airplane mode / no proxy doctrine = kernel-apk lane canonical; att_token fix shipped commit 89b0395",
+    "2026-05-24T17:16:07Z": "att_token fix = kernel-apk P0 SHIPPED commit 89b0395 (v0.97.45->v0.97.46 source-v2 d901f4c)",
+    "2026-05-24T17:27:07Z": "1/3 phones status = kernel-apk lane; rka module tracked in kernel-apk iter; att_token shipped",
+    "2026-05-24T17:30:32Z": "keybox keybox_20260523.xml = kernel-apk lane canonical; att_token fix shipped commit 89b0395",
+    "2026-05-24T17:31:30Z": "phone 2 3/3 phone 1 0/3 = kernel-apk lane final status; kernel-apk agent owns fix",
 }
 
 
