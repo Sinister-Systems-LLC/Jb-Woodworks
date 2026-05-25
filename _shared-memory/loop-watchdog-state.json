@@ -2,40 +2,40 @@
     "schema_version":  "sinister.loop-watchdog-state.v1",
     "agents":  {
                    "jb-woodworks":  {
-                                        "last_poke_cycle_id":  "tick-39",
+                                        "last_poke_cycle_id":  "tick-55",
                                         "last_mtime_utc":  "2026-05-25T02:47:54Z",
                                         "last_iter":  1,
                                         "last_focus":  "",
-                                        "last_poke_utc":  "2026-05-25T06:21:42Z",
-                                        "ticks_same_iter":  38,
-                                        "last_age_min":  213.8,
-                                        "last_seen_utc":  "2026-05-25T06:21:42Z",
+                                        "last_poke_utc":  "2026-05-25T08:06:42Z",
+                                        "ticks_same_iter":  54,
+                                        "last_age_min":  318.8,
+                                        "last_seen_utc":  "2026-05-25T08:06:42Z",
                                         "ticks_same_focus":  1
                                     },
                    "sanctum-mintty-fix":  {
-                                              "last_poke_cycle_id":  "tick-39",
+                                              "last_poke_cycle_id":  "tick-55",
                                               "last_mtime_utc":  "2026-05-25T02:34:10Z",
                                               "last_iter":  19,
                                               "last_focus":  "RELENTLESS LOOP SYSTEM SHIPPED iter-19. Foreground: brain entry loop-relentless-pursuit-doctrine-2026-05-25 (4 sub-rules 8-11) + CLAUDE.md new TOP hard-canonical block (rules 8-11) + _INDEX.md row + decay sidecar 211/211 + HIGH fleet-update push. 3 sub-agents back: (F) loop-relentless-watchdog.ps1 + install-loop-watchdog-task.ps1 (DryRun found 3 stalled: me + sibling sanctum + sinister-chatbot); (G) agent-poke.ps1 + Desktop Poke-All-Sinister-Agents.bat (smoke verified); (H) launcher Build-Phrase RELENTLESS phrase + projects.json v10 27 projects flagged loop_relentless=true. Now running real watchdog Scan to poke stalled siblings; operator action: install schtask via install-loop-watchdog-task.ps1.",
-                                              "last_poke_utc":  "2026-05-25T06:21:43Z",
-                                              "ticks_same_iter":  39,
-                                              "last_age_min":  227.5,
-                                              "last_seen_utc":  "2026-05-25T06:21:42Z",
-                                              "ticks_same_focus":  39
+                                              "last_poke_utc":  "2026-05-25T08:06:42Z",
+                                              "ticks_same_iter":  55,
+                                              "last_age_min":  332.5,
+                                              "last_seen_utc":  "2026-05-25T08:06:42Z",
+                                              "ticks_same_focus":  55
                                           },
                    "sinister-chatbot":  {
-                                            "last_poke_cycle_id":  "tick-39",
-                                            "last_mtime_utc":  "2026-05-25T01:40:32Z",
-                                            "last_iter":  2,
-                                            "last_focus":  "Phase 2 step 2 SHIPPED: DPO preference-pair miner endpoint at /api/chatter/training-dpo-export. 3-tier matching (exact → fuzzy ≥0.4 → weak). Per-persona JSONL output at data/sinister/training-dpo/\u003cslug\u003e.jsonl. Toolbar button on /chatter pings it; convo log surfaces match_breakdown. Dead TestsTab props cleaned.",
-                                            "last_poke_utc":  "2026-05-25T06:21:47Z",
-                                            "ticks_same_iter":  39,
-                                            "last_age_min":  281.2,
-                                            "last_seen_utc":  "2026-05-25T06:21:42Z",
-                                            "ticks_same_focus":  39
+                                            "last_poke_cycle_id":  "tick-55",
+                                            "last_mtime_utc":  "2026-05-25T07:39:52Z",
+                                            "last_iter":  4,
+                                            "last_focus":  "Iter-3 + iter-4 SHIPPED: /chatter redesign chunk-1 (6-tab strip + Overseer signal endpoints + TweakTab + OverseerTab + smoke 26/26) + chunk-2 first slice (HUMANLIKE_BASELINE in safe-mode buildChatterSystemPrompt). Slice-4 Hetzner deploy staged but operator-gated (main has 3 sister-lane commits I haven\u0027t reviewed; merging would exceed scope).",
+                                            "last_poke_utc":  "2026-05-25T08:06:42Z",
+                                            "ticks_same_iter":  6,
+                                            "last_age_min":  26.8,
+                                            "last_seen_utc":  "2026-05-25T08:06:42Z",
+                                            "ticks_same_focus":  6
                                         }
                },
     "created_utc":  "2026-05-25T02:36:05Z",
-    "last_tick_utc":  "2026-05-25T06:21:42Z",
-    "tick_count":  39
+    "last_tick_utc":  "2026-05-25T08:06:41Z",
+    "tick_count":  55
 }

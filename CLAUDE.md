@@ -104,6 +104,8 @@ Operator (verbatim 2026-05-24, 19:55Z): *"loop isnt working agents are sotpping 
 
 Live in `start-sinister-session.ps1` Build-Phrase (modes.loop) + `Prompt-AgentModes` + `projects.json`.
 
+**Iter-22 update 2026-05-25 ~06:30Z (operator hard-canonical):** `loop=relentless` + `swarm=on` are now DEFAULT for every spawn (was: swarm=off, loop=on but non-relentless). Empty-Enter on the launcher prompts accepts the new defaults; operator can still type `off` (disable) or `on` (loop without relentless preset) to opt out. Doctrine: `_shared-memory/knowledge/loop-swarm-default-on-doctrine-2026-05-25.md`.
+
 ## Operator hard-canonical 2026-05-24 — UI BASE = `dashboard-skeleton` (EXPAND, never fork)
 
 Operator (verbatim 2026-05-24, 15:44Z): *"everything that makes a ui needs to base off our dsahboard skeleton ... each time we make a dahsbaord and such we need to expand on that"*

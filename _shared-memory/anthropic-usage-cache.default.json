@@ -9,22 +9,22 @@
     "overage_status":  "rejected",
     "overage_disabled_reason":  "org_level_disabled",
     "session":  {
-                    "utilization":  0.17,
-                    "pct":  17,
+                    "utilization":  0.57,
+                    "pct":  57,
                     "status":  "allowed",
                     "reset_unix":  1779698400,
                     "reset_utc":  "2026-05-25T08:40:00Z"
                 },
     "weekly_all":  {
-                       "utilization":  0.67,
-                       "pct":  67,
+                       "utilization":  0.74,
+                       "pct":  74,
                        "status":  "allowed",
                        "reset_unix":  1780023600,
                        "reset_utc":  "2026-05-29T03:00:00Z"
                    },
     "weekly_sonnet":  {
-                          "utilization":  0,
-                          "pct":  0,
+                          "utilization":  0.01,
+                          "pct":  1,
                           "status":  "allowed",
                           "reset_unix":  1780023600,
                           "reset_utc":  "2026-05-29T03:00:00Z",
@@ -41,5 +41,5 @@
     "probed_model":  "claude-sonnet-4-5",
     "cache_hit":  false,
     "cache_age_sec":  0,
-    "measured_at_utc":  "2026-05-25T06:24:47Z"
+    "measured_at_utc":  "2026-05-25T08:10:34Z"
 }
