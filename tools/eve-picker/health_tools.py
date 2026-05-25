@@ -18,10 +18,17 @@ from __future__ import annotations
 import json
 import os
 import re
+import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+
+# Path bootstrap so eve_ui (sibling module) is importable when called
+# directly via `python health_tools.py` (smoke) or from eve.py callback.
+_HERE = Path(__file__).resolve().parent
+if str(_HERE) not in sys.path:
+    sys.path.insert(0, str(_HERE))
 
 # ANSI accents shared with eve.py (local copy to avoid import cycle).
 PURPLE = "\033[38;5;141m"
@@ -150,22 +157,42 @@ def _hourly_rate(events: list[dict[str, Any]]) -> float:
     return count / 24.0
 
 
+def _clear_screen() -> None:
+    """Wipe terminal + cursor home so a fresh sub-page renders on blank surface.
+
+    RKOJ-ELENO :: 2026-05-25T00:15Z :: operator "each menu needs to go to a
+    complete clean new menu that is clean and you cannot see the menu you
+    just came from". No-op when NO_COLOR / TERM=dumb on POSIX.
+    """
+    if "NO_COLOR" in os.environ:
+        return
+    if os.environ.get("TERM", "").lower() == "dumb" and os.name != "nt":
+        return
+    try:
+        import sys as _sys
+        _sys.stdout.write("\033[2J\033[H")
+        _sys.stdout.flush()
+    except Exception:
+        pass
+
+
 def _header(title: str) -> None:
+    """Canonical EVE UI uniformity header (RKOJ-ELENO 2026-05-24).
+    Per eve-ui-uniformity-doctrine: DARKP --- WHITE BOLD title DARKP ---.
+
+    RKOJ-ELENO :: 2026-05-25T00:15Z :: clears screen first so the sub-page
+    lands on a blank surface (operator never sees the prior menu)."""
+    _clear_screen()
+    print(f"  {DARKP}---{RESET} {WHITE}{BOLD}{title}{RESET} {DARKP}---{RESET}")
     print()
-    print(f"  {DARKP}{'=' * 68}{RESET}")
-    print(f"  {WHITE}{BOLD} {title} {RESET}")
-    print(f"  {DARKP}{'=' * 68}{RESET}")
 
 
 def health_status() -> int:
-    """One-screen Anthropic throttle health surface.
+    """One-screen Anthropic throttle health surface (centered body).
 
-    Output:
-      - # plan-quota events today
-      - # server-throttle events today
-      - avg "Churned for Xs" wait per server-throttle event
-      - SINISTER_FLEET_BURST_LIMIT current value
-      - Recommendation if server-throttle hourly rate > 1
+    RKOJ-ELENO :: 2026-05-25T01:15Z :: operator hard-canonical *"centered
+    menu styling applied to every sub-page"*. Body status block now
+    block-centers via eve_ui.center_block.
     """
     _header("EVE :: Health (Anthropic throttle status)")
 
@@ -186,60 +213,87 @@ def health_status() -> int:
     rate = _hourly_rate(server_throttle)
 
     burst = os.environ.get("SINISTER_FLEET_BURST_LIMIT", "").strip()
-    burst_disp = f"{BRIGHTP}{burst}{RESET}" if burst else f"{DIM}(unset — no limit){RESET}"
+    burst_disp = f"{BRIGHTP}{burst}{RESET}" if burst else f"{DIM}(unset -- no limit){RESET}"
 
-    print()
-    print(f"  {SOFT}date (UTC):{RESET}              {today}")
-    print()
-    print(f"  {WHITE}{BOLD}Plan-quota events{RESET}  {DIM}(per-account 429; rotation helps){RESET}")
-    print(f"    today:                  {OK if pq_today == 0 else WARN}{pq_today}{RESET}")
-    print(f"    all-time:               {SOFT}{pq_total}{RESET}")
-    print()
-    print(f"  {WHITE}{BOLD}Server-throttle events{RESET}  {DIM}(Anthropic GLOBAL; rotation does NOT help){RESET}")
-    print(f"    today:                  {OK if st_today == 0 else WARN}{st_today}{RESET}")
-    print(f"    all-time:               {SOFT}{st_total}{RESET}")
+    body: list[str] = []
+    body.append(f"{SOFT}date (UTC):{RESET}              {today}")
+    body.append("")
+    body.append(f"{WHITE}{BOLD}Plan-quota events{RESET}  {DIM}(per-account 429; rotation helps){RESET}")
+    body.append(f"  today:                  {OK if pq_today == 0 else WARN}{pq_today}{RESET}")
+    body.append(f"  all-time:               {SOFT}{pq_total}{RESET}")
+    body.append("")
+    body.append(f"{WHITE}{BOLD}Server-throttle events{RESET}  {DIM}(Anthropic GLOBAL; rotation does NOT help){RESET}")
+    body.append(f"  today:                  {OK if st_today == 0 else WARN}{st_today}{RESET}")
+    body.append(f"  all-time:               {SOFT}{st_total}{RESET}")
     if avg is not None:
-        print(f"    avg 'Churned for':      {SOFT}{avg:.1f}s{RESET}  {DIM}(per event){RESET}")
+        body.append(f"  avg 'Churned for':      {SOFT}{avg:.1f}s{RESET}  {DIM}(per event){RESET}")
     else:
-        print(f"    avg 'Churned for':      {DIM}n/a (no parseable wait times){RESET}")
-    print(f"    rolling 24h rate:       {SOFT}{rate:.2f}/hr{RESET}")
-    print()
-    print(f"  {WHITE}{BOLD}Fleet-burst dampener{RESET}")
-    print(f"    SINISTER_FLEET_BURST_LIMIT = {burst_disp}")
-    print()
+        body.append(f"  avg 'Churned for':      {DIM}n/a (no parseable wait times){RESET}")
+    body.append(f"  rolling 24h rate:       {SOFT}{rate:.2f}/hr{RESET}")
+    body.append("")
+    body.append(f"{WHITE}{BOLD}Fleet-burst dampener{RESET}")
+    body.append(f"  SINISTER_FLEET_BURST_LIMIT = {burst_disp}")
+    body.append("")
 
-    # Recommendation logic.
-    print(f"  {DARKP}{'-' * 68}{RESET}")
+    # Recommendation logic (single-line per branch for body-budget compliance).
     if rate > 1.0:
         if not burst:
-            print(f"  {WARN}[recommend]{RESET} server-throttle rate {rate:.2f}/hr > 1.0 — "
-                  f"set {BRIGHTP}SINISTER_FLEET_BURST_LIMIT=2{RESET} in env to cap concurrent")
-            print(f"               spawns and dampen the burst-rate that triggers the limiter.")
+            body.append(f"{WARN}[recommend]{RESET} rate {rate:.2f}/hr > 1.0 -> "
+                        f"set {BRIGHTP}SINISTER_FLEET_BURST_LIMIT=2{RESET}")
         else:
-            print(f"  {WARN}[recommend]{RESET} still throttled with limit={burst} — try lowering to "
-                  f"{BRIGHTP}SINISTER_FLEET_BURST_LIMIT={max(1, int(burst) - 1) if burst.isdigit() else 1}{RESET}.")
+            new_lim = max(1, int(burst) - 1) if burst.isdigit() else 1
+            body.append(f"{WARN}[recommend]{RESET} still throttled limit={burst} -> try "
+                        f"{BRIGHTP}SINISTER_FLEET_BURST_LIMIT={new_lim}{RESET}")
     elif st_today == 0 and pq_today == 0:
-        print(f"  {OK}[healthy]{RESET}  no throttle events today.")
+        body.append(f"{OK}[healthy]{RESET}  no throttle events today.")
     else:
-        print(f"  {DIM}[ok]{RESET}       rate within tolerances — no dampener needed.")
-    print(f"  {DARKP}{'-' * 68}{RESET}")
-    print()
-    print(f"  {SOFT}log files:{RESET}")
-    print(f"    {DIM}server-throttle:{RESET}  _shared-memory/anthropic-throttle-events.jsonl")
-    print(f"    {DIM}plan-quota:{RESET}       _shared-memory/claude-accounts.log")
-    print(f"  {SOFT}doctrine:{RESET}  _shared-memory/knowledge/anthropic-server-throttle-vs-plan-quota-2026-05-24.md")
-    print()
+        body.append(f"{DIM}[ok]{RESET}       rate within tolerances - no dampener needed.")
+
+    # Block-center the body so the status block aligns with main_menu hero
+    try:
+        from eve_ui import center_block  # type: ignore
+        for ln in center_block(body, width=68):
+            print(ln)
+    except Exception:
+        # Fallback: pre-eve_ui terminals get the old left-indent
+        for ln in body:
+            print(f"  {ln}")
     return 0
+
+
+def _route_home() -> None:
+    """Dispatch to main menu. Best-effort import (sibling module)."""
+    try:
+        from main_menu import show_main_menu  # type: ignore
+        show_main_menu()
+    except Exception:
+        pass
 
 
 def menu_loop() -> int:
-    """Health menu entry point. Single-screen + wait for Enter to return."""
-    health_status()
-    try:
-        input(f"  {DIM}> press Enter to return to picker:{RESET} ")
-    except (EOFError, KeyboardInterrupt):
-        pass
-    return 0
+    """Canonical Health sub-page (RKOJ-ELENO 2026-05-24T22:40Z).
+    Header + body + footer (B/H/X/R) per eve-ui-uniformity-doctrine-2026-05-24.md."""
+    while True:
+        health_status()
+        print()
+        print(f"  {DIM}---{RESET} {PURPLE}B){RESET} Back   "
+              f"{PURPLE}H){RESET} Home   "
+              f"{PURPLE}X){RESET} Exit   {DIM}(R)efresh{RESET}")
+        try:
+            resp = input("  > ").strip().lower()
+        except (EOFError, KeyboardInterrupt):
+            return 0
+        if resp in ("", "b", "back"):
+            return 0
+        if resp in ("h", "home"):
+            _route_home()
+            return 0
+        if resp in ("x", "exit"):
+            import sys as _sys
+            _sys.exit(0)
+        if resp == "r":
+            continue
+        return 0
 
 
 if __name__ == "__main__":

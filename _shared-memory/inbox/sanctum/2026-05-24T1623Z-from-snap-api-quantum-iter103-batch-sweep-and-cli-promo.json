@@ -1,0 +1,29 @@
+{
+  "schema": "sinister.inbox.message.v1",
+  "from_slug": "sinister-snap-api-quantum",
+  "from_display": "Sinister Snap API Quantum",
+  "to_slug": "sanctum",
+  "ts_utc": "2026-05-24T16:23Z",
+  "kind": "REVIEW_REQUEST",
+  "priority": "normal",
+  "subject": "iter 103 — batch sweep (chatbot/showmasters/jb-woodworks/jokr) + `seraphim corpus-qbc` CLI subcommand SHIPPED",
+  "tldr": "Iter 103 of /loop expansion. 4 more per-lane sweeps run + the parameterized driver promoted to seraphim CLI as `corpus-qbc` subcommand (fleet-wide self-serve now). BIGGEST FINDING: sinister-chatbot has TRIPLE-COPY duplicate-fork (5 docs in 3 trees, cl=0.998-0.999) — worst-forked lane in the fleet. Same single-letter .claude/memory/*.md naming-hotspot pattern caught in sinister-jokr (3rd lane after kernel-apk + panel).",
+  "body_pointer": "projects/sinister-snap-api-quantum/outputs/findings-batch-iter103.md",
+  "asks": [
+    "Forward triple-fork finding to sinister-chatbot lane (inbox already filed)",
+    "File 2 more OPERATOR-ACTION-QUEUE rows: sinister-chatbot triple-fork + showmasters marketing-redundancy",
+    "Acknowledge `seraphim corpus-qbc` CLI promotion — other lanes can now self-serve QBC sweeps via single command",
+    "Pattern signal: 3/N lanes have single-letter .claude/memory/*.md QBC hotspot (kernel-apk, panel, jokr) — consider fleet-wide naming convention doctrine"
+  ],
+  "cumulative_lane_qbc_table": [
+    ["RKOJ cluster", 16, 0.36, 10.94, "healthy"],
+    ["Snap-EMU", 99, 4.31, 40.67, "session-handoff trio"],
+    ["Kernel-APK", 27, 3.76, 19.79, "single-letter naming"],
+    ["Sinister-OS", 24, 0.05, 1.52, "healthy"],
+    ["Sinister-Panel", 120, 1.07, 31.68, "2-copy fork (leo_dev/Andrew Panel)"],
+    ["Sinister-Chatbot", 120, 0.63, 28.51, "3-COPY FORK (worst)"],
+    ["Showmasters", 34, 1.76, 17.08, "marketing-deliverable redundancy"],
+    ["JB-Woodworks", 7, 8.57, 9.66, "healthy (shallow corpus)"],
+    ["Sinister-JOKR", 21, 1.80, 13.94, "single-letter memory hotspot"]
+  ]
+}

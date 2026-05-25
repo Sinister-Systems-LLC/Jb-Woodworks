@@ -1,9 +1,9 @@
 {
   "prompt": "A technical director at a production village table backstage, covered in two open laptops, a small monitor showing camera feeds, a notepad and pen, and a coffee. Viewed from above-right at a three-quarter angle. The screens glow softly cool, a single amber clip-lamp arches over the table casting warm light on the hands and paperwork. Subject's hand reaches for the laptop trackpad. Deep shadow behind. Cinematic photographic realism. \u2014 cinematic volumetric stage lighting, deep black background (#0A0A0F), gold gradient accent (#E8C078 -> #D4A24A -> #9C7126), high-contrast subject, no text in image, no emojis, no logos",
   "model": "gemini-2.5-flash-image",
-  "created_utc": "2026-05-23T09:42:27Z",
-  "elapsed_seconds": 116.44,
+  "created_utc": "2026-05-23T11:57:38Z",
+  "elapsed_seconds": 8.31,
   "ref_image_count": 0,
-  "image_bytes": 1416213,
+  "image_bytes": 1437525,
   "text_response_excerpt": "Here's that image: "
 }

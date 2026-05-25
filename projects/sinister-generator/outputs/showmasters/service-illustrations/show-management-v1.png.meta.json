@@ -1,9 +1,9 @@
 {
   "prompt": "A show producer with a headset at a backstage management station, viewed from behind. Three monitors in front display camera feeds of an unseen stage, glowing cool. The producer leans slightly forward toward the screens with one hand resting on a clipboard. Amber backlight spills in from offstage left, rim-lighting the shoulders and the headset cable. Deep shadow on the right side of the frame. Cinematic photographic realism. \u2014 cinematic volumetric stage lighting, deep black background (#0A0A0F), gold gradient accent (#E8C078 -> #D4A24A -> #9C7126), high-contrast subject, no text in image, no emojis, no logos",
   "model": "gemini-2.5-flash-image",
-  "created_utc": "2026-05-23T09:42:35Z",
-  "elapsed_seconds": 6.74,
+  "created_utc": "2026-05-23T11:59:33Z",
+  "elapsed_seconds": 76.74,
   "ref_image_count": 0,
-  "image_bytes": 1316784,
+  "image_bytes": 1331629,
   "text_response_excerpt": null
 }

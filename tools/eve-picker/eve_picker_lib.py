@@ -71,6 +71,11 @@ class PickerRow:
     is_default: bool
     customized: bool
     project_color: str
+    # RKOJ-ELENO :: 2026-05-24 :: operator 19:55Z tier system. 1=critical (always
+    # routes to operator slot first), 2=high, 3=normal (default), 4=background
+    # (only spawns when global capacity available). Read from projects.json
+    # project.tier field; defaults to 3 when missing.
+    tier: int = 3
 
 
 @dataclass
@@ -156,7 +161,13 @@ def count_mcp() -> int:
         if not cand.exists():
             continue
         try:
-            data = json.loads(cand.read_text(encoding="utf-8"))
+            # RKOJ-ELENO :: 2026-05-24 :: BOM-tolerant decode (operator screenshot
+            # showed mcp:2 despite 22 servers configured). PS5.1 had rewritten
+            # ~/.claude/.mcp.json with a UTF-8 BOM during the 26-wrong-path repair;
+            # plain "utf-8" rejects the BOM, the bare except swallowed it silently,
+            # and we fell through to ~/.claude.json (2 servers). utf-8-sig handles
+            # both BOM + non-BOM cleanly — matches read_projects() at line 110.
+            data = json.loads(cand.read_text(encoding="utf-8-sig"))
             n = len(data.get("mcpServers") or {})
             if n:
                 return n
@@ -166,10 +177,18 @@ def count_mcp() -> int:
 
 
 def count_bots() -> int:
-    bot_dir = Path(r"D:\Sinister\Sinister Skills\12_LLM_ORCHESTRATION\agents")
-    if not bot_dir.exists():
-        return 0
-    return sum(1 for _ in bot_dir.iterdir() if _.is_dir())
+    # RKOJ-ELENO :: 2026-05-24 :: post-skills-rename path fix. Earlier hardcode was
+    # the pre-rename `D:\Sinister\Sinister Skills\...` which doesn't exist; the
+    # _sinister-skills directory was relocated under D:\Sinister Sanctum. This
+    # mismatch is why every child session banner showed `bots:0` (operator 19:36Z).
+    candidates = [
+        Path(r"D:\Sinister Sanctum\_sinister-skills\12_LLM_ORCHESTRATION\agents"),
+        Path(r"D:\Sinister\Sinister Skills\12_LLM_ORCHESTRATION\agents"),
+    ]
+    for bot_dir in candidates:
+        if bot_dir.exists():
+            return sum(1 for _ in bot_dir.iterdir() if _.is_dir())
+    return 0
 
 
 # ---------------------------------------------------------------------------
@@ -189,6 +208,13 @@ def build_picker_state(boot_ms: int = 0,
         key = p["key"]
         agent = get_agent_name(key, pf)
         accent = get_accent(key, pf)
+        tier_raw = p.get("tier", 3)
+        try:
+            tier = int(tier_raw)
+            if tier < 1 or tier > 4:
+                tier = 3
+        except (TypeError, ValueError):
+            tier = 3
         rows.append(PickerRow(
             index=i,
             key=key,
@@ -199,6 +225,7 @@ def build_picker_state(boot_ms: int = 0,
             is_default=(key == default_key),
             customized=(agent != key) or (accent != "purple"),
             project_color=project_color(key),
+            tier=tier,
         ))
     return PickerState(
         rows=rows,
@@ -352,3 +379,26 @@ def prompt_agent_modes_from_env() -> AgentModes:
     except ValueError:
         loop_interval_s = 0
     return AgentModes(swarm=swarm, loop=loop, loop_interval_s=loop_interval_s)
+
+
+# ---------------------------------------------------------------------------
+# Fuzzy filter (jcode session_picker/filter.rs parity)
+# Author: RKOJ-ELENO :: 2026-05-24
+# ---------------------------------------------------------------------------
+
+def filter_rows(rows: list[PickerRow], query: str) -> list[PickerRow]:
+    """Lowercased substring match across display + tag + key. Stable order.
+
+    Mirrors jcode `session_matches_picker_query` semantics: a row matches if
+    the lowercased query is a substring of any of: display name, tag, key,
+    agent_name. Empty query returns all rows unchanged.
+    """
+    q = (query or "").strip().lower()
+    if not q:
+        return list(rows)
+    out: list[PickerRow] = []
+    for r in rows:
+        haystack = f"{r.display}\n{r.tag}\n{r.key}\n{r.agent_name}".lower()
+        if q in haystack:
+            out.append(r)
+    return out

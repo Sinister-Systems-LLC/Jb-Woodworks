@@ -44,9 +44,13 @@ set "AUDIT_LOG=%DAEMON_LOG_DIR%\daemon.log"
 if not exist "%DAEMON_LOG_DIR%" mkdir "%DAEMON_LOG_DIR%" >nul 2>&1
 if not exist "%HEARTBEAT_DIR%" mkdir "%HEARTBEAT_DIR%" >nul 2>&1
 
-REM Per-launch log gets a UTC-ish stamp (locale-independent via wmic).
+REM Per-launch log gets a UTC-ish stamp (locale-independent).
+REM /loop iter 6 of eve-into-rkoj-integration follow-ups (2026-05-23): wmic.exe
+REM is deprecated/removed on Win10+ recent builds. Same fix shape as
+REM tools/sinister-vault/vault-daemon.bat (iter 5). Get-Date -Format
+REM yyyyMMddHHmmss matches the 14-char shape the substring slices expect.
 set "LOCAL_DT="
-for /f "skip=1 delims=" %%T in ('wmic os get LocalDateTime ^| findstr /R "^[0-9]"') do (
+for /f "delims=" %%T in ('powershell.exe -NoProfile -Command "Get-Date -Format yyyyMMddHHmmss"') do (
     if not defined LOCAL_DT set "LOCAL_DT=%%T"
 )
 set "STAMP=%LOCAL_DT:~0,8%T%LOCAL_DT:~8,6%"
@@ -115,8 +119,9 @@ goto loop
 REM ---------------------------------------------------------------------------
 :log
 set "MSG=%~1"
+REM /loop iter 6: same wmic -> PowerShell Get-Date fix as the per-launch stamp.
 set "LOG_DT="
-for /f "skip=1 delims=" %%T in ('wmic os get LocalDateTime ^| findstr /R "^[0-9]"') do (
+for /f "delims=" %%T in ('powershell.exe -NoProfile -Command "Get-Date -Format yyyyMMddHHmmss"') do (
     if not defined LOG_DT set "LOG_DT=%%T"
 )
 set "LOG_TS=%LOG_DT:~0,4%-%LOG_DT:~4,2%-%LOG_DT:~6,2% %LOG_DT:~8,2%:%LOG_DT:~10,2%:%LOG_DT:~12,2%"

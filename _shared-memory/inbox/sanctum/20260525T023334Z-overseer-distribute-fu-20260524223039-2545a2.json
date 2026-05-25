@@ -1,0 +1,15 @@
+{
+    "ts_utc":  "2026-05-25T02:33:34Z",
+    "_author":  "RKOJ-ELENO :: 2026-05-25",
+    "to":  "sanctum",
+    "subject":  "Fleet-update fan-out: doctrine_update priority=normal",
+    "message":  "BRAIN new: loop-relentless-pursuit-doctrine-2026-05-25 - Loop relentless-pursuit doctrine ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â 2026-05-25",
+    "rationale":  "Overseer auto-distributed because this fleet-update either targeted you OR mentioned your lane slug. Review + ack if actionable.",
+    "source_id":  "fu-20260524223039-2545a2",
+    "source_ts_utc":  "2026-05-25T02:30:39Z",
+    "from":  "overseer",
+    "source_priority":  "normal",
+    "tag":  "[OVERSEER-DISTRIBUTE]",
+    "source_pushed_by":  "sanctum",
+    "source_kind":  "doctrine_update"
+}

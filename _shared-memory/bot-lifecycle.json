@@ -1,0 +1,173 @@
+{
+    "bots":  {
+                 "researcher":  {
+                                    "spawned_utc":  "2026-05-24T20:10:41Z",
+                                    "sleep_after_idle_sec":  600,
+                                    "idle_since_utc":  "2026-05-24T20:10:42Z",
+                                    "last_used_utc":  "2026-05-24T20:10:41Z",
+                                    "users":  [
+
+                                              ],
+                                    "wake_cmd":  "py -m researcher.server",
+                                    "state":  "spawning",
+                                    "pid":  null,
+                                    "refcount":  0
+                                },
+                 "watcher":  {
+                                 "spawned_utc":  "2026-05-24T20:10:34Z",
+                                 "sleep_after_idle_sec":  600,
+                                 "idle_since_utc":  "2026-05-24T20:10:34Z",
+                                 "last_used_utc":  "2026-05-24T20:10:34Z",
+                                 "users":  [
+
+                                           ],
+                                 "wake_cmd":  "py -m watcher.server",
+                                 "state":  "spawning",
+                                 "pid":  null,
+                                 "refcount":  0
+                             },
+                 "sinister-bus":  {
+                                      "spawned_utc":  "2026-05-24T20:10:35Z",
+                                      "sleep_after_idle_sec":  600,
+                                      "idle_since_utc":  "2026-05-24T20:10:36Z",
+                                      "last_used_utc":  "2026-05-24T20:10:35Z",
+                                      "users":  [
+
+                                                ],
+                                      "wake_cmd":  "py -m sinister_bus.server",
+                                      "state":  "spawning",
+                                      "pid":  null,
+                                      "refcount":  0
+                                  },
+                 "translator":  {
+                                    "spawned_utc":  "2026-05-24T20:10:33Z",
+                                    "sleep_after_idle_sec":  600,
+                                    "idle_since_utc":  "2026-05-24T20:10:33Z",
+                                    "last_used_utc":  "2026-05-24T20:10:33Z",
+                                    "users":  [
+
+                                              ],
+                                    "wake_cmd":  "py -m translator.server",
+                                    "state":  "spawning",
+                                    "pid":  null,
+                                    "refcount":  0
+                                },
+                 "triage":  {
+                                "spawned_utc":  "2026-05-24T20:10:39Z",
+                                "sleep_after_idle_sec":  600,
+                                "idle_since_utc":  "2026-05-24T20:10:39Z",
+                                "last_used_utc":  "2026-05-24T20:10:39Z",
+                                "users":  [
+
+                                          ],
+                                "wake_cmd":  "py -m triage.server",
+                                "state":  "spawning",
+                                "pid":  null,
+                                "refcount":  0
+                            },
+                 "scribe":  {
+                                "spawned_utc":  "2026-05-24T20:10:42Z",
+                                "sleep_after_idle_sec":  600,
+                                "idle_since_utc":  "2026-05-24T20:10:43Z",
+                                "last_used_utc":  "2026-05-24T20:10:42Z",
+                                "users":  [
+
+                                          ],
+                                "wake_cmd":  "py -m scribe.server",
+                                "state":  "spawning",
+                                "pid":  null,
+                                "refcount":  0
+                            },
+                 "curator":  {
+                                 "spawned_utc":  "2026-05-24T20:10:43Z",
+                                 "sleep_after_idle_sec":  600,
+                                 "idle_since_utc":  "2026-05-24T20:10:44Z",
+                                 "last_used_utc":  "2026-05-24T20:10:43Z",
+                                 "users":  [
+
+                                           ],
+                                 "wake_cmd":  "py -m curator.server",
+                                 "state":  "spawning",
+                                 "pid":  null,
+                                 "refcount":  0
+                             },
+                 "sentinel":  {
+                                  "spawned_utc":  "2026-05-24T20:10:32Z",
+                                  "sleep_after_idle_sec":  600,
+                                  "idle_since_utc":  "2026-05-24T20:10:32Z",
+                                  "last_used_utc":  "2026-05-24T20:10:32Z",
+                                  "users":  [
+
+                                            ],
+                                  "wake_cmd":  "py -m sentinel.server",
+                                  "state":  "spawning",
+                                  "pid":  null,
+                                  "refcount":  0
+                              },
+                 "vault":  {
+                               "spawned_utc":  "2026-05-24T20:10:38Z",
+                               "sleep_after_idle_sec":  600,
+                               "idle_since_utc":  "2026-05-24T20:10:38Z",
+                               "last_used_utc":  "2026-05-24T20:10:38Z",
+                               "users":  [
+
+                                         ],
+                               "wake_cmd":  "py -m vault.server",
+                               "state":  "spawning",
+                               "pid":  null,
+                               "refcount":  0
+                           },
+                 "stealth-browser":  {
+                                         "spawned_utc":  "2026-05-24T20:10:37Z",
+                                         "sleep_after_idle_sec":  600,
+                                         "idle_since_utc":  "2026-05-24T20:10:37Z",
+                                         "last_used_utc":  "2026-05-24T20:10:37Z",
+                                         "users":  [
+
+                                                   ],
+                                         "wake_cmd":  "py -m stealth_browser.server",
+                                         "state":  "spawning",
+                                         "pid":  null,
+                                         "refcount":  0
+                                     },
+                 "custodian":  {
+                                   "spawned_utc":  "2026-05-24T20:10:36Z",
+                                   "sleep_after_idle_sec":  600,
+                                   "idle_since_utc":  "2026-05-24T20:10:36Z",
+                                   "last_used_utc":  "2026-05-24T20:10:36Z",
+                                   "users":  [
+
+                                             ],
+                                   "wake_cmd":  "py -m custodian.server",
+                                   "state":  "spawning",
+                                   "pid":  null,
+                                   "refcount":  0
+                               },
+                 "auditor":  {
+                                 "spawned_utc":  "2026-05-24T20:10:34Z",
+                                 "sleep_after_idle_sec":  600,
+                                 "idle_since_utc":  "2026-05-24T20:10:35Z",
+                                 "last_used_utc":  "2026-05-24T20:10:34Z",
+                                 "users":  [
+
+                                           ],
+                                 "wake_cmd":  "py -m auditor.server",
+                                 "state":  "spawning",
+                                 "pid":  null,
+                                 "refcount":  0
+                             },
+                 "librarian":  {
+                                   "spawned_utc":  "2026-05-24T20:10:40Z",
+                                   "sleep_after_idle_sec":  60,
+                                   "idle_since_utc":  "2026-05-24T20:10:40Z",
+                                   "last_used_utc":  "2026-05-24T20:10:40Z",
+                                   "users":  [
+
+                                             ],
+                                   "wake_cmd":  "py -m librarian.server",
+                                   "state":  "spawning",
+                                   "pid":  null,
+                                   "refcount":  0
+                               }
+             }
+}

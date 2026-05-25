@@ -1,0 +1,242 @@
+{
+  "schema": "sinister-seraphim.reconcile-corpora.v1",
+  "label": "letstext-vs-panel",
+  "corpus_a_root": "D:/Sinister Sanctum/projects/sinister-letstext",
+  "corpus_b_root": "D:/Sinister Sanctum/projects/sinister-panel",
+  "n_corpus_a": 198,
+  "n_corpus_b": 216,
+  "cl_threshold": 0.3,
+  "sim_threshold": 0.5,
+  "total_pairs": 42768,
+  "reconciliation_candidates_count": 70,
+  "top_reconciliation_candidates": [
+    {
+      "rank": 1,
+      "classical": 0.7220903952623831,
+      "sim": 0.9922630678651551,
+      "combined": 1.7143534631275381,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/.claude/memory/R.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-panel/source/.claude/memory/R.md"
+    },
+    {
+      "rank": 2,
+      "classical": 0.7220903952623831,
+      "sim": 0.9922630678651551,
+      "combined": 1.7143534631275381,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/letstext2.0/memory-snapshot/R.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-panel/source/.claude/memory/R.md"
+    },
+    {
+      "rank": 3,
+      "classical": 0.8796644358788889,
+      "sim": 0.6295811565787888,
+      "combined": 1.5092455924576775,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/_README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-panel/automations/_README.md"
+    },
+    {
+      "rank": 4,
+      "classical": 0.8665895189888961,
+      "sim": 0.6295811565787887,
+      "combined": 1.4961706755676847,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText-Legal/_README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-panel/automations/_README.md"
+    },
+    {
+      "rank": 5,
+      "classical": 0.8646045258090898,
+      "sim": 0.6295811565787887,
+      "combined": 1.4941856823878785,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/letstext-logos/_README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-panel/automations/_README.md"
+    },
+    {
+      "rank": 6,
+      "classical": 0.8627888930645795,
+      "sim": 0.6295811565787887,
+      "combined": 1.4923700496433683,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/letstext-pfp-animations/_README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-panel/automations/_README.md"
+    },
+    {
+      "rank": 7,
+      "classical": 0.39564413457231445,
+      "sim": 0.9546372689942683,
+      "combined": 1.3502814035665827,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/.claude/memory/p.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-panel/source/.claude/memory/p.md"
+    },
+    {
+      "rank": 8,
+      "classical": 0.39564413457231445,
+      "sim": 0.9546372689942683,
+      "combined": 1.3502814035665827,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/letstext2.0/memory-snapshot/p.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-panel/source/.claude/memory/p.md"
+    },
+    {
+      "rank": 9,
+      "classical": 0.3483661098628136,
+      "sim": 0.98340676490674,
+      "combined": 1.3317728747695536,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/.claude/memory/c.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-panel/source/leo_dev/DEPLOY.md"
+    },
+    {
+      "rank": 10,
+      "classical": 0.3483661098628136,
+      "sim": 0.98340676490674,
+      "combined": 1.3317728747695536,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/letstext2.0/memory-snapshot/c.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-panel/source/leo_dev/DEPLOY.md"
+    },
+    {
+      "rank": 11,
+      "classical": 0.3435919793762285,
+      "sim": 0.9868462190177362,
+      "combined": 1.3304381983939646,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/.claude/memory/c.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-panel/source/Andrew Panel/Sinister Panel/panel/DEPLOY.md"
+    },
+    {
+      "rank": 12,
+      "classical": 0.3435919793762285,
+      "sim": 0.9868462190177362,
+      "combined": 1.3304381983939646,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/letstext2.0/memory-snapshot/c.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-panel/source/Andrew Panel/Sinister Panel/panel/DEPLOY.md"
+    },
+    {
+      "rank": 13,
+      "classical": 0.3314616295310605,
+      "sim": 0.9659008920853062,
+      "combined": 1.2973625216163667,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/letstext2.0/docs/CLAUDE.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-panel/source/Andrew Panel/Sinister Panel/panel/WORKFLOW.md"
+    },
+    {
+      "rank": 14,
+      "classical": 0.3314616295310605,
+      "sim": 0.9659008920853062,
+      "combined": 1.2973625216163667,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/letstext2.0/docs/CLAUDE.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-panel/source/leo_dev/WORKFLOW.md"
+    },
+    {
+      "rank": 15,
+      "classical": 0.32384659719343245,
+      "sim": 0.9597385297054609,
+      "combined": 1.2835851268988934,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/letstext2.0/docs/CLAUDE.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-panel/source/Andrew Panel/Sinister Panel/DEV-HANDOFF.md"
+    }
+  ],
+  "top_highest_classical": [
+    {
+      "rank": 1,
+      "classical": 0.8796644358788889,
+      "sim": 0.6295811565787888,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/_README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-panel/automations/_README.md"
+    },
+    {
+      "rank": 2,
+      "classical": 0.8665895189888961,
+      "sim": 0.6295811565787887,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText-Legal/_README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-panel/automations/_README.md"
+    },
+    {
+      "rank": 3,
+      "classical": 0.8646045258090898,
+      "sim": 0.6295811565787887,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/letstext-logos/_README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-panel/automations/_README.md"
+    },
+    {
+      "rank": 4,
+      "classical": 0.8627888930645795,
+      "sim": 0.6295811565787887,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/letstext-pfp-animations/_README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-panel/automations/_README.md"
+    },
+    {
+      "rank": 5,
+      "classical": 0.7220903952623831,
+      "sim": 0.9922630678651551,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/.claude/memory/R.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-panel/source/.claude/memory/R.md"
+    },
+    {
+      "rank": 6,
+      "classical": 0.7220903952623831,
+      "sim": 0.9922630678651551,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/letstext2.0/memory-snapshot/R.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-panel/source/.claude/memory/R.md"
+    },
+    {
+      "rank": 7,
+      "classical": 0.6937172716670965,
+      "sim": 0.4393909314587267,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/_vault/_index.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-panel/automations/_vault/_index.md"
+    },
+    {
+      "rank": 8,
+      "classical": 0.6854767330200588,
+      "sim": 0.43939093145872715,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText-Legal/_vault/_index.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-panel/automations/_vault/_index.md"
+    },
+    {
+      "rank": 9,
+      "classical": 0.6839603180051672,
+      "sim": 0.4393909314587267,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/letstext-pfp-animations/_vault/_index.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-panel/automations/_vault/_index.md"
+    },
+    {
+      "rank": 10,
+      "classical": 0.6815587783509997,
+      "sim": 0.4393909314587267,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/letstext-logos/_vault/_index.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-panel/automations/_vault/_index.md"
+    },
+    {
+      "rank": 11,
+      "classical": 0.485963211848562,
+      "sim": 0.2934898997744121,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/.claude/memory/b.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-panel/source/.claude/memory/b.md"
+    },
+    {
+      "rank": 12,
+      "classical": 0.485963211848562,
+      "sim": 0.2934898997744121,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/letstext2.0/memory-snapshot/b.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-panel/source/.claude/memory/b.md"
+    },
+    {
+      "rank": 13,
+      "classical": 0.4849324609427774,
+      "sim": 0.6552118696268686,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/.claude/memory/g.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-panel/source/.claude/memory/g.md"
+    },
+    {
+      "rank": 14,
+      "classical": 0.4849324609427774,
+      "sim": 0.6552118696268686,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/letstext2.0/memory-snapshot/g.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-panel/source/.claude/memory/g.md"
+    },
+    {
+      "rank": 15,
+      "classical": 0.44353039522141524,
+      "sim": 0.4264997625173581,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/imessage-bridge/docs/08-PROXY-BINDING.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-panel/source/Andrew Panel/Obsidian Vault/03 \u2014 Workflows/Proxy Assignment.md"
+    }
+  ],
+  "wall_seconds": 83.70400166511536
+}

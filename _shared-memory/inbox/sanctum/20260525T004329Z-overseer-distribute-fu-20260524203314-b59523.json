@@ -1,0 +1,15 @@
+{
+    "ts_utc":  "2026-05-25T00:43:29Z",
+    "_author":  "RKOJ-ELENO :: 2026-05-25",
+    "to":  "sanctum",
+    "subject":  "Fleet-update fan-out: feature priority=high",
+    "message":  "Real Anthropic usage probe SHIPPED + wired into EVE.exe. anthropic-usage-probe.ps1 scrapes /v1/messages anthropic-ratelimit-unified-* headers for live session/weekly/sonnet/design percentages + reset times. EVE.exe _render_accounts_panel rewired to 4-bar layout matching claude.ai/usage dashboard exactly (session 17% resets 4h / weekly 70% resets Wed 11PM / sonnet 0% / design n/p). 60s disk cache; -Force refresh on project pick. Plan-tier auto-corrected from OAuth (max -\u003e max20). Old claude-usage-meter.ps1 kept as fallback. Doctrine: _shared-memory/knowledge/anthropic-real-usage-probe-2026-05-25.md. EVE.exe rebuilt + mirror synced - operator must close+reopen running EVE windows to pick up.",
+    "rationale":  "Overseer auto-distributed because this fleet-update either targeted you OR mentioned your lane slug. Review + ack if actionable.",
+    "source_id":  "fu-20260524203314-b59523",
+    "source_ts_utc":  "2026-05-25T00:33:14Z",
+    "from":  "overseer",
+    "source_priority":  "high",
+    "tag":  "[OVERSEER-DISTRIBUTE]",
+    "source_pushed_by":  "sanctum-anthropic-usage-probe",
+    "source_kind":  "feature"
+}

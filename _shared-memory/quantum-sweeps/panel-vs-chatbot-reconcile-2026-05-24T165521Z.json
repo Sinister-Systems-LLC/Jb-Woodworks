@@ -1,0 +1,242 @@
+{
+  "schema": "sinister-seraphim.reconcile-corpora.v1",
+  "label": "panel-vs-chatbot",
+  "corpus_a_root": "D:/Sinister Sanctum/projects/sinister-panel",
+  "corpus_b_root": "D:/Sinister Sanctum/projects/sinister-chatbot",
+  "n_corpus_a": 216,
+  "n_corpus_b": 190,
+  "cl_threshold": 0.3,
+  "sim_threshold": 0.5,
+  "total_pairs": 41040,
+  "reconciliation_candidates_count": 1908,
+  "top_reconciliation_candidates": [
+    {
+      "rank": 1,
+      "classical": 1.0,
+      "sim": 1.0,
+      "combined": 2.0,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/Andrew Panel/Implementation Guides/25-PHONE-AUTONAME.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-chatbot/Andrew Panel/Implementation Guides/25-PHONE-AUTONAME.md"
+    },
+    {
+      "rank": 2,
+      "classical": 1.0000000000000002,
+      "sim": 0.9999999999999996,
+      "combined": 1.9999999999999998,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/Andrew Panel/Sinister Harvester/05-OPERATIONAL.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-chatbot/Andrew Panel/Sinister Harvester/05-OPERATIONAL.md"
+    },
+    {
+      "rank": 3,
+      "classical": 1.0000000000000002,
+      "sim": 0.9999999999999996,
+      "combined": 1.9999999999999998,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/leo_dev/dashboard/docs/PHASE-5-7-5-8-PATTERN-DOC.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/dashboard/docs/PHASE-5-7-5-8-PATTERN-DOC.md"
+    },
+    {
+      "rank": 4,
+      "classical": 1.0,
+      "sim": 0.9999999999999996,
+      "combined": 1.9999999999999996,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/Andrew Panel/Obsidian Vault/03 \u2014 Workflows/Operator Playbook.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-chatbot/Andrew Panel/Obsidian Vault/03 \u2014 Workflows/Operator Playbook.md"
+    },
+    {
+      "rank": 5,
+      "classical": 1.0,
+      "sim": 0.9999999999999996,
+      "combined": 1.9999999999999996,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/Andrew Panel/Obsidian Vault/04 \u2014 Data Model/SalesClient.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-chatbot/Andrew Panel/Obsidian Vault/04 \u2014 Data Model/SalesClient.md"
+    },
+    {
+      "rank": 6,
+      "classical": 1.0,
+      "sim": 0.9999999999999996,
+      "combined": 1.9999999999999996,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/Andrew Panel/Obsidian Vault/05 \u2014 Roadmap/Phases.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-chatbot/Andrew Panel/Obsidian Vault/05 \u2014 Roadmap/Phases.md"
+    },
+    {
+      "rank": 7,
+      "classical": 1.0,
+      "sim": 0.9999999999999996,
+      "combined": 1.9999999999999996,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/Andrew Panel/Sinister Harvester/reference-docs/HARVEST-COMPLETE-GUIDE.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-chatbot/Andrew Panel/Sinister Harvester/reference-docs/HARVEST-COMPLETE-GUIDE.md"
+    },
+    {
+      "rank": 8,
+      "classical": 1.0,
+      "sim": 0.9999999999999996,
+      "combined": 1.9999999999999996,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/Andrew Panel/Sinister Harvester/reference-docs/HARVEST-COMPLETE-GUIDE.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-chatbot/Andrew Panel/Sinister Panel/panel/docs/HARVEST-COMPLETE-GUIDE.md"
+    },
+    {
+      "rank": 9,
+      "classical": 1.0,
+      "sim": 0.9999999999999996,
+      "combined": 1.9999999999999996,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/Andrew Panel/Sinister Harvester/reference-docs/WHAT-WAS-FIXED.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-chatbot/Andrew Panel/Sinister Harvester/reference-docs/WHAT-WAS-FIXED.md"
+    },
+    {
+      "rank": 10,
+      "classical": 1.0,
+      "sim": 0.9999999999999996,
+      "combined": 1.9999999999999996,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/Andrew Panel/Sinister Harvester/reference-docs/WHAT-WAS-FIXED.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-chatbot/Andrew Panel/Sinister Panel/panel/docs/WHAT-WAS-FIXED.md"
+    },
+    {
+      "rank": 11,
+      "classical": 1.0000000000000002,
+      "sim": 0.9999999999999993,
+      "combined": 1.9999999999999996,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/Andrew Panel/Sinister Panel/HANDOFF-account-push-fields.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-chatbot/Andrew Panel/Sinister Panel/HANDOFF-account-push-fields.md"
+    },
+    {
+      "rank": 12,
+      "classical": 1.0000000000000002,
+      "sim": 0.9999999999999993,
+      "combined": 1.9999999999999996,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/leo_dev/_handoff_docs/CHANGELOG-2026-05-11-EVE-AUDIT.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/_handoff_docs/CHANGELOG-2026-05-11-EVE-AUDIT.md"
+    },
+    {
+      "rank": 13,
+      "classical": 1.0,
+      "sim": 0.9999999999999996,
+      "combined": 1.9999999999999996,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/leo_dev/docs/APK-DRIVEN-HARVEST.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/docs/APK-DRIVEN-HARVEST.md"
+    },
+    {
+      "rank": 14,
+      "classical": 1.0000000000000002,
+      "sim": 0.9999999999999993,
+      "combined": 1.9999999999999996,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/leo_dev/docs/LETSTEXT-CANONICAL-REFERENCE.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/docs/LETSTEXT-CANONICAL-REFERENCE.md"
+    },
+    {
+      "rank": 15,
+      "classical": 1.0,
+      "sim": 0.9999999999999996,
+      "combined": 1.9999999999999996,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/leo_dev/scripts/autonomy/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/scripts/autonomy/README.md"
+    }
+  ],
+  "top_highest_classical": [
+    {
+      "rank": 1,
+      "classical": 1.0000000000000002,
+      "sim": 0.999999999999998,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/Andrew Panel/Implementation Guides/00-INDEX.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-chatbot/Andrew Panel/Implementation Guides/00-INDEX.md"
+    },
+    {
+      "rank": 2,
+      "classical": 1.0000000000000002,
+      "sim": 0.9999999999999989,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/Andrew Panel/Implementation Guides/01-SNAP-CREATOR.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-chatbot/Andrew Panel/Implementation Guides/01-SNAP-CREATOR.md"
+    },
+    {
+      "rank": 3,
+      "classical": 1.0000000000000002,
+      "sim": 0.9999999999999987,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/Andrew Panel/Implementation Guides/03-HARVESTER-FLOW.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-chatbot/Andrew Panel/Implementation Guides/03-HARVESTER-FLOW.md"
+    },
+    {
+      "rank": 4,
+      "classical": 1.0000000000000002,
+      "sim": 0.9999999999999982,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/Andrew Panel/Implementation Guides/06-FRIDA-TOOLING.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-chatbot/Andrew Panel/Implementation Guides/06-FRIDA-TOOLING.md"
+    },
+    {
+      "rank": 5,
+      "classical": 1.0000000000000002,
+      "sim": 0.9999999999999982,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/Andrew Panel/Implementation Guides/07-COMMAND-CENTER.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-chatbot/Andrew Panel/Implementation Guides/07-COMMAND-CENTER.md"
+    },
+    {
+      "rank": 6,
+      "classical": 1.0000000000000002,
+      "sim": 0.9999999999999991,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/Andrew Panel/Implementation Guides/09-DEPLOYMENT.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-chatbot/Andrew Panel/Implementation Guides/09-DEPLOYMENT.md"
+    },
+    {
+      "rank": 7,
+      "classical": 1.0000000000000002,
+      "sim": 0.9999999999999982,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/Andrew Panel/Implementation Guides/10-PUSHING-ACCOUNTS.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-chatbot/Andrew Panel/Implementation Guides/10-PUSHING-ACCOUNTS.md"
+    },
+    {
+      "rank": 8,
+      "classical": 1.0000000000000002,
+      "sim": 0.9999999999999982,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/Andrew Panel/Implementation Guides/11-ANTI-DETECTION-MODULES.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-chatbot/Andrew Panel/Implementation Guides/11-ANTI-DETECTION-MODULES.md"
+    },
+    {
+      "rank": 9,
+      "classical": 1.0000000000000002,
+      "sim": 0.9999999999999989,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/Andrew Panel/Implementation Guides/17-TIKTOK-INTEGRATION.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-chatbot/Andrew Panel/Implementation Guides/17-TIKTOK-INTEGRATION.md"
+    },
+    {
+      "rank": 10,
+      "classical": 1.0000000000000002,
+      "sim": 0.9999999999999982,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/Andrew Panel/Implementation Guides/22-SALES-COMMERCE.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-chatbot/Andrew Panel/Implementation Guides/22-SALES-COMMERCE.md"
+    },
+    {
+      "rank": 11,
+      "classical": 1.0000000000000002,
+      "sim": 0.9999999999999989,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/Andrew Panel/Implementation Guides/23-DATABASE-NETWORK.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-chatbot/Andrew Panel/Implementation Guides/23-DATABASE-NETWORK.md"
+    },
+    {
+      "rank": 12,
+      "classical": 1.0000000000000002,
+      "sim": 0.9999999999999991,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/Andrew Panel/Obsidian Vault/00 \u2014 Vision/EVE \u2014 the agent.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-chatbot/Andrew Panel/Obsidian Vault/00 \u2014 Vision/EVE \u2014 the agent.md"
+    },
+    {
+      "rank": 13,
+      "classical": 1.0000000000000002,
+      "sim": 0.9999999999999978,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/Andrew Panel/Obsidian Vault/01 \u2014 Platforms/Snap.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-chatbot/Andrew Panel/Obsidian Vault/01 \u2014 Platforms/Snap.md"
+    },
+    {
+      "rank": 14,
+      "classical": 1.0000000000000002,
+      "sim": 0.9999999999999978,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/Andrew Panel/Obsidian Vault/01 \u2014 Platforms/TikTok.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-chatbot/Andrew Panel/Obsidian Vault/01 \u2014 Platforms/TikTok.md"
+    },
+    {
+      "rank": 15,
+      "classical": 1.0000000000000002,
+      "sim": 0.9999999999999991,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/Andrew Panel/Obsidian Vault/02 \u2014 Systems/APK.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-chatbot/Andrew Panel/Obsidian Vault/02 \u2014 Systems/APK.md"
+    }
+  ],
+  "wall_seconds": 197.99599862098694
+}

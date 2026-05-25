@@ -1,0 +1,15 @@
+{
+    "ts_utc":  "2026-05-25T00:10:07Z",
+    "_author":  "RKOJ-ELENO :: 2026-05-25",
+    "to":  "sanctum",
+    "subject":  "Fleet-update fan-out: fix priority=high",
+    "message":  "EVE.exe main menu CLEANED UP per operator 23:15Z (banner janky + MCP/bots showed 0 + acct leaked to main + duplicate header). FIXES: (1) animations.py _logo_banner: replaced janky \u0027S I N I S T E R // E V E\u0027 wordmark with proper 5-row block-letter SINISTER using box-drawing chars. (2) render_banner: dropped orbit_rings particle overlay (was making letters look junky); pure logo + per-character HSV hue shimmer (Sinister purple base +-30 drift; cycles via animation tick; row+col offsets give vertical gradient). (3) eve.py _main_menu_loop: removed _build_info_row helper entirely (it was duplicate of menu header + leaked acct email). (4) MCP/bot counts: replaced broken Get_MCPCount/Get_BotCount wrappers with direct lib.build_picker_state().mcp + .bots (real values now). (5) Single clean header line: \u0027Sinister Sanctum  EVE  ::  \u003cmcp\u003e MCP  \u003cbots\u003e bots  [R]esume [G]eneral [T]ools [O]nboard [N]ew [X]it\u0027. Sub-agent confirmed jcode has NO actual ASCII banner -- \u0027jcode animations\u0027 = HSV+orbit effects (now applied to clean wordmark, not random particles). EVE.exe rebuilt (2010198 bytes / 19:20Z); mirror byte-matches.",
+    "rationale":  "Overseer auto-distributed because this fleet-update either targeted you OR mentioned your lane slug. Review + ack if actionable.",
+    "source_id":  "fu-20260524192117-cb15f1",
+    "source_ts_utc":  "2026-05-24T23:21:17Z",
+    "from":  "overseer",
+    "source_priority":  "high",
+    "tag":  "[OVERSEER-DISTRIBUTE]",
+    "source_pushed_by":  "sanctum",
+    "source_kind":  "fix"
+}

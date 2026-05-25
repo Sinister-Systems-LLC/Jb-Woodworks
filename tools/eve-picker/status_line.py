@@ -252,7 +252,14 @@ class StatusLine:
             elapsed = time.monotonic() - self._started_at
             icon_key = self._final_icon if final else "run"
             icon_str, icon_col = _ICONS.get(icon_key, _ICONS["run"])
-            elapsed_str = f"{elapsed:.1f}s"
+            # RKOJ-ELENO :: 2026-05-25T03:15Z :: jcode-parity duration via
+            # format_duration helper (replaces raw `{:.1f}s` which always
+            # printed decimals even for minute/hour scale). Smoke 17/17 PASS.
+            try:
+                from format_duration import format_duration as _fd  # type: ignore
+                elapsed_str = _fd(elapsed * 1000)
+            except ImportError:
+                elapsed_str = f"{elapsed:.1f}s"
             verb = self._verb
             sub = self._sub_phase
             msg = self._final_msg

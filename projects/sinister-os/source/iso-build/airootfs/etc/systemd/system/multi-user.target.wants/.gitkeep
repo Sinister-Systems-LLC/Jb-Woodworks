@@ -1,0 +1,14 @@
+# Sinister OS :: multi-user.target.wants/ placeholder
+# Author: RKOJ-ELENO :: 2026-05-24
+#
+# This directory holds enable-symlinks for units that should start at multi-user.target.
+# Windows authoring caveat: real symlinks are unreliable through git on Windows hosts,
+# so the archiso build host (Linux) creates the actual symlinks via a post-bake hook:
+#
+#   ln -sf /etc/systemd/system/tailscaled.service \
+#          /etc/systemd/system/multi-user.target.wants/tailscaled.service
+#   ln -sf /etc/systemd/system/sinister-tailscale-firstboot.service \
+#          /etc/systemd/system/multi-user.target.wants/sinister-tailscale-firstboot.service
+#
+# This .gitkeep exists only so the directory is committed; archiso copies the layout
+# verbatim into the live ISO once the symlinks are materialised on the build host.

@@ -4,6 +4,7 @@ import { statSync } from "node:fs";
 import { join } from "node:path";
 import { SITE } from "@/lib/site";
 import { portfolio } from "@/lib/content";
+import { blogPosts } from "@/lib/content/blog/posts";
 
 // Read mtime of a content file; fall back to build-time date on any error so
 // the sitemap never breaks just because a JSON path moved.
@@ -30,8 +31,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE.url}/services`,          lastModified: servicesM,  changeFrequency: "monthly",  priority: 0.9 },
     { url: `${SITE.url}/portfolio`,         lastModified: portfolioM, changeFrequency: "monthly",  priority: 0.9 },
     { url: `${SITE.url}/about`,             lastModified: faqM,       changeFrequency: "yearly",   priority: 0.7 },
-    { url: `${SITE.url}/contact`,           lastModified: servicesM,  changeFrequency: "yearly",   priority: 0.8 }
+    { url: `${SITE.url}/contact`,           lastModified: servicesM,  changeFrequency: "yearly",   priority: 0.8 },
+    { url: `${SITE.url}/blog`,              lastModified: blogPosts.reduce<Date>((acc, p) => {
+      const d = new Date((p.updatedAt ?? p.publishedAt) + "T12:00:00Z");
+      return d > acc ? d : acc;
+    }, new Date(0)), changeFrequency: "weekly", priority: 0.8 }
   ];
+
+  const blog: MetadataRoute.Sitemap = blogPosts.map((p) => ({
+    url: `${SITE.url}/blog/${p.slug}`,
+    lastModified: new Date((p.updatedAt ?? p.publishedAt) + "T12:00:00Z"),
+    changeFrequency: "monthly" as const,
+    priority: 0.7
+  }));
 
   const items: MetadataRoute.Sitemap = portfolio.map((p) => {
     // Cover lives in /img/projects/ when raw, /media/ when from the optimized pipeline.
@@ -54,5 +66,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE.url}/legal/accessibility`, lastModified: legalM, changeFrequency: "yearly", priority: 0.3 }
   ];
 
-  return [...fixed, ...items, ...legal];
+  return [...fixed, ...items, ...blog, ...legal];
 }

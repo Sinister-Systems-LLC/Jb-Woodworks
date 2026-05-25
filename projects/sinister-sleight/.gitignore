@@ -1,0 +1,65 @@
+# Author: RKOJ-ELENO :: 2026-05-24
+# Sinister Sleight .gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.installed.cfg
+*.egg
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Virtual envs
+.venv/
+venv/
+env/
+ENV/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Data (large files; NEVER commit raw market data)
+data/raw/
+data/features/
+data/news/
+data/llm-traders/
+data/cache/
+data/*.parquet
+data/*.csv.gz
+
+# Models (trained artifacts; track via meta.json only)
+models/*.pkl
+models/*.pt
+models/*.onnx
+models/*.h5
+models/*.bin
+
+# Backtests (regenerable)
+backtests/*/
+
+# Secrets — NEVER commit
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+broker-creds/
+*-credentials.json
+alpaca-keys.json
+polygon-keys.json
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini

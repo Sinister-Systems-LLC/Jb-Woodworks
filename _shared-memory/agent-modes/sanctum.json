@@ -1,0 +1,8 @@
+{
+    "slug":  "sanctum",
+    "swarm":  true,
+    "reason":  "operator 18:42Z: confirm both sanctum agents work in swarm+loop modes then get to work; cold-start phrase set swarm=on loop=on at session boot",
+    "loop":  true,
+    "set_via":  "manual-cold-start-confirm",
+    "set_by_operator_at_utc":  "2026-05-24T18:42:50Z"
+}

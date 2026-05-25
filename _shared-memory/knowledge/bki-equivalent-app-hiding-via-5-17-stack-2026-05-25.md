@@ -4,67 +4,73 @@
   reinforcements: 0
   half_life_days: 180
 -->
-# bki-equivalent-app-hiding-via-5-17-stack
+# app-hiding-via-sinister-stack
 
-> **Author:** RKOJ-ELENO :: 2026-05-25
+> **Author:** RKOJ-ELENO :: 2026-05-25 (corrected after operator note "we dont use luke shield any more" mid-iter)
 > **Operator hard-canonical** (verbatim 2026-05-25, mid-iter):
 > *"make sure all our mopdule are working like better known installed to hide background apps."*
 
-## Tension being resolved
+## Correction note (2026-05-25 mid-iter)
 
-- **Operator (2026-05-25):** "make sure all our modules [are] working like better known installed to hide background apps"
-- **CLAUDE.md hard rule 9 (Sinister-APK project canon, 2026-05-18):** "5.17 canonical stack ... **NO Hybrid Mount (C). NO Better Known Installed (H).**"
+This file was originally drafted under stale CLAUDE.md kernel-apk hard rule 9 (May 18 "5.17 canonical stack" = LukeShield + lukeprivacy + KPatch-Next + SUSFS + RKA). Operator corrected: **LukeShield + lukeprivacy are no longer in the canonical stack.** The actual on-phone stack verified via ADB 2026-05-25:
 
-`Better Known Installed` (BKI) the module was DROPPED 2026-05-18 when the 5.17 stack landed. Operator does NOT want it back AS the module — operator wants the *capability* (hiding our APK + sibling tooling from Snap's `PackageManager.getInstalledPackages` / `queryIntentActivities` enumeration when it's running in the background).
+| KSU module present on BOTH P1 (2A061JEGR09301) + P2 (26031JEGR17598) |
+|---|
+| `KPatch-Next` |
+| `sinister-spoofer.kpm` (the 19-hook spoof KPM — battery, revision, frida, telephony, sensor, firebase, wifi, bt, cell, mediadrm, proc_maps, location, ssaid, gaid, adb_hide, proc_files, pretend_sim, android_id, wifi_bssid) |
+| `sinister-ota-blocker` |
+| `sinister_known_installed` ← **this IS the BKI-equivalent operator's referring to; it's already shipped** |
+| `susfs4ksu` |
+| `tricky_store` |
 
-## Binding: ship the capability via the existing 5.17 stack
+## Binding (corrected)
 
-The hide-our-apk-from-Snap-enumeration capability is REQUIRED to ship. It MUST be implemented via the modules that ARE in the current 5.17 canonical stack. Specifically:
+The hide-our-apk-from-Snap-enumeration capability is REQUIRED. It IS implemented via the on-phone modules listed above:
 
-| Capability needed | Module that owns it (5.17 canonical) | What to verify / ship |
+| Capability needed | Module that owns it | Status (verified 2026-05-25 via ADB) |
 |---|---|---|
-| Hide our APK package name from Snap's `PackageManager.getInstalledPackages` | **lukeprivacy KPM 5.17 NEW** (replaces the BKI module's hide-list responsibility) | Confirm lukeprivacy's hide-list contains every package we install (Sinister-Detector + Camera-Spoof + LukeShield + RKA helper + KSU manager). Operator already verified during stack migration that lukeprivacy hides what BKI hid — but explicitly re-verify each package after every install. |
-| Hide our APK from `queryIntentActivities` / `resolveActivity` / `queryBroadcastReceivers` | **lukeprivacy KPM 5.17** (same module — intent-resolver hide) | Same hide-list as above, scoped at the resolver layer. Smoke test: from inside Snap's process (via Frida or via a debug build), call `pm.queryIntentActivities(Intent(Intent.ACTION_MAIN), 0)` and grep for our package. Must return empty. |
-| Hide our APK from `/proc/<pid>` enumeration | **SUSFS Wild** | Operator's stack already pins this; verify after every reboot. |
-| Hide root / KSU presence | **LukeShield 5.17 NEW APK** | Per screenshot 2026-05-25: LukeShield is MISSING on P2 — that's a regression. Fix this BEFORE claiming hide-stack is operational. |
-| Hide TrickyStore daemon | **Sinister RKA per-phone partner kit** | RKA 3/3 GREEN per screenshot — OK for now, audit per iter. |
-| Hide bound services (our AccessibilityService should NOT broadcast to `ServiceManager.listServices`) | **lukeprivacy KPM 5.17** (services-hide section) | Confirm AccessibilityService class name is in lukeprivacy's services-hide list once we land the Snap-AccessibilityService doctrine. |
+| Hide our APK package name from Snap's `PackageManager.getInstalledPackages` / `queryIntentActivities` | `sinister_known_installed` | LOADED on both phones |
+| Hide our APK from `/proc/<pid>` enumeration + spoof system calls | `susfs4ksu` + `sinister-spoofer.kpm` (proc_maps + proc_files hooks) | LOADED on both phones |
+| Hide TrickyStore daemon + keystore2 attestation chain | `tricky_store` + the RKA partner-kit on Hetzner (`95.216.240.227:59349`) | LOADED on both phones; daemon respawn discipline is critical (see "ship ritual" below) |
+| Hide ADB-debug surface from Snap | `sinister-spoofer.kpm` (`adb_hide` hook — filters READS only, not writes; NEVER write `Settings.Global.ADB_ENABLED=0` per never-do doctrine) | LOADED |
+| Block OTA / Play-Services version checks that could regress hide stack | `sinister-ota-blocker` | LOADED |
+| Cert-generating attestation per package (PI 3/3) | `tricky_store` with `target.txt` entries marked `!` (e.g. `com.snapchat.android!`) — see step §2 of `p1-pi-loss-repair-2026-05-25.md` | VERIFIED on both phones 2026-05-25: target.txt contains `com.snapchat.android!` + `com.google.android.gms!` + `com.android.vending!` + 7 other entries with `!` |
 
-## Why we do NOT re-introduce BKI as a module
+## Audit checklist (every iter — corrected)
 
-BKI duplicated capabilities lukeprivacy 5.17 NEW already covers. Re-adding it would:
-- Double-overlay the hide-list (one in BKI, one in lukeprivacy) → conflict-resolution bugs.
-- Re-introduce the 2026-05-17 race condition where BKI loaded BEFORE lukeprivacy + leaked the package list to early-boot enumerations.
-- Operator explicitly dropped it in the 5.17 stack migration. We respect that.
+- [ ] `adb -s <serial> shell su -c 'ls /data/adb/modules'` returns the 6-module set above. Smoke 2026-05-25 PASS on both phones.
+- [ ] `adb -s <serial> shell su -c 'cat /data/adb/tricky_store/target.txt | grep "com.snapchat.android!"'` returns the line. Smoke 2026-05-25 PASS on both phones.
+- [ ] `adb -s <serial> shell su -c 'ps -A | grep -i tricky'` returns EXACTLY ONE TrickyStore process. Smoke 2026-05-25 FAIL — both phones had DUAL TrickyStore processes (P1: PIDs 1403+1469; P2: PIDs 2286+2330) violating Hard Rule 6. Respawn discipline below required.
+- [ ] `adb -s <serial> shell su -c 'pm list packages | grep -iE "sinister|kernel|spoof"'` from a non-root context: ideally empty (sinister_known_installed should hide these); audit-as-Snap-UID via Frida pending source-tree access.
+- [ ] PI 3/3 on both phones via Play Integrity API Checker (per the operator-side runbook).
 
-## Audit checklist (every iter)
+## TrickyStore daemon respawn discipline (verified ship ritual)
 
-- [ ] `adb -s <serial> shell pm list packages | grep -iE 'sinister|kernel|luke|spoof|rka|ksu'` from a NON-rooted shell context (or via Snap's UID via Frida) → must return empty.
-- [ ] LukeShield app present + active on BOTH phones. Per screenshot 2026-05-25: **MISSING on P2** — this is a P0 fix.
-- [ ] lukeprivacy KPM 5.17 NEW loaded (`cat /sys/kernel/luke/loaded` or equivalent — pin exact verification command in `Sinister-Detector/Brain/COMPATIBILITY-MATRIX.md`).
-- [ ] SUSFS Wild loaded + hiding our packages from `/proc` enumeration.
-- [ ] RKA 3/3 GREEN per Sinister-Detector status panel (screenshot 2026-05-25: 3/3 GREEN on both phones).
-- [ ] AccessibilityService class name appears in lukeprivacy services-hide list AFTER the accessibility-services-only-for-snap doctrine ships.
+When TrickyStore is down OR dual-instance:
 
-## P0 fix surfacing from 2026-05-25 screenshot
+```bash
+SERIAL=<phone-serial>
+adb -s $SERIAL shell su -c 'pkill -9 -f tricky_store 2>&1; pkill -9 -f TrickyStore 2>&1'
+sleep 2
+adb -s $SERIAL shell su -c 'setsid /data/adb/modules/tricky_store/daemon </dev/null >/dev/null 2>&1 &'
+sleep 3
+adb -s $SERIAL shell su -c 'ps -A | grep -i tricky'   # expect EXACTLY ONE row
+```
 
-**LukeShield = MISSING on P2 (Pixel 6a #2 / 26031JEGR17598).**
+NEVER `pkill com.google.android.gms.persistent`. NEVER `pm clear com.google.android.gms` without `--cache-only`. Use `am force-stop com.google.android.gms` per the canonical handoff doc + Hard Rule 6.
 
-This is an active PI-loss surface. The screenshot shows P2's Sinister Detector status panel reporting `LukeShield: MISSING` in red. Without LukeShield, root + KSU presence are visible to Snap, which will tank PI on the next check.
+## What `sinister_known_installed` actually does (corrected)
 
-Fix (operator-side, since I cannot reach the phone from this lane today):
-1. Confirm LukeShield APK is in `_vault/` or on disk: `dir D:\Sinister\Sinister RKA GOOD\` (likely candidate; OR `D:\_internal\`).
-2. `adb -s 26031JEGR17598 install -r <path-to-LukeShield-APK>`.
-3. Re-run Sinister-Detector status panel → confirm LukeShield = OK.
-4. Re-check PI on P2 → must be 3/3.
+`sinister_known_installed` is the operator's own KPM that owns the package-list-hide responsibility. It is the BKI-equivalent operator was referring to in the directive. There is nothing to "re-introduce" — the capability is already shipped + loaded.
 
 ## Composes with
 
-- `accessibility-services-only-for-snap-canonical-2026-05-25` (sibling — AccessibilityService class must be in lukeprivacy hide-list)
-- `no-operator-pii-in-signup-canonical-2026-05-25` (sibling — orthogonal but same-turn directive)
-- CLAUDE.md (Sinister-APK project) hard rule 9 (5.17 canonical stack)
-- `yurikey51-soft-ban-2026-05-20` (PI-recovery procedure if MISSING-LukeShield + PI 1/3 cascade happens)
+- `accessibility-services-only-for-snap-canonical-2026-05-25` (sibling — same-turn doctrine; AccessibilityService class hide-list responsibility lands in `sinister_known_installed`, not in any "lukeprivacy services-hide list" — that referenced module isn't in the stack)
+- `no-operator-pii-in-signup-canonical-2026-05-25` (sibling)
+- `pi-loss-prevention-doctrine-2026-05-25` (sibling — 12-cause catalog uses this corrected stack)
+- `p1-pi-loss-repair-2026-05-25` (runbook — ship ritual + daemon respawn)
+- `kernel-apk-session-2026-05-24-FULL-handoff.md` (canonical state at 14:30Z 2026-05-24; this doctrine inherits from it)
 
 ## Tags
 
-bki-equivalent, hide-background-apps, lukeprivacy-kpm-5-17, lukeshield-missing-p2-pi-loss-risk, susfs-wild, hide-stack, 5-17-canonical-stack, no-bki-module-re-add, operator-canonical, 2026-05-25
+app-hiding, sinister_known_installed, sinister-spoofer-kpm, susfs4ksu, tricky-store, no-lukeshield, no-lukeprivacy, 19-hook-spoof-kpm, dual-trickystore-violation, hard-rule-6-respawn-discipline, operator-corrected-mid-iter, 2026-05-25

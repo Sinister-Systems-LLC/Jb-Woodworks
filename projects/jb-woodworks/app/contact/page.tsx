@@ -13,7 +13,15 @@ export default function ContactPage() {
   return (
     <>
       <section className="pt-40 pb-16 bg-gradient-to-b from-ink-2 to-ink border-b border-line relative overflow-hidden">
-        <div aria-hidden className="absolute -top-24 -right-24 w-[400px] h-[400px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(201,168,76,0.10), transparent 70%)" }} />
+        {/* Nano Banana atmospheric backdrop — single chisel on walnut, cool window light. Sets a tone of careful craft. */}
+        <div
+          aria-hidden
+          className="absolute inset-0 pointer-events-none bg-cover bg-center"
+          style={{ backgroundImage: "url(/img/generated/contact-tools.png)", opacity: 0.22 }}
+        />
+        <div aria-hidden className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(180deg, rgba(8,8,8,0.5) 0%, rgba(8,8,8,0.75) 60%, #080808 100%)" }} />
+        <div aria-hidden className="absolute -top-24 -right-24 w-[400px] h-[400px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(201,168,76,0.12), transparent 70%)" }} />
+        <div aria-hidden className="absolute inset-0 pointer-events-none mix-blend-overlay" style={{ backgroundImage: "url(/img/generated/grain-texture.png)", backgroundSize: "cover", opacity: 0.06 }} />
         <div className="container-site relative">
           <span className="section-tag">Contact</span>
           <h1 className="mb-5">Start your next<br /><em>project with us.</em></h1>
@@ -38,7 +46,7 @@ export default function ContactPage() {
             </div>
 
             <ul className="mt-9 space-y-2.5 list-none p-0">
-              {["Free estimates", "Custom design consultations", "Licensed and insured"].map((s, i) => (
+              {["Free estimates", "Custom design consultations", "Same-day response on weekdays"].map((s, i) => (
                 <li key={i} className="flex items-center gap-3 text-cream-80 text-[0.95rem]">
                   <span className="w-2 h-2 bg-gold rounded-full inline-block" />{s}
                 </li>

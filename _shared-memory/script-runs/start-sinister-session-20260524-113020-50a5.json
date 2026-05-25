@@ -1,0 +1,12 @@
+{
+    "ts":  "2026-05-24T11:30:20.5867986-04:00",
+    "project":  "sinister-snap-api-quantum",
+    "agent":  "sinister-snap-api-quantum",
+    "accent":  "purple",
+    "kind":  "headless",
+    "launcher_version":  "v6",
+    "outputs":  {
+                    "project":  "sinister-snap-api-quantum",
+                    "mode":  "resume"
+                }
+}

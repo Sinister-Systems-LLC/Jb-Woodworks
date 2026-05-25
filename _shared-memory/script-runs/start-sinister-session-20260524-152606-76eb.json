@@ -1,0 +1,12 @@
+{
+    "ts":  "2026-05-24T15:26:06.7294359-04:00",
+    "project":  "letstext",
+    "agent":  "letstext",
+    "accent":  "purple",
+    "kind":  "headless",
+    "launcher_version":  "v6",
+    "outputs":  {
+                    "project":  "letstext",
+                    "mode":  "resume"
+                }
+}

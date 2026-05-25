@@ -4,6 +4,9 @@
 *.bak
 *.bak-*
 
+# Transient helper scripts emitted by forever-improve.ps1 -WithQualityLoop (auto-pruned >1d).
+automations/_tmp/
+
 # Seraphim QRNG provenance — runaway producer (1 file/30s; sibling sanctum sweep-loop
 # has been stuck trying to add 1986+ files for hours without ever converging to commit).
 # Operator review: if billing-audit trail needed in git, replace with a batched commit
@@ -11,6 +14,16 @@
 # by EVE on Sanctum during Phase-2 loop iteration 1 to break a multi-agent contention
 # storm. Reversible: `git rm` this line if operator wants the per-event files committed.
 _shared-memory/qrng-provenance/
+
+# Custodian archive root — sanctum_custodian.py rotates oversized JSONL + quarantines
+# oversized inbox JSON here. Never push archives to git; they exist for forensic
+# recovery on disk. Added 2026-05-25 by sanctum-helper-A per operator directive
+# "we should have a custdoian that cleans these things".
+_shared-memory/_archive/
+
+# Custodian-prevented: catch runaway inbox files (mojibake-explosion bugs created
+# 141MB single-message JSON files that blocked git push). Added 2026-05-25.
+_shared-memory/inbox/**/oversized-*.json
 
 # Python
 __pycache__/
@@ -115,6 +128,14 @@ _shared-memory/auto-push.log.*
 automations/window-manager/_build-logs/
 automations/window-manager/dist/
 *.exe
+
+# EVE.exe at repo root SHIPS so collaborators (Leo, fresh-clone) find it next to
+# README.md without spelunking into automations/eve-launcher/dist/EVE/. Auto-synced
+# by automations/verify-eve-features.ps1 -AutoRebuild -SyncMirror after every eve.py
+# edit (per session-start-auto-update-propagation doctrine 2026-05-24).
+# Operator hard-canonical 2026-05-25 ~03:30Z: "push the entire sanctum to github with
+# the exe in the main folder where he can find it like read me".
+!EVE.exe
 
 # RKOJ source-only asset originals (large .bak / .webp masters); kept on
 # disk for re-export but excluded from EXE bundle + git. See agent A note
@@ -323,3 +344,8 @@ _shared-memory/resume-search-index.json
 
 # sinister-doctor HTML reports (timestamped; regenerated on each run)
 _shared-memory/sinister-doctor-*.html
+
+# Rotated archives (RKOJ-ELENO 2026-05-25 -- 1.1GB fleet-updates.jsonl OOM blocker)
+_shared-memory/fleet-updates.jsonl.archive-*
+_shared-memory/fleet-updates.jsonl.gz
+*.jsonl.archive*

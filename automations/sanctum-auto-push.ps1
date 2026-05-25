@@ -21,6 +21,7 @@
 #   10 = staging/commit failed
 #   11 = push failed
 #   12 = secret-scrub regex tripped (abort, do NOT push)
+#   13 = push-policy violation (RKOJ-ELENO 2026-05-25; origin URL doesn't match policy)
 #
 # Safety rails:
 #   - Branch handling: on `main` → stage + commit + push.
@@ -36,8 +37,21 @@ param(
     [string]$Branch     = '',
     [string]$Remote     = 'origin',
     [int]$LogRotateMB   = 2,
-    [switch]$DryRun
+    [switch]$DryRun,
+    # RKOJ-ELENO :: 2026-05-25 -- on-demand push hook per
+    # frequent-detailed-commits-per-agent-2026-05-25.md (operator hard-canonical).
+    # Action=PushNow runs the same flow as the scheduled task but bypasses the lock-age
+    # skip (still respects active lock with 60s wait). Slug just tags the log line.
+    [ValidateSet('','PushNow','Status')]
+    [string]$Action     = '',
+    [string]$Slug       = ''
 )
+
+if ($Action -eq 'Status') {
+    $logFile2 = Join-Path $RepoRoot '_shared-memory\auto-push.log'
+    if (Test-Path $logFile2) { Get-Content -LiteralPath $logFile2 -Tail 5 } else { 'no-log-yet' }
+    exit 0
+}
 
 # RKOJ-ELENO :: 2026-05-23 — was 'Stop'; that turned every native-cmd stderr line
 # (like `From https://github.com/...` from git fetch) into a terminating exception
@@ -83,15 +97,35 @@ if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir -Forc
 Rotate-Log
 
 # Lock check (prevents concurrent runs even if the task overlaps)
+# RKOJ-ELENO :: 2026-05-25 -- PushNow waits up to 60s for an active lock rather
+# than skipping immediately, so on-demand pushes from agent code don't silently
+# no-op when a scheduled run is mid-flight.
 if (Test-Path $lockFile) {
     $lockAge = (Get-Date) - (Get-Item $lockFile).LastWriteTime
-    # Stale-lock recovery: if the lock is > 25 min old, prior run hung — take over.
-    if ($lockAge.TotalMinutes -lt 25) {
-        Write-Log 'skipped' "lock-held age=$([int]$lockAge.TotalMinutes)m path=$lockFile"
-        exit 2
+    if ($Action -eq 'PushNow') {
+        $waited = 0
+        while ((Test-Path $lockFile) -and $waited -lt 60) {
+            Start-Sleep -Seconds 2; $waited += 2
+        }
+        if (Test-Path $lockFile) {
+            $lockAge = (Get-Date) - (Get-Item $lockFile).LastWriteTime
+            if ($lockAge.TotalMinutes -gt 25) {
+                Write-Log 'note' "PushNow stale-lock-removed age=$([int]$lockAge.TotalMinutes)m"
+                Remove-Item -LiteralPath $lockFile -Force -ErrorAction SilentlyContinue
+            } else {
+                Write-Log 'skipped' "PushNow lock-still-held-after-60s age=$([int]$lockAge.TotalMinutes)m slug=$Slug"
+                exit 2
+            }
+        }
+    } else {
+        # Stale-lock recovery: if the lock is > 25 min old, prior run hung -- take over.
+        if ($lockAge.TotalMinutes -lt 25) {
+            Write-Log 'skipped' "lock-held age=$([int]$lockAge.TotalMinutes)m path=$lockFile"
+            exit 2
+        }
+        Write-Log 'note' "stale-lock-removed age=$([int]$lockAge.TotalMinutes)m"
+        Remove-Item -LiteralPath $lockFile -Force
     }
-    Write-Log 'note' "stale-lock-removed age=$([int]$lockAge.TotalMinutes)m"
-    Remove-Item -LiteralPath $lockFile -Force
 }
 
 try {
@@ -255,6 +289,19 @@ try {
     } else {
         $sha = (Invoke-Git rev-parse --short HEAD).output.Trim()
         Write-Log 'note' "pushing-existing-commits ahead=$aheadCount sha=$sha"
+    }
+
+    # ---- Pre-push policy guard (RKOJ-ELENO :: 2026-05-25) ----
+    # Operator hard-canonical 2026-05-25: single-repo push policy. Refuse to push
+    # if the working repo's origin URL diverges from the policy in projects.json
+    # (3 carve-outs: LetsText, Showmasters, JB Woodworks).
+    $policyScript = Join-Path (Split-Path -Parent $PSCommandPath) 'sanctum-push-policy.ps1'
+    if (Test-Path $policyScript) {
+        & $policyScript -Action CheckPath -Path $RepoRoot | Out-Null
+        if ($LASTEXITCODE -ne 0) {
+            Write-Log 'aborted' "push-policy-violation repo=$RepoRoot (run sanctum-push-policy -Action Audit for detail)"
+            exit 13
+        }
     }
 
     # ---- Push ----

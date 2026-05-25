@@ -1,0 +1,53 @@
+{
+  "schema": "sinister-sanctum.resume-point.v1",
+  "ts_utc": "2026-05-25T02:36:00Z",
+  "project_key": "sinister-snap-api-quantum",
+  "agent_name": "sinister-snap-api-quantum",
+  "agent_identity": "EVE",
+  "mode": "resume",
+  "iter": 114,
+  "branch": "agent/sinister-snap-api-quantum/iter114-master-plan-100x-2026-05-25",
+  "focus_intent": "Iter-114 SHIPPED. Three operator asks served: (1) master plan 100x with hard-additive guardrail (9 swimlanes); (2) inventory tools+bots+MCP+Ruflo with combination opportunities; (3) freeze + zombie-windows investigation with root-cause taxonomy + fix script. SWIMLANE 1 SHIPPED forge-memory brain backfill 210/210 (memory power 40x foundation laid). SWIMLANE 8 SHIPPED diagnose-fleet-freeze.ps1 + brain entry + 5 operator-actionable F1-F5 fixes queued. Three previous iters (110/112/113) deliver empirical demos for swimlanes 2/3 of the plan.",
+  "shipped_verified": [
+    "_shared-memory/plans/quantum-fleet-100x-master-plan-2026-05-25T0128Z/plan.md (9-swimlane master plan)",
+    "_shared-memory/plans/quantum-fleet-100x-master-plan-2026-05-25T0128Z/addendum-freeze-fix-and-fleet-inventory.md (inventory + freeze + overseer activation)",
+    "_shared-memory/knowledge/quantum-fleet-100x-master-plan-2026-05-25.md (NEW brain entry)",
+    "_shared-memory/knowledge/fleet-freeze-and-zombie-windows-diagnosis-2026-05-25.md (NEW brain entry)",
+    "_shared-memory/knowledge/_INDEX.md (+2 top rows)",
+    "automations/seed-forge-memory-from-brain.py (idempotent backfill script)",
+    "automations/diagnose-fleet-freeze.ps1 (read-only diagnosis + opt-in -KillZombies)",
+    "_shared-memory/diagnostics/fleet-freeze-2026-05-25T023619Z.json (full snapshot)",
+    "_shared-memory/OPERATOR-ACTION-QUEUE.md (NEW HIGH-priority row F1-F5)",
+    "forge-memory disk store at _shared-memory/forge-memory/ (210 brain entries in namespace `brain`)"
+  ],
+  "in_flight": [],
+  "next_steps": [
+    "Iter-115 A (HIGH): Overseer fleet activation = swimlane 9 (add sinister-sanctum + per-lane recipes to projects/sinister-overseer/config/improvement-recipe.json; wire diagnose-fleet-freeze.ps1 into Sensor layer; this is the 'trickle down to all projects' the operator asked for)",
+    "Iter-115 B (HIGH if operator clicks F1): post-zombie-reap fleet snapshot (re-run diagnose-fleet-freeze.ps1 to confirm conhost/powershell/claude counts dropped)",
+    "Iter-115 C (MED): swimlane 2 = `find_qbc_triads_rstar()` wrapper + `--rstar` CLI flag in memory_kernel.py / sim-generic-corpus-qbc.py",
+    "Iter-115 D (MED): swimlane 3 = sim-brain-vs-code-drift.py (concept #10 from python-simulator-concepts-expansion doc)"
+  ],
+  "open_for_operator": [
+    "F1 HIGH: powershell -File automations\\diagnose-fleet-freeze.ps1 -KillZombies -Confirm  (reaps 6 stale sessions >4h)",
+    "F2 HIGH: investigate 4 host-crash scheduled tasks (LastResult=4294770688): APKAutoPush, APKWatchdog, Custodian, SanctumDailyBackup",
+    "F3 MED: sc.exe create Ollama binPath='C:\\Program Files\\Ollama\\ollama.exe serve' start=auto",
+    "F4 MED: stagger watchdog cadences (currently all on 5-min grid -> 6+ ps spawns per cycle)",
+    "F5 LOW: disable dormant MCP servers in ~/.claude.json (playwright/context7/memory/sequential-thinking)"
+  ],
+  "pre_warm_reads": [
+    "_shared-memory/plans/quantum-fleet-100x-master-plan-2026-05-25T0128Z/plan.md",
+    "_shared-memory/plans/quantum-fleet-100x-master-plan-2026-05-25T0128Z/addendum-freeze-fix-and-fleet-inventory.md",
+    "_shared-memory/PROGRESS/sinister-snap-api-quantum.md (head 200 = iter 114+113+112+110)",
+    "_shared-memory/diagnostics/fleet-freeze-2026-05-25T023619Z.json"
+  ],
+  "operator_utterances_triaged_this_iter": "Three operator utterances driving this turn (01:20Z + 01:28Z + 02:18Z). All three served in-turn. Six prior unread (sanctum-push-policy global etc) remain global, not snap-quantum.",
+  "budget_status": {
+    "tracker_total_seconds": 230.0,
+    "tracker_used_after_iter114": 160.4,
+    "iter_114_burn_seconds": 0,
+    "backend": "sim-local (no cloud burn this iter)"
+  },
+  "loop_state": "RELENTLESS on (per CLAUDE.md new doctrine rules 8-11). iter-115 has 4 actionable candidates queued; SHIP-THIS-TURN if /loop fires; only ScheduleWakeup ≤270s if blocked",
+  "swarm_state": "on; spawned 3 parallel Explore sub-agents this turn (tools/bots/MCP inventory) — first time swarm actually fired in this lane",
+  "this_session_iter_count": 5
+}

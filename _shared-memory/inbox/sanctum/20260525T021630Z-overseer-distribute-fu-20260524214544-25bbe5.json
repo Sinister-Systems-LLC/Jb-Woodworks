@@ -1,0 +1,15 @@
+{
+    "ts_utc":  "2026-05-25T02:16:30Z",
+    "_author":  "RKOJ-ELENO :: 2026-05-25",
+    "to":  "sanctum",
+    "subject":  "Fleet-update fan-out: doctrine_update priority=normal",
+    "message":  "BRAIN new: ps51-scriptblock-replace-bug-2026-05-25 - PowerShell 5.1 stringifies scriptblock substitutions in `-replace` Ã¢â‚¬â€ DO NOT USE",
+    "rationale":  "Overseer auto-distributed because this fleet-update either targeted you OR mentioned your lane slug. Review + ack if actionable.",
+    "source_id":  "fu-20260524214544-25bbe5",
+    "source_ts_utc":  "2026-05-25T01:45:44Z",
+    "from":  "overseer",
+    "source_priority":  "normal",
+    "tag":  "[OVERSEER-DISTRIBUTE]",
+    "source_pushed_by":  "sanctum",
+    "source_kind":  "doctrine_update"
+}

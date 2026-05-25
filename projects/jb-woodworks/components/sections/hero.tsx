@@ -1,11 +1,9 @@
 // Author: RKOJ-ELENO :: 2026-05-23
 "use client";
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { hero, type HeroSlide } from "@/lib/content";
-import { SITE } from "@/lib/site";
 
 const stagger = {
   hidden: { opacity: 0, y: 28 },
@@ -97,7 +95,7 @@ export function Hero() {
       <div className="hidden md:block absolute top-1/2 -translate-y-1/2 left-7 z-[3] writing-vertical text-cream-30 text-[0.65rem] tracking-[0.4em] uppercase font-semibold">
         <div className="space-y-8" style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
           <span>EST. 2019  /  ORLANDO FL</span>
-          <span>LICENSED + INSURED</span>
+          <span>CUSTOM WOODWORKING</span>
         </div>
       </div>
 
@@ -140,23 +138,28 @@ export function Hero() {
       {/* Content - centered editorial layout */}
       <div className="container-site relative z-[3] h-full flex flex-col items-center justify-center text-center pt-[82px] pb-24">
         <motion.p custom={0} variants={stagger} initial={reduced ? false : "hidden"} animate="show" className="eyebrow !mb-7">
-          <span className="eyebrow-dot" /> ORLANDO, FLORIDA <span className="eyebrow-dot" /> LICENSED &amp; INSURED <span className="eyebrow-dot" />
+          <span className="eyebrow-dot" /> ORLANDO, FLORIDA <span className="eyebrow-dot" /> EST. 2019 <span className="eyebrow-dot" />
         </motion.p>
 
-        {/* Lead wordmark - JB WOODWORKS as the primary headline */}
+        {/* Logo — stacked wordmark, dead center, oversized. Replaces the
+            old "JB / Woodworks" text + the "Premium Craftsmanship" tagline +
+            the two CTAs. Just the mark, just the desc. Operator-canonical. */}
         <motion.div
           custom={1}
           variants={stagger}
           initial={reduced ? false : "hidden"}
           animate="show"
-          className="select-none"
+          className="select-none flex justify-center"
         >
-          <div className="font-sans text-[clamp(3.4rem,11vw,7.5rem)] font-black tracking-[0.16em] text-white leading-[0.95] mb-1">
-            JB
-          </div>
-          <div className="text-[clamp(0.8rem,1.5vw,1.05rem)] tracking-[0.55em] text-gold font-bold uppercase">
-            Woodworks
-          </div>
+          <Image
+            src="/img/branding/jbw-wordmark-stacked.png"
+            alt="JB Woodworks — Construction & Fabrication"
+            width={971}
+            height={733}
+            priority
+            sizes="(max-width: 640px) 88vw, (max-width: 1024px) 70vw, 720px"
+            className="h-auto w-[min(88vw,720px)] drop-shadow-[0_18px_46px_rgba(0,0,0,0.55)]"
+          />
         </motion.div>
 
         {/* Animated gold rule with shimmer */}
@@ -165,7 +168,7 @@ export function Hero() {
           variants={stagger}
           initial={reduced ? false : "hidden"}
           animate="show"
-          className="relative h-px w-[clamp(140px,22vw,260px)] bg-gold-dim mt-8 mb-8 overflow-hidden origin-center"
+          className="relative h-px w-[clamp(160px,26vw,320px)] bg-gold-dim mt-10 mb-7 overflow-hidden origin-center"
         >
           {!reduced && (
             <span
@@ -176,38 +179,16 @@ export function Hero() {
           )}
         </motion.div>
 
-        {/* Italic tagline - the brand voice */}
+        {/* Short description — kept per operator. */}
         <motion.p
           custom={3}
           variants={stagger}
           initial={reduced ? false : "hidden"}
           animate="show"
-          className="font-display text-[clamp(1.5rem,3.4vw,2.4rem)] text-white italic leading-tight mb-5"
-        >
-          Premium Craftsmanship. <em className="not-italic text-gold">Built to Last.</em>
-        </motion.p>
-
-        {/* Short description */}
-        <motion.p
-          custom={4}
-          variants={stagger}
-          initial={reduced ? false : "hidden"}
-          animate="show"
-          className="text-[1.02rem] text-cream-50 max-w-[520px] mb-10 leading-[1.7]"
+          className="text-[1.05rem] text-cream-50 max-w-[560px] leading-[1.7]"
         >
           Custom decks, docks, furniture, and outdoor builds — designed and built in Orlando, FL.
         </motion.p>
-
-        <motion.div
-          custom={5}
-          variants={stagger}
-          initial={reduced ? false : "hidden"}
-          animate="show"
-          className="flex gap-3.5 flex-wrap justify-center"
-        >
-          <Link href="/contact" className="btn btn-primary btn-large">Start Your Project</Link>
-          <Link href="/portfolio" className="btn btn-ghost btn-large">View Our Work</Link>
-        </motion.div>
       </div>
 
       {/* Scroll indicator */}
@@ -235,4 +216,55 @@ function labelFor(slide?: HeroSlide): string {
 function Slide({
   slide, active, ready, onReady, videoRef, preload, eager
 }: {
-  slide: HeroSlide; active: boolean; read
+  slide: HeroSlide; active: boolean; ready: boolean;
+  onReady: () => void; videoRef: (el: HTMLVideoElement | null) => void;
+  preload: "auto" | "none" | "metadata";
+  eager: boolean;
+}) {
+  const posterSrc = slide.type === "image"
+    ? `/media/${slide.src}`
+    : slide.poster ? `/media/${slide.poster}` : undefined;
+
+  return (
+    <div
+      className={[
+        "absolute inset-0 transition-opacity duration-[1400ms] ease-linear",
+        active ? "opacity-100" : "opacity-0"
+      ].join(" ")}
+      style={{
+        transform: active ? "scale(1.06)" : "scale(1)",
+        transition: active
+          ? "opacity 1400ms ease, transform 11000ms linear"
+          : "opacity 1400ms ease, transform 0ms linear"
+      }}
+    >
+      {posterSrc && (
+        <Image
+          src={posterSrc}
+          alt=""
+          aria-hidden="true"
+          fill
+          sizes="100vw"
+          priority={eager}
+          loading={eager ? undefined : "lazy"}
+          className="object-cover object-center"
+        />
+      )}
+      {slide.type === "video" && (
+        <video
+          ref={videoRef}
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${ready && active ? "opacity-100" : "opacity-0"}`}
+          loop
+          muted
+          playsInline
+          preload={preload}
+          poster={`/media/${slide.poster}`}
+          onCanPlay={onReady}
+          onLoadedData={onReady}
+        >
+          <source src={`/media/${slide.src}`} type="video/mp4" />
+        </video>
+      )}
+    </div>
+  );
+}

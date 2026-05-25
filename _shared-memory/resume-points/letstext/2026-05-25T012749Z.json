@@ -1,0 +1,45 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-25T03:11:00.5060837Z",
+    "project":  "letstext",
+    "agent_name":  "letstext",
+    "mode":  "resume",
+    "focus_intent":  "",
+    "git":  {
+                "branch":  "agent/sinister-os-mobile/p0-spec-2026-05-24",
+                "head":  "761d06b2034e420a17f49ec3280563a686374a18",
+                "head_msg":  "sinister-os: panel-shell healthcheck accepts Next.js 307 redirect",
+                "recent_commits":  [
+                                       "761d06b sinister-os: panel-shell healthcheck accepts Next.js 307 redirect",
+                                       "99174f8 sinister-os: MASSIVE-EXPANSION ΓÇö variant split + hot-reconfig + lang research",
+                                       "f064aca sinister-os: M5-EXPAND + PANEL-AS-SHELL SCAFFOLDED (iter 2-6 ship)",
+                                       "8bd3529 sinister-os: M5 mesh SCAFFOLDED ΓÇö Tailscale overlay + ACL + runbook + eve mesh CLI",
+                                       "af1f1b8 sanctum: fleet-health.ps1 (iter-10) + claude-accounts SetKey/Status (iter-9 re-add)",
+                                       "af21f38 brain+inbox: refresh sandbox doctrine with keybox+behavioral+scenario; final cross-lane brief",
+                                       "8835676 sinister-os-mobile: Turn 4 ΓÇö kernel cloned + sepolicy draft + cvd budget + Q1-Q10 + branding-spec patch",
+                                       "e093cbc os-mobile/sandbox: behavioral fingerprints + scenario runner",
+                                       "02e9e5d sanctum: claude-accounts.ps1 -Action SetKey + -Action Status (multi-account UX)",
+                                       "eb1ad5c sinister-os: /loop iter 1 ΓÇö overlay LIVE-applied to running CachyOS VM"
+                                   ]
+            },
+    "progress_top3":  [
+                          "2026-05-25T01:24Z â€” R8 cold-start triage + overseer broadcast ack + cross-lane WT bleed flagged (await-pivot maintained)",
+                          "2026-05-24T22:05Z â€” R7 cold-start triage + dashboard-skeleton inheritance audit (await-pivot maintained)"
+                      ],
+    "latest_plan":  {
+                        "dir":  null,
+                        "artifact":  null
+                    },
+    "inbox_unread_count":  3,
+    "last_5_files_touched_24h":  [
+                                     "_shared-memory\\canonical-protections-violations.log",
+                                     "_shared-memory\\fleet-updates.jsonl.tmp",
+                                     "_shared-memory\\.fleet-updates.lock",
+                                     "automations\\eve-launcher\\build\\EVE\\EXE-00.toc",
+                                     "automations\\eve-launcher\\build\\EVE\\EVE.exe"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\letstext.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}

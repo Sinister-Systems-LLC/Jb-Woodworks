@@ -1,0 +1,18 @@
+{
+  "_author": "RKOJ-ELENO :: 2026-05-21",
+  "schema_version": "sinister.forge-memory.v1",
+  "namespace": "brain",
+  "key": "pyinstaller-tomli-hook-missing",
+  "value": "<!-- decay:\n  category: fact\n  confidence: 0.85\n  reinforcements: 0\n  half_life_days: 180\n-->\n> **Author:** Sinister Sanctum master agent (Claude) :: 2026-05-19\n\n# Topic: PyInstaller 6.20 fresh install misses hook-tomli.py\n\n**Slug:** pyinstaller-tomli-hook-missing\n**First discovered:** 2026-05-19 by Sinister Sanctum\n**Last updated:** 2026-05-19 by Sinister Sanctum\n**Status:** workaround\n**Tags:** pyinstaller, build, hooks-contrib, python-3-12\n\n## Problem\n\nFresh `pip install pyinstaller` (6.20.0) in a Python 3.12 venv, then running `pyinstaller app.py` fails immediately:\n\n```\nFileNotFoundError: [Errno 2] No such file or directory:\n'...\\\\.venv\\\\Lib\\\\site-packages\\\\PyInstaller\\\\hooks\\\\pre_safe_import_module\\\\hook-tomli.py'\n```\n\nPyInstaller's own hooks directory is missing the `hook-tomli.py` file (and possibly others). The build aborts before producing any output.\n\n## Why it happens\n\nPyInstaller's hooks were split into a separate package `pyinstaller-hooks-contrib`. The main `pyinstaller` wheel declares it as a dep, but on Python 3.12 the install may complete with the dep file structure half-populated (some hook files copied, others not). Likely a race condition or a setup.py bug interacting with pip's resolver.\n\nThe missing hook files are in `pyinstaller-hooks-contrib` (the contrib package), not `pyinstaller` itself.\n\n## Fix or workaround\n\nForce-reinstall `pyinstaller-hooks-contrib`:\n\n```bash\n.venv/Scripts/python.exe -m pip install --force-reinstall --no-deps pyinstaller-hooks-contrib\n```\n\nAfter this, the missing hook file appears at:\n```\n.venv/Lib/site-packages/PyInstaller/hooks/pre_safe_import_module/hook-tomli.py\n```\n\n(Yes \u2014 `pyinstaller-hooks-contrib` writes into `PyInstaller/hooks/`, not its own namespace. This is by PyInstaller's design.)\n\nThen retry `pyinstaller app.py` \u2014 the build proceeds.\n\n## Sanctum-specific note\n\nHit while building `Sanctum-Console.exe` from `desktop_app.py` for the operator. The fix worked first try. Worth scripting into the Sanctum-Console build automation: always run `pip install --force-reinstall --no-deps pyinstaller-hooks-contrib` after a fresh PyInstaller install.\n\n## Discoveries (append-only log, most-recent at top)\n\n### 2026-05-19 03:20 by Sinister Sanctum\nReproduced cleanly. Force-reinstall of hooks-contrib added the missing hook + 100+ others. Build succeeded after.\n\n## Related topics\n\n- [pip-self-upgrade-breaks-venv](./pip-self-upgrade-breaks-venv.md)\n",
+  "tags": [
+    "pyinstaller",
+    "tomli",
+    "hook",
+    "missing"
+  ],
+  "ts_utc_first": "2026-05-25T02:30:47Z",
+  "ts_utc_last": "2026-05-25T02:30:47Z",
+  "writes": 1,
+  "confidence": 1.0,
+  "content_hash": "e84aff7b9bd0c23818b0a8c53087d484d42721be71c82c6a088d2e4892cfbc15"
+}

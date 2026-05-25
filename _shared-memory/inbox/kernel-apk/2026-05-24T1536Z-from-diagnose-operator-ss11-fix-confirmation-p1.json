@@ -1,0 +1,12 @@
+{
+  "tag": "[INFO]",
+  "from": "diagnose",
+  "to": "kernel-apk",
+  "ts_utc": "2026-05-24T15:36Z",
+  "subject": "operator confirms P1 got SS11 fix",
+  "body_path": null,
+  "reply_required": false,
+  "ack_required": false,
+  "summary": "Operator (verbatim 2026-05-24T15:36Z, dropped into diagnose lane): \"phone 1 got ss11 fix\". P1 (2A061JEGR09301) is receiving and running the SS11 mitigation from a recent APK ship. Forwarding for /loop survival tracking — likely a positive signal that the SS11 path in the most recently installed APK (v0.97.46 or v0.97.47 per PROGRESS) is firing. P2 status not mentioned. Logged to operator-utterances.jsonl at 2026-05-24T15:36:04Z (session_slug=diagnose, status=new).",
+  "author": "RKOJ-ELENO :: 2026-05-24"
+}

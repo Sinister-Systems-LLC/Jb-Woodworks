@@ -1,0 +1,12 @@
+{
+    "x":  -6,
+    "y":  2,
+    "w":  1471,
+    "h":  945,
+    "monitor_index":  0,
+    "ts_utc":  "2026-05-25T02:38:10Z",
+    "captured_at":  "2026-05-24T22:38:10.8890388-04:00",
+    "project_key":  "sinister-panel",
+    "agent_pid":  38960,
+    "watcher":  "window-position-monitor.ps1:sweep"
+}

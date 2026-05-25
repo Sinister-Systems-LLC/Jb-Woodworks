@@ -4,23 +4,51 @@
   "agent_display": "EVE on Sinister OS",
   "agent_identity": "EVE",
   "lane": "sinister-os",
-  "branch": "agent/sinister-os/m1-hardening-2026-05-24",
-  "lane_canonical_branch": "agent/sinister-os/p1-docker-bootstrap-2026-05-24",
+  "branch_committed": "agent/sinister-os-mobile/p0-spec-2026-05-24 (auto-push race) + mirrored to agent/sinister-os/m1-hardening-2026-05-24",
+  "lane_canonical_branch": "agent/sinister-os/m1-hardening-2026-05-24",
   "cwd": "D:/Sinister Sanctum/projects/sinister-os",
-  "mode": "RESUME",
-  "ts_utc": "2026-05-24T15:28:00Z",
-  "phase": "Turn 4: M1 hardening overlay shipped (compose.hardened.yml + HARDENING.md); commit 532f4e9; daemon-free verification PASS; live-container verify blocked on Docker Desktop being DOWN",
-  "operator_utterance_count": 17,
-  "verified_services_last_session": ["panel", "gitea", "syncthing", "nats", "yjs", "ollama", "vault-api", "guacamole", "filebrowser", "rocketchat"],
-  "services_live_now": 0,
-  "docker_daemon_status": "down",
-  "queued_operator_actions": ["start Docker Desktop so next-turn live smoke can run"],
+  "mode": "RESUME (active)",
+  "ts_utc": "2026-05-24T16:55:00Z",
+  "phase": "OS-build operator-aligned: CachyOS base + Sinister overlay + auto-install + EVE-OS integration shipped via 8 parallel agents; VM RUNNING with CachyOS desktop visible",
+  "operator_utterance_count": 25,
+  "vm_status": {
+    "name": "Sinister-OS-Test",
+    "state": "running",
+    "host": "VirtualBox 7.2.4 on Windows",
+    "iso": "source/iso-base/cachyos-hyprland.iso (2.92 GB, SHA256 verified)",
+    "resolution_hint_sent": "1920x1080",
+    "fullscreen_hint_for_operator": "Right-Ctrl+F"
+  },
+  "docker_services_live": 10,
+  "shipped_this_session_summary": [
+    "M1 hardening overlay (compose.hardened.yml + HARDENING.md) - 13-service ghost baseline",
+    "4-service theme overlays (filebrowser/gitea/RC/guacamole)",
+    "eve docker-stack CLI (350 LOC, sub-cmds verified)",
+    "panel-dev HMR overlay (port 3082)",
+    "4 docs (qol-features, ghost-server, live-dev-workflow, geo-mesh)",
+    "bake-panel.sh 3 safety fixes (atomic swap, EXIT trap, npm retry)",
+    "CachyOS ISO downloaded + VirtualBox VM running",
+    "Sinister overlay full tree (Hyprland config, GTK theme, Plymouth, wallpapers, eve sudoers)",
+    "Calamares 11-file unattended preset (one-click install)",
+    "ISO remaster pipeline (Dockerfile + remaster.sh + Makefile; docker image built)",
+    "EVE-OS integration design + Python prototype + brain port mapping",
+    "Slim package list 109 -> 85 (Windows-PC audit-driven)",
+    "ISO BLOCKER fixes (3) applied to airootfs first-boot",
+    "Sinister Quantum honest applicability verdict (entropy only; not classification)",
+    "GitHub prior-art research (CachyOS / HyDE / EndeavourOS)"
+  ],
+  "next_eve_first_action": "Read SESSION-HANDOFF + this heartbeat + the OS-integration DESIGN.md sec.9 for the 6 operator approval items; if approved, port the Python EVE-MCP prototype to Rust at source/eve-control/ (P3 unblock)",
   "next_eve_must_read": [
     "_shared-memory/PROGRESS/test-os.md",
-    "projects/sinister-os/SESSION-HANDOFF-2026-05-24T1442Z.md",
-    "projects/sinister-os/source/docker-stack/HARDENING.md",
-    "projects/sinister-os/plans/mesh-os-master-plan-2026-05-24.md"
+    "projects/sinister-os/source/eve-os-integration/DESIGN.md",
+    "projects/sinister-os/source/sinister-overlay/CALAMARES-AUTOMATION.md",
+    "projects/sinister-os/source/iso-remaster/README.md",
+    "projects/sinister-os/docs/pc-feature-audit.md"
   ],
-  "next_eve_first_action": "bash projects/sinister-os/source/docker-stack/smoke-test.sh ; if 0/10 healthy, ask operator to start Docker Desktop, else: docker compose -f docker-compose.yml -f compose.hardened.yml up -d && docker inspect sinister-gitea --format '{{.HostConfig.SecurityOpt}}'",
-  "bring_up_command": "cd 'D:/Sinister Sanctum/projects/sinister-os/source/docker-stack' && docker compose -f docker-compose.yml -f compose.hardened.yml up -d"
+  "operator_action_queue_top": [
+    "Hit Right-Ctrl+F in VirtualBox to enter fullscreen (or install Guest Additions for auto-resize)",
+    "Refill Gemini/Google AI Studio credits to upgrade Sinister branding SVGs -> PNGs",
+    "Approve 6 EVE-OS items in source/eve-os-integration/DESIGN.md sec.9",
+    "Run source/iso-remaster/`make build-image && make remaster && make verify` to produce sinister-os-v1.iso"
+  ]
 }

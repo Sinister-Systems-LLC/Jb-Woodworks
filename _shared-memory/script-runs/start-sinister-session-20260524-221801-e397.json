@@ -1,0 +1,12 @@
+{
+    "ts":  "2026-05-24T22:18:01.3084779-04:00",
+    "project":  "sinister-overseer",
+    "agent":  "sinister-overseer",
+    "accent":  "purple",
+    "kind":  "headless",
+    "launcher_version":  "v6",
+    "outputs":  {
+                    "project":  "sinister-overseer",
+                    "mode":  "resume"
+                }
+}

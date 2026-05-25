@@ -1,0 +1,11 @@
+# Author: RKOJ-ELENO :: 2026-05-24
+# Track model metadata sidecars (meta.json) but NEVER the binary artifacts.
+*.pkl
+*.pt
+*.onnx
+*.h5
+*.bin
+*.joblib
+!.gitkeep
+!.gitignore
+!*/meta.json

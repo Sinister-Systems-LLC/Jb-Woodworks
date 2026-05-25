@@ -1,0 +1,92 @@
+{
+  "schema": "sinister-seraphim.reconcile-corpora.v1",
+  "label": "plans-vs-brain-cli-smoke",
+  "corpus_a_root": "D:/Sinister Sanctum/_shared-memory/plans",
+  "corpus_b_root": "D:/Sinister Sanctum/_shared-memory/knowledge",
+  "n_corpus_a": 52,
+  "n_corpus_b": 159,
+  "cl_threshold": 0.3,
+  "sim_threshold": 0.5,
+  "total_pairs": 8268,
+  "reconciliation_candidates_count": 33,
+  "top_reconciliation_candidates": [
+    {
+      "rank": 1,
+      "classical": 0.6732787458556478,
+      "sim": 0.9792968615731265,
+      "combined": 1.6525756074287743,
+      "doc_a": "D:/Sinister Sanctum/_shared-memory/plans/sinister-quantum-deep-audit-2026-05-24.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/quantum-memory-kernel-fleet-action-items-2026-05-23.md"
+    },
+    {
+      "rank": 2,
+      "classical": 0.6063408755558493,
+      "sim": 0.8647184479547307,
+      "combined": 1.47105932351058,
+      "doc_a": "D:/Sinister Sanctum/_shared-memory/plans/eve-exe-completion-2026-05-23T1230Z/eve-exe-finish-plan.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/eve-exe-launcher-jcode-speed-parity-2026-05-23.md"
+    },
+    {
+      "rank": 3,
+      "classical": 0.3645670803954556,
+      "sim": 0.9865156791082026,
+      "combined": 1.351082759503658,
+      "doc_a": "D:/Sinister Sanctum/_shared-memory/plans/sanctum-auto-2026-05-20T2340Z/master-plan.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/auto-mode-launcher-pattern.md"
+    },
+    {
+      "rank": 4,
+      "classical": 0.3423465082696001,
+      "sim": 0.9739316652835238,
+      "combined": 1.316278173553124,
+      "doc_a": "D:/Sinister Sanctum/_shared-memory/plans/sanctum-complete-and-expand-2026-05-23T1145Z/master-plan.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/jcode-swarm-token-parity-audit-2026-05-23.md"
+    },
+    {
+      "rank": 5,
+      "classical": 0.4254265463939044,
+      "sim": 0.8706201305395372,
+      "combined": 1.2960466769334418,
+      "doc_a": "D:/Sinister Sanctum/_shared-memory/plans/sanctum-d-drive-final-reorg-2026-05-21/panel-ui-rewrite.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/rkoj-workstation-ui-layout.md"
+    }
+  ],
+  "top_highest_classical": [
+    {
+      "rank": 1,
+      "classical": 0.6732787458556478,
+      "sim": 0.9792968615731265,
+      "doc_a": "D:/Sinister Sanctum/_shared-memory/plans/sinister-quantum-deep-audit-2026-05-24.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/quantum-memory-kernel-fleet-action-items-2026-05-23.md"
+    },
+    {
+      "rank": 2,
+      "classical": 0.6063408755558493,
+      "sim": 0.8647184479547307,
+      "doc_a": "D:/Sinister Sanctum/_shared-memory/plans/eve-exe-completion-2026-05-23T1230Z/eve-exe-finish-plan.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/eve-exe-launcher-jcode-speed-parity-2026-05-23.md"
+    },
+    {
+      "rank": 3,
+      "classical": 0.5746399721816918,
+      "sim": 0.5538246371952288,
+      "doc_a": "D:/Sinister Sanctum/_shared-memory/plans/sinister-freeze-2026-05-21/deep-research.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-freeze-project-doctrine.md"
+    },
+    {
+      "rank": 4,
+      "classical": 0.469081051156233,
+      "sim": 0.6333008606821534,
+      "doc_a": "D:/Sinister Sanctum/_shared-memory/plans/sinister-term-2026-05-21/plan.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/jcode-feature-parity-targets.md"
+    },
+    {
+      "rank": 5,
+      "classical": 0.4662930494392799,
+      "sim": 0.09532655128712904,
+      "doc_a": "D:/Sinister Sanctum/_shared-memory/plans/Sanctum-deepclean-2026-05-21T2300Z/memory-jcode-integration-audit.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/rkoj-phase1-memory-bootstrap-2026-05-21.md"
+    }
+  ],
+  "wall_seconds": 12.473000288009644
+}

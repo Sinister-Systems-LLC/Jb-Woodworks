@@ -1,0 +1,15 @@
+{
+    "ts_utc":  "2026-05-25T02:33:33Z",
+    "_author":  "RKOJ-ELENO :: 2026-05-25",
+    "to":  "sanctum",
+    "subject":  "Fleet-update fan-out: verify priority=high",
+    "message":  "Leo handoff READY-WITH-CAVEATS (1 trivial caveat). 9/9 auto-setup scripts + 6/6 docs + 8/8 brain entries + fresh EVE.exe (2.18MB built 22:11Z) + .claude/settings.json on GitHub. Local HEAD 761d06b == remote (zero diff). Fresh-clone simulation produces clean install report. Caveat: operator-side mirror sync deferred (auto-resolves on Leo first run). Full audit at _shared-memory/setup/leo-handoff-readiness-2026-05-25.md. Send Leo: git clone Sinister-Systems-LLC/Sinister-Sanctum + double-click EVE.exe.",
+    "rationale":  "Overseer auto-distributed because this fleet-update either targeted you OR mentioned your lane slug. Review + ack if actionable.",
+    "source_id":  "fu-20260524222006-9860dd",
+    "source_ts_utc":  "2026-05-25T02:20:06Z",
+    "from":  "overseer",
+    "source_priority":  "high",
+    "tag":  "[OVERSEER-DISTRIBUTE]",
+    "source_pushed_by":  "sanctum",
+    "source_kind":  "verify"
+}

@@ -1,0 +1,74 @@
+94 INFO: PyInstaller: 6.20.0, contrib hooks: 2026.5
+244 INFO: Python: 3.12.10
+340 INFO: Platform: Windows-10-10.0.19045-SP0
+710 INFO: Python environment: C:\Users\Zonia\AppData\Local\Programs\Python\Python312
+1221 INFO: wrote build\EVE.spec
+1582 INFO: Removing temporary files and cleaning cache in C:\Users\Zonia\AppData\Local\pyinstaller
+2777 INFO: Module search paths (PYTHONPATH):
+['C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Scripts\\pyinstaller.exe',
+ 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\python312.zip',
+ 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\DLLs',
+ 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib',
+ 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312',
+ 'C:\\Users\\Zonia\\AppData\\Roaming\\Python\\Python312\\site-packages',
+ 'C:\\Users\\Zonia\\Desktop\\Sinister Library Of Alexandria\\eve '
+ 'mcp\\eve-server\\src',
+ 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages',
+ '__editable__.sinister_mind-0.1.0.finder.__path_hook__',
+ 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\win32',
+ 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\win32\\lib',
+ 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\Pythonwin',
+ 'D:\\Sinister Sanctum\\automations\\eve-launcher',
+ 'D:\\Sinister Sanctum\\tools\\eve-picker']
+3582 INFO: checking Analysis
+3960 INFO: Building Analysis because Analysis-00.toc is non existent
+4426 INFO: Looking for Python shared library...
+4598 INFO: Using Python shared library: C:\Users\Zonia\AppData\Local\Programs\Python\Python312\python312.dll
+4767 INFO: Running Analysis Analysis-00.toc
+5171 INFO: Target bytecode optimization level: 0
+5410 INFO: Initializing module dependency graph...
+5567 INFO: Initializing module graph hook caches...
+5763 INFO: Analyzing modules for base_library.zip ...
+6881 INFO: Processing standard module hook 'hook-encodings.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+7630 INFO: Processing standard module hook 'hook-heapq.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+9085 INFO: Processing standard module hook 'hook-pickle.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+10914 INFO: Caching module dependency graph...
+11070 INFO: Analyzing D:\Sinister Sanctum\automations\eve-launcher\eve.py
+11580 INFO: Processing standard module hook 'hook-_ctypes.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks'
+11640 INFO: Analyzing hidden import 'account_manager'
+11773 INFO: Analyzing hidden import 'project_picker_multiselect'
+11969 INFO: Analyzing hidden import 'project_config_grid'
+12085 INFO: Analyzing hidden import 'garden_of_eden'
+12212 INFO: Processing module hooks (post-graph stage)...
+12306 INFO: Performing binary vs. data reclassification (1 entries)
+12459 INFO: Looking for ctypes DLLs
+12670 INFO: Analyzing run-time hooks ...
+12793 INFO: Including run-time hook 'pyi_rth_inspect.py' from 'C:\\Users\\Zonia\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
+12970 INFO: Creating base_library.zip...
+14136 INFO: Looking for dynamic libraries
+14466 INFO: Extra DLL search directories (AddDllDirectory): []
+14686 INFO: Extra DLL search directories (PATH): []
+15494 INFO: Warnings written to D:\Sinister Sanctum\automations\eve-launcher\build\EVE\warn-EVE.txt
+16046 INFO: Graph cross-reference written to D:\Sinister Sanctum\automations\eve-launcher\build\EVE\xref-EVE.html
+18746 INFO: checking PYZ
+18867 INFO: Building PYZ because PYZ-00.toc is non existent
+18962 INFO: Building PYZ (ZlibArchive) D:\Sinister Sanctum\automations\eve-launcher\build\EVE\PYZ-00.pyz
+21368 INFO: Building PYZ (ZlibArchive) D:\Sinister Sanctum\automations\eve-launcher\build\EVE\PYZ-00.pyz completed successfully.
+21891 INFO: checking PKG
+22051 INFO: Building PKG because PKG-00.toc is non existent
+22161 INFO: Building PKG (CArchive) EVE.pkg
+22888 INFO: Building PKG (CArchive) EVE.pkg completed successfully.
+23229 INFO: Bootloader C:\Users\Zonia\AppData\Local\Programs\Python\Python312\Lib\site-packages\PyInstaller\bootloader\Windows-64bit-intel\run.exe
+23487 INFO: checking EXE
+23687 INFO: Building EXE because EXE-00.toc is non existent
+23895 INFO: Building EXE from EXE-00.toc
+24013 INFO: Copying bootloader EXE to D:\Sinister Sanctum\automations\eve-launcher\build\EVE\EVE.exe
+25696 INFO: Copying icon to EXE
+28190 INFO: Copying 0 resources to EXE
+28621 INFO: Embedding manifest in EXE
+29598 INFO: Appending PKG archive to EXE
+62134 INFO: Fixing EXE headers
+66516 INFO: Building EXE from EXE-00.toc completed successfully.
+67028 INFO: checking COLLECT
+67099 INFO: Building COLLECT because COLLECT-00.toc is non existent
+ERROR: The output directory "D:\Sinister Sanctum\automations\eve-launcher\dist\EVE" is not empty. Please remove all its contents or use the -y option (remove output directory without confirmation).

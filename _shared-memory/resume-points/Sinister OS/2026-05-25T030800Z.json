@@ -1,0 +1,53 @@
+{
+  "schema_version": "sinister.resume-point.v1",
+  "ts_utc": "2026-05-25T03:08:00Z",
+  "project": "sinister-os",
+  "agent_name": "sinister-os",
+  "mode": "resume-loop",
+  "focus_intent": "Iter 15 close-out of massive-expansion-2026-05-24T2110Z + 4-doctrine adoption. Files written to disk but COMMIT DEFERRED due to git index.lock contention from SinisterBrainBroadcast + SinisterToolAutotrigger scheduled tasks running concurrently.",
+  "git": {
+    "branch": "agent/sinister-os/iter15-doctrine-adopt-2026-05-25",
+    "head": "(retry-needed after 03:08Z lock window)",
+    "head_msg": "(commit pending; index.lock contention with sister agents)",
+    "recent_commits": [
+      "761d06b sinister-os: panel-shell healthcheck accepts Next.js 307 redirect",
+      "99174f8 sinister-os: MASSIVE-EXPANSION variant split + hot-reconfig + lang research",
+      "f064aca sinister-os: M5-EXPAND + PANEL-AS-SHELL SCAFFOLDED (iter 2-6 ship)"
+    ]
+  },
+  "files_to_commit_next_session": [
+    "projects/sinister-os/docs/no-function-loss-doctrine-2026-05-24.md (NEW, on-disk, parse-clean)",
+    "projects/sinister-os/docs/integration-phasing-2026-05-24.md (NEW, on-disk, parse-clean)",
+    "_shared-memory/PROGRESS/Sinister OS.md (iter 15 row prepended)",
+    "_shared-memory/heartbeats/sinister-os.json (gitignored; refreshed in place)"
+  ],
+  "commit_recipe_for_retry": "cd 'D:/Sinister Sanctum' && git add projects/sinister-os/docs/no-function-loss-doctrine-2026-05-24.md projects/sinister-os/docs/integration-phasing-2026-05-24.md '_shared-memory/PROGRESS/Sinister OS.md' && git commit -m '<paste iter15 message from PROGRESS row>'",
+  "blocker_diagnosis": "After clearing the initial stale lock (4 hung git.exe from earlier sessions killed cleanly), index.lock continued cycling within 100ms windows because SinisterBrainBroadcast (started 22:43Z) + SinisterToolAutotrigger (started 22:46Z) are both running git operations as part of their work. Lock contention is environmental + transient. Recommended retry path: ScheduleWakeup 270s OR wait for next operator-spawned agent turn after the scheduled tasks finish.",
+  "iter_status": {
+    "iter_15_files_written": true,
+    "iter_15_commit_landed": false,
+    "iter_15_resume_point_landed": true
+  },
+  "doctrines_adopted_this_turn": [
+    "no-visible-powershell-windows-doctrine-2026-05-25 (audit: zero violations in lane-owned ps1)",
+    "jcode-condensed-log-discipline-2026-05-25 (registered for future emitters)",
+    "operator-full-audit-directive-no-questions-2026-05-25 (binding)",
+    "jcode-full-audit-2026-05-25 (read; informs Phase 1 sinister-eve.service state machine)"
+  ],
+  "audit_findings_sinister_os_ps1": [
+    "source/vm-boot/boot-virtualbox.ps1 :: EXEMPT (operator-clicked VM tool)",
+    "source/vm-boot/install-helpers/install-virtualbox.ps1 :: EXEMPT (operator-clicked installer)",
+    "Zero background daemons / scheduled tasks owned by this lane to patch"
+  ],
+  "next_iter_candidates": [
+    "Iter 16: Phase 0b prep — qemu/kvm boot smoke of variant compose overlays per rollout-doctrine",
+    "Iter 16: sinister-eve.service systemd unit shape (jcode state machine integration)",
+    "Iter 16: triage operator-utterances 22:45/22:56/00:58/01:25Z for sinister-os-scope items",
+    "Retry the deferred iter-15 commit (priority once lock cycling subsides)"
+  ],
+  "pre_warm_reads": [
+    "D:\\Sinister Sanctum\\_shared-memory\\plans\\sinister-os-massive-expansion-2026-05-24T2110Z\\plan.md",
+    "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Sinister OS.md",
+    "D:\\Sinister Sanctum\\_shared-memory\\heartbeats\\sinister-os.json"
+  ]
+}

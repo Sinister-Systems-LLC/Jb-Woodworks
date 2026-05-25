@@ -37,7 +37,7 @@ Environment="EVE_BIND=127.0.0.1:7331"
 EnvironmentFile=-/etc/sinister/eve.env
 
 ExecStartPre=/usr/bin/install -d -m 0750 -o eve -g sinister /var/lib/sinister/memory
-ExecStart=/usr/bin/sinister-eve daemon --config ${EVE_CONFIG}
+ExecStart=/usr/local/bin/sinister-eve daemon --config ${EVE_CONFIG}
 ExecReload=/bin/kill -HUP $MAINPID
 
 Restart=on-failure

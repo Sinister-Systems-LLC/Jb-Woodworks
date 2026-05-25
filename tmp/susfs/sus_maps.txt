@@ -1,0 +1,7 @@
+# Sinister canonical sus_maps rules
+# Substring match against /proc/<pid>/maps entries
+lspd.so
+riru
+zygisk
+lsposed
+nohello

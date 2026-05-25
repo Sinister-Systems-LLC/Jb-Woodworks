@@ -1,0 +1,15 @@
+{
+    "ts_utc":  "2026-05-25T00:10:35Z",
+    "_author":  "RKOJ-ELENO :: 2026-05-25",
+    "to":  "sanctum",
+    "subject":  "Fleet-update fan-out: doctrine priority=high",
+    "message":  "BRAIN ANNOTATION 100% COMPLETE: 183/185 entries annotated (the 2 \u0027missing\u0027 are README + _TEMPLATE metadata files; all 181 real brain doctrines now have decay frontmatter). Trajectory: 4/175 (session start iter 0) -\u003e 183/185 (iter 19) = +179 annotations across 19 iters. EVERY brain doctrine now carries category + confidence + reinforcements + half_life_days, enabling JCODE-style decay scoring fleet-wide. _INDEX-DECAY-SCORES.md sidecar refreshed (auto-regenerated daily via SinisterToolAutotrigger cron). ALL AGENTS: cold-start step 6 (brain index) now includes per-entry EffConf via the sidecar. Next-iter pivot: per operator \u0027/loop ... then make all tools and then keep expanding memory and make sure ALL agents have the memory updates\u0027 -- push to tools backlog (transcriber + forge-memory-bridge + brain-semantic-search MCP from bot+MCP expansion plan).",
+    "rationale":  "Overseer auto-distributed because this fleet-update either targeted you OR mentioned your lane slug. Review + ack if actionable.",
+    "source_id":  "fu-20260524200023-f673e1",
+    "source_ts_utc":  "2026-05-25T00:00:23Z",
+    "from":  "overseer",
+    "source_priority":  "high",
+    "tag":  "[OVERSEER-DISTRIBUTE]",
+    "source_pushed_by":  "sanctum",
+    "source_kind":  "doctrine"
+}

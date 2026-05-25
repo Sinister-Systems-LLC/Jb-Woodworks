@@ -1,0 +1,111 @@
+{
+  "_author": "RKOJ-ELENO :: 2026-05-24",
+  "_lane": "kernel-apk (Snap auto-update pipeline, Phase 2)",
+  "_purpose": "JSON Schema for the canonical-hooks file written by the Phase 2 Frida probe. Captures de-obfuscated class/method/field names that drift between Snap versions.",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SnapCanonicalHooks",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "snap_version",
+    "extracted_at_utc",
+    "hooks",
+    "confidence",
+    "validation_status"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "sinister.snap-hooks.v1",
+      "description": "Fixed schema tag. Bump only on breaking shape changes."
+    },
+    "snap_version": {
+      "type": "string",
+      "pattern": "^[0-9]+(\\.[0-9]+){2,3}$",
+      "description": "Snap APK version this hooks bundle was extracted from."
+    },
+    "extracted_at_utc": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 UTC timestamp of the Frida-probe extraction run."
+    },
+    "hooks": {
+      "type": "object",
+      "description": "De-obfuscated symbol map. Keys are stable across versions; values are the Snap-version-specific obfuscated identifiers.",
+      "required": [
+        "kiib_zck_class",
+        "kiib_zck_method_g",
+        "kiib_zck_method_h",
+        "m0l_class",
+        "m0l_field_id_tag",
+        "m0l_field_status_tag",
+        "m0l_field_payload_tag",
+        "hlm_class",
+        "hlm_load_condition",
+        "user_agent"
+      ],
+      "properties": {
+        "kiib_zck_class": {
+          "type": "string",
+          "description": "FQCN of the KIIB-ZCK signing class (Snap-internal obfuscated)."
+        },
+        "kiib_zck_method_g": {
+          "type": "string",
+          "description": "Method name on kiib_zck_class that applies the signature."
+        },
+        "kiib_zck_method_h": {
+          "type": "string",
+          "description": "Method name on kiib_zck_class that derives the nonce."
+        },
+        "m0l_class": {
+          "type": "string",
+          "description": "FQCN of the M0L opaque-registration class."
+        },
+        "m0l_field_id_tag": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Protobuf field tag for the registration ID."
+        },
+        "m0l_field_status_tag": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Protobuf field tag for the registration status."
+        },
+        "m0l_field_payload_tag": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Protobuf field tag for the registration payload."
+        },
+        "hlm_class": {
+          "type": "string",
+          "description": "FQCN of the HLM attestation-finalizer class."
+        },
+        "hlm_load_condition": {
+          "type": "string",
+          "description": "Trigger / condition string for when hlm_class is loaded (e.g. register_with_username_password)."
+        },
+        "user_agent": {
+          "type": "string",
+          "description": "Snap User-Agent header string for this version (e.g. Snapchat/13.89.0.5)."
+        }
+      },
+      "additionalProperties": true
+    },
+    "confidence": {
+      "type": "string",
+      "enum": ["HIGH", "MEDIUM", "LOW"],
+      "description": "Phase 2 self-reported confidence in the extracted hook map."
+    },
+    "validation_status": {
+      "type": "string",
+      "enum": ["pending", "PASS", "FAIL"],
+      "description": "Phase 3 validation gate. pending = not yet validated; PASS = end-to-end register/login succeeded; FAIL = blocked."
+    },
+    "validation_details": {
+      "type": "object",
+      "description": "Freeform Phase 3 diagnostics (per-step results, error logs, screenshot paths, etc).",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

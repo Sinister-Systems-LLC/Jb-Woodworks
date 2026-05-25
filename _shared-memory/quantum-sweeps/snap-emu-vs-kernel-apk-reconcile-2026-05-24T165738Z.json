@@ -1,0 +1,242 @@
+{
+  "schema": "sinister-seraphim.reconcile-corpora.v1",
+  "label": "snap-emu-vs-kernel-apk",
+  "corpus_a_root": "D:/Sinister Sanctum/projects/sinister-snap-emu",
+  "corpus_b_root": "D:/Sinister Sanctum/projects/sinister-kernel-apk",
+  "n_corpus_a": 251,
+  "n_corpus_b": 596,
+  "cl_threshold": 0.3,
+  "sim_threshold": 0.5,
+  "total_pairs": 149596,
+  "reconciliation_candidates_count": 1392,
+  "top_reconciliation_candidates": [
+    {
+      "rank": 1,
+      "classical": 0.9994038770239378,
+      "sim": 0.9999999999999987,
+      "combined": 1.9994038770239366,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/docs/LUKE-SPOOFER-KPM.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/docs/LUKE-SPOOFER-KPM.md"
+    },
+    {
+      "rank": 2,
+      "classical": 0.9989708235560539,
+      "sim": 0.9999999999999991,
+      "combined": 1.998970823556053,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/docs/PHONE-SETUP-KPM.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/docs/PHONE-SETUP-KPM.md"
+    },
+    {
+      "rank": 3,
+      "classical": 0.9986640387280521,
+      "sim": 0.9999999999999982,
+      "combined": 1.9986640387280503,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/docs/RKA-MIGRATION.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/docs/RKA-MIGRATION.md"
+    },
+    {
+      "rank": 4,
+      "classical": 0.9984461836122284,
+      "sim": 0.9999999999999987,
+      "combined": 1.9984461836122271,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/docs/KPM-RESCUE.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/docs/KPM-RESCUE.md"
+    },
+    {
+      "rank": 5,
+      "classical": 0.9984340268015208,
+      "sim": 0.9999999999999987,
+      "combined": 1.9984340268015195,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/docs/PER-ACCOUNT-RITUAL-KPM.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/docs/PER-ACCOUNT-RITUAL-KPM.md"
+    },
+    {
+      "rank": 6,
+      "classical": 0.9974954959116425,
+      "sim": 0.9999999999999987,
+      "combined": 1.9974954959116413,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/docs/SS07-DEEP-DIVE.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/docs/SS07-DEEP-DIVE.md"
+    },
+    {
+      "rank": 7,
+      "classical": 0.9946416109765581,
+      "sim": 0.9999999999999984,
+      "combined": 1.9946416109765566,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/sinister-rka/Sinister RKA GOOD/server-java/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/docs/RKA-SERVER-JAVA.md"
+    },
+    {
+      "rank": 8,
+      "classical": 0.7852695939974063,
+      "sim": 0.9898673187659817,
+      "combined": 1.7751369127633878,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/docs/WHAT-FAILED.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/CHANGELOG.md"
+    },
+    {
+      "rank": 9,
+      "classical": 0.855521128137264,
+      "sim": 0.8620423434235511,
+      "combined": 1.717563471560815,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/eleno/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-kernel-apk/eleno/README.md"
+    },
+    {
+      "rank": 10,
+      "classical": 0.6716800165643657,
+      "sim": 0.9827212372020002,
+      "combined": 1.654401253766366,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/docs/WHAT-FAILED.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/PARALLEL-AGENT-POLICY.md"
+    },
+    {
+      "rank": 11,
+      "classical": 0.6439817743027594,
+      "sim": 0.9979629135107536,
+      "combined": 1.6419446878135129,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/SESSION-START.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Rooting Guide/MD Files/ERRORS.md"
+    },
+    {
+      "rank": 12,
+      "classical": 0.6710081301141212,
+      "sim": 0.9611346447517877,
+      "combined": 1.6321427748659088,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/docs/WHAT-FAILED.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/docs/ATT-SIGN-HARVEST-PLAN.md"
+    },
+    {
+      "rank": 13,
+      "classical": 0.7326458393363086,
+      "sim": 0.8867549329702231,
+      "combined": 1.6194007723065318,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/docs/WHAT-FAILED.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Rooting Guide/MD Files/ERRORS.md"
+    },
+    {
+      "rank": 14,
+      "classical": 0.7213220864707256,
+      "sim": 0.893424786127446,
+      "combined": 1.6147468725981717,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/SESSION-START.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/CHANGELOG.md"
+    },
+    {
+      "rank": 15,
+      "classical": 0.6340454927800377,
+      "sim": 0.9684037575242839,
+      "combined": 1.6024492503043217,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/SESSION-START.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/PARALLEL-AGENT-POLICY.md"
+    }
+  ],
+  "top_highest_classical": [
+    {
+      "rank": 1,
+      "classical": 0.9994038770239378,
+      "sim": 0.9999999999999987,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/docs/LUKE-SPOOFER-KPM.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/docs/LUKE-SPOOFER-KPM.md"
+    },
+    {
+      "rank": 2,
+      "classical": 0.9989708235560539,
+      "sim": 0.9999999999999991,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/docs/PHONE-SETUP-KPM.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/docs/PHONE-SETUP-KPM.md"
+    },
+    {
+      "rank": 3,
+      "classical": 0.9986640387280521,
+      "sim": 0.9999999999999982,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/docs/RKA-MIGRATION.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/docs/RKA-MIGRATION.md"
+    },
+    {
+      "rank": 4,
+      "classical": 0.9984461836122284,
+      "sim": 0.9999999999999987,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/docs/KPM-RESCUE.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/docs/KPM-RESCUE.md"
+    },
+    {
+      "rank": 5,
+      "classical": 0.9984340268015208,
+      "sim": 0.9999999999999987,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/docs/PER-ACCOUNT-RITUAL-KPM.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/docs/PER-ACCOUNT-RITUAL-KPM.md"
+    },
+    {
+      "rank": 6,
+      "classical": 0.9974954959116425,
+      "sim": 0.9999999999999987,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/docs/SS07-DEEP-DIVE.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/docs/SS07-DEEP-DIVE.md"
+    },
+    {
+      "rank": 7,
+      "classical": 0.9946416109765581,
+      "sim": 0.9999999999999984,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/sinister-rka/Sinister RKA GOOD/server-java/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/docs/RKA-SERVER-JAVA.md"
+    },
+    {
+      "rank": 8,
+      "classical": 0.855521128137264,
+      "sim": 0.8620423434235511,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/eleno/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-kernel-apk/eleno/README.md"
+    },
+    {
+      "rank": 9,
+      "classical": 0.8329376117654649,
+      "sim": 0.24522243155532575,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/me/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-kernel-apk/eleno/README.md"
+    },
+    {
+      "rank": 10,
+      "classical": 0.8314748381381826,
+      "sim": 0.4822890419811859,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/me/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-kernel-apk/me/README.md"
+    },
+    {
+      "rank": 11,
+      "classical": 0.8285287992390697,
+      "sim": 0.6707022122179123,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/eleno/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-kernel-apk/me/README.md"
+    },
+    {
+      "rank": 12,
+      "classical": 0.7852695939974063,
+      "sim": 0.9898673187659817,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/docs/WHAT-FAILED.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/CHANGELOG.md"
+    },
+    {
+      "rank": 13,
+      "classical": 0.7326458393363086,
+      "sim": 0.8867549329702231,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/docs/WHAT-FAILED.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Rooting Guide/MD Files/ERRORS.md"
+    },
+    {
+      "rank": 14,
+      "classical": 0.7213220864707256,
+      "sim": 0.893424786127446,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/SESSION-START.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/CHANGELOG.md"
+    },
+    {
+      "rank": 15,
+      "classical": 0.7000113421379294,
+      "sim": 0.4832276758631915,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/docs/AUTONOMY-LOG.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/CHANGELOG.md"
+    }
+  ],
+  "wall_seconds": 200.8694999217987
+}

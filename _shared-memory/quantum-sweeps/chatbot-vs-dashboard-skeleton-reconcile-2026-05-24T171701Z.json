@@ -1,0 +1,242 @@
+{
+  "schema": "sinister-seraphim.reconcile-corpora.v1",
+  "label": "chatbot-vs-dashboard-skeleton",
+  "corpus_a_root": "D:/Sinister Sanctum/projects/sinister-chatbot",
+  "corpus_b_root": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton",
+  "n_corpus_a": 190,
+  "n_corpus_b": 31,
+  "cl_threshold": 0.3,
+  "sim_threshold": 0.5,
+  "total_pairs": 5890,
+  "reconciliation_candidates_count": 30,
+  "top_reconciliation_candidates": [
+    {
+      "rank": 1,
+      "classical": 0.5144330716858513,
+      "sim": 0.9165769601843078,
+      "combined": 1.431010031870159,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/docs/LETSTEXT-CANONICAL-REFERENCE.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/MIGRATION-NOTES.md"
+    },
+    {
+      "rank": 2,
+      "classical": 0.7508673959628291,
+      "sim": 0.598889617573844,
+      "combined": 1.349757013536673,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/docs/LETSTEXT-CANONICAL-REFERENCE.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/PATTERNS.md"
+    },
+    {
+      "rank": 3,
+      "classical": 0.39438953744267585,
+      "sim": 0.935390854160181,
+      "combined": 1.3297803916028568,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/docs/LETSTEXT-CANONICAL-REFERENCE.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/VERIFY.md"
+    },
+    {
+      "rank": 4,
+      "classical": 0.34249381137132245,
+      "sim": 0.9650626183749328,
+      "combined": 1.3075564297462552,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/docs/OVERHAUL-2026-05-16.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/VERIFY.md"
+    },
+    {
+      "rank": 5,
+      "classical": 0.393141885188744,
+      "sim": 0.9037642335466621,
+      "combined": 1.296906118735406,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/docs/OVERHAUL-2026-05-16.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/MIGRATION-NOTES.md"
+    },
+    {
+      "rank": 6,
+      "classical": 0.41329036668224506,
+      "sim": 0.8764286727486525,
+      "combined": 1.2897190394308975,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/dashboard/components/DESIGN-SYSTEM.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/THEME-DOCTRINE.md"
+    },
+    {
+      "rank": 7,
+      "classical": 0.41460307308931527,
+      "sim": 0.869225858802713,
+      "combined": 1.2838289318920282,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/docs/LETSTEXT-CANONICAL-REFERENCE.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/AGENTS.md"
+    },
+    {
+      "rank": 8,
+      "classical": 0.3579999511651178,
+      "sim": 0.9230236832596216,
+      "combined": 1.2810236344247394,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/dashboard/components/DESIGN-SYSTEM.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/MIGRATION-NOTES.md"
+    },
+    {
+      "rank": 9,
+      "classical": 0.3007247604906089,
+      "sim": 0.9210516508774087,
+      "combined": 1.2217764113680176,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/SESSION-START.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/README.md"
+    },
+    {
+      "rank": 10,
+      "classical": 0.49544476236161467,
+      "sim": 0.7230799033030261,
+      "combined": 1.2185246656646407,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/docs/LETSTEXT-CANONICAL-REFERENCE.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/THEME-DOCTRINE.md"
+    },
+    {
+      "rank": 11,
+      "classical": 0.3166849104209868,
+      "sim": 0.8949276286478811,
+      "combined": 1.211612539068868,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/CLAUDE.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/.claude/memory/R.md"
+    },
+    {
+      "rank": 12,
+      "classical": 0.3074893793499733,
+      "sim": 0.8504711665439376,
+      "combined": 1.1579605458939108,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/dashboard/docs/PANEL-DOCTRINE.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/README.md"
+    },
+    {
+      "rank": 13,
+      "classical": 0.31040167392428436,
+      "sim": 0.8467692060627127,
+      "combined": 1.157170879986997,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/dashboard/components/DESIGN-SYSTEM.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/VERIFY.md"
+    },
+    {
+      "rank": 14,
+      "classical": 0.30227940417417387,
+      "sim": 0.8447457131108064,
+      "combined": 1.1470251172849801,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/docs/OVERHAUL-2026-05-16.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/docs/agent-handoff.md"
+    },
+    {
+      "rank": 15,
+      "classical": 0.3091632950580166,
+      "sim": 0.8373383999162859,
+      "combined": 1.1465016949743025,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/docs/PANEL-UI-SWEEP-2026-05-20-PLAN.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/README.md"
+    }
+  ],
+  "top_highest_classical": [
+    {
+      "rank": 1,
+      "classical": 0.7508673959628291,
+      "sim": 0.598889617573844,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/docs/LETSTEXT-CANONICAL-REFERENCE.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/PATTERNS.md"
+    },
+    {
+      "rank": 2,
+      "classical": 0.56728435444799,
+      "sim": 0.3734646613051628,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/docs/LETSTEXT-CANONICAL-REFERENCE.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/docs/component-library.md"
+    },
+    {
+      "rank": 3,
+      "classical": 0.5144330716858513,
+      "sim": 0.9165769601843078,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/docs/LETSTEXT-CANONICAL-REFERENCE.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/MIGRATION-NOTES.md"
+    },
+    {
+      "rank": 4,
+      "classical": 0.49544476236161467,
+      "sim": 0.7230799033030261,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/docs/LETSTEXT-CANONICAL-REFERENCE.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/THEME-DOCTRINE.md"
+    },
+    {
+      "rank": 5,
+      "classical": 0.46544177461581226,
+      "sim": 0.4838035995179992,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/docs/LETSTEXT-CANONICAL-REFERENCE.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/README.md"
+    },
+    {
+      "rank": 6,
+      "classical": 0.4615007868026235,
+      "sim": 0.586375446188014,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/docs/OVERHAUL-2026-05-16-letstext-map.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/THEME-DOCTRINE.md"
+    },
+    {
+      "rank": 7,
+      "classical": 0.4407137554749165,
+      "sim": 0.5299344021773001,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/docs/LETSTEXT-CANONICAL-REFERENCE.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/CHANGELOG.md"
+    },
+    {
+      "rank": 8,
+      "classical": 0.42362886370990444,
+      "sim": 0.33026227393903607,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/docs/OVERHAUL-2026-05-16.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/CHANGELOG.md"
+    },
+    {
+      "rank": 9,
+      "classical": 0.41460307308931527,
+      "sim": 0.869225858802713,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/docs/LETSTEXT-CANONICAL-REFERENCE.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/AGENTS.md"
+    },
+    {
+      "rank": 10,
+      "classical": 0.41329036668224506,
+      "sim": 0.8764286727486525,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/dashboard/components/DESIGN-SYSTEM.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/THEME-DOCTRINE.md"
+    },
+    {
+      "rank": 11,
+      "classical": 0.41002527323231386,
+      "sim": 0.6552533589492107,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/docs/LETSTEXT-CANONICAL-REFERENCE.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/docs/lg-classes-reference.md"
+    },
+    {
+      "rank": 12,
+      "classical": 0.3996105072318757,
+      "sim": 0.5709424264294997,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/docs/LETSTEXT-CANONICAL-REFERENCE.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/docs/agent-handoff.md"
+    },
+    {
+      "rank": 13,
+      "classical": 0.39438953744267585,
+      "sim": 0.935390854160181,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/docs/LETSTEXT-CANONICAL-REFERENCE.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/VERIFY.md"
+    },
+    {
+      "rank": 14,
+      "classical": 0.393141885188744,
+      "sim": 0.9037642335466621,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/docs/OVERHAUL-2026-05-16.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/MIGRATION-NOTES.md"
+    },
+    {
+      "rank": 15,
+      "classical": 0.3888090971294832,
+      "sim": 0.47518456570024376,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/dashboard/components/DESIGN-SYSTEM.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/docs/component-library.md"
+    }
+  ],
+  "wall_seconds": 24.574000120162964
+}

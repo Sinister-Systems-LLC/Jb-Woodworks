@@ -5,6 +5,70 @@
 
 ---
 
+## 2026-05-23T12:50Z — JKOR CORRECTED canonical (primary-banner-driven character lock)
+
+**Project:** jkor
+**Output:** `outputs/jkor/pfp/peeking-CORRECT-canonical-2026-05-23T125049Z.png` (1024×1024)
+**Model:** `gemini-2.5-flash-image`
+**Cost:** $0.039
+**Refs (order matters):**
+1. `memory/per-project/jkor/reference/00-PRIMARY-BANNER-canonical-*.jpg` — operator-canonical look-of-record
+2. `memory/per-project/jkor/reference/01-peeking-pose-reference-*.jpg` — peeking-over-banner pose cue
+
+**The critical correction this entry captures:** earlier 8 gens this session used `00-base-banner-original.png` + the misread BRAND.md spec as the "canonical" — that produced purple-skinned demon-jester w/ wide showing-teeth grin and mini-jester-head-bell staff. Operator pushed back ("I want these exact same look and character" — pointing at `primary-banner.jpg`). The ACTUAL canonical is very different:
+
+| Trait | Misread (earlier 8 gens) | CORRECT (primary-banner.jpg) |
+|---|---|---|
+| Face | purple skin | pale white / porcelain mask |
+| Mouth | wide showing-teeth grin | closed-mouth smirk |
+| Eyes | large bright purple irises | small narrow dark eyes |
+| Horns | small, easy to miss | LARGE prominent dark-purple |
+| Staff | mini-jester-head bell | heart-shaped glowing gem |
+| Cards | plain card faces w/ suits | swirl-pattern magic backs |
+| Gloves | bare hands | WHITE GLOVES |
+| Background | calm deep purple-navy | vibrant runic-circle + paisley |
+
+**Key prompt moves that worked:**
+1. Pass `primary-banner.jpg` as ref[0] (Gemini biases toward ref[0] for style transfer)
+2. Pass `peeking-pfp.jpg` as ref[1] (POSE only — explicitly call out "look from ref[0], pose from ref[1]")
+3. `style_suffix=None` — do NOT pass `JKOR_STYLE` from nano-banana. That suffix encodes the misread (purple skin, teeth grin, jester-head staff) and will fight the ref-driven look.
+4. Spell out the trait deltas: skin color (white mask), mouth (closed smirk, no teeth), held items (heart-staff + magic-card backs, not jester-head + plain cards), gloves (white).
+
+**Known weakness:** the horns came back partially obscured by the jester hat. Cure for v2: emphasize "TWO LARGE prominent dark-purple horns extending VISIBLY BEYOND the jester hat — they should be the most prominent feature above the head, NOT covered by hat prongs."
+
+**Lesson 1:** when the LLM-suffix encodes the wrong canonical, drop it entirely (`style_suffix=None`) and let the references drive. Don't try to layer correct prompts on top of an incorrect suffix.
+**Lesson 2:** verify the canonical reference by viewing it BEFORE building the prompt. I spent 8 gens × $0.039 = $0.312 because I trusted BRAND.md's text description instead of looking at the actual operator-canonical image.
+
+---
+
+## 2026-05-23T12:12Z — JKOR demon-jester peeking-pfp v2 (text-free PFP)
+
+**Project:** jkor
+**Output:** `outputs/jkor/pfp/peeking-jkor-regen-v2-2026-05-23T121226Z.png` (1024×1024)
+**Model:** `gemini-2.5-flash-image`
+**Cost:** $0.039 (v1 also $0.039 — rejected for baked text; total $0.078 for the iterated keeper)
+**Refs (order matters — Gemini biases toward ref[0] for style transfer):**
+1. `memory/per-project/jkor/reference/00-base-banner-original.png` — canonical look-of-record
+2. `memory/per-project/jkor/reference/peeking-pfp-operator-supplied-2026-05-23T120707Z.jpg` — operator-supplied pose cue
+
+**Why v2 worked / v1 failed:** v1 used `nano_banana.JKOR_STYLE` verbatim. That suffix contains a stale line: *"The JOKR display lettering stays where the source has it"* — outdated relative to JKOR BRAND.md's *"text NEVER baked in"* doctrine. Model honored the suffix and stamped a giant "JOKR" wordmark across the bottom. v2 overrode the suffix with a corrected `JKOR_STYLE_NO_TEXT` (drops the JOKR-lettering line, adds explicit "ABSOLUTELY NO text, NO letters, NO logos, NO wordmarks anywhere in the image") + triple-redundant no-text emphasis in the prompt body (top-priority bullet block + repeated reminders + final summary line). Model honored it cleanly.
+
+**Proven prompt structure (reusable for any JKOR demon-jester PFP):**
+
+1. Open with composition + pose specifics (square, peeking, head+shoulders, hands on edge, grin)
+2. **TOP-PRIORITY block** repeating the no-text rule three different ways before any other instruction
+3. LOCKED CHARACTER TRAITS block with hex codes for skin / eye / crown / collar / gem
+4. POSE block referencing ref[1]
+5. BACKGROUND block (calm purple-navy, no runes, no sparkles)
+6. Style closing
+7. FINAL REMINDER line reiterating no-text rule (model honors instructions at the end more reliably than the middle)
+
+**Followup needed:** patch `tools/nano-banana/nano_banana/api.py :: JKOR_STYLE` to drop the JOKR-lettering line so future calls don't need this override. Filed as anti-pattern.
+
+**Lesson:** if a brand style suffix says "X stays where the source has it" and the source contains baked text, the model will repeat that text every time. Audit suffixes for "stays where" / "preserve" clauses that bind to source artifacts that shouldn't propagate.
+
+---
+
 ## 2026-05-23T07:45Z — JKOR banner-v9 (PIL composite — pixel-perfect)
 
 **Project:** jkor

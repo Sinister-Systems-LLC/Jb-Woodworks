@@ -1,0 +1,61 @@
+﻿
+=== MEMORY ===
+Total: 65298 MB | Free: 31306 MB | Used: 52.1%
+
+=== PROCESS COUNTS ===
+powershell: 2 procs / 158 MB
+node: 4 procs / 130 MB
+python: 2 procs / 32 MB
+claude: 3 procs / 1582 MB
+mintty: 3 procs / 51 MB
+
+=== TOP 20 PROCESSES (working set) ===
+Memory Compression     pid=3252   ws=2,752.5MB
+vmmem                  pid=5264   ws=2,195.4MB
+MsMpEng                pid=8916   ws=1,248.8MB
+claude                 pid=26988  ws= 549.1MB
+zen                    pid=31824  ws= 529.9MB
+claude                 pid=40684  ws= 519.8MB
+claude                 pid=31544  ws= 513.4MB
+zen                    pid=2780   ws= 412.4MB
+zen                    pid=15792  ws= 349.2MB
+Discord                pid=36292  ws= 347.8MB
+zen                    pid=20828  ws= 343.6MB
+zen                    pid=4384   ws= 323.1MB
+Spotify                pid=20848  ws= 320.1MB
+zen                    pid=22880  ws= 289.5MB
+Spotify                pid=19432  ws= 281.8MB
+Tresorit               pid=21476  ws= 254.6MB
+explorer               pid=12792  ws= 238.6MB
+chrome                 pid=31728  ws= 237.1MB
+zen                    pid=17536  ws= 217.0MB
+zen                    pid=7136   ws= 215.0MB
+
+=== STALE .tmp.PID.TS FILES ===
+none
+
+=== STALE .lock FILES (>30min) ===
+D:\Sinister Sanctum\_shared-memory\external-imports\ruflo\agentdb.rvf.lock (age 7821.3min)
+D:\Sinister Sanctum\_shared-memory\external-imports\ruflo\.claude\scheduled_tasks.lock (age 7821.9min)
+D:\Sinister Sanctum\_shared-memory\external-imports\ruflo\v3\@claude-flow\guidance\wasm-kernel\Cargo.lock (age 7811.2min)
+D:\Sinister Sanctum\_shared-memory\external-imports\ruflo\v3\crates\ruflo-federation-peer\Cargo.lock (age 7805min)
+
+=== DISK QUEUE LENGTH ===
+sample-failed
+
+=== SINISTER SCHEDULED TASKS ===
+\SinisterMeshCoordSweep | next: 5/24/2026 8:00:47 PM | Ready
+\SinisterToolAutotrigger | next: 5/24/2026 8:01:58 PM | Ready
+\SinisterAPKWatchdog | next: 5/24/2026 8:03:25 PM | Ready
+\Sinister\Sinister-fleet-monitor | next: 5/24/2026 8:05:00 PM | Ready
+\SinisterWindowPosMonitor | next: 5/24/2026 8:08:00 PM | Ready
+\SinisterAPKAutoPush | next: 5/24/2026 8:09:20 PM | Ready
+\Sinister\Sinister-sheets-sync | next: 5/24/2026 8:15:00 PM | Ready
+\SinisterSanctumAutoPush | next: 5/24/2026 8:15:19 PM | Ready
+\SinisterCustodian-DailyRestart | next: 5/25/2026 3:00:00 AM | Ready
+\SinisterSanctumDailyBackup | next: 5/25/2026 3:30:00 AM | Ready
+\Sinister\Sinister-daily-digest | next: 5/25/2026 9:00:00 AM | Ready
+\SinisterCustodian | next: N/A | Ready
+\SinisterScrcpyP1 | next: N/A | Ready
+\SinisterScrcpyP2 | next: N/A | Ready
+\SinisterVault | next: N/A | Ready

@@ -1,0 +1,70 @@
+{
+  "_author": "RKOJ-ELENO :: 2026-05-24",
+  "_lane": "kernel-apk (Snap auto-update pipeline, Phase 0)",
+  "_purpose": "JSON Schema for _shared-memory/snap-version-state.json written by tools/snap-update-detector/poll.ps1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SnapVersionState",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "current_canonical_version",
+    "latest_observed_version",
+    "is_update_pending",
+    "detected_at_utc",
+    "detection_sources",
+    "poll_history"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "sinister.snap-version-state.v1",
+      "description": "Fixed schema tag. Bump only on breaking shape changes."
+    },
+    "current_canonical_version": {
+      "type": "string",
+      "pattern": "^[0-9]+(\\.[0-9]+){2,3}$",
+      "description": "The Snap APK version the fleet has finalized hooks/keybox/canonical-snapshot against. Promoted by Phase 3."
+    },
+    "latest_observed_version": {
+      "type": "string",
+      "pattern": "^[0-9]+(\\.[0-9]+){2,3}$",
+      "description": "The highest version detected across all polled sources in the latest sweep."
+    },
+    "is_update_pending": {
+      "type": "boolean",
+      "description": "True when latest_observed_version > current_canonical_version (per [version] comparison)."
+    },
+    "detected_at_utc": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 UTC timestamp of the latest poll sweep."
+    },
+    "detection_sources": {
+      "type": "array",
+      "description": "Slugs of sources that returned a parseable version this sweep.",
+      "items": {
+        "type": "string",
+        "enum": ["apkmirror-rss", "play-store-html", "phone-heartbeat"]
+      }
+    },
+    "last_canonical_promotion_utc": {
+      "type": "string",
+      "description": "ISO 8601 UTC timestamp of last canonical-version promotion (Phase 3). May be empty string when never promoted."
+    },
+    "poll_history": {
+      "type": "array",
+      "description": "Rolling window of last 10 (source, version, ts) tuples observed.",
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "required": ["ts_utc", "source", "version"],
+        "properties": {
+          "ts_utc": { "type": "string", "format": "date-time" },
+          "source": { "type": "string", "enum": ["apkmirror-rss", "play-store-html", "phone-heartbeat"] },
+          "version": { "type": "string", "pattern": "^[0-9]+(\\.[0-9]+){2,3}$" }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

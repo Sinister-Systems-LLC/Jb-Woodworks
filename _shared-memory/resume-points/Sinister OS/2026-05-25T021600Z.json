@@ -1,0 +1,62 @@
+{
+  "schema_version": "sinister.resume-point.v1",
+  "ts_utc": "2026-05-25T02:16:00Z",
+  "project": "sinister-os",
+  "agent_name": "sinister-os",
+  "mode": "resume",
+  "focus_intent": "Massive-expansion iters 10-14 SHIPPED. Iter 10 sinister-control reboot-banner pipeline (3 scripts + README, classifier 3/3 verdict cases verified). Iter 11 sinister-lang DSL scaffold (Janet+CUE design + example.sin + 3 transpiler sample outputs). Iters 12-14 docs at -2026-05-25 paths (rollout / no-function-loss / integration-phasing) + research/feature-parity-audit-2026-05-25.md. Files landed in HEAD via parallel sanctum-auto-push commit on branch agent/sinister-os/iter15-doctrine-adopt-2026-05-25 (SINGLE-REPO PUSH POLICY compliant).",
+  "git": {
+    "branch": "agent/sinister-os/iter15-doctrine-adopt-2026-05-25",
+    "head_commit_at_resume_write": "50edd10 (sanctum: Leo auto-setup v3 ... — includes iter 10-14 files via auto-push -A staging)",
+    "all_iter_10_14_files_tracked": true
+  },
+  "shipped_this_turn": [
+    "projects/sinister-os/source/sinister-control/reboot-required.sh",
+    "projects/sinister-os/source/sinister-control/reboot-banner-watch.sh",
+    "projects/sinister-os/source/sinister-control/hot-reconfig-classifier.py (+ HOT_OVERRIDE fix for panel.accent class)",
+    "projects/sinister-os/source/sinister-control/README.md",
+    "projects/sinister-os/source/sinister-lang/DSL-DESIGN-2026-05-24.md",
+    "projects/sinister-os/source/sinister-lang/example.sin",
+    "projects/sinister-os/source/sinister-lang/sample-output/sinister-panel-shell.service",
+    "projects/sinister-os/source/sinister-lang/sample-output/compose.panel-shell.yml",
+    "projects/sinister-os/source/sinister-lang/sample-output/mesh-services-panel-shell.json",
+    "projects/sinister-os/docs/rollout-doctrine-2026-05-25.md",
+    "projects/sinister-os/docs/no-function-loss-doctrine-2026-05-25.md",
+    "projects/sinister-os/docs/integration-phasing-2026-05-25.md",
+    "projects/sinister-os/research/feature-parity-audit-2026-05-25.md"
+  ],
+  "verified_this_turn": [
+    "bash -n on reboot-required.sh + reboot-banner-watch.sh",
+    "python -m py_compile on hot-reconfig-classifier.py",
+    "3/3 classifier verdicts end-to-end with portable mktemp paths: hot (exit 0) / service (exit 10) / reboot (exit 20)",
+    "Bug caught + fixed in same turn: panel.accent was classified service due to coarse panel.* prefix; added HOT_OVERRIDE set so UI-token changes hot-apply per operator directive"
+  ],
+  "cross_lane_events_this_turn": [
+    "Spawn landed on agent/showmasters/p1-secure-and-ship-2026-05-25 (contamination); agent-branch-router.ps1 cleanly switched to agent/sinister-os/p1-iter10-15-2026-05-25-2026-05-25.",
+    "Sanctum-lane agent's auto-push held .git/index.lock continuously for ~5 min during commit attempt; cross-lane branch swap to agent/sinister-sanctum/eve-exe-headless-jcode-audit-2026-05-25, then to agent/sinister-os/iter15-doctrine-adopt-2026-05-25 via parallel sinister-os spawn.",
+    "Parallel sinister-os spawn shipped iter-13/14 duplicates at -2026-05-24 paths (no-function-loss-doctrine-2026-05-24.md + integration-phasing-2026-05-24.md) before noticing mine at -2026-05-25 paths existed; both versions co-exist per forever-upgrade doctrine §5 (date-stamped revisions)."
+  ],
+  "operator_utterances_triage": {
+    "unread_at_start": 7,
+    "addressed_by_this_lane": 0,
+    "rationale": "All 7 (21:32 new-tools auto / 21:40+21:50 eve UI uniform+redesign / 22:45 jcode anims+logo / 22:56 account-login flow / 00:58 single-repo push policy ALREADY canonical / 01:25 mintty UX) are sanctum/eve-exe/sinister-term lane scope per sanctum-scope discipline 2026-05-24. Surfaced in end-of-turn for visibility."
+  },
+  "latest_plan": {
+    "dir": "D:\\Sinister Sanctum\\_shared-memory\\plans\\sinister-os-massive-expansion-2026-05-24T2110Z",
+    "artifact": "D:\\Sinister Sanctum\\_shared-memory\\plans\\sinister-os-massive-expansion-2026-05-24T2110Z\\plan.md",
+    "progress": "iters 8-14 shipped; iter 15 close-out shared between this lane + parallel sinister-os spawn"
+  },
+  "pre_warm_reads": [
+    "D:\\Sinister Sanctum\\_shared-memory\\plans\\sinister-os-massive-expansion-2026-05-24T2110Z\\plan.md",
+    "D:\\Sinister Sanctum\\projects\\sinister-os\\source\\sinister-control\\README.md",
+    "D:\\Sinister Sanctum\\projects\\sinister-os\\source\\sinister-lang\\DSL-DESIGN-2026-05-24.md",
+    "D:\\Sinister Sanctum\\projects\\sinister-os\\docs\\rollout-doctrine-2026-05-25.md",
+    "D:\\Sinister Sanctum\\projects\\sinister-os\\research\\feature-parity-audit-2026-05-25.md",
+    "D:\\Sinister Sanctum\\_shared-memory\\knowledge\\loop-relentless-pursuit-doctrine-2026-05-25.md"
+  ],
+  "next_action_for_resumer": [
+    "Loop iter 16+: prep P0a docker smoke (run validate-merge.sh across all 8 compose overlays; healthcheck loop for 30 min on desktop + headless + mesh per rollout-doctrine-2026-05-25.md P0a gate)",
+    "OR address any new operator utterance routed to sinister-os scope",
+    "OR consume the 4 new fleet doctrines surfaced this turn (no-visible-powershell-windows / jcode-condensed-log / operator-full-audit-no-questions / jcode-full-audit) if not yet adopted in lane-owned files"
+  ]
+}

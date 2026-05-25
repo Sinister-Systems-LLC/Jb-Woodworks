@@ -10,12 +10,35 @@ Sanctum is the "new library of alexandria" for Sinister â€” the orchestrati
 that every other Sinister company project consumes for bots, automations, docs,
 session-start protocols, backup tooling, and the GitHub-push workflow.
 
+## Quick start (Windows)
+
+Double-click `EVE.exe` in this folder. That's the launcher â€” picks a project, spawns a themed mintty + claude session with all the right configs.
+
+EVE.exe is built from `automations/eve-launcher/eve.py`. To rebuild: open a shell in the repo root and run:
+
+```
+python automations/eve-launcher/build-eve-exe.py   # (legacy: build-eve-exe.bat)
+```
+
+The root EVE.exe auto-syncs whenever `verify-eve-features.ps1 -AutoRebuild -SyncMirror` runs (which happens after any eve.py edit per doctrine).
+
+Note: EVE.exe is a PyInstaller bundle. First-launch can take a moment as PyInstaller extracts internal files. Microsoft Defender may quarantine on first scan â€” the build script self-heals (see `automations/eve-launcher/build-eve-exe.bat`).
+
+
 > **2026-05-19 pivot:** The flagship workstation binary is now **`RKOJ.exe`** (built from `automations/window-manager/`, replaces `Sanctum-Console.exe`) and the canonical collaborative storage layer is the **Sinister Vault** at `D:\sinister-vault\` (Gitea + Syncthing + MCP + multi-account; daemon on `localhost:5078`). Quick links:
 > - RKOJ operator one-pager: [`docs/WORKBENCH.md`](docs/WORKBENCH.md)
 > - RKOJ architecture brain entry: [`_shared-memory/knowledge/rkoj-workbench-architecture.md`](_shared-memory/knowledge/rkoj-workbench-architecture.md)
 > - Vault tool card: [`tools/sinister-vault/README.md`](tools/sinister-vault/README.md)
 > - Vault architecture brain entry: [`_shared-memory/knowledge/sinister-vault-architecture.md`](_shared-memory/knowledge/sinister-vault-architecture.md)
 > - Multi-account: [`tools/sinister-vault/ACCOUNTS.md`](tools/sinister-vault/ACCOUNTS.md) | Gitea integration: [`tools/sanctum-git/vault-integration.md`](tools/sanctum-git/vault-integration.md)
+>
+> **2026-05-23 pivot:** **EVE picker integration** shipped — both `EVE.exe` (standalone jcode-speed launcher, `--onedir`, 60 ms median cold-start) and `RKOJ.exe` (in-panel `QPickerOverlay` overlay via `Ctrl+P` / sidebar EVE row / header chip) share the same `tools/eve-picker/eve_picker_lib.py` source-of-truth library. Picker-spawned cards land inline in RKOJ's niri-scroll grid (no new mintty / no shell window). Plus `ni_auth_probe` (`sinister-login auth-probe <cli> --cmd "..." --envvar NAME`) for non-interactive auth detection, fleet-wide BOM-defense + wmic-deprecation sweeps, vault `/list` junction-resolve fix, and the `skills/sinister-browser.md` Layer D mirror. Status `acceptance-tested+` (11/12 done-definition rows PASS; row #12 operator hands-on the only remaining gate). Quick links:
+> - Picker doctrine: [`_shared-memory/knowledge/eve-into-rkoj-integration-2026-05-23.md`](_shared-memory/knowledge/eve-into-rkoj-integration-2026-05-23.md)
+> - Shared lib: [`tools/eve-picker/`](tools/eve-picker/) (34/34 unit tests, 15 ms cold import)
+> - RKOJ overlay: `projects/rkoj/source/sinister_rkoj_qt/picker_overlay.py` (Ctrl+P opens; L8 PASS 8 ms first-paint)
+> - EVE.exe launcher: [`automations/eve-launcher/`](automations/eve-launcher/) (banner-art ICO; `--onedir`; L7 PASS 60 ms)
+> - Non-interactive auth probe: [`tools/sinister-login/sinister_login/auth_probe.py`](tools/sinister-login/sinister_login/auth_probe.py) + `sinister-login auth-probe` CLI (14/14 tests)
+> - Sinister-browser skill: [`skills/sinister-browser.md`](skills/sinister-browser.md) (operator-gated XPI install)
 
 **Scope:** ALL Sinister company projects. **Excluded:** LetsText, JOKR-global,
 library-of-jokr-mirror, personal stuff, operator-private references (Yurikey
@@ -43,12 +66,12 @@ D:\Sinister Sanctum\
 â”œâ”€â”€ .gitignore                      excludes venvs, node_modules, .env, credentials, snapshots, logs
 â”œâ”€â”€ .github/
 â”‚   â””â”€â”€ workflows/                  CI for the bots (lint, smoke-test health() calls)
-â”œâ”€â”€ bots/                           the 12 Sinister Bots (mirror of 12_LLM_ORCHESTRATION/agents/)
+â”œâ”€â”€ bots/                           the 13 Sinister Bots (mirror of 12_LLM_ORCHESTRATION/agents/)
 â”‚   â”œâ”€â”€ README.md                   fleet overview + how to install
 â”‚   â”œâ”€â”€ _shared/                    bot_memory + runlog Python helpers
 â”‚   â”œâ”€â”€ sentinel/   translator/   librarian/   watcher/   auditor/
 â”‚   â”œâ”€â”€ sinister-bus/   triage/   scribe/   curator/   custodian/
-â”‚   â”œâ”€â”€ stealth-browser/   researcher/
+â”‚   â”œâ”€â”€ stealth-browser/   researcher/   vault/
 â”‚   â””â”€â”€ install-fleet.ps1
 â”œâ”€â”€ projects/                       Sinister-branded source projects (initially junctions; later git submodules or true copies)
 â”‚   â”œâ”€â”€ snap-signer/

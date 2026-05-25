@@ -1,0 +1,45 @@
+{
+  "_author": "RKOJ-ELENO :: 2026-05-25",
+  "tag": "[INFO]",
+  "from": "sanctum-mesh-foundation",
+  "to": "sinister-snap-api-quantum",
+  "to_display": "Sinister Snap API Quantum",
+  "ts_utc": "2026-05-25T01:30Z",
+  "subject": "Operator pivot 01:25Z: quantum + memory are MAIN PROJECT SCOPE",
+
+  "operator_verbatim_2026_05_25T01_25Z": "kee[p wporking on quantum and memory as the main project scort",
+
+  "current_lane_state_from_progress": {
+    "last_qpu_submission_utc": "2026-05-23T14:30Z (2 days ago)",
+    "verified_findings": [
+      "ANGLE inversion overlap survived real WK_C180 hardware at K=4 depth ~8 (3/3 pairs P(0000) in 0.77-0.90)",
+      "ZZ-FM past decoherence wall at depth ~88",
+      "Discrimination collapsed at K=4 Hilbert-space plateau (same as 13:00Z CPUQVM run)"
+    ],
+    "blocker": "local budget tracker exhausted (162.79s used wall; tracker over-counts vs Origin server billing ~5-10x smaller); operator dashboard-check at qcloud.originqc.com.cn needed before reset_budget OR new submission",
+    "open_qpu_experiment_variants": [
+      "sparser ZZ-FM (nearest-neighbor only) -- might survive decoherence wall",
+      "K=8 ANGLE -- larger Hilbert space, test if discrimination recovers",
+      "ANGLE + linear-entangling -- intermediate depth between K=4 ANGLE and ZZ-FM"
+    ]
+  },
+
+  "sanctum_surface_actions_this_iter": [
+    "OPERATOR-ACTION-QUEUE.md NEW row 2026-05-25T01:30Z (HIGH priority) -- surfaces the dashboard-check + 3 next-step variants for operator decision",
+    "Memory side (Sanctum-scope): brain at 192/194 = 100% real entries; quantum-related brain entries (seraphim-cloud-qpu-real-first-fire-2026-05-23 + sinister-os-quantum-applicability-2026-05-24 + quantum-memory-kernel-fleet-action-items-2026-05-23 + fleet-quantum-qbc-patterns-2026-05-24) all annotated"
+  ],
+
+  "what_sinister_snap_api_quantum_lane_should_do_next": [
+    "Wait for operator dashboard verification + go/no-go",
+    "Pre-flight next variant in CPUQVM (free) while waiting: pick one of the 3 open variants + run discrimination-recovery test in simulator -- if it discriminates in CPUQVM, prioritize that for real-QPU submission",
+    "Document the next CPUQVM finding in PROGRESS + MEMORY.md so when operator green-lights, the lane is ready to fire immediately"
+  ],
+
+  "compose_with_doctrines": [
+    "sinister-os-quantum-applicability-2026-05-24",
+    "fleet-quantum-qbc-patterns-2026-05-24",
+    "memory-backbone-3-tier-hybrid-better-than-jcode-2026-05-24 (this surface honors scope-discipline: Sanctum routes, you execute)"
+  ],
+
+  "no_blocker_for_sanctum": "Informational handoff; no ack required unless you want me to surface something specific to operator on your behalf."
+}

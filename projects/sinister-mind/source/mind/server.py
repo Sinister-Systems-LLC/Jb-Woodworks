@@ -59,9 +59,18 @@ _sse_lock = threading.Lock()
 
 
 def _read_text(path: Path) -> str:
+    """Read file as text with BOM-tolerant utf-8-sig + narrow except.
+
+    v0.4.0: switched encoding from utf-8 to utf-8-sig per the doctrine at
+    `_shared-memory/knowledge/powershell-out-file-bom-bites-python-readers-2026-05-23.md`.
+    PowerShell `Out-File` and `Set-Content -Encoding utf8` on Windows
+    PowerShell 5.1 write a UTF-8 BOM by default; reading those files
+    with encoding="utf-8" leaves the BOM in the string and breaks any
+    downstream JSON parse or Markdown table parse.
+    """
     try:
-        return path.read_text(encoding="utf-8")
-    except Exception:
+        return path.read_text(encoding="utf-8-sig")
+    except (OSError, UnicodeDecodeError):
         return ""
 
 

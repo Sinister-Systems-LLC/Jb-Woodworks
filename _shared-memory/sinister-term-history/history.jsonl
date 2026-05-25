@@ -7,3 +7,23 @@
 
 # 2026-05-21 10:18:13.579130
 +pick up where we left off on the kernel apk
+
+# 2026-05-23 10:43:40.246933
++/heartbeats
+
+# 2026-05-23 10:43:53.965933
++how can i launch a project
+{"ts_utc": "2026-05-25T01:46:02.265237Z", "agent": "sanctum", "verb": "connecting", "event": "start"}
+{"ts_utc": "2026-05-25T01:46:20.364277Z", "agent": "sanctum", "verb": "connecting", "event": "sub", "sub_phase": "opening websocket", "elapsed_s": 18.09}
+{"ts_utc": "2026-05-25T01:46:22.919775Z", "agent": "sanctum", "verb": "connecting", "event": "sub", "sub_phase": "auth handshake", "elapsed_s": 20.66}
+{"ts_utc": "2026-05-25T01:46:30.682784Z", "agent": "sanctum", "verb": "connecting", "event": "sub", "sub_phase": "ws connected", "elapsed_s": 28.41}
+{"ts_utc": "2026-05-25T01:46:31.519785Z", "agent": "sanctum", "verb": "connecting", "event": "ok", "msg": "session-id ab12cd34", "elapsed_s": 29.25}
+{"ts_utc": "2026-05-25T01:46:31.711285Z", "agent": "sanctum", "verb": "indexing brain", "event": "start"}
+{"ts_utc": "2026-05-25T01:46:31.872285Z", "agent": "sanctum", "verb": "indexing brain", "event": "sub", "sub_phase": "scanning _shared-memory/knowledge", "elapsed_s": 0.16}
+{"ts_utc": "2026-05-25T01:46:32.498783Z", "agent": "sanctum", "verb": "indexing brain", "event": "sub", "sub_phase": "scoring decay", "elapsed_s": 0.8}
+{"ts_utc": "2026-05-25T01:46:32.977784Z", "agent": "sanctum", "verb": "indexing brain", "event": "warn", "msg": "3 entries past half-life", "elapsed_s": 1.27}
+{"ts_utc": "2026-05-25T01:46:33.063284Z", "agent": "sanctum", "verb": "spawning helper", "event": "start"}
+{"ts_utc": "2026-05-25T01:46:33.480285Z", "agent": "sanctum", "verb": "spawning helper", "event": "sub", "sub_phase": "resolving project key", "elapsed_s": 0.41}
+{"ts_utc": "2026-05-25T01:46:33.900284Z", "agent": "sanctum", "verb": "spawning helper", "event": "sub", "sub_phase": "launching mintty", "elapsed_s": 0.83}
+{"ts_utc": "2026-05-25T01:46:35.188786Z", "agent": "sanctum", "verb": "spawning helper", "event": "fail", "msg": "mintty exit 1", "elapsed_s": 2.12}
+{"ts_utc": "2026-05-25T01:46:36.846785Z", "agent": "sanctum", "verb": "history.jsonl write", "event": "ok", "msg": "D:\\Sinister Sanctum\\_shared-memory\\sinister-term-history\\history.jsonl"}

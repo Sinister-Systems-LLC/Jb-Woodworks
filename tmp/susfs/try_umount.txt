@@ -1,0 +1,4 @@
+# Sinister canonical try_umount rules
+# Mountpoints SUSFS will attempt to detach from non-root mount namespaces
+/data/adb/modules
+/debug_ramdisk

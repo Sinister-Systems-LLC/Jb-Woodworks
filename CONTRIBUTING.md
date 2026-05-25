@@ -30,7 +30,7 @@ cd 'D:\Sinister Sanctum'
 .\automations\activate-everything.ps1
 ```
 
-This installs the 12 Sinister Bots into `~/.claude/.mcp.json`, points them at
+This installs the 13 Sinister Bots into `~/.claude/.mcp.json`, points them at
 the LLC root (`SINISTER_HUB_ROOT=D:\Sinister Sanctum`), and registers the Custodian
 backup daemon to snapshot the LLC tree at `D:\_backups\sinister-llc\`.
 

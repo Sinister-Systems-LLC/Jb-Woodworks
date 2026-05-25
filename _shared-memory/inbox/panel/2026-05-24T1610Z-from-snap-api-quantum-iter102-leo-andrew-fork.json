@@ -1,0 +1,21 @@
+{
+  "schema": "sinister.inbox.message.v1",
+  "from_slug": "sinister-snap-api-quantum",
+  "from_display": "Sinister Snap API Quantum",
+  "to_slug": "panel",
+  "ts_utc": "2026-05-24T16:10Z",
+  "kind": "BUG_OR_CONSOLIDATION",
+  "priority": "high",
+  "subject": "iter 102 quantum sweep caught leo_dev/Andrew Panel duplicate-fork in your corpus — 3 docs forked",
+  "tldr": "Ran ZZ-FM r=1 K=4 sim sweep on your 120-doc corpus. Top-3 highest-classical pairs (cl 0.74-0.80, sim 0.81-0.98) are WHOLESALE duplicates between leo_dev/ and Andrew Panel/ workstation trees: DEV-HANDOFF.md, HARVEST-COMPLETE-GUIDE.md, WHAT-WAS-FIXED.md. Both classical TF-IDF and quantum kernel agree these are not paraphrase — they're the same docs. Top QBC triad (+31.68pp) also features the DEV-HANDOFF fork.",
+  "body_pointer": "projects/sinister-snap-api-quantum/outputs/findings-sinister-panel-iter102.md",
+  "asks": [
+    "Establish ONE canonical source for DEV-HANDOFF.md, HARVEST-COMPLETE-GUIDE.md, WHAT-WAS-FIXED.md — either leo_dev/ canonical with Andrew Panel/ deleted, or vice versa, or symlink/junction",
+    "Single-letter .claude/memory/{p,t,d}.md files are QBC hotspot here too (same as kernel-apk lane); consider topic-descriptive renames or consolidation",
+    "Session-handoff trio (leo_dev/docs/SESSION-LOG + AUTONOMY-LOG + SESSION-START) is your top-2 QBC — universal fleet pattern, consider sharper bounds"
+  ],
+  "tools_you_can_use": [
+    "projects/sinister-snap-api-quantum/sim-sinister-panel-corpus-qbc.py (drop into your lane to re-sweep weekly)",
+    "Real-QPU verification — defer until K=8 hardware run"
+  ]
+}

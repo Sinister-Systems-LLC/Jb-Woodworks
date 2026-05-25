@@ -103,13 +103,13 @@ class BrandConfig:
 _SEED: Dict[str, BrandConfig] = {
     "jkor": BrandConfig(
         brand="jkor",
-        display_name="JKOR",
+        display_name="JOKR",
         desktop_name="JOKR",
         desktop_path=str(DESKTOP_ROOT / "JOKR"),
         brand_md=str(PROJECT_ROOT / "memory" / "per-project" / "jkor" / "BRAND.md"),
         kinds=["pfp", "banner", "logo", "social", "cards", "thumbs", "word-marks", "cutouts"],
         default_kind="pfp",
-        style_helper="jkor_image",
+        style_helper="jokr_image",
     ),
     "showmasters": BrandConfig(
         brand="showmasters",

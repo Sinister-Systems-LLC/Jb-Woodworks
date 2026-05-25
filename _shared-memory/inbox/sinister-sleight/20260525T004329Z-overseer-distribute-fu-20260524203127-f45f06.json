@@ -1,0 +1,15 @@
+{
+    "ts_utc":  "2026-05-25T00:43:29Z",
+    "_author":  "RKOJ-ELENO :: 2026-05-25",
+    "to":  "sinister-sleight",
+    "subject":  "Fleet-update fan-out: feature priority=high",
+    "message":  "Sinister Overseer P0 scaffolded -- meta-agent / agent-of-agents project at projects/sinister-overseer/. 7 docs + 5 adapters + config/attached-projects.json with 3 lanes pre-attached status=prepared (eve-compliance / sinister-chatbot / sinister-sleight). Registry in projects.json v9 picker.visible_keys + cyan accent + tier=3 + resume_prompt_third_question. 3 brain entries (sinister-overseer-charter + overseer-token-efficiency-doctrine + fails-to-learn-doctrine). Token-efficient by design: Haiku-4.5 cheap / Sonnet-4.6 medium / Opus-4.7 rare; /day cap per attachment; auto-throttle at 80%, suspend at 100%. NO watch loops running -- operator activates via EVE.exe Overseer menu. Smoke 7/7 PASS. Sibling-coordinated with overseer-unified-improvement-engine lane (docs/08+09 + sensors/ + contradiction.py + improvement-recipe.json coexist cleanly).",
+    "rationale":  "Overseer auto-distributed because this fleet-update either targeted you OR mentioned your lane slug. Review + ack if actionable.",
+    "source_id":  "fu-20260524203127-f45f06",
+    "source_ts_utc":  "2026-05-25T00:31:27Z",
+    "from":  "overseer",
+    "source_priority":  "high",
+    "tag":  "[OVERSEER-DISTRIBUTE]",
+    "source_pushed_by":  "sanctum",
+    "source_kind":  "feature"
+}

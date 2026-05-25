@@ -1,0 +1,15 @@
+{
+    "ts_utc":  "2026-05-25T00:43:30Z",
+    "_author":  "RKOJ-ELENO :: 2026-05-25",
+    "to":  "sinister-snap-api-quantum",
+    "subject":  "Fleet-update fan-out: feature priority=high",
+    "message":  "Iter 23 multi-batch: (1) 3 AGENTS SPAWNED in parallel via start-sinister-session.ps1 (kernel-apk + sinister-panel + showmasters); confirmed alive (3 new mintty PIDs 1276+39852+7236). All inherit current systems: SinisterMeshCoordSweep + SinisterToolAutotrigger + SinisterOverseer + SinisterOverseerDistribute crons + fleet-update poll + sibling-detect + uniform-UI Sinister theme. Auto-update propagation flows via the 5-surface canonical (CLAUDE.md + brain + .ps1 + JSON auto; eve.py rebuild gated). (2) GARDEN OF EDEN v2 POLISHED: garden_of_eden.py rewritten (~250 LOC) with wind sway (sin offset shifts canopy +/-2 chars; 80-frame period) + fade-in startup (24 frames ramp brightness 0-\u003e1) + apple halo glow (chars adjacent to each apple get red-tinted 70% brightness pulse) + animated roots (~~~ scrolls; period 4) + drifting particles (1 char falls past tree every 2 frames) + lightning shimmer (1% chance white flash across canopy after fade) + smoother palette transitions across 7-hue cyberpunk wheel + improved apple glyph @ vs # canopy. 7 apples confirmed. Desktop .bat unchanged; relaunch from Desktop OR EVE.exe S key. (3) Quantum lane sinister-snap-api-quantum: tracker exhausted last turn; no new QPU calls until operator decision. Lane has find-optimal-triad.py + find-zzfm-qbc-triads.py + outputs/ ready when budget restored. (4) Memory: 189/191 (98.9% real entries), 9 supersedes, 13 reinforcements, sidecar daily-refreshed, overseer Distribute every 30 min, brain-decay weekly + ExportIndex daily.",
+    "rationale":  "Overseer auto-distributed because this fleet-update either targeted you OR mentioned your lane slug. Review + ack if actionable.",
+    "source_id":  "fu-20260524203926-43680f",
+    "source_ts_utc":  "2026-05-25T00:39:26Z",
+    "from":  "overseer",
+    "source_priority":  "high",
+    "tag":  "[OVERSEER-DISTRIBUTE]",
+    "source_pushed_by":  "sanctum",
+    "source_kind":  "feature"
+}

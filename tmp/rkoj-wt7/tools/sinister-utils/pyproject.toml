@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sinister-utils"
+version = "0.1.0"
+description = "Defensive I/O helpers for the Sinister fleet: BOM-tolerant JSON read, BOM-less JSON write, fleet-wide load_json_tolerant pattern from the BOM-bites-readers brain entry."
+readme = "README.md"
+license = { text = "AGPL-3.0-or-later" }
+authors = [{ name = "RKOJ-ELENO", email = "andrew.viperrr@gmail.com" }]
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["sinister_utils*"]

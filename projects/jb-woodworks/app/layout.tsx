@@ -6,6 +6,7 @@ import { Nav } from "@/components/sections/nav";
 import { Footer } from "@/components/sections/footer";
 import { Splash } from "@/components/ui/splash";
 import { RouteProgress } from "@/components/ui/route-progress";
+import { ScrollToTop } from "@/components/ui/scroll-to-top";
 import { SITE } from "@/lib/site";
 
 const inter = Inter({ subsets: ["latin"], weight: ["300", "400", "500", "600", "700", "800", "900"], variable: "--font-sans", display: "swap" });
@@ -29,12 +30,17 @@ export const metadata: Metadata = {
   manifest: "/site.webmanifest",
   icons: {
     icon: [
-      { url: "/img/favicon.svg", type: "image/svg+xml" },
       { url: "/img/favicon-32.png", sizes: "32x32", type: "image/png" },
-      { url: "/img/favicon-16.png", sizes: "16x16", type: "image/png" }
+      { url: "/img/favicon-16.png", sizes: "16x16", type: "image/png" },
+      { url: "/img/favicon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/img/favicon-512.png", sizes: "512x512", type: "image/png" }
     ],
     shortcut: ["/img/favicon.ico"],
     apple: [{ url: "/img/favicon-180.png", sizes: "180x180" }]
+  },
+  alternates: {
+    canonical: SITE.url,
+    types: { "application/rss+xml": "/rss.xml" }
   }
 };
 
@@ -69,6 +75,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Nav />
         <main id="main">{children}</main>
         <Footer />
+        <ScrollToTop />
+        {/* Sitewide subtle film grain — fixed overlay, very low opacity */}
+        <div aria-hidden className="jbw-grain-overlay" />
       </body>
     </html>
   );

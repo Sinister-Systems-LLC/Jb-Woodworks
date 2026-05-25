@@ -51,10 +51,10 @@ images:
   productWelcome:   show.svg
   productWallpaper: show.svg
 
-# Slideshow: a single static image is the minimum-viable slideshow API v1.
-# (Future P4 work: ship a QML slideshow with multi-page brand story.)
-slideshow:    show.svg
-slideshowAPI: 1
+# Slideshow: minimal QML wrapper around the show.svg static image.
+# slideshowAPI 2 = QML; API 1 wanted .qmlproject; embedded show.svg via Image element.
+slideshow:    "show.qml"
+slideshowAPI: 2
 
 # Style: sidebar colors lifted from sinister-theme-tokens.css.
 style:

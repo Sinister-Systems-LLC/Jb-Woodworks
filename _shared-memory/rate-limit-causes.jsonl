@@ -1,0 +1,2 @@
+﻿{"ts_utc":"2026-05-24T22:15:00Z","account_name":"operator","project_key":"sanctum","concurrent_claude_count":7,"spawns_in_last_5min":4,"spawns_in_last_30min":12,"plan_tier":"max","retry_after_seconds":30,"root_cause_guess":"burst_spawn"}
+{"ts_utc":"2026-05-25T04:00:47Z","account_name":"operator","project_key":"sinister-os","concurrent_claude_count":3,"spawns_in_last_5min":0,"spawns_in_last_30min":1,"plan_tier":"unknown","retry_after_seconds":60,"root_cause_guess":"unknown"}

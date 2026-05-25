@@ -583,6 +583,286 @@ def _brain_recall_cmd(args) -> int:
     return 0
 
 
+def _corpus_qbc_cmd(args) -> int:
+    """Iter 103: parameterized sim QBC sweep over any .md tree. Zero cloud burn."""
+    import time
+    from itertools import combinations
+    from pathlib import Path
+    try:
+        from .memory_kernel import (
+            _tfidf_vectors, _classical_cosine,
+            _thetas_for_inversion, _sim_inversion_overlap,
+        )
+    except ImportError:
+        from memory_kernel import (  # type: ignore
+            _tfidf_vectors, _classical_cosine,
+            _thetas_for_inversion, _sim_inversion_overlap,
+        )
+
+    DEFAULT_EXCLUDE = {'node_modules', 'dist', '.git', '.next', 'build', 'outputs', 'target', '_archive', '__pycache__'}
+    excludes = DEFAULT_EXCLUDE | set(args.exclude)
+    root = Path(args.root)
+    if not root.exists():
+        print(f'ERROR: corpus root not found: {root}')
+        return 2
+
+    t0 = time.time()
+    docs_paths = []
+    for p in root.rglob('*.md'):
+        if any(part in excludes for part in p.parts):
+            continue
+        try:
+            rel = p.relative_to(root)
+        except ValueError:
+            continue
+        if len(rel.parts) > args.max_depth:
+            continue
+        docs_paths.append(p)
+
+    pre_cap = len(docs_paths)
+    if len(docs_paths) > args.cap:
+        docs_paths = sorted(docs_paths, key=lambda p: p.stat().st_mtime, reverse=True)[: args.cap]
+
+    if len(docs_paths) < 3:
+        msg = {'ok': False, 'error': 'not enough docs (need >= 3)', 'docs_found': pre_cap, 'label': args.label}
+        print(json.dumps(msg) if args.json else f'[seraphim corpus-qbc] {msg["error"]}: {pre_cap} docs in {root}')
+        return 3
+
+    doc_names = [str(p).replace('\\', '/') for p in docs_paths]
+    texts = [p.read_text(encoding='utf-8', errors='replace') for p in docs_paths]
+    tfidf = _tfidf_vectors(texts)
+    N = len(docs_paths)
+    thetas = [_thetas_for_inversion(v, 4) for v in tfidf]
+
+    pair_cl = [[0.0] * N for _ in range(N)]
+    pair_sim = [[0.0] * N for _ in range(N)]
+    for i in range(N):
+        for j in range(i + 1, N):
+            pair_cl[i][j] = pair_cl[j][i] = _classical_cosine(tfidf[i], tfidf[j])
+            pair_sim[i][j] = pair_sim[j][i] = _sim_inversion_overlap(thetas[i], thetas[j], 'zzfm', 4, 1)
+
+    scores = []
+    for i, j, k in combinations(range(N), 3):
+        cl_off = (pair_cl[i][j] + pair_cl[i][k] + pair_cl[j][k]) / 3
+        sim_off = (pair_sim[i][j] + pair_sim[i][k] + pair_sim[j][k]) / 3
+        adv = cl_off - sim_off
+        scores.append((adv, cl_off, sim_off, (i, j, k)))
+    scores.sort(reverse=True)
+    by_cl = sorted(scores, key=lambda x: x[1], reverse=True)
+    qbc = sum(1 for s in scores if s[0] > 0)
+
+    if args.out:
+        out_path = Path(args.out)
+    else:
+        import time as _time
+        ts = _time.strftime('%Y-%m-%dT%H%M%SZ', _time.gmtime())
+        out_dir = Path(r'D:\Sinister Sanctum\_shared-memory\quantum-sweeps')
+        out_dir.mkdir(parents=True, exist_ok=True)
+        out_path = out_dir / f'{args.label}-corpus-qbc-{ts}.json'
+
+    result = {
+        'schema': 'sinister-seraphim.corpus-qbc.v1',
+        'label': args.label,
+        'root': str(root),
+        'n_docs_found': pre_cap,
+        'n_docs_used': N,
+        'cap': args.cap,
+        'sim_variant': 'zzfm-r1-K4',
+        'total_triads': len(scores),
+        'qbc_count': qbc,
+        'qbc_pct': qbc / len(scores) * 100 if scores else 0,
+        'max_advantage_pp': scores[0][0] * 100,
+        'median_advantage_pp': scores[len(scores)//2][0] * 100,
+        'top10_qbc': [
+            {'rank': r + 1, 'advantage_pp': s[0] * 100, 'classical': s[1], 'sim': s[2],
+             'docs': [doc_names[i] for i in s[3]]}
+            for r, s in enumerate(scores[:10]) if s[0] > 0
+        ],
+        'top5_highest_classical': [
+            {'classical': s[1], 'sim': s[2], 'advantage_pp': s[0] * 100,
+             'docs': [doc_names[i] for i in s[3]]}
+            for s in by_cl[:5]
+        ],
+        'wall_seconds': time.time() - t0,
+    }
+    out_path.write_text(json.dumps(result, indent=2), encoding='utf-8')
+
+    if args.json:
+        print(json.dumps({'ok': True, 'output': str(out_path), 'summary': {
+            'label': args.label, 'docs': N, 'triads': len(scores),
+            'qbc_pct': result['qbc_pct'], 'max_advantage_pp': result['max_advantage_pp'],
+        }}))
+    else:
+        print(f'[seraphim corpus-qbc] {args.label}: {N} docs, {len(scores)} triads, QBC {qbc} ({result["qbc_pct"]:.2f}%), '
+              f'max +{result["max_advantage_pp"]:.2f}pp')
+        if scores[0][0] > 0:
+            print(f'  Top QBC triad:')
+            for i in scores[0][3]:
+                print(f'    {doc_names[i]}')
+        print(f'  Saved: {out_path}')
+    return 0
+
+
+def _reconcile_corpora_cmd(args) -> int:
+    """Iter 104: cross-corpus reconciler. Surface (corpus-A-doc, corpus-B-doc) pairs that are
+    quantum-near-equivalent (potential re-implementation / plan-shipped-as-brain / duplicate fork)."""
+    import time
+    from pathlib import Path
+    try:
+        from .memory_kernel import (
+            _tfidf_vectors, _classical_cosine,
+            _thetas_for_inversion, _sim_inversion_overlap,
+        )
+    except ImportError:
+        from memory_kernel import (  # type: ignore
+            _tfidf_vectors, _classical_cosine,
+            _thetas_for_inversion, _sim_inversion_overlap,
+        )
+
+    DEFAULT_EXCLUDE = {'node_modules', 'dist', '.git', '.next', 'build', 'outputs', 'target', '_archive', '__pycache__'}
+    excludes = DEFAULT_EXCLUDE | set(args.exclude or [])
+
+    def _walk(root_str: str, max_depth: int):
+        root = Path(root_str)
+        if not root.exists():
+            return None
+        out = []
+        for p in root.rglob('*.md'):
+            if any(part in excludes for part in p.parts):
+                continue
+            try:
+                rel = p.relative_to(root)
+            except ValueError:
+                continue
+            if len(rel.parts) > max_depth:
+                continue
+            out.append(p)
+        return sorted(out)
+
+    a_paths = _walk(args.corpus_a, args.max_depth)
+    b_paths = _walk(args.corpus_b, args.max_depth)
+    if a_paths is None or b_paths is None:
+        print(f'ERROR: corpus root not found: {args.corpus_a if a_paths is None else args.corpus_b}')
+        return 2
+
+    t0 = time.time()
+    a_names = [str(p).replace('\\', '/') for p in a_paths]
+    b_names = [str(p).replace('\\', '/') for p in b_paths]
+    a_texts = [p.read_text(encoding='utf-8', errors='replace') for p in a_paths]
+    b_texts = [p.read_text(encoding='utf-8', errors='replace') for p in b_paths]
+    all_texts = a_texts + b_texts
+    N_A = len(a_paths)
+    N_B = len(b_paths)
+    if N_A < 1 or N_B < 1:
+        print(f'ERROR: empty corpus (a={N_A} b={N_B})')
+        return 3
+
+    tfidf = _tfidf_vectors(all_texts)
+    thetas = [_thetas_for_inversion(v, 4) for v in tfidf]
+
+    pairs = []
+    for ai in range(N_A):
+        for bi in range(N_B):
+            gb = N_A + bi
+            cl = _classical_cosine(tfidf[ai], tfidf[gb])
+            sim = _sim_inversion_overlap(thetas[ai], thetas[gb], 'zzfm', 4, 1)
+            pairs.append((ai, bi, cl, sim))
+
+    recon = [p for p in pairs if p[2] > args.cl_threshold and p[3] > args.sim_threshold]
+    recon.sort(key=lambda x: -(x[2] + x[3]))
+    by_classical = sorted(pairs, key=lambda x: x[2], reverse=True)
+
+    if args.out:
+        out_path = Path(args.out)
+    else:
+        import time as _time
+        ts = _time.strftime('%Y-%m-%dT%H%M%SZ', _time.gmtime())
+        out_dir = Path(r'D:\Sinister Sanctum\_shared-memory\quantum-sweeps')
+        out_dir.mkdir(parents=True, exist_ok=True)
+        out_path = out_dir / f'{args.label}-reconcile-{ts}.json'
+
+    result = {
+        'schema': 'sinister-seraphim.reconcile-corpora.v1',
+        'label': args.label,
+        'corpus_a_root': args.corpus_a,
+        'corpus_b_root': args.corpus_b,
+        'n_corpus_a': N_A,
+        'n_corpus_b': N_B,
+        'cl_threshold': args.cl_threshold,
+        'sim_threshold': args.sim_threshold,
+        'total_pairs': N_A * N_B,
+        'reconciliation_candidates_count': len(recon),
+        'top_reconciliation_candidates': [
+            {'rank': r + 1, 'classical': cl, 'sim': sim, 'combined': cl + sim,
+             'doc_a': a_names[ai], 'doc_b': b_names[bi]}
+            for r, (ai, bi, cl, sim) in enumerate(recon[: args.top])
+        ],
+        'top_highest_classical': [
+            {'rank': r + 1, 'classical': cl, 'sim': sim,
+             'doc_a': a_names[ai], 'doc_b': b_names[bi]}
+            for r, (ai, bi, cl, sim) in enumerate(by_classical[: args.top])
+        ],
+        'wall_seconds': time.time() - t0,
+    }
+    out_path.write_text(json.dumps(result, indent=2), encoding='utf-8')
+
+    if args.json:
+        print(json.dumps({'ok': True, 'output': str(out_path), 'summary': {
+            'label': args.label, 'pairs': N_A * N_B, 'reconciliation_candidates': len(recon),
+        }}))
+    else:
+        print(f'[seraphim reconcile-corpora] {args.label}: A={N_A} B={N_B} pairs={N_A*N_B} '
+              f'reconcile-candidates={len(recon)} (cl>{args.cl_threshold} AND sim>{args.sim_threshold})')
+        if recon:
+            print(f'  Top match:')
+            ai, bi, cl, sim = recon[0][0], recon[0][1], recon[0][2], recon[0][3]
+            print(f'    [A] {a_names[ai]}')
+            print(f'    [B] {b_names[bi]}')
+            print(f'    cl={cl:.4f}  sim={sim:.4f}  combined={cl+sim:.4f}')
+        print(f'  Saved: {out_path}')
+    return 0
+
+
+def _verify_triad_real_qpu_cmd(args) -> int:
+    """Iter 106: thin wrapper around projects/sinister-snap-api-quantum/run-real-qpu-corpus-triad.py.
+    Submits a 3-doc triad to Wukong-180 SWAP-test (10s budget). Paid cloud call."""
+    import subprocess
+    import sys as _sys
+    from pathlib import Path
+    SCRIPT = Path(r'D:\Sinister Sanctum\projects\sinister-snap-api-quantum\run-real-qpu-corpus-triad.py')
+    if not SCRIPT.exists():
+        print(json.dumps({'ok': False, 'error': f'script not found at {SCRIPT}'}) if args.json else f'ERROR: {SCRIPT} not found')
+        return 2
+
+    cmd = [_sys.executable, str(SCRIPT), '--label', args.label]
+    for d in args.doc:
+        cmd.extend(['--doc', d])
+    if args.classical_off_diag is not None:
+        cmd.extend(['--classical-off-diag', str(args.classical_off_diag)])
+    if args.sim_off_diag is not None:
+        cmd.extend(['--sim-off-diag', str(args.sim_off_diag)])
+    if args.reported_advantage_pp is not None:
+        cmd.extend(['--reported-advantage-pp', str(args.reported_advantage_pp)])
+    if args.budget_seconds is not None:
+        cmd.extend(['--budget-seconds', str(args.budget_seconds)])
+
+    if not args.json:
+        print(f'[seraphim verify-triad-real-qpu] invoking {SCRIPT.name}')
+        print(f'  label: {args.label}')
+        for i, d in enumerate(args.doc):
+            print(f'  doc[{i}]: {d}')
+        print(f'  budget: {args.budget_seconds}s')
+
+    try:
+        result = subprocess.run(cmd, check=False)
+    except KeyboardInterrupt:
+        print('[seraphim verify-triad-real-qpu] interrupted')
+        return 130
+    if args.json:
+        print(json.dumps({'ok': result.returncode == 0, 'returncode': result.returncode}))
+    return result.returncode
+
+
 def _version_cmd(args) -> int:
     try:
         from . import __version__
@@ -701,6 +981,36 @@ def main(argv: list[str] | None = None) -> int:
 
     p_ver = sub.add_parser('version', help='Print package version')
     p_ver.set_defaults(fn=_version_cmd)
+
+    p_cq = sub.add_parser('corpus-qbc', help='Iter 103: sim QBC sweep over a per-lane corpus (any .md tree). Zero cloud burn.')
+    p_cq.add_argument('--label', required=True, help='Lane label (used in output filename)')
+    p_cq.add_argument('--root', required=True, help='Corpus root directory')
+    p_cq.add_argument('--max-depth', dest='max_depth', type=int, default=5, help='Max .md path depth from root (default 5)')
+    p_cq.add_argument('--cap', type=int, default=120, help='Max docs to keep, most-recent-modified first (default 120)')
+    p_cq.add_argument('--exclude', action='append', default=[], help='Additional exclude dirnames (repeatable). Default already excludes node_modules/dist/.git/.next/build/outputs/target/_archive/__pycache__')
+    p_cq.add_argument('--out', default=None, help='Optional output JSON path (default: _shared-memory/quantum-sweeps/<label>-corpus-qbc-<UTC>.json)')
+    p_cq.set_defaults(fn=_corpus_qbc_cmd)
+
+    p_rc = sub.add_parser('reconcile-corpora', help='Iter 104: cross-corpus reconciler. Surface (A-doc, B-doc) pairs that are quantum-near-equivalent (plan-shipped-as-brain / duplicate fork / cross-tree redundancy). Zero cloud burn.')
+    p_rc.add_argument('--label', required=True, help='Label for output filename (e.g. plans-vs-brain, panel-vs-chatbot)')
+    p_rc.add_argument('--corpus-a', dest='corpus_a', required=True, help='Corpus A root directory')
+    p_rc.add_argument('--corpus-b', dest='corpus_b', required=True, help='Corpus B root directory')
+    p_rc.add_argument('--max-depth', dest='max_depth', type=int, default=5, help='Max .md path depth from each root (default 5)')
+    p_rc.add_argument('--cl-threshold', dest='cl_threshold', type=float, default=0.30, help='Classical TF-IDF cosine threshold for reconciliation (default 0.30)')
+    p_rc.add_argument('--sim-threshold', dest='sim_threshold', type=float, default=0.50, help='Sim ZZ-FM r=1 K=4 threshold for reconciliation (default 0.50)')
+    p_rc.add_argument('--top', type=int, default=30, help='How many top-N pairs to save (default 30)')
+    p_rc.add_argument('--exclude', action='append', default=[], help='Additional exclude dirnames (repeatable)')
+    p_rc.add_argument('--out', default=None, help='Optional output JSON path')
+    p_rc.set_defaults(fn=_reconcile_corpora_cmd)
+
+    p_vt = sub.add_parser('verify-triad-real-qpu', help='Iter 106: real WK_C180 SWAP-test verification on a 3-doc triad. PAID cloud call (~10s budget per triad). Wraps projects/sinister-snap-api-quantum/run-real-qpu-corpus-triad.py.')
+    p_vt.add_argument('--label', required=True, help='Label for output filename (e.g. snap-emu-top1, kernel-apk-snap-top1)')
+    p_vt.add_argument('--doc', action='append', required=True, help='Doc paths (specify exactly 3 with 3 separate --doc flags)')
+    p_vt.add_argument('--classical-off-diag', dest='classical_off_diag', type=float, default=None, help='Reported classical off-diag from prior sim sweep')
+    p_vt.add_argument('--sim-off-diag', dest='sim_off_diag', type=float, default=None, help='Reported sim off-diag from prior sim sweep')
+    p_vt.add_argument('--reported-advantage-pp', dest='reported_advantage_pp', type=float, default=None, help='Reported QBC advantage from prior sim sweep')
+    p_vt.add_argument('--budget-seconds', dest='budget_seconds', type=float, default=10.0, help='Cloud-Wukong budget for this triad (default 10s — note actual wall is typically 30-50s due to cloud queue)')
+    p_vt.set_defaults(fn=_verify_triad_real_qpu_cmd)
 
     args = p.parse_args(argv)
     return args.fn(args)

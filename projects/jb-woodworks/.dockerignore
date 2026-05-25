@@ -1,0 +1,10 @@
+# Mirrors .railwayignore — Nixpacks honors either depending on builder version.
+public/img/_sorted_2026/
+node_modules/
+.next/
+.git/
+_legacy-flask/
+.env
+.env.local
+.DS_Store
+Thumbs.db

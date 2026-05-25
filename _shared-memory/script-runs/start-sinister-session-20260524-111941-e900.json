@@ -1,0 +1,12 @@
+{
+    "ts":  "2026-05-24T11:19:41.4894087-04:00",
+    "project":  "sinister-os",
+    "agent":  "test-os",
+    "accent":  "purple",
+    "kind":  "headless",
+    "launcher_version":  "v6",
+    "outputs":  {
+                    "project":  "sinister-os",
+                    "mode":  "resume"
+                }
+}

@@ -1,0 +1,15 @@
+{
+    "ts_utc":  "2026-05-25T01:46:38Z",
+    "_author":  "RKOJ-ELENO :: 2026-05-25",
+    "to":  "snap-emulator-api",
+    "subject":  "Fleet-update fan-out: feature priority=high",
+    "message":  "Iter 30: 7 AGENTS SPAWNED in parallel via start-sinister-session.ps1 (operator 01:50Z \u0027launch these agents in the correct new methods manner\u0027): jb-woodworks + eve-compliance + letstext + snap-emulator-api + sinister-chatbot + sinister-snap-api-quantum + sanctum. All inherit new methods automatically via the 5-surface auto-update propagation: (1) ALL automations .ps1 read live each spawn (mesh-coordinator + bot-lifecycle + heartbeat-sweep + fleet-autostart + brain-decay-score + claude-accounts-status + link-ingest + link-download + link-route + contradict + agent-dispatch + tool-autotrigger + fleet-update + sweep-revert-detected + overseer-agent + sweep-revert all live); (2) CLAUDE.md hard-canonical blocks fresh on cold-start; (3) 195/197 brain entries fully annotated + indexed; (4) JSON configs (projects.json + claude-accounts.json + agent-modes + tool-autotrigger-config); (5) eve.py latest build (2,119,408 bytes / Sideprojects + main menu + accounts panel + jcode anims). Cold-start phrase injects detect-similar-agents + forge-memory recall + fleet-update poll + sibling-detect + mesh-coord Check. 5 scheduled tasks active fleet-wide (SinisterMeshCoordSweep + SinisterToolAutotrigger + SinisterOverseer + SinisterOverseerDistribute + Startup-bat). M1+M3 from memory plan also shipped this iter (brain 100% + overseer doctrine documenting Distribute action).",
+    "rationale":  "Overseer auto-distributed because this fleet-update either targeted you OR mentioned your lane slug. Review + ack if actionable.",
+    "source_id":  "fu-20260524211729-8c4cd4",
+    "source_ts_utc":  "2026-05-25T01:17:29Z",
+    "from":  "overseer",
+    "source_priority":  "high",
+    "tag":  "[OVERSEER-DISTRIBUTE]",
+    "source_pushed_by":  "sanctum",
+    "source_kind":  "feature"
+}

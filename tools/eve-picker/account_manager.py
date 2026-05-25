@@ -597,24 +597,31 @@ def _action_bulk_setup() -> None:
         print(f"  {C['FAIL']}[bulk] wizard missing: {wizard}{C['RESET']}")
         return
     print()
-    print(f"  {C['WHITE']}{C['BOLD']}Launching bulk OAuth login wizard in a new window...{C['RESET']}")
-    print(f"  {C['DIM']}  (this terminal will wait until the wizard exits){C['RESET']}")
+    print(f"  {C['WHITE']}{C['BOLD']}Launching bulk OAuth login wizard...{C['RESET']}")
+    print(f"  {C['DIM']}  (Account Manager will resume when wizard exits; no extra window){C['RESET']}")
     print()
     try:
-        # `start /WAIT` opens a NEW cmd window for the powershell process and
-        # blocks until it closes -- so EVE.exe rendering pauses cleanly and
-        # resumes once the operator finishes the wizard.
+        # RKOJ-ELENO :: 2026-05-25T01:35Z :: operator "enter here doesnt work i
+        # need allow flows to allow for unlimited use ... and now it wont
+        # fucking close". Previous impl used `cmd /c start /WAIT "Title" ps1`
+        # which spawned an EXTRA `start` cmd window that lingered after the
+        # inner powershell exited -- operator perceived "stuck". Switched to
+        # direct subprocess.run on powershell.exe (inherits this console, no
+        # extra window, exits cleanly so control snaps back to the manager
+        # menu loop). The wizard itself uses Start-Sleep auto-close at end.
         cmd = [
-            "cmd.exe", "/c", "start", "/WAIT",
-            "Sinister Bulk OAuth Login",
             "powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass",
             "-File", str(wizard),
         ]
         subprocess.run(cmd, check=False)
         print()
         print(f"  {C['OK']}[bulk] wizard exited -- returning to Account Manager.{C['RESET']}")
+        # Brief pause so the operator sees the "returning" msg before the
+        # manager loop re-renders the header on the next iteration.
+        time.sleep(0.6)
     except Exception as e:
         print(f"  {C['FAIL']}[bulk] launch failed: {e}{C['RESET']}")
+        time.sleep(1.0)
 
 
 def _action_mark_limited(data: dict) -> None:

@@ -1,0 +1,242 @@
+{
+  "schema": "sinister-seraphim.reconcile-corpora.v1",
+  "label": "kernel-apk-vs-brain",
+  "corpus_a_root": "D:/Sinister Sanctum/projects/sinister-kernel-apk",
+  "corpus_b_root": "D:/Sinister Sanctum/_shared-memory/knowledge",
+  "n_corpus_a": 596,
+  "n_corpus_b": 160,
+  "cl_threshold": 0.3,
+  "sim_threshold": 0.5,
+  "total_pairs": 95360,
+  "reconciliation_candidates_count": 283,
+  "top_reconciliation_candidates": [
+    {
+      "rank": 1,
+      "classical": 0.5192776115313065,
+      "sim": 0.9183297584393632,
+      "combined": 1.4376073699706695,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/Brain/SINISTER-REBRAND-PLAN-2026-05-18.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/service-apk-hash-check.md"
+    },
+    {
+      "rank": 2,
+      "classical": 0.42593038159380264,
+      "sim": 0.9754513881195083,
+      "combined": 1.4013817697133109,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/Brain/SANDBOX-BYPASS.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/claude-sandbox-autonomy-grant.md"
+    },
+    {
+      "rank": 3,
+      "classical": 0.39952725569208264,
+      "sim": 0.9840706997779586,
+      "combined": 1.3835979554700413,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Rooting Guide/MD Files/DEPLOY-REBRAND-2026-05-18.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/apk-post-reboot-adb-reverse-wipe.md"
+    },
+    {
+      "rank": 4,
+      "classical": 0.4981699217006558,
+      "sim": 0.8655999859032741,
+      "combined": 1.36376990760393,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/Brain/APK-ORCHESTRATOR-2026-05-18.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/service-apk-hash-check.md"
+    },
+    {
+      "rank": 5,
+      "classical": 0.5299434591319845,
+      "sim": 0.8239302819611256,
+      "combined": 1.35387374109311,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/Brain/KSU-MANAGER-REBRAND-DECISION.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/ksu-manager-sister-app-pattern.md"
+    },
+    {
+      "rank": 6,
+      "classical": 0.4632629816583101,
+      "sim": 0.8858741936580171,
+      "combined": 1.3491371753163273,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/SESSION-START.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/claude-sandbox-autonomy-grant.md"
+    },
+    {
+      "rank": 7,
+      "classical": 0.3822505580371262,
+      "sim": 0.9642747343850141,
+      "combined": 1.3465252924221403,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/docs/SETUP-FROM-SCRATCH-2026-05-17.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/console-phone-viewer-integration.md"
+    },
+    {
+      "rank": 8,
+      "classical": 0.37556772308999153,
+      "sim": 0.9676298895870613,
+      "combined": 1.3431976126770528,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/docs/RKA-MIGRATION.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-chatbot-test-env-findings-2026-05-24.md"
+    },
+    {
+      "rank": 9,
+      "classical": 0.3399265203132897,
+      "sim": 0.9954696581049463,
+      "combined": 1.335396178418236,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Rooting Guide/MD Files/ERRORS.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/tt-hedra-recipe-canonical.md"
+    },
+    {
+      "rank": 10,
+      "classical": 0.47659279820063716,
+      "sim": 0.8575354354078807,
+      "combined": 1.3341282336085178,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/docs/PHONE-SETUP-KPM.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/lukeprivacy-kpm-at-rest-safe.md"
+    },
+    {
+      "rank": 11,
+      "classical": 0.38446833808607567,
+      "sim": 0.9493806013169296,
+      "combined": 1.3338489394030053,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/_MIRROR-WARNING.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/windows-case-folding-resume-point-trap.md"
+    },
+    {
+      "rank": 12,
+      "classical": 0.3570533295565892,
+      "sim": 0.9703089715887213,
+      "combined": 1.3273623011453104,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/.claude/memory/p.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/no-bullshit-tested-before-claimed-doctrine-2026-05-23.md"
+    },
+    {
+      "rank": 13,
+      "classical": 0.37038530511990425,
+      "sim": 0.9558637665682992,
+      "combined": 1.3262490716882034,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Rooting Guide/MD Files/DETECTOR-CLEANUP-MODE-CONSTRAINTS.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-chatbot-test-env-findings-2026-05-24.md"
+    },
+    {
+      "rank": 14,
+      "classical": 0.3760239034449404,
+      "sim": 0.9492445974267923,
+      "combined": 1.3252685008717329,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/living-mds/GOTCHAS.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/claude-sandbox-autonomy-grant.md"
+    },
+    {
+      "rank": 15,
+      "classical": 0.40445298759757936,
+      "sim": 0.9179516805875335,
+      "combined": 1.322404668185113,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/living-mds/CURRENT-STATE.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/apk-classifier-aup-doctrine.md"
+    }
+  ],
+  "top_highest_classical": [
+    {
+      "rank": 1,
+      "classical": 0.8074889851161106,
+      "sim": 0.4569822589168676,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/.claude/memory/sandbox-fix.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/claude-sandbox-autonomy-grant.md"
+    },
+    {
+      "rank": 2,
+      "classical": 0.6284193637012113,
+      "sim": 0.6548375890267063,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/_MIRROR-WARNING.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sanctum-mirror-orphan-corruption-pattern-2026-05-23.md"
+    },
+    {
+      "rank": 3,
+      "classical": 0.5734528371912269,
+      "sim": 0.23412903270310126,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/Brain/APK-ORCHESTRATOR-2026-05-18.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/apk-orchestrator-pattern.md"
+    },
+    {
+      "rank": 4,
+      "classical": 0.5579580397722785,
+      "sim": 0.3814680409668589,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/.claude/memory/luke-rules.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/lukeprivacy-kpm-at-rest-safe.md"
+    },
+    {
+      "rank": 5,
+      "classical": 0.5299434591319845,
+      "sim": 0.8239302819611256,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/Brain/KSU-MANAGER-REBRAND-DECISION.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/ksu-manager-sister-app-pattern.md"
+    },
+    {
+      "rank": 6,
+      "classical": 0.5192776115313065,
+      "sim": 0.9183297584393632,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/Brain/SINISTER-REBRAND-PLAN-2026-05-18.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/service-apk-hash-check.md"
+    },
+    {
+      "rank": 7,
+      "classical": 0.5145314249222502,
+      "sim": 0.6933141990161055,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Rooting Guide/MD Files/PARTNER-DEV-TRACK-T2-KSUMGR.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/ksu-manager-sister-app-pattern.md"
+    },
+    {
+      "rank": 8,
+      "classical": 0.4981699217006558,
+      "sim": 0.8655999859032741,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/Brain/APK-ORCHESTRATOR-2026-05-18.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/service-apk-hash-check.md"
+    },
+    {
+      "rank": 9,
+      "classical": 0.4828764108823348,
+      "sim": 0.32061880870864146,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Rooting Guide/MD Files/KERNELSU-SETUP-GUIDE.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/lukeprivacy-kpm-at-rest-safe.md"
+    },
+    {
+      "rank": 10,
+      "classical": 0.4767530863675912,
+      "sim": 0.09015742707020556,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/audits/steve/02-STEVE-HEDRA-REVIEW.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/tt-hedra-recipe-canonical.md"
+    },
+    {
+      "rank": 11,
+      "classical": 0.47659279820063716,
+      "sim": 0.8575354354078807,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/docs/PHONE-SETUP-KPM.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/lukeprivacy-kpm-at-rest-safe.md"
+    },
+    {
+      "rank": 12,
+      "classical": 0.47275405230872436,
+      "sim": 0.678301879499284,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/Brain/KSU-MANAGER-REBRAND-DECISION-2026-05-19.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/ksu-manager-sister-app-pattern.md"
+    },
+    {
+      "rank": 13,
+      "classical": 0.4683919440994472,
+      "sim": 0.5586842775898596,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/living-mds/GOTCHAS.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/apk-classifier-aup-doctrine.md"
+    },
+    {
+      "rank": 14,
+      "classical": 0.46466416535917654,
+      "sim": 0.7405593076232657,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/.claude/memory/operator-todo.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/service-apk-hash-check.md"
+    },
+    {
+      "rank": 15,
+      "classical": 0.4632629816583101,
+      "sim": 0.8858741936580171,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/SESSION-START.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/claude-sandbox-autonomy-grant.md"
+    }
+  ],
+  "wall_seconds": 152.14500212669373
+}

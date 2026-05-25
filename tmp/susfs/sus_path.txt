@@ -1,0 +1,5 @@
+# Sinister canonical sus_path rules
+# Hides suspicious paths from stat/access checks
+# Format: <path> [max_tries]
+/data/adb/ksu
+/data/adb/modules

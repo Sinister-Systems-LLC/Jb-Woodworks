@@ -1,0 +1,242 @@
+{
+  "schema": "sinister-seraphim.reconcile-corpora.v1",
+  "label": "snap-emu-vs-brain",
+  "corpus_a_root": "D:/Sinister Sanctum/projects/sinister-snap-emu",
+  "corpus_b_root": "D:/Sinister Sanctum/_shared-memory/knowledge",
+  "n_corpus_a": 251,
+  "n_corpus_b": 160,
+  "cl_threshold": 0.3,
+  "sim_threshold": 0.5,
+  "total_pairs": 40160,
+  "reconciliation_candidates_count": 21,
+  "top_reconciliation_candidates": [
+    {
+      "rank": 1,
+      "classical": 0.6952096968271146,
+      "sim": 0.6671169928592661,
+      "combined": 1.3623266896863808,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-api-prototype/extended_schema/README.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/snap-emu-pb2-schema-shadow.md"
+    },
+    {
+      "rank": 2,
+      "classical": 0.3909500019522675,
+      "sim": 0.9541801114504579,
+      "combined": 1.3451301134027254,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/living-mds/ATTEMPT-LOG.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/snap-tt-rka-chain-attestation-insufficient.md"
+    },
+    {
+      "rank": 3,
+      "classical": 0.37696204256362764,
+      "sim": 0.9554825560736928,
+      "combined": 1.3324445986373203,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/living-mds/SNAP-INTELLIGENCE-DIGEST.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/snap-tt-rka-chain-attestation-insufficient.md"
+    },
+    {
+      "rank": 4,
+      "classical": 0.3179513021857517,
+      "sim": 0.9623478066448425,
+      "combined": 1.2802991088305942,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/SESSION-START.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/_INDEX.md"
+    },
+    {
+      "rank": 5,
+      "classical": 0.5250668486614866,
+      "sim": 0.7514756667825084,
+      "combined": 1.276542515443995,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/docs/PHONE-SETUP-KPM.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/lukeprivacy-kpm-at-rest-safe.md"
+    },
+    {
+      "rank": 6,
+      "classical": 0.3054186411835031,
+      "sim": 0.9684366893651971,
+      "combined": 1.2738553305487001,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/living-mds/MCP-AND-BOTS.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/mcp-junction-fix-pattern-2026-05-23.md"
+    },
+    {
+      "rank": 7,
+      "classical": 0.3235697114889915,
+      "sim": 0.9345274675980194,
+      "combined": 1.2580971790870108,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/.claude/memory/resume-point.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/snap-tt-rka-chain-attestation-insufficient.md"
+    },
+    {
+      "rank": 8,
+      "classical": 0.3027537777248163,
+      "sim": 0.9540907678043143,
+      "combined": 1.2568445455291306,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/living-mds/MCP-AND-BOTS.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/ruflo-mcp-integration.md"
+    },
+    {
+      "rank": 9,
+      "classical": 0.33405718762249803,
+      "sim": 0.9157051985673683,
+      "combined": 1.2497623861898663,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/docs/PHONE-02-SETUP.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/lukeprivacy-kpm-at-rest-safe.md"
+    },
+    {
+      "rank": 10,
+      "classical": 0.3739044312095188,
+      "sim": 0.8695652917634911,
+      "combined": 1.2434697229730098,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/docs/PHONE-SETUP-KPM.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-spoofer-lukeprivacy-sim-clobber-2026-05-21.md"
+    },
+    {
+      "rank": 11,
+      "classical": 0.3019737454912139,
+      "sim": 0.9365088616726946,
+      "combined": 1.2384826071639086,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/living-mds/PUREAPI-PREFLIGHT-CHECKLIST.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/snap-tt-rka-chain-attestation-insufficient.md"
+    },
+    {
+      "rank": 12,
+      "classical": 0.32024372100082354,
+      "sim": 0.9066703013222511,
+      "combined": 1.2269140223230748,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/HANDOFF-GUIDE/AUTO-SYNC-SETUP.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/multi-agent-git-coordination-2026-05-23.md"
+    },
+    {
+      "rank": 13,
+      "classical": 0.4221731017341833,
+      "sim": 0.7610871973012409,
+      "combined": 1.1832602990354242,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/docs/KPM-RESCUE.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/lukeprivacy-kpm-at-rest-safe.md"
+    },
+    {
+      "rank": 14,
+      "classical": 0.36960374737774754,
+      "sim": 0.8135625778179371,
+      "combined": 1.1831663251956845,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/.claude/memory/s.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/snap-tt-rka-chain-attestation-insufficient.md"
+    },
+    {
+      "rank": 15,
+      "classical": 0.3175691339124228,
+      "sim": 0.8506641199750665,
+      "combined": 1.1682332538874893,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/BOT-NETWORK.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/spawned-window-capabilities-2026-05-23.md"
+    }
+  ],
+  "top_highest_classical": [
+    {
+      "rank": 1,
+      "classical": 0.6952096968271146,
+      "sim": 0.6671169928592661,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-api-prototype/extended_schema/README.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/snap-emu-pb2-schema-shadow.md"
+    },
+    {
+      "rank": 2,
+      "classical": 0.5250668486614866,
+      "sim": 0.7514756667825084,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/docs/PHONE-SETUP-KPM.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/lukeprivacy-kpm-at-rest-safe.md"
+    },
+    {
+      "rank": 3,
+      "classical": 0.4346339849973397,
+      "sim": 0.4381454618531319,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/living-mds/TIER2-EMPIRICAL-LOCK-2026-05-19.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/snap-tt-rka-chain-attestation-insufficient.md"
+    },
+    {
+      "rank": 4,
+      "classical": 0.4293330897409938,
+      "sim": 0.17090850690110676,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/living-mds/AUP-CLASSIFIER-WALLS-2026-05-21.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/apk-classifier-aup-doctrine.md"
+    },
+    {
+      "rank": 5,
+      "classical": 0.4279342668428628,
+      "sim": 0.12957818090790332,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/docs/LUKE-SPOOFER-KPM.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/lukeprivacy-kpm-at-rest-safe.md"
+    },
+    {
+      "rank": 6,
+      "classical": 0.4221731017341833,
+      "sim": 0.7610871973012409,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/docs/KPM-RESCUE.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/lukeprivacy-kpm-at-rest-safe.md"
+    },
+    {
+      "rank": 7,
+      "classical": 0.41169431457659117,
+      "sim": 0.1378154120005203,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/living-mds/DECISIONS.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/snap-tt-rka-chain-attestation-insufficient.md"
+    },
+    {
+      "rank": 8,
+      "classical": 0.39847993540713383,
+      "sim": 0.42258160019368735,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/living-mds/CURRENT-STATE.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/snap-tt-rka-chain-attestation-insufficient.md"
+    },
+    {
+      "rank": 9,
+      "classical": 0.3909500019522675,
+      "sim": 0.9541801114504579,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/living-mds/ATTEMPT-LOG.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/snap-tt-rka-chain-attestation-insufficient.md"
+    },
+    {
+      "rank": 10,
+      "classical": 0.38487138521705544,
+      "sim": 0.3899952742891977,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/living-mds/MCP-AND-BOTS.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/spawned-window-capabilities-2026-05-23.md"
+    },
+    {
+      "rank": 11,
+      "classical": 0.37878105203144496,
+      "sim": 0.1720987570247293,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/HANDOFF-GUIDE/AUTO-SYNC-SETUP.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sanctum-auto-push.md"
+    },
+    {
+      "rank": 12,
+      "classical": 0.37854907860360243,
+      "sim": 0.07372145447062105,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/docs/02-HARNESS-BYPASSES.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/claude-sandbox-autonomy-grant.md"
+    },
+    {
+      "rank": 13,
+      "classical": 0.377607797525017,
+      "sim": 0.11544434398798344,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/.claude/memory/d.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/snap-tt-rka-chain-attestation-insufficient.md"
+    },
+    {
+      "rank": 14,
+      "classical": 0.37696204256362764,
+      "sim": 0.9554825560736928,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/living-mds/SNAP-INTELLIGENCE-DIGEST.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/snap-tt-rka-chain-attestation-insufficient.md"
+    },
+    {
+      "rank": 15,
+      "classical": 0.3739044312095188,
+      "sim": 0.8695652917634911,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/docs/PHONE-SETUP-KPM.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-spoofer-lukeprivacy-sim-clobber-2026-05-21.md"
+    }
+  ],
+  "wall_seconds": 63.5450005531311
+}

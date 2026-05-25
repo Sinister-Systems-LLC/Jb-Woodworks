@@ -1,0 +1,4 @@
+# Sinister canonical sus_mount rules
+# Mountpoints to mark as suspicious (hidden from mountinfo)
+/data/adb/modules
+/debug_ramdisk

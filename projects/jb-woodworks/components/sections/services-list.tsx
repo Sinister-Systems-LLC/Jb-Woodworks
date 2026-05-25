@@ -45,7 +45,7 @@ export function ServicesList({ services }: { services: Service[] }) {
             />
 
             <Link
-              href={`/contact?service=${s.slug}`}
+              href={s.exampleHref ?? `/contact?service=${s.slug}`}
               className="relative grid grid-cols-[auto_1fr_auto] items-center gap-6 sm:gap-12 py-8 sm:py-12 px-4 sm:px-8"
             >
               <span className="font-display text-[2.5rem] sm:text-[4rem] leading-none text-cream-30 group-hover:text-gold transition-colors duration-300 tabular-nums">
@@ -73,7 +73,7 @@ export function ServicesList({ services }: { services: Service[] }) {
                 <AnimatePresence mode="wait" initial={false}>
                   {active ? (
                     <motion.span key="hover" initial={{ x: -6, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: 6, opacity: 0 }} transition={{ duration: 0.25 }}>
-                      Ask now
+                      {s.ctaLabel ?? "See examples"}
                     </motion.span>
                   ) : (
                     <motion.span key="idle" initial={{ x: -6, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: 6, opacity: 0 }} transition={{ duration: 0.25 }} className="text-cream-30">

@@ -63,7 +63,10 @@
   const popupClose = popup.querySelector('.smpl-map-popup-close');
 
   function tileCenterPct(g) {
-    // Cartogram uses <rect>; silhouette uses <circle>. Handle both.
+    // Resolve the center of a hub marker across all map generations:
+    //   - Cartogram era used <rect>
+    //   - Silhouette era used <circle class="hub-dot">
+    //   - Albers era (current) uses <polygon class="hub-star">
     const viewBox = svg.viewBox.baseVal;
     const rect = g.querySelector('rect');
     if (rect) {
@@ -72,15 +75,30 @@
       const w = parseFloat(rect.getAttribute('width'));
       const h = parseFloat(rect.getAttribute('height'));
       return {
-        x: ((x + w / 2) / viewBox.width) * 100,
-        y: ((y + h / 2) / viewBox.height) * 100,
+        x: ((x + w / 2 - viewBox.x) / viewBox.width) * 100,
+        y: ((y + h / 2 - viewBox.y) / viewBox.height) * 100,
       };
+    }
+    const polygon = g.querySelector('polygon.hub-star') || g.querySelector('polygon');
+    if (polygon) {
+      const pts = (polygon.getAttribute('points') || '').trim().split(/\s+/);
+      let sx = 0, sy = 0, n = 0;
+      for (const p of pts) {
+        const [px, py] = p.split(',').map(Number);
+        if (Number.isFinite(px) && Number.isFinite(py)) { sx += px; sy += py; n++; }
+      }
+      if (n) {
+        return {
+          x: ((sx / n - viewBox.x) / viewBox.width) * 100,
+          y: ((sy / n - viewBox.y) / viewBox.height) * 100,
+        };
+      }
     }
     const circle = g.querySelector('circle.hub-dot') || g.querySelector('circle');
     if (circle) {
       return {
-        x: (parseFloat(circle.getAttribute('cx')) / viewBox.width) * 100,
-        y: (parseFloat(circle.getAttribute('cy')) / viewBox.height) * 100,
+        x: ((parseFloat(circle.getAttribute('cx')) - viewBox.x) / viewBox.width) * 100,
+        y: ((parseFloat(circle.getAttribute('cy')) - viewBox.y) / viewBox.height) * 100,
       };
     }
     return { x: 50, y: 50 };

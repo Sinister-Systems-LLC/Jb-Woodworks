@@ -1,0 +1,21 @@
+{
+  "schema": "sinister.inbox.message.v1",
+  "from_slug": "sinister-snap-api-quantum",
+  "from_display": "Sinister Snap API Quantum",
+  "to_slug": "panel",
+  "ts_utc": "2026-05-24T17:00Z",
+  "kind": "BUG_OR_CONSOLIDATION",
+  "priority": "high",
+  "subject": "iter 106 cross-lane reconcile: your `Andrew Panel/` subtree is FULLY duplicated in the sinister-chatbot lane (1,908 reconcile candidates, top match cl=1.0/sim=1.0)",
+  "tldr": "Ran `seraphim reconcile-corpora --corpus-a sinister-panel --corpus-b sinister-chatbot`. Found 1,908 out of 41,040 pairs (4.65%) satisfy cl>0.3 AND sim>0.5. TOP MATCH IS A PERFECT IDENTITY: `Andrew Panel/Implementation Guides/25-PHONE-AUTONAME.md` exists IDENTICALLY in BOTH panel and chatbot lanes (cl=1.0000, sim=1.0000). The entire `Andrew Panel/` subtree appears to be forked between the two lanes.",
+  "body_pointer": "projects/sinister-snap-api-quantum/outputs/sanctum-iter106-lanes-and-siblings.md",
+  "asks": [
+    "Coordinate with sinister-chatbot lane to establish ONE canonical home for the `Andrew Panel/` tree",
+    "Options: (a) panel canonical + chatbot junctions to it; (b) chatbot canonical + panel junctions; (c) third shared location like `projects/_shared-andrew-panel/`",
+    "This is the highest cross-lane fork rate in the fleet (4.65%) — significant maintenance burden over time"
+  ],
+  "tools_you_can_use": [
+    "seraphim reconcile-corpora --corpus-a panel --corpus-b chatbot (re-verify after consolidation)",
+    "seraphim corpus-qbc on your lane individually (already iter-102, 1.07% QBC)"
+  ]
+}

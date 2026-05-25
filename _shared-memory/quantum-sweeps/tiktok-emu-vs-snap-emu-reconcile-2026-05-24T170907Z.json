@@ -1,0 +1,242 @@
+{
+  "schema": "sinister-seraphim.reconcile-corpora.v1",
+  "label": "tiktok-emu-vs-snap-emu",
+  "corpus_a_root": "D:/Sinister Sanctum/projects/sinister-tiktok-emu",
+  "corpus_b_root": "D:/Sinister Sanctum/projects/sinister-snap-emu",
+  "n_corpus_a": 440,
+  "n_corpus_b": 251,
+  "cl_threshold": 0.3,
+  "sim_threshold": 0.5,
+  "total_pairs": 110440,
+  "reconciliation_candidates_count": 1043,
+  "top_reconciliation_candidates": [
+    {
+      "rank": 1,
+      "classical": 1.0000000000000002,
+      "sim": 0.9999999999999996,
+      "combined": 1.9999999999999998,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/docs/PATCH-16-HANDOFF-FOR-SNAP-AGENT.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/HANDOFF-GUIDE/PATCH-16-HANDOFF-FROM-TIKTOK.md"
+    },
+    {
+      "rank": 2,
+      "classical": 1.0000000000000002,
+      "sim": 0.9999999999999996,
+      "combined": 1.9999999999999998,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/docs/PATCH-16-HANDOFF-FOR-SNAP-AGENT.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/HANDOFF-GUIDE/PATCH-16-HANDOFF-FROM-TIKTOK.md"
+    },
+    {
+      "rank": 3,
+      "classical": 1.0,
+      "sim": 0.9999999999999987,
+      "combined": 1.9999999999999987,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/rka/server-java/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/sinister-rka/Sinister RKA GOOD/server-java/README.md"
+    },
+    {
+      "rank": 4,
+      "classical": 1.0,
+      "sim": 0.9999999999999987,
+      "combined": 1.9999999999999987,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/rka/server-java/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/sinister-rka/Sinister RKA GOOD/server-java/README.md"
+    },
+    {
+      "rank": 5,
+      "classical": 0.999871938701089,
+      "sim": 0.9999999999999987,
+      "combined": 1.9998719387010877,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/md-archive/from-library-of-alexandria/RKA__KEYBOX-SOURCING.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/sinister-rka/Sinister RKA GOOD/docs/KEYBOX-SOURCING.md"
+    },
+    {
+      "rank": 6,
+      "classical": 0.999871938701089,
+      "sim": 0.9999999999999987,
+      "combined": 1.9998719387010877,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/md-archive/from-library-of-alexandria/RKA__KEYBOX-SOURCING.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/sinister-rka/Sinister RKA GOOD/docs/KEYBOX-SOURCING.md"
+    },
+    {
+      "rank": 7,
+      "classical": 0.9996191010056611,
+      "sim": 0.9999999999999991,
+      "combined": 1.9996191010056603,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/.claude/worktrees/agent-ad9a44d5baacf8941/docs/PATCH-16-HANDOFF-FOR-SNAP-AGENT.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/HANDOFF-GUIDE/PATCH-16-HANDOFF-FROM-TIKTOK.md"
+    },
+    {
+      "rank": 8,
+      "classical": 0.9981055418051669,
+      "sim": 0.9999999999999989,
+      "combined": 1.9981055418051659,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/md-archive/from-library-of-alexandria/RKA__PROTOCOL.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/sinister-rka/Sinister RKA GOOD/docs/PROTOCOL.md"
+    },
+    {
+      "rank": 9,
+      "classical": 0.9981055418051669,
+      "sim": 0.9999999999999989,
+      "combined": 1.9981055418051659,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/md-archive/from-library-of-alexandria/RKA__PROTOCOL.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/sinister-rka/Sinister RKA GOOD/docs/PROTOCOL.md"
+    },
+    {
+      "rank": 10,
+      "classical": 0.9974826996736194,
+      "sim": 0.9999999999999991,
+      "combined": 1.9974826996736184,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/md-archive/from-library-of-alexandria/RKA-MIGRATION.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/docs/RKA-MIGRATION.md"
+    },
+    {
+      "rank": 11,
+      "classical": 0.9974826996736194,
+      "sim": 0.9999999999999991,
+      "combined": 1.9974826996736184,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/md-archive/from-library-of-alexandria/RKA-MIGRATION.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/docs/RKA-MIGRATION.md"
+    },
+    {
+      "rank": 12,
+      "classical": 0.9951793673407492,
+      "sim": 0.9999999999999987,
+      "combined": 1.9951793673407479,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/md-archive/from-library-of-alexandria/TEAMMATE-RKA-SETUP.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/TEAMMATE-RKA-SETUP.md"
+    },
+    {
+      "rank": 13,
+      "classical": 0.9951793673407492,
+      "sim": 0.9999999999999987,
+      "combined": 1.9951793673407479,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/md-archive/from-library-of-alexandria/TEAMMATE-RKA-SETUP.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/TEAMMATE-RKA-SETUP.md"
+    },
+    {
+      "rank": 14,
+      "classical": 0.9946068203514168,
+      "sim": 0.9999999999999987,
+      "combined": 1.9946068203514153,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/md-archive/from-library-of-alexandria/RKA__OPERATOR-RUNBOOK.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/sinister-rka/Sinister RKA GOOD/docs/OPERATOR-RUNBOOK.md"
+    },
+    {
+      "rank": 15,
+      "classical": 0.9946068203514168,
+      "sim": 0.9999999999999987,
+      "combined": 1.9946068203514153,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/md-archive/from-library-of-alexandria/RKA__OPERATOR-RUNBOOK.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/sinister-rka/Sinister RKA GOOD/docs/OPERATOR-RUNBOOK.md"
+    }
+  ],
+  "top_highest_classical": [
+    {
+      "rank": 1,
+      "classical": 1.0000000000000002,
+      "sim": 0.9999999999999996,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/docs/PATCH-16-HANDOFF-FOR-SNAP-AGENT.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/HANDOFF-GUIDE/PATCH-16-HANDOFF-FROM-TIKTOK.md"
+    },
+    {
+      "rank": 2,
+      "classical": 1.0000000000000002,
+      "sim": 0.9999999999999996,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/docs/PATCH-16-HANDOFF-FOR-SNAP-AGENT.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/HANDOFF-GUIDE/PATCH-16-HANDOFF-FROM-TIKTOK.md"
+    },
+    {
+      "rank": 3,
+      "classical": 1.0,
+      "sim": 0.9999999999999987,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/rka/server-java/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/sinister-rka/Sinister RKA GOOD/server-java/README.md"
+    },
+    {
+      "rank": 4,
+      "classical": 1.0,
+      "sim": 0.9999999999999987,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/rka/server-java/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/sinister-rka/Sinister RKA GOOD/server-java/README.md"
+    },
+    {
+      "rank": 5,
+      "classical": 0.999871938701089,
+      "sim": 0.9999999999999987,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/md-archive/from-library-of-alexandria/RKA__KEYBOX-SOURCING.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/sinister-rka/Sinister RKA GOOD/docs/KEYBOX-SOURCING.md"
+    },
+    {
+      "rank": 6,
+      "classical": 0.999871938701089,
+      "sim": 0.9999999999999987,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/md-archive/from-library-of-alexandria/RKA__KEYBOX-SOURCING.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/sinister-rka/Sinister RKA GOOD/docs/KEYBOX-SOURCING.md"
+    },
+    {
+      "rank": 7,
+      "classical": 0.9996191010056611,
+      "sim": 0.9999999999999991,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/.claude/worktrees/agent-ad9a44d5baacf8941/docs/PATCH-16-HANDOFF-FOR-SNAP-AGENT.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/HANDOFF-GUIDE/PATCH-16-HANDOFF-FROM-TIKTOK.md"
+    },
+    {
+      "rank": 8,
+      "classical": 0.9981055418051669,
+      "sim": 0.9999999999999989,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/md-archive/from-library-of-alexandria/RKA__PROTOCOL.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/sinister-rka/Sinister RKA GOOD/docs/PROTOCOL.md"
+    },
+    {
+      "rank": 9,
+      "classical": 0.9981055418051669,
+      "sim": 0.9999999999999989,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/md-archive/from-library-of-alexandria/RKA__PROTOCOL.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/sinister-rka/Sinister RKA GOOD/docs/PROTOCOL.md"
+    },
+    {
+      "rank": 10,
+      "classical": 0.9974826996736194,
+      "sim": 0.9999999999999991,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/md-archive/from-library-of-alexandria/RKA-MIGRATION.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/docs/RKA-MIGRATION.md"
+    },
+    {
+      "rank": 11,
+      "classical": 0.9974826996736194,
+      "sim": 0.9999999999999991,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/md-archive/from-library-of-alexandria/RKA-MIGRATION.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/docs/RKA-MIGRATION.md"
+    },
+    {
+      "rank": 12,
+      "classical": 0.9951793673407492,
+      "sim": 0.9999999999999987,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/md-archive/from-library-of-alexandria/TEAMMATE-RKA-SETUP.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/TEAMMATE-RKA-SETUP.md"
+    },
+    {
+      "rank": 13,
+      "classical": 0.9951793673407492,
+      "sim": 0.9999999999999987,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/md-archive/from-library-of-alexandria/TEAMMATE-RKA-SETUP.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/TEAMMATE-RKA-SETUP.md"
+    },
+    {
+      "rank": 14,
+      "classical": 0.9946068203514168,
+      "sim": 0.9999999999999987,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/md-archive/from-library-of-alexandria/RKA__OPERATOR-RUNBOOK.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/sinister-rka/Sinister RKA GOOD/docs/OPERATOR-RUNBOOK.md"
+    },
+    {
+      "rank": 15,
+      "classical": 0.9946068203514168,
+      "sim": 0.9999999999999987,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/md-archive/from-library-of-alexandria/RKA__OPERATOR-RUNBOOK.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/sinister-rka/Sinister RKA GOOD/docs/OPERATOR-RUNBOOK.md"
+    }
+  ],
+  "wall_seconds": 169.76200079917908
+}

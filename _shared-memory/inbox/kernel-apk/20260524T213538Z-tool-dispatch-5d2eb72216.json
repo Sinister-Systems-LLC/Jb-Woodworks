@@ -1,0 +1,17 @@
+{
+    "_author":  "RKOJ-ELENO :: 2026-05-24",
+    "tag":  "[TOOL-DISPATCH]",
+    "from":  "sanctum",
+    "to":  "kernel-apk",
+    "ts_utc":  "2026-05-24T21:35:38Z",
+    "dispatch_id":  "5d2eb72216",
+    "tool":  "heartbeat-sweep",
+    "script":  "heartbeat-sweep.ps1",
+    "args":  [
+                 "-MaxAgeHours",
+                 "24"
+             ],
+    "subject":  "Run sanctum tool \u0027heartbeat-sweep\u0027 and post result back via agent-dispatch.ps1 -Action Result",
+    "instructions":  "Read agent-dispatch.ps1 -Action Run -MessageFile \u003cthis-file-path\u003e to execute, then post result via agent-dispatch.ps1 -Action Result -Target sanctum -DispatchId 5d2eb72216 -Result \u003coutput\u003e",
+    "status":  "pending"
+}

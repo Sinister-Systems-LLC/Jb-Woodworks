@@ -1,0 +1,15 @@
+{
+    "ts_utc":  "2026-05-25T03:13:29Z",
+    "_author":  "RKOJ-ELENO :: 2026-05-25",
+    "to":  "sanctum",
+    "subject":  "Fleet-update fan-out: doctrine_update priority=normal",
+    "message":  "BRAIN updated: we-have-the-source-read-it-doctrine-2026-05-25 - We have the source -- READ it, don\u0027t reverse-engineer (operator hard-canonical)",
+    "rationale":  "Overseer auto-distributed because this fleet-update either targeted you OR mentioned your lane slug. Review + ack if actionable.",
+    "source_id":  "fu-20260524230805-bd3f2e",
+    "source_ts_utc":  "2026-05-25T03:08:05Z",
+    "from":  "overseer",
+    "source_priority":  "normal",
+    "tag":  "[OVERSEER-DISTRIBUTE]",
+    "source_pushed_by":  "sanctum",
+    "source_kind":  "doctrine_update"
+}

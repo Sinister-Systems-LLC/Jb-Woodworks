@@ -1,0 +1,126 @@
+<!doctype html>
+<!-- Author: RKOJ-ELENO :: 2026-05-24 -->
+<!-- SinisterCast browser viewer — MediaSource H.264 from ws://localhost:9002/stream, touch to /touch. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SinisterCast Viewer</title>
+<style>
+  :root { --accent: #c084fc; --bg: #0b0b10; --fg: #e7e7ee; --panel: #15151d; --border: #2a2a36; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; height: 100%; background: var(--bg); color: var(--fg); font-family: ui-sans-serif, system-ui, sans-serif; }
+  header { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); background: var(--panel); }
+  header h1 { margin: 0; font-size: 14px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+  header .status { font-size: 12px; opacity: 0.7; }
+  header .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #555; margin-right: 6px; vertical-align: middle; }
+  header .dot.live { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+  main { display: flex; align-items: center; justify-content: center; height: calc(100% - 46px); padding: 16px; }
+  .stage { position: relative; height: 100%; aspect-ratio: var(--ar, 9 / 20); border: 1px solid var(--accent); border-radius: 14px; overflow: hidden; box-shadow: 0 0 24px rgba(192, 132, 252, 0.18); background: #000; touch-action: none; }
+  video { width: 100%; height: 100%; object-fit: contain; background: #000; display: block; }
+  .overlay { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(11, 11, 16, 0.72); color: var(--accent); font-size: 14px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .overlay.show { display: flex; }
+  footer { position: fixed; bottom: 6px; right: 10px; font-size: 11px; opacity: 0.5; }
+</style>
+</head>
+<body>
+<header>
+  <h1>SinisterCast</h1>
+  <div class="status"><span id="dot" class="dot"></span><span id="state">connecting</span></div>
+</header>
+<main>
+  <div class="stage" id="stage">
+    <video id="v" autoplay muted playsinline></video>
+    <div class="overlay" id="overlay">Reconnecting&hellip;</div>
+  </div>
+</main>
+<footer>RKOJ-ELENO</footer>
+<script>
+(() => {
+  const hash = (location.hash || "#1080x2400").replace("#", "");
+  const [PW, PH] = hash.split("x").map(n => parseInt(n, 10) || 0);
+  const phoneW = PW || 1080, phoneH = PH || 2400;
+  document.documentElement.style.setProperty("--ar", `${phoneW} / ${phoneH}`);
+
+  const video = document.getElementById("v");
+  const overlay = document.getElementById("overlay");
+  const stateEl = document.getElementById("state");
+  const dotEl = document.getElementById("dot");
+  const stage = document.getElementById("stage");
+
+  const STREAM_URL = `ws://${location.hostname || "localhost"}:9002/stream`;
+  const TOUCH_URL = `ws://${location.hostname || "localhost"}:9002/touch`;
+  const MIME = 'video/mp4; codecs="avc1.640028"';
+
+  function setState(s, live) {
+    stateEl.textContent = s;
+    dotEl.classList.toggle("live", !!live);
+    overlay.classList.toggle("show", !live);
+  }
+
+  let mediaSource = null, sourceBuffer = null, pendingChunks = [];
+  function appendNext() {
+    if (!sourceBuffer || sourceBuffer.updating || pendingChunks.length === 0) return;
+    try { sourceBuffer.appendBuffer(pendingChunks.shift()); }
+    catch (e) { console.warn("appendBuffer failed", e); pendingChunks.length = 0; }
+  }
+
+  function connectStream() {
+    setState("connecting", false);
+    mediaSource = new MediaSource();
+    video.src = URL.createObjectURL(mediaSource);
+    mediaSource.addEventListener("sourceopen", () => {
+      if (!MediaSource.isTypeSupported(MIME)) { console.error("MIME unsupported", MIME); return; }
+      sourceBuffer = mediaSource.addSourceBuffer(MIME);
+      sourceBuffer.mode = "sequence";
+      sourceBuffer.addEventListener("updateend", appendNext);
+    }, { once: true });
+
+    const ws = new WebSocket(STREAM_URL);
+    ws.binaryType = "arraybuffer";
+    ws.onopen = () => setState("live", true);
+    ws.onmessage = (ev) => { pendingChunks.push(new Uint8Array(ev.data)); appendNext(); };
+    ws.onclose = () => { setState("reconnecting", false); setTimeout(connectStream, 500); };
+    ws.onerror = () => { try { ws.close(); } catch (_) {} };
+  }
+
+  let touchWs = null;
+  function connectTouch() {
+    touchWs = new WebSocket(TOUCH_URL);
+    touchWs.onclose = () => setTimeout(connectTouch, 500);
+    touchWs.onerror = () => { try { touchWs.close(); } catch (_) {} };
+  }
+
+  let pendingMove = null;
+  function rafLoop() {
+    if (pendingMove && touchWs && touchWs.readyState === 1) {
+      touchWs.send(JSON.stringify(pendingMove));
+      pendingMove = null;
+    }
+    requestAnimationFrame(rafLoop);
+  }
+  function toPhoneCoords(ev) {
+    const rect = stage.getBoundingClientRect();
+    const xr = (ev.clientX - rect.left) / rect.width;
+    const yr = (ev.clientY - rect.top) / rect.height;
+    return { x: Math.max(0, Math.min(phoneW - 1, Math.round(xr * phoneW))),
+             y: Math.max(0, Math.min(phoneH - 1, Math.round(yr * phoneH))) };
+  }
+  function send(action, ev) {
+    if (!touchWs || touchWs.readyState !== 1) return;
+    const { x, y } = toPhoneCoords(ev);
+    const payload = { x, y, action, ts_ns: Math.round(performance.now() * 1e6) };
+    if (action === "move") { pendingMove = payload; return; }  // 60Hz batch — full-rate would DDoS the WS
+    touchWs.send(JSON.stringify(payload));
+  }
+  stage.addEventListener("pointerdown", (ev) => { stage.setPointerCapture(ev.pointerId); send("down", ev); });
+  stage.addEventListener("pointermove", (ev) => { if (ev.buttons || ev.pointerType === "touch") send("move", ev); });
+  stage.addEventListener("pointerup",   (ev) => { send("up", ev); try { stage.releasePointerCapture(ev.pointerId); } catch (_) {} });
+  stage.addEventListener("pointercancel", (ev) => send("up", ev));
+
+  connectStream();
+  connectTouch();
+  requestAnimationFrame(rafLoop);
+})();
+</script>
+</body>
+</html>

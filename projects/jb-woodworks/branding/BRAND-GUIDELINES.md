@@ -10,7 +10,7 @@ Display + Inter, italic for emphasis. Nothing else.**
 
 - **Confident, plain.** A craftsman talks like a craftsman.
 - **Concrete.** Name the wood. Name the project type. Name the city.
-- **Direct on price + insurance.** "Free estimates. Licensed and insured." Both appear above the fold on the contact page.
+- **Direct on price.** "Free estimates." Above the fold on the contact page.
 - **The italic move.** Display-serif italic on the second half of a headline ("Premium Craftsmanship. Built to *Last*."). That is the brand signature. Use it on every page head.
 
 Phrases to avoid (slip-ups from prior drafts):

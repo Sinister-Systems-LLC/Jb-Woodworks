@@ -16,8 +16,14 @@ from __future__ import annotations
 
 import json
 import os
+import sys
 from pathlib import Path
 from typing import Any, Iterable
+
+# Path bootstrap so eve_ui (sibling module) is importable from this module
+_HERE = Path(__file__).resolve().parent
+if str(_HERE) not in sys.path:
+    sys.path.insert(0, str(_HERE))
 
 # ANSI accents shared with eve.py (kept local to avoid import cycle).
 PURPLE = "\033[38;5;141m"
@@ -57,11 +63,34 @@ def _load_json(path: Path) -> dict[str, Any] | None:
         return None
 
 
+def _clear_screen() -> None:
+    """Wipe terminal + cursor home so a fresh sub-page renders on blank surface.
+
+    RKOJ-ELENO :: 2026-05-25T00:15Z :: operator "each menu needs to go to a
+    complete clean new menu that is clean and you cannot see the menu you
+    just came from". No-op when NO_COLOR / TERM=dumb on POSIX.
+    """
+    if "NO_COLOR" in os.environ:
+        return
+    if os.environ.get("TERM", "").lower() == "dumb" and os.name != "nt":
+        return
+    try:
+        import sys as _sys
+        _sys.stdout.write("\033[2J\033[H")
+        _sys.stdout.flush()
+    except Exception:
+        pass
+
+
 def _header(title: str) -> None:
+    """Canonical EVE UI uniformity header (RKOJ-ELENO 2026-05-24T22:40Z).
+    Per eve-ui-uniformity-doctrine: DARKP --- WHITE BOLD title DARKP ---.
+
+    RKOJ-ELENO :: 2026-05-25T00:15Z :: clears screen first so the sub-page
+    lands on a blank surface (operator never sees the prior menu)."""
+    _clear_screen()
+    print(f"  {DARKP}---{RESET} {WHITE}{BOLD}{title}{RESET} {DARKP}---{RESET}")
     print()
-    print(f"  {DARKP}{'=' * 68}{RESET}")
-    print(f"  {WHITE}{BOLD} {title} {RESET}")
-    print(f"  {DARKP}{'=' * 68}{RESET}")
 
 
 def _miss(label: str) -> None:
@@ -550,31 +579,56 @@ def qadp_promoter() -> int:
 # Sub-menu render + dispatch
 # ---------------------------------------------------------------------------
 
-_TOOLS: list[tuple[str, str, str]] = [
-    ("1", "qbc-recall",       "QBC verdict + 95% CI for a triad query"),
-    ("2", "triad-prescreen",  "PSTF: iter-65/66 K=4 combined predictor"),
-    ("3", "drift-check",      "QDDD: rank-1 canonical sim drift vs iter-19"),
-    ("4", "catalog-list",     "TLPC: canonical top-10 across encodings"),
-    ("5", "quantum-summary",  "one-screen ops status"),
-    ("6", "brain-recall",     "S1 QDB-R: quantum-tiebreaker brain recall"),
-    ("7", "daas-mcp",         "S4: scaffold MCP-DaaS proposal (operator-gate)"),
-    ("8", "saecd",            "S6: dual-emu diagnostic verdict per triad"),
-    ("9", "kkd-ec",           "S7: 60-row K'=K*D conjecture closer (local sim)"),
-    ("10","qadp",             "S8: scaffold auto-doctrine-promoter rules"),
+_TOOLS: list[tuple[str, str, str, str]] = [
+    ("1", "qbc-recall",       "QBC verdict + 95% CI for a triad query",
+        "Find 3-doc groups the quantum kernel sees as distinct. Type a keyword, get top matches."),
+    ("2", "triad-prescreen",  "PSTF: iter-65/66 K=4 combined predictor",
+        "Predicts which doc-triples are worth verifying. Saves time before paid quantum runs."),
+    ("3", "drift-check",      "QDDD: rank-1 canonical sim drift vs iter-19",
+        "Watches the reference triad for surprise changes. Alerts if the brain has drifted."),
+    ("4", "catalog-list",     "TLPC: canonical top-10 across encodings",
+        "Browse today's top-10 most-discriminable triads in the brain. Quick what's-interesting."),
+    ("5", "quantum-summary",  "one-screen ops status",
+        "Experiments run, budget left, last paid quantum job time. Your operations dashboard."),
+    ("6", "brain-recall",     "S1 QDB-R: quantum-tiebreaker brain recall",
+        "Search the brain by keyword; flags which hits are quantum-distinct vs just similar."),
+    ("7", "daas-mcp",         "S4: scaffold MCP-DaaS proposal (operator-gate)",
+        "Builds the file to expose quantum tools as an MCP server. You install it manually."),
+    ("8", "saecd",            "S6: dual-emu diagnostic verdict per triad",
+        "Per 3-doc triad: should quantum kernel USE / SKIP / TIEBREAK? Drives dual-emu test harness."),
+    ("9", "kkd-ec",           "S7: 60-row K'=K*D conjecture closer (local sim)",
+        "Does more qubits AND more reps together help more than either alone? Fast local sim test."),
+    ("10","qadp",             "S8: scaffold auto-doctrine-promoter rules",
+        "Surfaces new brain entries that should link to existing ones. You decide what to commit."),
 ]
 
 
 def render_menu() -> None:
+    """Canonical Quantum Tools menu per eve-ui-uniformity-doctrine-2026-05-24.
+
+    RKOJ-ELENO :: 2026-05-25T01:15Z :: operator hard-canonical *"centered
+    menu styling applied to every sub-page"* (image #61). Body menu rows
+    block-center via eve_ui.center_block; header + footer stay full-width.
+    """
+    _clear_screen()
+    print(f"  {DARKP}---{RESET} {WHITE}{BOLD}Quantum Tools{RESET} {DARKP}---{RESET}")
     print()
-    print(f"  {DARKP}{'=' * 68}{RESET}")
-    print(f"  {WHITE}{BOLD} EVE :: Quantum Tools sub-menu (T) {RESET}")
-    print(f"  {DARKP}{'=' * 68}{RESET}")
-    print(f"  {SOFT}Read-only access to projects/sinister-snap-api-quantum/outputs/{RESET}")
+    body: list[str] = []
+    body.append(f"{SOFT}Read-only :: projects/sinister-snap-api-quantum/outputs/{RESET}")
+    body.append("")
+    for num, name, desc, _human in _TOOLS:
+        body.append(f"{PURPLE}{num:>2}){RESET} {WHITE}{name:<20}{RESET} {SOFT}{desc}{RESET}")
+    try:
+        from eve_ui import center_block  # type: ignore
+        for ln in center_block(body, width=72):
+            print(ln)
+    except Exception:
+        for ln in body:
+            print(f"  {ln}")
     print()
-    for num, name, desc in _TOOLS:
-        print(f"  {PURPLE}{num}){RESET} {WHITE}{name:<20}{RESET} {SOFT}{desc}{RESET}")
-    print(f"  {PURPLE}B){RESET} {WHITE}{'back to picker':<20}{RESET}")
-    print(f"  {DARKP}{'-' * 68}{RESET}")
+    print(f"  {DIM}---{RESET} {PURPLE}B){RESET} Back   "
+          f"{PURPLE}H){RESET} Home   {PURPLE}X){RESET} Exit   "
+          f"{DIM}(1-{len(_TOOLS)} to run){RESET}")
 
 
 def dispatch(choice: str, arg: str = "") -> int:
@@ -603,19 +657,36 @@ def dispatch(choice: str, arg: str = "") -> int:
     return 1
 
 
+def _route_home() -> None:
+    """Dispatch to main menu. Best-effort import (sibling module)."""
+    try:
+        from main_menu import show_main_menu  # type: ignore
+        show_main_menu()
+    except Exception:
+        pass
+
+
 def menu_loop() -> int:
-    """Render menu, read selection, dispatch, loop until B / Q / EOF."""
+    """Canonical Quantum Tools sub-page loop (RKOJ-ELENO 2026-05-24T22:40Z).
+
+    Header + body + footer (B/H/X) per eve-ui-uniformity-doctrine-2026-05-24.
+    """
     while True:
         render_menu()
         try:
-            raw = input(f"  {WHITE}Quantum tool [1-10 / B] {PURPLE}>{RESET} ").strip()
+            raw = input("  > ").strip()
         except (EOFError, KeyboardInterrupt):
             print()
             return 0
-        if not raw:
-            continue
-        if raw.lower() in ("b", "back", "q", "quit", "exit"):
+        low = raw.lower()
+        if low in ("", "b", "back"):
             return 0
+        if low in ("h", "home"):
+            _route_home()
+            return 0
+        if low in ("x", "exit", "q", "quit"):
+            import sys as _sys
+            _sys.exit(0)
         # qbc-recall + triad-prescreen + brain-recall + saecd take optional query suffix
         parts = raw.split(maxsplit=1)
         cmd = parts[0]
@@ -628,6 +699,6 @@ def menu_loop() -> int:
                     arg = ""
         dispatch(cmd, arg)
         try:
-            input(f"  {DIM}> press Enter for menu, B/Q to exit:{RESET} ")
+            input(f"  {DIM}> press Enter for menu (B back, H home, X exit):{RESET} ")
         except (EOFError, KeyboardInterrupt):
             return 0

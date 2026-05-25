@@ -6,6 +6,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 
 const MIN_MS = 2600;
@@ -70,15 +71,21 @@ export function Splash() {
           <div aria-hidden className="absolute inset-0 pointer-events-none bg-cover bg-center" style={{ backgroundImage: "url(/img/generated/grain-texture.png)", opacity: 0.06, mixBlendMode: "screen" }} />
 
           <div className="relative flex flex-col items-center gap-7 px-6">
-            {/* Wordmark, animated in */}
+            {/* Monogram, animated in */}
             <motion.div
               initial={reduced ? false : { opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
               className="text-center"
             >
-              <div className="font-sans text-[clamp(3rem,9vw,5rem)] font-black tracking-[0.18em] text-white leading-none">JB</div>
-              <div className="mt-3 text-[0.78rem] tracking-[0.55em] text-gold font-bold uppercase">Woodworks</div>
+              <Image
+                src="/img/branding/jbw-monogram.png"
+                alt="JB Woodworks"
+                width={687}
+                height={585}
+                priority
+                className="h-[clamp(4rem,11vw,7rem)] w-auto mx-auto"
+              />
             </motion.div>
 
             {/* Gold rule with shimmer */}
@@ -99,16 +106,6 @@ export function Splash() {
                 />
               )}
             </motion.div>
-
-            {/* Italic tagline */}
-            <motion.p
-              initial={reduced ? false : { opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.55, ease: [0.16, 1, 0.3, 1] }}
-              className="font-display text-[clamp(0.95rem,1.6vw,1.2rem)] text-cream-50 italic text-center"
-            >
-              Premium Craftsmanship. <em className="not-italic text-gold">Built to Last.</em>
-            </motion.p>
 
             {/* Progress dots */}
             {!reduced && (

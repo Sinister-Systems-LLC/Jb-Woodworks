@@ -1,0 +1,138 @@
+{
+  "schema": "sinister-seraphim.reconcile-corpora.v1",
+  "label": "bumble-emu-vs-snap-emu",
+  "corpus_a_root": "D:/Sinister Sanctum/projects/sinister-bumble-emu",
+  "corpus_b_root": "D:/Sinister Sanctum/projects/sinister-snap-emu",
+  "n_corpus_a": 3,
+  "n_corpus_b": 297,
+  "cl_threshold": 0.3,
+  "sim_threshold": 0.5,
+  "total_pairs": 891,
+  "reconciliation_candidates_count": 2,
+  "top_reconciliation_candidates": [
+    {
+      "rank": 1,
+      "classical": 0.7837063630812815,
+      "sim": 0.9873931951273386,
+      "combined": 1.7710995582086202,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-bumble-emu/me/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/eleno/README.md"
+    },
+    {
+      "rank": 2,
+      "classical": 0.8175011773226232,
+      "sim": 0.568304141476934,
+      "combined": 1.3858053187995572,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-bumble-emu/eleno/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/eleno/README.md"
+    }
+  ],
+  "top_highest_classical": [
+    {
+      "rank": 1,
+      "classical": 0.8175011773226232,
+      "sim": 0.568304141476934,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-bumble-emu/eleno/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/eleno/README.md"
+    },
+    {
+      "rank": 2,
+      "classical": 0.7963671280842707,
+      "sim": 0.4163438403404829,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-bumble-emu/eleno/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/me/README.md"
+    },
+    {
+      "rank": 3,
+      "classical": 0.7881473232916462,
+      "sim": 0.20523057430129887,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-bumble-emu/me/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/me/README.md"
+    },
+    {
+      "rank": 4,
+      "classical": 0.7837063630812815,
+      "sim": 0.9873931951273386,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-bumble-emu/me/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/eleno/README.md"
+    },
+    {
+      "rank": 5,
+      "classical": 0.15800557056317058,
+      "sim": 0.859749756258282,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-bumble-emu/_SCAFFOLD-BRIEF.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/README.md"
+    },
+    {
+      "rank": 6,
+      "classical": 0.13570832995519794,
+      "sim": 0.6234879101922094,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-bumble-emu/_SCAFFOLD-BRIEF.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/agent-dashboards/AGENT-PROGRESS-PROTOCOL.md"
+    },
+    {
+      "rank": 7,
+      "classical": 0.13200671043404885,
+      "sim": 0.7397759190738812,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-bumble-emu/me/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/TEAMWORK.md"
+    },
+    {
+      "rank": 8,
+      "classical": 0.1294370562420802,
+      "sim": 0.4080804772840545,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-bumble-emu/me/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/living-mds/MIGRATION-2026-05-19.md"
+    },
+    {
+      "rank": 9,
+      "classical": 0.12849920941385387,
+      "sim": 0.697464326185504,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-bumble-emu/me/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/README.md"
+    },
+    {
+      "rank": 10,
+      "classical": 0.1250764393768616,
+      "sim": 0.7923413213425912,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-bumble-emu/_SCAFFOLD-BRIEF.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/HANDOFF-GUIDE/AUTO-SYNC-SETUP.md"
+    },
+    {
+      "rank": 11,
+      "classical": 0.12220188018488166,
+      "sim": 0.5750021676549998,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-bumble-emu/_SCAFFOLD-BRIEF.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/agent-dashboards/AGENT-UI-SYSTEM-HANDOFF.md"
+    },
+    {
+      "rank": 12,
+      "classical": 0.12022412193962317,
+      "sim": 0.8737881741722873,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-bumble-emu/eleno/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/TEAMWORK.md"
+    },
+    {
+      "rank": 13,
+      "classical": 0.11897418085000075,
+      "sim": 0.8529029598803117,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-bumble-emu/eleno/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/README.md"
+    },
+    {
+      "rank": 14,
+      "classical": 0.11819889323728182,
+      "sim": 0.5945195394476261,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-bumble-emu/eleno/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/living-mds/MIGRATION-2026-05-19.md"
+    },
+    {
+      "rank": 15,
+      "classical": 0.11273771050642391,
+      "sim": 0.3767375840079271,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-bumble-emu/_SCAFFOLD-BRIEF.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/SESSION-START.md"
+    }
+  ],
+  "wall_seconds": 1.9230005741119385
+}

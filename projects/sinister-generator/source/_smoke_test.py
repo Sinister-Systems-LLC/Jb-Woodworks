@@ -20,16 +20,16 @@ def main() -> int:
 
     print("version:", sg.__version__)
     print("brands registry keys:", sorted(sg.BRAND_REGISTRY.keys()))
-    print("jkor style len:", len(sg.JKOR_STYLE), "chars")
+    print("jokr style len:", len(sg.JOKR_STYLE), "chars")
     print("smpl style len:", len(sg.SMPL_STYLE), "chars")
     print("jbw  style len:", len(sg.JBW_STYLE), "chars")
 
     existing_jpg = pathlib.Path(
-        r"D:\Sinister Sanctum\projects\sinister-generator\outputs\jkor\banners\banner-wide-character.jpg"
+        r"D:\Sinister Sanctum\projects\sinister-generator\outputs\JOKR\banners\banner-wide-character.jpg"
     )
     report = sg.structural_check(existing_jpg)
     print()
-    print("Structural check on existing JKOR banner:")
+    print("Structural check on existing JOKR banner:")
     print("  output_path:", report.output_path)
     print("  file_exists:", report.file_exists)
     print("  is_recognized_image:", report.is_recognized_image)

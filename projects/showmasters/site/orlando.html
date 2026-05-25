@@ -63,7 +63,8 @@
 </head>
 <body>
 
-  <nav id="navbar" class="scrolled">
+    <a class="skip-link" href="#main">Skip to main content</a>
+<nav id="navbar" class="scrolled">
     <div class="nav-inner">
       <a href="/" class="nav-logo"><img src="public/img/logo-monogram.svg" alt="Show Masters" /></a>
       <ul class="nav-links">
@@ -93,13 +94,19 @@
     </ul>
   </div>
 
+  <main id="main">
+
   <header class="page-header page-header-city">
-    <div class="page-hero-bg" style="background-image: url('public/img/generated/cities/orlando.png');"></div>
+    <div class="page-hero-bg" style="background-image: image-set(url('public/img/generated/cities/orlando.webp') type('image/webp'), url('public/img/generated/cities/orlando.png') type('image/png'));"></div>
     <div class="page-hero-overlay"></div>
     <div class="container">
       <h1>Stagehands, riggers &amp; crew<br/><em>in Orlando, Florida.</em></h1>
       <p class="subtitle">Florida Hub since 2002. Local crew that knows OCCC, Amway Center, Gaylord Palms, Dr. Phillips Center, Hard Rock Live. Same-day response. Crew Lead runs the show.</p>
-    </div>
+      <div class="hero-cta-row" style="margin-top: 32px;">
+        <a href="contact.html#estimate" class="btn btn-primary btn-large">Get an Estimate</a>
+        <a href="order.html" class="btn btn-ghost btn-large">Place a Crew Order</a>
+      </div>
+</div>
   </header>
 
   <section style="padding: 40px 0 60px;">
@@ -118,8 +125,7 @@
             <h2 style="font-family:'DM Serif Display',serif; font-size:1.8rem; margin-bottom:18px;">Central Florida + statewide</h2>
             <p style="color:var(--text-2);">Orlando · Kissimmee · Lake Mary · Winter Park · Sanford · Lake Buena Vista · Celebration · Tampa · St. Petersburg · Sarasota · Daytona Beach · Jacksonville · Tallahassee · Fort Lauderdale · Miami · Naples · Fort Myers.</p>
           </div>
-        </div>
-      </div>
+        </div></div>
     </div>
   </section>
 
@@ -173,6 +179,7 @@
       </div>
     </div>
   </section>
+  </main>
 
   <footer class="site-footer">
     <div class="container">

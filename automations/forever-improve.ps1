@@ -4,9 +4,10 @@
 # Composes with: forever-improve-review-doctrine-2026-05-24.md
 #                no-bullshit-tested-before-claimed-doctrine-2026-05-23.md (rule 5 + rule 8)
 #                loop-quality-gate.ps1 (sibling; produces stop-signals where this produces suggestions)
+#                quality-monotonic-loop.ps1 (-WithQualityLoop on Review piggybacks a score-trajectory run; score = -1 * open findings for target)
 #
 # Usage:
-#   powershell -File forever-improve.ps1 -Action Review       -Target <path>          [-Lane sanctum]
+#   powershell -File forever-improve.ps1 -Action Review       -Target <path>          [-Lane sanctum] [-WithQualityLoop] [-QualityLoopIters 3] [-QualityLoopPlateau 2]
 #   powershell -File forever-improve.ps1 -Action ReviewCommit -Sha <hash>             [-Lane sanctum]
 #   powershell -File forever-improve.ps1 -Action Tally                                [-Lane <slug>]
 #   powershell -File forever-improve.ps1 -Action Drain                                [-MaxTurns 3]
@@ -23,7 +24,11 @@ param(
     [string]$Sha = '',
     [string]$Lane = 'sanctum',
     [int]$MaxTurns = 3,
-    [string]$SanctumRoot = 'D:\Sinister Sanctum'
+    [string]$SanctumRoot = 'D:\Sinister Sanctum',
+    [switch]$WithQualityLoop,
+    [int]$QualityLoopIters = 3,
+    [int]$QualityLoopPlateau = 2,
+    [switch]$DryRun
 )
 
 $ErrorActionPreference = 'Stop'
@@ -388,6 +393,58 @@ switch ($Action) {
     'Review' {
         if (-not $Target) { Write-Error '-Target required for Review'; exit 2 }
         Invoke-Review -TargetPath $Target -LaneSlug $Lane
+
+        if ($WithQualityLoop) {
+            # Resolve the same rel-path the Review row used so the score matches the log target field
+            $resolvedQL = (Resolve-Path -LiteralPath $Target).Path
+            $relQL = $resolvedQL
+            if ($resolvedQL.StartsWith($SanctumRoot, [StringComparison]::OrdinalIgnoreCase)) {
+                $relQL = $resolvedQL.Substring($SanctumRoot.Length).TrimStart('\','/')
+            }
+            # Normalize to forward-slashes for jsonl matching (Append-Row keeps backslashes; match either)
+            $relForward = $relQL -replace '\\','/'
+            $relBackslash = $relQL -replace '/','\\'
+
+            # Inline score command: count OPEN rows whose target matches (either slash style), negate so higher=better.
+            # Emits 0 (never empty) when no open rows exist. Uses a tmp scoring script to dodge quoting hell.
+            $scoreScriptDir = Join-Path $SanctumRoot 'automations\_tmp'
+            if (-not (Test-Path $scoreScriptDir)) { New-Item -ItemType Directory -Path $scoreScriptDir -Force | Out-Null }
+            $scoreScriptPath = Join-Path $scoreScriptDir ("forever-improve-score-" + (Get-Date).ToUniversalTime().ToString('yyyyMMddTHHmmssfffZ') + ".ps1")
+            $scoreScriptBody = @"
+`$p = '$($LogPath -replace "'", "''")'
+`$relF = '$relForward'
+`$relB = '$($relBackslash -replace "'", "''")'
+if (-not (Test-Path `$p)) { 0; return }
+`$rows = Get-Content -LiteralPath `$p -Encoding UTF8 | Where-Object { `$_ -and `$_.Trim() } | ForEach-Object { try { ConvertFrom-Json `$_ } catch { `$null } }
+`$n = (`$rows | Where-Object { `$_ -and `$_.status -eq 'open' -and (`$_.target -eq `$relF -or `$_.target -eq `$relB) } | Measure-Object).Count
+(-1 * `$n)
+"@
+            Set-Content -LiteralPath $scoreScriptPath -Value $scoreScriptBody -Encoding UTF8
+            # _RunScore uses Invoke-Expression; use call-operator form so the quoted path survives.
+            $scoreCmd = "& '$scoreScriptPath'"
+            # Keep _tmp small: prune anything older than 1 day so the dir doesn't grow unbounded.
+            try {
+                Get-ChildItem -LiteralPath $scoreScriptDir -Filter 'forever-improve-score-*.ps1' -ErrorAction SilentlyContinue |
+                    Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-1) } |
+                    Remove-Item -Force -ErrorAction SilentlyContinue
+            } catch { }
+
+            $taskName = "forever-improve review of $relForward"
+            $qlScript = Join-Path $SanctumRoot 'automations\quality-monotonic-loop.ps1'
+
+            Write-Output ""
+            Write-Output "----- forever-improve: piggyback quality-monotonic-loop -----"
+            $qlArgs = @(
+                '-NoProfile','-File', $qlScript,
+                '-Lane', $Lane,
+                '-TaskName', $taskName,
+                '-ScoreCommand', $scoreCmd,
+                '-MaxIters', $QualityLoopIters,
+                '-PlateauCount', $QualityLoopPlateau
+            )
+            if ($DryRun) { $qlArgs += '-DryRun' }
+            & powershell @qlArgs
+        }
     }
     'ReviewCommit' {
         if (-not $Sha) { Write-Error '-Sha required for ReviewCommit'; exit 2 }

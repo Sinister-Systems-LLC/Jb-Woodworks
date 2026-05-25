@@ -1,0 +1,154 @@
+{
+  "schema": "sinister-seraphim.reconcile-corpora.v1",
+  "label": "dashboard-skeleton-vs-brain",
+  "corpus_a_root": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton",
+  "corpus_b_root": "D:/Sinister Sanctum/_shared-memory/knowledge",
+  "n_corpus_a": 31,
+  "n_corpus_b": 160,
+  "cl_threshold": 0.3,
+  "sim_threshold": 0.5,
+  "total_pairs": 4960,
+  "reconciliation_candidates_count": 4,
+  "top_reconciliation_candidates": [
+    {
+      "rank": 1,
+      "classical": 0.30395324434993826,
+      "sim": 0.8308377760578378,
+      "combined": 1.134791020407776,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/docs/agent-handoff.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-ui-canonical-dashboard-skeleton-inheritance-2026-05-24.md"
+    },
+    {
+      "rank": 2,
+      "classical": 0.4417616811577427,
+      "sim": 0.5715223011123935,
+      "combined": 1.0132839822701363,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/THEME-DOCTRINE.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-ui-canonical-dashboard-skeleton-inheritance-2026-05-24.md"
+    },
+    {
+      "rank": 3,
+      "classical": 0.3359768008412261,
+      "sim": 0.5463401955266372,
+      "combined": 0.8823169963678632,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/AGENTS.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-ui-canonical-dashboard-skeleton-inheritance-2026-05-24.md"
+    },
+    {
+      "rank": 4,
+      "classical": 0.3255120244335266,
+      "sim": 0.5060443747154738,
+      "combined": 0.8315563991490005,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/docs/token-reference.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-ui-canonical-dashboard-skeleton-inheritance-2026-05-24.md"
+    }
+  ],
+  "top_highest_classical": [
+    {
+      "rank": 1,
+      "classical": 0.4417616811577427,
+      "sim": 0.5715223011123935,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/THEME-DOCTRINE.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-ui-canonical-dashboard-skeleton-inheritance-2026-05-24.md"
+    },
+    {
+      "rank": 2,
+      "classical": 0.3359768008412261,
+      "sim": 0.5463401955266372,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/AGENTS.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-ui-canonical-dashboard-skeleton-inheritance-2026-05-24.md"
+    },
+    {
+      "rank": 3,
+      "classical": 0.3255120244335266,
+      "sim": 0.5060443747154738,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/docs/token-reference.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-ui-canonical-dashboard-skeleton-inheritance-2026-05-24.md"
+    },
+    {
+      "rank": 4,
+      "classical": 0.31662977005285414,
+      "sim": 0.46650069900927355,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/README.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-ui-canonical-dashboard-skeleton-inheritance-2026-05-24.md"
+    },
+    {
+      "rank": 5,
+      "classical": 0.30395324434993826,
+      "sim": 0.8308377760578378,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/docs/agent-handoff.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-ui-canonical-dashboard-skeleton-inheritance-2026-05-24.md"
+    },
+    {
+      "rank": 6,
+      "classical": 0.2886286450158833,
+      "sim": 0.7319243162385589,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/.claude/memory/R.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-ui-canonical-dashboard-skeleton-inheritance-2026-05-24.md"
+    },
+    {
+      "rank": 7,
+      "classical": 0.27799344655022135,
+      "sim": 0.5949518543665251,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/00-START-HERE.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-ui-canonical-dashboard-skeleton-inheritance-2026-05-24.md"
+    },
+    {
+      "rank": 8,
+      "classical": 0.27786824266190424,
+      "sim": 0.8116256542385987,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/docs/page-signatures.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-ui-canonical-dashboard-skeleton-inheritance-2026-05-24.md"
+    },
+    {
+      "rank": 9,
+      "classical": 0.2743858210198005,
+      "sim": 0.4532760657466734,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/THEME-DOCTRINE.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/rkoj-ui-exact-spec-2026-05-21.md"
+    },
+    {
+      "rank": 10,
+      "classical": 0.2683358904432935,
+      "sim": 0.180659749450847,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/CHANGELOG.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-ui-canonical-dashboard-skeleton-inheritance-2026-05-24.md"
+    },
+    {
+      "rank": 11,
+      "classical": 0.2552457427698474,
+      "sim": 0.791768777332216,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/THEME-DOCTRINE.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/rkoj-workstation-ui-layout.md"
+    },
+    {
+      "rank": 12,
+      "classical": 0.23881613331670745,
+      "sim": 0.6288044267466188,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/VERIFY.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-ui-canonical-dashboard-skeleton-inheritance-2026-05-24.md"
+    },
+    {
+      "rank": 13,
+      "classical": 0.22964060661676713,
+      "sim": 0.8341222505857726,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/.claude/memory/R.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/do-not-revert-operator-canonical-protections-2026-05-23.md"
+    },
+    {
+      "rank": 14,
+      "classical": 0.2276230579111668,
+      "sim": 0.38831988799520667,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/docs/architecture.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-ui-canonical-dashboard-skeleton-inheritance-2026-05-24.md"
+    },
+    {
+      "rank": 15,
+      "classical": 0.22701023889132518,
+      "sim": 0.10886913268785822,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/.claude/memory/g.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-ui-canonical-dashboard-skeleton-inheritance-2026-05-24.md"
+    }
+  ],
+  "wall_seconds": 34.81750130653381
+}

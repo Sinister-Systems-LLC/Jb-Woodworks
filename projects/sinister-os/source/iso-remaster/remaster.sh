@@ -211,6 +211,10 @@ log "using compression: $SQUASH_COMP"
 
 log "step 5/8: removing old squashfs + resquashing"
 rm -f "$SQUASH_PATH"
+# mksquashfs >= 4.5 rejects SOURCE_DATE_EPOCH env var combined with -mkfs-time/-all-time
+# flags. We rely on the explicit flags for determinism, so unset the env var here.
+# Fixed 2026-05-24 by RKOJ-ELENO -- first-ISO build hit this on Arch mksquashfs 4.6.
+env -u SOURCE_DATE_EPOCH \
 mksquashfs "$SQUASH_ROOT/root" "$SQUASH_PATH" \
     -comp "$SQUASH_COMP" \
     -noappend \

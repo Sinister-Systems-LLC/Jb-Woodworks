@@ -1,0 +1,43 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-25T03:11:00.4550836Z",
+    "project":  "sinister-chatbot",
+    "agent_name":  "sinister-chatbot",
+    "mode":  "resume",
+    "focus_intent":  "",
+    "git":  {
+                "branch":  "agent/showmasters/p1-secure-and-ship-2026-05-25",
+                "head":  "761d06b2034e420a17f49ec3280563a686374a18",
+                "head_msg":  "sinister-os: panel-shell healthcheck accepts Next.js 307 redirect",
+                "recent_commits":  [
+                                       "761d06b sinister-os: panel-shell healthcheck accepts Next.js 307 redirect",
+                                       "99174f8 sinister-os: MASSIVE-EXPANSION ΓÇö variant split + hot-reconfig + lang research",
+                                       "f064aca sinister-os: M5-EXPAND + PANEL-AS-SHELL SCAFFOLDED (iter 2-6 ship)",
+                                       "8bd3529 sinister-os: M5 mesh SCAFFOLDED ΓÇö Tailscale overlay + ACL + runbook + eve mesh CLI",
+                                       "af1f1b8 sanctum: fleet-health.ps1 (iter-10) + claude-accounts SetKey/Status (iter-9 re-add)",
+                                       "af21f38 brain+inbox: refresh sandbox doctrine with keybox+behavioral+scenario; final cross-lane brief",
+                                       "8835676 sinister-os-mobile: Turn 4 ΓÇö kernel cloned + sepolicy draft + cvd budget + Q1-Q10 + branding-spec patch",
+                                       "e093cbc os-mobile/sandbox: behavioral fingerprints + scenario runner",
+                                       "02e9e5d sanctum: claude-accounts.ps1 -Action SetKey + -Action Status (multi-account UX)",
+                                       "eb1ad5c sinister-os: /loop iter 1 ΓÇö overlay LIVE-applied to running CachyOS VM"
+                                   ]
+            },
+    "progress_top3":  [
+
+                      ],
+    "latest_plan":  {
+                        "dir":  null,
+                        "artifact":  null
+                    },
+    "inbox_unread_count":  5,
+    "last_5_files_touched_24h":  [
+                                     "_shared-memory\\canonical-protections-violations.log",
+                                     "_shared-memory\\script-runs\\start-sinister-session-20260524-213737-392e.json",
+                                     "_shared-memory\\spawned-windows.jsonl",
+                                     "_shared-memory\\script-runs\\start-sinister-session-20260524-213736-94d1.json",
+                                     "projects\\sinister-snap-api-quantum\\outputs\\sanctum-quantum-dashboard.md"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}

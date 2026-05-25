@@ -1,0 +1,11 @@
+﻿{"ts_utc":"2026-05-24T20:09:11Z","step":"start","status":"begin","mode":"Status"}
+{"ts_utc":"2026-05-24T20:09:12Z","step":"status","status":"ok","mode":"Status"}
+{"ts_utc":"2026-05-24T20:10:30Z","step":"start","status":"begin","mode":"Full"}
+{"mode":"Full","waited_sec":0,"step":"docker-wait","version":"29.1.3","ts_utc":"2026-05-24T20:10:31Z","status":"ready"}
+{"mode":"Full","total":13,"step":"warm","ts_utc":"2026-05-24T20:10:44Z","warmed":13,"status":"ok"}
+{"ts_utc":"2026-05-24T20:10:45Z","step":"mesh-sweep","status":"ok","mode":"Full"}
+{"ts_utc":"2026-05-24T20:10:45Z","step":"heartbeat-sweep","summary":"summary :: archived=0  kept=27  (mode=APPLY)","status":"ok","mode":"Full"}
+{"ts_utc":"2026-05-24T20:10:47Z","step":"fleet-update-push","status":"ok","mode":"Full"}
+{"mode":"Full","step":"done","docker_ready":true,"ts_utc":"2026-05-24T20:10:47Z","warmed":13,"status":"ok"}
+{"ts_utc":"2026-05-24T20:34:29Z","step":"start","status":"begin","mode":"Status"}
+{"ts_utc":"2026-05-24T20:34:29Z","step":"status","status":"ok","mode":"Status"}

@@ -1,0 +1,15 @@
+# Author: RKOJ-ELENO :: 2026-05-25
+# Operator source archive — not served by the site, only used locally for
+# media selection. Excluded from the Railway upload so the artifact stays
+# below Cloudflare's 500 MB request body cap.
+public/img/_sorted_2026/
+
+# Local-only artifacts
+node_modules/
+.next/
+.git/
+_legacy-flask/
+.env
+.env.local
+.DS_Store
+Thumbs.db

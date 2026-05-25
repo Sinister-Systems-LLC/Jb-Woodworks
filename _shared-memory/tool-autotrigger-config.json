@@ -1,0 +1,110 @@
+{
+  "_comment": "Auto-trigger config for sanctum automation tools. Operator 2026-05-24T21:32Z: 'most if not all of these tools to be automatic as to if and when the agent needs or wants to use them'. RKOJ-ELENO :: 2026-05-24. Cron-style triggers fire via SinisterToolAutotrigger scheduled task; event-style triggers fire via hooks (next iter).",
+  "version": 1,
+  "triggers": [
+    {
+      "tool": "mesh-coordinator",
+      "args": ["-Action", "Sweep"],
+      "schedule": "cron:10m",
+      "owner_task": "SinisterMeshCoordSweep",
+      "purpose": "purge expired locks",
+      "active": true
+    },
+    {
+      "tool": "fleet-autostart",
+      "args": ["-Mode", "Full", "-Quiet"],
+      "schedule": "event:logon",
+      "owner_task": "SinisterFleetAutostart (Startup .bat fallback active)",
+      "purpose": "boot bringup: Docker wait + bot warm + sweeps",
+      "active": true
+    },
+    {
+      "tool": "heartbeat-sweep",
+      "args": ["-MaxAgeHours", "24", "-Apply"],
+      "schedule": "cron:24h",
+      "owner_task": "SinisterToolAutotrigger",
+      "purpose": "archive stale heartbeats daily",
+      "active": true
+    },
+    {
+      "tool": "brain-decay-score",
+      "args": ["-Action", "Score", "-TopDecayed", "5", "-As", "Json"],
+      "schedule": "cron:7d",
+      "owner_task": "SinisterToolAutotrigger",
+      "purpose": "weekly decay scan -> surface most-stale brain entries to operator queue",
+      "active": true,
+      "post_action": "append top 5 to OPERATOR-ACTION-QUEUE.md as 'brain entries past half-life'"
+    },
+    {
+      "tool": "brain-decay-score",
+      "args": ["-Action", "ExportIndex"],
+      "schedule": "cron:24h",
+      "owner_task": "SinisterToolAutotrigger",
+      "purpose": "daily refresh of _INDEX-DECAY-SCORES.md sidecar (read by operator/agents for at-a-glance entry health)",
+      "active": true
+    },
+    {
+      "tool": "contradict",
+      "args": ["-Action", "Audit", "-WindowDays", "7"],
+      "schedule": "cron:7d",
+      "owner_task": "SinisterToolAutotrigger",
+      "purpose": "weekly contradict audit -> flag STAGNANT lanes",
+      "active": true,
+      "post_action": "if any lane STAGNANT, push fleet-update priority=normal"
+    },
+    {
+      "tool": "link-route",
+      "args": ["-Action", "RouteAll", "-Limit", "5"],
+      "schedule": "cron:30m",
+      "owner_task": "SinisterToolAutotrigger",
+      "purpose": "route processed drop-link entries to OPERATOR-ACTION-QUEUE for review",
+      "active": true
+    },
+    {
+      "tool": "link-download",
+      "args": ["-Action", "Run", "-Limit", "3"],
+      "schedule": "cron:15m",
+      "owner_task": "SinisterToolAutotrigger",
+      "purpose": "process pending drop-link queue rows",
+      "active": true
+    },
+    {
+      "tool": "claude-accounts-status",
+      "args": ["-Mode", "Bar"],
+      "schedule": "event:spawn",
+      "owner_task": "start-sinister-session.ps1:1580 banner injection",
+      "purpose": "show round-robin status on every spawn",
+      "active": true
+    },
+    {
+      "tool": "fleet-update",
+      "args": ["-Action", "List", "-Tail", "5", "-Slug", "<self>"],
+      "schedule": "event:spawn + every-Nth-heartbeat",
+      "owner_task": "CLAUDE.md cold-start step 11(a)",
+      "purpose": "agent picks up fleet-wide announcements",
+      "active": true
+    },
+    {
+      "tool": "detect-similar-agents",
+      "args": ["-ProjectKey", "<spawn-project>"],
+      "schedule": "event:spawn",
+      "owner_task": "start-sinister-session.ps1 Build-Phrase",
+      "purpose": "detect sibling agents in same/similar project; inject brief into cold-start phrase",
+      "active": true
+    }
+  ],
+  "queued_for_event_hooks_next_iter": [
+    {
+      "tool": "contradict",
+      "args": ["-Action", "Pivot"],
+      "trigger_event": "plan.md file write under _shared-memory/plans/",
+      "purpose": "auto-prompt for pivot row when a new plan is written; drives project growth"
+    },
+    {
+      "tool": "brain-decay-score",
+      "args": ["-Action", "Reinforce"],
+      "trigger_event": "brain entry referenced via Composes-with in another new entry",
+      "purpose": "auto-reinforce brain entries cited by new doctrines"
+    }
+  ]
+}

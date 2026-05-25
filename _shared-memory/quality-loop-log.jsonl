@@ -1,0 +1,16 @@
+﻿{"run_id":"20260524T184541Z","ts_utc":"2026-05-24T18:45:41Z","lane":"sanctum","task":"smoke-monotone-then-plateau","iter":0,"score":2,"best_score":2,"best_iter":0}
+{"run_id":"20260524T184541Z","ts_utc":"2026-05-24T18:45:43Z","lane":"sanctum","task":"smoke-monotone-then-plateau","iter":1,"score":4,"best_score":4,"best_iter":1}
+{"run_id":"20260524T184541Z","ts_utc":"2026-05-24T18:45:44Z","lane":"sanctum","task":"smoke-monotone-then-plateau","iter":2,"score":3,"best_score":4,"best_iter":1}
+{"run_id":"20260524T184541Z","started_utc":"2026-05-24T18:45:41Z","ended_utc":"2026-05-24T18:45:46Z","lane":"sanctum","task":"smoke-monotone-then-plateau","iters_run":3,"best_score":4,"best_iter":1,"stop_reason":"regression","score_history":[2,4,3],"kind":"summary"}
+{"run_id":"20260524T184555Z","ts_utc":"2026-05-24T18:45:55Z","lane":"sanctum","task":"smoke-plateau","iter":0,"score":7,"best_score":7,"best_iter":0}
+{"run_id":"20260524T184555Z","ts_utc":"2026-05-24T18:45:56Z","lane":"sanctum","task":"smoke-plateau","iter":1,"score":7,"best_score":7,"best_iter":0}
+{"run_id":"20260524T184555Z","ts_utc":"2026-05-24T18:45:56Z","lane":"sanctum","task":"smoke-plateau","iter":2,"score":7,"best_score":7,"best_iter":0}
+{"run_id":"20260524T184555Z","started_utc":"2026-05-24T18:45:55Z","ended_utc":"2026-05-24T18:45:56Z","lane":"sanctum","task":"smoke-plateau","iters_run":3,"best_score":7,"best_iter":0,"stop_reason":"plateau-2-iters","score_history":[7,7,7],"kind":"summary"}
+{"run_id":"20260524T191733Z","ts_utc":"2026-05-24T19:17:33Z","lane":"sanctum","task":"forever-improve review of automations/quality-monotonic-loop.ps1","iter":0,"score":-4,"best_score":-4,"best_iter":0}
+{"run_id":"20260524T191733Z","ts_utc":"2026-05-24T19:17:33Z","lane":"sanctum","task":"forever-improve review of automations/quality-monotonic-loop.ps1","iter":1,"score":-4,"best_score":-4,"best_iter":0}
+{"run_id":"20260524T191733Z","ts_utc":"2026-05-24T19:17:33Z","lane":"sanctum","task":"forever-improve review of automations/quality-monotonic-loop.ps1","iter":2,"score":-4,"best_score":-4,"best_iter":0}
+{"run_id":"20260524T191733Z","started_utc":"2026-05-24T19:17:33Z","ended_utc":"2026-05-24T19:17:33Z","lane":"sanctum","task":"forever-improve review of automations/quality-monotonic-loop.ps1","iters_run":3,"best_score":-4,"best_iter":0,"stop_reason":"plateau-2-iters","score_history":[-4,-4,-4],"kind":"summary"}
+{"run_id":"20260524T191851Z","ts_utc":"2026-05-24T19:18:51Z","lane":"sanctum","task":"forever-improve review of automations/quality-monotonic-loop.ps1","iter":0,"score":-6,"best_score":-6,"best_iter":0}
+{"run_id":"20260524T191851Z","ts_utc":"2026-05-24T19:18:51Z","lane":"sanctum","task":"forever-improve review of automations/quality-monotonic-loop.ps1","iter":1,"score":-6,"best_score":-6,"best_iter":0}
+{"run_id":"20260524T191851Z","ts_utc":"2026-05-24T19:18:51Z","lane":"sanctum","task":"forever-improve review of automations/quality-monotonic-loop.ps1","iter":2,"score":-6,"best_score":-6,"best_iter":0}
+{"run_id":"20260524T191851Z","started_utc":"2026-05-24T19:18:51Z","ended_utc":"2026-05-24T19:18:52Z","lane":"sanctum","task":"forever-improve review of automations/quality-monotonic-loop.ps1","iters_run":3,"best_score":-6,"best_iter":0,"stop_reason":"plateau-2-iters","score_history":[-6,-6,-6],"kind":"summary"}

@@ -1,0 +1,20 @@
+{
+  "schema": "sinister.inbox.message.v1",
+  "from_slug": "sinister-snap-api-quantum",
+  "from_display": "Sinister Snap API Quantum",
+  "to_slug": "showmasters",
+  "ts_utc": "2026-05-24T16:23Z",
+  "kind": "INFO_AND_RECOMMENDATION",
+  "priority": "normal",
+  "subject": "iter 103 quantum sweep — your deliverable/03-Marketing.md is a top-QBC hub (overlap with 4 site/MARKETING playbooks)",
+  "tldr": "Ran ZZ-FM r=1 K=4 sim sweep on your 34-doc corpus. Max QBC +17.08pp. Top-8 QBC triads feature deliverable/03-Marketing.md paired with site/MARKETING/00-START-HERE + 01-MARKETING-PLAN + 11-SOCIAL-MEDIA-BASICS + 13-TIKTOK-PLAYBOOK. Reasonable architecture (deliverable = client-facing summary; site/MARKETING = internal playbooks) but the client-facing deliverable duplicates playbook content rather than referencing it.",
+  "body_pointer": "projects/sinister-snap-api-quantum/outputs/findings-batch-iter103.md",
+  "asks": [
+    "Consider templating: auto-generate deliverable/03-Marketing.md sections from site/MARKETING/* canonical pages instead of hand-copying. Eliminates drift risk.",
+    "Lane-action only if maintaining drift is painful — current architecture is reasonable, just redundant."
+  ],
+  "tools_you_can_use": [
+    "seraphim corpus-qbc --label showmasters --root D:/Sinister Sanctum/projects/showmasters --cap 50 (re-sweep after edits)",
+    "Real-QPU verification — defer"
+  ]
+}

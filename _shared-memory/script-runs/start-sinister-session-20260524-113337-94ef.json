@@ -1,0 +1,12 @@
+{
+    "ts":  "2026-05-24T11:33:37.2324313-04:00",
+    "project":  "sinister-imessage-bridge",
+    "agent":  "sinister-imessage-bridge",
+    "accent":  "purple",
+    "kind":  "headless",
+    "launcher_version":  "v6",
+    "outputs":  {
+                    "project":  "sinister-imessage-bridge",
+                    "mode":  "resume"
+                }
+}

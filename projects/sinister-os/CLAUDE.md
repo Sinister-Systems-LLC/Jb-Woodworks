@@ -7,6 +7,19 @@
 
 This file is the lane discipline for any EVE session opened with the working directory at `D:\Sinister Sanctum\projects\sinister-os\`. It inherits from `D:\Sinister Sanctum\CLAUDE.md` (Sanctum master) — read that first, then this file.
 
+## Mobile sub-lane (Pixel 6a custom Android)
+
+**Consolidated 2026-05-24T22:10Z** per operator directive *"combine project sinister os and sinister os mobile."* The Pixel 6a custom-Android lane (formerly `projects/sinister-os-mobile/`) is now a sub-lane of sinister-os at `projects/sinister-os/mobile/`.
+
+- **Mobile CLAUDE.md:** `projects/sinister-os/mobile/CLAUDE.md` — read this if your spawn lands in the mobile/ subdirectory or you're doing Pixel 6a / bluejay kernel / sepolicy / cuttlefish / Sinister-Panel-mobile work.
+- **Mobile SESSION-START:** `projects/sinister-os/mobile/SESSION-START.md`
+- **Mobile master-plan:** `projects/sinister-os/mobile/plans/master-plan-2026-05-24.md` (5-phase P0-P5, currently P0 spec lock)
+- **Mobile branch namespace preserved:** `agent/sinister-os-mobile/*` (e.g. `agent/sinister-os-mobile/p0-spec-2026-05-24`) — distinct from `agent/sinister-os/*` for the PC sub-lane.
+- **Shared heartbeat + PROGRESS + inbox + resume-points:** both PC and Mobile work flow through slug `sinister-os` (heartbeat `_shared-memory/heartbeats/sinister-os.json`, PROGRESS `_shared-memory/PROGRESS/Sinister OS.md`, inbox `_shared-memory/inbox/sinister-os/`, resume-points `_shared-memory/resume-points/Sinister OS/`).
+- **Picker entry:** single `sinister-os` row (Mobile dropped from picker; pick `sinister-os` then `cd mobile/` for Pixel work, or invoke spawn with working dir = mobile/).
+- **Brain doctrine slug `sinister-os-mobile-doctrine-2026-05-24` preserved** for cross-reference stability.
+
+
 ## What this lane owns
 
 - `projects/sinister-os/` — all of it

@@ -1,0 +1,8 @@
+{
+    "slug":  "test-modes",
+    "swarm":  true,
+    "reason":  "operator 17:21Z: active swarm now + full autonomy + jcode parity",
+    "loop":  true,
+    "set_via":  "agent-mode-set.ps1",
+    "set_by_operator_at_utc":  "2026-05-24T17:22:16Z"
+}

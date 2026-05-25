@@ -27,10 +27,33 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    "@id": "https://www.showmasters.com/tampa.html#tampa-coverage",
+    "name": "Show Masters Production Logistics — Tampa, FL coverage",
+    "url": "https://www.showmasters.com/tampa.html",
+    "telephone": "+1-877-765-2267",
+    "email": "Orders@ShowMasters.com",
+    "image": "https://www.showmasters.com/public/img/og-card.svg",
+    "description": "Live-event stagehands, riggers, technicians and crew leads for Tampa, FL productions. Local crew dispatched from our Orlando hub.",
+    "areaServed": [
+      { "@type": "City", "name": "Tampa" },
+      { "@type": "City", "name": "St. Petersburg" },
+      { "@type": "City", "name": "Clearwater" },
+      { "@type": "City", "name": "Sarasota" },
+      { "@type": "City", "name": "Brandon" }
+    ],
+    "parentOrganization": { "@id": "https://www.showmasters.com/#org" },
+    "foundingDate": "2002"
+  }
+  </script>
 </head>
 <body>
 
-  <nav id="navbar" class="scrolled">
+    <a class="skip-link" href="#main">Skip to main content</a>
+<nav id="navbar" class="scrolled">
     <div class="nav-inner">
       <a href="/" class="nav-logo"><img src="public/img/logo-monogram.svg" alt="Show Masters" /></a>
       <ul class="nav-links">
@@ -49,22 +72,30 @@
   <div class="mobile-menu" id="mobileMenu">
     <ul>
       <li><a href="what.html" class="mob-link">What we do</a></li>
+      <li><a href="how.html" class="mob-link">How we work</a></li>
       <li><a href="where.html" class="mob-link">Where we work</a></li>
       <li><a href="shows.html" class="mob-link">Shows</a></li>
       <li><a href="blog.html" class="mob-link">Blog</a></li>
-      <li><a href="careers.html">Apply</a></li>
+      <li><a href="about.html" class="mob-link">About</a></li>
+      <li><a href="careers.html" class="mob-link">Apply</a></li>
       <li><a href="contact.html" class="mob-link">Contact</a></li>
       <li><a href="order.html" class="btn btn-primary mob-link">Order Online</a></li>
     </ul>
   </div>
 
+  <main id="main">
+
   <header class="page-header page-header-city">
-    <div class="page-hero-bg" style="background-image: url('public/img/generated/cities/tampa.png');"></div>
+    <div class="page-hero-bg" style="background-image: image-set(url('public/img/generated/cities/tampa.webp') type('image/webp'), url('public/img/generated/cities/tampa.png') type('image/png'));"></div>
     <div class="page-hero-overlay"></div>
     <div class="container">
       <h1>Stagehands, riggers &amp; crew<br/><em>in Tampa Bay.</em></h1>
       <p class="subtitle">Tampa shows get crewed from our Orlando Hub &mdash; most of our Tampa Bay crew lives in the metro and never sees an I-4 traffic drive. Local hands that already know Amalie Arena, Tampa Convention Center, Yuengling Center, Raymond James Stadium, and the Straz Center.</p>
-    </div>
+      <div class="hero-cta-row" style="margin-top: 32px;">
+        <a href="contact.html#estimate" class="btn btn-primary btn-large">Get an Estimate</a>
+        <a href="order.html" class="btn btn-ghost btn-large">Place a Crew Order</a>
+      </div>
+</div>
   </header>
 
   <section style="padding: 40px 0 60px;">
@@ -82,8 +113,7 @@
             <p><strong style="color:var(--text);">Phone:</strong> <a href="tel:+18777652267" style="color:var(--gold);">(877) 765-2267</a></p>
             <p><strong style="color:var(--text);">Email:</strong> <a href="mailto:Orders@ShowMasters.com" style="color:var(--gold);">Orders@ShowMasters.com</a></p>
           </div>
-        </div>
-      </div>
+        </div></div>
     </div>
   </section>
 
@@ -123,6 +153,7 @@
       </div>
     </div>
   </section>
+  </main>
 
   <footer class="site-footer">
     <div class="container">

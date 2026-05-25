@@ -1,0 +1,34 @@
+{
+    "version":  2,
+    "default":  {
+                    "agent_name":  "",
+                    "accent_color":  "purple"
+                },
+    "per_project":  {
+                        "sinister-os":  {
+                                            "agent_name":  "sinister-os",
+                                            "accent_color":  "purple"
+                                        },
+                        "kernel-apk":  {
+                                           "agent_name":  "TEST-RENAME-AGENT",
+                                           "accent_color":  "cyan"
+                                       },
+                        "sanctum":  {
+                                        "agent_name":  "TEST-S",
+                                        "accent_color":  "green"
+                                    },
+                        "sinister-chatbot":  {
+                                                 "agent_name":  "sinister-chatbot",
+                                                 "accent_color":  "purple"
+                                             }
+                    },
+    "available_colors":  [
+                             "purple",
+                             "magenta",
+                             "cyan",
+                             "green",
+                             "yellow",
+                             "white",
+                             "random"
+                         ]
+}

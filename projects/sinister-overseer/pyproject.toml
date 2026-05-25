@@ -1,0 +1,68 @@
+# Author: RKOJ-ELENO :: 2026-05-24
+# Sinister Overseer -- meta-agent / agent-of-agents
+# Status: P0 scaffolded -- deps DECLARED, not yet installed
+
+[project]
+name = "sinister-overseer"
+version = "0.0.1"
+description = "Sinister Overseer :: meta-agent that watches + fixes + learns across attached projects (token-efficient model-tier routing)"
+authors = [
+    { name = "RKOJ-ELENO" }
+]
+license = { text = "Proprietary" }
+readme = "README.md"
+requires-python = ">=3.11"
+
+# Recommended starter deps -- DECLARED only; install when P1 begins.
+# Phase indicates earliest phase that needs each dep.
+dependencies = [
+    # P0 -- already-fleet-standard (stdlib pathlib + json + sqlite3 cover most)
+    # P1 -- Anthropic SDK for cheap-tier detector calls
+    "anthropic >=0.34",
+    # P1 -- data validation for adapter config
+    "pydantic >=2.5",
+    # P1 -- env loading (cost cap envs etc)
+    "python-dotenv >=1.0",
+    # P1 -- file system watcher for file-based signal sources
+    "watchdog >=4.0",
+    # P1 -- polling cadence scheduler
+    "schedule >=1.2",
+    # P1 -- HTTP for metric_endpoint signal sources (where applicable)
+    "requests >=2.31",
+    # P2 -- structured logging
+    "structlog >=24.1",
+    # P3 -- SQLite is stdlib; sqlalchemy optional for ORM convenience (kept declared, not required at P0)
+    # "sqlalchemy >=2.0",
+    # P4 -- cross-project aggregator uses numpy for KS-test + rolling stats
+    "numpy >=1.24",
+    "scipy >=1.11",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest >=7.4",
+    "pytest-cov >=4.1",
+    "ruff >=0.1",
+]
+
+[project.scripts]
+overseer = "overseer.__main__:main_cli_entrypoint"
+
+[project.urls]
+"Project Root" = "file://D:/Sinister Sanctum/projects/sinister-overseer"
+"Charter" = "file://D:/Sinister Sanctum/_shared-memory/knowledge/sinister-overseer-charter-2026-05-24.md"
+
+[build-system]
+requires = ["setuptools >=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"

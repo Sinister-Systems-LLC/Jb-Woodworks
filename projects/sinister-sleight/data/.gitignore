@@ -1,0 +1,16 @@
+# Author: RKOJ-ELENO :: 2026-05-24
+# Exclude all data subdirs (regenerable) but keep this .gitignore + README + .gitkeep tracked.
+raw/
+features/
+news/
+llm-traders/
+cache/
+paid-promo-blacklist/
+*.parquet
+*.csv
+*.csv.gz
+*.feather
+kill-switch.lock
+!.gitkeep
+!.gitignore
+!README.md

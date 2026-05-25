@@ -1,0 +1,6 @@
+{
+  "version": 1,
+  "default": "direct",
+  "routes": {},
+  "_comment": "Seed file for eve proxy CLI. Author: RKOJ-ELENO :: 2026-05-24. Schema: {version: int, default: 'direct'|'ny'|'fl'|'tor', routes: {<app>: <route>}}. The CLI is the only writer; do not hand-edit unless you know what you're doing."
+}

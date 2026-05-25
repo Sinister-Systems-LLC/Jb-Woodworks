@@ -1,0 +1,15 @@
+{
+    "ts_utc":  "2026-05-25T00:10:06Z",
+    "_author":  "RKOJ-ELENO :: 2026-05-25",
+    "to":  "sanctum",
+    "subject":  "Fleet-update fan-out: feature priority=high",
+    "message":  "Phase 2 SHIPPED: jcode animations in EVE.exe main menu + JOKR logo verified bundled. (1) automations/eve-launcher/animations.py NEW (~200 LOC; HSV-to-RGB ported from jcode ui_animations.rs + orbit_rings 3D-ASCII + Sinister-purple-biased hue rotation +/- 40deg around 270 + ease-out-cubic 150ms + threaded ticker 80ms; render_banner returns frame; skippable via SINISTER_SKIP_ANIMATIONS=1). (2) eve.py _main_menu_loop wired banner region (5 rows above menu header = 6-line cap honored per Uniform UI doctrine). (3) build-eve-exe.bat --hidden-import animations added. (4) EVE.exe rebuilt (1991620 bytes / 18:55Z) + mirror force-synced to ~/.eve/. (5) JOKR icon: --icon assets/eve-icon.ico ALREADY in build flags since iter 5; ie4uinit -ClearIconCache run to force Windows taskbar/explorer refresh. OPERATOR: close + reopen EVE.exe -\u003e main menu opens with animated SINISTER banner + JOKR icon in title bar/taskbar.",
+    "rationale":  "Overseer auto-distributed because this fleet-update either targeted you OR mentioned your lane slug. Review + ack if actionable.",
+    "source_id":  "fu-20260524185843-d1335a",
+    "source_ts_utc":  "2026-05-24T22:58:43Z",
+    "from":  "overseer",
+    "source_priority":  "high",
+    "tag":  "[OVERSEER-DISTRIBUTE]",
+    "source_pushed_by":  "sanctum",
+    "source_kind":  "feature"
+}

@@ -1,0 +1,170 @@
+{
+  "schema": "sinister-seraphim.reconcile-corpora.v1",
+  "label": "chatbot-vs-brain",
+  "corpus_a_root": "D:/Sinister Sanctum/projects/sinister-chatbot",
+  "corpus_b_root": "D:/Sinister Sanctum/_shared-memory/knowledge",
+  "n_corpus_a": 190,
+  "n_corpus_b": 160,
+  "cl_threshold": 0.3,
+  "sim_threshold": 0.5,
+  "total_pairs": 30400,
+  "reconciliation_candidates_count": 6,
+  "top_reconciliation_candidates": [
+    {
+      "rank": 1,
+      "classical": 0.30795735995758516,
+      "sim": 0.9731117946311187,
+      "combined": 1.2810691545887039,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/docs/LETSTEXT-CANONICAL-REFERENCE.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-ui-canonical-dashboard-skeleton-inheritance-2026-05-24.md"
+    },
+    {
+      "rank": 2,
+      "classical": 0.5359900932148859,
+      "sim": 0.6068662948708183,
+      "combined": 1.1428563880857041,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/docs/CHATBOT-DIRECTION-2026-05-24.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-chatbot-direction-2026-05-24.md"
+    },
+    {
+      "rank": 3,
+      "classical": 0.3008424370287517,
+      "sim": 0.7860642519028708,
+      "combined": 1.0869066889316223,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/_handoff_docs/DEV-HANDOFF.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-chatbot-test-env-findings-2026-05-24.md"
+    },
+    {
+      "rank": 4,
+      "classical": 0.36656598257397366,
+      "sim": 0.694326947245508,
+      "combined": 1.0608929298194818,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/CLAUDE.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-chatbot-direction-2026-05-24.md"
+    },
+    {
+      "rank": 5,
+      "classical": 0.4094198578101114,
+      "sim": 0.5213305516707861,
+      "combined": 0.9307504094808976,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/docs/OVERHAUL-2026-05-16-letstext-map.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-ui-canonical-dashboard-skeleton-inheritance-2026-05-24.md"
+    },
+    {
+      "rank": 6,
+      "classical": 0.30190791986794724,
+      "sim": 0.5266949861919877,
+      "combined": 0.8286029060599349,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/docs/MCP-INTEGRATION-MAP.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/spawned-window-capabilities-2026-05-23.md"
+    }
+  ],
+  "top_highest_classical": [
+    {
+      "rank": 1,
+      "classical": 0.5359900932148859,
+      "sim": 0.6068662948708183,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/docs/CHATBOT-DIRECTION-2026-05-24.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-chatbot-direction-2026-05-24.md"
+    },
+    {
+      "rank": 2,
+      "classical": 0.4094198578101114,
+      "sim": 0.5213305516707861,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/docs/OVERHAUL-2026-05-16-letstext-map.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-ui-canonical-dashboard-skeleton-inheritance-2026-05-24.md"
+    },
+    {
+      "rank": 3,
+      "classical": 0.3798555099787304,
+      "sim": 0.2162159218768814,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/docs/CHATBOT-DIRECTION-2026-05-24.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-chatbot-test-env-findings-2026-05-24.md"
+    },
+    {
+      "rank": 4,
+      "classical": 0.36656598257397366,
+      "sim": 0.694326947245508,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/CLAUDE.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-chatbot-direction-2026-05-24.md"
+    },
+    {
+      "rank": 5,
+      "classical": 0.30795735995758516,
+      "sim": 0.9731117946311187,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/docs/LETSTEXT-CANONICAL-REFERENCE.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-ui-canonical-dashboard-skeleton-inheritance-2026-05-24.md"
+    },
+    {
+      "rank": 6,
+      "classical": 0.30190791986794724,
+      "sim": 0.5266949861919877,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/docs/MCP-INTEGRATION-MAP.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/spawned-window-capabilities-2026-05-23.md"
+    },
+    {
+      "rank": 7,
+      "classical": 0.3008424370287517,
+      "sim": 0.7860642519028708,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/_handoff_docs/DEV-HANDOFF.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-chatbot-test-env-findings-2026-05-24.md"
+    },
+    {
+      "rank": 8,
+      "classical": 0.29440774447936974,
+      "sim": 0.7456664061873247,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/mcp/README.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/pip-editable-hides-mcp-cwd-emptiness-2026-05-23.md"
+    },
+    {
+      "rank": 9,
+      "classical": 0.2938294953435384,
+      "sim": 0.1816932307374787,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/docs/MCP-INTEGRATION-MAP.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/pip-editable-hides-mcp-cwd-emptiness-2026-05-23.md"
+    },
+    {
+      "rank": 10,
+      "classical": 0.2918447143828069,
+      "sim": 0.9062189536652441,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/docs/SANDBOX-BYPASS.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/windows-npm-spawn-from-powershell.md"
+    },
+    {
+      "rank": 11,
+      "classical": 0.2866382806710738,
+      "sim": 0.4541588420539261,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/dashboard/public/downloads/LEO-ONBOARDING-PIXEL-6-PRO.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/kernel-apk-session-2026-05-24-FULL-handoff.md"
+    },
+    {
+      "rank": 12,
+      "classical": 0.2852662343153782,
+      "sim": 0.7116141254886547,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/dashboard/public/downloads/LEO-ONBOARDING-PIXEL-6-PRO.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/lukeprivacy-kpm-at-rest-safe.md"
+    },
+    {
+      "rank": 13,
+      "classical": 0.2838818529046743,
+      "sim": 0.9747753442892918,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/leo_dev/docs/WHAT-WAS-FIXED.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-chatbot-test-env-findings-2026-05-24.md"
+    },
+    {
+      "rank": 14,
+      "classical": 0.28376463279664216,
+      "sim": 0.9747753442892918,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/Andrew Panel/Sinister Harvester/reference-docs/WHAT-WAS-FIXED.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-chatbot-test-env-findings-2026-05-24.md"
+    },
+    {
+      "rank": 15,
+      "classical": 0.28376463279664216,
+      "sim": 0.9747753442892918,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-chatbot/Andrew Panel/Sinister Panel/panel/docs/WHAT-WAS-FIXED.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-chatbot-test-env-findings-2026-05-24.md"
+    }
+  ],
+  "wall_seconds": 207.61649990081787
+}

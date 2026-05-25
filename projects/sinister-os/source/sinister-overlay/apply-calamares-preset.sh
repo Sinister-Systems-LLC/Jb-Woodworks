@@ -68,6 +68,13 @@ done
 install -m 0644 "$SRC_DIR/branding/sinister/branding.desc" "$DST_DIR/branding/sinister/branding.desc"
 log "  + branding/sinister/branding.desc"
 
+# show.qml slideshow wrapper (slideshowAPI: 2 — Calamares wants QML, not raw image).
+# Safety fix 2026-05-24 (RKOJ-ELENO): was missing; Calamares bailed FATAL on missing QML.
+if [[ -f "$SRC_DIR/branding/sinister/show.qml" ]]; then
+  install -m 0644 "$SRC_DIR/branding/sinister/show.qml" "$DST_DIR/branding/sinister/show.qml"
+  log "  + branding/sinister/show.qml"
+fi
+
 # show.svg lives in the overlay's usr/share/calamares/branding/sinister/ tree.
 # Calamares looks for branding assets relative to branding.desc, so we copy
 # show.svg next to it in the destination.

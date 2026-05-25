@@ -12,6 +12,18 @@ Append-only catalog of what the generator has learned. Most-recent first.
 | Showmasters | `per-project/showmasters/` | (TBD — pull from `Showmasters Site/BRANDING/NANO-BANANA-INTEGRATION.md`) |
 | JB Woodworks | `per-project/jb-woodworks/` | (TBD — pull from JB Woodworks v0.2.0 canonical brand pack) |
 
+## Library + feedback loop (operator surface)
+
+Desktop folders per brand — operator's review surface. Drag-drop ✅/❌/📥 is the training signal.
+
+| Brand | Desktop folder | Learning state |
+|---|---|---|
+| JKOR | `C:\Users\Zonia\Desktop\JOKR\` | `learning/jkor.json` |
+| Showmasters | `C:\Users\Zonia\Desktop\Showmasters\` (created on first gen) | `learning/showmasters.json` |
+| JB Woodworks | `C:\Users\Zonia\Desktop\JB Woodworks\` (created on first gen) | `learning/jb-woodworks.json` |
+
+Fleet-agent API: `from sinister_generator.library import generate; generate(brand=..., prompt=..., kind=...)`. See `docs/LIBRARY-AND-FEEDBACK.md` (agent-side) + `JOKR\README.md` (operator-side).
+
 ## Cross-project prompt libraries
 
 | File | Purpose |

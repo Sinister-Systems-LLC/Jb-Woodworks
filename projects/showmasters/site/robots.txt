@@ -6,7 +6,9 @@ Disallow: /MARKETING/
 Disallow: /app-v2/
 Disallow: /STACK.md
 Disallow: /HOSTING.md
-Disallow: /privacy.html
-Disallow: /terms.html
+Disallow: /PLAN.md
+Disallow: /SECURITY.md
+Disallow: /CLAUDE.md
+Disallow: /.tmp/
 
 Sitemap: https://www.showmasters.com/sitemap.xml

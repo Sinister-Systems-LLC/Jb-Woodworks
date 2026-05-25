@@ -1,0 +1,179 @@
+{
+  "schema": "sinister-seraphim.corpus-qbc.v1",
+  "label": "sinister-tiktok-emu",
+  "root": "D:\\Sinister Sanctum\\projects\\sinister-tiktok-emu",
+  "n_docs_found": 440,
+  "n_docs_used": 120,
+  "cap": 120,
+  "sim_variant": "zzfm-r1-K4",
+  "total_triads": 280840,
+  "qbc_count": 7663,
+  "qbc_pct": 2.7285999145420883,
+  "max_advantage_pp": 54.535659530620265,
+  "median_advantage_pp": -39.50699408757657,
+  "top10_qbc": [
+    {
+      "rank": 1,
+      "advantage_pp": 54.535659530620265,
+      "classical": 0.6673674876416605,
+      "sim": 0.12201089233545788,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/living-mds/DECISIONS.md",
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/living-mds/ATTEMPT-LOG.md",
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/living-mds/CURRENT-STATE.md"
+      ]
+    },
+    {
+      "rank": 2,
+      "advantage_pp": 54.26511784026674,
+      "classical": 0.6670142319329693,
+      "sim": 0.12436305353030182,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/living-mds/DECISIONS.md",
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/living-mds/ATTEMPT-LOG.md",
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/living-mds/CURRENT-STATE.md"
+      ]
+    },
+    {
+      "rank": 3,
+      "advantage_pp": 53.30706084385254,
+      "classical": 0.6631756077257026,
+      "sim": 0.1301049992871772,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/living-mds/ATTEMPT-LOG.md",
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/living-mds/DECISIONS.md",
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/living-mds/CURRENT-STATE.md"
+      ]
+    },
+    {
+      "rank": 4,
+      "advantage_pp": 53.30045270089252,
+      "classical": 0.6608074278477595,
+      "sim": 0.1278029008388343,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/living-mds/ATTEMPT-LOG.md",
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/living-mds/DECISIONS.md",
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/living-mds/CURRENT-STATE.md"
+      ]
+    },
+    {
+      "rank": 5,
+      "advantage_pp": 47.173142750219185,
+      "classical": 0.6749731671842043,
+      "sim": 0.20324173968201242,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/living-mds/DECISIONS.md",
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/living-mds/CURRENT-STATE.md",
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/living-mds/ATTEMPT-LOG.md"
+      ]
+    },
+    {
+      "rank": 6,
+      "advantage_pp": 46.33611091483451,
+      "classical": 0.6644408323364015,
+      "sim": 0.20107972318805645,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/living-mds/DECISIONS.md",
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/living-mds/CURRENT-STATE.md",
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/living-mds/ATTEMPT-LOG.md"
+      ]
+    },
+    {
+      "rank": 7,
+      "advantage_pp": 44.35075704771852,
+      "classical": 0.7976730464339769,
+      "sim": 0.35416547595679165,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/living-mds/DECISIONS.md",
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/living-mds/ATTEMPT-LOG.md",
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/living-mds/DECISIONS.md"
+      ]
+    },
+    {
+      "rank": 8,
+      "advantage_pp": 44.27453172538251,
+      "classical": 0.7944537072517773,
+      "sim": 0.35170838999795223,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/living-mds/DECISIONS.md",
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/living-mds/ATTEMPT-LOG.md",
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/living-mds/ATTEMPT-LOG.md"
+      ]
+    },
+    {
+      "rank": 9,
+      "advantage_pp": 44.25303505811109,
+      "classical": 0.6586970478276656,
+      "sim": 0.2161666972465547,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/living-mds/CURRENT-STATE.md",
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/living-mds/ATTEMPT-LOG.md",
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/living-mds/DECISIONS.md"
+      ]
+    },
+    {
+      "rank": 10,
+      "advantage_pp": 44.21807262314899,
+      "classical": 0.7974970777829528,
+      "sim": 0.35531635155146285,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/living-mds/DECISIONS.md",
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/living-mds/ATTEMPT-LOG.md",
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/living-mds/DECISIONS.md"
+      ]
+    }
+  ],
+  "top5_highest_classical": [
+    {
+      "classical": 0.7976730464339769,
+      "sim": 0.35416547595679165,
+      "advantage_pp": 44.35075704771852,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/living-mds/DECISIONS.md",
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/living-mds/ATTEMPT-LOG.md",
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/living-mds/DECISIONS.md"
+      ]
+    },
+    {
+      "classical": 0.7974970777829528,
+      "sim": 0.35531635155146285,
+      "advantage_pp": 44.21807262314899,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/living-mds/DECISIONS.md",
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/living-mds/ATTEMPT-LOG.md",
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/living-mds/DECISIONS.md"
+      ]
+    },
+    {
+      "classical": 0.7944537072517773,
+      "sim": 0.35170838999795223,
+      "advantage_pp": 44.27453172538251,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/living-mds/DECISIONS.md",
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/living-mds/ATTEMPT-LOG.md",
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/living-mds/ATTEMPT-LOG.md"
+      ]
+    },
+    {
+      "classical": 0.7903146541083269,
+      "sim": 0.3546049521953656,
+      "advantage_pp": 43.570970191296134,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/living-mds/ATTEMPT-LOG.md",
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/living-mds/ATTEMPT-LOG.md",
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/living-mds/DECISIONS.md"
+      ]
+    },
+    {
+      "classical": 0.7827697476580363,
+      "sim": 0.8340500566412336,
+      "advantage_pp": -5.128030898319724,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/RESUME-HERE.md",
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/living-mds/TT-MASTER-INDEX.md",
+        "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/living-mds/TT-MASTER-INDEX.md"
+      ]
+    }
+  ],
+  "wall_seconds": 27.393500328063965
+}

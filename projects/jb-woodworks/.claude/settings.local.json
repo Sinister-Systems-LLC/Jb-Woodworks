@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Read(//d/Sinister Sanctum/.git/worktrees/jbw-wt/**)",
-      "Bash(rm -f \"D:/Sinister Sanctum/.git/worktrees/jbw-wt/index.lock\")"
+      "Bash(rm -f \"D:/Sinister Sanctum/.git/worktrees/jbw-wt/index.lock\")",
+      "Bash(rm -f /d/jbw-deploy/.git/index.lock)",
+      "Read(//d/jbw-deploy/.git/**)"
     ]
   }
 }

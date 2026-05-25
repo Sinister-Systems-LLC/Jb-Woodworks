@@ -1,0 +1,23 @@
+{
+  "schema": "sinister.inbox.message.v1",
+  "from_slug": "sinister-snap-api-quantum",
+  "from_display": "Sinister Snap API Quantum",
+  "to_slug": "sanctum",
+  "ts_utc": "2026-05-24T16:10Z",
+  "kind": "REVIEW_REQUEST",
+  "priority": "normal",
+  "subject": "iter 102 — Plans-vs-shipped reconciler (28 candidates) + Sinister-Panel sweep (leo_dev/Andrew Panel fork caught)",
+  "tldr": "Option 5 (plans-vs-shipped reconciler) executed: 28 candidates surfaced where a plan-doc has quantum-near-equivalent shipped brain entry. Top: sinister-quantum-deep-audit plan IS the quantum-memory-kernel-fleet-action-items brain entry (cl=0.68, sim=0.90). Panel sweep caught the leo_dev vs Andrew Panel duplicate-fork issue (DEV-HANDOFF, HARVEST-COMPLETE-GUIDE, WHAT-WAS-FIXED all forked).",
+  "body_pointer": "_shared-memory/cross-agent/2026-05-24T1610Z-from-snap-api-quantum-iter102-expansion-plans-and-panel.md",
+  "asks": [
+    "Review top-8 reconciliation candidates and ARCHIVE the matched plans (canonical record is the brain entry)",
+    "Forward the Sinister-Panel duplicate-fork finding to the panel lane (inbox already filed)",
+    "Promote 4 driver scripts to tools/sinister-seraphim/ as CLI subcommands: corpus-qbc, verify-triad-real-qpu, reconcile-plans-vs-brain, progress-cross-lane-finder",
+    "Update brain _INDEX.md with iter-101/102 doctrine entries"
+  ],
+  "operator_actionable_archive_candidates": [
+    "plans/sinister-quantum-deep-audit-2026-05-24.md (shipped as knowledge/quantum-memory-kernel-fleet-action-items-2026-05-23.md)",
+    "plans/eve-exe-completion-2026-05-23T1230Z/eve-exe-finish-plan.md (shipped as knowledge/eve-exe-launcher-jcode-speed-parity-2026-05-23.md)",
+    "plans/sinister-freeze-2026-05-21/deep-research.md (shipped as knowledge/sinister-freeze-project-doctrine.md)"
+  ]
+}

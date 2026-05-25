@@ -1,0 +1,15 @@
+{
+    "ts_utc":  "2026-05-25T00:10:08Z",
+    "_author":  "RKOJ-ELENO :: 2026-05-25",
+    "to":  "sanctum",
+    "subject":  "Fleet-update fan-out: feature priority=high",
+    "message":  "Auto-429 detect+rotate shipped: claude-wrapper.ps1 (scans 12 rate-limit patterns, parses retry-after ISO/relative/HH:MM, calls AutoMark429+PickBest, optional retry) + oauth-health-poller.ps1 (every 5min: clears expired limits, decodes JWT exp, scores slots, writes oauth-slot-health.json) + claude-oauth-accounts.ps1::AutoMark429 (idempotent widen-only) + install-oauth-health-poller.ps1 (schtasks installer). Smoke=22/22 PASS in temp dir. start-sinister-session.ps1 already calls PickBest pre-spawn (sibling). Operator action: run install-oauth-health-poller.ps1 ONCE.",
+    "rationale":  "Overseer auto-distributed because this fleet-update either targeted you OR mentioned your lane slug. Review + ack if actionable.",
+    "source_id":  "fu-20260524192518-a5edeb",
+    "source_ts_utc":  "2026-05-24T23:25:19Z",
+    "from":  "overseer",
+    "source_priority":  "high",
+    "tag":  "[OVERSEER-DISTRIBUTE]",
+    "source_pushed_by":  "sanctum-auto429",
+    "source_kind":  "feature"
+}

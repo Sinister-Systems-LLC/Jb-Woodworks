@@ -86,8 +86,15 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // ---- 3) Fallback: forward to FormSubmit (v1 behavior) ----
-  if (!emailSent && process.env.CONTACT_FORMSUBMIT_URL) {
+  // ---- 3) Fallback: forward to FormSubmit (operator-owned default) ----
+  // Hardcoded fallback so inquiries flow even when no env vars are set.
+  // Operator-owned email: jbwoodworks8@gmail.com (matches lib/site.ts SITE.email).
+  // Bounded to 8s so a slow third-party never hangs the form response.
+  const formSubmitUrl =
+    process.env.CONTACT_FORMSUBMIT_URL || "https://formsubmit.co/jbwoodworks8@gmail.com";
+  if (!emailSent && formSubmitUrl) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 8000);
     try {
       const fwd = new URLSearchParams();
       fwd.set("Name", name);
@@ -97,14 +104,28 @@ export async function POST(req: NextRequest) {
       fwd.set("Project Details", message);
       fwd.set("_subject", `New project inquiry - JB Woodworks (${name})`);
       fwd.set("_captcha", "false");
-      await fetch(process.env.CONTACT_FORMSUBMIT_URL, {
+      fwd.set("_template", "table");
+      const res = await fetch(formSubmitUrl, {
         method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: fwd.toString()
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Accept": "application/json",
+          "User-Agent": "JB-Woodworks-Site/0.3.0"
+        },
+        body: fwd.toString(),
+        redirect: "manual",
+        signal: controller.signal
       });
-      emailSent = true;
+      // 200, 302, and 303 are all "delivered" from FormSubmit.
+      emailSent = res.status < 400;
+      if (!emailSent) {
+        console.warn(`[contact] FormSubmit returned ${res.status}`);
+      }
     } catch (err) {
+      // AbortError or network failure - log but do not block the user.
       console.error("[contact] FormSubmit fallback failed:", err);
+    } finally {
+      clearTimeout(timer);
     }
   }
 

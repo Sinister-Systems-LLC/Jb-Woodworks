@@ -1,0 +1,91 @@
+{
+  "schema": "sinister-seraphim.corpus-qbc.v1",
+  "label": "sinister-imessage-bridge",
+  "root": "D:\\Sinister Sanctum\\projects\\sinister-imessage-bridge",
+  "n_docs_found": 17,
+  "n_docs_used": 17,
+  "cap": 50,
+  "sim_variant": "zzfm-r1-K4",
+  "total_triads": 680,
+  "qbc_count": 2,
+  "qbc_pct": 0.29411764705882354,
+  "max_advantage_pp": 1.1125426733532118,
+  "median_advantage_pp": -34.59587379673727,
+  "top10_qbc": [
+    {
+      "rank": 1,
+      "advantage_pp": 1.1125426733532118,
+      "classical": 0.3773141519608129,
+      "sim": 0.3661887252272808,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-imessage-bridge/README.md",
+        "D:/Sinister Sanctum/projects/sinister-imessage-bridge/docs/architecture.md",
+        "D:/Sinister Sanctum/projects/sinister-imessage-bridge/memory/decisions.md"
+      ]
+    },
+    {
+      "rank": 2,
+      "advantage_pp": 0.5200393101609802,
+      "classical": 0.3474712007100951,
+      "sim": 0.3422708076084853,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-imessage-bridge/README.md",
+        "D:/Sinister Sanctum/projects/sinister-imessage-bridge/memory/decisions.md",
+        "D:/Sinister Sanctum/projects/sinister-imessage-bridge/plans/p4-cross-lane-acceptance.md"
+      ]
+    }
+  ],
+  "top5_highest_classical": [
+    {
+      "classical": 0.39546377474745964,
+      "sim": 0.6850726794847407,
+      "advantage_pp": -28.960890473728107,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-imessage-bridge/docs/applescript-surface.md",
+        "D:/Sinister Sanctum/projects/sinister-imessage-bridge/memory/decisions.md",
+        "D:/Sinister Sanctum/projects/sinister-imessage-bridge/plans/p2-send-acceptance.md"
+      ]
+    },
+    {
+      "classical": 0.39528168534153973,
+      "sim": 0.5137733627960768,
+      "advantage_pp": -11.849167745453704,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-imessage-bridge/docs/applescript-surface.md",
+        "D:/Sinister Sanctum/projects/sinister-imessage-bridge/docs/architecture.md",
+        "D:/Sinister Sanctum/projects/sinister-imessage-bridge/plans/p2-send-acceptance.md"
+      ]
+    },
+    {
+      "classical": 0.38590504733115766,
+      "sim": 0.5739483479164995,
+      "advantage_pp": -18.804330058534184,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-imessage-bridge/README.md",
+        "D:/Sinister Sanctum/projects/sinister-imessage-bridge/docs/architecture.md",
+        "D:/Sinister Sanctum/projects/sinister-imessage-bridge/plans/p4-cross-lane-acceptance.md"
+      ]
+    },
+    {
+      "classical": 0.38264134669691713,
+      "sim": 0.8632149419288068,
+      "advantage_pp": -48.057359523188964,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-imessage-bridge/docs/applescript-surface.md",
+        "D:/Sinister Sanctum/projects/sinister-imessage-bridge/plans/p1-readonly-acceptance.md",
+        "D:/Sinister Sanctum/projects/sinister-imessage-bridge/plans/p2-send-acceptance.md"
+      ]
+    },
+    {
+      "classical": 0.3776143123480593,
+      "sim": 0.598917422890698,
+      "advantage_pp": -22.130311054263874,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-imessage-bridge/docs/architecture.md",
+        "D:/Sinister Sanctum/projects/sinister-imessage-bridge/plans/p3-bridge-daemon-acceptance.md",
+        "D:/Sinister Sanctum/projects/sinister-imessage-bridge/plans/p4-cross-lane-acceptance.md"
+      ]
+    }
+  ],
+  "wall_seconds": 0.12700128555297852
+}

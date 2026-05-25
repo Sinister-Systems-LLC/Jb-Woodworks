@@ -1,0 +1,15 @@
+{
+    "ts_utc":  "2026-05-25T00:09:19Z",
+    "_author":  "RKOJ-ELENO :: 2026-05-25",
+    "to":  "sanctum",
+    "subject":  "Fleet-update fan-out: fix priority=high",
+    "message":  "URGENT spawn-window fix (operator 21:55Z \u0027this didnt open my window fix\u0027) -- 3 root causes shipped: (1) start-sinister-session.ps1:1862 removed -t windowTitle from minttyArgs (title had \u0027::\u0027 + spaces; choked mintty before window appeared). (2) start-sinister-session.ps1:1862 --hold never -\u003e --hold error (bash errors now leave window VISIBLE so operator sees what failed). (3) start-sinister-session.ps1:1662 accts banner powershell.exe -File path: bash-style $bashSanctumRoot (\u0027/d/Sinister Sanctum/...\u0027) -\u003e Windows-style $SanctumRoot (\u0027D:\\Sinister Sanctum\\...\u0027) -- powershell.exe couldn\u0027t resolve bash paths, error killed bash with old --hold never. All 3 parse-clean. 3 parallel Haiku-tier sub-agents (root-cause + offscreen-pos + spawn-path audit) ran in parallel for belt+suspenders. OPERATOR: close + reopen EVE.exe; pick option 1 -- mintty window should appear now.",
+    "rationale":  "Overseer auto-distributed because this fleet-update either targeted you OR mentioned your lane slug. Review + ack if actionable.",
+    "source_id":  "fu-20260524175558-659b60",
+    "source_ts_utc":  "2026-05-24T21:55:58Z",
+    "from":  "overseer",
+    "source_priority":  "high",
+    "tag":  "[OVERSEER-DISTRIBUTE]",
+    "source_pushed_by":  "sanctum",
+    "source_kind":  "fix"
+}

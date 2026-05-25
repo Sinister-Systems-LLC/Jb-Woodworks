@@ -1,0 +1,15 @@
+{
+    "ts_utc":  "2026-05-25T00:50:46Z",
+    "_author":  "RKOJ-ELENO :: 2026-05-25",
+    "to":  "sanctum",
+    "subject":  "Fleet-update fan-out: feature priority=high",
+    "message":  "Leo auto-setup flow shipped: EVE.exe + Sanctum folder drop -\u003e first-run gate -\u003e wizard -\u003e spawns real Sinister Setup Wizard Claude agent via mintty + claude --dangerously-skip-permissions. New: spawn-setup-wizard.ps1 / eve-first-run-check.ps1 v2 (3-tier exit + SimulateFreshMachine) / eve-first-run-wizard.ps1 v2 (logs all steps) / eve.py --force-setup-wizard flag + dual-marker drift protection. 10 issues documented + fixed. Doctrine: leo-auto-setup-doctrine-2026-05-25.md + leo-first-run-issues-and-fixes-2026-05-25.md.",
+    "rationale":  "Overseer auto-distributed because this fleet-update either targeted you OR mentioned your lane slug. Review + ack if actionable.",
+    "source_id":  "fu-20260524204837-9f02f5",
+    "source_ts_utc":  "2026-05-25T00:48:37Z",
+    "from":  "overseer",
+    "source_priority":  "high",
+    "tag":  "[OVERSEER-DISTRIBUTE]",
+    "source_pushed_by":  "sanctum-leo-autosetup",
+    "source_kind":  "feature"
+}

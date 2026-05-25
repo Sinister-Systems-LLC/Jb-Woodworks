@@ -1,0 +1,173 @@
+﻿{
+    "schema":  "sinister.fleet-freeze-diagnosis.v1",
+    "ts_utc":  "2026-05-25T03:24:38Z",
+    "findings":  [
+                     "RED: conhost.exe count \u003e 30 (currently 31) - Windows console host pile. Each cmd/powershell/mintty launch creates one. Excess indicates spawn flood + slow shutdown.",
+                     "ORANGE: 15 scheduled tasks have issues (NOT_HIDDEN / FAILING / STUCK_RUNNING).",
+                     "ORANGE: Ollama running as user-mode process (no Windows service). Scheduled tasks running as SYSTEM may not reach it."
+                 ],
+    "process_summary":  [
+                            {
+                                "Name":  "conhost",
+                                "Count":  31,
+                                "TotalMemMB":  247.9,
+                                "OldestAgeHrs":  8.345933054972221
+                            },
+                            {
+                                "Name":  "node",
+                                "Count":  6,
+                                "TotalMemMB":  499.9,
+                                "OldestAgeHrs":  0.24502656058333333
+                            },
+                            {
+                                "Name":  "cmd",
+                                "Count":  6,
+                                "TotalMemMB":  29.9,
+                                "OldestAgeHrs":  0.24504793522222221
+                            },
+                            {
+                                "Name":  "claude",
+                                "Count":  4,
+                                "TotalMemMB":  2577.2,
+                                "OldestAgeHrs":  0.245187363
+                            },
+                            {
+                                "Name":  "powershell",
+                                "Count":  3,
+                                "TotalMemMB":  191.4,
+                                "OldestAgeHrs":  0.12784471047222221
+                            },
+                            {
+                                "Name":  "mintty",
+                                "Count":  3,
+                                "TotalMemMB":  53.9,
+                                "OldestAgeHrs":  0.24532366483333332
+                            },
+                            {
+                                "Name":  "python",
+                                "Count":  1,
+                                "TotalMemMB":  15.4,
+                                "OldestAgeHrs":  0.012872074416666665
+                            }
+                        ],
+    "scheduled_task_issues":  [
+                                  {
+                                      "Name":  "RKOJ",
+                                      "State":  3,
+                                      "LastResult":  1,
+                                      "Issue":  "FAILING (LastResult=1)",
+                                      "Exec":  "cmd.exe /c \"D:\\Sinister Sanctum\\automations\\window-manager\\console-daemon.bat\""
+                                  },
+                                  {
+                                      "Name":  "SinisterAPKAutoPush",
+                                      "State":  3,
+                                      "LastResult":  4294770688,
+                                      "Issue":  "FAILING (LastResult=4294770688)",
+                                      "Exec":  "powershell.exe -WindowStyle Hidden -NoProfile -ExecutionPolicy Bypass -File \"D:\\Sinister\\01_Projects..."
+                                  },
+                                  {
+                                      "Name":  "SinisterAPKWatchdog",
+                                      "State":  3,
+                                      "LastResult":  4294770688,
+                                      "Issue":  "FAILING (LastResult=4294770688)",
+                                      "Exec":  "powershell.exe -WindowStyle Hidden -NoProfile -ExecutionPolicy Bypass -File \"D:\\Sinister\\01_Projects..."
+                                  },
+                                  {
+                                      "Name":  "SinisterBrainAutoAnnotate",
+                                      "State":  3,
+                                      "LastResult":  1,
+                                      "Issue":  "FAILING (LastResult=1)",
+                                      "Exec":  "powershell.exe -WindowStyle Hidden -NoProfile -ExecutionPolicy Bypass -File \"D:\\Sinister Sanctum\\aut..."
+                                  },
+                                  {
+                                      "Name":  "SinisterCustodian",
+                                      "State":  3,
+                                      "LastResult":  4294770688,
+                                      "Issue":  "FAILING (LastResult=4294770688)",
+                                      "Exec":  "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -WindowStyle Hidden -ExecutionPolicy Bypas..."
+                                  },
+                                  {
+                                      "Name":  "SinisterCustodian-DailyRestart",
+                                      "State":  3,
+                                      "LastResult":  1,
+                                      "Issue":  "FAILING (LastResult=1)",
+                                      "Exec":  "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -WindowStyle Hidden -ExecutionPolicy Bypas..."
+                                  },
+                                  {
+                                      "Name":  "SinisterLoopRelentlessWatchdog",
+                                      "State":  3,
+                                      "LastResult":  3221225786,
+                                      "Issue":  "FAILING (LastResult=3221225786)",
+                                      "Exec":  "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"D:\\Sinister Sanctum\\automations\\loop-relent..."
+                                  },
+                                  {
+                                      "Name":  "SinisterPushAllAgents",
+                                      "State":  3,
+                                      "LastResult":  1,
+                                      "Issue":  "FAILING (LastResult=1)",
+                                      "Exec":  "powershell.exe -WindowStyle Hidden -NoProfile -ExecutionPolicy Bypass -File \"D:\\Sinister Sanctum\\aut..."
+                                  },
+                                  {
+                                      "Name":  "SinisterSanctumDailyBackup",
+                                      "State":  3,
+                                      "LastResult":  4294770688,
+                                      "Issue":  "FAILING (LastResult=4294770688)",
+                                      "Exec":  "powershell.exe -WindowStyle Hidden -NoProfile -ExecutionPolicy Bypass -File \"D:\\Sinister Sanctum\\aut..."
+                                  },
+                                  {
+                                      "Name":  "SinisterScrcpyP1",
+                                      "State":  3,
+                                      "LastResult":  1,
+                                      "Issue":  "FAILING (LastResult=1)",
+                                      "Exec":  "C:\\Users\\Zonia\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Genymobile.scrcpy_Microsoft.Winget.Source_8we..."
+                                  },
+                                  {
+                                      "Name":  "SinisterScrcpyP2",
+                                      "State":  3,
+                                      "LastResult":  1,
+                                      "Issue":  "FAILING (LastResult=1)",
+                                      "Exec":  "C:\\Users\\Zonia\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Genymobile.scrcpy_Microsoft.Winget.Source_8we..."
+                                  },
+                                  {
+                                      "Name":  "SinisterVault",
+                                      "State":  3,
+                                      "LastResult":  1,
+                                      "Issue":  "FAILING (LastResult=1)",
+                                      "Exec":  "cmd.exe /c \"D:\\Sinister Sanctum\\tools\\sinister-vault\\vault-daemon.bat\""
+                                  },
+                                  {
+                                      "Name":  "Sinister-daily-digest",
+                                      "State":  3,
+                                      "LastResult":  2147942667,
+                                      "Issue":  "FAILING (LastResult=2147942667)",
+                                      "Exec":  "C:\\Users\\Zonia\\jupyter-workstation\\Scripts\\python.exe \"C:\\Users\\Zonia\\Desktop\\Tools\\cron\\daily_diges..."
+                                  },
+                                  {
+                                      "Name":  "Sinister-fleet-monitor",
+                                      "State":  3,
+                                      "LastResult":  2,
+                                      "Issue":  "FAILING (LastResult=2)",
+                                      "Exec":  "C:\\Users\\Zonia\\jupyter-workstation\\Scripts\\pythonw.exe \"C:\\Users\\Zonia\\Desktop\\Tools\\cron\\fleet_moni..."
+                                  },
+                                  {
+                                      "Name":  "Sinister-sheets-sync",
+                                      "State":  3,
+                                      "LastResult":  2,
+                                      "Issue":  "FAILING (LastResult=2)",
+                                      "Exec":  "C:\\Users\\Zonia\\jupyter-workstation\\Scripts\\pythonw.exe \"C:\\Users\\Zonia\\Desktop\\Tools\\cron\\sheets_syn..."
+                                  }
+                              ],
+    "mcp_health":  {
+                       "OllamaService":  "NOT_REGISTERED",
+                       "OllamaHttp200":  true,
+                       "OllamaVersion":  "{\"version\":\"0.5.7-0-ga420a45-dirty\"}"
+                   },
+    "actions_taken":  [
+
+                      ],
+    "operator_actionable":  [
+                                "INVESTIGATE: failing scheduled tasks - read their log files (typically _shared-memory/logs/ or per-script log dir)",
+                                "FIX: register Ollama as a Windows service (sc.exe create Ollama binPath=\u0027C:\\\\Program Files\\\\Ollama\\\\ollama.exe serve\u0027) OR move bots to user-context scheduled tasks"
+                            ],
+    "zombies":  null
+}

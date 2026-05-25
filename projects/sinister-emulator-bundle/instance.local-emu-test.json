@@ -1,0 +1,16 @@
+{
+  "_comment_1": "Author: RKOJ-ELENO :: 2026-05-24",
+  "_comment_2": "Local-emu-test variant of instance.json. Drop-in replacement when running cvd-1 against the local RKA server (RUN_LOCAL_RKA_FOR_EMU_TESTING.bat) instead of Hetzner production. Operator deploys this by copying it over source/patches/instance.json OR by setting RKA_HOST/RKA_PORT env vars at cvd boot.",
+  "_comment_3": "Differences from production instance.json: rka_host -> 127.0.0.1 OR cvd host-bridge gateway; device_template -> pixel6a (matches kernel-apk fleet); build_fingerprint -> Android 15 BP1A.250505.005 (matches lukeprivacy doctrine + verified GET_FINGERPRINT response from local server 2026-05-24T17:08Z).",
+  "instance_id": "sinister-cvd-local-emu-test",
+  "rka_host": "127.0.0.1",
+  "rka_port": 59348,
+  "auth_token": "7432c2f5bef5afc6dc1293e61b83e804355eaffd0c85f95cb47a067f5540aff5",
+  "device_template": "pixel6a",
+  "build_fingerprint": "google/bluejay/bluejay:15/BP1A.250505.005/150000:user/release-keys",
+  "_notes": [
+    "If cvd cannot reach 127.0.0.1 from inside the VM, use the cuttlefish host-bridge gateway IP (typically 192.168.97.1 for QEMU-bridge cvds) and bind the RKA server to 0.0.0.0 not 127.0.0.1.",
+    "auth_token kept identical to production so libsinister_attest.so doesn't need to be reauthored.",
+    "build_fingerprint matches the verified GET_FINGERPRINT response from the local Java RKA server with --device pixel6a default."
+  ]
+}

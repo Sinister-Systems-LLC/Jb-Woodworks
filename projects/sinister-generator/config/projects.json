@@ -4,15 +4,15 @@
   "projects": [
     {
       "slug": "jkor",
-      "display_name": "JKOR",
+      "display_name": "JOKR",
       "lane": "jkor",
-      "brand_lock_helper": "jkor_image",
-      "output_root": "outputs/jkor/",
+      "brand_lock_helper": "jokr_image",
+      "output_root": "outputs/JOKR/",
       "memory_root": "memory/per-project/jkor/",
       "default_image_types": ["banners", "social", "thumbs", "cutouts"],
       "owner_agent": "general",
       "registered_utc": "2026-05-23T07:00:00Z",
-      "notes": "First project. Brand: purple cartoon demon-jester w/ gold crown + jester staff + cards + JOKR text. See memory/per-project/jkor/BRAND.md"
+      "notes": "First project. Brand: purple cartoon demon-jester w/ gold crown + jester staff + cards + JOKR text. See memory/per-project/jkor/BRAND.md. Slug path kept as 'jkor' for back-compat; display + outputs renamed to JOKR on 2026-05-24."
     },
     {
       "slug": "showmasters",

@@ -1,0 +1,130 @@
+{
+  "schema": "sinister-seraphim.reconcile-corpora.v1",
+  "label": "imessage-bridge-vs-dashboard-skeleton",
+  "corpus_a_root": "D:/Sinister Sanctum/projects/sinister-imessage-bridge",
+  "corpus_b_root": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton",
+  "n_corpus_a": 17,
+  "n_corpus_b": 31,
+  "cl_threshold": 0.3,
+  "sim_threshold": 0.5,
+  "total_pairs": 527,
+  "reconciliation_candidates_count": 1,
+  "top_reconciliation_candidates": [
+    {
+      "rank": 1,
+      "classical": 0.3106352472273207,
+      "sim": 0.8246666517611164,
+      "combined": 1.1353018989884371,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/memory/decisions.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/THEME-DOCTRINE.md"
+    }
+  ],
+  "top_highest_classical": [
+    {
+      "rank": 1,
+      "classical": 0.3106352472273207,
+      "sim": 0.8246666517611164,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/memory/decisions.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/THEME-DOCTRINE.md"
+    },
+    {
+      "rank": 2,
+      "classical": 0.2822833924452963,
+      "sim": 0.791789379734691,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/memory/decisions.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/.claude/memory/R.md"
+    },
+    {
+      "rank": 3,
+      "classical": 0.27594387445986396,
+      "sim": 0.7136055402563051,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/memory/decisions.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/CHANGELOG.md"
+    },
+    {
+      "rank": 4,
+      "classical": 0.26584101994065557,
+      "sim": 0.5733229759072749,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/dashboard/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/VERIFY.md"
+    },
+    {
+      "rank": 5,
+      "classical": 0.2651870416386328,
+      "sim": 0.16602378675992688,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/dashboard/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/THEME-DOCTRINE.md"
+    },
+    {
+      "rank": 6,
+      "classical": 0.2584264851244126,
+      "sim": 0.7936390455709632,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/memory/decisions.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/AGENTS.md"
+    },
+    {
+      "rank": 7,
+      "classical": 0.25705870875931663,
+      "sim": 0.8795685937849799,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/dashboard/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/README.md"
+    },
+    {
+      "rank": 8,
+      "classical": 0.25655389718755045,
+      "sim": 0.8061525718032322,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/memory/decisions.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/docs/agent-handoff.md"
+    },
+    {
+      "rank": 9,
+      "classical": 0.2529578098805109,
+      "sim": 0.5381618807618301,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/dashboard/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/AGENTS.md"
+    },
+    {
+      "rank": 10,
+      "classical": 0.25227447386578056,
+      "sim": 0.9502501445594709,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/memory/decisions.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/docs/navigation-groups.md"
+    },
+    {
+      "rank": 11,
+      "classical": 0.25119739038036065,
+      "sim": 0.38027124136391083,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/memory/decisions.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/README.md"
+    },
+    {
+      "rank": 12,
+      "classical": 0.2488562417667658,
+      "sim": 0.6930974995706564,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/dashboard/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/.claude/memory/R.md"
+    },
+    {
+      "rank": 13,
+      "classical": 0.24768800507757982,
+      "sim": 0.6611515865760036,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/dashboard/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/docs/agent-handoff.md"
+    },
+    {
+      "rank": 14,
+      "classical": 0.24467402196514831,
+      "sim": 0.47982895607962467,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/dashboard/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/00-START-HERE.md"
+    },
+    {
+      "rank": 15,
+      "classical": 0.2408819676620213,
+      "sim": 0.20135580226366703,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/dashboard/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/CHANGELOG.md"
+    }
+  ],
+  "wall_seconds": 6.273999929428101
+}

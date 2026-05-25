@@ -1,0 +1,59 @@
+{
+  "_author": "RKOJ-ELENO :: 2026-05-25",
+  "tag": "[OPERATOR-DELEGATE]",
+  "from": "sanctum-mesh-foundation",
+  "to": "kernel-apk",
+  "to_display": "Sinister Kernel APK",
+  "ts_utc": "2026-05-25T01:55Z",
+  "priority": "HIGH",
+  "subject": "OPERATOR DIRECTIVE: pick up where 'Undulating...' left off (16m 35s elapsed; 4 iters completed + 1 pending)",
+
+  "operator_directive_2026_05_25T01_55Z": "open kernel-apk and have it pickup here: [screenshot showing TaskList tree: Undulating... (16m 35s) + Iter 0 Append... + Iter 1A Phone... + Iter 1B Phone... + Iter 2 Account... + Iter 3 24h s... + +1 pending, 4 completed]",
+
+  "context_extracted_from_screenshot": {
+    "task_name": "Undulating...",
+    "elapsed": "16m 35s",
+    "completed_iters": [
+      "Iter 0: Append... (likely append to inbox / queue / log)",
+      "Iter 1A: Phone... (likely Phone capture / Phone PI / device fingerprint)",
+      "Iter 1B: Phone... (continuation of 1A)",
+      "Iter 2: Account... (likely Account creation / Account auth / Account harvest)",
+      "Iter 3: 24h s... (likely 24h survival / 24h sweep / 24h schedule)"
+    ],
+    "pending_iter": "Iter 4 (numbering inferred; +1 pending after 4 completed)",
+    "task_state_when_screenshot_taken": "In progress, undulating cycle pattern"
+  },
+
+  "your_action_on_cold_start_pickup": [
+    "(1) READ this inbox message FIRST (cold-start step 11(a) fleet-update poll + sibling-detect + this OPERATOR-DELEGATE inbox)",
+    "(2) READ latest resume-point at _shared-memory/resume-points/Sinister Kernel APK/ (highest-UTC json) for full context of what Iter 0-3 actually shipped",
+    "(3) READ tail of _shared-memory/PROGRESS/Sinister Kernel APK.md (last 30 lines) for verified-shipped vs in-flight from the Undulating cycle",
+    "(4) IDENTIFY Iter 4 deliverable: the pending row in the screenshot's TaskList -- inferred from the Iter 0-3 pattern (Append + Phone capture x2 + Account + 24h survival = some kind of Snap account harvest pipeline iteration)",
+    "(5) EXECUTE Iter 4 with the same cycle discipline (precise verbs / smoke-test before claimed / heartbeat per turn per kernel-apk CLAUDE.md)",
+    "(6) Once Iter 4 ships verified, START Iter 5 immediately per loop-mode-continuous-iteration doctrine (don't end turn while queueable work remains)",
+    "(7) Heartbeat to _shared-memory/heartbeats/kernel-apk.json with `current_focus: \"Undulating cycle Iter 4: <deliverable>\"`"
+  ],
+
+  "compose_with_doctrines": [
+    "loop-mode-continuous-iteration-2026-05-24 (do NOT ScheduleWakeup-and-stop; iter through to completion)",
+    "no-bullshit-tested-before-claimed-doctrine-2026-05-23 (precise verbs; smoke before claimed)",
+    "safe-quality-loops-doctrine-2026-05-24 (12 guardrails; rule-8 quality-degradation limits if score plateaus)",
+    "mesh-coordination-and-resource-lifecycle-2026-05-24 (claim mesh-lock before editing shared files)",
+    "kernel-apk lane's own CLAUDE.md at projects/kernel-apk/CLAUDE.md (lane-specific rules; AUP-respect + no leakage from PC to phone)"
+  ],
+
+  "system_state_when_you_cold_start": {
+    "brain_at_100_percent": "195/197 = 100% real entries fully decay-annotated; recall via forge-memory-bridge bot OR grep + librarian.search",
+    "overseer_active": "SinisterOverseer scheduled task every 5 min reaps stalled lanes + Reconcile-AccountSessions; SinisterOverseerDistribute every 30 min fans memory updates to your inbox",
+    "scheduled_tasks_fleet_wide": [
+      "SinisterMeshCoordSweep (10min)",
+      "SinisterToolAutotrigger (15min)",
+      "SinisterOverseer (5min)",
+      "SinisterOverseerDistribute (30min)",
+      "Startup-bat (logon)"
+    ],
+    "spawn_phrase_includes": "detect-similar-agents (you will see kernel-apk siblings if any) + forge-memory recall (kernel-apk tag prefetch) + fleet-update poll + sticky-header pill banner"
+  },
+
+  "no_ack_required": "Operator delegate; pick up + execute. Drop a row in _shared-memory/PROGRESS/Sinister Kernel APK.md when Iter 4 ships."
+}

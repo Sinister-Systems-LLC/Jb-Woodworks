@@ -1,0 +1,12 @@
+{
+    "ts":  "2026-05-24T11:34:23.8081126-04:00",
+    "project":  "sinister-chatbot",
+    "agent":  "sinister-chatbot",
+    "accent":  "purple",
+    "kind":  "headless",
+    "launcher_version":  "v6",
+    "outputs":  {
+                    "project":  "sinister-chatbot",
+                    "mode":  "resume"
+                }
+}

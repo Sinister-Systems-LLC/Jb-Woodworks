@@ -1,0 +1,7 @@
+# Sinister canonical sus_open_redirect rules
+# Format: <original_path> <redirected_path> <stage>
+#   stage 0 = applied at boot-completed.sh
+#   stage 1 = applied at service.sh
+/proc/cpuinfo /data/adb/sinister/fake/cpuinfo 0
+/proc/net/if_inet6 /data/adb/sinister/fake/empty_if_inet6 0
+/sys/devices/soc0/serial_number /data/adb/sinister/fake/empty_serial 0

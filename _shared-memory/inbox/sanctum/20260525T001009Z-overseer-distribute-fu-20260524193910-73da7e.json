@@ -1,0 +1,15 @@
+{
+    "ts_utc":  "2026-05-25T00:10:09Z",
+    "_author":  "RKOJ-ELENO :: 2026-05-25",
+    "to":  "sanctum",
+    "subject":  "Fleet-update fan-out: verify priority=high",
+    "message":  "CLAUDE LOGIN SYSTEM VERIFIED 5/5 PASS. Operator\u0027s ~/.claude/.credentials.json hash IDENTICAL before+after all wizard activity (46e53cb39...) -- running sessions stay logged in. Isolation template (HOME+USERPROFILE+CLAUDE_CONFIG_DIR redirected to per-account sandbox in TEMP) confirmed. EVE.exe v0.4.5 rebuilt 2027208 bytes mirrored. claude-oauth-accounts.ps1 List PASS. Sub-agent A\u0027s 429 poller already firing (operator slot auto-marked limited at 22:28Z).",
+    "rationale":  "Overseer auto-distributed because this fleet-update either targeted you OR mentioned your lane slug. Review + ack if actionable.",
+    "source_id":  "fu-20260524193910-73da7e",
+    "source_ts_utc":  "2026-05-24T23:39:10Z",
+    "from":  "overseer",
+    "source_priority":  "high",
+    "tag":  "[OVERSEER-DISTRIBUTE]",
+    "source_pushed_by":  "sanctum",
+    "source_kind":  "verify"
+}

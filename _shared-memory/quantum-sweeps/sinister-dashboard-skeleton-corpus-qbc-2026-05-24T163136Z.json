@@ -1,0 +1,179 @@
+{
+  "schema": "sinister-seraphim.corpus-qbc.v1",
+  "label": "sinister-dashboard-skeleton",
+  "root": "D:\\Sinister Sanctum\\projects\\sinister-dashboard-skeleton",
+  "n_docs_found": 31,
+  "n_docs_used": 31,
+  "cap": 50,
+  "sim_variant": "zzfm-r1-K4",
+  "total_triads": 4495,
+  "qbc_count": 156,
+  "qbc_pct": 3.4705228031145716,
+  "max_advantage_pp": 37.985941402172095,
+  "median_advantage_pp": -30.876831448316423,
+  "top10_qbc": [
+    {
+      "rank": 1,
+      "advantage_pp": 37.985941402172095,
+      "classical": 0.6080986254180838,
+      "sim": 0.2282392113963628,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/CHANGELOG.md",
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/MIGRATION-NOTES.md",
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/THEME-DOCTRINE.md"
+      ]
+    },
+    {
+      "rank": 2,
+      "advantage_pp": 30.280927460339235,
+      "classical": 0.48811716792281884,
+      "sim": 0.18530789331942646,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/CHANGELOG.md",
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/THEME-DOCTRINE.md",
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/docs/lg-classes-reference.md"
+      ]
+    },
+    {
+      "rank": 3,
+      "advantage_pp": 27.74711619176337,
+      "classical": 0.5582389478513815,
+      "sim": 0.2807677859337478,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/CHANGELOG.md",
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/MIGRATION-NOTES.md",
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/VERIFY.md"
+      ]
+    },
+    {
+      "rank": 4,
+      "advantage_pp": 23.664225083220174,
+      "classical": 0.5187042811406998,
+      "sim": 0.282062030308498,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/README.md",
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/THEME-DOCTRINE.md",
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/docs/lg-classes-reference.md"
+      ]
+    },
+    {
+      "rank": 5,
+      "advantage_pp": 23.318857527957277,
+      "classical": 0.43739010672327483,
+      "sim": 0.20420153144370204,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/00-START-HERE.md",
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/THEME-DOCTRINE.md",
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/docs/lg-classes-reference.md"
+      ]
+    },
+    {
+      "rank": 6,
+      "advantage_pp": 22.170444138109364,
+      "classical": 0.6890451157658682,
+      "sim": 0.4673406743847746,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/CHANGELOG.md",
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/README.md",
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/THEME-DOCTRINE.md"
+      ]
+    },
+    {
+      "rank": 7,
+      "advantage_pp": 21.422958788413368,
+      "classical": 0.44977162910213203,
+      "sim": 0.23554204121799835,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/CHANGELOG.md",
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/MIGRATION-NOTES.md",
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/docs/navigation-groups.md"
+      ]
+    },
+    {
+      "rank": 8,
+      "advantage_pp": 21.153284563565542,
+      "classical": 0.36516729386856056,
+      "sim": 0.15363444823290515,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/CHANGELOG.md",
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/MIGRATION-NOTES.md",
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/docs/dependencies.md"
+      ]
+    },
+    {
+      "rank": 9,
+      "advantage_pp": 21.08552064545448,
+      "classical": 0.4852217358796512,
+      "sim": 0.27436652942510636,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/CHANGELOG.md",
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/THEME-DOCTRINE.md",
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/docs/token-reference.md"
+      ]
+    },
+    {
+      "rank": 10,
+      "advantage_pp": 20.597388635636367,
+      "classical": 0.5925778191307697,
+      "sim": 0.386603932774406,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/MIGRATION-NOTES.md",
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/README.md",
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/THEME-DOCTRINE.md"
+      ]
+    }
+  ],
+  "top5_highest_classical": [
+    {
+      "classical": 0.6890451157658682,
+      "sim": 0.4673406743847746,
+      "advantage_pp": 22.170444138109364,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/CHANGELOG.md",
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/README.md",
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/THEME-DOCTRINE.md"
+      ]
+    },
+    {
+      "classical": 0.6667196252091719,
+      "sim": 0.5152160315591087,
+      "advantage_pp": 15.150359365006327,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/00-START-HERE.md",
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/README.md",
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/THEME-DOCTRINE.md"
+      ]
+    },
+    {
+      "classical": 0.6577677452368061,
+      "sim": 0.5059412149744511,
+      "advantage_pp": 15.182653026235505,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/CHANGELOG.md",
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/MIGRATION-NOTES.md",
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/README.md"
+      ]
+    },
+    {
+      "classical": 0.65391229811281,
+      "sim": 0.7313444803803738,
+      "advantage_pp": -7.743218226756376,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/00-START-HERE.md",
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/AGENTS.md",
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/README.md"
+      ]
+    },
+    {
+      "classical": 0.6497286327519918,
+      "sim": 0.8038783956150573,
+      "advantage_pp": -15.414976286306548,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/00-START-HERE.md",
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/CHANGELOG.md",
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/README.md"
+      ]
+    }
+  ],
+  "wall_seconds": 0.4464998245239258
+}

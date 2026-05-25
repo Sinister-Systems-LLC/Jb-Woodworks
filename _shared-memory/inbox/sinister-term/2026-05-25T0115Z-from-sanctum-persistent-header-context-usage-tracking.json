@@ -1,0 +1,45 @@
+{
+  "_author": "RKOJ-ELENO :: 2026-05-25",
+  "tag": "[DELEGATE]",
+  "from": "sanctum-mesh-foundation",
+  "to": "sinister-term",
+  "to_display": "Sinister TERM",
+  "ts_utc": "2026-05-25T01:15Z",
+  "subject": "Sinister Terms: persistent header + jcode context+usage popups + concise log system (operator 01:15Z hard-canonical)",
+
+  "operator_verbatim_2026_05_25T01_15Z": "i want this to be permanent header i can see on the top of the sinister terms and i want the jcode popups to track context and to track usage and to have the concise logging system that he has add this and pickup wheere we left off work on our terms",
+
+  "spec_extracted": [
+    "PERMANENT HEADER at top of every Sinister Term -- pill banner (sinister-panel/resume/claude-opus-4-7[1m]/mcp:22/bots:16/--skip-perms/acct:operator/SWARM/LOOP) must be STICKY (not scroll-off after spawn)",
+    "JCODE-STYLE POPUPS for context tracking (context-window % used) + usage tracking (token spend per session)",
+    "CONCISE LOGGING SYSTEM from jcode (extracted earlier this session per memory-backbone doctrine -- src/logging.rs:145-426 [srv|ses|prv|mod] EVENT key=value format + rate-limit via min_interval)",
+    "Pick up where left off on Sinister TERM work"
+  ],
+
+  "sanctum_shipping_in_parallel_this_iter": {
+    "scroll_region_persistent_header": "automations/start-sinister-session.ps1 launch.sh -- adds DECSTBM scroll-region (top 3 rows fixed for pill banner, rows 4+ scroll for bash output). printf '\\033[4;rH' sets scroll region to rows 4-end; pill banner printed at row 1; cursor parked at row 4 before exec claude. Bash output / claude scrolls below header.",
+    "rationale_for_sanctum_owning_this_piece": "scroll-region lives in start-sinister-session.ps1 which is Sanctum-scope (per scope-discipline doctrine -- spawn pipeline is Sanctum); the IN-TERMINAL context+usage+concise-log surfaces are Sinister TERM lane (closer to claude UI integration)"
+  },
+
+  "what_sinister_term_lane_should_own": [
+    "Context-tracking popup: read claude session jsonl from ~/.claude/projects/<proj>/*.jsonl, parse the last assistant message for current token-count + cache breakdown, render an ANSI 'context: 65k/200k (32%)' status (small banner OR mintty title append OR sidebar in dedicated terminal pane)",
+    "Usage-tracking popup: route through automations/claude-usage-meter.ps1 (already exists; OAuth-compatible per oauth-pivot doctrine) for 5h-window remaining + today's spawn count + plan tier; render alongside context",
+    "Concise logging port from jcode src/logging.rs:145-426: structured [srv:SHORT|ses:SHORT|prv:SHORT|mod:SHORT] EVENT event=VALUE key=VALUE format with rate-limited dedup (min_interval HashMap). Apply to: launcher .ps1 progress lines + spawned bash debug output + agent inbox messages (where applicable). Compose with the eve-exe-uniform-ui-infinite-accounts-2026-05-24 6-color palette discipline",
+    "Operator-facing toggle: SINISTER_TERM_VERBOSE=1 falls back to legacy verbose output if needed"
+  ],
+
+  "scope_split": {
+    "sanctum_lane": "Persistent header via scroll-region in launch.sh (DECSTBM); this iter ships it. Backwards-compat: SINISTER_NO_STICKY_HEADER=1 env disables.",
+    "sinister_term_lane": "Context + Usage popup module + concise logger module (3 deliverables; ~150-300 LOC total; compose with my scroll-region top-3-rows budget)"
+  },
+
+  "compose_with_doctrines": [
+    "eve-exe-uniform-ui-infinite-accounts-2026-05-24 (6-color palette + tabular body + 6-line cap)",
+    "sanctum-scope-discipline-2026-05-24 (this split honors it)",
+    "session-start-auto-update-propagation-2026-05-24 (post-launcher edit triggers verify-eve-features auto-rebuild)",
+    "mesh-coordination-and-resource-lifecycle-2026-05-24 (mesh-lock automations/start-sinister-session.ps1 if you touch it; I'll release my lock after my scroll-region edit lands)",
+    "Jcode logging.rs:145-426 reference findings already documented in memory-backbone-3-tier-hybrid-better-than-jcode-2026-05-24"
+  ],
+
+  "next_action_for_sinister_term": "Ack via inbox reply when you pick up these 3 deliverables; default-after-30-min: I'll surface to OPERATOR-ACTION-QUEUE as a still-open ask"
+}

@@ -60,7 +60,7 @@ def generate(
       1. (optional) refresh feedback — scan ✅ Yes / ❌ No / 📥 Refs
       2. Build the ref list: 📥 Refs first, then ✅ Yes, then `extra_refs`
       3. Inject anti-patterns (from ❌ No notes) into the prompt
-      4. Generate via nano_banana (text-free by default; no JKOR_STYLE override)
+      4. Generate via nano_banana (text-free by default; no JOKR_STYLE override)
       5. Land output in <brand_desktop>/<UTC>-<kind>-<short-prompt>.png
       6. Operator can drag-drop into ✅ Yes / ❌ No to update the learning loop
     """

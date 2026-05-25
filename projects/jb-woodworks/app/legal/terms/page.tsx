@@ -72,7 +72,7 @@ export default function TermsOfService() {
 
       <h2>8. No professional advice</h2>
       <p>
-        Content on this website is for general informational purposes and is not legal, engineering, or licensed-contractor advice for your specific situation. Always confirm permitting, structural, and code requirements with the appropriate authority for your jurisdiction before proceeding with any project.
+        Content on this website is for general informational purposes and is not legal, engineering, or contractor advice for your specific situation. Always confirm permitting, structural, and code requirements with the appropriate authority for your jurisdiction before proceeding with any project.
       </p>
 
       <h2>9. Disclaimer of warranties</h2>

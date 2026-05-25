@@ -1,0 +1,18 @@
+{
+  "_author": "RKOJ-ELENO :: 2026-05-21",
+  "schema_version": "sinister.forge-memory.v1",
+  "namespace": "brain",
+  "key": "cross-machine-mesh-coord-2026-05-25",
+  "value": "# Cross-machine mesh coordination\n\n> Author: RKOJ-ELENO :: 2026-05-25\n\n## Why\n\n`mesh-coordinator.ps1` was built for the multi-EVE-session-on-one-machine\nscenario. With Sinister LINK pairing operator (eleno) + Leo's workstations,\nthe same lock primitive now spans two machines. Without `owner_machine` in\nthe lock record, both peers would see the same `<focus>.json` lock and\nneither could tell whether the holder was a local sister agent or the peer.\n\n## The extension (this iteration)\n\n- **New field** in every lock written by `Register`: `owner_machine`\n  (lowercased `$env:COMPUTERNAME` OR \u2014 preferred \u2014 the `local_machine`\n  field from `_shared-memory/sinister-link-state.json` so the value\n  matches what the peer sees in their synced copy).\n- **`Check` action**: now prints `LOCKED [PEER]:` when the lock's\n  `owner_machine` differs from the local machine id. Exit code 1 unchanged\n  (still a conflict \u2014 pick a different slice).\n- **New `List` columns**: `Loc` (`LOCAL`/`PEER`/`UNK`) and `Machine`.\n- **New `ListPeer` action**: scoped to peer-owned locks only. Reads\n  `sinister-link-state.json` to determine peer machine id; returns a\n  table of every active peer lock so operator can see \"what is Leo doing\n  right now\".\n\n## Backward compatibility\n\nLocks written before this iteration lack `owner_machine`. `Check` treats\nthose as `UNK` (no `[PEER]` flag; just `LOCKED:`). New locks immediately\nget the field. `Sweep` removes expired locks regardless; in 30 minutes\nall locks will carry the new field.\n\n## Consume in agent workflows\n\nBefore editing a shared file (anything in `automations/`, `CLAUDE.md`,\nbrain `_INDEX.md`, `projects.json`, etc.):\n\n```\npowershell -File automations\\mesh-coordinator.ps1 -Action Check -Focus <path-or-topic>\n```\n\n- Exit 0 + `CLEAR:` -> safe, proceed.\n- Exit 1 + `LOCKED:` -> local sister agent owns; inbox them or pick\n  different slice.\n- Exit 1 + `LOCKED [PEER]:` -> peer (Leo) owns; inbox or pick different\n  slice OR (if blocking) ping operator OOB.\n\n## Future: handoff protocol\n\nComposes with cross-agent inbox: when a peer-owned lock blocks you, drop\nan inbox row addressed to the peer's slug describing what you want and\nwhen you need it by. Peer's lane agent reads it on next cold-start poll\nand either Releases the lock + responds OR explains the conflict.\n\n## Smoke evidence\n\nSynthetic peer lock written to `_shared-memory/mesh-locks/projects_\nsinister-os_kernel-apk.ts.json` with `owner_machine: \"fake-leo-machine\"`\nwhile sinister-link-state declared `peer.name: \"fake-leo-machine\"`:\n\n- `ListPeer` -> \"Peer (fake-leo-machine) active locks: ... leo-kernel-apk\n  / projects/sinister-os/kernel-apk.ts / ACTIVE\"\n- `Check -Focus projects/sinister-os/kernel-apk.ts` ->\n  `LOCKED [PEER]: ... by leo-kernel-apk@fake-leo-machine ... exit 1`\n\nVerified 2026-05-25.\n\n## Composes with\n\n- `sinister-link-doctrine-2026-05-25` \u2014 provides the peer id used here\n- `mesh-coordination-and-resource-lifecycle-2026-05-24` \u2014 base doctrine\n- `gradual-growth-memory-push-eve-exe-ready-2026-05-24` \u2014 operator sees\n  peer locks in EVE.exe `L)` sub-page `V)` action\n",
+  "tags": [
+    "cross",
+    "machine",
+    "mesh",
+    "coord"
+  ],
+  "ts_utc_first": "2026-05-25T02:14:50Z",
+  "ts_utc_last": "2026-05-25T02:20:36Z",
+  "writes": 3,
+  "confidence": 1.0,
+  "content_hash": "4308b9c75bfb1dbe720773c00624c9c54cb269c2c1123ff969fe33d93cf84ea5"
+}

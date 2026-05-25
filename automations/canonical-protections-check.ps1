@@ -340,6 +340,20 @@ Test-Protection -Id 'P11' -Description 'UI base = dashboard-skeleton doctrine + 
     return ($coldStartOk -and $indexOk)
 } | Out-Null
 
+# P14 -- no PS-7-only scriptblock substitution in -replace under automations/ (PS 5.1 stringifies the block).
+# Brain: ps51-scriptblock-replace-bug-2026-05-25. Root-caused operator mintty exit 126 at 01:52Z.
+Test-Protection -Id 'P14' -Description 'No PS5.1-fatal -replace scriptblock pattern in automations/' -Check {
+    $autoDir = Join-Path $SanctumRoot 'automations'
+    if (-not (Test-Path $autoDir)) { return $false }
+    $bad = @(Select-String -Path (Join-Path $autoDir '*.ps1') -Pattern "-replace\s+'[^']*'\s*,\s*\{" -List -ErrorAction SilentlyContinue)
+    $bad = @($bad | Where-Object { $_.Line -notmatch '^\s*#' })
+    if ($bad.Count -gt 0) {
+        $script:results[-1].detail = "regression: $($bad[0].Path):$($bad[0].LineNumber)"
+        return $false
+    }
+    return $true
+} | Out-Null
+
 # Report
 $ts = (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ')
 $fails = $results | Where-Object { -not $_.ok }
@@ -365,12 +379,40 @@ if (-not $Quiet) {
 }
 
 if ($failCount -gt 0) {
-    $banner = "`n## [REVERT-DETECTED] $ts -- $failCount canonical protection(s) FAILED`n"
-    $body = ($fails | ForEach-Object { "- $($_.id) :: $($_.desc)" }) -join "`n"
-    $note = "`nDoctrine: _shared-memory/knowledge/do-not-revert-operator-canonical-protections-2026-05-23.md`n"
-    Add-Content -Path $OperatorQueue -Value ($banner + $body + $note) -Encoding UTF8 -ErrorAction SilentlyContinue
-    if (-not $Quiet) {
-        Write-Host "    [!] Surfaced to OPERATOR-ACTION-QUEUE.md" -ForegroundColor Yellow
+    # RKOJ-ELENO :: 2026-05-24T23:55Z :: DEDUP -- sub-agent audit 2026-05-24T23:50Z found
+    # 16 [REVERT-DETECTED] rows with only 3-5 unique failure signatures. Cron fires every
+    # ~10 min; without dedup OPERATOR-ACTION-QUEUE.md fills with identical rows. Now we
+    # compare current fail signature (sorted P-id set) against the most recent
+    # [REVERT-DETECTED] block; skip writing if identical (state hasn't changed).
+    $sig = (($fails | ForEach-Object { $_.id } | Sort-Object) -join ',')
+    $skipWrite = $false
+    try {
+        if (Test-Path $OperatorQueue) {
+            $tail = Get-Content $OperatorQueue -Tail 50 -ErrorAction SilentlyContinue
+            # Find the most recent [REVERT-DETECTED] block + its '- <id> ::' lines
+            $lastBlockIdx = -1
+            for ($i = $tail.Count - 1; $i -ge 0; $i--) {
+                if ($tail[$i] -match '\[REVERT-DETECTED\]') { $lastBlockIdx = $i; break }
+            }
+            if ($lastBlockIdx -ge 0) {
+                $priorIds = @()
+                for ($j = $lastBlockIdx + 1; $j -lt $tail.Count; $j++) {
+                    if ($tail[$j] -match '^\s*-\s+(\S+)\s*::') { $priorIds += $matches[1] }
+                    elseif ($tail[$j] -match '^##') { break }
+                }
+                $priorSig = (($priorIds | Sort-Object) -join ',')
+                if ($priorSig -and $priorSig -eq $sig) { $skipWrite = $true }
+            }
+        }
+    } catch {}
+    if (-not $skipWrite) {
+        $banner = "`n## [REVERT-DETECTED] $ts -- $failCount canonical protection(s) FAILED`n"
+        $body = ($fails | ForEach-Object { "- $($_.id) :: $($_.desc)" }) -join "`n"
+        $note = "`nDoctrine: _shared-memory/knowledge/do-not-revert-operator-canonical-protections-2026-05-23.md`n"
+        Add-Content -Path $OperatorQueue -Value ($banner + $body + $note) -Encoding UTF8 -ErrorAction SilentlyContinue
+        if (-not $Quiet) { Write-Host "    [!] Surfaced to OPERATOR-ACTION-QUEUE.md" -ForegroundColor Yellow }
+    } else {
+        if (-not $Quiet) { Write-Host "    [.] same fail signature as prior row; skip-write (dedup)" -ForegroundColor DarkGray }
     }
 }
 

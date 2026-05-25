@@ -136,8 +136,13 @@ $sbOk = (Test-Path $statusBar) -or (Test-Path $statusBar2)
 Add-Result 'R7'  'Forge status_bar.py (any of two spellings)'   $sbOk "$statusBar or $statusBar2"
 
 # R8 — Ruflo agentdb_* MCP server source on disk (can't easily call MCP from PS)
+# Updated 2026-05-24 (test-modes lane, swarm jcode-parity slice): probe paths were stale.
+# Ruflo actually lives at _shared-memory/external-imports/ruflo/{package.json,plugins/ruflo-*}.
+# Keep legacy paths as fallback in case operator npm-installs the published @ruvllm package.
 $rufloAny = $false
 $rufloPaths = @(
+    (Join-Path $SanctumRoot '_shared-memory\external-imports\ruflo\package.json'),
+    (Join-Path $SanctumRoot '_shared-memory\external-imports\ruflo\plugins\ruflo-agentdb'),
     "$env:USERPROFILE\.npm-global\node_modules\@ruvllm",
     "$env:APPDATA\npm\node_modules\@ruvllm",
     'D:\Sinister\Sinister Skills\12_LLM_ORCHESTRATION\agents'

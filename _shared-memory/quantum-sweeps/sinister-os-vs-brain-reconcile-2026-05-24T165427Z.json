@@ -1,0 +1,162 @@
+{
+  "schema": "sinister-seraphim.reconcile-corpora.v1",
+  "label": "sinister-os-vs-brain",
+  "corpus_a_root": "D:/Sinister Sanctum/projects/sinister-os",
+  "corpus_b_root": "D:/Sinister Sanctum/_shared-memory/knowledge",
+  "n_corpus_a": 42,
+  "n_corpus_b": 160,
+  "cl_threshold": 0.3,
+  "sim_threshold": 0.5,
+  "total_pairs": 6720,
+  "reconciliation_candidates_count": 5,
+  "top_reconciliation_candidates": [
+    {
+      "rank": 1,
+      "classical": 0.4623983393660616,
+      "sim": 0.8428847675288201,
+      "combined": 1.3052831068948818,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os/plans/master-plan-2026-05-24.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-os-doctrine-2026-05-24.md"
+    },
+    {
+      "rank": 2,
+      "classical": 0.32540123932130366,
+      "sim": 0.9767035249285254,
+      "combined": 1.3021047642498291,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os/plans/mesh-os-master-plan-2026-05-24.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-vault-architecture.md"
+    },
+    {
+      "rank": 3,
+      "classical": 0.38693059604352453,
+      "sim": 0.8731430041273139,
+      "combined": 1.2600736001708386,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os/docs/architecture.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-os-doctrine-2026-05-24.md"
+    },
+    {
+      "rank": 4,
+      "classical": 0.33847190114928766,
+      "sim": 0.8859526028040485,
+      "combined": 1.2244245039533361,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os/source/eve-os-integration/DESIGN.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-os-doctrine-2026-05-24.md"
+    },
+    {
+      "rank": 5,
+      "classical": 0.5159904645576497,
+      "sim": 0.5646870848311709,
+      "combined": 1.0806775493888208,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os/README.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-os-doctrine-2026-05-24.md"
+    }
+  ],
+  "top_highest_classical": [
+    {
+      "rank": 1,
+      "classical": 0.5159904645576497,
+      "sim": 0.5646870848311709,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os/README.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-os-doctrine-2026-05-24.md"
+    },
+    {
+      "rank": 2,
+      "classical": 0.4623983393660616,
+      "sim": 0.8428847675288201,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os/plans/master-plan-2026-05-24.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-os-doctrine-2026-05-24.md"
+    },
+    {
+      "rank": 3,
+      "classical": 0.38693059604352453,
+      "sim": 0.8731430041273139,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os/docs/architecture.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-os-doctrine-2026-05-24.md"
+    },
+    {
+      "rank": 4,
+      "classical": 0.3638898037671793,
+      "sim": 0.23205280420288307,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os/CLAUDE.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-os-doctrine-2026-05-24.md"
+    },
+    {
+      "rank": 5,
+      "classical": 0.33847190114928766,
+      "sim": 0.8859526028040485,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os/source/eve-os-integration/DESIGN.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-os-doctrine-2026-05-24.md"
+    },
+    {
+      "rank": 6,
+      "classical": 0.32540123932130366,
+      "sim": 0.9767035249285254,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os/plans/mesh-os-master-plan-2026-05-24.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-vault-architecture.md"
+    },
+    {
+      "rank": 7,
+      "classical": 0.31215958531235843,
+      "sim": 0.14899382322195842,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os/source/docker-stack/SERVICE-MAP.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/gitea-self-host.md"
+    },
+    {
+      "rank": 8,
+      "classical": 0.296545692132654,
+      "sim": 0.9733841104654685,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os/memory/decisions.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-os-doctrine-2026-05-24.md"
+    },
+    {
+      "rank": 9,
+      "classical": 0.29219024239218416,
+      "sim": 0.6040543390903702,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os/source/eve-os-integration/DESIGN.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/spawned-window-capabilities-2026-05-23.md"
+    },
+    {
+      "rank": 10,
+      "classical": 0.2849029471387792,
+      "sim": 0.5049360803646203,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os/source/eve-os-integration/DESIGN.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/image2-mcp-set.md"
+    },
+    {
+      "rank": 11,
+      "classical": 0.2809872376616485,
+      "sim": 0.7095684718686567,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os/source/eve-os-integration/DESIGN.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/agent-identity-eve.md"
+    },
+    {
+      "rank": 12,
+      "classical": 0.278795481460199,
+      "sim": 0.5780215608723656,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os/source/docker-stack/eve.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/eve-exe-launcher-jcode-speed-parity-2026-05-23.md"
+    },
+    {
+      "rank": 13,
+      "classical": 0.2749387936940069,
+      "sim": 0.2741447632195079,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os/source/eve-os-integration/DESIGN.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/_INDEX.md"
+    },
+    {
+      "rank": 14,
+      "classical": 0.2747747017242902,
+      "sim": 0.1762775685722368,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os/source/docker-stack/eve.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/agent-identity-eve.md"
+    },
+    {
+      "rank": 15,
+      "classical": 0.2714172691307042,
+      "sim": 0.662569456229879,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os/SESSION-HANDOFF-2026-05-24T1442Z.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/_INDEX.md"
+    }
+  ],
+  "wall_seconds": 12.437998533248901
+}

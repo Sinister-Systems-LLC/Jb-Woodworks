@@ -1,10 +1,10 @@
 // Author: RKOJ-ELENO :: 2026-05-23
 "use client";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { SITE } from "@/lib/site";
-import { Icon } from "@/components/ui/icon";
 import { cn } from "@/lib/utils";
 
 export function Nav() {
@@ -30,33 +30,24 @@ export function Nav() {
       )}
     >
       <div className="max-w-site mx-auto px-7 h-[82px] flex items-center gap-5">
-        <Link href="/" aria-label={`${SITE.name} home`} className="flex items-center gap-3 shrink-0">
-          <span className="font-sans text-[1.2rem] font-black tracking-[0.16em] text-white leading-none">
-            JB
-            <span className="block text-[0.5rem] tracking-[0.42em] text-gold font-bold mt-1">WOODWORKS</span>
-          </span>
+        <Link href="/" aria-label={`${SITE.name} home`} className="flex items-center shrink-0 group">
+          <Image
+            src="/img/branding/jbw-wordmark-horizontal.png"
+            alt={`${SITE.name} - Construction & Fabrication`}
+            width={1146}
+            height={277}
+            priority
+            className="h-9 sm:h-10 w-auto transition-opacity duration-200 group-hover:opacity-90"
+          />
         </Link>
 
         <nav className="hidden md:flex gap-9 ml-auto" aria-label="Primary">
           <NavLink href="/#services">Services</NavLink>
           <NavLink href="/portfolio">Portfolio</NavLink>
+          <NavLink href="/blog">Blog</NavLink>
           <NavLink href="/about#faq">FAQ</NavLink>
           <NavLink href="/contact">Contact</NavLink>
         </nav>
-
-        <a
-          href={SITE.socials.instagram}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hidden md:inline-flex items-center gap-2 px-4 py-2 bg-gold-dim border border-gold rounded-full text-[0.8rem] font-semibold text-white tracking-wide transition-all hover:bg-gold hover:text-ink hover:-translate-y-0.5"
-        >
-          <Icon name="instagram" size={16} />
-          <span>Follow</span>
-        </a>
-
-        <Link href="/contact" className="hidden md:inline-flex btn btn-primary !px-5 !py-2.5 !text-[0.75rem]">
-          Get a Quote
-        </Link>
 
         <button
           type="button"
@@ -82,6 +73,7 @@ export function Nav() {
           {[
             { href: "/#services", label: "Services" },
             { href: "/portfolio", label: "Portfolio" },
+            { href: "/blog", label: "Blog" },
             { href: "/about#faq", label: "FAQ" },
             { href: SITE.socials.instagram, label: "Instagram", external: true },
             { href: SITE.socials.facebook, label: "Facebook", external: true },

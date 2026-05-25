@@ -300,8 +300,18 @@ def _cmd_browser(browser_cmd: str, args: list[str]) -> int:
         print()
         print("Quick local check: looking for firefox-agent-bridge clone...")
         from pathlib import Path
-        local = Path(r"C:\Users\Zonia\Desktop\Github Research\firefox-agent-bridge-0.9.9")
+        import os
+        # RKOJ-ELENO :: 2026-05-25 :: env-var first to avoid hardcoded operator-machine paths
+        # (overseer-audit finding 2026-05-25 — cli.py:303 hardcoded C:\Users\Zonia\...).
+        # Falls back to the operator default for backwards-compat, but any other workstation
+        # can set SINISTER_FIREFOX_BRIDGE_PATH instead.
+        local_str = os.environ.get(
+            "SINISTER_FIREFOX_BRIDGE_PATH",
+            r"C:\Users\Zonia\Desktop\Github Research\firefox-agent-bridge-0.9.9",
+        )
+        local = Path(local_str)
         print(f"  clone present: {local.exists()}  ({local})")
+        print(f"  (override with SINISTER_FIREFOX_BRIDGE_PATH env var)")
     return 1
 
 

@@ -1,0 +1,35 @@
+{
+  "schema_version": "sinister.inbox.v1",
+  "from_slug": "sanctum",
+  "from_display": "Sinister Sanctum",
+  "to_slug": "sinister-os",
+  "ts_utc": "2026-05-24T20:40Z",
+  "topic": "INTEGRATION-MANIFEST.md handoff — 20 sanctum primitives mapped to sinister-os landing paths",
+  "priority": "high",
+  "tags": ["integration-manifest", "ops-migration", "sinister-os", "sanctum-primitives", "port-plan"],
+  "operator_trigger_verbatim": "link all of this into the sinister os im making as we will be switching over operations to there soon",
+  "operator_trigger_ts_utc": "2026-05-24T20:38Z",
+  "delivered_files": [
+    "projects/sinister-os/INTEGRATION-MANIFEST.md (20-row table: sanctum primitive -> sinister-os landing path -> port work -> smoke test)"
+  ],
+  "open_dependencies_to_resolve_before_port": [
+    "Round-robin v2 telemetry: 4 clarifying questions to operator (telemetry source / hot-swap / burn-down thresholds / pref-learning store) — defer port of claude-accounts to OS until answered",
+    "EVE.exe mcp:2 BOM bug: 2-char fix in tools/eve-picker/eve_picker_lib.py line 164 (utf-8 -> utf-8-sig) — sister-B coord note 2026-05-24T2025Z",
+    "Only 1/4 claude account slots enabled — rotation can't be smoke-tested with <2 slots",
+    "Sister-B has launcher in-flight — let her settle before porting start-sinister-session.ps1"
+  ],
+  "ships_referenced": [
+    "automations/overseer-agent.ps1 (+ doctrine) — Scan/Reap/Resurrect/Watch shipped this turn, smoke PASS",
+    "automations/window-position-monitor.ps1 — extended with Snapshot/Watch modes, smoke PASS (sinister-panel.json written)",
+    "_shared-memory/knowledge/cross-machine-non-interference-doctrine-2026-05-24.md — Zonia<->Leo coordination",
+    "_shared-memory/knowledge/memory-audit-jcode-rufus-obsidian-understand-2026-05-24.md — comparison + 3 cherry-pick gaps",
+    "_shared-memory/knowledge/safe-quality-loops-doctrine-2026-05-24.md (prior iter) — 12 guardrails universal",
+    "_shared-memory/cross-agent/2026-05-24T2025Z-sanctum-to-sinister-term-handterm-fork-brief.md — terminal layer port plan",
+    "Fleet-autostart: sister-B already shipped scripts; sanctum added user-level Startup folder .bat fallback (smoke PASS)"
+  ],
+  "ack_action_requested": "When sinister-os lane next spawns, READ projects/sinister-os/INTEGRATION-MANIFEST.md first. Use it as the master port checklist. Each row has a smoke-test — port + verify per-row, do not bulk-port.",
+  "composes_with": [
+    "_shared-memory/knowledge/sanctum-scope-discipline-2026-05-24.md (sanctum orchestrates, sinister-os implements its port)",
+    "_shared-memory/knowledge/_INDEX.md (master brain index — all 170+ doctrines)"
+  ]
+}

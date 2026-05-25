@@ -1,0 +1,15 @@
+{
+    "ts_utc":  "2026-05-25T00:50:44Z",
+    "_author":  "RKOJ-ELENO :: 2026-05-25",
+    "to":  "kernel-apk",
+    "subject":  "Fleet-update fan-out: feature priority=high",
+    "message":  "Iter 24 ship: (1) PERSISTENT HEADER in spawned Sinister Terms (operator 01:15Z \u0027pill banner permanent at top\u0027). start-sinister-session.ps1:1918 -- DECSTBM scroll-region reserves top 2 rows; pill banner painted at row 1 (clear+cursor-home + paint + CSI 3;r set scroll region + park cursor row 3). Bash output scrolls rows 3+; header stays sticky. Backwards-compat: SINISTER_NO_STICKY_HEADER=1 falls back to legacy. Parse OK. (2) 3 spawned agents VERIFIED ALIVE: kernel-apk PID 1276 heartbeat 5649b 20:42 (working) + showmasters PID 7236 heartbeat 457b 20:40 (warming) + sinister-panel PID 39852 (cold-start in progress); all 3 inherited current systems via 5-surface auto-update. (3) Sinister TERM lane INBOX dropped for the deeper asks: jcode-style context-tracking popup + usage-tracking popup + concise-logging port from jcode src/logging.rs:145-426 (scope-discipline: Sanctum owns the scroll-region in launcher; sinister-term owns the in-terminal context/usage/log surfaces). (4) Garden of Eden v3 polish: v2 already substantial (wind sway + fade-in + halo + roots + particles + lightning); operator preview encouraged via Desktop .bat OR EVE.exe S key. OPERATOR: close + reopen any spawned EVE.exe agent to see sticky header at top.",
+    "rationale":  "Overseer auto-distributed because this fleet-update either targeted you OR mentioned your lane slug. Review + ack if actionable.",
+    "source_id":  "fu-20260524204749-dad1e5",
+    "source_ts_utc":  "2026-05-25T00:47:49Z",
+    "from":  "overseer",
+    "source_priority":  "high",
+    "tag":  "[OVERSEER-DISTRIBUTE]",
+    "source_pushed_by":  "sanctum",
+    "source_kind":  "feature"
+}

@@ -2,24 +2,2594 @@
   "_author": "RKOJ-ELENO :: 2026-05-21",
   "schema_version": "sinister.forge-memory.v1.index",
   "records": {
-    "sinister-term/ph7-shipped": {
-      "ts_utc_last": "2026-05-21T11:28:08Z",
-      "writes": 1,
+    "brain/_index-decay-scores": {
+      "ts_utc_last": "2026-05-25T02:19:51Z",
+      "writes": 3,
       "confidence": 1.0,
       "tags": [
-        "sinister-term"
+        "_INDEX",
+        "DECAY",
+        "SCORES"
       ],
-      "content_hash": "3b0e5ad672a2ff9d0713a29e2bd5e4866030d4588a7a752d6403859ae167d3c9"
+      "content_hash": "7f4448885900b89b750f5668403f80e605f5bd8b7357f22c3308fc05cd92cf5f"
     },
-    "sinister-term/interactive-test": {
-      "ts_utc_last": "2026-05-21T11:42:24Z",
+    "brain/accessibility-services-only-for-snap-canonical-2026-05-25": {
+      "ts_utc_last": "2026-05-25T02:19:58Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "accessibility",
+        "services",
+        "only",
+        "for",
+        "snap",
+        "canonical"
+      ],
+      "content_hash": "13be069b14416cd0ff36d3343536159f1bda67366e3f2212917ecdd9c16a7906"
+    },
+    "brain/agent-autonomy-push-and-completion-2026-05-23": {
+      "ts_utc_last": "2026-05-25T02:20:02Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "agent",
+        "autonomy",
+        "push",
+        "and",
+        "completion"
+      ],
+      "content_hash": "544d68ba6d7c97644a865c5c19d1d3c9f09d6c2886f6dbb88da68f4f5c1d7b2f"
+    },
+    "brain/agent-browser-bridge-pattern": {
+      "ts_utc_last": "2026-05-25T02:20:03Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "agent",
+        "browser",
+        "bridge",
+        "pattern"
+      ],
+      "content_hash": "8dd3f9e013b6b0a97e794dc21c9cbab7584368b2152345d5ea5f2c59f90ec31a"
+    },
+    "brain/agent-continuity-no-long-naps-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:20:03Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "agent",
+        "continuity",
+        "long",
+        "naps"
+      ],
+      "content_hash": "21fae9648da353cd5f8be0f950644cce2306cde905d6b89b3483e755c24b2a08"
+    },
+    "brain/agent-identity-eve": {
+      "ts_utc_last": "2026-05-25T02:20:04Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "agent",
+        "identity",
+        "eve"
+      ],
+      "content_hash": "c5da77ebee882c872a4f727ff7a5dd188a3a251e53b2c48d34a25ac5133b0dbc"
+    },
+    "brain/agent-intelligence-control": {
+      "ts_utc_last": "2026-05-25T02:20:04Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "agent",
+        "intelligence",
+        "control"
+      ],
+      "content_hash": "391f80fa953f3f4614e39bd88bfdedb158f06af2f8dddf2170fddad1df0650ca"
+    },
+    "brain/anthropic-real-usage-probe-2026-05-25": {
+      "ts_utc_last": "2026-05-25T02:20:04Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "anthropic",
+        "real",
+        "usage",
+        "probe"
+      ],
+      "content_hash": "29d17bdae9aea898ceddd4b5444a39e26cc2ba22a5868573d45aeca16069f87e"
+    },
+    "brain/anthropic-server-throttle-vs-plan-quota-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:20:05Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "anthropic",
+        "server",
+        "throttle",
+        "plan",
+        "quota"
+      ],
+      "content_hash": "6516d7ac60c5ebd14ec98b2832bb80fd601646746365c5c73ad4619c50395f2e"
+    },
+    "brain/apk-classifier-aup-doctrine": {
+      "ts_utc_last": "2026-05-25T02:20:05Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "apk",
+        "classifier",
+        "aup",
+        "doctrine"
+      ],
+      "content_hash": "3558e38baa43657672877e6f83b5813b14a713e8110e00254e21003a5f12913a"
+    },
+    "brain/apk-orchestrator-pattern": {
+      "ts_utc_last": "2026-05-25T02:20:06Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "apk",
+        "orchestrator",
+        "pattern"
+      ],
+      "content_hash": "a33d5c85a292a49620422fa6a475b1a6c330ae56a49fd8c19eb82213b465e858"
+    },
+    "brain/apk-post-reboot-adb-reverse-wipe": {
+      "ts_utc_last": "2026-05-25T02:20:06Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "apk",
+        "post",
+        "reboot",
+        "adb",
+        "reverse",
+        "wipe"
+      ],
+      "content_hash": "31c602e92a8057a09b2535188514df917dae5f2946845e3b1a258d9783d9fd92"
+    },
+    "brain/apk-ps1-grep-lock-contention": {
+      "ts_utc_last": "2026-05-25T02:20:07Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "apk",
+        "ps1",
+        "grep",
+        "lock",
+        "contention"
+      ],
+      "content_hash": "83fabb7a99c05aceab878ef78f7f94cfddff5bbefe500475f1a2f4e1e4f7dfb4"
+    },
+    "brain/audit-pass-is-output-2026-05-21": {
+      "ts_utc_last": "2026-05-25T02:20:07Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "audit",
+        "pass",
+        "output"
+      ],
+      "content_hash": "af1975f2944f23ff595c2e0963b7e0242403c34df963a03c35386718727b0812"
+    },
+    "brain/auto-brain-propagation-doctrine-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:20:07Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "auto",
+        "brain",
+        "propagation",
+        "doctrine"
+      ],
+      "content_hash": "1a20507019a906026d614c6d65349b28e10c0e41407d74bbc50bf11649ec7f46"
+    },
+    "brain/auto-mode-launcher-pattern": {
+      "ts_utc_last": "2026-05-25T02:20:07Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "auto",
+        "mode",
+        "launcher",
+        "pattern"
+      ],
+      "content_hash": "1830e924736330b4db231bc1f285b100a0c0e0068649c927ed087a37903a11fb"
+    },
+    "brain/best-agent-count-per-claude-plan-study-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:20:08Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "best",
+        "agent",
+        "count",
+        "per",
+        "claude",
+        "plan",
+        "study"
+      ],
+      "content_hash": "9cb056c1309e77b4cd555a2dbd672b3ac87491edb0abf8d4e389aad6da356244"
+    },
+    "brain/bki-equivalent-app-hiding-via-5-17-stack-2026-05-25": {
+      "ts_utc_last": "2026-05-25T02:20:08Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "bki",
+        "equivalent",
+        "app",
+        "hiding",
+        "via",
+        "stack"
+      ],
+      "content_hash": "85f9862ac20388b713ed20c28c589a126c25d8cc1bedc964deb2a40031f7a234"
+    },
+    "brain/bot-fleet-quick-reference": {
+      "ts_utc_last": "2026-05-25T02:20:08Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "bot",
+        "fleet",
+        "quick",
+        "reference"
+      ],
+      "content_hash": "064a8239aa2495b15058860ea1f399886b29aa6814212ca72b6c2ca67519ac8c"
+    },
+    "brain/brain-decay-implementation-schema-2026-05-25": {
+      "ts_utc_last": "2026-05-25T02:20:09Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "brain",
+        "decay",
+        "implementation",
+        "schema"
+      ],
+      "content_hash": "3e3843525c55f2d38adc9ba95d234113760743500500dfb89daac30e5cadd329"
+    },
+    "brain/branch-checkout-silently-undoes-doctrine-2026-05-23": {
+      "ts_utc_last": "2026-05-25T02:20:09Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "branch",
+        "checkout",
+        "silently",
+        "undoes",
+        "doctrine"
+      ],
+      "content_hash": "782d45e57a2fcc76bd1e912f168964997ff0af15843410c6fdd1118843e2e8fa"
+    },
+    "brain/branch-convention-2026-05-25": {
+      "ts_utc_last": "2026-05-25T02:20:09Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "branch",
+        "convention"
+      ],
+      "content_hash": "155ae0eafa334b73599350433adb57cce0a3f9df471aad1808d0fc066c8b8e94"
+    },
+    "brain/browser-bridge-integration-shape-2026-05-23": {
+      "ts_utc_last": "2026-05-25T02:20:10Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "browser",
+        "bridge",
+        "integration",
+        "shape"
+      ],
+      "content_hash": "09b152aa0482c0a060023a4e75bc7231434ef2ca08b6f98a11edd39989d017fc"
+    },
+    "brain/claude-sandbox-autonomy-grant": {
+      "ts_utc_last": "2026-05-25T02:20:10Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "claude",
+        "sandbox",
+        "autonomy",
+        "grant"
+      ],
+      "content_hash": "1312641ed9041c031b75020c1954ac185e4f6a8fbd1ba2b5a55e08d5c8271a7a"
+    },
+    "brain/codex-companion-usage": {
+      "ts_utc_last": "2026-05-25T02:20:11Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "codex",
+        "companion",
+        "usage"
+      ],
+      "content_hash": "302cf7335fe1e3ce2bf4366227bac7c0e050d64bed1442c6efd96aee5631e97b"
+    },
+    "brain/complete-everything-sweep-pattern": {
+      "ts_utc_last": "2026-05-25T02:20:33Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "complete",
+        "everything",
+        "sweep",
+        "pattern"
+      ],
+      "content_hash": "0656e5f819792f2b6db87650b530e5e2ed66f612d54e0475057fc264ec41292f"
+    },
+    "brain/console-phone-viewer-integration": {
+      "ts_utc_last": "2026-05-25T02:20:34Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "console",
+        "phone",
+        "viewer",
+        "integration"
+      ],
+      "content_hash": "83f6a3e079d0199906292bf16989811740b400cd71c1e54e26dd00e6f0dac2f6"
+    },
+    "brain/contradiction-engine-doctrine-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:20:34Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "contradiction",
+        "engine",
+        "doctrine"
+      ],
+      "content_hash": "5eec0c40115e26605fee217e320abb406c5f37648d7c381eeb0893c31693feb2"
+    },
+    "brain/cross-agent-coordination": {
+      "ts_utc_last": "2026-05-25T02:20:36Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "cross",
+        "agent",
+        "coordination"
+      ],
+      "content_hash": "94e0b0268f91ada309d20778823b4ade4487d131fcf55b5dac2aefa1790c6896"
+    },
+    "brain/cross-machine-mesh-coord-2026-05-25": {
+      "ts_utc_last": "2026-05-25T02:20:36Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "cross",
+        "machine",
+        "mesh",
+        "coord"
+      ],
+      "content_hash": "4308b9c75bfb1dbe720773c00624c9c54cb269c2c1123ff969fe33d93cf84ea5"
+    },
+    "brain/cross-machine-non-interference-doctrine-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:20:37Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "cross",
+        "machine",
+        "non",
+        "interference",
+        "doctrine"
+      ],
+      "content_hash": "1ac4e4b651592f8541add5093292f8949ecd31260d448433ab0c019a86b67c3a"
+    },
+    "brain/daemon-liveness-heartbeats": {
+      "ts_utc_last": "2026-05-25T02:20:37Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "daemon",
+        "liveness",
+        "heartbeats"
+      ],
+      "content_hash": "87a0d4c1f642a01bbd7d8e31c98e41e504a53183098aa8b5ad6348b346d38a1b"
+    },
+    "brain/do-not-revert-operator-canonical-protections-2026-05-23": {
+      "ts_utc_last": "2026-05-25T02:20:38Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "not",
+        "revert",
+        "operator",
+        "canonical",
+        "protections"
+      ],
+      "content_hash": "8edb4942aece85c0e0b88be4173059321ee579e0dc18547632d5b2441521166c"
+    },
+    "brain/drop-link-ingest-spec-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:20:38Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "drop",
+        "link",
+        "ingest",
+        "spec"
+      ],
+      "content_hash": "74684491c091a48de0220b14f752bcfd85f6412a13af733a7a6ddb08d1801b4e"
+    },
+    "brain/emu-pixel-6a-os-fidelity-canonical-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:20:38Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "emu",
+        "pixel",
+        "fidelity",
+        "canonical"
+      ],
+      "content_hash": "5769b4ab54fabea125a52248935cc23e4532590690d3e8fce493c0a95fb92855"
+    },
+    "brain/emu-sim-card-proxy-integration-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:20:39Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "emu",
+        "sim",
+        "card",
+        "proxy",
+        "integration"
+      ],
+      "content_hash": "b6a75971a014307e4508f53e8b5570a8b8a01926ff5347a173c03668528f55be"
+    },
+    "brain/enrollment-buildconfig-gate": {
+      "ts_utc_last": "2026-05-25T02:20:39Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "enrollment",
+        "buildconfig",
+        "gate"
+      ],
+      "content_hash": "f81891bfeb003919293c23b746cf3ea4cec477f9fcc60b653ed365c48d9f2fe4"
+    },
+    "brain/eve-exe-launcher-jcode-speed-parity-2026-05-23": {
+      "ts_utc_last": "2026-05-25T02:20:40Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "eve",
+        "exe",
+        "launcher",
+        "jcode",
+        "speed",
+        "parity"
+      ],
+      "content_hash": "4a9bc343a993928e8f920768ba5950184fdc9e654806c685ab65c1aff1d0a082"
+    },
+    "brain/eve-exe-rebuild-ci-doctrine-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:20:40Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "eve",
+        "exe",
+        "rebuild",
+        "doctrine"
+      ],
+      "content_hash": "88f9a27555e37ff5eda43856bf5faa58fb31fca872838ee2b3ba9a93e56b86f5"
+    },
+    "brain/eve-exe-uniform-ui-infinite-accounts-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:20:40Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "eve",
+        "exe",
+        "uniform",
+        "infinite",
+        "accounts"
+      ],
+      "content_hash": "14a2cce90df25cae70980558afa7bdfa66c62789b552c38bb985781e8f9e8a59"
+    },
+    "brain/eve-ui-uniformity-doctrine-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:20:41Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "eve",
+        "uniformity",
+        "doctrine"
+      ],
+      "content_hash": "b3fb657434dbe17f34980fadf8903e08042c05df6d26881e626f7c3efd670f18"
+    },
+    "brain/fails-to-learn-doctrine-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:20:41Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "fails",
+        "learn",
+        "doctrine"
+      ],
+      "content_hash": "d08691c8df23571fa154fff8815151676cdae6eb7e8d9d3914e85870ef956ba3"
+    },
+    "brain/fleet-freeze-root-cause-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:20:41Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "fleet",
+        "freeze",
+        "root",
+        "cause"
+      ],
+      "content_hash": "06ab80e8b79305e08a65b462a55fa116c58f8603959f1ebd80253bd91a260b3e"
+    },
+    "brain/fleet-quantum-qbc-patterns-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:20:42Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "fleet",
+        "quantum",
+        "qbc",
+        "patterns"
+      ],
+      "content_hash": "292b13f7dd79e414a0c60e93f287c197b502900899f37ef46b6df0b3cbcb63ac"
+    },
+    "brain/fleet-state-single-source": {
+      "ts_utc_last": "2026-05-25T02:20:42Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "fleet",
+        "state",
+        "single",
+        "source"
+      ],
+      "content_hash": "3c9a9594eb7cf5e28c6913cfa4d9b5f379cc67c54a1f1ee4e153c75559ecd81d"
+    },
+    "brain/forever-expanding-modular-architecture-doctrine": {
+      "ts_utc_last": "2026-05-25T02:20:42Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "forever",
+        "expanding",
+        "modular",
+        "architecture",
+        "doctrine"
+      ],
+      "content_hash": "3e3b9a705afdd72d37512f560ded12cafa6a56ad3485cbc6c174dba829b4b03f"
+    },
+    "brain/forever-improve-review-doctrine-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:20:43Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "forever",
+        "improve",
+        "review",
+        "doctrine"
+      ],
+      "content_hash": "b596db5ba0e2613d591b9c717de2132298f829c1cc33d4e24e7592ea76e264fb"
+    },
+    "brain/forge-bridge-rest-sse-pattern": {
+      "ts_utc_last": "2026-05-25T02:20:43Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "forge",
+        "bridge",
+        "rest",
+        "sse",
+        "pattern"
+      ],
+      "content_hash": "3cb150e9ec92094a6e0e5b03d93b9bc8c9c0998ecaa546a65bbd86c93810f9f3"
+    },
+    "brain/forge-memory-usage-2026-05-23": {
+      "ts_utc_last": "2026-05-25T02:20:44Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "forge",
+        "memory",
+        "usage"
+      ],
+      "content_hash": "c15d6c3c9543ef58d8fc48cc4e3b44c1ac9ef9a98f63229e04564d13b640c48c"
+    },
+    "brain/frequent-detailed-commits-per-agent-2026-05-25": {
+      "ts_utc_last": "2026-05-25T02:20:47Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "frequent",
+        "detailed",
+        "commits",
+        "per",
+        "agent"
+      ],
+      "content_hash": "8c7ea01fbb106628b3cd8cf39e02e3c5399ec69e992bedb7475de70b0ffd84fb"
+    },
+    "brain/gitea-self-host": {
+      "ts_utc_last": "2026-05-25T02:20:52Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "gitea",
+        "self",
+        "host"
+      ],
+      "content_hash": "30e6a3de773c7ea0dd97bf8f08c741d638ac3ff0e78fff8e17068c5c774c5dcf"
+    },
+    "brain/github-auth-workflow-scope": {
+      "ts_utc_last": "2026-05-25T02:20:53Z",
+      "writes": 3,
+      "confidence": 1.0,
+      "tags": [
+        "github",
+        "auth",
+        "workflow",
+        "scope"
+      ],
+      "content_hash": "e6e2964f2e79856863c7fb8219d22148fb727c49273f882baa3d287bdf88b0c0"
+    },
+    "brain/github-first-sourcing-doctrine-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:20:54Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "github",
+        "first",
+        "sourcing",
+        "doctrine"
+      ],
+      "content_hash": "02bf2d93de6ebfb093afa103f0713675f69397e8c1c7975d85cdf2e2f297a72b"
+    },
+    "brain/gradual-growth-memory-push-eve-exe-ready-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:20:54Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "gradual",
+        "growth",
+        "memory",
+        "push",
+        "eve",
+        "exe",
+        "ready"
+      ],
+      "content_hash": "14b45dad6d560e880df0a02482c366b267cd185bf89a33682e0184ca4970affb"
+    },
+    "brain/handterm-vs-sinister-term-clarification-2026-05-23": {
+      "ts_utc_last": "2026-05-25T02:20:55Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "handterm",
+        "sinister",
+        "term",
+        "clarification"
+      ],
+      "content_hash": "2a5b0dc388728d31b27d52f47414e47400265471550e1a513ed96a2c4a9e3ade"
+    },
+    "brain/headless-spawn-pattern-2026-05-23": {
+      "ts_utc_last": "2026-05-25T02:20:55Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "headless",
+        "spawn",
+        "pattern"
+      ],
+      "content_hash": "7a817e561a7207bbc186e268b858817911352480eaa9a56a1599b01f0cb4a3f9"
+    },
+    "brain/image2-mcp-set": {
+      "ts_utc_last": "2026-05-25T02:20:55Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "image2",
+        "mcp",
+        "set"
+      ],
+      "content_hash": "436df8f36e04869924c078cde645da02c85e7506036d4eb4a7d60ca3ad3baab3"
+    },
+    "brain/imessage-bridge-p0-scaffold-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:20:55Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "imessage",
+        "bridge",
+        "scaffold"
+      ],
+      "content_hash": "98625c8f2e3fe19925ebbc7cc0b906e24e3e4e42f29b7129d736cd5eb406aa85"
+    },
+    "brain/jcode-agentic-loop-patterns-port-to-python": {
+      "ts_utc_last": "2026-05-25T02:20:56Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "jcode",
+        "agentic",
+        "loop",
+        "patterns",
+        "port",
+        "python"
+      ],
+      "content_hash": "093d7a1d04b82fd0151b421250d823ebb0c11f56847e35edaf9617f226b6020e"
+    },
+    "brain/jcode-condensed-log-discipline-2026-05-25": {
+      "ts_utc_last": "2026-05-25T02:20:56Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "jcode",
+        "condensed",
+        "log",
+        "discipline"
+      ],
+      "content_hash": "35be86e0ca53c1792f6039513f221a6fda2f156995858fffb9f4211c97182d06"
+    },
+    "brain/jcode-eve-exe-parity-audit-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:20:56Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "jcode",
+        "eve",
+        "exe",
+        "parity",
+        "audit"
+      ],
+      "content_hash": "5f1c3183c65ade17a0555c1e0e6fa07a929c7169bfa8e23d52d4194931b615af"
+    },
+    "brain/jcode-feature-matrix": {
+      "ts_utc_last": "2026-05-25T02:20:56Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "jcode",
+        "feature",
+        "matrix"
+      ],
+      "content_hash": "abe51c872b97c2c45bf5170d48d3a8afadb77cfff32fbb1e4e5eedeb5f5c1483"
+    },
+    "brain/jcode-feature-parity-targets": {
+      "ts_utc_last": "2026-05-25T02:20:56Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "jcode",
+        "feature",
+        "parity",
+        "targets"
+      ],
+      "content_hash": "5a4b1e77ad759ab27e563079165b5d0c9788797e4ad60f04c3a1bb946f9d52d3"
+    },
+    "brain/jcode-full-audit-2026-05-25": {
+      "ts_utc_last": "2026-05-25T02:20:57Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "jcode",
+        "full",
+        "audit"
+      ],
+      "content_hash": "148c55b3c64adfffa2d770b17eafabbf7e739658904cc8f0e0fde73471ea79ef"
+    },
+    "brain/jcode-full-feature-audit-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:20:57Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "jcode",
+        "full",
+        "feature",
+        "audit"
+      ],
+      "content_hash": "7ef1cadbab449c1b52cad09999243012b1898a84b08b1c9f9b106005b669bfa6"
+    },
+    "brain/jcode-memory-graph-visualization-pattern": {
+      "ts_utc_last": "2026-05-25T02:20:59Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "jcode",
+        "memory",
+        "graph",
+        "visualization",
+        "pattern"
+      ],
+      "content_hash": "68318af2aad33ffbdf0bfcd9681a2c2770c331d34d6cb386a513da7944cdace4"
+    },
+    "brain/jcode-parity-gap-audit-2026-05-24-test-modes": {
+      "ts_utc_last": "2026-05-25T02:21:00Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "jcode",
+        "parity",
+        "gap",
+        "audit",
+        "test",
+        "modes"
+      ],
+      "content_hash": "a950fa175cc1668991b80c28a2d89ecb8b3a4a2cf4c8913a4ee75fb19403c62d"
+    },
+    "brain/jcode-port-plan-eve-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:21:03Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "jcode",
+        "port",
+        "plan",
+        "eve"
+      ],
+      "content_hash": "7190cc55a01d61326f5c770a273c48245d8f1ac5f1f3ebbc5bfdb5ae87997bf8"
+    },
+    "brain/jcode-swarm-token-parity-audit-2026-05-23": {
+      "ts_utc_last": "2026-05-25T02:21:04Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "jcode",
+        "swarm",
+        "token",
+        "parity",
+        "audit"
+      ],
+      "content_hash": "cfe140f417f633a24fe0a354f04b5a51725c53b1136033ffff61900bbec0e5e6"
+    },
+    "brain/jcode-usage-tracking-pattern-2026-05-25": {
+      "ts_utc_last": "2026-05-25T02:21:05Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "jcode",
+        "usage",
+        "tracking",
+        "pattern"
+      ],
+      "content_hash": "88e9d2d1538fc8e57d9d4a3a5bc30a8b50e1104ec95100fef982c26113afab87"
+    },
+    "brain/junction-based-path-migration-pattern": {
+      "ts_utc_last": "2026-05-25T02:21:06Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "junction",
+        "based",
+        "path",
+        "migration",
+        "pattern"
+      ],
+      "content_hash": "4b46526b51ebc9e832c468d5bbc99d41bc51deeed5d42a5585e9cc2cbd37e977"
+    },
+    "brain/kernel-apk-session-2026-05-24-full-handoff": {
+      "ts_utc_last": "2026-05-25T02:21:06Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "kernel",
+        "apk",
+        "session",
+        "FULL",
+        "handoff"
+      ],
+      "content_hash": "c59a8c1c00391eea4c6bc6f05d95eaa83175513b7c64230b3e4a759d1c5ab640"
+    },
+    "brain/keybox-bypass-crypto-infeasibility-2026-05-25": {
+      "ts_utc_last": "2026-05-25T02:21:07Z",
       "writes": 1,
       "confidence": 1.0,
       "tags": [
-        "sinister-term"
+        "keybox",
+        "bypass",
+        "crypto",
+        "infeasibility"
       ],
-      "content_hash": "8a232290eeb19e6ad489b8c5351bbdc4eb3218b46b920fc877d7446ecac66c17"
+      "content_hash": "0f57eafef3014057aded776b7f7e32c23ee93ac47d6a3dbfcaae7fd879d6826b"
+    },
+    "brain/ksu-manager-sister-app-pattern": {
+      "ts_utc_last": "2026-05-25T02:21:08Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "ksu",
+        "manager",
+        "sister",
+        "app",
+        "pattern"
+      ],
+      "content_hash": "be5777d48fb2765a575ccb0cc5d90bea5dfe0827056abb32d1c0cd914aec5879"
+    },
+    "brain/ksu-susfs-app-mount-namespace-isolation-2026-05-20": {
+      "ts_utc_last": "2026-05-25T02:21:08Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "ksu",
+        "susfs",
+        "app",
+        "mount",
+        "namespace",
+        "isolation"
+      ],
+      "content_hash": "b15655844fe416e8b7f9974394df01e3d931369d694f4bea415a862bc3d355a8"
+    },
+    "brain/launcher-mode-evolution": {
+      "ts_utc_last": "2026-05-25T02:21:09Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "launcher",
+        "mode",
+        "evolution"
+      ],
+      "content_hash": "a38e277e32dcc170f049a79a18c07385ffc388c5a3b08499090ff792f5e9bfb5"
+    },
+    "brain/launcher-v6-concise-rewrite-2026-05-23": {
+      "ts_utc_last": "2026-05-25T02:21:09Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "launcher",
+        "concise",
+        "rewrite"
+      ],
+      "content_hash": "4022348cbe22d1339698f503e4257b59668808ab4129abb67c2f0ecb6adffaad"
+    },
+    "brain/launcher-v6.1-jcode-style-directives-2026-05-23": {
+      "ts_utc_last": "2026-05-25T02:21:10Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "launcher",
+        "v6.1",
+        "jcode",
+        "style",
+        "directives"
+      ],
+      "content_hash": "88da5b82e83454070dd565fe242022cc76b6001aafd281133317ef76314c3a38"
+    },
+    "brain/leo-auto-setup-doctrine-2026-05-25": {
+      "ts_utc_last": "2026-05-25T02:21:11Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "leo",
+        "auto",
+        "setup",
+        "doctrine"
+      ],
+      "content_hash": "3f2bdd3a872f5ee89eabf564891cf62c88bc344f558956a1e90ba00e65503e4e"
+    },
+    "brain/leo-first-run-issues-and-fixes-2026-05-25": {
+      "ts_utc_last": "2026-05-25T02:21:12Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "leo",
+        "first",
+        "run",
+        "issues",
+        "and",
+        "fixes"
+      ],
+      "content_hash": "c4c100cd7836321e28662eaf4a09cb2f78f670242ebbaf8bdda847b554d3507d"
+    },
+    "brain/loop-driven-sessions-meta-lessons-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:21:12Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "loop",
+        "driven",
+        "sessions",
+        "meta",
+        "lessons"
+      ],
+      "content_hash": "adab83f4b5df5b28dd1f9b6b2dc85683438a4544468f30a595dfa7b969c74393"
+    },
+    "brain/lukeprivacy-kpm-at-rest-safe": {
+      "ts_utc_last": "2026-05-25T02:21:12Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "lukeprivacy",
+        "kpm",
+        "rest",
+        "safe"
+      ],
+      "content_hash": "712d8e203cb99d55d8fea860ccc7e95b58a5dd72009bdf84c25ae2a39bee75a0"
+    },
+    "brain/magic-number-audit-taxonomy-2026-05-21": {
+      "ts_utc_last": "2026-05-25T02:21:13Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "magic",
+        "number",
+        "audit",
+        "taxonomy"
+      ],
+      "content_hash": "0e81aa8a2561d43c1a06fef26136a24b3ad0c3051a4442c9eec9b5baa64f2680"
+    },
+    "brain/marketplace-plugin-purge": {
+      "ts_utc_last": "2026-05-25T02:21:14Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "marketplace",
+        "plugin",
+        "purge"
+      ],
+      "content_hash": "250e3378a3d8439cdebb4588b01b5a4313dc28346919980a717adcfc339a0738"
+    },
+    "brain/mcp-junction-fix-pattern-2026-05-23": {
+      "ts_utc_last": "2026-05-25T02:21:14Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "mcp",
+        "junction",
+        "fix",
+        "pattern"
+      ],
+      "content_hash": "adfdaddad0a1313441a316739ddc6890766489162b874fe77fd0feec08f73ff5"
+    },
+    "brain/memory-audit-jcode-rufus-obsidian-understand-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:21:17Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "memory",
+        "audit",
+        "jcode",
+        "rufus",
+        "obsidian",
+        "understand"
+      ],
+      "content_hash": "537eaa4631311fa79aa433c96dd73e064375f1261e8f1cbf29581584906c8878"
+    },
+    "brain/memory-backbone-3-tier-hybrid-better-than-jcode-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:21:18Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "memory",
+        "backbone",
+        "tier",
+        "hybrid",
+        "better",
+        "than",
+        "jcode"
+      ],
+      "content_hash": "0f3e728cb419735b89bc64862c1fd5a1f7f31ff2908c5c691fa1071473bf4d8e"
+    },
+    "brain/mesh-coordination-and-resource-lifecycle-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:21:21Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "mesh",
+        "coordination",
+        "and",
+        "resource",
+        "lifecycle"
+      ],
+      "content_hash": "7b9c8053599ce1c03158dd33fd8fcbe1509615ac28673be18c76649d8c34d6f0"
+    },
+    "brain/modular-fleet-cross-lane-integration-2026-05-21": {
+      "ts_utc_last": "2026-05-25T02:21:22Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "modular",
+        "fleet",
+        "cross",
+        "lane",
+        "integration"
+      ],
+      "content_hash": "64ce9332fce5fdcf7bd5746ce1489704028a74dcf347ed34dc3fd99cf2d63b39"
+    },
+    "brain/multi-account-burn-first-capacity-blocker-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:21:22Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "multi",
+        "account",
+        "burn",
+        "first",
+        "capacity",
+        "blocker"
+      ],
+      "content_hash": "4eeb6db184fd765ae2cab97030c2436527de7b9cb91045241aca7702bd7ed5dc"
+    },
+    "brain/multi-agent-branch-contention-isolation-pattern": {
+      "ts_utc_last": "2026-05-25T02:21:25Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "multi",
+        "agent",
+        "branch",
+        "contention",
+        "isolation",
+        "pattern"
+      ],
+      "content_hash": "97d31dbf93972ecad2a78039581193fcba17c8ebf77d3ca25b78675dea6fc034"
+    },
+    "brain/multi-agent-git-coordination-2026-05-23": {
+      "ts_utc_last": "2026-05-25T02:21:26Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "multi",
+        "agent",
+        "git",
+        "coordination"
+      ],
+      "content_hash": "21731d48e7f174692fe21d5fda7ee34169679c3073d32a18f5ea96d0a67a9852"
+    },
+    "brain/multi-agent-git-index-contention-storm-2026-05-23": {
+      "ts_utc_last": "2026-05-25T02:21:27Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "multi",
+        "agent",
+        "git",
+        "index",
+        "contention",
+        "storm"
+      ],
+      "content_hash": "764c221abba2431fc7cf9f4997790a4f0ce58e4baf21e64b12882556592985c4"
+    },
+    "brain/nano-banana-gemini-image": {
+      "ts_utc_last": "2026-05-25T02:21:27Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "nano",
+        "banana",
+        "gemini",
+        "image"
+      ],
+      "content_hash": "876679d5d502e1c67cd11e5116def2ef8b11ba37cf1018ed27265ade8f986086"
+    },
+    "brain/niri-scrollable-column-pattern": {
+      "ts_utc_last": "2026-05-25T02:21:28Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "niri",
+        "scrollable",
+        "column",
+        "pattern"
+      ],
+      "content_hash": "30ded1d77b7c2485687da6b3e12089d168082809502cd7fc0fad53c95fe81886"
+    },
+    "brain/no-bullshit-tested-before-claimed-doctrine-2026-05-23": {
+      "ts_utc_last": "2026-05-25T02:21:28Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "bullshit",
+        "tested",
+        "before",
+        "claimed",
+        "doctrine"
+      ],
+      "content_hash": "0cfd715c8819ee95540c294007c17fe21fee85e75e17d3e9380ffbd5ae1dafd4"
+    },
+    "brain/no-operator-pii-in-signup-canonical-2026-05-25": {
+      "ts_utc_last": "2026-05-25T02:21:29Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "operator",
+        "pii",
+        "signup",
+        "canonical"
+      ],
+      "content_hash": "a3e0b3bb6730112eb9f72b8f171e9e39caf321eb3dbe7845834748c2d4c32361"
+    },
+    "brain/no-visible-powershell-windows-doctrine-2026-05-25": {
+      "ts_utc_last": "2026-05-25T02:21:30Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "visible",
+        "powershell",
+        "windows",
+        "doctrine"
+      ],
+      "content_hash": "5edb753344314b02ee70e20a37e817e1b7dbf99c0c0ede05d0d4cfa4e48ff25e"
+    },
+    "brain/non-interactive-auth-doctrine-2026-05-23": {
+      "ts_utc_last": "2026-05-25T02:21:31Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "non",
+        "interactive",
+        "auth",
+        "doctrine"
+      ],
+      "content_hash": "e6d69701500b99c4341c3469e26c7502bfc8e6a476e98bb6f618ada1dbf7fb62"
+    },
+    "brain/oauth-pivot-max-quota-pooling-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:21:31Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "oauth",
+        "pivot",
+        "max",
+        "quota",
+        "pooling"
+      ],
+      "content_hash": "e51c6c5c7fc54b2df88bdf0822c959a52c85bf9378d23ed28f8145ef93507785"
+    },
+    "brain/operator-full-audit-directive-no-questions-2026-05-25": {
+      "ts_utc_last": "2026-05-25T02:21:32Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "operator",
+        "full",
+        "audit",
+        "directive",
+        "questions"
+      ],
+      "content_hash": "75cb01519a69c8440f103f365028c03113d6ae0a9d4b0a38014b78c021dc8edb"
+    },
+    "brain/operator-iteration-loop-2026-05-21": {
+      "ts_utc_last": "2026-05-25T02:21:33Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "operator",
+        "iteration",
+        "loop"
+      ],
+      "content_hash": "5111ece6881613d266a6fc1ce5c780b9935224b1a6141b3f7deb639c3dd1b356"
+    },
+    "brain/operator-paced-outage-discipline-2026-05-21": {
+      "ts_utc_last": "2026-05-25T02:21:34Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "operator",
+        "paced",
+        "outage",
+        "discipline"
+      ],
+      "content_hash": "d691eb97f47538cea6a0d8a4963cb9eac5544fc3259490cdd016b139ed6eab02"
+    },
+    "brain/operator-utterance-tracking-doctrine-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:21:34Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "operator",
+        "utterance",
+        "tracking",
+        "doctrine"
+      ],
+      "content_hash": "320aca2b9663ef2840f053662d6b5a46e443c5efe0caf6dbe78de5d10ee26479"
+    },
+    "brain/overseer-agent-doctrine-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:21:35Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "overseer",
+        "agent",
+        "doctrine"
+      ],
+      "content_hash": "07068a089fa401759f8c96c1f6c8a2366130a0e4123988411ae0bae9eacb4f6a"
+    },
+    "brain/overseer-audit-sinister-term-2026-05-25": {
+      "ts_utc_last": "2026-05-25T02:21:36Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "overseer",
+        "audit",
+        "sinister",
+        "term"
+      ],
+      "content_hash": "fde502837fc6725fc217a7e6030898147a6fa5b497be5916f53f22a9d23d8f14"
+    },
+    "brain/overseer-lessons-from-first-audit-2026-05-25": {
+      "ts_utc_last": "2026-05-25T02:21:36Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "overseer",
+        "lessons",
+        "from",
+        "first",
+        "audit"
+      ],
+      "content_hash": "46009929f16ba1c5775f3ae58f050978495c8728e55bdf1e1dd0cab4029349bc"
+    },
+    "brain/overseer-token-efficiency-doctrine-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:21:38Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "overseer",
+        "token",
+        "efficiency",
+        "doctrine"
+      ],
+      "content_hash": "e4c8ac3797ac260e7c300ea51bf982d36d531a3b953f5b515b9694359abbcca3"
+    },
+    "brain/overseer-unified-improvement-engine-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:21:39Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "overseer",
+        "unified",
+        "improvement",
+        "engine"
+      ],
+      "content_hash": "b25b343dce1acc25b3c929099c396dd7ced3759942e0570f080d5c0f50a05cc3"
+    },
+    "brain/panel-command-center-18-wave-sweep-2026-05-21": {
+      "ts_utc_last": "2026-05-25T02:21:40Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "panel",
+        "command",
+        "center",
+        "wave",
+        "sweep"
+      ],
+      "content_hash": "00c2ad1daacbc4215a1cb2b527b7f5fbb2f8a7cedadb7c358cbff1b718ac7eac"
+    },
+    "brain/panel-localhost-routing": {
+      "ts_utc_last": "2026-05-25T02:21:40Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "panel",
+        "localhost",
+        "routing"
+      ],
+      "content_hash": "3b0ca219b7fa9e9bb927c0bc175e7bf2a94c635bc07924e7b4f09991744ac579"
+    },
+    "brain/parallel-agent-orchestration-pattern-2026-05-21": {
+      "ts_utc_last": "2026-05-25T02:21:41Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "parallel",
+        "agent",
+        "orchestration",
+        "pattern"
+      ],
+      "content_hash": "9cc273df6554c31102818d07c5a9eb31f2a4eb91a9fd590a9af3366b99dae50c"
+    },
+    "brain/per-agent-branch-convention": {
+      "ts_utc_last": "2026-05-25T02:21:42Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "per",
+        "agent",
+        "branch",
+        "convention"
+      ],
+      "content_hash": "319a9d761b939f9ba2954e8f0878ca493a9ded8adb71044e1bde1b5f2da8bbce"
+    },
+    "brain/per-project-bot-adoption-playbook-2026-05-23": {
+      "ts_utc_last": "2026-05-25T02:21:43Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "per",
+        "project",
+        "bot",
+        "adoption",
+        "playbook"
+      ],
+      "content_hash": "13c5d6813348c993f02ed4a321408f4d43a711486177910b6d1db02ab56f36a1"
+    },
+    "brain/perf-freeze-root-cause-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:21:47Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "perf",
+        "freeze",
+        "root",
+        "cause"
+      ],
+      "content_hash": "fb00061ccc084023fa5fd352d6c486c630c7bf64100e6c2d9c65666fa54ef37f"
+    },
+    "brain/pip-editable-hides-mcp-cwd-emptiness-2026-05-23": {
+      "ts_utc_last": "2026-05-25T02:21:50Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "pip",
+        "editable",
+        "hides",
+        "mcp",
+        "cwd",
+        "emptiness"
+      ],
+      "content_hash": "4eada2f7726336847b16da64fa14e69b8b1f963081a7ade92a960ab25d145aab"
+    },
+    "brain/pip-editable-stale-pth-correction-2026-05-23": {
+      "ts_utc_last": "2026-05-25T02:30:38Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "pip",
+        "editable",
+        "stale",
+        "pth",
+        "correction"
+      ],
+      "content_hash": "ceac199e6ca1ebb983f9a505d8b176e6426f56bfafcccad9484bb9367bca71d3"
+    },
+    "brain/pip-self-upgrade-breaks-venv": {
+      "ts_utc_last": "2026-05-25T02:30:39Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "pip",
+        "self",
+        "upgrade",
+        "breaks",
+        "venv"
+      ],
+      "content_hash": "ee2b56437bf3fa823bea5368c7a6345f1bad7cdbfd3a425a64744daa9963892e"
+    },
+    "brain/post-reboot-auto-unlock": {
+      "ts_utc_last": "2026-05-25T02:30:40Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "post",
+        "reboot",
+        "auto",
+        "unlock"
+      ],
+      "content_hash": "72357ddc9ace3b4d45ce3e9b7ef310ed072e03d27395bdf617cc527e610dce0b"
+    },
+    "brain/postreboot-pi-network-settle": {
+      "ts_utc_last": "2026-05-25T02:30:41Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "postreboot",
+        "network",
+        "settle"
+      ],
+      "content_hash": "1e9e7bf07bf4a71b50fad761b65822ca03868ae1330ec1afbc1f6cd6478edc9b"
+    },
+    "brain/powershell-emdash-non-ascii": {
+      "ts_utc_last": "2026-05-25T02:30:41Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "powershell",
+        "emdash",
+        "non",
+        "ascii"
+      ],
+      "content_hash": "d26c2a9e3f839a95b8652c8425a758c68c02741c1b3327a9591244903dc98e6f"
+    },
+    "brain/powershell-named-param-splat-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:30:41Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "powershell",
+        "named",
+        "param",
+        "splat"
+      ],
+      "content_hash": "d28852857559b0717f3a671537a5a7789c26a6eb117fbb919540bd79ca3680d2"
+    },
+    "brain/powershell-readhost-empty-prompt": {
+      "ts_utc_last": "2026-05-25T02:30:42Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "powershell",
+        "readhost",
+        "empty",
+        "prompt"
+      ],
+      "content_hash": "e796694a34def4534f893b15df41e1ac59805c34a39855e6d70388d1bea170ac"
+    },
+    "brain/proc-maps-hook-breaks-ksu-su-2026-05-21": {
+      "ts_utc_last": "2026-05-25T02:30:42Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "proc",
+        "maps",
+        "hook",
+        "breaks",
+        "ksu"
+      ],
+      "content_hash": "3946c58fb30889a981fd687344f4c10a182cb68baa94158808d884c1be8c1ff4"
+    },
+    "brain/progress-cross-lane-pattern-finder-2026-05-25": {
+      "ts_utc_last": "2026-05-25T02:30:43Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "progress",
+        "cross",
+        "lane",
+        "pattern",
+        "finder"
+      ],
+      "content_hash": "413a2751f97487b0c0b2c0390bfc1913ad59114d074dc3d1b6b6765f4bf0c8dc"
+    },
+    "brain/project-root-disk-integrity-2026-05-23": {
+      "ts_utc_last": "2026-05-25T02:30:43Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "project",
+        "root",
+        "disk",
+        "integrity"
+      ],
+      "content_hash": "b88b9514a03ace75bf6a327d8da254a86f9a98eb1fce4011639f3107b88ef127"
+    },
+    "brain/ps51-scriptblock-replace-bug-2026-05-25": {
+      "ts_utc_last": "2026-05-25T02:30:43Z",
+      "writes": 2,
+      "confidence": 1.0,
+      "tags": [
+        "ps51",
+        "scriptblock",
+        "replace",
+        "bug"
+      ],
+      "content_hash": "227668457b473fd21f3f980fa9b36c24429163892bdc10717be5748d0220bd75"
+    },
+    "brain/pyinstaller-distutils-exclude-collision": {
+      "ts_utc_last": "2026-05-25T02:30:44Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "pyinstaller",
+        "distutils",
+        "exclude",
+        "collision"
+      ],
+      "content_hash": "8769ac2f39236e49e3c91f5ac262803baa77aa93bfadc573f00074ea70f0482c"
+    },
+    "brain/pyinstaller-tmp-race-condition-2026-05-21": {
+      "ts_utc_last": "2026-05-25T02:30:46Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "pyinstaller",
+        "tmp",
+        "race",
+        "condition"
+      ],
+      "content_hash": "11bba65e35d5571669844c0eaacac3c831576d9e14323259c2adae9c1c4a859e"
+    },
+    "brain/pyinstaller-tomli-hook-missing": {
+      "ts_utc_last": "2026-05-25T02:30:47Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "pyinstaller",
+        "tomli",
+        "hook",
+        "missing"
+      ],
+      "content_hash": "e84aff7b9bd0c23818b0a8c53087d484d42721be71c82c6a088d2e4892cfbc15"
+    },
+    "brain/quantum-fleet-discipline-doctrine-2026-05-25": {
+      "ts_utc_last": "2026-05-25T02:30:48Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "quantum",
+        "fleet",
+        "discipline",
+        "doctrine"
+      ],
+      "content_hash": "aa4d259ea6a499beca96d06d099ec89d6432c7f780e8d4d1eaf2b50c551cf674"
+    },
+    "brain/quantum-memory-kernel-fleet-action-items-2026-05-23": {
+      "ts_utc_last": "2026-05-25T02:30:48Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "quantum",
+        "memory",
+        "kernel",
+        "fleet",
+        "action",
+        "items"
+      ],
+      "content_hash": "17a854755da206aa2dc40b3d073bc1edf39b2d6b79e89b6ce1181584e0cdeab3"
+    },
+    "brain/r28-sinister-mermaid-render-rust-fork-doctrine-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:30:50Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "r28",
+        "sinister",
+        "mermaid",
+        "render",
+        "rust",
+        "fork",
+        "doctrine"
+      ],
+      "content_hash": "9c290c89e21c26f27244239ee1797345097819ae0a4a2017ddba070cf85531d2"
+    },
+    "brain/research-import-pipeline": {
+      "ts_utc_last": "2026-05-25T02:30:50Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "research",
+        "import",
+        "pipeline"
+      ],
+      "content_hash": "e1e2f09c6d7c8ecb5aba2b211bc78f9c14aeb12224176c5e8281c3b1b8806530"
+    },
+    "brain/resource-refcount-cleanup-sleep-wake-doctrine-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:30:51Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "resource",
+        "refcount",
+        "cleanup",
+        "sleep",
+        "wake",
+        "doctrine"
+      ],
+      "content_hash": "f76903bb860663bf0d97e8cc556b065077445433fa42fb2f7759f8ea37604b03"
+    },
+    "brain/resume-point-dir-name-convention": {
+      "ts_utc_last": "2026-05-25T02:30:52Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "resume",
+        "point",
+        "dir",
+        "name",
+        "convention"
+      ],
+      "content_hash": "6e533470934543a61f2b8c112f968b9f31048a5fbfb48193562dfdf0a958c5c0"
+    },
+    "brain/resume-point-write-ps1-fulltree-scan-hang-2026-05-21": {
+      "ts_utc_last": "2026-05-25T02:30:52Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "resume",
+        "point",
+        "write",
+        "ps1",
+        "fulltree",
+        "scan",
+        "hang"
+      ],
+      "content_hash": "87ca4e0edf2362a4e609b9d55d3ea2d67ae56a15dc88ad5551142ab6b84ddebe"
+    },
+    "brain/rkoj-cmd-spawn-loop-diagnosis": {
+      "ts_utc_last": "2026-05-25T02:30:54Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "rkoj",
+        "cmd",
+        "spawn",
+        "loop",
+        "diagnosis"
+      ],
+      "content_hash": "1f26362991742880b1e036df5d108877d96a77957a4e37ab9e34bc6e555d24f4"
+    },
+    "brain/rkoj-embedded-device-viewer": {
+      "ts_utc_last": "2026-05-25T02:30:54Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "rkoj",
+        "embedded",
+        "device",
+        "viewer"
+      ],
+      "content_hash": "6c0db27bf34366b5d5e9b4051d5d596f48d6f69b1222e4781dfce49542e048ca"
+    },
+    "brain/rkoj-fleet-state-sse": {
+      "ts_utc_last": "2026-05-25T02:30:55Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "rkoj",
+        "fleet",
+        "state",
+        "sse"
+      ],
+      "content_hash": "1d155409b23f7487b0cd7f8ec7b958ae0397b51035136f0801c2bf8021efd9ad"
+    },
+    "brain/rkoj-hot-reload-pattern": {
+      "ts_utc_last": "2026-05-25T02:30:55Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "rkoj",
+        "hot",
+        "reload",
+        "pattern"
+      ],
+      "content_hash": "e051c95baa9163e536a8c18827fe6fe488974ae6b78b06cc9a1bd853acf689c6"
+    },
+    "brain/rkoj-introspection-cluster-v1.6.45-56-2026-05-22": {
+      "ts_utc_last": "2026-05-25T02:30:56Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "rkoj",
+        "introspection",
+        "cluster",
+        "v1.6.45"
+      ],
+      "content_hash": "7ed9ef4fbb5af814a4858a52f2c811e36687963adbb19d3331788328bc356a9b"
+    },
+    "brain/rkoj-phase1-memory-bootstrap-2026-05-21": {
+      "ts_utc_last": "2026-05-25T02:30:58Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "rkoj",
+        "phase1",
+        "memory",
+        "bootstrap"
+      ],
+      "content_hash": "6d4f66409e1590947c57119d0d401070a4da0982116b5b5b169ed8b308c6c76b"
+    },
+    "brain/rkoj-polish-cluster-v1.6.20-25-2026-05-22": {
+      "ts_utc_last": "2026-05-25T02:31:01Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "rkoj",
+        "polish",
+        "cluster",
+        "v1.6.20"
+      ],
+      "content_hash": "0c2d788d51ff270951efb34697127fe7e17048bf071da74d7df6acca8b14a21f"
+    },
+    "brain/rkoj-polish-cluster-v1.6.27-31-2026-05-22": {
+      "ts_utc_last": "2026-05-25T02:31:02Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "rkoj",
+        "polish",
+        "cluster",
+        "v1.6.27"
+      ],
+      "content_hash": "bc1c53871a1fcc946b2247b7205d7d1f8787bb4ecd5f5d5d20b598492c0d656e"
+    },
+    "brain/rkoj-project-shape-promotion-2026-05-21": {
+      "ts_utc_last": "2026-05-25T02:31:03Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "rkoj",
+        "project",
+        "shape",
+        "promotion"
+      ],
+      "content_hash": "50290e54f174a1e0cdf373e347365f15abf8069248a89f033068bff5b1311882"
+    },
+    "brain/rkoj-runtime-ergonomics-cluster-v1.6.37-44-2026-05-22": {
+      "ts_utc_last": "2026-05-25T02:31:03Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "rkoj",
+        "runtime",
+        "ergonomics",
+        "cluster",
+        "v1.6.37"
+      ],
+      "content_hash": "01ed1600855de1d35d3b9d25ee18d689c01ee2c197b78579f77e3d5e35646fe5"
+    },
+    "brain/rkoj-session-continuity-pattern-2026-05-21": {
+      "ts_utc_last": "2026-05-25T02:31:04Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "rkoj",
+        "session",
+        "continuity",
+        "pattern"
+      ],
+      "content_hash": "48e274563f12f317672bc2cfb03eca9ffa97aebdd15a0fe85eded63015961629"
+    },
+    "brain/rkoj-stream-json-jcode-parity-2026-05-22": {
+      "ts_utc_last": "2026-05-25T02:31:04Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "rkoj",
+        "stream",
+        "json",
+        "jcode",
+        "parity"
+      ],
+      "content_hash": "ac1a914eec4e21a3643005a2ae3f16de879a1d2e1087204c4311186a0ed98aaa"
+    },
+    "brain/rkoj-ui-exact-spec-2026-05-21": {
+      "ts_utc_last": "2026-05-25T02:31:05Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "rkoj",
+        "exact",
+        "spec"
+      ],
+      "content_hash": "7ddb31dff0ab8a8b7501aa7046c6b9a9461cac116dc83fdb8db5facd518edaf6"
+    },
+    "brain/rkoj-v1.0-to-v1.1-form-parity-journey": {
+      "ts_utc_last": "2026-05-25T02:31:06Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "rkoj",
+        "v1.0",
+        "v1.1",
+        "form",
+        "parity",
+        "journey"
+      ],
+      "content_hash": "3511e8c614f2943546c0dec6163ac33402105ed93236fc99011236cbc4ff8fe6"
+    },
+    "brain/rkoj-workbench-architecture": {
+      "ts_utc_last": "2026-05-25T02:31:06Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "rkoj",
+        "workbench",
+        "architecture"
+      ],
+      "content_hash": "ce61e43c67520103cf527cbe3cc0bf32ffce7a71a4a622702435a10bc7353d2b"
+    },
+    "brain/rkoj-workstation-ui-layout": {
+      "ts_utc_last": "2026-05-25T02:31:07Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "rkoj",
+        "workstation",
+        "layout"
+      ],
+      "content_hash": "1daa49b6e7fdf70b8ac5516b053cf00ba3588eee2a7b33171e712096ff5c78e4"
+    },
+    "brain/ruflo-mcp-integration": {
+      "ts_utc_last": "2026-05-25T02:31:08Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "ruflo",
+        "mcp",
+        "integration"
+      ],
+      "content_hash": "116362d3aeef97279652f2f2e783a38355bb7fd3ae8a09350a58b1b5f6327f3d"
+    },
+    "brain/runtime-liveness-heartbeats": {
+      "ts_utc_last": "2026-05-25T02:31:08Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "runtime",
+        "liveness",
+        "heartbeats"
+      ],
+      "content_hash": "d86a05e42a46daf38d318e7a96e82b5898af27741838e54cf055f1f1396b3ab6"
+    },
+    "brain/safe-quality-loops-doctrine-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:31:09Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "safe",
+        "quality",
+        "loops",
+        "doctrine"
+      ],
+      "content_hash": "ded6162d6086a29979767156645f465b4e755a8e434e7ffe73a5a01ea518718e"
+    },
+    "brain/sanctioned-bypasses-doctrine-2026-05-21": {
+      "ts_utc_last": "2026-05-25T02:31:10Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "sanctioned",
+        "bypasses",
+        "doctrine"
+      ],
+      "content_hash": "a173c262cc2cc211d1afd587aaa1810b398c95f4a603cffc3675c463a47bb086"
+    },
+    "brain/sanctum-auto-push": {
+      "ts_utc_last": "2026-05-25T02:31:10Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "sanctum",
+        "auto",
+        "push"
+      ],
+      "content_hash": "6493da619c5e8a7e6b247dc3ec783bcc8215c24c7113cb049fd37a02a1f618b6"
+    },
+    "brain/sanctum-mirror-orphan-corruption-pattern-2026-05-23": {
+      "ts_utc_last": "2026-05-25T02:31:11Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "sanctum",
+        "mirror",
+        "orphan",
+        "corruption",
+        "pattern"
+      ],
+      "content_hash": "2cb7ef98c3eedfd8e313d9ea113d553e16ec6bbed12a7112e35f457b3ef9f0aa"
+    },
+    "brain/sanctum-scope-discipline-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:31:11Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "sanctum",
+        "scope",
+        "discipline"
+      ],
+      "content_hash": "259465391b3cbfbe7384ea54bb0e2a742222158fb93c6d260d07847c077e0add"
+    },
+    "brain/sanctum-shared-rename-pyinstaller-collision": {
+      "ts_utc_last": "2026-05-25T02:31:11Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "sanctum",
+        "shared",
+        "rename",
+        "pyinstaller",
+        "collision"
+      ],
+      "content_hash": "e6e38a25b67e23da81358b430463e9c01578cd1787637d20571cc400ca079a08"
+    },
+    "brain/scrcpy-virtual-display-detected": {
+      "ts_utc_last": "2026-05-25T02:31:12Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "scrcpy",
+        "virtual",
+        "display",
+        "detected"
+      ],
+      "content_hash": "78920f869f949713dd700f718a9e7ac2d0abb1035d50c361ad34dbaa8911cd86"
+    },
+    "brain/seraphim-cloud-qpu-real-first-fire-2026-05-23": {
+      "ts_utc_last": "2026-05-25T02:31:12Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "seraphim",
+        "cloud",
+        "qpu",
+        "real",
+        "first",
+        "fire"
+      ],
+      "content_hash": "c791c8ecde5be6fd424f8e9eed948a148f593e2626dbd9f36ca012cd71745097"
+    },
+    "brain/seraphim-for-emu-re-2026-05-23": {
+      "ts_utc_last": "2026-05-25T02:31:13Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "seraphim",
+        "for",
+        "emu"
+      ],
+      "content_hash": "0a140ed281ed191919e50f36c3105cdd2c951a577c654ce089bf3f69463f3172"
+    },
+    "brain/service-apk-hash-check": {
+      "ts_utc_last": "2026-05-25T02:31:13Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "service",
+        "apk",
+        "hash",
+        "check"
+      ],
+      "content_hash": "45efaadc3b117465af29ad188ce94484abd6998b6a255cea5f247f9ddbfaf4b5"
+    },
+    "brain/session-start-auto-update-propagation-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:31:14Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "session",
+        "start",
+        "auto",
+        "update",
+        "propagation"
+      ],
+      "content_hash": "6ed417bf1d0185da5bacb66bede7fb0d0a64b26b4d183138f7dd56ba713c9fc6"
+    },
+    "brain/sibling-active-launch-coordination-pattern": {
+      "ts_utc_last": "2026-05-25T02:31:15Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "sibling",
+        "active",
+        "launch",
+        "coordination",
+        "pattern"
+      ],
+      "content_hash": "7cd75a1d9d97ccd95bfe1b47134c4809f786deba93789f8200db10599814e518"
+    },
+    "brain/single-repo-push-policy-2026-05-25": {
+      "ts_utc_last": "2026-05-25T02:31:16Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "single",
+        "repo",
+        "push",
+        "policy"
+      ],
+      "content_hash": "de413abc60f40c8d0555047d1f590b0675f22c2a3cd24f06b5085cea64eade00"
+    },
+    "brain/sinister-chatbot-direction-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:31:18Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "sinister",
+        "chatbot",
+        "direction"
+      ],
+      "content_hash": "4f405f2cdaf60531f41862f47b7c8d463097fe364f31ef6cafb14888bb643c41"
+    },
+    "brain/sinister-chatbot-test-env-findings-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:31:18Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "sinister",
+        "chatbot",
+        "test",
+        "env",
+        "findings"
+      ],
+      "content_hash": "ba05809a04c7ba870c1e51b59f7d851455b1242cbf8e18d69f06d3ed1d7f86f5"
+    },
+    "brain/sinister-cli-subcommand-pattern": {
+      "ts_utc_last": "2026-05-25T02:31:19Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "sinister",
+        "cli",
+        "subcommand",
+        "pattern"
+      ],
+      "content_hash": "2ad53172bdf1587f72d1c67f9a03ed85471c15357c015a99889c4e2a17e66633"
+    },
+    "brain/sinister-forge-harness-pattern": {
+      "ts_utc_last": "2026-05-25T02:31:20Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "sinister",
+        "forge",
+        "harness",
+        "pattern"
+      ],
+      "content_hash": "5fbc33a4886695724988430918af6d2319b0f5253c5e95a052265d757b92cb55"
+    },
+    "brain/sinister-freeze-project-doctrine": {
+      "ts_utc_last": "2026-05-25T02:31:20Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "sinister",
+        "freeze",
+        "project",
+        "doctrine"
+      ],
+      "content_hash": "dc02ec28143b303743e388da47b5a11deeaa938da4f02370b2f06c9b7b2e8749"
+    },
+    "brain/sinister-link-doctrine-2026-05-25": {
+      "ts_utc_last": "2026-05-25T02:31:21Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "sinister",
+        "link",
+        "doctrine"
+      ],
+      "content_hash": "5859cf980b5611b588d064be83a474757c938b21fb75243f06883eb345c9c87f"
+    },
+    "brain/sinister-os-doctrine-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:31:21Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "sinister",
+        "doctrine"
+      ],
+      "content_hash": "39905a5ce92bd4b8639c28514d73751f6bb6899e8ba1a1f077b840891756ff67"
+    },
+    "brain/sinister-os-fleet-host-linkage-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:31:22Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "sinister",
+        "fleet",
+        "host",
+        "linkage"
+      ],
+      "content_hash": "268e47ee39acda943fbb7c0b38266465abca1bd60bc5625765a6d39f5edb66fe"
+    },
+    "brain/sinister-os-mobile-doctrine-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:31:22Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "sinister",
+        "mobile",
+        "doctrine"
+      ],
+      "content_hash": "af599ec91649b9d6f607614867e0faff645c4a55807434348140ddf96850f93d"
+    },
+    "brain/sinister-os-mobile-sandbox-cuttlefish-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:31:23Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "sinister",
+        "mobile",
+        "sandbox",
+        "cuttlefish"
+      ],
+      "content_hash": "22abb71d1f3c493f53b4d92875bf21c70afcc11cbb80d2c8361b9422cbef68e9"
+    },
+    "brain/sinister-os-quantum-applicability-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:31:23Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "sinister",
+        "quantum",
+        "applicability"
+      ],
+      "content_hash": "97b8b78a8480d8ad97522c2176baac149193a7ace664e8aa558f967e65e64322"
+    },
+    "brain/sinister-overseer-charter-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:31:23Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "sinister",
+        "overseer",
+        "charter"
+      ],
+      "content_hash": "bb7d9cf02ebb078212faced5d6e418d1cb9efe30e99f01641a7f43ddc2a7250f"
+    },
+    "brain/sinister-rkoj-extensibility-doctrine": {
+      "ts_utc_last": "2026-05-25T02:31:24Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "sinister",
+        "rkoj",
+        "extensibility",
+        "doctrine"
+      ],
+      "content_hash": "339dcc0bf59c5787ec93afb2cb0acfc547468dcd88e8719885184dd1d8918eae"
+    },
+    "brain/sinister-seraphim-integration-vision-2026-05-23": {
+      "ts_utc_last": "2026-05-25T02:31:25Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "sinister",
+        "seraphim",
+        "integration",
+        "vision"
+      ],
+      "content_hash": "1526a2b043d1a279f2a41d2ced25f76a6454de609e154706927424bbe2bf75aa"
+    },
+    "brain/sinister-sleight-project-charter-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:31:25Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "sinister",
+        "sleight",
+        "project",
+        "charter"
+      ],
+      "content_hash": "84a996b6c59ad8fd2da3b3b4838d2984224ce335d1dffb97bafa517490acd536"
+    },
+    "brain/sinister-spoofer-lukeprivacy-sim-clobber-2026-05-21": {
+      "ts_utc_last": "2026-05-25T02:31:25Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "sinister",
+        "spoofer",
+        "lukeprivacy",
+        "sim",
+        "clobber"
+      ],
+      "content_hash": "dbc5dc8499c9dabdab6161b836e100ceaf5f2bc5591c2d8a7337ac4e6d7d588b"
+    },
+    "brain/sinister-ui-canonical-dashboard-skeleton-inheritance-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:31:27Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "sinister",
+        "canonical",
+        "dashboard",
+        "skeleton",
+        "inheritance"
+      ],
+      "content_hash": "bc48e3a4f60df772fc46b28dbcdbcc024239bf36dacff2f647909c0ad6ffdfdd"
+    },
+    "brain/sinister-vault-architecture": {
+      "ts_utc_last": "2026-05-25T02:31:28Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "sinister",
+        "vault",
+        "architecture"
+      ],
+      "content_hash": "2076a93844b18cba00f1dc12b8fe4e6ccd9029a0290f96651477cf7d240451de"
+    },
+    "brain/sinistercast-pc-leak-doctrine-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:31:28Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "sinistercast",
+        "leak",
+        "doctrine"
+      ],
+      "content_hash": "9ce0a59e0fc2e591a97608eac39badf2b75178d0a41b9cf7a86ce4880b5d7f9e"
+    },
+    "brain/snap-account-24h-survival-doctrine-2026-05-21": {
+      "ts_utc_last": "2026-05-25T02:31:28Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "snap",
+        "account",
+        "24h",
+        "survival",
+        "doctrine"
+      ],
+      "content_hash": "3c8e14a355292c2027a36b4e354988b8b060ba5846d9e42f9523eaf503ae3746"
+    },
+    "brain/snap-emu-pb2-schema-shadow": {
+      "ts_utc_last": "2026-05-25T02:31:29Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "snap",
+        "emu",
+        "pb2",
+        "schema",
+        "shadow"
+      ],
+      "content_hash": "ae78936160e5bd02468d635cac12d5471ba53c322e1e61d9efe90ee4909824c3"
+    },
+    "brain/snap-tt-rka-chain-attestation-insufficient": {
+      "ts_utc_last": "2026-05-25T02:31:29Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "snap",
+        "rka",
+        "chain",
+        "attestation",
+        "insufficient"
+      ],
+      "content_hash": "44d3e275a772ffe85749f6dc4d997715c629d656ea2e7f9c20bf4eead717a274"
+    },
+    "brain/spawn-validation-end-to-end-2026-05-23": {
+      "ts_utc_last": "2026-05-25T02:31:29Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "spawn",
+        "validation",
+        "end",
+        "end"
+      ],
+      "content_hash": "3b5c9ddbf7d691016a4ec8504ba732e48d9f701dd8ac76a23f5d41544d9a0a3e"
+    },
+    "brain/spawned-phrase-refusal-fix-2026-05-23": {
+      "ts_utc_last": "2026-05-25T02:31:29Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "spawned",
+        "phrase",
+        "refusal",
+        "fix"
+      ],
+      "content_hash": "a2a3f3a2714658437c246e1a9102ad692c118e2c1da60af6b7ea4159d0c08edc"
+    },
+    "brain/spawned-window-capabilities-2026-05-23": {
+      "ts_utc_last": "2026-05-25T02:31:30Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "spawned",
+        "window",
+        "capabilities"
+      ],
+      "content_hash": "8e372bf4209134331e83602f03c17a26cd2ede07a78eca3263274c3efce27b83"
+    },
+    "brain/speculation-as-empirical-anti-pattern-2026-05-20": {
+      "ts_utc_last": "2026-05-25T02:31:31Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "speculation",
+        "empirical",
+        "anti",
+        "pattern"
+      ],
+      "content_hash": "c85f0e1bd2b3198795739eb7e9db778f4e2c67357074924ae01fd9cd0ba48449"
+    },
+    "brain/stale-state-reconciliation-pattern-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:31:31Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "stale",
+        "state",
+        "reconciliation",
+        "pattern"
+      ],
+      "content_hash": "7215c75dbb097e4dab769eaa4e35cd001c47d199553b9b0b103d3e3e1dd8c381"
+    },
+    "brain/sterm-default-shell-fleet-wide-2026-05-23": {
+      "ts_utc_last": "2026-05-25T02:31:34Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "sterm",
+        "default",
+        "shell",
+        "fleet",
+        "wide"
+      ],
+      "content_hash": "22137a462d99738ed8d88002bb41cf6a85fd737bd8740cb4cebf81d8b26205a4"
+    },
+    "brain/sub-agent-ascii-only-prompt-template-doctrine-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:31:34Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "sub",
+        "agent",
+        "ascii",
+        "only",
+        "prompt",
+        "template",
+        "doctrine"
+      ],
+      "content_hash": "071ff27e4b8bd8af9ecbf7a20e480dc89888a9a69534e8e742e712f894d21188"
+    },
+    "brain/test-modes-5x-parallel-consolidated-status-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:31:34Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "test",
+        "modes",
+        "parallel",
+        "consolidated",
+        "status"
+      ],
+      "content_hash": "af5c55b9bfed22fe42bb36ea59fa8428963dcda816568f8e0012db4c0c5bb1d2"
+    },
+    "brain/textual-render-shadowing-pitfall": {
+      "ts_utc_last": "2026-05-25T02:31:35Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "textual",
+        "render",
+        "shadowing",
+        "pitfall"
+      ],
+      "content_hash": "36ea64cf44f01560144ef971c5af5e96e50f52dd764eec9788a80f9600e405cd"
+    },
+    "brain/themed-modulezips-body-identical-upstream": {
+      "ts_utc_last": "2026-05-25T02:31:35Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "themed",
+        "modulezips",
+        "body",
+        "identical",
+        "upstream"
+      ],
+      "content_hash": "d8fe5d7e68c1add188bae9c30550faea3ed102f27f73807a60f7b50246a45a9a"
+    },
+    "brain/tiktok-cuttlefish-5-signal-detection-model": {
+      "ts_utc_last": "2026-05-25T02:31:35Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "tiktok",
+        "cuttlefish",
+        "signal",
+        "detection",
+        "model"
+      ],
+      "content_hash": "75b34ea978b3de6eff0e4e4f9d36331cfb0fc9011c1f7f0b0566c39c66894f67"
+    },
+    "brain/token-efficiency-analytics-doctrine-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:31:35Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "token",
+        "efficiency",
+        "analytics",
+        "doctrine"
+      ],
+      "content_hash": "15cd46a1d9007ab39271bb76aa3a157be4704bef164cd639d54fb3f3c6b7b815"
+    },
+    "brain/token-efficiency-post-swarm-addendum-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:31:35Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "token",
+        "efficiency",
+        "post",
+        "swarm",
+        "addendum"
+      ],
+      "content_hash": "6dcbc6599146b91b4fe98339168bbbf651a10b2e54509a3e64cdda0251c03136"
+    },
+    "brain/trading-bot-doctrine-2026-05-24": {
+      "ts_utc_last": "2026-05-25T02:31:35Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "trading",
+        "bot",
+        "doctrine"
+      ],
+      "content_hash": "822d0e372b5dc869a0263e18274e4deba00b6cfe3b24ad3ec078f23c0919310c"
+    },
+    "brain/tt-captcha-equals-detection": {
+      "ts_utc_last": "2026-05-25T02:31:36Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "captcha",
+        "equals",
+        "detection"
+      ],
+      "content_hash": "6eb4bb449061cc9af8a515e20851c807f86ab26c39a892227520799364bc5143"
+    },
+    "brain/tt-hedra-recipe-canonical": {
+      "ts_utc_last": "2026-05-25T02:31:36Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "hedra",
+        "recipe",
+        "canonical"
+      ],
+      "content_hash": "6e09c473955e78b221a71cd14fba73b519a3d7c54476bdce1a70f6f2d1ea5dcd"
+    },
+    "brain/vault-commit-modal-pattern": {
+      "ts_utc_last": "2026-05-25T02:31:36Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "vault",
+        "commit",
+        "modal",
+        "pattern"
+      ],
+      "content_hash": "d875771d8d32700a69bb02ac920c226f1f5abd2d8ec83b1edd02d8f8aece5f9a"
+    },
+    "brain/verify-head-before-commit-multi-agent": {
+      "ts_utc_last": "2026-05-25T02:31:36Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "verify",
+        "head",
+        "before",
+        "commit",
+        "multi",
+        "agent"
+      ],
+      "content_hash": "b211ad3d263afcbd5a9340836ed391bde4c736f1c1db31818bfe93a6f23ee9d2"
+    },
+    "brain/wake-on-demand-bot-dispatcher-2026-05-23": {
+      "ts_utc_last": "2026-05-25T02:31:36Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "wake",
+        "demand",
+        "bot",
+        "dispatcher"
+      ],
+      "content_hash": "f6363dccc3ed58a73c03bbc9cb4159dfe975f7e9605e1abd3f6fc9d760914e35"
+    },
+    "brain/windows-case-folding-resume-point-trap": {
+      "ts_utc_last": "2026-05-25T02:31:36Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "windows",
+        "case",
+        "folding",
+        "resume",
+        "point",
+        "trap"
+      ],
+      "content_hash": "b0560f5e55f0fccd1de7126072fa8d2e2d16f747d229e37501119f58ac43178f"
+    },
+    "brain/windows-npm-spawn-from-powershell": {
+      "ts_utc_last": "2026-05-25T02:31:37Z",
+      "writes": 1,
+      "confidence": 1.0,
+      "tags": [
+        "windows",
+        "npm",
+        "spawn",
+        "from",
+        "powershell"
+      ],
+      "content_hash": "26136c2118596cfacaaaa6aae1ce1cadb867e9dccdd889e65cb9c60484d2c6e0"
     }
   },
-  "updated_utc": "2026-05-23T09:24:26Z"
+  "updated_utc": "2026-05-25T02:31:37Z"
 }

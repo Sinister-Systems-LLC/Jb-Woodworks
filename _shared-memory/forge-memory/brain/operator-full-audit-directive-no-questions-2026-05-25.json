@@ -1,0 +1,19 @@
+{
+  "_author": "RKOJ-ELENO :: 2026-05-21",
+  "schema_version": "sinister.forge-memory.v1",
+  "namespace": "brain",
+  "key": "operator-full-audit-directive-no-questions-2026-05-25",
+  "value": "<!-- Author: RKOJ-ELENO :: 2026-05-25 -->\n<!-- decay:\n  category: preference\n  confidence: 1.0\n  reinforcements: 1\n  half_life_days: 365\n-->\n# Operator directive: \"full audit\" = execute, no questions asked\n\n**Status:** HARD-CANONICAL 2026-05-25T02:10Z (operator verbatim, fleet-wide binding).\n\n**Operator verbatim 2026-05-25T~02:10Z:** *\"alsop not in the sysstem that if i tell you to do full audit you fucking do it\"*.\n\n## What this means\n\nWhen the operator uses the phrase \"**full audit**\" (or \"full complete audit\", \"audit everything\", \"audit X completely\") on any topic, the master agent (Sanctum / EVE) MUST execute the audit immediately. No clarification questions. No \"should I scope this to...\" No \"do you want me to also...\"\n\nThe audit gets done. Period. Documented as a brain entry, decay-annotated, indexed.\n\n## Standard \"full audit\" execution template (no-questions form)\n\n1. **Spawn a general-purpose audit subagent in BACKGROUND** with explicit scope:\n   - The target (file tree path, system, doctrine cluster, etc.)\n   - Reference comparison (if operator named one, e.g., \"vs jcode\")\n   - Output destination: `_shared-memory/knowledge/<topic>-full-audit-<UTC-date>.md`\n   - Decay annotation: `category=fact, confidence=0.95, half_life=180`\n   - Section requirements: TL;DR scoreboard, deep-dive per subsystem, gaps, wins, implementation backlog\n2. **Continue other operator work in foreground** (audits run parallel; don't block)\n3. **When audit completes**: surface findings + the top 3 gaps in the next end-of-turn summary\n4. **Auto-queue the implementation backlog** into operator-action-queue OR ship the gaps directly per `loop-mode-continuous-iteration-2026-05-24`\n\n## Anti-patterns (NEVER on a \"full audit\" trigger)\n\n- \"What scope did you want for the audit?\" \u2192 operator already told you (the noun in their sentence)\n- \"Should I include X?\" \u2192 yes, include everything; full = full\n- Shallow audit (skim a few files; surface 2 generic observations) \u2192 \"full\" = exhaustive; read complete files for key subsystems\n- Ship audit findings without an implementation backlog \u2192 audit without action is fluff\n\n## Composes with\n\n- `no-bullshit-tested-before-claimed-doctrine-2026-05-23` (rule 6: laser focus; full-audit is its own focused turn)\n- `loop-mode-continuous-iteration-2026-05-24` (audit findings auto-queue next iter)\n- `forever-improve-review-doctrine-2026-05-24` (audit IS a forever-improve action; logs to improvement-log)\n- `quantum-fleet-discipline-doctrine-2026-05-25` (audit pre-screen for quantum lane)\n\n## Measurable pass criterion\n\n- Audit doctrine file exists at the canonical path, frontmatter present, indexed in `_INDEX.md`\n- Audit has all 5 sections (scoreboard, deep-dive, gaps, wins, backlog)\n- At least 3 backlog items are tickets the fleet can execute without further operator clarification\n\nUpdated: 2026-05-25\n",
+  "tags": [
+    "operator",
+    "full",
+    "audit",
+    "directive",
+    "questions"
+  ],
+  "ts_utc_first": "2026-05-25T02:16:07Z",
+  "ts_utc_last": "2026-05-25T02:21:32Z",
+  "writes": 2,
+  "confidence": 1.0,
+  "content_hash": "75cb01519a69c8440f103f365028c03113d6ae0a9d4b0a38014b78c021dc8edb"
+}

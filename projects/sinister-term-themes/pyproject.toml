@@ -1,0 +1,41 @@
+# Author: RKOJ-ELENO :: 2026-05-25
+# Ancestral Remotion (Sinister Term Themes)
+# Status: P0 scaffolded — stdlib only
+
+[project]
+name = "sinister-term-themes"
+version = "0.0.1"
+description = "Ancestral Remotion :: living ASCII visualization layer for the Sinister fleet (per-project entities + palettes + energy-responsive animation)"
+authors = [
+    { name = "RKOJ-ELENO" }
+]
+license = { text = "Proprietary" }
+readme = "README.md"
+requires-python = ">=3.11"
+
+# P0–P2 — stdlib ONLY. Portability is the doctrine.
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest >=7.4",
+    "ruff >=0.1",
+]
+
+[project.urls]
+"Project Root" = "file://D:/Sinister Sanctum/projects/sinister-term-themes"
+
+[build-system]
+requires = ["setuptools >=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"

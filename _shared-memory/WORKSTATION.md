@@ -6,9 +6,9 @@ This is the master orientation doc for every Claude session. Read on cold-start 
 
 Sanctum is NOT just an orchestration repo. It is the operator's **entire workstation**. Every tool the operator uses to work, build, expand, push, and ship lives inside this folder OR is registered in the catalogs below. The Console (EXE) is the unified surface — one window, all the tools.
 
-## The 12 Sinister Bots fleet
+## The 13 Sinister Bots fleet
 
-All 12 live at `D:\Sinister\Sinister Skills\12_LLM_ORCHESTRATION\agents\` (junctioned at `D:\Sinister Sanctum\bots\agents\`). Each is an MCP server registered in `~/.claude/.mcp.json`. From any Claude session, you can call:
+All 13 live at `D:\Sinister\Sinister Skills\12_LLM_ORCHESTRATION\agents\` (junctioned at `D:\Sinister Sanctum\bots\agents\`). Each is an MCP server registered in `~/.claude/.mcp.json`. From any Claude session, you can call:
 
 | Bot | Tier | Cost | Default use |
 |---|---|---|---|
@@ -24,8 +24,9 @@ All 12 live at `D:\Sinister\Sinister Skills\12_LLM_ORCHESTRATION\agents\` (junct
 | `custodian` | 1 | $0 | active backup to D:\\_backups\\ |
 | `stealth-browser` | 1 | $0 | undetected Chromium (nodriver) |
 | `researcher` | 2 | $0 | scrape → Ollama summarize |
+| `vault` | 1 | $0 | Sinister Vault MCP (health / list / audit / search / commit / push / pull / snapshot / sync_status / accounts — 10 `mcp__vault__*` tools per `bots/agents/vault/server.py`) |
 
-The Console's "Bots" view (in development) makes these browsable + invokable from the UI.
+The Console's "Bots" view (in development) makes these browsable + invokable from the UI. Full call-sheet at `_shared-memory/knowledge/bot-fleet-quick-reference.md` (109 verified `@mcp.tool()` signatures across the 13).
 
 ## Sanctum Inventions (operator-vision projects)
 

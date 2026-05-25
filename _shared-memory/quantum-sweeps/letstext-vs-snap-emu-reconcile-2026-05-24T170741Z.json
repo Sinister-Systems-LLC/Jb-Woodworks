@@ -1,0 +1,242 @@
+{
+  "schema": "sinister-seraphim.reconcile-corpora.v1",
+  "label": "letstext-vs-snap-emu",
+  "corpus_a_root": "D:/Sinister Sanctum/projects/sinister-letstext",
+  "corpus_b_root": "D:/Sinister Sanctum/projects/sinister-snap-emu",
+  "n_corpus_a": 198,
+  "n_corpus_b": 251,
+  "cl_threshold": 0.3,
+  "sim_threshold": 0.5,
+  "total_pairs": 49698,
+  "reconciliation_candidates_count": 44,
+  "top_reconciliation_candidates": [
+    {
+      "rank": 1,
+      "classical": 0.4607905230690694,
+      "sim": 0.9388968978204496,
+      "combined": 1.399687420889519,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/TEAMWORK.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/HANDOFF-GUIDE/AUTO-SYNC-SETUP.md"
+    },
+    {
+      "rank": 2,
+      "classical": 0.34949386743000205,
+      "sim": 0.9423829233134882,
+      "combined": 1.2918767907434903,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/CLAUDE.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/HANDOFF-GUIDE/05-RULES-AND-GUARDRAILS.md"
+    },
+    {
+      "rank": 3,
+      "classical": 0.4495768729023598,
+      "sim": 0.8418716125150426,
+      "combined": 1.2914484854174024,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/_README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/.claude/memory/g.md"
+    },
+    {
+      "rank": 4,
+      "classical": 0.3056276692497822,
+      "sim": 0.9844766883788745,
+      "combined": 1.2901043576286566,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/docs/audit/race-conditions.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/SESSION-START.md"
+    },
+    {
+      "rank": 5,
+      "classical": 0.3320007974604221,
+      "sim": 0.956439891813442,
+      "combined": 1.2884406892738642,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/.claude/memory/R.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/.claude/memory/R.md"
+    },
+    {
+      "rank": 6,
+      "classical": 0.3320007974604221,
+      "sim": 0.956439891813442,
+      "combined": 1.2884406892738642,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/letstext2.0/memory-snapshot/R.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/.claude/memory/R.md"
+    },
+    {
+      "rank": 7,
+      "classical": 0.43795983939462085,
+      "sim": 0.8490038687617277,
+      "combined": 1.2869637081563485,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/letstext-pfp-animations/_README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/.claude/memory/g.md"
+    },
+    {
+      "rank": 8,
+      "classical": 0.4401867670422437,
+      "sim": 0.841871612515043,
+      "combined": 1.2820583795572866,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText-Legal/_README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/.claude/memory/g.md"
+    },
+    {
+      "rank": 9,
+      "classical": 0.3024174208331673,
+      "sim": 0.9794122614918567,
+      "combined": 1.281829682325024,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/docs/security/agent-2026-05-02-rate-limit-abuse-webhooks.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/SESSION-START.md"
+    },
+    {
+      "rank": 10,
+      "classical": 0.4392848089726055,
+      "sim": 0.841871612515043,
+      "combined": 1.2811564214876485,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/letstext-logos/_README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/.claude/memory/g.md"
+    },
+    {
+      "rank": 11,
+      "classical": 0.30570636907222304,
+      "sim": 0.9734920490626049,
+      "combined": 1.279198418134828,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/imessage-bridge/CLAUDE.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/docs/AUTONOMY-LOG.md"
+    },
+    {
+      "rank": 12,
+      "classical": 0.34986871012281173,
+      "sim": 0.921879798633789,
+      "combined": 1.2717485087566007,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/letstext2.0/docs/CLAUDE.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/HANDOFF-GUIDE/05-RULES-AND-GUARDRAILS.md"
+    },
+    {
+      "rank": 13,
+      "classical": 0.308730001563853,
+      "sim": 0.9594823199286616,
+      "combined": 1.2682123214925145,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/CLAUDE.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/.claude/memory/p.md"
+    },
+    {
+      "rank": 14,
+      "classical": 0.32102277402311724,
+      "sim": 0.9467399755978089,
+      "combined": 1.267762749620926,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/docs/audit/race-conditions.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/living-mds/DECISIONS.md"
+    },
+    {
+      "rank": 15,
+      "classical": 0.3226925719830853,
+      "sim": 0.9360830543066683,
+      "combined": 1.2587756262897536,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/letstext2.0/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/HANDOFF-GUIDE/05-RULES-AND-GUARDRAILS.md"
+    }
+  ],
+  "top_highest_classical": [
+    {
+      "rank": 1,
+      "classical": 0.6637315273244151,
+      "sim": 0.417829103172566,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/_README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/BOT-NETWORK.md"
+    },
+    {
+      "rank": 2,
+      "classical": 0.6547418916741713,
+      "sim": 0.41782910317256616,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText-Legal/_README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/BOT-NETWORK.md"
+    },
+    {
+      "rank": 3,
+      "classical": 0.6532317626753422,
+      "sim": 0.41782910317256644,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/letstext-logos/_README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/BOT-NETWORK.md"
+    },
+    {
+      "rank": 4,
+      "classical": 0.6512614869106454,
+      "sim": 0.39014847556596244,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/letstext-pfp-animations/_README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/BOT-NETWORK.md"
+    },
+    {
+      "rank": 5,
+      "classical": 0.5068308991870891,
+      "sim": 0.3737155137676727,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/_README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/living-mds/MCP-AND-BOTS.md"
+    },
+    {
+      "rank": 6,
+      "classical": 0.499379425762598,
+      "sim": 0.373715513767673,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText-Legal/_README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/living-mds/MCP-AND-BOTS.md"
+    },
+    {
+      "rank": 7,
+      "classical": 0.4987518388654928,
+      "sim": 0.373715513767673,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/letstext-logos/_README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/living-mds/MCP-AND-BOTS.md"
+    },
+    {
+      "rank": 8,
+      "classical": 0.49724750500289866,
+      "sim": 0.35887625716550126,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/letstext-pfp-animations/_README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/living-mds/MCP-AND-BOTS.md"
+    },
+    {
+      "rank": 9,
+      "classical": 0.4607905230690694,
+      "sim": 0.9388968978204496,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/TEAMWORK.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/HANDOFF-GUIDE/AUTO-SYNC-SETUP.md"
+    },
+    {
+      "rank": 10,
+      "classical": 0.4495768729023598,
+      "sim": 0.8418716125150426,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/_README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/.claude/memory/g.md"
+    },
+    {
+      "rank": 11,
+      "classical": 0.4401867670422437,
+      "sim": 0.841871612515043,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText-Legal/_README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/.claude/memory/g.md"
+    },
+    {
+      "rank": 12,
+      "classical": 0.4392848089726055,
+      "sim": 0.841871612515043,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/letstext-logos/_README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/.claude/memory/g.md"
+    },
+    {
+      "rank": 13,
+      "classical": 0.43795983939462085,
+      "sim": 0.8490038687617277,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/letstext-pfp-animations/_README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/.claude/memory/g.md"
+    },
+    {
+      "rank": 14,
+      "classical": 0.38869377855297327,
+      "sim": 0.7894854432368763,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/docs/audit/race-conditions.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/snap-signer-tree/docs/WHAT-FAILED.md"
+    },
+    {
+      "rank": 15,
+      "classical": 0.38774509804865925,
+      "sim": 0.687314568076269,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/_README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-snap-emu/source/.claude/memory/R.md"
+    }
+  ],
+  "wall_seconds": 78.54600095748901
+}

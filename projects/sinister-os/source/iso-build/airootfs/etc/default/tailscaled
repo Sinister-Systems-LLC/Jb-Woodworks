@@ -1,0 +1,25 @@
+# Sinister OS Tailscaled environment configuration
+# Author: RKOJ-ELENO :: 2026-05-24
+#
+# Sourced by /etc/systemd/system/tailscaled.service AND the first-boot one-shot.
+# On first boot, if TS_AUTHKEY is set, sinister-tailscale-firstboot.service will
+# `tailscale up --authkey=...` and then zero out TS_AUTHKEY in this file so the
+# raw key doesn't linger.
+
+# Reusable Tailscale auth key (generate at https://login.tailscale.com/admin/settings/keys)
+# Leave empty to disable auto-join — the operator can `tailscale up` manually later.
+TS_AUTHKEY=""
+
+# Hostname in the tailnet (empty = use system hostname)
+TS_HOSTNAME=""
+
+# Extra args passed to `tailscale up` on first-boot, e.g.:
+#   --advertise-exit-node --advertise-tags=tag:server
+TS_UP_EXTRA_ARGS=""
+
+# Extra args passed to `tailscaled` itself, e.g.:
+#   --tun=tailscale0
+TS_EXTRA_ARGS=""
+
+# Tailscale listening port (default 41641)
+TS_PORT="41641"

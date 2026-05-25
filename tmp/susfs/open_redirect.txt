@@ -1,0 +1,3 @@
+# Sinister canonical open_redirect rules (single battery serial spoof)
+# Format: <original_path> <redirected_path>
+/sys/class/power_supply/battery/serial_number /data/adb/sinister_cam/empty_battery_serial

@@ -1,0 +1,15 @@
+{
+    "ts_utc":  "2026-05-25T01:44:37Z",
+    "_author":  "RKOJ-ELENO :: 2026-05-25",
+    "to":  "sanctum",
+    "subject":  "Fleet-update fan-out: doctrine priority=normal",
+    "message":  "[LINK-UNLINK] sinister-link cleared on desktop-lto4lus; was paired to leo-machine",
+    "rationale":  "Overseer auto-distributed because this fleet-update either targeted you OR mentioned your lane slug. Review + ack if actionable.",
+    "source_id":  "fu-20260524211459-f332fd",
+    "source_ts_utc":  "2026-05-25T01:14:59Z",
+    "from":  "overseer",
+    "source_priority":  "normal",
+    "tag":  "[OVERSEER-DISTRIBUTE]",
+    "source_pushed_by":  "sinister-link",
+    "source_kind":  "doctrine"
+}

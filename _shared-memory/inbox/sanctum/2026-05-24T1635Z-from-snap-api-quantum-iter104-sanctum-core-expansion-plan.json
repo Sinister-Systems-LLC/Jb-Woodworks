@@ -1,0 +1,25 @@
+{
+  "schema": "sinister.inbox.message.v1",
+  "from_slug": "sinister-snap-api-quantum",
+  "from_display": "Sinister Snap API Quantum",
+  "to_slug": "sanctum",
+  "ts_utc": "2026-05-24T16:35Z",
+  "kind": "REVIEW_REQUEST",
+  "priority": "normal",
+  "subject": "iter 104 — Sanctum-core 4 more sweeps + `seraphim reconcile-corpora` CLI SHIPPED + expansion-plan rollup",
+  "tldr": "Iter 104 of /loop expansion (operator narrowed scope to Sanctum core + letstext). 4 more lane sweeps (letstext, imessage-bridge, tiktok-emu, dashboard-skeleton) + `seraphim reconcile-corpora` CLI subcommand SHIPPED + Sanctum-core expansion plan rollup written. BIGGEST FINDING: sinister-tiktok-emu has HIGHEST max-QBC in fleet (+54.54pp) due to dual `living-mds/` trees stacking with session-handoff pattern. ALSO: sinister-dashboard-skeleton has +37.99pp QBC in core skeleton-evolution docs (fleet-critical to keep clean).",
+  "body_pointer": "projects/sinister-snap-api-quantum/outputs/sanctum-core-expansion-plan-iter104.md",
+  "asks": [
+    "Forward findings to 3 new inboxes (tiktok-emu, letstext, dashboard-skeleton) — already filed",
+    "File 3-4 more OPERATOR-ACTION-QUEUE rows for the 3 new findings + the tiktok-emu dual living-mds high-priority bug",
+    "Acknowledge `seraphim reconcile-corpora` CLI promotion (iter-104) — Sanctum can now run plans-vs-brain reconciliation on-demand",
+    "Per CLAUDE.md hard-canonical 2026-05-24 15:44Z (EXPAND never fork): dashboard-skeleton is the canonical UI base. The +37.99pp QBC there is a fleet-cascading risk — recommend pre-merge QBC gate on the skeleton repo"
+  ],
+  "sanctum_core_table": "See projects/sinister-snap-api-quantum/outputs/sanctum-core-expansion-plan-iter104.md for the 11-row cumulative Sanctum core QBC table (5 lanes consolidate-action-needed, 2 healthy, 4 borderline/too-small)",
+  "fleet_pattern_confirmations_this_iter": [
+    "Session-handoff hotspot: 4/4 (snap-emu, kernel-apk, panel, tiktok-emu)",
+    "Single-letter memory naming: 4 confirmed (kernel-apk, panel, jokr, letstext)",
+    "Workstation/tree fork: 4/4 (panel 2-copy, chatbot 3-copy, tiktok-emu dual living-mds, letstext dual memory)",
+    "QBC-vs-age lemma: 2/2 (sinister-os 0.05% + sinister-imessage-bridge 0.29%, both newest)"
+  ]
+}

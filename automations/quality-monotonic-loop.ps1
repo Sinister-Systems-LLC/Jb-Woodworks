@@ -1,0 +1,164 @@
+# quality-monotonic-loop.ps1 - iterate a task until quality stops increasing
+# Author: RKOJ-ELENO :: 2026-05-24
+#
+# Operator hard-canonical 2026-05-24T18:40Z (verbatim):
+#   "i want you to focus on roudn robin claude account, contracdict ssytem like
+#    in jcode code. working on progress until lquality stops increasing"
+#
+# Composes with:
+#   - counter-arg.ps1 (red-team each iteration before applying improvement)
+#   - forever-improve.ps1 (Review-style auditing per work unit)
+#   - no-bullshit doctrine rule 8 (quality-degradation expansion limits)
+#
+# Design:
+#   Each iteration runs ScoreCommand to produce a numeric score (higher is better).
+#   Between iterations, ImproveCommand is invoked to apply the next improvement.
+#   counter-arg.ps1 fires BEFORE each ImproveCommand call to log the red-team angle.
+#   Loop stops when MaxIters reached OR score has not improved for PlateauCount
+#   consecutive iterations OR score regresses by more than RegressTolerance.
+#
+# Usage:
+#   powershell -File quality-monotonic-loop.ps1 `
+#       -Lane sanctum `
+#       -TaskName 'round-robin-strict smoke-test' `
+#       -ScoreCommand 'powershell -NoProfile -Command ". automations/claude-accounts.ps1; (Get-AccountsConfig).last_rotation_index"' `
+#       -ImproveCommand 'powershell -NoProfile -Command ". automations/claude-accounts.ps1; Get-NextAvailableAccount | Out-Null"' `
+#       -MaxIters 6 -PlateauCount 2
+#
+# Stop conditions:
+#   1. iter >= MaxIters
+#   2. last $PlateauCount iters have score <= score at iter (current - PlateauCount)
+#   3. score regressed by more than RegressTolerance from prior best
+#   4. ScoreCommand fails (non-numeric output) -> abort with status=score-error
+#
+# Output: per-iter rows appended to _shared-memory/quality-loop-log.jsonl, final
+# summary printed to stdout. Returns final score on success, $null on failure.
+
+[CmdletBinding()]
+param(
+    [Parameter(Mandatory=$true)] [string]$Lane,
+    [Parameter(Mandatory=$true)] [string]$TaskName,
+    [Parameter(Mandatory=$true)] [string]$ScoreCommand,
+    [string]$ImproveCommand = '',
+    [int]$MaxIters = 10,
+    [int]$PlateauCount = 3,
+    [double]$RegressTolerance = 0.0,
+    [string]$CounterArgClaim = '',
+    [string]$SanctumRoot = 'D:\Sinister Sanctum',
+    [switch]$DryRun
+)
+
+$ErrorActionPreference = 'Stop'
+
+$logFile = Join-Path $SanctumRoot '_shared-memory\quality-loop-log.jsonl'
+$counterArgScript = Join-Path $SanctumRoot 'automations\counter-arg.ps1'
+
+function _Now { (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ') }
+
+function _AppendLog($obj) {
+    $json = $obj | ConvertTo-Json -Compress -Depth 6
+    $mutex = New-Object System.Threading.Mutex($false, 'SinisterQualityLoopMutex')
+    $null = $mutex.WaitOne(5000)
+    try { Add-Content -LiteralPath $logFile -Value $json -Encoding UTF8 }
+    finally { $mutex.ReleaseMutex() | Out-Null; $mutex.Dispose() }
+}
+
+function _RunScore {
+    param([string]$Cmd)
+    $out = Invoke-Expression $Cmd 2>&1 | Select-Object -Last 1
+    $score = $null
+    if ($out -match '^-?\d+(\.\d+)?$') {
+        $score = [double]$out
+    } else {
+        # try parse last numeric token in line
+        $tok = ($out -split '\s+' | Where-Object { $_ -match '^-?\d+(\.\d+)?$' } | Select-Object -Last 1)
+        if ($tok) { $score = [double]$tok }
+    }
+    return $score
+}
+
+$runId = (Get-Date).ToUniversalTime().ToString('yyyyMMddTHHmmssZ')
+$scoreHistory = @()
+$bestScore = [double]::NegativeInfinity
+$bestIter = -1
+$stopReason = 'max-iters'
+$startUtc = _Now
+
+Write-Host "quality-monotonic-loop: run_id=$runId lane=$Lane task='$TaskName' max=$MaxIters plateau=$PlateauCount" -ForegroundColor Cyan
+
+for ($iter = 0; $iter -lt $MaxIters; $iter++) {
+    if ($iter -gt 0 -and $ImproveCommand -and -not $DryRun) {
+        # Red-team BEFORE applying improvement (composes with contradict-system focus)
+        if ($CounterArgClaim) {
+            $claimText = "$TaskName iter $iter improvement"
+            $resolutionText = "iter $($iter-1) score=$($scoreHistory[$iter-1]) best=$bestScore"
+            & powershell -NoProfile -File $counterArgScript `
+                -Lane $Lane `
+                -Claim $claimText `
+                -Steelman $CounterArgClaim `
+                -RedTeam 'improvement may not be monotone; could regress' `
+                -Alt 'stop here and ship current best' `
+                -BestPath 'open' `
+                -Resolution $resolutionText `
+                -Status 'open' 2>&1 | Out-Null
+        }
+        Invoke-Expression $ImproveCommand | Out-Null
+    }
+
+    $score = _RunScore -Cmd $ScoreCommand
+    if ($null -eq $score) {
+        Write-Host "  iter=$iter score=ERROR (non-numeric output)" -ForegroundColor Red
+        _AppendLog ([pscustomobject]@{
+            run_id = $runId; ts_utc = (_Now); lane = $Lane; task = $TaskName
+            iter = $iter; score = $null; status = 'score-error'
+        })
+        $stopReason = 'score-error'
+        break
+    }
+
+    $scoreHistory += $score
+    if ($score -gt $bestScore) { $bestScore = $score; $bestIter = $iter }
+
+    _AppendLog ([pscustomobject]@{
+        run_id = $runId; ts_utc = (_Now); lane = $Lane; task = $TaskName
+        iter = $iter; score = $score; best_score = $bestScore; best_iter = $bestIter
+    })
+
+    Write-Host ("  iter={0,-2} score={1,-10} best={2} (iter {3})" -f $iter, $score, $bestScore, $bestIter) -ForegroundColor Green
+
+    # Plateau detection: last $PlateauCount iters had no improvement over (iter - PlateauCount)
+    if ($iter -ge $PlateauCount) {
+        $windowMax = ($scoreHistory[($iter - $PlateauCount + 1)..$iter] | Measure-Object -Maximum).Maximum
+        $referenceScore = $scoreHistory[$iter - $PlateauCount]
+        if ($windowMax -le $referenceScore) {
+            $stopReason = "plateau-$PlateauCount-iters"
+            break
+        }
+    }
+
+    # Regression detection
+    if ($bestScore - $score -gt $RegressTolerance) {
+        $stopReason = 'regression'
+        break
+    }
+}
+
+$summary = [pscustomobject]@{
+    run_id = $runId
+    started_utc = $startUtc
+    ended_utc = (_Now)
+    lane = $Lane
+    task = $TaskName
+    iters_run = $scoreHistory.Count
+    best_score = $bestScore
+    best_iter = $bestIter
+    stop_reason = $stopReason
+    score_history = $scoreHistory
+}
+_AppendLog ($summary | Select-Object *, @{n='kind';e={'summary'}})
+
+Write-Host ''
+Write-Host "FINAL: best_score=$bestScore at iter $bestIter / $($scoreHistory.Count) iters / stop=$stopReason" -ForegroundColor Cyan
+Write-Host "log: $logFile (run_id=$runId)"
+
+return $bestScore

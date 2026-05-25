@@ -1,0 +1,15 @@
+{
+    "ts_utc":  "2026-05-25T00:09:20Z",
+    "_author":  "RKOJ-ELENO :: 2026-05-25",
+    "to":  "sanctum",
+    "subject":  "Fleet-update fan-out: feature priority=normal",
+    "message":  "EVE.exe main-menu redesign Phase 1 SHIPPED + parallel brain consolidation (operator 22:00Z \u0027get back to work on memory + parallel\u0027). Ships: (1) _main_menu_loop() in eve.py + wired into main() at line 1666 with R/G/T/O/N/X picks + back-button routing; SINISTER_SKIP_MAIN_MENU=1 escape hatch; verify-eve-features.ps1 -AutoRebuild -SyncMirror ran. (2) Plan doc at _shared-memory/plans/sanctum-eve-main-menu-redesign-2026-05-24T2152Z/plan.md (4-phase split; Phase 2/3/4 sibling-coordinated via inbox). (3) Brain consolidation: 4 new decay annotations (anthropic-server-throttle fact/90 + agent-autonomy-push preference/365 + forever-improve preference/180 + mesh-coordination fact/95/90) + 1 supersede (eve-ui-uniformity-doctrine -\u003e eve-exe-uniform-ui-infinite-accounts). 9/174 brain entries now annotated (was 4/174). (4) Brain analyzer + orphan sub-agents returned: 80/175 orphans flagged, 2 duplicate clusters confirmed, 3 doctrine-gap recommendations queued. Mesh-lock released. Operator workflow next: close+reopen EVE.exe to see new main menu.",
+    "rationale":  "Overseer auto-distributed because this fleet-update either targeted you OR mentioned your lane slug. Review + ack if actionable.",
+    "source_id":  "fu-20260524181406-108fdf",
+    "source_ts_utc":  "2026-05-24T22:14:06Z",
+    "from":  "overseer",
+    "source_priority":  "normal",
+    "tag":  "[OVERSEER-DISTRIBUTE]",
+    "source_pushed_by":  "sanctum",
+    "source_kind":  "feature"
+}

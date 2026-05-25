@@ -5,7 +5,13 @@
 
 set -euo pipefail
 
-PROTO="${SINISTER_EVE_PROTOTYPE:-/usr/share/sinister-eve/sinister-eve-mcp-bridge.py}"
+# Installed-system canonical location (overlay install.sh writes it here).
+PROTO="${SINISTER_EVE_PROTOTYPE:-/usr/lib/sinister-eve/sinister-eve-mcp-bridge.py}"
+
+# Legacy fallback location (older drops).
+if [[ ! -f "$PROTO" ]] && [[ -f /usr/share/sinister-eve/sinister-eve-mcp-bridge.py ]]; then
+    PROTO="/usr/share/sinister-eve/sinister-eve-mcp-bridge.py"
+fi
 
 # In dev / VM testing the prototype lives next to this script.
 if [[ ! -f "$PROTO" ]]; then

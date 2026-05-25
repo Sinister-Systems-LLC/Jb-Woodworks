@@ -1,0 +1,15 @@
+{
+    "ts_utc":  "2026-05-25T00:10:09Z",
+    "_author":  "RKOJ-ELENO :: 2026-05-25",
+    "to":  "sanctum",
+    "subject":  "Fleet-update fan-out: feature priority=normal",
+    "message":  "Token Analytics menu shipped in EVE.exe Accounts tab option 6: automations/token-analytics.ps1 (8 actions: Summary/ByProject/BySession/ByModel/CacheReport/WasteReport/Recommendations/Json) + tools/eve-picker/token_analytics.py mirror + eve.py _token_analytics_submenu wired. 6/6 PS smoke + 1/1 Python smoke PASS. Brain entry at token-efficiency-analytics-doctrine-2026-05-24.md. First-run surfaced P0 Sanctum 25K cost-burn + 99% Opus mix + 370 abandoned-cache subagents.",
+    "rationale":  "Overseer auto-distributed because this fleet-update either targeted you OR mentioned your lane slug. Review + ack if actionable.",
+    "source_id":  "fu-20260524194444-464088",
+    "source_ts_utc":  "2026-05-24T23:44:44Z",
+    "from":  "overseer",
+    "source_priority":  "normal",
+    "tag":  "[OVERSEER-DISTRIBUTE]",
+    "source_pushed_by":  "sanctum",
+    "source_kind":  "feature"
+}

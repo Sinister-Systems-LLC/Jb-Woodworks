@@ -1,0 +1,242 @@
+{
+  "schema": "sinister-seraphim.reconcile-corpora.v1",
+  "label": "tiktok-emu-vs-brain",
+  "corpus_a_root": "D:/Sinister Sanctum/projects/sinister-tiktok-emu",
+  "corpus_b_root": "D:/Sinister Sanctum/_shared-memory/knowledge",
+  "n_corpus_a": 440,
+  "n_corpus_b": 160,
+  "cl_threshold": 0.3,
+  "sim_threshold": 0.5,
+  "total_pairs": 70400,
+  "reconciliation_candidates_count": 31,
+  "top_reconciliation_candidates": [
+    {
+      "rank": 1,
+      "classical": 0.6897467157753665,
+      "sim": 0.9080134950693047,
+      "combined": 1.5977602108446711,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/living-mds/SIGNAL-CLOSURE-MATRIX.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/tiktok-cuttlefish-5-signal-detection-model.md"
+    },
+    {
+      "rank": 2,
+      "classical": 0.6897467157753665,
+      "sim": 0.9080134950693047,
+      "combined": 1.5977602108446711,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/living-mds/SIGNAL-CLOSURE-MATRIX.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/tiktok-cuttlefish-5-signal-detection-model.md"
+    },
+    {
+      "rank": 3,
+      "classical": 0.37997739959984306,
+      "sim": 0.950757714084013,
+      "combined": 1.330735113683856,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/docs/DETECTION-SIGNALS-2026-05-17.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/tiktok-cuttlefish-5-signal-detection-model.md"
+    },
+    {
+      "rank": 4,
+      "classical": 0.37997739959984306,
+      "sim": 0.950757714084013,
+      "combined": 1.330735113683856,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/docs/DETECTION-SIGNALS-2026-05-17.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/tiktok-cuttlefish-5-signal-detection-model.md"
+    },
+    {
+      "rank": 5,
+      "classical": 0.32893766640805866,
+      "sim": 0.9504377935004341,
+      "combined": 1.2793754599084928,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/docs/SESSION-LOG.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/tiktok-cuttlefish-5-signal-detection-model.md"
+    },
+    {
+      "rank": 6,
+      "classical": 0.32893766640805866,
+      "sim": 0.9504377935004341,
+      "combined": 1.2793754599084928,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/docs/SESSION-LOG.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/tiktok-cuttlefish-5-signal-detection-model.md"
+    },
+    {
+      "rank": 7,
+      "classical": 0.3140025847214359,
+      "sim": 0.9614553010326234,
+      "combined": 1.2754578857540593,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/.claude/worktrees/agent-ad9a44d5baacf8941/RESUME-HERE.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/tt-captcha-equals-detection.md"
+    },
+    {
+      "rank": 8,
+      "classical": 0.3140025847214359,
+      "sim": 0.9614553010326234,
+      "combined": 1.2754578857540593,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/.claude/worktrees/agent-ad9a44d5baacf8941/RESUME-HERE.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/tt-captcha-equals-detection.md"
+    },
+    {
+      "rank": 9,
+      "classical": 0.4574192029830137,
+      "sim": 0.7669765637738601,
+      "combined": 1.224395766756874,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/living-mds/RESUME-NEXT-SESSION.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/tiktok-cuttlefish-5-signal-detection-model.md"
+    },
+    {
+      "rank": 10,
+      "classical": 0.34847839078181125,
+      "sim": 0.8670969113358745,
+      "combined": 1.2155753021176858,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/docs/MASTER-PLAN-PURE-API-ACCOUNT-V2-2026-05-21.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/tt-captcha-equals-detection.md"
+    },
+    {
+      "rank": 11,
+      "classical": 0.4438628875001354,
+      "sim": 0.7669765637738599,
+      "combined": 1.2108394512739953,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/living-mds/RESUME-NEXT-SESSION.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/tiktok-cuttlefish-5-signal-detection-model.md"
+    },
+    {
+      "rank": 12,
+      "classical": 0.30764520317810345,
+      "sim": 0.8549529565994777,
+      "combined": 1.1625981597775812,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/docs/ROADMAP.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/tiktok-cuttlefish-5-signal-detection-model.md"
+    },
+    {
+      "rank": 13,
+      "classical": 0.30764520317810345,
+      "sim": 0.8549529565994777,
+      "combined": 1.1625981597775812,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/docs/ROADMAP.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/tiktok-cuttlefish-5-signal-detection-model.md"
+    },
+    {
+      "rank": 14,
+      "classical": 0.3018920006505637,
+      "sim": 0.8588022392543821,
+      "combined": 1.1606942399049458,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/docs/WHAT-FAILED.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/tiktok-cuttlefish-5-signal-detection-model.md"
+    },
+    {
+      "rank": 15,
+      "classical": 0.3018920006505637,
+      "sim": 0.8588022392543821,
+      "combined": 1.1606942399049458,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/docs/WHAT-FAILED.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/tiktok-cuttlefish-5-signal-detection-model.md"
+    }
+  ],
+  "top_highest_classical": [
+    {
+      "rank": 1,
+      "classical": 0.6897467157753665,
+      "sim": 0.9080134950693047,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/living-mds/SIGNAL-CLOSURE-MATRIX.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/tiktok-cuttlefish-5-signal-detection-model.md"
+    },
+    {
+      "rank": 2,
+      "classical": 0.6897467157753665,
+      "sim": 0.9080134950693047,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/living-mds/SIGNAL-CLOSURE-MATRIX.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/tiktok-cuttlefish-5-signal-detection-model.md"
+    },
+    {
+      "rank": 3,
+      "classical": 0.5235811037004343,
+      "sim": 0.27348346551998326,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/docs/MASTER-PLAN-PURE-API-ACCOUNT-V2-2026-05-21.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/tt-hedra-recipe-canonical.md"
+    },
+    {
+      "rank": 4,
+      "classical": 0.5043259033746013,
+      "sim": 0.5316764752939639,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/docs/PATH-A-REAL-PIXEL-RUNBOOK.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/tt-hedra-recipe-canonical.md"
+    },
+    {
+      "rank": 5,
+      "classical": 0.4574192029830137,
+      "sim": 0.7669765637738601,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/living-mds/RESUME-NEXT-SESSION.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/tiktok-cuttlefish-5-signal-detection-model.md"
+    },
+    {
+      "rank": 6,
+      "classical": 0.4438628875001354,
+      "sim": 0.7669765637738599,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/living-mds/RESUME-NEXT-SESSION.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/tiktok-cuttlefish-5-signal-detection-model.md"
+    },
+    {
+      "rank": 7,
+      "classical": 0.3982655070555523,
+      "sim": 0.567520307156404,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/docs/CAPTCHA-AS-DETECTION-POLICY.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/tt-captcha-equals-detection.md"
+    },
+    {
+      "rank": 8,
+      "classical": 0.3982655070555523,
+      "sim": 0.567520307156404,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/docs/CAPTCHA-AS-DETECTION-POLICY.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/tt-captcha-equals-detection.md"
+    },
+    {
+      "rank": 9,
+      "classical": 0.39603768838920655,
+      "sim": 0.5675203071564041,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/.claude/worktrees/agent-ad9a44d5baacf8941/docs/CAPTCHA-AS-DETECTION-POLICY.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/tt-captcha-equals-detection.md"
+    },
+    {
+      "rank": 10,
+      "classical": 0.37997739959984306,
+      "sim": 0.950757714084013,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/docs/DETECTION-SIGNALS-2026-05-17.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/tiktok-cuttlefish-5-signal-detection-model.md"
+    },
+    {
+      "rank": 11,
+      "classical": 0.37997739959984306,
+      "sim": 0.950757714084013,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/docs/DETECTION-SIGNALS-2026-05-17.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/tiktok-cuttlefish-5-signal-detection-model.md"
+    },
+    {
+      "rank": 12,
+      "classical": 0.3613170112127882,
+      "sim": 0.32072008385674805,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/patches/sinister-25b-identity-coherence-bluejay/PLAN.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/tt-hedra-recipe-canonical.md"
+    },
+    {
+      "rank": 13,
+      "classical": 0.3503916294128505,
+      "sim": 0.14949201884172073,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/patches/Patch_27_jni_capture_dlclose/README.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/tt-hedra-recipe-canonical.md"
+    },
+    {
+      "rank": 14,
+      "classical": 0.34847839078181125,
+      "sim": 0.8670969113358745,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/docs/MASTER-PLAN-PURE-API-ACCOUNT-V2-2026-05-21.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/tt-captcha-equals-detection.md"
+    },
+    {
+      "rank": 15,
+      "classical": 0.34413800544613726,
+      "sim": 0.7114252625339653,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/patches/sinister-18-sensor-spoof/PLAN.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/tiktok-cuttlefish-5-signal-detection-model.md"
+    }
+  ],
+  "wall_seconds": 111.33700108528137
+}

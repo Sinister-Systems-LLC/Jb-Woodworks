@@ -1,0 +1,67 @@
+{
+    "_comment": "Author: RKOJ-ELENO :: 2026-05-24 -- Sinister Overseer attached-projects registry. P0 scaffold ships 3 pre-attached lanes in status='prepared' per operator brief. NO watch loops run until operator clicks 'Activate' in the EVE.exe Overseer menu. status values: prepared | active | detached | suspended.",
+    "version": 1,
+    "default_cost_cap_usd_per_day": 5.0,
+    "default_throttle_pct": 0.80,
+    "default_suspend_pct": 1.00,
+    "attachments": [
+        {
+            "project_key": "eve-compliance",
+            "adapter": "ImageScannerAdapter",
+            "status": "active",
+            "polling_interval_seconds": 1800,
+            "cost_cap_usd_per_day": 5.0,
+            "schema_version": 1,
+            "prepared_utc": "2026-05-24T23:55Z",
+            "prepared_by": "Sinister Sanctum (sanctum-overseer-scaffold)",
+            "activated_utc": "2026-05-25T02:40Z",
+            "activated_by": "Sinister Sanctum (master) per operator 2026-05-25 ~02:35Z 'start the sinister overseer project for me ... and tell eve compliance its ready'",
+            "first_fire_focus": [
+                "vision-model drift on flagged-vs-cleared deltas",
+                "per-agency moderation throughput",
+                "admin-review queue lag",
+                "training-feedback loop label velocity"
+            ],
+            "escalation_inbox": "_shared-memory/inbox/eve-compliance/",
+            "notes": "ACTIVATED 2026-05-25T02:40Z per operator. First watch loop fires on next Overseer spawn (eve-compliance polling cadence = 1800s)."
+        },
+        {
+            "project_key": "sinister-chatbot",
+            "adapter": "ChatbotAdapter",
+            "status": "prepared",
+            "polling_interval_seconds": 300,
+            "cost_cap_usd_per_day": 5.0,
+            "schema_version": 1,
+            "prepared_utc": "2026-05-24T23:55Z",
+            "prepared_by": "Sinister Sanctum (sanctum-overseer-scaffold)",
+            "first_fire_focus": [
+                "per-fan memory hit-rate",
+                "NSFW-route guardrail violations",
+                "ML feedback labels backlog",
+                "latency P95 per OpenRouter model",
+                "uncensored-route stability"
+            ],
+            "escalation_inbox": "_shared-memory/inbox/sinister-chatbot/",
+            "notes": "Pre-attached per operator brief 2026-05-24 ~23:48Z. Named exemplar for the 'train chatbot to train itself' outcome (P5)."
+        },
+        {
+            "project_key": "sinister-sleight",
+            "adapter": "TradingBotAdapter",
+            "status": "prepared",
+            "polling_interval_seconds": 300,
+            "cost_cap_usd_per_day": 5.0,
+            "schema_version": 1,
+            "prepared_utc": "2026-05-24T23:55Z",
+            "prepared_by": "Sinister Sanctum (sanctum-overseer-scaffold)",
+            "first_fire_focus": [
+                "paper-PnL daily delta vs strategy expectation",
+                "model drift KS-test",
+                "kill-switch state ALWAYS visible (must be ON)",
+                "walk-forward retrain queue",
+                "data-feed cost burn"
+            ],
+            "escalation_inbox": "_shared-memory/inbox/sinister-sleight/",
+            "notes": "Pre-attached per operator brief 2026-05-24 ~23:48Z. Operator parenthetical 'make sure this is setup and is a active project' -- Sleight IS registered in projects.json (tier=3, gold accent, P0 scaffolded 2026-05-24). Sleight CLAUDE.md hard rule 1 forbids real_money_enable auto-apply -- adapter respects via CRITICAL tier classification."
+        }
+    ]
+}

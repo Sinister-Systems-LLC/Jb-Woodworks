@@ -1,0 +1,12 @@
+{
+    "x":  260,
+    "y":  260,
+    "w":  1296,
+    "h":  839,
+    "monitor_index":  0,
+    "ts_utc":  "2026-05-25T02:59:26Z",
+    "captured_at":  "2026-05-24T22:59:26.6911445-04:00",
+    "project_key":  "sanctum",
+    "agent_pid":  26712,
+    "watcher":  "window-position-monitor.ps1:sweep"
+}

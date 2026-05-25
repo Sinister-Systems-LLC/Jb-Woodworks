@@ -1,0 +1,130 @@
+{
+  "schema": "sinister-seraphim.reconcile-corpora.v1",
+  "label": "letstext-vs-imessage-bridge",
+  "corpus_a_root": "D:/Sinister Sanctum/projects/sinister-letstext",
+  "corpus_b_root": "D:/Sinister Sanctum/projects/sinister-imessage-bridge",
+  "n_corpus_a": 198,
+  "n_corpus_b": 17,
+  "cl_threshold": 0.3,
+  "sim_threshold": 0.5,
+  "total_pairs": 3366,
+  "reconciliation_candidates_count": 1,
+  "top_reconciliation_candidates": [
+    {
+      "rank": 1,
+      "classical": 0.30511570090569856,
+      "sim": 0.936041055793518,
+      "combined": 1.2411567566992165,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/imessage-bridge/CLAUDE.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/memory/decisions.md"
+    }
+  ],
+  "top_highest_classical": [
+    {
+      "rank": 1,
+      "classical": 0.30511570090569856,
+      "sim": 0.936041055793518,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/imessage-bridge/CLAUDE.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/memory/decisions.md"
+    },
+    {
+      "rank": 2,
+      "classical": 0.29475076986328996,
+      "sim": 0.6790186751775145,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/.claude/memory/p.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/memory/decisions.md"
+    },
+    {
+      "rank": 3,
+      "classical": 0.29475076986328996,
+      "sim": 0.6790186751775145,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/letstext2.0/memory-snapshot/p.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/memory/decisions.md"
+    },
+    {
+      "rank": 4,
+      "classical": 0.28453846787924714,
+      "sim": 0.5246164358408959,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/.claude/memory/d.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/memory/decisions.md"
+    },
+    {
+      "rank": 5,
+      "classical": 0.28453846787924714,
+      "sim": 0.5246164358408959,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/letstext2.0/memory-snapshot/d.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/memory/decisions.md"
+    },
+    {
+      "rank": 6,
+      "classical": 0.2531144046653445,
+      "sim": 0.7863447580629099,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/docs/audit/race-conditions.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/memory/decisions.md"
+    },
+    {
+      "rank": 7,
+      "classical": 0.2462602111082115,
+      "sim": 0.7811644086563059,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/imessage-bridge/NEXT-STEPS.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/memory/decisions.md"
+    },
+    {
+      "rank": 8,
+      "classical": 0.24324108637528247,
+      "sim": 0.8043681846645216,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/imessage-bridge/docs/19-STEALTH-CHECKLIST.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/memory/decisions.md"
+    },
+    {
+      "rank": 9,
+      "classical": 0.24219069593935247,
+      "sim": 0.5827614060734118,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/2.0/mcp-server/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/memory/decisions.md"
+    },
+    {
+      "rank": 10,
+      "classical": 0.24078935665885817,
+      "sim": 0.9298217148780692,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/CLAUDE.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/memory/decisions.md"
+    },
+    {
+      "rank": 11,
+      "classical": 0.24035411748160843,
+      "sim": 0.9166982994835898,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/letstext2.0/docs/CLAUDE.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/memory/decisions.md"
+    },
+    {
+      "rank": 12,
+      "classical": 0.23886011801977428,
+      "sim": 0.8654816569310602,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/imessage-bridge/docs/19-STEALTH-CHECKLIST.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/plans/p1-readonly-acceptance.md"
+    },
+    {
+      "rank": 13,
+      "classical": 0.23845991102251907,
+      "sim": 0.7105909402391102,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/docs/security/agent-2026-05-02-rate-limit-abuse-webhooks.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/memory/decisions.md"
+    },
+    {
+      "rank": 14,
+      "classical": 0.2381058446257276,
+      "sim": 0.2114319051765965,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/imessage-bridge/BRIDGE-PLAN.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/memory/decisions.md"
+    },
+    {
+      "rank": 15,
+      "classical": 0.22523303990614227,
+      "sim": 0.8853819406925566,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/.claude/memory/c.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/memory/decisions.md"
+    }
+  ],
+  "wall_seconds": 5.980999946594238
+}

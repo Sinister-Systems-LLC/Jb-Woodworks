@@ -52,8 +52,9 @@ SINISTER_STYLE = Style.from_dict({
 BANNER = """
   [purple]◈[/purple] [bold purple]SINISTER TERM[/bold purple]  [dim]:: handterm-inspired :: RKOJ-ELENO 2026-05-21[/dim]
 
-  [cyan]/forge[/cyan]  [cyan]/mind[/cyan]  [cyan]/launch <project>[/cyan]  [cyan]/bot <name>[/cyan]  [cyan]/skill <name>[/cyan]
-  [cyan]/projects[/cyan]  [cyan]/heartbeats[/cyan]  [cyan]/commits[/cyan]  [cyan]/help[/cyan]  [cyan]/exit[/cyan]
+  [cyan]/forge[/cyan]  [cyan]/mind[/cyan]  [cyan]/launch <project>[/cyan]  [cyan]/cd <project>[/cyan]  [cyan]/projects[/cyan]
+  [cyan]/heartbeats[/cyan]  [cyan]/commits[/cyan]  [cyan]/inbox[/cyan]  [cyan]/cross-agent[/cyan]  [cyan]/ask <agent> <msg>[/cyan]
+  [cyan]/progress[/cyan]  [cyan]/alias[/cyan]  [cyan]/bot <name>[/cyan]  [cyan]/skill <name>[/cyan]  [cyan]/help[/cyan]  [cyan]/exit[/cyan]
 
   Anything else runs in the underlying shell (powershell on Windows).
 """

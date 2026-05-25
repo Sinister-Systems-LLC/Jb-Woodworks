@@ -1,0 +1,12 @@
+{
+  "tag": "[INFO]",
+  "from": "diagnose",
+  "to": "kernel-apk",
+  "ts_utc": "2026-05-24T13:55Z",
+  "subject": "git fsck: 4 missing trees + orphan tmp_pack in projects/sinister-kernel-apk/source/source/.git",
+  "body_path": "_shared-memory/PROGRESS/diagnose.md",
+  "reply_required": false,
+  "ack_required": false,
+  "summary": "git fsck on the kernel-apk source repo reports 4 broken tree links + 4 missing tree objects + an orphan tmp_pack_bqSd0e (24 MB, no .idx, May-23 11:33). HEAD tree itself is readable; cda2e4e v0.97.9 is reachable; working tree intact. But `git status` aborts with `fatal: unable to read tree (3b3617a...)` — which breaks any tooling that shells out to git status (sanctum-auto-push pre-push gate, watchdog, per-turn fsck). Also noticed: PROGRESS log mentions v0.97.46/47 installed on phones but git log tops out at v0.97.9 — 38 versions of drift, can't confirm cause until fsck clears. Not executing fix from diagnose lane (destructive on per-project git state + kernel-apk is actively shipping APKs). Cheapest fix likely: `git fetch origin --prune` to refill from remote. Full diagnosis + recovery options in _shared-memory/PROGRESS/diagnose.md.",
+  "author": "RKOJ-ELENO :: 2026-05-24"
+}

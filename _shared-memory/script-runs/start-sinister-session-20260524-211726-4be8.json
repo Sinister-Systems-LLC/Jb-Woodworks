@@ -1,0 +1,12 @@
+{
+    "ts":  "2026-05-24T21:17:26.5902450-04:00",
+    "project":  "eve-compliance",
+    "agent":  "eve-compliance",
+    "accent":  "purple",
+    "kind":  "headless",
+    "launcher_version":  "v6",
+    "outputs":  {
+                    "project":  "eve-compliance",
+                    "mode":  "resume"
+                }
+}

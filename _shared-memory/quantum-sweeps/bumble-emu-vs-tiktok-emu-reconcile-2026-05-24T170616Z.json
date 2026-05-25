@@ -1,0 +1,138 @@
+{
+  "schema": "sinister-seraphim.reconcile-corpora.v1",
+  "label": "bumble-emu-vs-tiktok-emu",
+  "corpus_a_root": "D:/Sinister Sanctum/projects/sinister-bumble-emu",
+  "corpus_b_root": "D:/Sinister Sanctum/projects/sinister-tiktok-emu",
+  "n_corpus_a": 3,
+  "n_corpus_b": 601,
+  "cl_threshold": 0.3,
+  "sim_threshold": 0.5,
+  "total_pairs": 1803,
+  "reconciliation_candidates_count": 2,
+  "top_reconciliation_candidates": [
+    {
+      "rank": 1,
+      "classical": 0.7605450171043651,
+      "sim": 0.985954978374119,
+      "combined": 1.7464999954784841,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-bumble-emu/me/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/eleno/README.md"
+    },
+    {
+      "rank": 2,
+      "classical": 0.7962214786667814,
+      "sim": 0.6263809139649832,
+      "combined": 1.4226023926317646,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-bumble-emu/eleno/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/eleno/README.md"
+    }
+  ],
+  "top_highest_classical": [
+    {
+      "rank": 1,
+      "classical": 0.7962214786667814,
+      "sim": 0.6263809139649832,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-bumble-emu/eleno/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/eleno/README.md"
+    },
+    {
+      "rank": 2,
+      "classical": 0.7711947302390882,
+      "sim": 0.33198864928853583,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-bumble-emu/eleno/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/me/README.md"
+    },
+    {
+      "rank": 3,
+      "classical": 0.7625824366614468,
+      "sim": 0.19408301801876376,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-bumble-emu/me/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/me/README.md"
+    },
+    {
+      "rank": 4,
+      "classical": 0.7605450171043651,
+      "sim": 0.985954978374119,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-bumble-emu/me/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/eleno/README.md"
+    },
+    {
+      "rank": 5,
+      "classical": 0.1370449060800021,
+      "sim": 0.9577401861963197,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-bumble-emu/me/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/.claude/worktrees/agent-ad9a44d5baacf8941/md-archive/from-library-of-alexandria/TEAMWORK.md"
+    },
+    {
+      "rank": 6,
+      "classical": 0.1370449060800021,
+      "sim": 0.9577401861963197,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-bumble-emu/me/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/md-archive/from-library-of-alexandria/TEAMWORK.md"
+    },
+    {
+      "rank": 7,
+      "classical": 0.1370449060800021,
+      "sim": 0.9577401861963197,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-bumble-emu/me/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/.claude/worktrees/agent-ad9a44d5baacf8941/md-archive/from-library-of-alexandria/TEAMWORK.md"
+    },
+    {
+      "rank": 8,
+      "classical": 0.1370449060800021,
+      "sim": 0.9577401861963197,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-bumble-emu/me/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/md-archive/from-library-of-alexandria/TEAMWORK.md"
+    },
+    {
+      "rank": 9,
+      "classical": 0.1282613554021385,
+      "sim": 0.14680648387858009,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-bumble-emu/_SCAFFOLD-BRIEF.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/README_sanctum_pointer.md"
+    },
+    {
+      "rank": 10,
+      "classical": 0.12337547495949987,
+      "sim": 0.6972187155615451,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-bumble-emu/eleno/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/.claude/worktrees/agent-ad9a44d5baacf8941/md-archive/from-library-of-alexandria/TEAMWORK.md"
+    },
+    {
+      "rank": 11,
+      "classical": 0.12337547495949987,
+      "sim": 0.6972187155615451,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-bumble-emu/eleno/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/md-archive/from-library-of-alexandria/TEAMWORK.md"
+    },
+    {
+      "rank": 12,
+      "classical": 0.12337547495949987,
+      "sim": 0.6972187155615451,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-bumble-emu/eleno/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/.claude/worktrees/agent-ad9a44d5baacf8941/md-archive/from-library-of-alexandria/TEAMWORK.md"
+    },
+    {
+      "rank": 13,
+      "classical": 0.12337547495949987,
+      "sim": 0.6972187155615451,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-bumble-emu/eleno/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/md-archive/from-library-of-alexandria/TEAMWORK.md"
+    },
+    {
+      "rank": 14,
+      "classical": 0.11320880684903414,
+      "sim": 0.7455980539275211,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-bumble-emu/_SCAFFOLD-BRIEF.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/README.md"
+    },
+    {
+      "rank": 15,
+      "classical": 0.1083197453500127,
+      "sim": 0.7219632475449388,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-bumble-emu/_SCAFFOLD-BRIEF.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/README.md"
+    }
+  ],
+  "wall_seconds": 3.839000701904297
+}

@@ -1,0 +1,15 @@
+{
+    "ts_utc":  "2026-05-25T01:13:49Z",
+    "_author":  "RKOJ-ELENO :: 2026-05-25",
+    "to":  "panel",
+    "subject":  "Fleet-update fan-out: feature priority=high",
+    "message":  "Single-repo push policy SHIPPED + canonical branch convention. All projects push to Sinister-Sanctum EXCEPT 3 carve-outs (LetsText / Showmasters / JB Woodworks). Audit at _shared-memory/audits/multi-repo-push-audit-2026-05-25.md reveals 4 embedded-repo violations (sinister-panel/source, sinister-chatbot, sinister-snap-emu/source, sinister-tiktok-emu) pending operator approval to consolidate. NEW automations/sanctum-push-policy.ps1 (Audit/Check/CheckPath, exit 13 = violation) wired into sanctum-auto-push.ps1 as pre-push hook. NEW automations/agent-branch-router.ps1 enforces canonical format agent/\u003cproject-key\u003e/\u003cshort-topic\u003e-\u003cutc-date\u003e per docs/BRANCH-CONVENTION.md; invoked from start-sinister-session.ps1 Launch-Session pre-spawn. Brain entries single-repo-push-policy-2026-05-25 + branch-convention-2026-05-25 indexed. CLAUDE.md new hard-canonical block at top. All agents: read docs/BRANCH-CONVENTION.md before next push.",
+    "rationale":  "Overseer auto-distributed because this fleet-update either targeted you OR mentioned your lane slug. Review + ack if actionable.",
+    "source_id":  "fu-20260524211016-020a23",
+    "source_ts_utc":  "2026-05-25T01:10:16Z",
+    "from":  "overseer",
+    "source_priority":  "high",
+    "tag":  "[OVERSEER-DISTRIBUTE]",
+    "source_pushed_by":  "sanctum-push-policy-consolidation",
+    "source_kind":  "feature"
+}

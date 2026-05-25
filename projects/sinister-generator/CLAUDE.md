@@ -56,20 +56,34 @@ The low-level SDK wrapper still lives at `D:\Sinister Sanctum\tools\nano-banana\
 
 ## Quick start (any fleet agent)
 
-```python
-from nano_banana import jkor_image, smpl_image, jbw_image, generate
+**Preferred path — modular library API (2026-05-23):**
 
-result = jkor_image(
+```python
+from sinister_generator.library import generate
+
+result = generate(
+    brand="jkor",  # or "showmasters" / "jb-woodworks" / any registered brand
     prompt="...",
-    output_path=r"D:\Sinister Sanctum\projects\sinister-generator\outputs\jkor\banners\next.png",
+    kind="pfp",    # optional hint: pfp / banner / logo / social / etc.
+)
+print(result.output_path)  # lands in operator's desktop folder for review
+```
+
+Auto-loads endorsed refs from `Desktop\<brand>\✅ Yes\` + operator-supplied refs from `📥 Refs\`, injects anti-patterns from `❌ No\*.reject.txt` notes, lands result in the desktop library root. Operator drag-drops into ✅/❌ to update the learning loop. See `docs/LIBRARY-AND-FEEDBACK.md` (agent-side) + `C:\Users\Zonia\Desktop\JOKR\README.md` (operator-side).
+
+**Legacy path — direct nano-banana SDK:**
+
+```python
+from nano_banana import jokr_image, smpl_image, jbw_image, generate
+
+result = jokr_image(
+    prompt="...",
+    output_path=r"...\outputs\JOKR\banners\next.png",
     ref_images=[r"...\memory\per-project\jkor\reference\00-base-banner-original.png"],
 )
 ```
 
-Other helpers:
-- `smpl_image(...)` — Showmasters brand-locked
-- `jbw_image(...)` — JB Woodworks brand-locked
-- `generate(...)` — generic, no brand-lock (use for ad-hoc)
+Use only when the library API doesn't fit (one-off scripts needing full control over output path / model / style suffix). New fleet code defaults to the library API for the feedback-loop benefits.
 
 ## What this project NEVER touches
 

@@ -51,11 +51,11 @@ projects/sinister-generator/
 ## Quick start (any fleet agent)
 
 ```python
-from nano_banana import jkor_image  # or smpl_image / jbw_image / generate
+from nano_banana import jokr_image  # or smpl_image / jbw_image / generate
 
-result = jkor_image(
+result = jokr_image(
     prompt="...",
-    output_path=r"D:\Sinister Sanctum\projects\sinister-generator\outputs\jkor\banners\next.png",
+    output_path=r"D:\Sinister Sanctum\projects\sinister-generator\outputs\JOKR\banners\next.png",
     ref_images=[r"D:\Sinister Sanctum\projects\sinister-generator\memory\per-project\jkor\reference\00-base-banner-original.png"],
 )
 print(result.status, result.output_path)
@@ -66,7 +66,7 @@ CLI:
 ```bash
 python -m nano_banana \
   --prompt "..." \
-  --output "D:/Sinister Sanctum/projects/sinister-generator/outputs/jkor/banners/next.png" \
+  --output "D:/Sinister Sanctum/projects/sinister-generator/outputs/JOKR/banners/next.png" \
   --brand jkor \
   --ref "D:/Sinister Sanctum/projects/sinister-generator/memory/per-project/jkor/reference/00-base-banner-original.png"
 ```

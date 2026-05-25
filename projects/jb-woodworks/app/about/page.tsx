@@ -2,13 +2,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Reveal } from "@/components/ui/reveal";
-import { FaqAccordion } from "@/components/sections/faq-accordion";
-import { faq } from "@/lib/content";
+import { FaqTabs } from "@/components/sections/faq-tabs";
+import { faqCategorized } from "@/lib/content/faq-categorized";
 import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "About / FAQ",
-  description: "JB Woodworks is a custom woodworking shop in Orlando, Florida. Licensed and insured. Free quotes. Answers to common questions."
+  description: "JB Woodworks is a custom woodworking shop in Orlando, Florida. Decks, docks, pergolas, furniture, custom pool tables. Free quotes. Answers to common questions."
 };
 
 const blocks = [
@@ -20,7 +20,7 @@ const blocks = [
           ["Reach out.", "Phone, email, or the form. Tell us what you need. Free estimate."],
           ["Site visit + sketch.", "Measurements, photos, and a rough sketch so we are quoting the actual job."],
           ["Honest quote.", "Fixed-bid where possible, with a stated material spec."],
-          ["Build.", "Photos at major milestones. Licensed and insured on every site."],
+          ["Build.", "Photos at major milestones. On-site daily until walk-through."],
           ["Walk-through.", "We do not call it done until you do."]
         ].map(([k, v], i) => (
           <li key={i} className="text-cream-50">
@@ -38,10 +38,6 @@ const blocks = [
         <p>We do not cut corners on hardware or wood grade. You will see what we used on the invoice.</p>
       </>
     )
-  },
-  {
-    title: "Licensed and insured.",
-    body: <p>Every job is fully licensed and insured. We carry general liability and workers comp. We are happy to send certificates before we start work.</p>
   },
   {
     title: "Service area.",
@@ -81,14 +77,18 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section id="faq" className="py-24 bg-ink-2 relative overflow-hidden">
+      <section id="faq" className="py-24 sm:py-28 bg-ink-2 relative overflow-hidden">
         <div aria-hidden className="absolute -top-32 -left-32 w-[420px] h-[420px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(201,168,76,0.08), transparent 70%)" }} />
-        <div className="container-site relative">
-          <span className="section-tag">FAQ</span>
-          <h2 className="mb-14">Everything you<br /><em>need to know.</em></h2>
-          <div className="max-w-[960px] mx-auto bg-ink-3/60 backdrop-blur-sm border border-line rounded-2xl overflow-hidden">
-            <FaqAccordion items={faq} initialOpen={-1} />
+        <div aria-hidden className="absolute -bottom-32 -right-32 w-[420px] h-[420px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(201,168,76,0.06), transparent 70%)" }} />
+        <div className="container-site relative max-w-[920px]">
+          <div className="text-center mb-12">
+            <p className="font-display italic text-gold text-[1rem] mb-3">Common questions</p>
+            <h2 className="font-display text-[clamp(2.2rem,4.6vw,3.4rem)] leading-[1.05] m-0 text-white tracking-[0.18em] uppercase">
+              FAQ
+            </h2>
+            <span aria-hidden className="block h-px w-16 mx-auto mt-5 bg-gradient-to-r from-transparent via-gold to-transparent" />
           </div>
+          <FaqTabs categories={faqCategorized} initialTab="general" initialOpen={-1} />
         </div>
       </section>
 
@@ -101,3 +101,6 @@ export default function AboutPage() {
           <Link href="/contact" className="btn btn-large bg-ink text-white hover:bg-ink-3">Start the conversation</Link>
         </div>
       </section>
+    </>
+  );
+}

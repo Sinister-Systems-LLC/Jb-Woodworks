@@ -1,0 +1,20 @@
+# Sinister cloudflared DoH proxy config
+# Author: RKOJ-ELENO :: 2026-05-24
+#
+# Mounted at /etc/cloudflared/config.yml inside the sinister-cloudflared container.
+# The CLI flags in compose.doh.yml win over this file when both set the same key;
+# this file documents the canonical proxy-dns config + bootstraps Prometheus
+# metrics on :42040 for future scrape.
+proxy-dns: true
+proxy-dns-port: 5053
+proxy-dns-address: 0.0.0.0
+proxy-dns-upstream:
+  - https://1.1.1.1/dns-query
+  - https://1.0.0.1/dns-query
+  - https://dns.google/dns-query
+proxy-dns-bootstrap:
+  - 1.1.1.1
+  - 1.0.0.1
+log-level: warn
+no-autoupdate: true
+metrics: 0.0.0.0:42040

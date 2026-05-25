@@ -1,0 +1,45 @@
+﻿{
+    "status":  "ok",
+    "slot":  "default",
+    "subscription_type":  "max",
+    "rate_limit_tier":  "default_claude_max_20x",
+    "organization_id":  "1ff83d33-6e2e-4978-8d47-6a6dbda14913",
+    "overall_status":  "allowed",
+    "representative_claim":  "five_hour",
+    "overage_status":  "rejected",
+    "overage_disabled_reason":  "org_level_disabled",
+    "session":  {
+                    "utilization":  0.01,
+                    "pct":  1,
+                    "status":  "allowed",
+                    "reset_unix":  1779698400,
+                    "reset_utc":  "2026-05-25T08:40:00Z"
+                },
+    "weekly_all":  {
+                       "utilization":  0.64,
+                       "pct":  64,
+                       "status":  "allowed",
+                       "reset_unix":  1780023600,
+                       "reset_utc":  "2026-05-29T03:00:00Z"
+                   },
+    "weekly_sonnet":  {
+                          "utilization":  0,
+                          "pct":  0,
+                          "status":  "allowed",
+                          "reset_unix":  1780023600,
+                          "reset_utc":  "2026-05-29T03:00:00Z",
+                          "present":  true
+                      },
+    "weekly_design":  {
+                          "utilization":  null,
+                          "pct":  null,
+                          "status":  null,
+                          "reset_unix":  null,
+                          "reset_utc":  null,
+                          "present":  false
+                      },
+    "probed_model":  "claude-sonnet-4-5",
+    "cache_hit":  false,
+    "cache_age_sec":  0,
+    "measured_at_utc":  "2026-05-25T03:46:37Z"
+}

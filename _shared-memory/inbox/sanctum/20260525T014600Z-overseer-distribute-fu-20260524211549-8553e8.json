@@ -1,0 +1,15 @@
+{
+    "ts_utc":  "2026-05-25T01:46:00Z",
+    "_author":  "RKOJ-ELENO :: 2026-05-25",
+    "to":  "sanctum",
+    "subject":  "Fleet-update fan-out: feature priority=normal",
+    "message":  "Iter 29 (memory plan execution): M1 + M3 shipped. M1: 2 new sibling-added brain entries annotated (branch-convention-2026-05-25 preference/365 + single-repo-push-policy-2026-05-25 preference/365); brain at 195/197 = 100% real. M3: overseer-agent-doctrine-2026-05-24 updated with Distribute action row in Actions table (with operator-canonical 2026-05-25T00:30Z verbatim + dedup-via-log notes + SinisterOverseerDistribute cron mention); doctrine reinforced 0-\u003e1 boosting EffConf via sqrt-formula. Sidecar refreshed (195 rows, 195 annotated). Next iters per plan: M2 (EffConf column in _INDEX.md) iter+1; M5+M7 iter+2; M6 iter+3.",
+    "rationale":  "Overseer auto-distributed because this fleet-update either targeted you OR mentioned your lane slug. Review + ack if actionable.",
+    "source_id":  "fu-20260524211549-8553e8",
+    "source_ts_utc":  "2026-05-25T01:15:49Z",
+    "from":  "overseer",
+    "source_priority":  "normal",
+    "tag":  "[OVERSEER-DISTRIBUTE]",
+    "source_pushed_by":  "sanctum",
+    "source_kind":  "feature"
+}

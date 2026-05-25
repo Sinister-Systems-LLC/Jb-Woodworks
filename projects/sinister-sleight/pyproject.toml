@@ -1,0 +1,81 @@
+# Author: RKOJ-ELENO :: 2026-05-24
+# Sinister Sleight — full-auto trading bot lane
+# Status: P0 scaffolded — deps DECLARED, not yet installed
+
+[project]
+name = "sinister-sleight"
+version = "0.0.1"
+description = "Sinister Sleight :: full-auto trading bot (paper-first; quantum-enhanced)"
+authors = [
+    { name = "RKOJ-ELENO" }
+]
+license = { text = "Proprietary" }
+readme = "README.md"
+requires-python = ">=3.11"
+
+# Recommended starter deps — DECLARED only; install when P1 begins.
+# Phase indicates earliest phase that needs each dep.
+dependencies = [
+    # P1 — data layer
+    "pandas >=2.0",
+    "numpy >=1.24",
+    "pyarrow >=14.0",          # parquet
+    "yfinance >=0.2",
+    "requests >=2.31",
+    "python-dotenv >=1.0",
+    # P1 — broker (paper)
+    "alpaca-py >=0.20",
+    # P2 — backtest engine
+    "vectorbt >=0.26",
+    # "backtrader >=1.9",       # alt / reference impl; uncomment if used
+    # P3 — strategy ML
+    "scikit-learn >=1.3",
+    "lightgbm >=4.0",
+    "xgboost >=2.0",
+    # P3 — RL agent + custom gym env
+    "gymnasium >=0.29",
+    "stable-baselines3 >=2.2",
+    # P3 — LLM trader (Claude)
+    "anthropic >=0.34",
+    # P3 — technical indicators (pure python fallback if ta-lib unavailable)
+    "ta >=0.11",                # pure-python; ta-lib is C-extension (optional)
+    # P3 — quantum hooks (via sibling sinister-snap-api-quantum lane)
+    # sinister-seraphim imported via sys.path; no PyPI dep here
+    # P4 — dashboard (Next.js / web served separately; not a python dep)
+    # P5 — risk + options
+    "cvxpy >=1.4",              # quadratic programming for portfolio
+    "scipy >=1.11",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest >=7.4",
+    "pytest-cov >=4.1",
+    "ruff >=0.1",
+    "ipykernel >=6.27",         # notebooks
+]
+talib = [
+    "ta-lib >=0.4",             # OPTIONAL — C-extension; install instructions in README if used
+]
+vectorbt-pro = [
+    # operator-gated; $400/yr; only if free vectorbt becomes bottleneck on grid-search
+]
+
+[project.urls]
+"Project Root" = "file://D:/Sinister Sanctum/projects/sinister-sleight"
+"Charter" = "file://D:/Sinister Sanctum/_shared-memory/knowledge/sinister-sleight-project-charter-2026-05-24.md"
+
+[build-system]
+requires = ["setuptools >=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"

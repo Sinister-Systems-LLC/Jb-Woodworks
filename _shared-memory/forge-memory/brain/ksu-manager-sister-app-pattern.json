@@ -1,0 +1,19 @@
+{
+  "_author": "RKOJ-ELENO :: 2026-05-21",
+  "schema_version": "sinister.forge-memory.v1",
+  "namespace": "brain",
+  "key": "ksu-manager-sister-app-pattern",
+  "value": "<!-- decay:\n  category: fact\n  confidence: 0.85\n  reinforcements: 0\n  half_life_days: 180\n-->\n> **Author:** Sinister Kernel APK (Claude agent, 2026-05-19)\n\n# Topic: Sister-app pattern when KSU Manager cert hash is kernel-pinned\n\n**Slug:** ksu-manager-sister-app-pattern\n**First discovered:** 2026-05-19 by Sinister Kernel APK\n**Last updated:** 2026-05-19 by Sinister Kernel APK\n**Status:** workaround\n**Tags:** ksu-manager, rebrand, kernel-trust, cert-hash, sister-app, signing\n\n## Problem\n\nWe want a Sinister-branded KSU Manager (icon, app name, package, splash) for fleet uniformity. But the Wild kernel pins the **cert hash** of the upstream KSU Manager APK \u2014 only an APK signed with the original keystore can issue privileged calls into the kernel.\n\nAny signature-changing rebrand kills kernel trust:\n\n- **apktool decompile + repack:** changes the v2/v3 signature \u2192 cert hash mismatch \u2192 kernel denies \u2192 SU prompts never fire \u2192 fleet is bricked-functional (boots, but no root).\n- **Upstream source rebuild with our keystore:** same outcome \u2014 new cert, mismatched hash, denied.\n\nWe can't extract the upstream keystore (don't have it; author won't share). We can't ask the kernel to trust a new hash without rebuilding the kernel.\n\n## Why it happens\n\nKSU's anti-tamper / anti-impersonation design: the kernel ships with a hardcoded SHA of the legitimate Manager's signing cert. Privileged syscalls check the calling UID's APK signature. Wrong signature \u2192 reject. This is by design \u2014 it prevents a malicious app from impersonating KSU Manager to steal SU grants.\n\nThe cert hash is baked into the kernel image, not user-space config. Changing it = rebuilding and reflashing the kernel. Not in scope.\n\n## Fix or workaround\n\n**Sister-app pattern.** Build a separate Sinister-branded APK with a **different package name** (e.g. `com.sinister.companion`). It coexists alongside the original upstream KSU Manager \u2014 does not replace it.\n\n- Upstream KSU Manager stays installed, keeps kernel trust, keeps the SU prompt role.\n- Sister app provides Sinister-branded entry surfaces (orchestrator UI, settings, telemetry display) \u2014 anything that does not need direct kernel privileged calls.\n- For privileged ops, the sister app shells out to `ksud` (which itself runs under SU granted to the calling app \u2014 see `apk-orchestrator-pattern.md`).\n\n**UX cost:** two app icons in the launcher (upstream KSU Manager + Sinister sister). Operator training: \"don't open the upstream one for normal work; sister app is the daily driver.\"\n\n**Recommended path:** Option C (sister-app). Options A (apktool rebrand) and B (upstream rebuild with our keystore) both fail kernel trust and are dead ends without kernel rework.\n\nTested: pattern proven by the Sinister Detector APK orchestrator (`apk-orchestrator-pattern.md`) which is itself a sister-app to KSU Manager.\n\n## Discoveries (append-only log, most-recent at top)\n\n### 2026-05-19 by Sinister Kernel APK\nB3 recon confirmed: cert hash pin is in the kernel image, not user-space. Options A and B both eliminated by signature mismatch. Settled on Option C. Sinister Detector APK already validates the pattern in production.\n\n## Related topics\n\n- [service-apk-hash-check](./service-apk-hash-check.md)\n- [apk-orchestrator-pattern](./apk-orchestrator-pattern.md)\n",
+  "tags": [
+    "ksu",
+    "manager",
+    "sister",
+    "app",
+    "pattern"
+  ],
+  "ts_utc_first": "2026-05-25T02:15:10Z",
+  "ts_utc_last": "2026-05-25T02:21:08Z",
+  "writes": 2,
+  "confidence": 1.0,
+  "content_hash": "be5777d48fb2765a575ccb0cc5d90bea5dfe0827056abb32d1c0cd914aec5879"
+}

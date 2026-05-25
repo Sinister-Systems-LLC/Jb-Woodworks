@@ -1,0 +1,12 @@
+{
+    "x":  234,
+    "y":  234,
+    "w":  1296,
+    "h":  839,
+    "monitor_index":  0,
+    "ts_utc":  "2026-05-25T02:30:35Z",
+    "captured_at":  "2026-05-24T22:30:35.9518773-04:00",
+    "project_key":  "kernel-apk",
+    "agent_pid":  50832,
+    "watcher":  "window-position-monitor.ps1:sweep"
+}

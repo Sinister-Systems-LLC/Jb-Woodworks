@@ -176,8 +176,8 @@ JBW_STYLE = (
     " no text in image, no emojis, no plastic / faux finishes"
 )
 
-JKOR_STYLE = (
-    " — preserve the canonical JKOR look: playful cartoon purple demon-jester"
+JOKR_STYLE = (
+    " — preserve the canonical JOKR look: playful cartoon purple demon-jester"
     " character with cheeky showing-teeth grin, small horns, gold crown,"
     " jester staff topped with a mini-jester-head bell, fan of playing cards,"
     " purple-and-gold royal-jester collar with central gem. Background uses"
@@ -187,6 +187,8 @@ JKOR_STYLE = (
     " stays where the source has it. NO download icons, NO UI buttons, NO"
     " interface chrome in any corner."
 )
+
+JKOR_STYLE = JOKR_STYLE  # back-compat alias (will be removed; use JOKR_STYLE)
 
 
 def smpl_image(
@@ -205,9 +207,12 @@ def jbw_image(
     return generate(prompt, output_path, ref_images=ref_images, style_suffix=JBW_STYLE)
 
 
-def jkor_image(
+def jokr_image(
     prompt: str,
     output_path: Union[str, pathlib.Path],
     ref_images: Optional[Iterable[RefImage]] = None,
 ) -> GenerationResult:
-    return generate(prompt, output_path, ref_images=ref_images, style_suffix=JKOR_STYLE)
+    return generate(prompt, output_path, ref_images=ref_images, style_suffix=JOKR_STYLE)
+
+
+jkor_image = jokr_image  # back-compat alias (will be removed; use jokr_image)

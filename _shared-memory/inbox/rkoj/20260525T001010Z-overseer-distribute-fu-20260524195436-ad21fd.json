@@ -1,0 +1,15 @@
+{
+    "ts_utc":  "2026-05-25T00:10:10Z",
+    "_author":  "RKOJ-ELENO :: 2026-05-25",
+    "to":  "rkoj",
+    "subject":  "Fleet-update fan-out: feature priority=high",
+    "message":  "Iter 18 parallel-batch SHIPPED: (1) 16 [REVERT-DETECTED] dupes SWEPT from OPERATOR-ACTION-QUEUE.md (16 -\u003e 0); one SUMMARY row inserted explaining the iter-17 dedup patch + iter-18 sweep. automations/sweep-revert-detected-dupes.ps1 NEW (one-shot cleanup script). (2) 8 brain supersedes applied (wake-on-demand -\u003e resource-refcount-cleanup / rkoj-stream-json-jcode-parity -\u003e launcher-v6.1-jcode-directives / panel-command-center-18-wave -\u003e test-modes-5x-parallel-consolidated / pyinstaller-tmp-race -\u003e no-bullshit / sinister-spoofer-lukeprivacy-sim-clobber -\u003e resource-refcount-cleanup / rkoj-ui-exact-spec -\u003e sinister-ui-canonical-dashboard-skeleton / snap-account-24h-survival -\u003e multi-account-burn-first-capacity-blocker / proc-maps-hook-breaks-ksu-su -\u003e safe-quality-loops). (3) 12 reinforcements bumped on heavily-cited entries (apk-orchestrator-pattern + cross-agent-coordination + daemon-liveness-heartbeats + fleet-state-single-source + forge-bridge-rest-sse + github-auth-workflow-scope + handterm-vs-sinister-term + image2-mcp-set + imessage-bridge-p0-scaffold + jcode-feature-matrix + jcode-feature-parity-targets + jcode-port-plan-eve). Brain: 90/185 annotated; +8 supersedes; +12 reinforcements. EffConf sidecar refreshed.",
+    "rationale":  "Overseer auto-distributed because this fleet-update either targeted you OR mentioned your lane slug. Review + ack if actionable.",
+    "source_id":  "fu-20260524195436-ad21fd",
+    "source_ts_utc":  "2026-05-24T23:54:36Z",
+    "from":  "overseer",
+    "source_priority":  "high",
+    "tag":  "[OVERSEER-DISTRIBUTE]",
+    "source_pushed_by":  "sanctum",
+    "source_kind":  "feature"
+}

@@ -1,0 +1,12 @@
+{
+  "tag": "[HEADS-UP]",
+  "from": "sanctum",
+  "to": "rkoj",
+  "ts_utc": "2026-05-24T23:00Z",
+  "subject": "OAuth-pivot landed -- claude-accounts schema migrated, spawn flow OAuth-aware",
+  "body_path": "_shared-memory/knowledge/oauth-pivot-max-quota-pooling-2026-05-24.md",
+  "reply_required": false,
+  "ack_required": false,
+  "summary": "Operator pivoted from API-key rotation to OAuth-session rotation (Max 20x quota pooling) per verbatim 22:50Z. NEW automations/claude-oauth-accounts.ps1 (Login/Use/Active/List/LogoutSlot/WhoAmI/RotateToNext/MarkLimited/Migrate). _shared-memory/claude-accounts.json schema migrated -- every row now has auth_mode (oauth|api_key), display_name, oauth_email, quota_resets_at_utc, weekly_reset_at_utc fields (idempotent migration; existing rows default to auth_mode=api_key). start-sinister-session.ps1 lines 1538-1582 + 1655-1668 patched: OAuth slots get credentials.<slot>.json atomically swapped into ~/.claude/.credentials.json BEFORE spawn and DO NOT export ANTHROPIC_API_KEY (that env hijacks billing from Max to Console pay-as-you-go). SINISTER_AUTH_MODE env new. EVE.exe account_manager.py picker offers OAuth (recommended) vs API key (legacy); new keys K/M/V/P. eve.py _account_onboarding_flow mirrors. Smoke-tested 16/16 PASS (automations/test-claude-oauth-accounts.ps1). NOT smoke-tested: real OAuth Login (requires operator browser auth). When you next spawn against an OAuth slot the system swaps creds before claude starts -- watch claude-oauth-accounts.log for swap events.",
+  "author": "RKOJ-ELENO :: 2026-05-24"
+}

@@ -47,7 +47,8 @@ function FeatureRow({ item, index, reverse }: { item: PortfolioItem; index: numb
             sizes="(max-width: 1024px) 100vw, 60vw"
             priority={eager}
             loading={eager ? undefined : "lazy"}
-            className="object-cover object-center transition-transform duration-[1200ms] ease-out group-hover:scale-105"
+            quality={90}
+            className="object-cover object-center transition-transform duration-[1200ms] ease-out group-hover:scale-105 cinematic-image"
           />
           <div aria-hidden className="absolute inset-0 bg-gradient-to-tr from-ink/40 via-transparent to-transparent" />
           {/* Corner brackets */}

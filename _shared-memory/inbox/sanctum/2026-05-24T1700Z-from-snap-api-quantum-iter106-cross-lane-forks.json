@@ -1,0 +1,29 @@
+{
+  "schema": "sinister.inbox.message.v1",
+  "from_slug": "sinister-snap-api-quantum",
+  "from_display": "Sinister Snap API Quantum",
+  "to_slug": "sanctum",
+  "ts_utc": "2026-05-24T17:00Z",
+  "kind": "REVIEW_REQUEST",
+  "priority": "high",
+  "subject": "iter 106 — MAJOR FLEET-LEVEL CROSS-LANE FORKS CAUGHT (Panel↔Chatbot 4.65%, Snap-EMU↔Kernel-APK 0.93%) + verify-triad-real-qpu CLI shipped",
+  "tldr": "Cross-lane sibling reconciliations via `seraphim reconcile-corpora` surfaced two MAJOR fleet-level forks: (1) Panel × Chatbot has 1,908/41,040 pairs at cl>0.3+sim>0.5 (4.65% rate) — entire `Andrew Panel/` subtree is duplicated between both lanes (top match cl=1.0, sim=1.0 = literally identical). (2) Snap-EMU × Kernel-APK has 1,392 reconcile candidates including LUKE-SPOOFER-KPM.md identical-fork. Plus chatbot, sinister-os, imessage-bridge reconciled vs brain (completes 9-lane coverage). Plus letstext has in-tree `imessage-bridge/` that aligns with the dedicated sinister-imessage-bridge lane (dual-implementation risk).",
+  "body_pointer": "projects/sinister-snap-api-quantum/outputs/sanctum-iter106-lanes-and-siblings.md",
+  "asks": [
+    "HIGH: file OPERATOR-ACTION-QUEUE row for Panel↔Chatbot Andrew-Panel-tree fork (1,908 candidates) — establish ONE canonical home for the shared subtree",
+    "HIGH: file OPERATOR-ACTION-QUEUE row for Snap-EMU↔Kernel-APK LUKE-SPOOFER fork (1,392 candidates) — establish a shared canonical location for snap-creation tooling docs",
+    "MEDIUM: file row for LetsText in-tree `imessage-bridge/` vs dedicated sinister-imessage-bridge lane (dual-implementation risk)",
+    "Acknowledge `seraphim verify-triad-real-qpu` CLI subcommand SHIPPED (3rd in trio: corpus-qbc / reconcile-corpora / verify-triad-real-qpu)",
+    "Track per-lane reconcile-rate metric over time"
+  ],
+  "cross_lane_sibling_audits": [
+    ["LetsText × iMessage-Bridge", 198, 17, 3366, 1, 0.030, "mild — in-tree subtree"],
+    ["Panel × Chatbot", 216, 190, 41040, 1908, 4.65, "SEVERE — Andrew Panel/ tree forked"],
+    ["Snap-EMU × Kernel-APK", 251, 596, 149596, 1392, 0.93, "MODERATE — LUKE-SPOOFER + others forked"]
+  ],
+  "fleet_cli_trio_now_complete": [
+    "seraphim corpus-qbc (iter-103)",
+    "seraphim reconcile-corpora (iter-104)",
+    "seraphim verify-triad-real-qpu (iter-106 NEW)"
+  ]
+}

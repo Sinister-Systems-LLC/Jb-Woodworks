@@ -52,7 +52,7 @@ Before any generated image is saved to a project's `outputs/<slug>/<type>/` fold
 If 1+ line fails: **move to `outputs/<slug>/_rejected/`** with a `.txt` note describing why. Don't just delete — failed variants help future prompt iteration.
 
 ```
-outputs/jkor/_rejected/
+outputs/JOKR/_rejected/
 ├── banner-v1.png
 ├── banner-v1.png.meta.json
 └── banner-v1.reject.txt    ← "lost cartoony jester face, character looks like sorcerer not jester"

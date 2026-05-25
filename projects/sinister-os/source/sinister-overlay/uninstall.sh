@@ -84,4 +84,52 @@ fi
 log "removing /etc/sudoers.d/eve"
 run "rm -f /etc/sudoers.d/eve"
 
+# ===== 8. EVE-OS integration (mirror of install.sh install_eve) =====
+# Author: RKOJ-ELENO :: 2026-05-24
+log "step 8 — EVE-OS integration removal"
+uninstall_eve() {
+  # Stop + disable systemd unit if present.
+  if command -v systemctl >/dev/null 2>&1; then
+    if systemctl list-unit-files 2>/dev/null | grep -q '^sinister-eve\.service'; then
+      run "systemctl disable --now sinister-eve.service 2>/dev/null || true"
+    fi
+  fi
+
+  # Files dropped by install_eve.
+  run "rm -f /etc/systemd/system/sinister-eve.service"
+  run "rm -f /usr/local/bin/sinister-eve"
+  run "rm -rf /usr/lib/sinister-eve"
+  # Config: keep eve.toml (operator-edited); only drop the example.
+  run "rm -f /etc/sinister/eve.toml.example"
+  # MCP drop-ins shipped by the overlay.
+  run "rm -f /etc/sinister/mcp/eve-cli.json /etc/sinister/mcp/panel-control.json"
+  # Empty /etc/sinister/mcp + /etc/sinister if nothing else remains.
+  if [[ -d /etc/sinister/mcp ]] && [[ -z "$(ls -A /etc/sinister/mcp 2>/dev/null)" ]]; then
+    run "rmdir /etc/sinister/mcp"
+  fi
+  if [[ -d /etc/sinister ]] && [[ -z "$(ls -A /etc/sinister 2>/dev/null)" ]]; then
+    run "rmdir /etc/sinister"
+  fi
+
+  # NOTE: /var/lib/sinister/memory is the operator's brain — NEVER auto-delete.
+  warn "preserved /var/lib/sinister/memory (operator brain). Delete manually if intended."
+
+  # Group: remove only if no users still belong to it.
+  if getent group sinister >/dev/null 2>&1; then
+    local members
+    members="$(getent group sinister | awk -F: '{print $4}')"
+    if [[ -z "$members" ]]; then
+      run "groupdel sinister 2>/dev/null || true"
+    else
+      warn "group 'sinister' has members ($members) — keeping group"
+    fi
+  fi
+
+  if command -v systemctl >/dev/null 2>&1; then
+    run "systemctl daemon-reload 2>/dev/null || true"
+  fi
+  log "  - EVE-OS integration removed"
+}
+uninstall_eve
+
 log "uninstall complete. Reboot to drop the Plymouth + Hyprland changes from running sessions."

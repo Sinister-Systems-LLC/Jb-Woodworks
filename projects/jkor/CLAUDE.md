@@ -1,19 +1,19 @@
-<!-- Author: RKOJ-ELENO :: 2026-05-23 -->
-# CLAUDE.md — JKOR
+<!-- Author: RKOJ-ELENO :: 2026-05-23 (jkor->JOKR display rename 2026-05-24) -->
+# CLAUDE.md — JOKR
 
-> Project root: `C:\Users\Zonia\Desktop\JKOR\` (image-generation working folder)
+> Project root: `C:\Users\Zonia\Desktop\JOKR\` (image-generation working folder)
 > Sanctum harness root: `D:\Sinister Sanctum\`
-> Agent slug: `jkor`
-> Display name: `JKOR`
+> Agent slug: `jkor` (kept lowercase for path stability; display name is JOKR)
+> Display name: `JOKR`
 > Persona: EVE (per `_shared-memory/knowledge/agent-identity-eve.md`)
 
 ## What this project is
 
-The **JKOR** brand surface — image-generation working folder for the JKOR identity (purple demon/jester hybrid, small gold crown, mischievous grin, fan of playing cards, sorcerer's wand). Operates as a thin lane on top of `D:\Sinister Sanctum\projects\sinister-generator\` (the application layer) and `D:\Sinister Sanctum\tools\nano-banana\` (the SDK wrapper).
+The **JOKR** brand surface — image-generation working folder for the JOKR identity (purple demon/jester hybrid, small gold crown, mischievous grin, fan of playing cards, sorcerer's wand). Operates as a thin lane on top of `D:\Sinister Sanctum\projects\sinister-generator\` (the application layer) and `D:\Sinister Sanctum\tools\nano-banana\` (the SDK wrapper).
 
 Working tree:
 ```
-C:\Users\Zonia\Desktop\JKOR\
+C:\Users\Zonia\Desktop\JOKR\
 ├── BRAND.md                              ← visual identity + per-prompt style guide
 ├── generate-banner.bat                   ← one-click first-banner generation
 ├── reference/
@@ -25,7 +25,7 @@ C:\Users\Zonia\Desktop\JKOR\
     └── (PNGs + .meta.json sidecars land here)
 ```
 
-Brand-pack canonical doc: `D:\Sinister Sanctum\projects\sinister-generator\memory\per-project\jkor\BRAND.md` (mirrored here for offline edits).
+Brand-pack canonical doc: `D:\Sinister Sanctum\projects\sinister-generator\memory\per-project\jkor\BRAND.md` (mirrored here for offline edits; folder path kept on `jkor/` for back-compat).
 
 ## Cold-start (every spawn)
 
@@ -34,24 +34,32 @@ Brand-pack canonical doc: `D:\Sinister Sanctum\projects\sinister-generator\memor
 3. **Read `D:\Sinister Sanctum\_shared-memory\DIRECTIVES.md`** + **`WORK-TOWARD.md`**.
 4. **Read this folder's `BRAND.md`** — visual identity + style guide.
 5. **Read `D:\Sinister Sanctum\projects\sinister-generator\docs\ANTI-SLOP.md`** before generating images.
-6. **Read `_shared-memory\knowledge\_INDEX.md`** rows tagged `jkor` / `nano-banana` / `image-generation`.
-7. **Grep `D:\Sinister Sanctum\_shared-memory\resume-points\JKOR\`** for latest resume-point.
+6. **Read `_shared-memory\knowledge\_INDEX.md`** rows tagged `jkor` / `jokr` / `nano-banana` / `image-generation`.
+7. **Grep `D:\Sinister Sanctum\_shared-memory\resume-points\jkor\`** for latest resume-point.
 
 ## Standard fleet I/O paths
 
 | What | Where |
 |---|---|
 | Heartbeat | `D:\Sinister Sanctum\_shared-memory\heartbeats\jkor.json` |
-| PROGRESS log | `D:\Sinister Sanctum\_shared-memory\PROGRESS\JKOR.md` |
-| Resume-points | `D:\Sinister Sanctum\_shared-memory\resume-points\JKOR\<UTC>.json` |
+| PROGRESS log | `D:\Sinister Sanctum\_shared-memory\PROGRESS\JOKR.md` |
+| Resume-points | `D:\Sinister Sanctum\_shared-memory\resume-points\jkor\<UTC>.json` |
 | Inbox | `D:\Sinister Sanctum\_shared-memory\inbox\jkor\` |
-| Generation outputs (canonical) | `D:\Sinister Sanctum\projects\sinister-generator\outputs\jkor\` |
-| Generation outputs (local working copy) | `C:\Users\Zonia\Desktop\JKOR\generated\` |
+| Generation outputs (canonical) | `D:\Sinister Sanctum\projects\sinister-generator\outputs\JOKR\` |
+| Generation outputs (local working copy) | `C:\Users\Zonia\Desktop\JOKR\generated\` |
+| Sorter dashboard | `http://127.0.0.1:7099/` (watches `C:\Users\Zonia\Desktop\JOKR\`) |
 
 Write a new resume-point:
 
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File "D:\Sinister Sanctum\automations\resume-point-write.ps1" -SanctumRoot "D:\Sinister Sanctum" -ProjectKey jkor -AgentName jkor -Mode resume
+```
+
+Launch the sorter dashboard:
+
+```bash
+cd "D:/Sinister Sanctum/projects/sinister-generator/source"
+PYTHONPATH=. nohup python -X utf8 -m sinister_generator.sorter_web --folder "C:/Users/Zonia/Desktop/JOKR" --port 7099 > /tmp/jokr-sorter.log 2>&1 &
 ```
 
 ## Per-agent branch
@@ -61,16 +69,16 @@ Work on `agent/jkor/<short-topic>` cut off the latest doctrine HEAD. Push freely
 ## Image generation quick start
 
 ```python
-from nano_banana import jkor_image
+from nano_banana import jokr_image
 
-result = jkor_image(
-    prompt="a JKOR banner showing the demon-jester in a smoky neon throne room ...",
-    output_path=r"C:\Users\Zonia\Desktop\JKOR\generated\banner-vN.png",
-    ref_images=[r"C:\Users\Zonia\Desktop\JKOR\reference\00-base-banner-original.png"],
+result = jokr_image(
+    prompt="a JOKR banner showing the demon-jester in a smoky neon throne room ...",
+    output_path=r"C:\Users\Zonia\Desktop\JOKR\generated\banner-vN.png",
+    ref_images=[r"C:\Users\Zonia\Desktop\JOKR\reference\00-base-banner-original.png"],
 )
 ```
 
-`jkor_image` is the brand-locked helper at `tools/nano-banana/nano_banana/api.py`. It auto-enforces the JKOR palette (purple primary, gold accent, dark sidebar bg from `01-color-scheme-command-center.png`) and applies the brand-pack prompt prefix.
+`jokr_image` is the brand-locked helper at `tools/nano-banana/nano_banana/api.py` (older callers `jkor_image` kept as a back-compat alias). It auto-enforces the JOKR palette (purple primary, gold accent, dark sidebar bg from `01-color-scheme-command-center.png`) and applies the brand-pack prompt prefix.
 
 For non-brand-locked generation, use `generate(...)` instead.
 

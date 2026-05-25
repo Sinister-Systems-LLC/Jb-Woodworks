@@ -63,7 +63,7 @@ $UserMcp        = Join-Path $env:USERPROFILE '.claude\.mcp.json'
 $ProjSettings   = Join-Path $SanctumRoot '.claude\settings.json'
 $CheckScript    = Join-Path $SanctumRoot 'automations\canonical-protections-check.ps1'
 $MarkerFile     = Join-Path $env:USERPROFILE '.sanctum-autonomy-granted'
-$Stamp          = (Get-Date -Format 'yyyy-MM-ddTHH-mm-ssZ')
+$Stamp          = ([datetime]::UtcNow).ToString('yyyy-MM-ddTHH-mm-ssZ')
 
 function Write-Status { param([string]$Msg, [ConsoleColor]$Fg = 'White') if (-not $Quiet) { Write-Host $Msg -ForegroundColor $Fg } }
 function Write-Step   { param([int]$N, [string]$Title) Write-Status ''; Write-Status "  [Step $N/9] $Title" Magenta; Write-Status "  $('-' * 70)" DarkMagenta }

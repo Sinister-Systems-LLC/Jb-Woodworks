@@ -5,6 +5,85 @@
 
 ---
 
+## 2026-05-25 ~04:00Z — Iter 17/18: ack 5 utterances + ship sinister-eve.service typed-state-machine design (closes jcode-full-audit row 41)
+
+Resumed on `agent/sinister-os/iter15-doctrine-adopt-2026-05-25` (HEAD `8392fb1`). Resume-point next_action = (1) ack utterances iter-16 already handled (2) ship deferred sinister-eve.service typed-state-machine design doc.
+
+**Shipped this iter (verified):**
+
+| Path | Verb | Verification |
+|---|---|---|
+| `projects/sinister-os/docs/design/sinister-eve-service-state-machine-2026-05-25.md` | shipped (design-doc) | NEW; 13 sections (5 states + transition table + epoch + socket protocol + sudoers binding + state-file format + 7 failure modes + Sync L5 seam + 10 P2→P3 test rows); markdown parse-clean; `Write` tool returned success |
+| `_shared-memory/operator-utterances.jsonl` | M | 5 sinister-os-tagged utterances (03:26Z freeze / 03:27Z sync / 03:27Z hive-mind / 03:29Z visible-PS / 03:31Z fleet-wide-one) flipped `new → acknowledged` with deliverable pointer to iter-16 row above. Receipt: `ack-operator-utterance.ps1` stdout `ack ts_utc=<each> agent=sinister-os status=acknowledged deliverables=<n>` x5 |
+| `_shared-memory/inbox/sinister-os/_acked/` | M (12 moves) | 12 stale fan-out + handoff rows from 2026-05-24 + 2026-05-25 early archived. Verify: `ls _shared-memory/inbox/sinister-os/ | grep -v _acked | wc -l` → `0` |
+| `_shared-memory/heartbeats/sinister-os.json` | M | This iter |
+| `_shared-memory/PROGRESS/Sinister OS.md` | M | This row |
+| `_shared-memory/resume-points/Sinister OS/<utc>.json` | written after commit |
+
+**Why the design doc matters (composes cleanly):**
+
+- **jcode-full-audit row 41** demanded *"typed states for OS lifecycle (BOOT/RUNNING/REBOOTING/HALTED/FAILED)"* for sinister-os. This doc is the response — explicit transitions + epoch + socket protocol + state.json format.
+- **Sinister Sync doctrine L5** (cold-start replay) needs a queryable state to replay from. §9 of the doc wires `subscribe` op (epoch-keyed transition stream) as the seam between OS-layer daemon and fleet-wide hive-mind — closes the "frozen overlay" failure mode iter-16 freeze-triage flagged (§4 epoch invalidation).
+- **master-plan §8.1** was untyped (receive→classify→execute). This doc replaces with 5 states + 11-row transition table; rejects illegal transitions → `FAILED`.
+- **no-function-loss-doctrine** (2026-05-24): the P2→P3 cutover gate now has 10 concrete test rows (§10) that must PASS in a VM before sinister-eve.service implementation lands.
+
+**Lane discipline preserved:**
+
+- Doc is design-only — NO code, NO config, NO firmware touched. P3 gated (operator click required).
+- All scope in `projects/sinister-os/docs/design/` (lane-owned).
+- Did NOT touch `_vault/`, sibling lanes, `~/.claude/.mcp.json`, `main` branch.
+- Did NOT spawn sub-agents (single-Opus iter; design synthesis fits cleanly in one turn — RELENTLESS rule 8 ship-this-turn satisfied).
+
+**Operator-action queue impact:** zero new operator clicks. Doc reviewable async. P3 gate flip remains the only operator action — unchanged.
+
+**Quality-degradation signals (rule 8 watch):**
+- Brain row count: unchanged this turn (design doc lives in project docs/, not brain).
+- PROGRESS file size: ~+1.4 KB (well under 300 KB cap).
+- Cold-start step count: unchanged.
+
+---
+
+## 2026-05-25 ~03:32Z — Iter 16: operator-interrupt pivot (5 utterances stacked) — freeze-triage + Sinister Sync doctrine + cross-project federation L6 + visible-PS reinforcement
+
+Resumed on `agent/sinister-os/iter15-doctrine-adopt-2026-05-25`. Verified iter-15 deferred commit already landed via sanctum-helper-gamma `94fde87` (git log + `git diff HEAD` of all 3 named files confirmed disk == HEAD; resume-point goal achieved without re-commit).
+
+**Operator interrupts received this turn (5 stacked messages, all logged via log-operator-utterance.ps1):**
+
+| ts_utc | gist | sinister-os action |
+|---|---|---|
+| 03:21Z (screenshot evidence) | terminals freezing + EVE.exe frozen + can't close + random + needs to stop | Ran canonical `automations/diagnose-fleet-freeze.ps1` (RED conhost=31, ORANGE 15 task issues, ORANGE Ollama not service-registered). Inboxed sanctum with ordered F1-F6 fix plan. |
+| 03:26Z | swarm + supercharge EVE.exe via new feature "Sinister Sync" | Shipped brain doctrine `sinister-sync-doctrine-2026-05-25.md` (5-layer arch: graph + Ruflo + broadcast + cold-start + swarm). Inboxed sanctum with design + implementation request. |
+| 03:27Z | design intent: sync brain with project, hive mind per project | Already covered by doctrine; design L1-L5 explicitly addresses "alive like a hive mind" framing. |
+| 03:29Z | stop random PowerShell windows + all agents adhere + agents have complete control | Annotated `no-visible-powershell-windows-doctrine-2026-05-25` with REINFORCEMENT (reinforcements 1->2). Pushed high-pri fleet-update broadcast `fu-20260524233008-56fd4f`. Lane audit confirmed zero violations in sinister-os ps1 surfaces (only 2 .ps1 files; both operator-clicked, EXEMPT). |
+| 03:31Z | use ALL tools + everything mapped + all agents+projects = one forever-expanding entity | Extended Sinister Sync doctrine with L6 cross-project federation layer (graph union + fleet namespace + tool-reach mapping + forever-expansion invariant). |
+
+**Lane discipline preserved (sanctum-scope-discipline-2026-05-24):**
+
+- Scheduled-task surgery (F1-F6 freeze fixes) = sanctum-master scope. sinister-os DID NOT touch.
+- EVE.exe Python source + start-sinister-session.ps1 wire-up for Sinister Sync = sanctum-master scope. sinister-os DID NOT touch.
+- Cross-project spawn for EVE.exe completion = sanctum scope. sinister-os DID NOT spawn.
+- sinister-os DID: design + doctrine + diagnostic + inbox routing + utterance logging + fleet broadcast (all lane-neutral or lane-owned).
+
+**Files added this turn:**
+
+| Path | Verification |
+|---|---|
+| `_shared-memory/knowledge/sinister-sync-doctrine-2026-05-25.md` | NEW; 5+1 layer design + ship plan + anti-patterns + pass criterion; parse-clean |
+| `_shared-memory/knowledge/no-visible-powershell-windows-doctrine-2026-05-25.md` | M; reinforcement note + decay reinforcements 1->2 |
+| `_shared-memory/inbox/sanctum/2026-05-25T0325Z-from-sinister-os-fleet-freeze-urgent-triage.json` | NEW high-pri; diagnostic JSON ref + ordered F1-F6 fix list |
+| `_shared-memory/inbox/sanctum/2026-05-25T0327Z-from-sinister-os-sinister-sync-design.json` | NEW high-pri; design pointer + lane routing matrix + freeze dependency |
+| `_shared-memory/diagnostics/fleet-freeze-2026-05-25T032438Z.json` | NEW; auto-written by diagnostic script |
+| `_shared-memory/heartbeats/sinister-os.json` | M; reflects iter-16 pivot |
+| `_shared-memory/PROGRESS/Sinister OS.md` | this row |
+
+**Tools reached this turn (per RELENTLESS rule 10 tool-reach-first):**
+
+`diagnose-fleet-freeze.ps1` (canonical fleet-freeze diag) · `log-operator-utterance.ps1` x5 (every operator interrupt logged) · `fleet-update.ps1 -Action Push` (high-pri broadcast) · Read/Grep/Edit/Write for brain + inbox · Bash + PowerShell for live process audit + scheduled-task inventory. Did NOT need Agent sub-agents this turn (design + diagnostic + routing fits in one Opus turn cleanly).
+
+**Loop continues:** Iter 17 = poll sanctum inbox for replies on freeze + Sinister Sync; if sanctum hasn't picked up within next loop tick, escalate via second high-pri row. Iter 18 = ship sinister-eve.service typed-state-machine design doc (deferred from this iter due to operator-interrupt priority).
+
+---
+
 ## 2026-05-25 ~03:05Z — Iter 15 close-out + 4-doctrine adoption + iter-13/14 gap-fill (no-bullshit §4 audit catch)
 
 Resumed on `agent/sinister-sanctum/eve-exe-headless-jcode-audit-2026-05-25` (cross-lane working dir at session start); branched to `agent/sinister-os/iter15-doctrine-adopt-2026-05-25` per single-repo-push-policy canonical 2026-05-25.

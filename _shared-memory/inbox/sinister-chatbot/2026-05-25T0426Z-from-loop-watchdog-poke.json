@@ -1,0 +1,15 @@
+{
+    "schema_version":  "sinister.cross-agent-msg.v1",
+    "ts_utc":  "2026-05-25T04:26:57Z",
+    "from_slug":  "loop-relentless-watchdog",
+    "from_display":  "Loop Watchdog",
+    "to_slug":  "sinister-chatbot",
+    "priority":  "high",
+    "kind":  "loop-poke",
+    "subject":  "STOP STOPPING - keep iterating on your loop goal",
+    "body":  "Operator hard-canonical 2026-05-25T02:18Z: \u0027make it aggressive and have agents relentlessly pursue goal\u0027. Your last 34 ticks show heartbeat_stale(166.4min) + focus_stuck(17 ticks) + iter_stalled(iter=2 x17 ticks). Per CLAUDE.md LOOP MODE rules 1-2: immediately start next iteration in SAME turn. If genuinely blocked: write a 1-line block reason to OPERATOR-ACTION-QUEUE.md AND ScheduleWakeup cap 270s. DO NOT just end turn.",
+    "stall_signal":  "heartbeat_stale(166.4min) + focus_stuck(17 ticks) + iter_stalled(iter=2 x17 ticks)",
+    "tick_count":  34,
+    "expected_action":  "resume iteration OR write block + ScheduleWakeup OR address operator interrupt",
+    "author":  "RKOJ-ELENO :: 2026-05-25"
+}

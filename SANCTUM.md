@@ -15,7 +15,7 @@ session-start protocols.
 
 | Repo (GitHub) | Local path | What it is |
 |---|---|---|
-| **[Sinister Sanctum](https://github.com/Sinister-Systems-LLC/Sinister-Sanctum)** | `D:\Sinister Sanctum\` | THIS repo. Orchestration + 12 Sinister Bots + docs + automations + session-start. The "new library of alexandria". |
+| **[Sinister Sanctum](https://github.com/Sinister-Systems-LLC/Sinister-Sanctum)** | `D:\Sinister Sanctum\` | THIS repo. Orchestration + 13 Sinister Bots + docs + automations + session-start. The "new library of alexandria". |
 | **[Sinister Snap API EMU](https://github.com/Sinister-Systems-LLC/Sinister-Snap-API-EMU)** | `D:\Sinister\01_Projects\Sinister\Sinister-Snap-EMU\` (canonical) or `C:\Users\Zonia\Desktop\Sinister Snap EMU.API` (legacy) | Snap API client + cvd signing oracle. **Already pushed (initial commit 628163a, 1058 files).** |
 | **[Sinister TikTok EMU](https://github.com/Sinister-Systems-LLC/Sinister-TikTok-API-EMU)** | `D:\Sinister\01_Projects\Sinister\Sinister-TikTok-EMU\` (canonical) or `C:\Users\Zonia\Desktop\Sinister Tiktok EMU.API` (legacy) | TikTok API + a11y + signing pipeline. (Repo name may be `Sinister-TikTok-API-EMU` matching Snap pattern; operator confirms.) |
 | **[Sinister Panel](https://github.com/Sinister-Systems-LLC/Sinister-Panel)** (Sinister Control Center) | `D:\Sinister\01_Projects\Sinister\Sinister-Panel\source\` (canonical; note `source/` wrapper) or `C:\Users\Zonia\Desktop\Sinister-Panel` (legacy fallback, marked read-only by panel agent 2026-05-18 PM) | Live dashboard at `snap.sinijkr.com`. HEAD: `ad333ee` (Overview rail rework). |
@@ -29,7 +29,7 @@ Additional Sinister-group projects in `D:\Sinister\01_Projects\Sinister\` (opera
 
 Each product repo's `CLAUDE.md` references Sanctum's:
 
-- **Bot fleet** Ã¢â‚¬â€ 12 MCP bots (sentinel, librarian, custodian, etc.) for recall, audit, scrape, backup
+- **Bot fleet** Ã¢â‚¬â€ 13 MCP bots (sentinel, librarian, custodian, vault, etc.) for recall, audit, scrape, backup
 - **`docs/ARCHITECTURE.md`** Ã¢â‚¬â€ the 3-layer model + data flows
 - **`docs/BOT-MEMORY-PROTOCOL.md`** Ã¢â‚¬â€ how absorb()/learn/forget works
 - **`docs/MEMORY-CODEC-AND-CRYPTO.md`** Ã¢â‚¬â€ token codec + at-rest vault
@@ -45,7 +45,7 @@ share, Sanctum could ship as a git submodule into each.)
 
 **Sanctum HAS:**
 
-- `bots/agents/` Ã¢â‚¬â€ 12 Sinister Bots (junction to `D:\Sinister\Sinister Skills\12_LLM_ORCHESTRATION\agents\` on operator's machine)
+- `bots/agents/` Ã¢â‚¬â€ 13 Sinister Bots (junction to `D:\Sinister\Sinister Skills\12_LLM_ORCHESTRATION\agents\` on operator's machine)
 - `automations/` Ã¢â‚¬â€ Git toolkit, secret-scrub, migrate-projects + `hub-scripts/` junction
 - `docs/` Ã¢â‚¬â€ ARCHITECTURE, SETUP, DEPLOYMENT, AGENT-BOOTSTRAP, BOT-MEMORY-PROTOCOL, MCP-NETWORK, ALIVE-ARCHITECTURE, MEMORY-CODEC-AND-CRYPTO, DRIVE-ENCRYPTION
 - `SESSION-START/` Ã¢â‚¬â€ cold-resume anchor (mirrored to/from the hub)

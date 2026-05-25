@@ -1,8 +1,8 @@
 {
   "schema": "sinister-seraphim.cloud-budget.v1",
-  "total_seconds": 50.0,
-  "used_seconds": 60.109,
+  "total_seconds": 230.0,
+  "used_seconds": 184.9380000000002,
   "reserve_seconds": 10.0,
-  "last_update_utc": "2026-05-23T21:53:14Z",
-  "note": "Reset by operator confirmation."
+  "last_update_utc": "2026-05-24T16:01:11Z",
+  "note": "Iter 101 cap 170 -> 230 at 2026-05-24T15:56Z. Operator added sinister-os to scope (3rd lane, 10s each). Snap-emu burned 44.7s wall. Kernel-apk burned ~49s wall (153.94 - 104.80). Sinister-os run expected to burn similar ~45s. Cap 230 leaves 76s for sinister-os (covers full SWAP-test triad + 10s reserve)."
 }

@@ -1,39 +1,7 @@
 {
-    "version":  2,
-    "default":  {
-                    "agent_name":  "",
-                    "accent_color":  "purple"
-                },
-    "per_project":  {
-                        "kernel-apk":  {
-                                           "agent_name":  "kernel-apk",
-                                           "accent_color":  "purple"
-                                       },
-                        "rkoj":  {
-                                     "agent_name":  "rkoj",
-                                     "accent_color":  "purple"
-                                 },
-                        "sinister-panel":  {
-                                               "agent_name":  "sinister-panel",
-                                               "accent_color":  "purple"
-                                           },
-                        "jb-woodworks":  {
-                                             "agent_name":  "jb-woodworks",
-                                             "accent_color":  "purple"
-                                         },
-                        "letstext":  {
-                                         "agent_name":  "letstext",
-                                         "accent_color":  "cyan"
-                                     },
-                        "showmasters":  {
-                                            "agent_name":  "showmasters",
-                                            "accent_color":  "purple"
-                                        },
-                        "sanctum":  {
-                                        "agent_name":  "sanctum",
-                                        "accent_color":  "purple"
-                                    }
-                    },
+    "version":  3,
+    "_schema":  "per_user_v1",
+    "_migrated_to_per_user_at_utc":  "2026-05-25T00:46:49Z",
     "available_colors":  [
                              "purple",
                              "magenta",
@@ -42,5 +10,67 @@
                              "yellow",
                              "white",
                              "random"
-                         ]
+                         ],
+    "default":  {
+                    "agent_name":  "",
+                    "accent_color":  "purple"
+                },
+    "users":  {
+                  "ezekielromero314@gmail.com":  {
+                                                     "projects":  {
+                                                                      "jb-woodworks":  {
+                                                                                           "agent_name":  "jb-woodworks",
+                                                                                           "accent_color":  "purple"
+                                                                                       },
+                                                                      "general":  {
+                                                                                      "agent_name":  "general",
+                                                                                      "accent_color":  "purple"
+                                                                                  },
+                                                                      "letstext":  {
+                                                                                       "agent_name":  "letstext",
+                                                                                       "accent_color":  "purple"
+                                                                                   },
+                                                                      "eve-compliance":  {
+                                                                                             "agent_name":  "eve-compliance",
+                                                                                             "accent_color":  "purple"
+                                                                                         },
+                                                                      "sinister-chatbot":  {
+                                                                                               "agent_name":  "sinister-chatbot",
+                                                                                               "accent_color":  "purple"
+                                                                                           },
+                                                                      "kernel-apk":  {
+                                                                                         "agent_name":  "kernel-apk",
+                                                                                         "accent_color":  "purple"
+                                                                                     },
+                                                                      "sinister-panel":  {
+                                                                                             "agent_name":  "sinister-panel",
+                                                                                             "accent_color":  "purple"
+                                                                                         },
+                                                                      "showmasters":  {
+                                                                                          "agent_name":  "showmasters",
+                                                                                          "accent_color":  "purple"
+                                                                                      },
+                                                                      "sinister-snap-api-quantum":  {
+                                                                                                        "agent_name":  "sinister-snap-api-quantum",
+                                                                                                        "accent_color":  "purple",
+                                                                                                        "last_saved_at_utc":  "2026-05-25T01:17:07Z"
+                                                                                                    },
+                                                                      "sinister-overseer":  {
+                                                                                                "agent_name":  "sinister-overseer",
+                                                                                                "accent_color":  "purple",
+                                                                                                "last_saved_at_utc":  "2026-05-25T02:32:18Z"
+                                                                                            },
+                                                                      "sanctum":  {
+                                                                                      "agent_name":  "sanctum",
+                                                                                      "accent_color":  "purple",
+                                                                                      "last_saved_at_utc":  "2026-05-25T03:08:56Z"
+                                                                                  },
+                                                                      "sinister-os":  {
+                                                                                          "agent_name":  "sinister-os",
+                                                                                          "accent_color":  "purple",
+                                                                                          "last_saved_at_utc":  "2026-05-25T03:46:41Z"
+                                                                                      }
+                                                                  }
+                                                 }
+              }
 }

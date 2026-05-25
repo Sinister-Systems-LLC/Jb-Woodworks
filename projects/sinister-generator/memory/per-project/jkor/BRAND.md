@@ -22,20 +22,30 @@ JKOR/
 
 ## Visual identity
 
-**Hero character** (carried over from the operator's base banner):
-- Purple-skinned demon / jester hybrid
-- Small horns, small gold crown
-- Mischievous grin, expressive eyes
-- Holds a fan of playing cards in one hand
-- Holds a sorcerer's wand or staff with a star tip in the other
-- Dressed in purple-and-gold royal-jester attire (cape / collar)
-- Posed center, looking at viewer
+> **CORRECTED 2026-05-23T20:50Z** — operator clarified that the canonical look is in `C:\Users\Zonia\Desktop\primary-banner.jpg`. The earlier "purple-skinned demon w/ teeth-grin + mini-jester-head-staff" description was a misinterpretation. Authoritative canonical reference: `reference/00-PRIMARY-BANNER-canonical-*.jpg`. The `nano_banana.JKOR_STYLE` suffix is ALSO based on the misread and needs patching (see [ASK] to sanctum 2026-05-23T20:20Z).
 
-**Background** (re-spec from operator's "less loud" feedback):
-- Deep near-black base: `#0A0B1E` (matches Sinister Command Center dashboard)
-- Subtle vertical Sanctum-purple glow behind the character: `#7A3DD4` → `#4B1F8B` fading to the dark base
-- NO runic symbols, NO swirls, NO sparkles, NO magical-particle clutter
-- Premium, clean, video-game UI quality — calm, not busy
+**Hero character** (from `reference/00-PRIMARY-BANNER-canonical-*.jpg`):
+- **Pale white / porcelain mask-like face** — NOT purple skin. Almost luminous white-grey, with subtle cool/silver highlights. Smooth, theatrical-mask aesthetic.
+- **Eyes:** small, narrow, dark. Mischievous half-lidded expression. NOT large cartoon eyes; NOT bright-purple irises.
+- **Mouth:** closed-mouth smirk — subtle upward curve, playful but cool. NEVER a wide showing-teeth grin; NEVER visible teeth or fangs.
+- **Horns:** TWO LARGE PROMINENT dark-purple horns angled outward and slightly backward from the temples, clearly visible above and beside the jester hat. This is a signature feature — must NOT be obscured by the hat.
+- **Crown:** small 4-5 point gold crown sitting at the front-top of the head.
+- **Jester hat:** 3-4 pronged purple-and-silver/iridescent jester hat with prongs flopping naturally; small spherical bell or pom-pom tips.
+- **Outfit:** purple-and-gold royal-jester attire — high collar / ruff with checkered or diamond patterning, gold trim, small heart-shaped gold pendant on the chest.
+- **Hands:** WHITE GLOVES.
+- **Held items:**
+  - LEFT hand: magical **STAFF** with a glowing purple/cyan **HEART-SHAPED gem** on top (faceted, gradient-purple, slightly luminous). NOT a mini-jester-head bell. NOT a star.
+  - RIGHT hand: fan of 3-5 magical playing cards — **card BACKS face the viewer** with swirling cyan-purple-magenta magic patterns (NOT plain card faces with suits).
+- **Pose:** 3/4 turn body angled toward viewer; mischievous half-lidded glance at the camera.
+
+**Background** (from `primary-banner.jpg`):
+- Vibrant magic-runic-circle energy — NOT calm, NOT minimal.
+- Glowing PURPLE-AND-CYAN runic circle behind the character, with rune marks in pink-magenta neon.
+- Paisley / cosmic / nebula patterns in deep purple-magenta with magic sparkles and small star points.
+- Bright pink-purple neon highlights on a deep purple-violet base.
+- Optional cyan-magenta neon border for surfaces that need a clean edge.
+
+> **Earlier "calm, not busy" background spec is deprecated** (was based on the misread that JKOR matched the Sinister Command Center dashboard palette). Canonical JKOR background is vibrant + magical, not minimal.
 
 **Palette** (locked to match Sinister Command Center):
 | Role | Hex |
@@ -80,8 +90,8 @@ The `--brand jkor` flag auto-appends the locked style suffix. `--ref` style-tran
 ### From Python
 
 ```python
-from nano_banana import jkor_image
-result = jkor_image(
+from nano_banana import jokr_image
+result = jokr_image(
     prompt="The demon-jester throwing a card mid-air, motion blur on the card",
     output_path="generated/card-throw.png",
     ref_images=["reference/00-base-banner-original.png"],

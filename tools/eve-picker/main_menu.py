@@ -516,12 +516,26 @@ def _accounts_inline_lines() -> list[str]:
         else:
             status_tag = f"{WARN}ON UNLINKED{RESET}"
 
-        # Usage column -- NEVER show a fake percent. Three cases:
-        # 1) default + live probe ok: show [MEASURED] + headers-ok hint
-        # 2) unlinked: "not logged in"
-        # 3) other: raw spawns_today + "(no probe)"
+        # Usage column -- NEVER show a fake percent. Cases (probe-first):
+        # 1) default + probe ok: show REAL "5h 76%  7d 80% [MEASURED]"
+        # 2) probe failed: "probe: refresh needed" or other status
+        # 3) unlinked + no probe: "not logged in"
+        # 4) fallback: raw spawns_today + "(no probe)"
         if is_default and live and live.get("status") == "ok":
-            usage_str = f"{OK}[MEASURED]{RESET} {DIM}headers ok{RESET}"
+            sess = live.get("session") or {}
+            wk = live.get("weekly_all") or {}
+            p5 = sess.get("pct")
+            p7 = wk.get("pct")
+            parts = []
+            if isinstance(p5, (int, float)):
+                parts.append(f"{WHITE}5h {int(p5)}%{RESET}")
+            if isinstance(p7, (int, float)):
+                parts.append(f"{DIM}7d {int(p7)}%{RESET}")
+            measured_tag = f" {OK}[MEASURED]{RESET}" if parts else f" {OK}[MEASURED]{RESET} {DIM}headers ok{RESET}"
+            usage_str = ("  ".join(parts) + measured_tag) if parts else measured_tag.lstrip()
+        elif is_default and live and str(live.get("status", "")).startswith("probe-failed"):
+            why = "refresh needed" if live.get("refresh_needed") else live.get("status")
+            usage_str = f"{WARN}[probe: {why}]{RESET} {DIM}spawns {today} today{RESET}"
         elif not linked:
             usage_str = f"{DIM}not logged in{RESET}"
         else:
@@ -912,9 +926,12 @@ def _read_choice_animated(highlight: int) -> tuple[Optional[str], int]:
     except ImportError:
         return _read_choice(highlight)
 
-    # Live-animation mode is DEFAULT (operator hard-canonical 2026-05-25T01:36Z).
-    # Set EVE_LIVE_ANIM=0 to opt-out and fall back to render-on-event.
-    if os.environ.get("EVE_LIVE_ANIM", "1") != "0":
+    # RKOJ-ELENO :: 2026-05-25T02:30Z :: operator P0 "i cannot scroll and select things"
+    # + "it wont close". Live-anim 5fps polling DROPPED keystrokes (msvcrt.kbhit + partial
+    # redraw race) AND blocked Ctrl-C handler. Flipped default OFF: render-on-event blocking
+    # msvcrt.getwch() never misses keystrokes and propagates Ctrl-C cleanly. Live mode is
+    # opt-in via EVE_LIVE_ANIM=1 for operators who can tolerate the input lag.
+    if os.environ.get("EVE_LIVE_ANIM", "0") == "1":
         return _read_choice_animated_live(highlight)
 
     # Render-on-event: paint once, then BLOCK on next keystroke.

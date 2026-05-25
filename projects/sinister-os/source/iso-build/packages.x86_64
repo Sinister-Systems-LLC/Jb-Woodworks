@@ -30,6 +30,11 @@ iwd
 wpa_supplicant
 openssh
 dhcpcd
+network-manager-applet         # Added 2026-05-24 (RKOJ-ELENO): nm-applet tray icon
+bluez                          # Added 2026-05-24 (RKOJ-ELENO): bluetooth daemon
+bluez-utils                    # Added 2026-05-24 (RKOJ-ELENO): bluetoothctl + helpers
+blueman                        # Added 2026-05-24 (RKOJ-ELENO): GUI bluetooth manager
+tailscale                      # Added 2026-05-24 (RKOJ-ELENO): mesh VPN — native systemd unit + sinister.conf drop-in for M5 mesh-native path; see iso-build/MESH-NATIVE.md
 
 # --- filesystem ---
 btrfs-progs
@@ -66,10 +71,15 @@ hyprlock
 hypridle
 hyprpicker
 xdg-desktop-portal-hyprland
+xdg-desktop-portal             # Added 2026-05-24 (RKOJ-ELENO): umbrella portal package (xdg-desktop-portal-hyprland is the impl)
 waybar
 wofi
 swaybg
 mako
+kitty                          # Added 2026-05-24 (RKOJ-ELENO): hyprland.conf binds Super+Q to kitty fallback chain
+foot                           # Added 2026-05-24 (RKOJ-ELENO): wayland-native terminal, secondary fallback
+qt5-wayland                    # Added 2026-05-24 (RKOJ-ELENO): hyprland.conf sets QT_QPA_PLATFORM=wayland; Qt5 plugin
+qt6-wayland                    # Added 2026-05-24 (RKOJ-ELENO): same as qt5-wayland for Qt6 apps
 
 # --- audio ---
 pipewire
@@ -77,6 +87,8 @@ pipewire-pulse
 pipewire-alsa
 pipewire-jack
 wireplumber
+pavucontrol                    # Added 2026-05-24 (RKOJ-ELENO): GUI audio mixer
+alsa-utils                     # Added 2026-05-24 (RKOJ-ELENO): alsamixer + diagnostics
 
 # --- session manager (greeter) ---
 greetd
@@ -95,6 +107,7 @@ python-pipx
 
 # --- gaming stack (P4 will verify but ship in minimal so cold-start has it) ---
 steam
+steam-native-runtime           # Added 2026-05-24 (RKOJ-ELENO): glibc compatibility for Steam runtime
 gamemode
 lib32-gamemode
 mangohud
@@ -104,6 +117,11 @@ lib32-mesa
 vulkan-icd-loader
 lib32-vulkan-icd-loader
 vulkan-tools
+vulkan-radeon                  # Added 2026-05-24 (RKOJ-ELENO): AMD vulkan driver (hardware-agnostic live ISO)
+lib32-vulkan-radeon            # Added 2026-05-24 (RKOJ-ELENO): AMD vulkan 32-bit (Steam/Proton)
+vulkan-intel                   # Added 2026-05-24 (RKOJ-ELENO): Intel vulkan driver
+lib32-vulkan-intel             # Added 2026-05-24 (RKOJ-ELENO): Intel vulkan 32-bit
+xf86-video-amdgpu              # Added 2026-05-24 (RKOJ-ELENO): AMD X11 fallback driver
 wine-staging
 winetricks
 lutris
@@ -118,3 +136,9 @@ ddrescue
 firefox
 mpv
 imv
+
+# --- communications + recording (operator-requested, NON-FOSS where noted) ---
+discord                        # Added 2026-05-24 (RKOJ-ELENO): operator-requested comms (NON-FOSS, see docs/proprietary-blobs.md)
+telegram-desktop               # Added 2026-05-24 (RKOJ-ELENO): operator-requested comms
+spotify-launcher               # Added 2026-05-24 (RKOJ-ELENO): operator-requested music (launcher FOSS, client NON-FOSS)
+obs-studio                     # Added 2026-05-24 (RKOJ-ELENO): operator-requested screen recording

@@ -1,0 +1,15 @@
+{
+    "ts_utc":  "2026-05-25T01:13:47Z",
+    "_author":  "RKOJ-ELENO :: 2026-05-25",
+    "to":  "sanctum",
+    "subject":  "Fleet-update fan-out: doctrine_update priority=normal",
+    "message":  "BRAIN updated: quantum-memory-kernel-fleet-action-items-2026-05-23 - Quantum-memory-kernel fleet action items (operator-directed)",
+    "rationale":  "Overseer auto-distributed because this fleet-update either targeted you OR mentioned your lane slug. Review + ack if actionable.",
+    "source_id":  "fu-20260524210641-bcdb30",
+    "source_ts_utc":  "2026-05-25T01:06:41Z",
+    "from":  "overseer",
+    "source_priority":  "normal",
+    "tag":  "[OVERSEER-DISTRIBUTE]",
+    "source_pushed_by":  "sanctum",
+    "source_kind":  "doctrine_update"
+}

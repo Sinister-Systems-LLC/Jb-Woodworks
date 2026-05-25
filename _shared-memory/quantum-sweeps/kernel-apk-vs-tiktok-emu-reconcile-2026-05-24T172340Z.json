@@ -1,0 +1,242 @@
+{
+  "schema": "sinister-seraphim.reconcile-corpora.v1",
+  "label": "kernel-apk-vs-tiktok-emu",
+  "corpus_a_root": "D:/Sinister Sanctum/projects/sinister-kernel-apk",
+  "corpus_b_root": "D:/Sinister Sanctum/projects/sinister-tiktok-emu",
+  "n_corpus_a": 596,
+  "n_corpus_b": 440,
+  "cl_threshold": 0.3,
+  "sim_threshold": 0.5,
+  "total_pairs": 262240,
+  "reconciliation_candidates_count": 1032,
+  "top_reconciliation_candidates": [
+    {
+      "rank": 1,
+      "classical": 0.9991230435372962,
+      "sim": 0.999999999999998,
+      "combined": 1.9991230435372942,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/docs/PANEL-PUSH-LEGACY.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/md-archive/from-md-archives/PUSHING-ACCOUNTS.md"
+    },
+    {
+      "rank": 2,
+      "classical": 0.9991230435372962,
+      "sim": 0.999999999999998,
+      "combined": 1.9991230435372942,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/docs/PANEL-PUSH-LEGACY.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/md-archive/from-md-archives/PUSHING-ACCOUNTS.md"
+    },
+    {
+      "rank": 3,
+      "classical": 0.9987885829723792,
+      "sim": 0.9999999999999984,
+      "combined": 1.9987885829723777,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/docs/RKA-MIGRATION.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/md-archive/from-library-of-alexandria/RKA-MIGRATION.md"
+    },
+    {
+      "rank": 4,
+      "classical": 0.9987885829723792,
+      "sim": 0.9999999999999984,
+      "combined": 1.9987885829723777,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/docs/RKA-MIGRATION.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/md-archive/from-library-of-alexandria/RKA-MIGRATION.md"
+    },
+    {
+      "rank": 5,
+      "classical": 0.9943853332203039,
+      "sim": 0.9999999999999987,
+      "combined": 1.9943853332203025,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/docs/RKA-SERVER-JAVA.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/rka/server-java/README.md"
+    },
+    {
+      "rank": 6,
+      "classical": 0.9943853332203039,
+      "sim": 0.9999999999999987,
+      "combined": 1.9943853332203025,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/docs/RKA-SERVER-JAVA.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/rka/server-java/README.md"
+    },
+    {
+      "rank": 7,
+      "classical": 0.8398539482043934,
+      "sim": 0.9189750125060581,
+      "combined": 1.7588289607104515,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/eleno/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/eleno/README.md"
+    },
+    {
+      "rank": 8,
+      "classical": 0.8111280254653517,
+      "sim": 0.7749963380213286,
+      "combined": 1.5861243634866802,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/me/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/eleno/README.md"
+    },
+    {
+      "rank": 9,
+      "classical": 0.6164813848133573,
+      "sim": 0.958009243273669,
+      "combined": 1.5744906280870263,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/Brain/SANDBOX-BYPASS.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/docs/SANDBOX-BYPASS-PROTOCOL.md"
+    },
+    {
+      "rank": 10,
+      "classical": 0.6164813848133573,
+      "sim": 0.958009243273669,
+      "combined": 1.5744906280870263,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/Brain/SANDBOX-BYPASS.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/docs/SANDBOX-BYPASS-PROTOCOL.md"
+    },
+    {
+      "rank": 11,
+      "classical": 0.5913749002501658,
+      "sim": 0.9694632583488194,
+      "combined": 1.5608381585989852,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/CHANGELOG.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/living-mds/DECISIONS.md"
+    },
+    {
+      "rank": 12,
+      "classical": 0.5950547952987275,
+      "sim": 0.956932574683205,
+      "combined": 1.5519873699819327,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/Brain/SANDBOX-BYPASS.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/.claude/worktrees/agent-ad9a44d5baacf8941/docs/SANDBOX-BYPASS-PROTOCOL.md"
+    },
+    {
+      "rank": 13,
+      "classical": 0.5749211512552794,
+      "sim": 0.9603640207184668,
+      "combined": 1.5352851719737464,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/CHANGELOG.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/living-mds/DECISIONS.md"
+    },
+    {
+      "rank": 14,
+      "classical": 0.5441780708679178,
+      "sim": 0.9671454252774985,
+      "combined": 1.5113234961454163,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Rooting Guide/MD Files/ERRORS.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/living-mds/DECISIONS.md"
+    },
+    {
+      "rank": 15,
+      "classical": 0.5522913951951088,
+      "sim": 0.9588690627906534,
+      "combined": 1.5111604579857623,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Rooting Guide/MD Files/ERRORS.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/living-mds/DECISIONS.md"
+    }
+  ],
+  "top_highest_classical": [
+    {
+      "rank": 1,
+      "classical": 0.9991230435372962,
+      "sim": 0.999999999999998,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/docs/PANEL-PUSH-LEGACY.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/md-archive/from-md-archives/PUSHING-ACCOUNTS.md"
+    },
+    {
+      "rank": 2,
+      "classical": 0.9991230435372962,
+      "sim": 0.999999999999998,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/docs/PANEL-PUSH-LEGACY.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/md-archive/from-md-archives/PUSHING-ACCOUNTS.md"
+    },
+    {
+      "rank": 3,
+      "classical": 0.9987885829723792,
+      "sim": 0.9999999999999984,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/docs/RKA-MIGRATION.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/md-archive/from-library-of-alexandria/RKA-MIGRATION.md"
+    },
+    {
+      "rank": 4,
+      "classical": 0.9987885829723792,
+      "sim": 0.9999999999999984,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/docs/RKA-MIGRATION.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/md-archive/from-library-of-alexandria/RKA-MIGRATION.md"
+    },
+    {
+      "rank": 5,
+      "classical": 0.9943853332203039,
+      "sim": 0.9999999999999987,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/docs/RKA-SERVER-JAVA.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/rka/server-java/README.md"
+    },
+    {
+      "rank": 6,
+      "classical": 0.9943853332203039,
+      "sim": 0.9999999999999987,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/docs/RKA-SERVER-JAVA.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/rka/server-java/README.md"
+    },
+    {
+      "rank": 7,
+      "classical": 0.8398539482043934,
+      "sim": 0.9189750125060581,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/eleno/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/eleno/README.md"
+    },
+    {
+      "rank": 8,
+      "classical": 0.8146309151068698,
+      "sim": 0.4169115866729085,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/eleno/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/me/README.md"
+    },
+    {
+      "rank": 9,
+      "classical": 0.8121675302278504,
+      "sim": 0.6931060044486962,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/me/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/me/README.md"
+    },
+    {
+      "rank": 10,
+      "classical": 0.8111280254653517,
+      "sim": 0.7749963380213286,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/me/README.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/eleno/README.md"
+    },
+    {
+      "rank": 11,
+      "classical": 0.6164813848133573,
+      "sim": 0.958009243273669,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/Brain/SANDBOX-BYPASS.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/docs/SANDBOX-BYPASS-PROTOCOL.md"
+    },
+    {
+      "rank": 12,
+      "classical": 0.6164813848133573,
+      "sim": 0.958009243273669,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/Brain/SANDBOX-BYPASS.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/docs/SANDBOX-BYPASS-PROTOCOL.md"
+    },
+    {
+      "rank": 13,
+      "classical": 0.5950547952987275,
+      "sim": 0.956932574683205,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/Brain/SANDBOX-BYPASS.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/.claude/worktrees/agent-ad9a44d5baacf8941/docs/SANDBOX-BYPASS-PROTOCOL.md"
+    },
+    {
+      "rank": 14,
+      "classical": 0.5913749002501658,
+      "sim": 0.9694632583488194,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/CHANGELOG.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/source/living-mds/DECISIONS.md"
+    },
+    {
+      "rank": 15,
+      "classical": 0.580750789475452,
+      "sim": 0.523059976299231,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-kernel-apk/source/source/Sinister-Detector/docs/RKA-MIGRATION.md",
+      "doc_b": "D:/Sinister Sanctum/projects/sinister-tiktok-emu/md-archive/from-library-of-alexandria/TEAMMATE-RKA-SETUP.md"
+    }
+  ],
+  "wall_seconds": 407.7830035686493
+}

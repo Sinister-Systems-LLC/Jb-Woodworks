@@ -1,0 +1,49 @@
+# Author: RKOJ-ELENO :: 2026-05-24
+# Sinister Overseer .gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.installed.cfg
+*.egg
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Virtual envs
+.venv/
+venv/
+env/
+ENV/
+
+# Lessons DB (per-machine; never commit)
+lessons.db
+lessons.db-journal
+lessons.db-wal
+lessons.db-shm
+
+# Snapshots from reversibility plans
+snapshots/
+failure-archives/
+
+# Secrets
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini

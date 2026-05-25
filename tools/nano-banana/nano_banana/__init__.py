@@ -7,15 +7,17 @@ from .api import (
     generate,
     jbw_image,
     jkor_image,
+    jokr_image,
     smpl_image,
 )
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 __all__ = [
     "DEFAULT_MODEL",
     "GenerationResult",
     "generate",
     "jbw_image",
     "jkor_image",
+    "jokr_image",
     "smpl_image",
 ]

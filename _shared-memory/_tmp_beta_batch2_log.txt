@@ -1,0 +1,5 @@
+BATCH=iter21-batch2 MSG=/tmp/commit-msg-iter21-batch2.txt PATHS=_shared-memory/cross-agent/ _shared-memory/inbox/ _shared-memory/OPERATOR-ACTION-QUEUE.md _shared-memory/fleet-updates.jsonl
+attempt=1 lock-held age=313.3406039s waiting 15s
+attempt=1 removing-orphan-lock
+COMMITTED iter21-batch2: [agent/sinister-os/iter15-doctrine-adopt-2026-05-25 2a3be82] sanctum-helper-beta: stage cross-agent + inbox + queue + fleet-updates (iter21-batch2)
+push-failed rc=1: remote: error: Trace: 4d49cc83e91e39bf0f9116ed70344314f7ed9cc43aa41c6da9659284638e53e0        

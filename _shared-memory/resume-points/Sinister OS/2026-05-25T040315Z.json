@@ -1,0 +1,44 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-25T04:03:26.4166503Z",
+    "project":  "sinister-os",
+    "agent_name":  "sinister-os",
+    "mode":  "resume",
+    "focus_intent":  "",
+    "git":  {
+                "branch":  "agent/sinister-os/iter15-doctrine-adopt-2026-05-25",
+                "head":  "1c6e7b65fe57f25d39f5f3f4459b99a0f49b408d",
+                "head_msg":  "sinister-os (sanctum-promoted) iter-17: EVE.exe arrow-key uniform nav (project picker) + render_picker cursor",
+                "recent_commits":  [
+                                       "1c6e7b6 sinister-os (sanctum-promoted) iter-17: EVE.exe arrow-key uniform nav (project picker) + render_picker cursor",
+                                       "8392fb1 sinister-os iter-16: operator-interrupt pivot ΓÇö freeze-triage + Sinister Sync doctrine (L1-L6) + visible-PS reinforcement",
+                                       "2a3be82 sanctum-helper-beta: stage cross-agent + inbox + queue + fleet-updates (iter21-batch2)",
+                                       "be9d3ab sanctum: brain auto-annotate + per-agent branch push fan-out + doctrine",
+                                       "07f4519 sanctum-helper-beta: stage docs + brain + PROGRESS + resume-points (iter21-batch1)",
+                                       "94fde87 sanctum-helper-gamma: Leo handoff READY-WITH-CAVEATS audit + GitHub coverage verify + fresh-clone simulation",
+                                       "3fc0d22 sanctum: sinister-headless.ps1 v2 arg-quoting fix + sinister-OS pickup inbox",
+                                       "50edd10 sanctum: Leo auto-setup v3 ΓÇö MCP + Docker + bots + autonomy + scheduled tasks",
+                                       "bfffdb1 sanctum: stop visible PS popups + EVE.exe cross-page nav + os._exit + jcode audit + status_line.py",
+                                       "761d06b sinister-os: panel-shell healthcheck accepts Next.js 307 redirect"
+                                   ]
+            },
+    "progress_top3":  [
+
+                      ],
+    "latest_plan":  {
+                        "dir":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\sinister-os-massive-expansion-2026-05-24T2110Z",
+                        "artifact":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\sinister-os-massive-expansion-2026-05-24T2110Z\\plan.md"
+                    },
+    "inbox_unread_count":  0,
+    "last_5_files_touched_24h":  [
+                                     "_shared-memory\\loop-watchdog-state.json",
+                                     "_shared-memory\\tool-autotrigger-state.json",
+                                     "_shared-memory\\claude-accounts.log",
+                                     "_shared-memory\\inbox\\sinister-chatbot\\2026-05-25T0403Z-from-loop-watchdog-poke.json",
+                                     "_shared-memory\\inbox\\link-ingest\\link-ingest-log.jsonl"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\plans\\sinister-os-massive-expansion-2026-05-24T2110Z\\plan.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}

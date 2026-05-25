@@ -1,4 +1,5 @@
 // Author: RKOJ-ELENO :: 2026-05-23
+import Image from "next/image";
 import Link from "next/link";
 import { SITE } from "@/lib/site";
 
@@ -9,12 +10,16 @@ export function Footer() {
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold-dim to-transparent" />
       <div className="max-w-site mx-auto px-7 grid gap-9 sm:grid-cols-2 lg:grid-cols-5">
         <div className="lg:col-span-2">
-          <Link href="/" className="flex items-center gap-3">
-            <span className="font-sans text-[1.2rem] font-black tracking-[0.16em] text-white leading-none">
-              JB<span className="block text-[0.5rem] tracking-[0.42em] text-gold font-bold mt-1">WOODWORKS</span>
-            </span>
+          <Link href="/" className="inline-flex items-start group" aria-label={`${SITE.name} home`}>
+            <Image
+              src="/img/branding/jbw-wordmark-stacked.png"
+              alt={`${SITE.name} - Construction & Fabrication`}
+              width={971}
+              height={733}
+              className="h-24 w-auto transition-opacity duration-200 group-hover:opacity-90"
+            />
           </Link>
-          <p className="mt-4 italic font-display text-[0.95rem] text-cream-50">{SITE.tagline}</p>
+          <p className="mt-5 italic font-display text-[0.95rem] text-cream-50">{SITE.tagline}</p>
           <p className="mt-2 text-[0.85rem] text-cream-30">Serving {SITE.serviceArea}.</p>
           <p className="mt-3 text-[0.78rem] leading-relaxed">
             <a href={`tel:${SITE.phoneTel}`} className="hover:text-gold transition-colors">{SITE.phone}</a><br />
@@ -54,7 +59,7 @@ export function Footer() {
       </div>
 
       <div className="mt-10 pt-5 mx-auto max-w-site px-7 border-t border-line text-center text-[0.78rem] text-cream-30">
-        (C) {year} {SITE.name}. Licensed and insured. Built in Orlando, FL.
+        (C) {year} {SITE.name}. Built in Orlando, FL.
       </div>
     </footer>
   );

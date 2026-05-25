@@ -1,14 +1,47 @@
 // Author: RKOJ-ELENO :: 2026-05-23
 "use client";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 import { type PortfolioItem, categorySlug, portfolioCategories } from "@/lib/content";
 import { PortfolioCard } from "./portfolio-card";
 import { cn } from "@/lib/utils";
 
-export function PortfolioFilter({ items }: { items: PortfolioItem[] }) {
+export function PortfolioFilter({
+  items,
+  initialFilter = "all"
+}: {
+  items: PortfolioItem[];
+  initialFilter?: string;
+}) {
   const cats = useMemo(() => portfolioCategories(), []);
-  const [filter, setFilter] = useState<string>("all");
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const validSlugs = useMemo(
+    () => new Set(["all", ...cats.map((c) => categorySlug(c))]),
+    [cats]
+  );
+  const [filter, setFilter] = useState<string>(
+    validSlugs.has(initialFilter) ? initialFilter : "all"
+  );
+
+  // Keep state in sync with the URL when the user nav's via back/forward or
+  // when a service-card link drops them on /portfolio?category=docks.
+  useEffect(() => {
+    const fromUrl = searchParams.get("category") ?? "all";
+    const next = validSlugs.has(fromUrl) ? fromUrl : "all";
+    setFilter((prev) => (prev === next ? prev : next));
+  }, [searchParams, validSlugs]);
+
+  const selectFilter = (id: string) => {
+    setFilter(id);
+    // Persist in URL so the filter is shareable + back-button safe.
+    const params = new URLSearchParams(searchParams.toString());
+    if (id === "all") params.delete("category"); else params.set("category", id);
+    const qs = params.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  };
 
   const chips = [
     { id: "all", label: "All", count: items.length },
@@ -26,7 +59,7 @@ export function PortfolioFilter({ items }: { items: PortfolioItem[] }) {
       <div
         role="tablist"
         aria-label="Filter portfolio by project type"
-        className="flex flex-wrap gap-2 mb-9 p-2 bg-ink-3 border border-line rounded-full max-w-max"
+        className="flex flex-wrap justify-center gap-2 mb-9 p-2 bg-ink-3 border border-line rounded-full max-w-max mx-auto"
       >
         {chips.map((chip) => {
           const active = filter === chip.id;
@@ -36,7 +69,7 @@ export function PortfolioFilter({ items }: { items: PortfolioItem[] }) {
               type="button"
               role="tab"
               aria-selected={active}
-              onClick={() => setFilter(chip.id)}
+              onClick={() => selectFilter(chip.id)}
               className={cn(
                 "relative inline-flex items-center gap-2.5 px-4 py-2.5 rounded-full text-[0.78rem] font-semibold tracking-wide uppercase transition-colors duration-200",
                 active ? "text-ink" : "text-cream-50 hover:text-white"
@@ -61,7 +94,7 @@ export function PortfolioFilter({ items }: { items: PortfolioItem[] }) {
 
       <motion.div
         layout
-        className="grid gap-6 [grid-template-columns:repeat(auto-fit,minmax(320px,1fr))]"
+        className="grid gap-6 justify-center [grid-template-columns:repeat(auto-fill,minmax(320px,420px))]"
       >
         <AnimatePresence mode="popLayout">
           {visible.map((item, i) => (

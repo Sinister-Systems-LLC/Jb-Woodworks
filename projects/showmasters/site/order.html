@@ -26,10 +26,30 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "url": "https://www.showmasters.com/order.html",
+    "name": "Place a Crew Order — Show Masters Production Logistics",
+    "description": "Place a crew order for an upcoming live event. Send role, headcount, dates, venue, and call times — we confirm within one business day.",
+    "potentialAction": {
+      "@type": "ReserveAction",
+      "name": "Request crew quote",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://www.showmasters.com/order.html",
+        "actionPlatform": ["https://schema.org/DesktopWebPlatform", "https://schema.org/MobileWebPlatform"]
+      },
+      "result": { "@type": "Reservation", "reservationStatus": "https://schema.org/ReservationPending" }
+    }
+  }
+  </script>
 </head>
 <body>
 
-  <nav id="navbar" class="scrolled">
+    <a class="skip-link" href="#main">Skip to main content</a>
+<nav id="navbar" class="scrolled">
     <div class="nav-inner">
       <a href="/" class="nav-logo"><img src="public/img/logo-monogram.svg" alt="Show Masters" /></a>
       <ul class="nav-links">
@@ -59,6 +79,8 @@
     </ul>
   </div>
 
+  <main id="main">
+
   <!-- Call-sheet header — styled like an actual production call-sheet -->
   <section class="callsheet">
     <div class="container">
@@ -71,8 +93,7 @@
           <div><span class="cs-k">DATE</span><span class="cs-v" id="csDate">—</span></div>
           <div><span class="cs-k">FORM REV</span><span class="cs-v">2026.05</span></div>
           <div><span class="cs-k">RESPONSE SLA</span><span class="cs-v">SAME DAY</span></div>
-        </div>
-      </div>
+        </div></div>
       <h1 class="callsheet-title">CREW ORDER<br/><em>Drop the brief.</em></h1>
       <p class="callsheet-sub">Same-day reply from our Fort Worth HQ or Orlando hub. Workers' comp, GL insurance, and payroll taxes are baked into every rate you see on the estimate.</p>
 
@@ -171,16 +192,16 @@
               <span>Notes</span>
             </header>
             <!-- Each row: role label + count + hours + notes -->
-            <div class="cs-row"><label class="cs-role">Stagehand</label><input type="number" min="0" name="cnt_stagehand" placeholder="0"/><input type="number" min="0" name="hrs_stagehand" placeholder="0"/><input type="text" name="note_stagehand" placeholder="audio / lighting / video / scenic"/></div>
-            <div class="cs-row"><label class="cs-role">Rigger</label><input type="number" min="0" name="cnt_rigger" placeholder="0"/><input type="number" min="0" name="hrs_rigger" placeholder="0"/><input type="text" name="note_rigger" placeholder="up-rigger / beam / ground"/></div>
-            <div class="cs-row"><label class="cs-role">Technician</label><input type="number" min="0" name="cnt_tech" placeholder="0"/><input type="number" min="0" name="hrs_tech" placeholder="0"/><input type="text" name="note_tech" placeholder="audio / lighting / video / virtual"/></div>
-            <div class="cs-row"><label class="cs-role">Camera op</label><input type="number" min="0" name="cnt_cam" placeholder="0"/><input type="number" min="0" name="hrs_cam" placeholder="0"/><input type="text" name="note_cam" placeholder="hand-held / jib / IMAG"/></div>
-            <div class="cs-row"><label class="cs-role">Spotlight op</label><input type="number" min="0" name="cnt_spot" placeholder="0"/><input type="number" min="0" name="hrs_spot" placeholder="0"/><input type="text" name="note_spot" placeholder="follow / corner / FOH"/></div>
-            <div class="cs-row"><label class="cs-role">Lift / Forklift op</label><input type="number" min="0" name="cnt_lift" placeholder="0"/><input type="number" min="0" name="hrs_lift" placeholder="0"/><input type="text" name="note_lift" placeholder="boom / scissor / forklift"/></div>
-            <div class="cs-row"><label class="cs-role">Crew Lead</label><input type="number" min="0" name="cnt_lead" placeholder="0"/><input type="number" min="0" name="hrs_lead" placeholder="0"/><input type="text" name="note_lead" placeholder="one per shift recommended"/></div>
-            <div class="cs-row"><label class="cs-role">Stage Manager</label><input type="number" min="0" name="cnt_sm" placeholder="0"/><input type="number" min="0" name="hrs_sm" placeholder="0"/><input type="text" name="note_sm" placeholder="cue calling / run of show"/></div>
-            <div class="cs-row"><label class="cs-role">Tech Director</label><input type="number" min="0" name="cnt_td" placeholder="0"/><input type="number" min="0" name="hrs_td" placeholder="0"/><input type="text" name="note_td" placeholder="full or assisted PM"/></div>
-            <div class="cs-row"><label class="cs-role">Warehouse</label><input type="number" min="0" name="cnt_wh" placeholder="0"/><input type="number" min="0" name="hrs_wh" placeholder="0"/><input type="text" name="note_wh" placeholder="local truck-pack support"/></div>
+            <div class="cs-row"><label class="cs-role">Stagehand</label><input type="number" min="0" name="cnt_stagehand" aria-label="Stagehand count" placeholder="0"/><input type="number" min="0" name="hrs_stagehand" aria-label="Stagehand hours" placeholder="0"/><input type="text" name="note_stagehand" aria-label="Stagehand notes" placeholder="audio / lighting / video / scenic"/></div>
+            <div class="cs-row"><label class="cs-role">Rigger</label><input type="number" min="0" name="cnt_rigger" aria-label="Rigger count" placeholder="0"/><input type="number" min="0" name="hrs_rigger" aria-label="Rigger hours" placeholder="0"/><input type="text" name="note_rigger" aria-label="Rigger notes" placeholder="up-rigger / beam / ground"/></div>
+            <div class="cs-row"><label class="cs-role">Technician</label><input type="number" min="0" name="cnt_tech" aria-label="Technician count" placeholder="0"/><input type="number" min="0" name="hrs_tech" aria-label="Technician hours" placeholder="0"/><input type="text" name="note_tech" aria-label="Technician notes" placeholder="audio / lighting / video / virtual"/></div>
+            <div class="cs-row"><label class="cs-role">Camera op</label><input type="number" min="0" name="cnt_cam" aria-label="Camera operator count" placeholder="0"/><input type="number" min="0" name="hrs_cam" aria-label="Camera operator hours" placeholder="0"/><input type="text" name="note_cam" aria-label="Camera operator notes" placeholder="hand-held / jib / IMAG"/></div>
+            <div class="cs-row"><label class="cs-role">Spotlight op</label><input type="number" min="0" name="cnt_spot" aria-label="Spotlight operator count" placeholder="0"/><input type="number" min="0" name="hrs_spot" aria-label="Spotlight operator hours" placeholder="0"/><input type="text" name="note_spot" aria-label="Spotlight operator notes" placeholder="follow / corner / FOH"/></div>
+            <div class="cs-row"><label class="cs-role">Lift / Forklift op</label><input type="number" min="0" name="cnt_lift" aria-label="Lift operator count" placeholder="0"/><input type="number" min="0" name="hrs_lift" aria-label="Lift operator hours" placeholder="0"/><input type="text" name="note_lift" aria-label="Lift operator notes" placeholder="boom / scissor / forklift"/></div>
+            <div class="cs-row"><label class="cs-role">Crew Lead</label><input type="number" min="0" name="cnt_lead" aria-label="Crew Lead count" placeholder="0"/><input type="number" min="0" name="hrs_lead" aria-label="Crew Lead hours" placeholder="0"/><input type="text" name="note_lead" aria-label="Crew Lead notes" placeholder="one per shift recommended"/></div>
+            <div class="cs-row"><label class="cs-role">Stage Manager</label><input type="number" min="0" name="cnt_sm" aria-label="Stage Manager count" placeholder="0"/><input type="number" min="0" name="hrs_sm" aria-label="Stage Manager hours" placeholder="0"/><input type="text" name="note_sm" aria-label="Stage Manager notes" placeholder="cue calling / run of show"/></div>
+            <div class="cs-row"><label class="cs-role">Tech Director</label><input type="number" min="0" name="cnt_td" aria-label="Technical Director count" placeholder="0"/><input type="number" min="0" name="hrs_td" aria-label="Technical Director hours" placeholder="0"/><input type="text" name="note_td" aria-label="Technical Director notes" placeholder="full or assisted PM"/></div>
+            <div class="cs-row"><label class="cs-role">Warehouse</label><input type="number" min="0" name="cnt_wh" aria-label="Warehouse Crew count" placeholder="0"/><input type="number" min="0" name="hrs_wh" aria-label="Warehouse Crew hours" placeholder="0"/><input type="text" name="note_wh" aria-label="Warehouse Crew notes" placeholder="local truck-pack support"/></div>
           </div>
         </fieldset>
 
@@ -216,6 +237,7 @@
       </form>
     </div>
   </section>
+  </main>
 
   <footer class="site-footer">
     <div class="container">

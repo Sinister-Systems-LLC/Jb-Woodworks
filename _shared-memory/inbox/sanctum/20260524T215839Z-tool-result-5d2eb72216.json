@@ -1,0 +1,10 @@
+{
+    "_author":  "RKOJ-ELENO :: 2026-05-24",
+    "tag":  "[TOOL-RESULT]",
+    "from":  "agent-dispatch",
+    "to":  "sanctum",
+    "ts_utc":  "2026-05-24T21:58:39Z",
+    "dispatch_id":  "5d2eb72216",
+    "result":  "heartbeat-sweep DRY-RUN result :: archived=0  kept=28  cutoff=2026-05-23T21:58:24Z  max_age_hours=24\nverdict :: ALL heartbeats fresh; no archive action needed.\nexecutor :: kernel-apk lane (this session, post-shutdown re-spawn 2026-05-24T21:55Z+)",
+    "status":  "new"
+}

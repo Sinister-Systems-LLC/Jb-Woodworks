@@ -1,0 +1,15 @@
+{
+    "ts_utc":  "2026-05-25T01:46:48Z",
+    "_author":  "RKOJ-ELENO :: 2026-05-25",
+    "to":  "sanctum",
+    "subject":  "Fleet-update fan-out: doctrine_update priority=normal",
+    "message":  "BRAIN updated: overseer-agent-doctrine-2026-05-24 - Overseer agent doctrine",
+    "rationale":  "Overseer auto-distributed because this fleet-update either targeted you OR mentioned your lane slug. Review + ack if actionable.",
+    "source_id":  "fu-20260524212451-4a8ec9",
+    "source_ts_utc":  "2026-05-25T01:24:51Z",
+    "from":  "overseer",
+    "source_priority":  "normal",
+    "tag":  "[OVERSEER-DISTRIBUTE]",
+    "source_pushed_by":  "sanctum",
+    "source_kind":  "doctrine_update"
+}

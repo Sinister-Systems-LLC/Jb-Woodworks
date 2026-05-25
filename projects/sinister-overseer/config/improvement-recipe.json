@@ -1,0 +1,190 @@
+{
+  "_author": "RKOJ-ELENO :: 2026-05-24",
+  "_doc": "Per-project improvement recipes consumed by src/overseer/triage.py + sensors/analyzer.py. Each recipe declares (a) signals the lane cares about, (b) fix templates the Triage stage may propose, (c) auto-apply criteria for the gate, (d) contradiction-engine threshold override, (e) cost cap override. The engine pipeline (Sensors -> WatchBus -> Detector -> Triage -> ContradictionEngine -> Proposer -> ApplyGate -> LessonsStore) is identical for every lane; recipes only change the SIGNALS + FIX TEMPLATES + AUTO-APPLY criteria.",
+  "_schema": {
+    "version": "1.0.0",
+    "fields": {
+      "lane_slug": "string -- must match a row in config/attached-projects.json",
+      "status": "prepared | active | suspended",
+      "signals": "array of {source, path_or_endpoint, signal_type, threshold} -- WHAT the sensors emit for this lane",
+      "fix_templates": "array of {template_id, applies_to_signal, risk, summary} -- Triage draws from these when proposing",
+      "auto_apply": "object -- {max_risk: low|medium|high, requires_tests_passing: bool, requires_operator_when: array<rule>}",
+      "contradiction_threshold": "int 0-10 -- override default 6 if this lane needs stricter or looser rollback bar",
+      "daily_cost_cap_usd": "float -- override default $5 if this lane is more or less critical"
+    },
+    "verdict_precedence": "cross_project_conflict > rollback > hold > apply (per docs/08)"
+  },
+  "recipes": [
+    {
+      "lane_slug": "eve-compliance",
+      "status": "prepared",
+      "signals": [
+        {
+          "source": "filesystem",
+          "path_or_endpoint": "projects/eve-compliance/data/agency-reviews.jsonl",
+          "signal_type": "confusion-matrix-shift",
+          "threshold": "kl_divergence > 0.15 vs 7d baseline"
+        },
+        {
+          "source": "subprocess",
+          "path_or_endpoint": "automations/token-analytics.ps1 -Action ByProject",
+          "signal_type": "per-project-cost-spike",
+          "threshold": "24h_cost_usd > 14d_avg * 2.0"
+        },
+        {
+          "source": "filesystem",
+          "path_or_endpoint": "_shared-memory/heartbeats/eve-compliance.json",
+          "signal_type": "stale-heartbeat",
+          "threshold": "age_minutes > 30"
+        }
+      ],
+      "fix_templates": [
+        {
+          "template_id": "retrain-classifier-on-recent-labels",
+          "applies_to_signal": "confusion-matrix-shift",
+          "risk": "medium",
+          "summary": "Retrain the image-scanner classifier on the last 14 days of operator labels; freeze previous weights as fallback."
+        },
+        {
+          "template_id": "throttle-poll-cadence",
+          "applies_to_signal": "per-project-cost-spike",
+          "risk": "low",
+          "summary": "Drop watch cadence one tier (5min -> 30min) until 24h cost falls within 7d avg."
+        }
+      ],
+      "auto_apply": {
+        "max_risk": "low",
+        "requires_tests_passing": true,
+        "requires_operator_when": [
+          "kind == 'retrain-classifier-on-recent-labels'",
+          "diff touches credentials / .env"
+        ]
+      },
+      "contradiction_threshold": 5,
+      "daily_cost_cap_usd": 5.0
+    },
+    {
+      "lane_slug": "sinister-chatbot",
+      "status": "prepared",
+      "signals": [
+        {
+          "source": "filesystem",
+          "path_or_endpoint": "_shared-memory/operator-utterances.jsonl",
+          "signal_type": "operator-complaint-keyword",
+          "threshold": "any row tagged kind=complaint OR sentiment=negative within 24h"
+        },
+        {
+          "source": "filesystem",
+          "path_or_endpoint": "projects/sinister-chatbot/data/nsfw-guardrail-violations.jsonl",
+          "signal_type": "guardrail-violation",
+          "threshold": "any row newer than last_acked_at_utc"
+        },
+        {
+          "source": "filesystem",
+          "path_or_endpoint": "projects/sinister-chatbot/data/per-fan-memory-hit-rate.jsonl",
+          "signal_type": "memory-hit-rate-drop",
+          "threshold": "7d hit_rate < 0.60"
+        },
+        {
+          "source": "subprocess",
+          "path_or_endpoint": "automations/claude-usage-meter.ps1 -Mode Json",
+          "signal_type": "p95-latency-spike",
+          "threshold": "p95_ms > 3500"
+        }
+      ],
+      "fix_templates": [
+        {
+          "template_id": "retrain-on-operator-complaint",
+          "applies_to_signal": "operator-complaint-keyword",
+          "risk": "medium",
+          "summary": "Add the complaint utterance + corrected response pair to the chatbot's fine-tune queue; flag for operator review of the diff before commit."
+        },
+        {
+          "template_id": "tighten-guardrail-regex",
+          "applies_to_signal": "guardrail-violation",
+          "risk": "low",
+          "summary": "Regenerate the NSFW guardrail allow-deny regex from the most recent 30 violation samples."
+        },
+        {
+          "template_id": "raise-memory-window-size",
+          "applies_to_signal": "memory-hit-rate-drop",
+          "risk": "low",
+          "summary": "Increase per-fan memory window from K=20 to K=30 turns; revert if cost goes above lane cap."
+        }
+      ],
+      "auto_apply": {
+        "max_risk": "low",
+        "requires_tests_passing": true,
+        "requires_operator_when": [
+          "kind == 'retrain-on-operator-complaint'",
+          "diff touches credentials / .env",
+          "diff touches NSFW-route definition file"
+        ]
+      },
+      "contradiction_threshold": 6,
+      "daily_cost_cap_usd": 5.0
+    },
+    {
+      "lane_slug": "sinister-sleight",
+      "status": "prepared",
+      "signals": [
+        {
+          "source": "filesystem",
+          "path_or_endpoint": "projects/sinister-sleight/data/paper-equity-curve.jsonl",
+          "signal_type": "drawdown-breach",
+          "threshold": "trailing_30d_drawdown_pct > 10.0"
+        },
+        {
+          "source": "filesystem",
+          "path_or_endpoint": "projects/sinister-sleight/data/drift-ks-test.jsonl",
+          "signal_type": "model-drift",
+          "threshold": "ks_pvalue < 0.05 over latest 24h window"
+        },
+        {
+          "source": "filesystem",
+          "path_or_endpoint": "projects/sinister-sleight/data/kill-switch-state.json",
+          "signal_type": "kill-switch-state-change",
+          "threshold": "any state transition"
+        },
+        {
+          "source": "filesystem",
+          "path_or_endpoint": "projects/sinister-sleight/data/walk-forward-queue.jsonl",
+          "signal_type": "retrain-overdue",
+          "threshold": "days_since_last_retrain > 30"
+        }
+      ],
+      "fix_templates": [
+        {
+          "template_id": "auto-flip-kill-switch-on-drawdown",
+          "applies_to_signal": "drawdown-breach",
+          "risk": "high",
+          "summary": "Flip kill-switch to ON, stop all new positions, write operator-inbox alert. NEVER auto-resume; operator must explicit-go."
+        },
+        {
+          "template_id": "schedule-walk-forward-retrain",
+          "applies_to_signal": "model-drift",
+          "risk": "medium",
+          "summary": "Queue a walk-forward retrain on the most recent 90d of data; freeze previous strategy as fallback."
+        },
+        {
+          "template_id": "surface-kill-switch-change",
+          "applies_to_signal": "kill-switch-state-change",
+          "risk": "low",
+          "summary": "Push priority=high fleet-update row; write operator-inbox notification with state delta."
+        }
+      ],
+      "auto_apply": {
+        "max_risk": "low",
+        "requires_tests_passing": true,
+        "requires_operator_when": [
+          "kind == 'auto-flip-kill-switch-on-drawdown' AND state == 'OFF'",
+          "kind == 'schedule-walk-forward-retrain'",
+          "diff touches broker credentials / .env",
+          "diff touches real-money switch"
+        ]
+      },
+      "contradiction_threshold": 4,
+      "daily_cost_cap_usd": 5.0
+    }
+  ]
+}

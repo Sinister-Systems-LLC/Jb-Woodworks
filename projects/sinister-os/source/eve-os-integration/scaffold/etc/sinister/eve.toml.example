@@ -8,7 +8,10 @@ unix_socket = "/run/sinister/eve.sock"
 tcp_bind = "127.0.0.1:7331"
 mcp_socket = "/run/sinister/mcp.sock"
 log_level = "info"        # trace | debug | info | warn | error
-# How often the daemon scans /etc/sinister/mcp/ for new registrations
+# Directory the daemon watches for MCP tool registrations (*.json drop-ins).
+# Env override: EVE_MCP_TOOL_DIR (set by sinister-eve.service).
+mcp_tool_dir = "/etc/sinister/mcp"
+# How often the daemon scans mcp_tool_dir for new registrations
 # in addition to the inotify watcher (belt + suspenders).
 mcp_rescan_interval_secs = 60
 

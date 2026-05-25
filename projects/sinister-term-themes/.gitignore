@@ -1,0 +1,36 @@
+# Author: RKOJ-ELENO :: 2026-05-25
+# Ancestral Remotion .gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.installed.cfg
+*.egg
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Virtual envs
+.venv/
+venv/
+env/
+
+# Local
+.env
+.env.local
+
+# Render captures (large)
+captures/*.cast
+captures/*.gif
+captures/*.mp4
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini

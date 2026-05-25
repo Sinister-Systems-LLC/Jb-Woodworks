@@ -1,0 +1,38 @@
+# Sinister OS Tailscale first-boot auto-join (one-shot)
+# Author: RKOJ-ELENO :: 2026-05-24
+#
+# If TS_AUTHKEY is set in /etc/default/tailscaled, runs `tailscale up` once,
+# then zeroes the key in the env file so re-boots don't re-auth. Disables
+# itself after a successful run.
+
+[Unit]
+Description=Sinister Tailscale first-boot auto-join
+Documentation=https://tailscale.com/docs/
+ConditionVirtualization=!container
+ConditionFileNotEmpty=/etc/default/tailscaled
+After=tailscaled.service network-online.target
+Wants=tailscaled.service network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+EnvironmentFile=-/etc/default/tailscaled
+ExecStart=/usr/bin/bash -c ' \
+  if [ -n "$TS_AUTHKEY" ]; then \
+    /usr/bin/tailscale up \
+      --authkey="$TS_AUTHKEY" \
+      ${TS_HOSTNAME:+--hostname="$TS_HOSTNAME"} \
+      --accept-dns=false \
+      $TS_UP_EXTRA_ARGS \
+      || exit 1; \
+    /usr/bin/sed -i "s|^TS_AUTHKEY=.*|TS_AUTHKEY=\"\"|" /etc/default/tailscaled; \
+    /usr/bin/systemctl disable sinister-tailscale-firstboot.service; \
+    /usr/bin/logger -t sinister-tailscale-firstboot "first-boot join completed; key cleared; unit disabled"; \
+  fi'
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=sinister-tailscale-firstboot
+
+[Install]
+WantedBy=multi-user.target

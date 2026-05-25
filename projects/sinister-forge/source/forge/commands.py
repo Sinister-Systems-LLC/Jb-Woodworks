@@ -3897,18 +3897,138 @@ def _cmd_replay(args, pane, app) -> str:
             f"  → {out_path}")
 
 
-def _cmd_browser(args, pane, app) -> str:
-    """Sinister /browser — open the operator's default browser at a URL.
+# Layer C — sinister-browser bridge subcommands. Recognised first-arg
+# keywords that route to firefox-agent-bridge via Layer A/B instead of
+# the legacy `/browser <url>` open-in-default-browser flow.
+_BRIDGE_SUBS = frozenset({
+    "bridge", "probe", "ping", "nav", "navigate", "content",
+    "click", "type", "screenshot", "evaluate", "reload", "tabs",
+    "new", "tab", "wait", "scroll", "form",
+})
 
-    With no arg, opens the Sinister Panel local server at http://127.0.0.1:5077.
-    With `--background` (and Playwright installed) runs the URL headless and
-    returns the page title.
+
+def _browser_bridge_dispatch(args: list[str]) -> str:
+    """Layer C dispatcher — talks to the firefox-agent-bridge via
+    ``sinister_browser`` Layer A (probe) + Layer B (Browser action API).
+
+    Graceful degradation: if ``sinister_browser`` isn't pip-installed,
+    every subcommand returns the install hint.
+    """
+    try:
+        from sinister_browser import probe as _probe  # type: ignore
+        from sinister_browser import Browser, BrowserError  # type: ignore
+    except Exception as e:
+        return (
+            "[yellow]/browser bridge: sinister-browser not installed[/]\n"
+            "  [dim]pip install -e D:/Sinister\\ Sanctum/tools/sinister-browser[/]\n"
+            f"  [dim]import error: {type(e).__name__}: {e}[/]"
+        )
+
+    sub = args[0].lower()
+    rest = args[1:]
+
+    # — probe / bridge / status (Layer A) —
+    if sub in ("bridge", "probe"):
+        result = _probe()
+        label = {0: "ALIVE", 2: "NOT-INSTALLED", 3: "UNREACHABLE"}.get(result.exit_code, "?")
+        color = {0: "green", 2: "yellow", 3: "red"}.get(result.exit_code, "white")
+        return (
+            f"[{color}]/browser {sub}[/]  {result.host}:{result.port} :: [{color}]{label}[/]\n"
+            f"  [dim]{result.summary}[/]"
+        )
+
+    b = Browser()
+    try:
+        if sub == "ping":
+            r = b.ping()
+            return f"[green]/browser ping[/]  → {r}"
+        if sub in ("nav", "navigate"):
+            if not rest:
+                return "[yellow]/browser nav <url>[/]  url required"
+            url = rest[0]
+            if "://" not in url:
+                url = "http://" + url
+            r = b.navigate(url)
+            return f"[green]/browser nav[/]  {url}  →  {r}"
+        if sub == "content":
+            fmt = rest[0] if rest else "annotated"
+            if fmt not in ("annotated", "text", "html"):
+                return f"[yellow]/browser content <annotated|text|html>[/]  got {fmt!r}"
+            r = b.get_content(fmt=fmt)
+            return f"[green]/browser content {fmt}[/]  → {str(r)[:400]}"
+        if sub == "click":
+            if not rest:
+                return "[yellow]/browser click <selector>|<text>[/]  arg required"
+            # Heuristic: starts with .#[ → CSS selector; else treat as visible text
+            arg = " ".join(rest)
+            if arg[:1] in ("#", ".", "["):
+                r = b.click(selector=arg)
+            else:
+                r = b.click(text=arg)
+            return f"[green]/browser click[/]  {arg!r}  →  {r}"
+        if sub == "type":
+            if not rest:
+                return "[yellow]/browser type <text>[/]  text required"
+            text = " ".join(rest)
+            r = b.type(text)
+            return f"[green]/browser type[/]  {text!r}  →  {r}"
+        if sub == "screenshot":
+            filename = rest[0] if rest else None
+            r = b.screenshot(filename=filename)
+            return f"[green]/browser screenshot[/]  → {r}"
+        if sub == "evaluate":
+            if not rest:
+                return "[yellow]/browser evaluate <script>[/]  script required"
+            script = " ".join(rest)
+            r = b.evaluate(script)
+            return f"[green]/browser evaluate[/]  → {r}"
+        if sub == "reload":
+            r = b.reload()
+            return f"[green]/browser reload[/]  → {r}"
+        if sub == "tabs":
+            r = b.list_tabs()
+            return f"[green]/browser tabs[/]  → {r}"
+        if sub in ("new", "tab"):
+            url = rest[0] if rest else None
+            r = b.new_session(url=url) if url else b.new_session()
+            return f"[green]/browser new[/]  → {r}"
+        if sub == "wait":
+            if not rest:
+                return "[yellow]/browser wait <selector>[/]  selector required"
+            r = b.wait_for(selector=" ".join(rest))
+            return f"[green]/browser wait[/]  → {r}"
+        return f"[yellow]/browser {sub}[/]  unknown subcommand"
+    except BrowserError as e:
+        return f"[red]/browser {sub}[/]  {type(e).__name__}: {e}"
+
+
+def _cmd_browser(args, pane, app) -> str:
+    """Sinister /browser — open the operator's default browser OR drive
+    firefox-agent-bridge via the sinister-browser wrapper.
 
     Forms:
-      /browser                       → open Sinister Panel (:5077)
-      /browser <url>                 → open URL in default browser
-      /browser <url> --background    → headless via Playwright (if installed)
+      /browser                              → open Sinister Panel (:5077)
+      /browser <url>                        → open URL in default browser
+      /browser <url> --background           → headless via Playwright (if installed)
+
+    Layer C bridge subcommands (require ``sinister-browser`` pip-installed):
+      /browser bridge | probe               → Layer A connectivity probe
+      /browser ping                         → bridge round-trip check
+      /browser nav <url>                    → navigate active tab
+      /browser content [annotated|text|html] → read page content
+      /browser click <selector|text>        → click element
+      /browser type <text>                  → type into focused input
+      /browser screenshot [filename]        → capture visible area
+      /browser evaluate <script>            → run JS in page
+      /browser reload                       → reload active tab
+      /browser tabs                         → list all tabs
+      /browser new [url]                    → new tab (optional URL)
+      /browser wait <selector>              → wait for element
     """
+    if args and args[0].lower() in _BRIDGE_SUBS:
+        return _browser_bridge_dispatch(args)
+
+    # Legacy paths — open URL in browser / Playwright
     bg = "--background" in args
     rest = [a for a in args if a != "--background"]
     url = rest[0] if rest else "http://127.0.0.1:5077"
@@ -4064,8 +4184,8 @@ SLASH_COMMANDS: dict[str, dict[str, Any]] = {
                            "Reads ~/.claude/settings.json `permissions` block (allow/ask/deny + defaultMode). --edit opens the file in the operator's editor (operator-owned; master agent never auto-writes)."),
     "replay":      _entry(_cmd_replay,      "[<N>] — replay last N turns of this pane as structured JSONL log", "session",
                            "Default N=5. Reads pane._journal_path, groups by `turn`, writes _shared-memory/replays/<pane-slug>/<UTC>.jsonl."),
-    "browser":     _entry(_cmd_browser,     "[<url>] [--background] — open URL (default: Sinister Panel :5077)", "system",
-                           "webbrowser.open() wrapper. With --background runs headless via Playwright if installed; otherwise prints install hint."),
+    "browser":     _entry(_cmd_browser,     "[<url>] [--background] | bridge|probe|ping|nav|content|click|type|screenshot|evaluate|reload|tabs|new|wait — open URL OR drive firefox-agent-bridge via sinister-browser", "system",
+                           "Default: webbrowser.open() wrapper at :5077. With --background runs headless via Playwright. Subcommands route to sinister-browser Layer A (probe) + Layer B (action API) against firefox-agent-bridge on ws://127.0.0.1:8766. Operator owns the upstream XPI install + native-host registry write. Layer C of jcode-feature-matrix row 26."),
 }
 
 

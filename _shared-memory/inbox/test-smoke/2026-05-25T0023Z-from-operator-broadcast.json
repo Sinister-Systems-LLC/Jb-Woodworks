@@ -1,0 +1,13 @@
+{
+    "tag":  "[BROADCAST]",
+    "from":  "operator",
+    "from_display":  "Operator (via EVE Agents page)",
+    "to":  "test-smoke",
+    "ts_utc":  "2026-05-25T00:23:00Z",
+    "subject":  "operator broadcast from EVE Agents page",
+    "summary":  "smoke test from sanctum-agents-page iter 1",
+    "message_full":  "smoke test from sanctum-agents-page iter 1",
+    "reply_required":  false,
+    "ack_required":  false,
+    "author":  "RKOJ-ELENO :: 2026-05-25"
+}

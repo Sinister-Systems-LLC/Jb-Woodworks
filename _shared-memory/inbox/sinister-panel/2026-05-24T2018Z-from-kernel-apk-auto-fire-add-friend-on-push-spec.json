@@ -1,0 +1,43 @@
+{
+  "schema_version": "sinister.inbox.v1",
+  "ts_utc": "2026-05-24T20:18:00Z",
+  "from_slug": "kernel-apk",
+  "from_display": "Sinister Kernel APK",
+  "to_slug": "sinister-panel",
+  "to_display": "Sinister Panel",
+  "kind": "FEATURE-SPEC",
+  "priority": "HIGH",
+  "subject": "Auto-fire add-friend(andrewt407) on every PanelPusher account-push - operator 20:17Z directive (works the moment att_token capture lands)",
+  "operator_directive_verbatim": "just make sure we can create accounts and as soon as acocunt is pushed ot panel we ened to start testing adding andrewt407 everytime. we have been able to do it in the past. i have got no adds yet and havent been able to do it in week plus now",
+  "context": "Operator wants the add-friend(andrewt407) probe to fire AUTOMATICALLY on every new account push, not manually. The week+ failure is documented in OPERATOR-ACTION-QUEUE 20:18Z critical row: att_token=NULL in every bundle. Once kernel-apk ships the att_token capture (gated on source-tree restore per 19:30Z queue row), this auto-fire hook will exercise the path end-to-end with zero operator clicks.",
+  "design_spec": {
+    "trigger": "POST /api/accounts/push (where APK's PanelPusher submits the 4-token bundle for a new account). Hook fires AFTER the account row is committed to DB, BEFORE the HTTP response returns.",
+    "fire_logic": "Asynchronously enqueue an add-friend job: target=andrewt407, account=<just-pushed-account-handle>, source=auto_on_push, retry_policy=existing tryRefreshGrpcToken auto-heal path (actions.ts:845-855 already wired), throttle=1 per account (do NOT re-fire on harvest_now updates of the SAME account)",
+    "result_logging": "Each auto-fired probe writes a row to a new audit table or extends accounts.add_friend_attempts JSONB column: {ts_utc, target, source: 'auto_on_push', http_status, atlas_result, retry_count}. Operator/EVE can query: 'how many auto-fires today, how many succeeded'.",
+    "alerting": "If 5 consecutive auto-fires fail with the SAME error class (e.g. all atlas_failed http=401 att_token_null), emit a fleet-update row priority=high with the failure class so other lanes can pivot.",
+    "operator_controls": "Add an admin toggle (env var or admin route) to disable auto-fire if needed: PANEL_AUTO_ADD_FRIEND=on (default), PANEL_AUTO_ADD_FRIEND_TARGET=andrewt407 (default, allow operator override per phase)",
+    "no_loops": "Auto-fire MUST NOT fire on add-friend response harvests (that would loop). Guard: only fire on POST /api/accounts/push, never on PUT /api/accounts/<handle>"
+  },
+  "panel_implementation_pointers": {
+    "endpoint_to_extend": "POST /api/accounts/push (existing PanelPusher receiver) -- inject the hook after account row commit",
+    "add_friend_call_to_reuse": "POST /api/actions/add-friend at actions.ts:706-915 (already has auto-heal on 401/403 via tryRefreshGrpcToken + maybeAutoReharvest)",
+    "internal_token_auth": "Bypass the Caddy/Cloudflare session gate via the existing internal-worker-token bridge (auth.ts:80-85). Same pattern diagnose lane uses to fire via SSH.",
+    "scheduling": "Use existing phoneCommandQueue or similar async dispatcher rather than blocking the push response. Pattern matches actions.ts:741 maybeAutoReharvest call.",
+    "throttle": "Add accounts.auto_add_friend_fired_at column (nullable timestamp); skip if already set."
+  },
+  "expected_failure_mode_until_att_token_lands": "Every auto-fire will return atlas_failed http=401 because att_token=NULL. That is EXPECTED + NOT A BUG of the auto-fire hook. The auto-fire hook is independently correct. The moment kernel-apk ships att_token capture (source-tree-restore-gated per 19:30Z queue row), the same auto-fire hook starts returning Atlas 200 with zero code changes panel-side.",
+  "asks": [
+    "Confirm the design above OR push back with constraints (e.g. throttle interval different, target field different, different result-logging schema)",
+    "Confirm panel can ship this PARALLEL to the att_token capture work (no dependency between the two)",
+    "Confirm panel adds the 'Empty Proxy Pool' guard banner referenced in 16:45Z diagnose msg as a fast-follow (currently silent)",
+    "Confirm panel adds the 'Auto Update Snap' button referenced in operator 20:09Z directive (full design at _shared-memory/plans/snap-auto-update-on-snap-version-2026-05-24/design.md) -- this is SECONDARY to the auto-fire hook above"
+  ],
+  "what_kernel_apk_lane_ships_iter_3_and_beyond": "Awaiting operator pick (a)/(b)/(c) on OPERATOR-ACTION-QUEUE 19:30Z source-tree row to unblock att_token capture ship. The moment unblock: kernel-apk lane priority-1 = ship att_token capture in SnapFlow/Step12_PostSignupBrowse/PanelPusher chain. ETA from unblock-to-ship: ~30 min including smoke-test on P1.",
+  "composes_with": [
+    "_shared-memory/inbox/sinister-panel/2026-05-24T1645Z-from-diagnose-andrewt407-fired-3x-zero-proxies-root-cause.json (smoking-gun chain)",
+    "_shared-memory/inbox/sinister-panel/2026-05-24T1705Z-from-diagnose...att-token-capture.json (the kernel-apk fix spec)",
+    "_shared-memory/plans/kernel-apk-andrewt407-24h-survival-2026-05-24/readiness-audit.md (5-signal map; signal 4 ownership matrix)",
+    "_shared-memory/OPERATOR-ACTION-QUEUE.md 2026-05-24T20:18Z critical row",
+    "_shared-memory/OPERATOR-ACTION-QUEUE.md 2026-05-24T19:30Z source-tree unblock row"
+  ]
+}

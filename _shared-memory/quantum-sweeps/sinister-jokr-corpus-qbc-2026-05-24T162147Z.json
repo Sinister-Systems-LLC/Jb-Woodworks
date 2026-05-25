@@ -1,0 +1,179 @@
+{
+  "schema": "sinister-seraphim.corpus-qbc.v1",
+  "label": "sinister-jokr",
+  "root": "D:\\Sinister Sanctum\\projects\\sinister-jokr",
+  "n_docs_found": 21,
+  "n_docs_used": 21,
+  "cap": 50,
+  "sim_variant": "zzfm-r1-K4",
+  "total_triads": 1330,
+  "qbc_count": 24,
+  "qbc_pct": 1.8045112781954888,
+  "max_advantage_pp": 13.93728378913309,
+  "median_advantage_pp": -44.19830642390311,
+  "top10_qbc": [
+    {
+      "rank": 1,
+      "advantage_pp": 13.93728378913309,
+      "classical": 0.2903708830510437,
+      "sim": 0.1509980451597128,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/SECURITY.md",
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/.claude/memory/b.md",
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/.claude/memory/t.md"
+      ]
+    },
+    {
+      "rank": 2,
+      "advantage_pp": 12.89943872440026,
+      "classical": 0.29255286048600454,
+      "sim": 0.16355847324200193,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/SECURITY.md",
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/.claude/memory/b.md",
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/.claude/memory/p.md"
+      ]
+    },
+    {
+      "rank": 3,
+      "advantage_pp": 12.184959358957077,
+      "classical": 0.40156719008065433,
+      "sim": 0.2797175964910836,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/SECURITY.md",
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/.claude/memory/s.md",
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/.claude/memory/t.md"
+      ]
+    },
+    {
+      "rank": 4,
+      "advantage_pp": 12.099996315902272,
+      "classical": 0.3749684678063247,
+      "sim": 0.253968504647302,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/CHANGELOG.md",
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/SECURITY.md",
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/.claude/memory/t.md"
+      ]
+    },
+    {
+      "rank": 5,
+      "advantage_pp": 11.545374116813925,
+      "classical": 0.2950497029140307,
+      "sim": 0.17959596174589146,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/SECURITY.md",
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/.claude/memory/b.md",
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/.claude/memory/c.md"
+      ]
+    },
+    {
+      "rank": 6,
+      "advantage_pp": 9.209932391417697,
+      "classical": 0.3873064083167386,
+      "sim": 0.29520708440256166,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/CLAUDE.md",
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/SECURITY.md",
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/.claude/memory/c.md"
+      ]
+    },
+    {
+      "rank": 7,
+      "advantage_pp": 7.465017824610406,
+      "classical": 0.26237340662411435,
+      "sim": 0.18772322837801028,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/README.md",
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/SECURITY.md",
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/.claude/memory/b.md"
+      ]
+    },
+    {
+      "rank": 8,
+      "advantage_pp": 7.224537811057877,
+      "classical": 0.26544977372902295,
+      "sim": 0.19320439561844419,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/SECURITY.md",
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/SETUP.md",
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/.claude/memory/b.md"
+      ]
+    },
+    {
+      "rank": 9,
+      "advantage_pp": 6.1977508516191655,
+      "classical": 0.3780670202331767,
+      "sim": 0.316089511716985,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/CHANGELOG.md",
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/README.md",
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/SECURITY.md"
+      ]
+    },
+    {
+      "rank": 10,
+      "advantage_pp": 5.620066415100383,
+      "classical": 0.31311165198885343,
+      "sim": 0.2569109878378496,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/SECURITY.md",
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/.claude/memory/p.md",
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/.claude/memory/R.md"
+      ]
+    }
+  ],
+  "top5_highest_classical": [
+    {
+      "classical": 0.5071369860424926,
+      "sim": 0.7903351737824913,
+      "advantage_pp": -28.31981877399987,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/ARCHITECTURE.md",
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/CHANGELOG.md",
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/README.md"
+      ]
+    },
+    {
+      "classical": 0.48282535248993064,
+      "sim": 0.7755005713612887,
+      "advantage_pp": -29.267521887135807,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/CHANGELOG.md",
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/CLAUDE.md",
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/README.md"
+      ]
+    },
+    {
+      "classical": 0.4776673909544716,
+      "sim": 0.7028625282719331,
+      "advantage_pp": -22.519513731746148,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/CHANGELOG.md",
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/README.md",
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/.claude/memory/t.md"
+      ]
+    },
+    {
+      "classical": 0.47584643878567306,
+      "sim": 0.6770320768806757,
+      "advantage_pp": -20.118563809500262,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/CHANGELOG.md",
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/.claude/memory/s.md",
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/.claude/memory/t.md"
+      ]
+    },
+    {
+      "classical": 0.458440394155155,
+      "sim": 0.6441177672198425,
+      "advantage_pp": -18.56773730646875,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/CHANGELOG.md",
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/CLAUDE.md",
+        "D:/Sinister Sanctum/projects/sinister-jokr/JOKR-Global/source/.claude/memory/t.md"
+      ]
+    }
+  ],
+  "wall_seconds": 2.2325005531311035
+}

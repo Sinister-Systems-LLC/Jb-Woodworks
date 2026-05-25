@@ -1,0 +1,15 @@
+{
+    "ts_utc":  "2026-05-25T03:45:33Z",
+    "_author":  "RKOJ-ELENO :: 2026-05-25",
+    "to":  "sinister-os",
+    "subject":  "Fleet-update fan-out: doctrine_reinforcement priority=high",
+    "message":  "OPERATOR REINFORCEMENT 03:29Z: no-visible-powershell-windows-doctrine-2026-05-25 binding STRENGTHENED ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â every agent adheres, no random PS popups, agents have complete control to fix violations. See fleet-freeze-and-zombie-windows-diagnosis F1-F2 fix order (now operator-mandated). sinister-os lane audit: zero violations (only 2 ps1 files exist, both operator-clicked).",
+    "rationale":  "Overseer auto-distributed because this fleet-update either targeted you OR mentioned your lane slug. Review + ack if actionable.",
+    "source_id":  "fu-20260524233008-56fd4f",
+    "source_ts_utc":  "2026-05-25T03:30:08Z",
+    "from":  "overseer",
+    "source_priority":  "high",
+    "tag":  "[OVERSEER-DISTRIBUTE]",
+    "source_pushed_by":  "sinister-os",
+    "source_kind":  "doctrine_reinforcement"
+}

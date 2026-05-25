@@ -1,0 +1,45 @@
+# Sinister OS Tailscaled systemd unit
+# Author: RKOJ-ELENO :: 2026-05-24
+#
+# Brings up the Tailscale daemon on Sinister OS. Auto-joins the tailnet on first
+# boot via the sinister-tailscale-firstboot.service one-shot if TS_AUTHKEY is set
+# in /etc/default/tailscaled.
+
+[Unit]
+Description=Tailscale VPN daemon
+Documentation=https://tailscale.com/docs/
+ConditionVirtualization=!container
+After=network-online.target NetworkManager.service systemd-resolved.service
+Wants=network-online.target
+
+[Service]
+Type=notify
+EnvironmentFile=-/etc/default/tailscaled
+ExecStartPre=/usr/bin/mkdir -p /var/lib/tailscale
+ExecStart=/usr/bin/tailscaled --state=/var/lib/tailscale/tailscaled.state --socket=/run/tailscale/tailscaled.sock --port=${TS_PORT:-41641} $TS_EXTRA_ARGS
+ExecStopPost=/usr/bin/rm -f /run/tailscale/tailscaled.sock
+
+Restart=always
+RestartSec=5s
+StartLimitInterval=60s
+StartLimitBurst=5
+
+CapabilityBoundingSet=CAP_NET_ADMIN CAP_SYS_MODULE CAP_NET_RAW
+AmbientCapabilities=CAP_NET_ADMIN CAP_SYS_MODULE CAP_NET_RAW
+
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/var/lib/tailscale /run/tailscale /var/log
+PrivateTmp=yes
+RuntimeDirectory=tailscale
+RuntimeDirectoryMode=0750
+StateDirectory=tailscale
+StateDirectoryMode=0700
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=tailscaled
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,25 @@
+2026-05-24 13:05:20,967 INFO sinister-eve registered tool eve-cli from eve-cli.json
+2026-05-24 13:05:20,967 INFO sinister-eve registered tool panel-control from panel-control.json
+2026-05-24 13:05:20,967 INFO sinister-eve memory root: C:\Users\Zonia\AppData\Local\Temp\sinister-eve-dev\memory
+2026-05-24 13:05:20,967 INFO sinister-eve mcp dir:     D:\Sinister Sanctum\projects\sinister-os\source\eve-os-integration\scaffold\etc\sinister\mcp
+2026-05-24 13:05:20,967 INFO sinister-eve tools:       2
+2026-05-24 13:05:20,973 INFO sinister-eve listening on http://127.0.0.1:7331
+2026-05-24 13:05:21,270 INFO sinister-eve http 127.0.0.1 - "GET /health HTTP/1.1" 200 -
+2026-05-24 13:05:33,796 INFO sinister-eve http 127.0.0.1 - "GET /v1/tools/list HTTP/1.1" 200 -
+2026-05-24 13:05:39,551 INFO sinister-eve http 127.0.0.1 - "POST /v1/intent/dispatch HTTP/1.1" 200 -
+2026-05-24 13:05:45,421 ERROR sinister-eve POST /v1/memory/set failed
+Traceback (most recent call last):
+  File "D:\Sinister Sanctum\projects\sinister-os\source\eve-os-integration\scaffold\sinister-eve-mcp-bridge.py", line 315, in do_POST
+    self.daemon.memory.set(body["key"], body["value"])
+  File "D:\Sinister Sanctum\projects\sinister-os\source\eve-os-integration\scaffold\sinister-eve-mcp-bridge.py", line 87, in set
+    tmp.write(value)
+  File "C:\Users\Zonia\AppData\Local\Programs\Python\Python312\Lib\tempfile.py", line 499, in func_wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+TypeError: write() argument must be str, not dict
+2026-05-24 13:05:45,424 INFO sinister-eve http 127.0.0.1 - "POST /v1/memory/set HTTP/1.1" 500 -
+2026-05-24 13:05:51,444 INFO sinister-eve http 127.0.0.1 - "POST /v1/memory/set HTTP/1.1" 200 -
+2026-05-24 13:05:56,741 INFO sinister-eve http 127.0.0.1 - "GET /v1/memory/get?key=test/smoke HTTP/1.1" 200 -
+2026-05-24 13:06:03,340 INFO sinister-eve http 127.0.0.1 - "POST /v1/heartbeat HTTP/1.1" 200 -
+2026-05-24 13:06:09,701 INFO sinister-eve http 127.0.0.1 - "GET /v1/memory/get?key=heartbeats/smoke.json HTTP/1.1" 200 -
+2026-05-24 13:06:29,544 INFO sinister-eve http 127.0.0.1 - "GET /health HTTP/1.1" 200 -

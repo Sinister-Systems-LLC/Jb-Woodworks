@@ -1,0 +1,18 @@
+{
+  "_author": "RKOJ-ELENO :: 2026-05-21",
+  "schema_version": "sinister.forge-memory.v1",
+  "namespace": "brain",
+  "key": "powershell-readhost-empty-prompt",
+  "value": "<!-- decay:\n  category: fact\n  confidence: 0.85\n  reinforcements: 0\n  half_life_days: 180\n-->\n> **Author:** Sinister Sanctum master agent (Claude) :: 2026-05-19\n\n# Topic: `Read-Host \"\"` crashes with \"name cannot be null or empty\"\n\n**Slug:** powershell-readhost-empty-prompt\n**First discovered:** 2026-05-19 by Sinister Sanctum\n**Last updated:** 2026-05-19 by Sinister Sanctum\n**Status:** fixed\n**Tags:** powershell, read-host, ui, pwsh-5\n\n## Problem\n\nPowerShell 5.1 crashes when given an empty string as the prompt:\n\n```powershell\n$pick = Read-Host \"\"\n```\n\nError:\n```\nRead-Host : name cannot be null or empty.\nAt ...\\start-sinister-session.ps1:685 char:13\n+ $pick = Read-Host \"\"\n+             ~~~~~~~~~\n    + CategoryInfo          : InvalidArgument: (:) [Read-Host], PSArgumentException\n    + FullyQualifiedErrorId : Argument,Microsoft.PowerShell.Commands.ReadHostCommand\n```\n\nThe launcher continues with `$pick = $null` and falls through to the default branch. From the operator's POV: they typed `2` to pick Snap EMU, but the launcher ignored them and acted as if they hit Enter.\n\n## Why it happens\n\n`Read-Host` requires either NO argument at all (zero-arg form) or a non-empty `-Prompt` parameter. Passing `\"\"` or `''` raises ArgumentException because PowerShell's parameter binder treats it as \"prompt name was set to empty\" rather than \"prompt name was omitted\".\n\nPowerShell 7 is more lenient but still warns. Stick to one of the safe forms below.\n\n## Fix or workaround\n\n```powershell\n# GOOD: no argument\n$pick = Read-Host\n\n# GOOD: non-empty prompt\n$pick = Read-Host 'choice'\n\n# GOOD: single space prompt (when you don't want a label but need a non-empty arg)\n$pick = Read-Host ' '\n\n# BAD: empty string\n$pick = Read-Host \"\"\n$pick = Read-Host ''\n```\n\nIf you want the prompt text on its OWN line (so the input cursor is on a new line), `Write-Host` the prompt first, then call `Read-Host` with a minimal placeholder:\n\n```powershell\nWrite-Host \"Selection [1-5/A/G, default=sanctum]\" -ForegroundColor Magenta\n$pick = Read-Host '  >'\n```\n\n## Sanctum-specific note\n\nThis bug was in `start-sinister-session.ps1` v6 at lines 685, 713, 1193. All three call sites fixed 2026-05-19 to use `Read-Host '  >'` (visual prompt indicator). Parse-check passes; live test confirmed picker accepts input.\n\n## Discoveries (append-only log, most-recent at top)\n\n### 2026-05-19 02:45 by Sinister Sanctum\nOperator hit this on the project picker selection. Fixed by replacing `Read-Host \"\"` with `Read-Host '  >'`. Verified with `[System.Management.Automation.Language.Parser]::ParseFile` + a live operator screenshot.\n\n## Related topics\n\n- [powershell-emdash-non-ascii](./powershell-emdash-non-ascii.md)\n",
+  "tags": [
+    "powershell",
+    "readhost",
+    "empty",
+    "prompt"
+  ],
+  "ts_utc_first": "2026-05-25T02:17:14Z",
+  "ts_utc_last": "2026-05-25T02:30:42Z",
+  "writes": 2,
+  "confidence": 1.0,
+  "content_hash": "e796694a34def4534f893b15df41e1ac59805c34a39855e6d70388d1bea170ac"
+}

@@ -1,0 +1,15 @@
+{
+    "ts_utc":  "2026-05-25T01:13:45Z",
+    "_author":  "RKOJ-ELENO :: 2026-05-25",
+    "to":  "sinister-os",
+    "subject":  "Fleet-update fan-out: doctrine_update priority=normal",
+    "message":  "BRAIN updated: sinister-os-quantum-applicability-2026-05-24 - Sinister OS x Sinister Quantum applicability verdict",
+    "rationale":  "Overseer auto-distributed because this fleet-update either targeted you OR mentioned your lane slug. Review + ack if actionable.",
+    "source_id":  "fu-20260524210621-62d870",
+    "source_ts_utc":  "2026-05-25T01:06:21Z",
+    "from":  "overseer",
+    "source_priority":  "normal",
+    "tag":  "[OVERSEER-DISTRIBUTE]",
+    "source_pushed_by":  "sanctum",
+    "source_kind":  "doctrine_update"
+}

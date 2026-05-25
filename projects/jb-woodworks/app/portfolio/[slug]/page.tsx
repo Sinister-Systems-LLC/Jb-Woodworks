@@ -5,6 +5,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Reveal } from "@/components/ui/reveal";
 import { Icon } from "@/components/ui/icon";
+import { BackLink } from "@/components/ui/back-link";
 import { BeforeAfter } from "@/components/sections/before-after";
 import { getPortfolioItem, portfolio } from "@/lib/content";
 
@@ -34,15 +35,18 @@ export default async function PortfolioItemPage({ params }: Props) {
       <section className="pt-40 pb-16 bg-gradient-to-b from-ink-2 to-ink border-b border-line relative overflow-hidden">
         <div aria-hidden className="absolute -top-24 -right-24 w-[400px] h-[400px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(201,168,76,0.10), transparent 70%)" }} />
         <div className="container-site relative">
-          <span className="section-tag">{item.category}</span>
+          <BackLink href="/portfolio" label="Back to portfolio" section={item.category} />
+          <span className="section-tag">
+            {item.category}
+            {item.subcategory && (
+              <>
+                <span aria-hidden className="mx-2 text-cream-30">·</span>
+                <span className="text-cream-50">{item.subcategory}</span>
+              </>
+            )}
+          </span>
           <h1 className="mb-5"><em>{item.title}.</em></h1>
           <p className="section-subheadline">{item.blurb}</p>
-          <p>
-            <Link href="/portfolio" className="link-arrow">
-              <Icon name="arrow-right" size={14} className="rotate-180" />
-              Back to portfolio
-            </Link>
-          </p>
         </div>
       </section>
 
@@ -86,8 +90,9 @@ export default async function PortfolioItemPage({ params }: Props) {
                     sizes="(max-width: 960px) 100vw, 960px"
                     loading={i === 0 ? undefined : "lazy"}
                     priority={i === 0}
+                    quality={92}
                     style={{ width: "100%", height: "auto" }}
-                    className="block"
+                    className="block cinematic-image"
                   />
                 )}
               </Reveal>
@@ -96,13 +101,31 @@ export default async function PortfolioItemPage({ params }: Props) {
         </div>
       </section>
 
-      <section className="py-20 relative overflow-hidden" style={{ background: "linear-gradient(135deg, #c9a84c, #a8842f)" }}>
+      {/* Bottom CTAs — Get Free Quote + Contact us (per operator: all portfolio pages need both) */}
+      <section className="py-24 bg-ink-2 border-t border-line relative overflow-hidden">
+        <div aria-hidden className="absolute -top-32 -right-24 w-[420px] h-[420px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(201,168,76,0.10), transparent 70%)" }} />
+        <div aria-hidden className="absolute -bottom-32 -left-24 w-[420px] h-[420px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(201,168,76,0.06), transparent 70%)" }} />
+        <div className="container-site relative text-center">
+          <span className="section-tag mx-auto inline-block">Want one like this?</span>
+          <h2 className="mt-2 mb-5">Free estimate.<br /><em>Honest pricing.</em></h2>
+          <p className="text-cream-50 text-[1rem] max-w-[560px] mx-auto mb-10">
+            Send the space, the timeline, the rough vision. We will come back with a real range and a real build date — usually within one business day.
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            <Link href={`/contact?service=${item.slug}`} className="btn btn-primary btn-large jbw-magnetic">Get a Free Quote</Link>
+            <Link href="/contact" className="btn btn-ghost btn-large jbw-magnetic">Contact us</Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-16 relative overflow-hidden" style={{ background: "linear-gradient(135deg, #c9a84c, #a8842f)" }}>
+        <div aria-hidden className="absolute inset-0 pointer-events-none bg-cover bg-center mix-blend-multiply" style={{ backgroundImage: "url(/img/generated/cta-shavings.png)", opacity: 0.30 }} />
         <div className="container-site flex items-center justify-between gap-8 flex-wrap relative">
           <div>
-            <h2 className="text-ink">Want one like this?</h2>
-            <p className="text-ink/80 mt-2">Free estimate. Tell us the space and the timeline.</p>
+            <h2 className="text-ink">Or just call us.</h2>
+            <p className="text-ink/80 mt-2">Sometimes a five-minute conversation beats a contact form.</p>
           </div>
-          <Link href={`/contact?service=${item.slug}`} className="btn btn-large bg-ink text-white hover:bg-ink-3">Get a Quote</Link>
+          <a href="tel:4075611453" className="btn btn-large bg-ink text-white hover:bg-ink-3 jbw-magnetic">(407) 561-1453</a>
         </div>
       </section>
     </>

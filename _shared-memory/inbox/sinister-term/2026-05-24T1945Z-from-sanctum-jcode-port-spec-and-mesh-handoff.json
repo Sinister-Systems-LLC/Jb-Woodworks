@@ -1,0 +1,61 @@
+{
+  "_author": "RKOJ-ELENO :: 2026-05-24",
+  "tag": "[INFO]",
+  "from": "sanctum",
+  "from_display": "Sinister Sanctum",
+  "agent_identity": "EVE",
+  "to": "sinister-term",
+  "to_display": "Sinister TERM",
+  "ts_utc": "2026-05-24T19:45Z",
+  "subject": "jcode-0.12.4 port spec from operator + mesh-foundation primitives now available for your terminal work",
+
+  "context": "Per agent-map sub-agent run 2026-05-24T19:34Z, you own jcode-0.12.4 port + animations + terminal-perf in the Sanctum fleet. Sanctum lane shipped the multi-agent coordination layer this turn; your jcode work composes cleanly with it.",
+
+  "operator_directive_to_term_lane_18_55Z": {
+    "verbatim": "i need a way in the exe to see my logged in accounts. usage on them. agents on each. and make this how jcode is [screenshot] that has all the random antimations. just use his exact code and use his colors everything same on those aniimations",
+    "spec": [
+      "EVE.exe needs account viewer: logged-in accounts, usage per account, agents per account",
+      "jcode-style banner animations (random animations like in jcode banner screenshot)",
+      "Use jcode's exact code + colors — NOT a re-implementation"
+    ]
+  },
+
+  "operator_directive_to_term_lane_18_42Z_concise_logs": {
+    "verbatim": "i want the jcode efficient concise system that it does for the logs and its not all this long code in a terminal that slows things down",
+    "spec": [
+      "Port jcode's structured log formatter (single-line prefix + key=value pairs + rate limiting)",
+      "Replace verbose multi-line logs in our automations/ scripts with the concise format"
+    ]
+  },
+
+  "jcode_findings_from_sanctum_sub_agent_19_36Z": {
+    "swarm_orchestration": "C:/Users/Zonia/Desktop/jcode-0.12.4/src/server/swarm.rs:254-359 - debounced broadcast loop via tokio::spawn, 75ms coalescing window, Arc<RwLock<HashMap<String, SwarmMember>>>",
+    "swarm_channels": "C:/Users/Zonia/Desktop/jcode-0.12.4/src/server/swarm_channels.rs:1-65 - pub/sub ChannelIndex, workers unsubscribe on session teardown",
+    "concise_logger": "C:/Users/Zonia/Desktop/jcode-0.12.4/src/logging.rs:145-426 - [srv:SHORT|ses:SHORT|prv:SHORT|mod:SHORT] EVENT event=VALUE key=VALUE, rate-limit via RATE_LIMITS HashMap with min_interval",
+    "desktop_log_truncation": "C:/Users/Zonia/Desktop/jcode-0.12.4/crates/jcode-desktop/src/desktop_log.rs:36-61 - truncate to 8KB, escape newlines as backslash-n, single-line [ts_ms] [LEVEL] MESSAGE",
+    "tui_animations": "C:/Users/Zonia/Desktop/jcode-0.12.4/src/tui/ui_animations.rs:1-50 - donut + orbit_rings 3D ASCII, HSV-to-RGB hue rotation hue=(time_hue + t * 160.0) % 360.0, ease-out-cubic 150ms",
+    "context_compaction": "C:/Users/Zonia/Desktop/jcode-0.12.4/src/compaction.rs:1-100 - reactive+proactive+semantic summarization at 80% token-limit",
+    "top_3_by_leverage": [
+      "Debounced broadcast state machine (swarm.rs:254-359)",
+      "Structured log formatter with rate limiting (logging.rs:145-426)",
+      "Background context compaction (compaction.rs:1-100)"
+    ]
+  },
+
+  "what_sanctum_shipped_this_turn": {
+    "mesh_coordinator": "automations/mesh-coordinator.ps1 - Register/Check/Heartbeat/Release file-locks under _shared-memory/mesh-locks/ with TTL. Smoke-tested 6/6 PASS. Use it to claim 'jcode-port' or 'eve-exe-account-viewer'.",
+    "bot_lifecycle": "automations/bot-lifecycle.ps1 - refcount Acquire/Release/Sweep for local MCP bots. State in _shared-memory/bot-lifecycle.json. Bots sleep at refcount=0 + idle>N; wake on next Acquire.",
+    "heartbeat_sweep": "automations/heartbeat-sweep.ps1 - pruned 25 stale heartbeats this turn.",
+    "eve_py_crash_hardening": "eve.py:808-845 + 1302-1340 - dispatch wrapped with timeout=180s + try/except. Use as base for your account-viewer; hardening already in place.",
+    "docker_autostart": "settings-store.json AutoStart=true (operator 19:45Z 'docker start on bootup'). Pull in automations/fleet-autostart.ps1 next turn for the post-Docker bot bringup."
+  },
+
+  "recommended_next_action": [
+    "powershell -File automations/mesh-coordinator.ps1 -Action Register -Slug sinister-term -Focus jcode-port-animations -TtlSeconds 7200 -BlastRadius lane",
+    "powershell -File automations/mesh-coordinator.ps1 -Action Register -Slug sinister-term -Focus eve-exe-account-viewer -TtlSeconds 7200 -BlastRadius lane",
+    "Pull eve.py before editing - sanctum edited 808-1340 this turn",
+    "Port the three top-leverage jcode patterns; file paths + line ranges above"
+  ],
+
+  "no_blocker": "Informational - no ack required."
+}

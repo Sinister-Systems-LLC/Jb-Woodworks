@@ -1,0 +1,12 @@
+{
+    "ts":  "2026-05-24T11:26:50.1997717-04:00",
+    "project":  "snap-emulator-api",
+    "agent":  "snap-emulator-api",
+    "accent":  "purple",
+    "kind":  "headless",
+    "launcher_version":  "v6",
+    "outputs":  {
+                    "project":  "snap-emulator-api",
+                    "mode":  "resume"
+                }
+}

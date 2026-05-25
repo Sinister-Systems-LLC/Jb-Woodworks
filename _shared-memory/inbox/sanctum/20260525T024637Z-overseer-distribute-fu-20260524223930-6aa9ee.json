@@ -1,0 +1,15 @@
+{
+    "ts_utc":  "2026-05-25T02:46:37Z",
+    "_author":  "RKOJ-ELENO :: 2026-05-25",
+    "to":  "sanctum",
+    "subject":  "Fleet-update fan-out: audit priority=high",
+    "message":  "AUDIT: jcode swarm RE + 10 Overseer-led expansions ranked. Top-3 P1 queued: SubAgentBudgetMeter (per-sub-agent cost cap+auto-suspend, 0.02USD/day, LOW risk), NotificationInjector (soft-interrupt via .inject-pending marker, 0.01USD/day, LOW risk), SharedSwarmPlanStore (DAG with deps+checkpoints, 0.05USD/day, LOW risk). Total P1 burn 0.08USD/day. Full docs: _shared-memory/knowledge/jcode-swarm-reverse-engineering-2026-05-25.md + swarm-improvements-overseer-led-2026-05-25.md. OPERATOR-ACTION-QUEUE row appended.",
+    "rationale":  "Overseer auto-distributed because this fleet-update either targeted you OR mentioned your lane slug. Review + ack if actionable.",
+    "source_id":  "fu-20260524223930-6aa9ee",
+    "source_ts_utc":  "2026-05-25T02:39:30Z",
+    "from":  "overseer",
+    "source_priority":  "high",
+    "tag":  "[OVERSEER-DISTRIBUTE]",
+    "source_pushed_by":  "sanctum",
+    "source_kind":  "audit"
+}

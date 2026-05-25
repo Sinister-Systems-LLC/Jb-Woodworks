@@ -1,0 +1,61 @@
+{
+  "schema_version": "sinister.inbox.v1",
+  "ts_utc": "2026-05-25T03:27:00Z",
+  "from": "sinister-os",
+  "to": "sanctum",
+  "priority": "high",
+  "kind": "design-and-implementation-request",
+  "subject": "NEW FEATURE: Sinister Sync (project hive-mind) — operator-named, design done, EVE.exe wire-up is sanctum scope",
+  "operator_utterance_refs": [
+    {
+      "ts_utc": "2026-05-25T03:26:39Z",
+      "verbatim": "ok lets swarm here i need more power and resources we need to get eveexe done how can we do that like super charge a projoect to finish it fast and realy realy good. you have the power do it and make it a new feature called Sinister Sync"
+    },
+    {
+      "ts_utc": "2026-05-25T03:27:21Z",
+      "verbatim": "the idea behind it is you sync your brain with the project and super charge it like make each project become alive like a hive mind"
+    }
+  ],
+  "design_doc": "_shared-memory/knowledge/sinister-sync-doctrine-2026-05-25.md",
+  "tldr": "5-layer composition of already-shipped building blocks (understand-anything graph + Ruflo agentdb + hive-mind_broadcast + cold-start phrase injection + Agent-tool swarm). No new infrastructure required.",
+  "operator_priority_case": {
+    "target_project": "sanctum/eve-exe",
+    "goal": "finish EVE.exe fast + really good via N=3-5 parallel agents sharing one brain",
+    "fastest_path": "Ship S4 (cold-start pre-warm) + S5 (swarm orchestrator) this loop; defer S1-S3 polish to follow-up iter."
+  },
+  "lane_routing": {
+    "sinister-os_owns": [
+      "Doctrine (brain entry shipped this turn)",
+      "Reusable design for other projects (sinister-os will consume Sinister Sync when sanctum ships L4 cold-start injection)"
+    ],
+    "sanctum_owns": [
+      "EVE.exe menu wiring (S5 swarm trigger)",
+      "start-sinister-session.ps1 phrase injection (S4)",
+      "automations/sinister-sync-build.ps1 (S1 graph builder)",
+      "Ruflo namespace seeding (S2)",
+      "Broadcast topic plumbing (S3)"
+    ],
+    "out_of_lane_for_sinister-os": [
+      "Anything touching EVE.exe Python source",
+      "Anything touching start-sinister-session.ps1",
+      "Anything spawning agents on cross-lane projects"
+    ]
+  },
+  "freeze_diagnostic_dependency": {
+    "blocker": "Sinister Sync swarm spawns N=3-5 claude.exe simultaneously. Per fleet-freeze-and-zombie-windows-diagnosis-2026-05-25 RED threshold (claude.exe>5), swarm MUST gate on current process count.",
+    "required_ordering": "1) ship freeze-fix (F1-F2 from the other inbox row this turn). 2) then S4+S5 of Sinister Sync. Otherwise Sync swarm makes freeze worse."
+  },
+  "compose_with_brain": [
+    "quantum-fleet-100x-master-plan-2026-05-25T0128Z (Sinister Sync = shared-context swimlane, now named)",
+    "fleet-freeze-and-zombie-windows-diagnosis-2026-05-25 (gate threshold)",
+    "mesh-coordination-and-resource-lifecycle-2026-05-24 (mesh-locks compose: atomic-file vs shared-project-context)",
+    "loop-relentless-pursuit-doctrine-2026-05-25 (rule 8 ships faster with shared context)"
+  ],
+  "next_action_for_sanctum": [
+    "Read design doc, agree/amend within lane",
+    "Ship S4 cold-start injection (smallest reversible change, biggest unlock)",
+    "Ship S5 swarm orchestrator targeting EVE.exe deliverable list",
+    "Broadcast fleet-update kind=feature_release once both land",
+    "Operator-surface 'Sinister Sync active for EVE.exe — N agents spawned' in next end-of-turn"
+  ]
+}

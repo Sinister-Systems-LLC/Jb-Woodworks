@@ -1,0 +1,15 @@
+{
+    "ts_utc":  "2026-05-25T02:45:54Z",
+    "_author":  "RKOJ-ELENO :: 2026-05-25",
+    "to":  "sinister-term",
+    "subject":  "Fleet-update fan-out: doctrine_update priority=normal",
+    "message":  "BRAIN updated: overseer-audit-sinister-term-2026-05-25 - Overseer first-fire audit -- sinister-term lane",
+    "rationale":  "Overseer auto-distributed because this fleet-update either targeted you OR mentioned your lane slug. Review + ack if actionable.",
+    "source_id":  "fu-20260524223359-b24de0",
+    "source_ts_utc":  "2026-05-25T02:33:59Z",
+    "from":  "overseer",
+    "source_priority":  "normal",
+    "tag":  "[OVERSEER-DISTRIBUTE]",
+    "source_pushed_by":  "sanctum",
+    "source_kind":  "doctrine_update"
+}

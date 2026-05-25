@@ -1,0 +1,102 @@
+# compose.doh.yml — Sinister Mesh M5 Layer-2 overlay (DoH per-node via cloudflared)
+# Author: RKOJ-ELENO :: 2026-05-24
+#
+# Status: SCAFFOLDED (compose validates; no live cloudflared daemon deployed yet).
+#
+# Intent (operator verbatim 2026-05-24, on the 3-layer anonymity stack):
+#   "take note these servers need to link over internet as well and be completely
+#    safe with like a VPN setup or something like that for complete anonymity ...
+#    all routing needs to pristine and efficient"
+#
+# Three-layer anonymity model:
+#   Layer 1 — tailnet (compose.mesh.yml) — peer↔peer encryption, exit nodes
+#   Layer 2 — DoH (THIS FILE)            — DNS queries encrypted to Cloudflare/NextDNS
+#   Layer 3 — per-app proxy (deferred)   — selective egress routing
+#
+# What this overlay adds:
+#   - A `cloudflared` sidecar service that runs in `proxy-dns` mode (NOT tunnel mode).
+#     Listens on UDP/TCP :5053 inside the `mesh` bridge network and forwards every
+#     DNS query upstream to 1.1.1.1 / 1.0.0.1 over HTTPS (DoH).
+#   - Default port 5053 (NOT 53) to avoid collision with the host's systemd-resolved
+#     or Windows DNS Client service on :53.
+#
+# What this overlay does NOT do:
+#   - Rewrite /etc/resolv.conf or Windows DNS settings. Operator opts-in per step
+#     in DOH-DEPLOY.md.
+#   - Authenticate to NextDNS. The default upstream is Cloudflare 1.1.1.1; switching
+#     to NextDNS requires the operator's NextDNS profile ID and a config edit.
+#   - Block ads/trackers by itself. Cloudflare 1.1.1.1 is neutral; use 1.1.1.2
+#     (Cloudflare Family) or NextDNS for filtering.
+#
+# How to apply (per-node):
+#   docker compose -f docker-compose.yml -f compose.hardened.yml \
+#                  -f compose.mesh.yml   -f compose.doh.yml up -d
+#
+#   # Verify from the host:
+#   dig @127.0.0.1 -p 5053 example.com +short
+#
+# Image pin:
+#   `cloudflare/cloudflared:latest` — Cloudflare publishes signed multi-arch images;
+#   pinning to `latest` is acceptable for M5 scaffold. When the deploy lands, pin
+#   to a specific tag (e.g. `2025.5.0` or whichever stable matches the cloudflared
+#   release notes at https://github.com/cloudflare/cloudflared/releases ).
+#
+# Honest caveat re: Windows-Docker:
+#   The cloudflared container itself runs fine on Docker Desktop for Windows
+#   (no host-networking dependency, no /dev/net/tun required). However, pointing
+#   the Windows host's DNS at the container needs `netsh dns add encryption` —
+#   see DOH-DEPLOY.md § Windows host path.
+
+services:
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: sinister-cloudflared
+    restart: unless-stopped
+
+    # proxy-dns mode: cloudflared listens on :5053 and forwards every query upstream
+    # over HTTPS. Bootstrap to 1.1.1.1 happens inside the binary before the DoH
+    # connection is established (no chicken-and-egg DNS-to-resolve-DNS-server).
+    command:
+      - proxy-dns
+      - --port=5053
+      - --address=0.0.0.0
+      - --upstream=https://1.1.1.1/dns-query
+      - --upstream=https://1.0.0.1/dns-query
+
+    volumes:
+      - ./config/cloudflared/config.yml:/etc/cloudflared/config.yml:ro
+      - cloudflared-state:/etc/cloudflared/state
+
+    # Attach to the shared mesh bridge so other services in the stack can resolve
+    # via cloudflared at sinister-cloudflared:5053 (DNS round-robin inside the net).
+    networks:
+      - mesh
+
+    # Optional: expose 5053 on the loopback of the host so `dig @127.0.0.1 -p 5053`
+    # works for verification + the operator can opt-in resolv.conf at their own
+    # pace. Bound to 127.0.0.1 only — do NOT expose to LAN.
+    ports:
+      - "127.0.0.1:5053:5053/udp"
+      - "127.0.0.1:5053:5053/tcp"
+
+    healthcheck:
+      # cloudflared --version is the safest cross-version smoke; the image is
+      # minimal and does not ship `dig`. A deeper check (actual DoH probe) is
+      # documented in DOH-DEPLOY.md § Verification commands.
+      test: ["CMD", "cloudflared", "--version"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+networks:
+  mesh:
+    # Inherits the `mesh` network defined in docker-compose.yml / compose.mesh.yml.
+    # Declaring `external: false` here would create a fresh net; we want to attach.
+    name: sinister-mesh
+    external: true
+
+volumes:
+  cloudflared-state:
+    name: sinister-cloudflared-state

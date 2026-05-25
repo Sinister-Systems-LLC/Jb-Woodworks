@@ -10,6 +10,50 @@ The Sanctum-side mirror of `SESSION-START/02-OPERATOR-QUEUE.md`, with checkboxes
 
 ---
 
+## 2026-05-25T02:36Z — 🔴 HIGH — Fleet freeze + zombie windows diagnosis (5 fixes)
+
+> Lane: sinister-snap-api-quantum (incubation; trickle to sanctum)
+> Diagnostic: `automations/diagnose-fleet-freeze.ps1` shipped + smoke-tested 2026-05-25T02:36Z; full report at `_shared-memory/diagnostics/fleet-freeze-2026-05-25T023619Z.json`
+> Brain entry: `_shared-memory/knowledge/fleet-freeze-and-zombie-windows-diagnosis-2026-05-25.md`
+> Addendum to master plan: `_shared-memory/plans/quantum-fleet-100x-master-plan-2026-05-25T0128Z/addendum-freeze-fix-and-fleet-inventory.md`
+
+Symptoms verified: 92 conhost + 26 powershell + 14 claude (8.3 GB) + 6 zombie sessions (>4 hr) + 12 failing scheduled tasks + Ollama not a Windows service.
+
+- [ ] **F1 (HIGH) — Reap zombies.** `powershell -File D:\Sinister Sanctum\automations\diagnose-fleet-freeze.ps1 -KillZombies -Confirm` (kills 6 claude/mintty sessions older than 4h; reversible — operator re-spawns affected lanes if needed)
+- [ ] **F2 (HIGH) — Investigate 4 host-crash scheduled tasks** (LastResult 4294770688 = 0xFFFD0000): SinisterAPKAutoPush, SinisterAPKWatchdog, SinisterCustodian, SinisterSanctumDailyBackup. Likely missing `-WindowStyle Hidden` + redirected stdio. Use `automations/sinister-headless.ps1` wrapper as the canonical fix shape.
+- [ ] **F3 (MED) — Register Ollama as Windows service.** `sc.exe create Ollama binPath='C:\Program Files\Ollama\ollama.exe serve' start=auto displayname='Ollama LLM Server'`. Makes 13 Ollama-backed bots reachable from SYSTEM context. Reversible via `sc.exe delete Ollama`.
+- [ ] **F4 (MED) — Stagger watchdog cadences.** MeshCoordSweep + ToolAutotrigger + Overseer + APKWatchdog + LoopRelentlessWatchdog + fleet-monitor all on 5-min grid → 6+ ps spawns/cycle. Offset to 5/6/7/8/9/10 min boundaries.
+- [ ] **F5 (LOW) — Disable dormant MCP servers** in `~/.claude.json` (playwright / context7 / memory / sequential-thinking) until install scripts run. Each dormant MCP that hangs on init blocks the parent Claude session = "freeze + can't close" symptom.
+
+---
+
+## 2026-05-25T02:35Z -- 🟡 MEDIUM -- Overseer-led swarm expansions top-3 P1 approval
+
+> Author: RKOJ-ELENO :: 2026-05-25 (sanctum-jcode-swarm-review lane)
+
+Read-only audit of jcode-0.12.4 swarm primitives vs Sinister current swarm surfaced 22-row coverage matrix + 6 gap categories. Full audit: `_shared-memory/knowledge/jcode-swarm-reverse-engineering-2026-05-25.md`. Ten Overseer-led expansions ranked (P1/P2/P3) at `_shared-memory/knowledge/swarm-improvements-overseer-led-2026-05-25.md`. Top-3 P1 for approval:
+
+- [ ] **P1.1 SubAgentBudgetMeter** -- per-sub-agent cost cap ($0.50 default) + auto-suspend via `agent-actions.ps1 -Action SaveAndClose`. Closes the "swarm just ate $2 in 4 min" failure mode jcode prevents. Cost-eq $0.02/day. Risk: LOW (auto-applies reversible SaveAndClose only). Files: 2 new (1 sensor module + 1 config row).
+- [ ] **P1.2 NotificationInjector** -- soft-interrupt via `.inject-pending` marker file so HIGH-priority operator/inbox rows reach mid-turn at next tool boundary instead of waiting for end-of-turn poll. Cost-eq $0.01/day. Risk: LOW (read-only marker; no auto-state-mutation). Files: 1 new module + 1 line in `start-sinister-session.ps1` Build-Phrase.
+- [ ] **P1.3 SharedSwarmPlanStore** -- `_shared-memory/swarm-plans/<swarm-id>/plan.json` DAG with deps + checkpoints + `automations/swarm-plan.ps1` (Create/List/Assign/AssignNext/Complete/Status) + Overseer `PlanProgressSensor` for stall detection. Unlocks `comm_assign_next`-style multi-lane parallel refactors. Cost-eq $0.05/day. Risk: LOW (additive; no existing file mutated). Files: 1 script + 1 sensor + 1 dir contract.
+
+Total daily burn for all 3 ~ $0.08/day (well under per-attachment $5 Overseer cap). Each ships with mesh-coord lock + reversibility plan + smoke evidence + lessons-store row per `docs/03-watch-architecture.md` apply-gate. Approve any/all to schedule P1 ship lane.
+
+---
+
+## 2026-05-25T02:30Z -- 🔴 CRITICAL -- Windows Defender quarantines fresh EVE.exe builds (PyInstaller bootloader false-positive)
+
+> Author: RKOJ-ELENO :: 2026-05-25 (sanctum lane :: final-rebuild subagent)
+
+EVE.exe rebuild is **structurally blocked** by Windows Defender real-time scanning. PyInstaller writes `build\EVE\EVE.exe` (~2.2 MB bootloader), then Defender quarantines it within ~1 second, causing `FileNotFoundError [WinError 2]` on the immediate chmod. Confirmed across 4 rebuild attempts tonight (logs: `automations/eve-launcher/build-attempt{,2,3,4}.log`). Multiple stale failed rebuilds also wiped the prior-session stable mirror at `C:\Users\Zonia\.eve\` (the .bat's `rmdir /S /Q %USERPROFILE%\.eve` runs before mirror-copy), leaving a broken `EVE.exe` shell with no `base_library.zip`. Mirror has been removed so `Sinister Start.bat` now falls through to the PS1 launcher (still works fine).
+
+**Source-side fixes ARE landed** (verified clean): all 13 Python + 8 PS1 parse-clean, `args[0].Groups` PS5.1 scriptblock bug gone, `Press Enter to exit` removed from `eve-bulk-oauth-login.ps1`, `Sideprojects` removed from main_menu.py, NO-CAP/LINKED/UNLINKED panel cleanup landed, accounts.json correctly has 2 entries. Animation loop test runs cleanly (tick=0, tick=1 progressing). Stale `Press Enter to exit` remains in `automations/fix-rkoj-login.ps1` (different file, NOT a P0 target).
+
+- [ ] **Operator fix (one-time):** open Defender Settings → Virus & threat protection → Manage settings → Add an exclusion → Folder → `D:\Sinister Sanctum\automations\eve-launcher\` AND `C:\Users\Zonia\.eve\`. Then re-run `automations\eve-launcher\build-eve-exe.bat`.
+- [ ] **Operator fallback (no fix needed):** continue using `Sinister Start.bat` which auto-falls-through to PS1 launcher when EVE.exe is missing. All source-level P0 fixes work via PS1 path.
+
+---
+
 ## 2026-05-25T02:14Z -- 🟠 HIGH -- Leo handoff READY-WITH-CAVEATS -- 1 trivial caveat (auto-resolves)
 
 > Author: RKOJ-ELENO :: 2026-05-25 (sanctum-helper-gamma-leo-handoff lane)
@@ -1936,6 +1980,63 @@ Doctrine: _shared-memory/knowledge/do-not-revert-operator-canonical-protections-
 ---
 
 ## 2026-05-25T02:05:54Z -- ðŸŸ¡ medium -- Drop-link routing proposal: PROJECT-FORK for github-repo
+> Author: RKOJ-ELENO :: 2026-05-24 (sanctum lane / link-route)
+
+**URL:** https://github.com/openai/whisper
+**Ingest id:** 20260524T212236Z-c38757
+**Decision:** PROJECT-FORK
+**Rationale:** hasDocker=False srcDirs=3 (complete app)
+**Proposed target:** projects/_pending-from-links/<slug>/
+**Download dir:** D:\Sinister Sanctum\_shared-memory\inbox\link-ingest\processed\20260524T212236Z-c38757-github.com_openai_whisper
+
+**Operator actions:**
+- [ ] approve (sanctum executes the action next lane turn)
+- [ ] dismiss (link-route marks decided=dismissed; sweep removes processed dir after 7 days)
+- [ ] override -> different action (reply via inbox to sanctum)
+
+---
+
+## 2026-05-25T02:47:02Z -- ðŸŸ¡ medium -- Drop-link routing proposal: PROJECT-FORK for github-repo
+> Author: RKOJ-ELENO :: 2026-05-24 (sanctum lane / link-route)
+
+**URL:** https://github.com/openai/whisper
+**Ingest id:** 20260524T212236Z-c38757
+**Decision:** PROJECT-FORK
+**Rationale:** hasDocker=False srcDirs=3 (complete app)
+**Proposed target:** projects/_pending-from-links/<slug>/
+**Download dir:** D:\Sinister Sanctum\_shared-memory\inbox\link-ingest\processed\20260524T212236Z-c38757-github.com_openai_whisper
+
+**Operator actions:**
+- [ ] approve (sanctum executes the action next lane turn)
+- [ ] dismiss (link-route marks decided=dismissed; sweep removes processed dir after 7 days)
+- [ ] override -> different action (reply via inbox to sanctum)
+
+---
+
+
+## [REVERT-DETECTED] 2026-05-25T03:09:58Z -- 2 canonical protection(s) FAILED
+- P13 :: every active lane has >=1 resume-point
+- P12 :: jcode-parity-probe real-fails = 0
+Doctrine: _shared-memory/knowledge/do-not-revert-operator-canonical-protections-2026-05-23.md
+
+## 2026-05-25T03:32:34Z -- ðŸŸ¡ medium -- Drop-link routing proposal: PROJECT-FORK for github-repo
+> Author: RKOJ-ELENO :: 2026-05-24 (sanctum lane / link-route)
+
+**URL:** https://github.com/openai/whisper
+**Ingest id:** 20260524T212236Z-c38757
+**Decision:** PROJECT-FORK
+**Rationale:** hasDocker=False srcDirs=3 (complete app)
+**Proposed target:** projects/_pending-from-links/<slug>/
+**Download dir:** D:\Sinister Sanctum\_shared-memory\inbox\link-ingest\processed\20260524T212236Z-c38757-github.com_openai_whisper
+
+**Operator actions:**
+- [ ] approve (sanctum executes the action next lane turn)
+- [ ] dismiss (link-route marks decided=dismissed; sweep removes processed dir after 7 days)
+- [ ] override -> different action (reply via inbox to sanctum)
+
+---
+
+## 2026-05-25T04:19:28Z -- ðŸŸ¡ medium -- Drop-link routing proposal: PROJECT-FORK for github-repo
 > Author: RKOJ-ELENO :: 2026-05-24 (sanctum lane / link-route)
 
 **URL:** https://github.com/openai/whisper

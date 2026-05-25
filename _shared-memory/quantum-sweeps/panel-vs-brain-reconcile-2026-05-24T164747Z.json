@@ -1,0 +1,202 @@
+{
+  "schema": "sinister-seraphim.reconcile-corpora.v1",
+  "label": "panel-vs-brain",
+  "corpus_a_root": "D:/Sinister Sanctum/projects/sinister-panel",
+  "corpus_b_root": "D:/Sinister Sanctum/_shared-memory/knowledge",
+  "n_corpus_a": 216,
+  "n_corpus_b": 160,
+  "cl_threshold": 0.3,
+  "sim_threshold": 0.5,
+  "total_pairs": 34560,
+  "reconciliation_candidates_count": 10,
+  "top_reconciliation_candidates": [
+    {
+      "rank": 1,
+      "classical": 0.37785061539604514,
+      "sim": 0.9015074912491082,
+      "combined": 1.2793581066451534,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/CLAUDE.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-chatbot-direction-2026-05-24.md"
+    },
+    {
+      "rank": 2,
+      "classical": 0.30213481465554753,
+      "sim": 0.9439242748615939,
+      "combined": 1.2460590895171415,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/leo_dev/docs/LETSTEXT-CANONICAL-REFERENCE.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-ui-canonical-dashboard-skeleton-inheritance-2026-05-24.md"
+    },
+    {
+      "rank": 3,
+      "classical": 0.5362452770400548,
+      "sim": 0.6297984341124021,
+      "combined": 1.1660437111524569,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/leo_dev/docs/CHATBOT-DIRECTION-2026-05-24.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-chatbot-direction-2026-05-24.md"
+    },
+    {
+      "rank": 4,
+      "classical": 0.31216355350212366,
+      "sim": 0.7912813032890738,
+      "combined": 1.1034448567911974,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/.claude/memory/p.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/panel/screenshot-batch-triage-pattern.md"
+    },
+    {
+      "rank": 5,
+      "classical": 0.40330167744829726,
+      "sim": 0.6433462046765559,
+      "combined": 1.0466478821248533,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/leo_dev/docs/OVERHAUL-2026-05-16-letstext-map.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-ui-canonical-dashboard-skeleton-inheritance-2026-05-24.md"
+    },
+    {
+      "rank": 6,
+      "classical": 0.3138948592719025,
+      "sim": 0.6982893667360691,
+      "combined": 1.0121842260079716,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/.claude/memory/p.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/launcher-v6-concise-rewrite-2026-05-23.md"
+    },
+    {
+      "rank": 7,
+      "classical": 0.3917897085003432,
+      "sim": 0.566572460132488,
+      "combined": 0.9583621686328312,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/.claude/memory/p.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sanctioned-bypasses-doctrine-2026-05-21.md"
+    },
+    {
+      "rank": 8,
+      "classical": 0.322696690124265,
+      "sim": 0.5659425619125417,
+      "combined": 0.8886392520368067,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/.claude/memory/p.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/claude-sandbox-autonomy-grant.md"
+    },
+    {
+      "rank": 9,
+      "classical": 0.3085822610482226,
+      "sim": 0.5769514951831148,
+      "combined": 0.8855337562313375,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/.claude/memory/p.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/apk-classifier-aup-doctrine.md"
+    },
+    {
+      "rank": 10,
+      "classical": 0.31529165354191596,
+      "sim": 0.5466049098945198,
+      "combined": 0.8618965634364357,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/.claude/memory/p.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/no-bullshit-tested-before-claimed-doctrine-2026-05-23.md"
+    }
+  ],
+  "top_highest_classical": [
+    {
+      "rank": 1,
+      "classical": 0.5362452770400548,
+      "sim": 0.6297984341124021,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/leo_dev/docs/CHATBOT-DIRECTION-2026-05-24.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-chatbot-direction-2026-05-24.md"
+    },
+    {
+      "rank": 2,
+      "classical": 0.40330167744829726,
+      "sim": 0.6433462046765559,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/leo_dev/docs/OVERHAUL-2026-05-16-letstext-map.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-ui-canonical-dashboard-skeleton-inheritance-2026-05-24.md"
+    },
+    {
+      "rank": 3,
+      "classical": 0.3917897085003432,
+      "sim": 0.566572460132488,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/.claude/memory/p.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sanctioned-bypasses-doctrine-2026-05-21.md"
+    },
+    {
+      "rank": 4,
+      "classical": 0.37785061539604514,
+      "sim": 0.9015074912491082,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/CLAUDE.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-chatbot-direction-2026-05-24.md"
+    },
+    {
+      "rank": 5,
+      "classical": 0.37759554125652933,
+      "sim": 0.2332652678437106,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/leo_dev/docs/CHATBOT-DIRECTION-2026-05-24.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-chatbot-test-env-findings-2026-05-24.md"
+    },
+    {
+      "rank": 6,
+      "classical": 0.34981326064491364,
+      "sim": 0.2053421346931229,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/.claude/memory/p.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/agent-autonomy-push-and-completion-2026-05-23.md"
+    },
+    {
+      "rank": 7,
+      "classical": 0.3318251602151854,
+      "sim": 0.193374533732045,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/.claude/memory/p.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/auto-mode-launcher-pattern.md"
+    },
+    {
+      "rank": 8,
+      "classical": 0.3278156426351653,
+      "sim": 0.27143249006987885,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/.claude/memory/p.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/cross-agent-coordination.md"
+    },
+    {
+      "rank": 9,
+      "classical": 0.322696690124265,
+      "sim": 0.5659425619125417,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/.claude/memory/p.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/claude-sandbox-autonomy-grant.md"
+    },
+    {
+      "rank": 10,
+      "classical": 0.31830180812189657,
+      "sim": 0.22238139384050945,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/.claude/memory/p.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/_INDEX.md"
+    },
+    {
+      "rank": 11,
+      "classical": 0.3177803062038367,
+      "sim": 0.475203436620819,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/.claude/memory/mcp-tools-reference.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/spawned-window-capabilities-2026-05-23.md"
+    },
+    {
+      "rank": 12,
+      "classical": 0.3171625116440477,
+      "sim": 0.21600206186262744,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/automations/_README.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/spawned-window-capabilities-2026-05-23.md"
+    },
+    {
+      "rank": 13,
+      "classical": 0.31529165354191596,
+      "sim": 0.5466049098945198,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/.claude/memory/p.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/no-bullshit-tested-before-claimed-doctrine-2026-05-23.md"
+    },
+    {
+      "rank": 14,
+      "classical": 0.3138948592719025,
+      "sim": 0.6982893667360691,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/.claude/memory/p.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/launcher-v6-concise-rewrite-2026-05-23.md"
+    },
+    {
+      "rank": 15,
+      "classical": 0.31216355350212366,
+      "sim": 0.7912813032890738,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-panel/source/.claude/memory/p.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/panel/screenshot-batch-triage-pattern.md"
+    }
+  ],
+  "wall_seconds": 57.84199833869934
+}

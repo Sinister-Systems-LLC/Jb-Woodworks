@@ -64,57 +64,69 @@ CHARACTER_LOCK = (
 )
 
 DESIGN_DNA = (
-    "DESIGN LANGUAGE — PSYCHEDELIC SELLING-PACK (operator hard-canonical\n"
-    "2026-05-23T17:55Z: 'i want psycheldilic art not shitt crown king backgrounds').\n"
-    "Snap-thread selling-pack STRUCTURE + PSYCHEDELIC art ART STYLE fused:\n"
+    "DESIGN LANGUAGE — DARK PROFESSIONAL SLEEK SELLING-PACK FOR JOKR-BRAND\n"
+    "SNAPCHAT ACCOUNT SALES (operator hard-canonical 2026-05-23T18:26Z verbatim:\n"
+    "'not so bright background more suttle professional sleek approach').\n"
     "\n"
-    "- BACKGROUND: psychedelic — swirling fluid liquid-paint patterns, fractal\n"
-    "  mandala motifs, oil-on-water iridescence, lava-lamp morph shapes, op-art\n"
-    "  optical-illusion patterns. Saturated purples + electric magenta + cyan +\n"
-    "  lime-green + chromatic accents. 1960s-70s rock-poster + risograph-grain\n"
-    "  vibes. NOT royal court, NOT cosmic starfield, NOT arcane library, NOT\n"
-    "  casino floor, NOT stage curtains — those are the rejected 'crown king'\n"
-    "  scenes.\n"
-    "- WHITE wavy negative-space cutouts at slide edges (kept from snap-thread\n"
-    "  DNA — operator's selling-pack convention)\n"
-    "- BOLD WHITE OUTLINED sans-serif titles — modern geometric sans, thick\n"
-    "  white fill, subtle dark-purple drop-shadow, ALL CAPS for hero titles\n"
-    "- 3D GLOSSY PURPLE/CHROMATIC icons + 3D lettering for prices and numbers\n"
-    "  (chunky 3D-extruded shapes with highlight gradients, iridescent chrome\n"
-    "  highlights where it fits)\n"
-    "- Where shown: telegram-paper-plane icon + @handle in a pale-purple pill\n"
-    "  ribbon footer at the bottom\n"
+    "PRODUCT: JOKR-brand Snapchat accounts (real USA SIM creation, 21-day\n"
+    "proxy, 2FA delivered, Adspower wired, Bitmoji customization, 70+ adds/day).\n"
+    "Powered by Sinister Panel / Sinister Snap automation. JOKR is the brand.\n"
+    "\n"
+    "- BACKGROUND: DEEP DARK rich PURPLE base (think #14062E → #28104E gradient).\n"
+    "  SUBTLE texture only — fine paisley/swirl pattern at low opacity (~10-15%)\n"
+    "  for depth, NOT loud psychedelic mandalas. Soft glow at the focal point.\n"
+    "  Overall vibe: dark luxury / sleek commerce / premium tech ad. Think the\n"
+    "  Apple-store-after-hours look in deep purple, not 60s rock poster.\n"
+    "- WHITE wavy negative-space cutouts at slide edges — RESTRAINED versions\n"
+    "  of the operator's reference Snap thread convention; thin and elegant\n"
+    "  rather than thick and pillowy.\n"
+    "- BOLD WHITE sans-serif titles — modern geometric sans (Inter / Plus Jakarta\n"
+    "  / Manrope style), clean white fill, subtle dark-purple drop-shadow.\n"
+    "  ALL CAPS for hero titles. Professional, not playful.\n"
+    "- 3D GLOSSY PURPLE icons + 3D LETTERING for prices/numbers — refined chunky\n"
+    "  3D-extruded with highlight gradients (Apple-keynote feel). These are the\n"
+    "  one place chromatic flair is allowed; the BACKGROUND stays restrained.\n"
+    "- Telegram-paper-plane icon + @handle pill-ribbon footer where appropriate\n"
+    "- Snapchat ghost yellow-on-white accents ONLY where Snap-relevant\n"
     "- 16:9 wide aspect for thread slides (target ~1500×900 or 1920×1080)\n"
+    "- JOKR brand wordmark MUST read clearly on every slide (operator 18:28Z:\n"
+    "  'but we are called jokr')\n"
 )
 
 REJECTION_ANTI_PATTERNS = (
     "ANTI-PATTERNS — do NOT repeat any of these:\n"
-    "- NO 'crown king' backgrounds: royal court, throne rooms, gilded banners,\n"
-    "  arcane libraries, cosmic starfields, casino floors, stage curtains\n"
-    "  (operator explicitly rejected these)\n"
-    "- NO porcelain-white skin on the JKOR mascot — purple skin only\n"
+    "- NO BRIGHT / BLOWN-OUT / WASHED-OUT / OVERLIT backgrounds — keep backgrounds\n"
+    "  DEEP DARK PURPLE / restrained (operator 18:24Z + 18:26Z)\n"
+    "- NO loud rock-poster psychedelic mandalas/swirls dominating the frame —\n"
+    "  the operator wants SUBTLE PROFESSIONAL SLEEK, not chaotic-trippy\n"
+    "- NO 'crown king' backgrounds: royal court / throne rooms / arcane libraries\n"
+    "  / cosmic starfields / casino floors / stage curtains (operator 17:55Z)\n"
+    "- NO content unrelated to JOKR-brand Snapchat-account sales — the product\n"
+    "  is Snap accounts SOLD BY JOKR (operator 18:25Z + 18:28Z 'we are called jokr')\n"
+    "- NO porcelain-white skin on the JOKR mascot — purple skin only\n"
     "- NO closed-mouth smirk on the mascot — wide grin\n"
-    "- NO photorealistic / painterly / 3D-rendered CHARACTER — character is 2D\n"
-    "  illustrated / vector (3D treatment is ONLY for icons + numbers + letters)\n"
-    "- NO replacing the JKOR character with the Sinister-Sanctum horned-skull\n"
-    "  mascot — JKOR character is the new anchor\n"
-    "- NO baked text WORDMARK inside the character art (the character is the\n"
-    "  art; wordmarks/titles are separate typography layers)\n"
-    "- NO tame / corporate / minimal flat backgrounds — operator wants\n"
-    "  PSYCHEDELIC visual energy in every slide\n"
+    "- NO photorealistic / painterly / 3D-rendered CHARACTER — 2D vector mascot\n"
+    "  (3D is ONLY for icons + numbers + lettering)\n"
+    "- NO replacing the JOKR character with the Sinister-Sanctum horned-skull\n"
+    "  generic mascot — JOKR mascot is the anchor\n"
+    "- NO baked text wordmark inside character art\n"
+    "- NO cheap / amateurish / cluttered layout — sleek + professional only\n"
+    "- NO loud saturated electric-neon palette — dark purple base + restrained\n"
+    "  accents only\n"
 )
 
 
 # ----- 20 hero slides -----
 
+# Hero titles — JOKR is the brand selling Snapchat accounts.
 HERO_TITLES = [
-    "JOKR ACCOUNTS", "SHOP JOKR", "JOKR PREMIUM",
-    "GET JOKR", "JOKR DROP", "JOKR EXCLUSIVE",
-    "JOIN JOKR", "JOKR DELUXE", "JOKR ELITE",
-    "JOKR LAUNCH", "OWN JOKR", "JOKR FAM",
-    "JOKR DECK", "PURE JOKR", "JOKR PASS",
-    "JOKR CIRCLE", "JOKR ONLY", "JOKR HOUSE",
-    "JOKR EDGE", "JOKR NIGHT",
+    "JOKR SNAPS", "JOKR SNAPCHAT", "JOKR ACCOUNTS",
+    "SNAPS BY JOKR", "GET JOKR SNAPS", "JOKR SNAP VAULT",
+    "PREMIUM JOKR SNAPS", "JOKR SNAP DROP", "BULK JOKR SNAPS",
+    "JOKR SNAP DEALS", "JOKR USA SNAPS", "REAL SNAPS BY JOKR",
+    "JOKR SNAP PACK", "JOKR SNAP SHOP", "JOKR SNAP ELITE",
+    "FRESH JOKR SNAPS", "JOKR SNAP STOCK", "JOKR HUSTLE PACK",
+    "JOKR SNAP CIRCLE", "JOKR PHASE I",
 ]
 
 
@@ -141,22 +153,24 @@ def build_hero_variants() -> list[tuple[str, str]]:
 
 # ----- 15 feature-bullet slides -----
 
+# Feature bundles — Snapchat-account selling features (operator 18:25Z).
+# Mined from operator's reference Snap thread at C:\Users\Zonia\Desktop\ART\Snap.
 FEATURE_BUNDLES = [
-    ["Premium Curated Decks", "Daily New Drops", "Trading Card Library", "Exclusive Artwork"],
-    ["Instant Delivery", "Verified Authenticity", "Lifetime Replacement", "24/7 Support"],
-    ["Custom Card Backs", "Personalized Foiling", "Limited Edition", "Numbered Series"],
-    ["Mystery Pack Drops", "Holo-Foil Variants", "Stamped Authenticity", "Owner Registry"],
-    ["100+ Card Designs", "5 Rarity Tiers", "Themed Collections", "Digital + Physical"],
-    ["MM Accepted", "Crypto Payments", "Group Discounts", "Loyalty Rewards"],
-    ["High-Quality Print", "Premium Cardstock", "Foil Detailing", "Collector Sleeves"],
-    ["Direct from Studio", "No Middleman", "Artist Royalties Paid", "Ethical Sourcing"],
-    ["First Access Pass", "Member-Only Drops", "Pre-Launch Pricing", "Founders Circle"],
-    ["Tradeable in Marketplace", "Verified Provenance", "Resale Royalties", "Authenticity NFC Chip"],
-    ["Personalized Recommendations", "Curator's Pick Monthly", "Match-to-Style", "Bundle Builder"],
-    ["Same-Day Shipping", "Discreet Packaging", "Insured Delivery", "Tracked Globally"],
-    ["Custom Mascot Variants", "Personalized Artwork", "Name Engraved", "Wedding-Pack Option"],
-    ["Limited Print Runs", "Numbered to 100", "Signed by Creator", "Certificate Included"],
-    ["Beginner Friendly", "Pro Tier Available", "All Skill Levels", "Tutorial Included"],
+    ["Can Add 70+ People Per Day", "Comes With 21 Days Of Proxy", "Created On Real Mobile Phones", "Created On USA Sim"],
+    ["Adspower Delivered", "Comes With 2FA Secret", "MM Accepted On Orders Of 10+", "Custom Bitmoji Hair + Eye Color"],
+    ["Guaranteed Login", "Private Accounts", "Replacement If No Login", "Instant Delivery"],
+    ["Real USA SIM-Created", "Aged 21+ Days", "Warm-Up Pattern Built In", "Discord Quality Check"],
+    ["Mass-Add Capability", "Cooldown Bypass Tuned", "Friend-Add Velocity 70+/day", "Snap Score Bumped"],
+    ["Bulk Pricing 10+", "Auto-Replacement Policy", "Reseller-Friendly", "MM Accepted Big Orders"],
+    ["Bitmoji Pre-Configured", "Hair + Eye Color Set", "Avatar Style Matched", "Profile Picture Optional"],
+    ["Adspower Profile Wired", "Cookies Pre-Loaded", "Login Sessions Active", "No Cold-Start Risk"],
+    ["No-Bot Detection", "Behavioral Fingerprint Real", "Mobile-Made Not Emulator", "Carrier-Grade SIM"],
+    ["Proxy Rotation 21d", "Geo-Matched USA IP", "Sticky Session Available", "Replacement If Banned <72h"],
+    ["Discreet Delivery via TG", "Inbox Within 30 Min", "Encrypted Handoff", "No Login History Leaked"],
+    ["Volume Tier Discounts", "10+ at $10/each", "20+ at $8/each", "100+ Custom Quote"],
+    ["2FA Backup Codes Sent", "Recovery Email Pre-Set", "TOTP Secret Delivered", "Account Lifelong"],
+    ["Built for Affiliate Hustle", "Built for Outreach", "Built for OnlyFans Promo", "Built for E-Comm DMs"],
+    ["Refund If Login Fails", "Insurance on Bulk Orders", "Replace Within 72hr", "Reseller Tier Discounts"],
 ]
 
 
@@ -183,22 +197,24 @@ def build_feature_variants() -> list[tuple[str, str]]:
 
 # ----- 15 pricing-tier slides -----
 
+# Pricing tiers — Snapchat-account sales pricing (matches operator's reference
+# Snap thread slide 5: $12/$10/$8 per account by volume).
 PRICING_TIERS = [
-    [("$5", "1 Card"), ("$12", "Per 5 Cards"), ("$8", "Per 10+ Cards")],
-    [("$15", "Starter Deck"), ("$45", "Pro Deck"), ("$120", "Master Set")],
-    [("$3", "Single"), ("$25", "Pack of 10"), ("$199", "Complete Series")],
-    [("$10", "1 Print"), ("$8", "Per 5 Prints"), ("$6", "Per 20+ Prints")],
-    [("$20", "Basic Pass"), ("$50", "Premium Pass"), ("$100", "Founders Pass")],
-    [("$7", "Common Pack"), ("$25", "Rare Pack"), ("$99", "Legendary Pack")],
-    [("$12", "1 Booster"), ("$60", "Box of 12"), ("$220", "Sealed Case")],
-    [("$30", "Bronze Tier"), ("$60", "Silver Tier"), ("$120", "Gold Tier")],
-    [("$9", "Card"), ("$24", "Foil Card"), ("$99", "Holo Foil")],
-    [("$15", "Starter"), ("$40", "Standard"), ("$80", "Collector's")],
-    [("$25", "Monthly"), ("$240", "Annual"), ("$600", "Lifetime")],
-    [("$5", "Sticker"), ("$10", "Card"), ("$25", "Sticker+Card Bundle")],
-    [("$50", "Bronze Drop"), ("$150", "Silver Drop"), ("$500", "Gold Drop")],
-    [("$8", "Single Card"), ("$15", "Pair"), ("$40", "Trio")],
-    [("$12", "Print"), ("$80", "Print Set of 8"), ("$200", "Print Set of 25")],
+    [("$12", "1 Account"), ("$10", "per 10 Accounts"), ("$8", "per 20+ Accounts")],
+    [("$15", "Single Snap"), ("$12", "5+ Snaps"), ("$9", "20+ Snaps")],
+    [("$20", "Premium Snap"), ("$15", "5+ Premium"), ("$11", "20+ Premium")],
+    [("$10", "Basic Account"), ("$8", "Bulk 10+"), ("$6", "Bulk 50+")],
+    [("$25", "Bitmoji-Custom"), ("$20", "5+ Bitmoji"), ("$15", "20+ Bitmoji")],
+    [("$12", "USA Account"), ("$10", "USA Bulk 10+"), ("$8", "USA Bulk 25+")],
+    [("$30", "Founders Snap"), ("$25", "5+ Founders"), ("$18", "10+ Founders")],
+    [("$10", "Standard"), ("$15", "+ Adspower"), ("$22", "+ Adspower + Proxy 30d")],
+    [("$12", "Snap Only"), ("$25", "Snap + Discord"), ("$40", "Snap + Discord + IG")],
+    [("$15", "Login Guarantee"), ("$30", "+ Replacement"), ("$50", "+ Replacement + Insurance")],
+    [("$8", "Reseller Tier"), ("$6", "100+ Resell"), ("$5", "500+ Resell")],
+    [("$12", "1 Snap"), ("$60", "Pack of 5"), ("$100", "Pack of 10 + Bonus")],
+    [("$10", "Cold Account"), ("$15", "Warmed Account"), ("$20", "Premium Warmed")],
+    [("$12", "Basic"), ("$24", "Premium + Bitmoji"), ("$48", "Premium + Adspower")],
+    [("$10", "Daily Drop"), ("$8", "Weekly Subscriber"), ("$6", "Monthly Subscriber")],
 ]
 
 
@@ -336,17 +352,18 @@ def build_thread_variants() -> list[tuple[str, str]]:
 
 # ----- 10 product-card mockups -----
 
+# Product cards — mockups of JOKR's Snapchat account product offerings.
 PRODUCT_CARDS = [
-    "1 Card Pack with hologram seal — single pack mockup, JKOR-branded wrapper, gold-foil border",
-    "Booster Box of 12 packs — 3D box mockup, JKOR mascot on the lid, opened to show packs",
-    "Sealed Case — large 3D shipping case, branded JKOR, gold-and-purple tape sealed",
-    "Starter Deck — 60-card deck box, illustrated JKOR cover, see-through window",
-    "Foil Card Showcase — single premium card displayed in protective sleeve + holder",
-    "Subscription Box — monthly mystery-pack mockup, JKOR branded, opening to reveal cards",
-    "Collector's Binder — premium binder with JKOR mascot on cover, open to show cards",
-    "Founders Pass — metallic membership card mockup with JKOR profile + embossed serial",
-    "Gift Bundle — wrapped present with JKOR ribbon + card inside, festive purple-and-gold",
-    "Apparel Drop — hoodie + tee mockup pair, JKOR mascot on back, hangtag attached",
+    "Phone-Screen Mockup — 3D phone showing a fresh Snap account login, JOKR mascot in corner badge, 'Account Ready' overlay",
+    "Bulk Snap Pack — 3D stack of 10 phone-card-style snap-account cards bound with a JOKR seal",
+    "Founders Account Card — premium metallic membership card with JOKR mascot + 'FOUNDERS SNAP' embossed",
+    "USA-SIM Pouch — 3D pouch / wallet mockup branded JOKR, USA SIM cards visible inside",
+    "Adspower Profile Drop — laptop-screen mockup of an Adspower window with JOKR Snap profile loaded",
+    "2FA Secret Capsule — 3D capsule containing TOTP secret, JOKR-branded wax seal",
+    "Discord Quality-Check Card — chat-screen mockup of JOKR verifying account, mascot peeking",
+    "Bitmoji Customization Kit — 3D Bitmoji avatar + customization options, JOKR mascot guiding",
+    "Bulk Reseller Briefcase — 3D briefcase opening to reveal stacks of snap-account cards, JOKR brand",
+    "Subscription Box — monthly snap-drop subscription, JOKR-branded box opening to reveal phone-card mockups",
 ]
 
 

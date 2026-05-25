@@ -42,6 +42,16 @@ Two tables — **folder-shaped skills** live in `skills/<slug>/` with their own 
 
 ---
 
+## File-shaped skills (`skills/<slug>.md` — single-file with YAML frontmatter)
+
+Skills that don't need a folder bundle. The `.md` file IS the deliverable — its YAML frontmatter declares `name` / `description` / `allowed-tools`, and the body is injected into EVE's system prompt when `/<slug>` fires in a Forge pane. Other file-shaped skills exist at `skills/*.md` and may be added here by their owning lanes.
+
+| Slug | Path | What it provides | Status | Captured |
+|---|---|---|---|---|
+| sinister-browser | `D:\Sinister Sanctum\skills\sinister-browser.md` | Layer D mirror of `tools/sinister-browser/` v0.2.0. Skill body documents Layer A probe usage + Layer B 18-action API table + Layer C Forge slash + 5 hard rules (no auto-XPI install, no creds in evaluate(), no hardcoded host:port, always probe before multi-action, pip-install fix when import fails). Operator runs `/sinister-browser` to drive a live Firefox session via the firefox-agent-bridge WebSocket. Prereqs are operator-gated (XPI install, HKCU NativeMessagingHosts registry write, optional FAB_AUTOLOGIN env). 35/35 lib tests; live firefox-bridge verify operator-gated. | shipped | 2026-05-23 by rkoj-lane /loop iter 3 |
+
+---
+
 ## How to add a new skill
 
 ### Folder-shaped (new capability bundle)

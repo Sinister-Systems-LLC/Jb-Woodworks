@@ -1,0 +1,179 @@
+{
+  "schema": "sinister-seraphim.corpus-qbc.v1",
+  "label": "sinister-letstext",
+  "root": "D:\\Sinister Sanctum\\projects\\sinister-letstext",
+  "n_docs_found": 198,
+  "n_docs_used": 50,
+  "cap": 50,
+  "sim_variant": "zzfm-r1-K4",
+  "total_triads": 19600,
+  "qbc_count": 300,
+  "qbc_pct": 1.530612244897959,
+  "max_advantage_pp": 23.88252904879155,
+  "median_advantage_pp": -34.862933858887445,
+  "top10_qbc": [
+    {
+      "rank": 1,
+      "advantage_pp": 23.88252904879155,
+      "classical": 0.6686169148760222,
+      "sim": 0.42979162438810664,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/letstext2.0/memory-snapshot/t.md",
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/letstext2.0/plans/round-20-imessage-bridge.md",
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/.claude/memory/t.md"
+      ]
+    },
+    {
+      "rank": 2,
+      "advantage_pp": 21.309593301082263,
+      "classical": 0.6588032832039947,
+      "sim": 0.4457073501931721,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/CLAUDE.md",
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/letstext2.0/docs/PROD-LAUNCH-PREP.md",
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/PROD-LAUNCH-PREP.md"
+      ]
+    },
+    {
+      "rank": 3,
+      "advantage_pp": 20.936991219993654,
+      "classical": 0.6586011365581125,
+      "sim": 0.4492312243581759,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/CLAUDE.md",
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/letstext2.0/docs/CLAUDE.md",
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/PROD-LAUNCH-PREP.md"
+      ]
+    },
+    {
+      "rank": 4,
+      "advantage_pp": 20.936991219993654,
+      "classical": 0.6586011365581125,
+      "sim": 0.4492312243581759,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/CLAUDE.md",
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/letstext2.0/docs/PROD-LAUNCH-PREP.md",
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/letstext2.0/docs/CLAUDE.md"
+      ]
+    },
+    {
+      "rank": 5,
+      "advantage_pp": 20.81838181020816,
+      "classical": 0.6631119277827501,
+      "sim": 0.4549281096806685,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/letstext2.0/docs/PROD-LAUNCH-PREP.md",
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/letstext2.0/docs/CLAUDE.md",
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/PROD-LAUNCH-PREP.md"
+      ]
+    },
+    {
+      "rank": 6,
+      "advantage_pp": 16.399019336601487,
+      "classical": 0.22448916653606266,
+      "sim": 0.06049897317004779,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/letstext2.0/docs/EMAIL-VOICE.md",
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/letstext2.0/brand-pack/README.md",
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/letstext2.0/brand-pack/MANIFEST.md"
+      ]
+    },
+    {
+      "rank": 7,
+      "advantage_pp": 16.399019336601487,
+      "classical": 0.22448916653606266,
+      "sim": 0.06049897317004779,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/docs/EMAIL-VOICE.md",
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/letstext2.0/brand-pack/README.md",
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/letstext2.0/brand-pack/MANIFEST.md"
+      ]
+    },
+    {
+      "rank": 8,
+      "advantage_pp": 15.863137470474737,
+      "classical": 0.22129364341326282,
+      "sim": 0.06266226870851548,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/letstext2.0/brand-pack/README.md",
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/letstext2.0/brand-pack/MANIFEST.md",
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/desktop-archive/audits/Sinister-Panel-LetsText-Alignment-Audit.md"
+      ]
+    },
+    {
+      "rank": 9,
+      "advantage_pp": 14.903789892658208,
+      "classical": 0.4272285885109736,
+      "sim": 0.2781906895843915,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/.claude/memory/s.md",
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/CLAUDE.md",
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/.claude/memory/t.md"
+      ]
+    },
+    {
+      "rank": 10,
+      "advantage_pp": 14.903789892658208,
+      "classical": 0.4272285885109736,
+      "sim": 0.2781906895843915,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/.claude/memory/s.md",
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/CLAUDE.md",
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/letstext2.0/memory-snapshot/t.md"
+      ]
+    }
+  ],
+  "top5_highest_classical": [
+    {
+      "classical": 0.7689828938639557,
+      "sim": 0.8468259249110885,
+      "advantage_pp": -7.7843031047132865,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/CLAUDE.md",
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/letstext2.0/docs/CLAUDE.md",
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/letstext2.0/memory-snapshot/c.md"
+      ]
+    },
+    {
+      "classical": 0.6791843398944449,
+      "sim": 0.8243833517250806,
+      "advantage_pp": -14.519901183063567,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/.claude/memory/s.md",
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/letstext2.0/memory-snapshot/s.md",
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/letstext2.0/plans/round-19-closeout.md"
+      ]
+    },
+    {
+      "classical": 0.6769808976095529,
+      "sim": 0.6952665348774422,
+      "advantage_pp": -1.8285637267889232,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/letstext2.0/docs/PRE-PROD-CHECKLIST.md",
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/letstext2.0/docs/CLAUDE.md",
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/PRE-PROD-CHECKLIST.md"
+      ]
+    },
+    {
+      "classical": 0.6757322852989232,
+      "sim": 0.6652075985407099,
+      "advantage_pp": 1.0524686758213275,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/CLAUDE.md",
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/letstext2.0/docs/PRE-PROD-CHECKLIST.md",
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/PRE-PROD-CHECKLIST.md"
+      ]
+    },
+    {
+      "classical": 0.6740001225189781,
+      "sim": 0.6791505611303315,
+      "advantage_pp": -0.5150438611353336,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/CLAUDE.md",
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/letstext2.0/docs/CLAUDE.md",
+        "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/PRE-PROD-CHECKLIST.md"
+      ]
+    }
+  ],
+  "wall_seconds": 2.573500394821167
+}

@@ -1,0 +1,57 @@
+{
+  "schema_version": "sinister.cross-agent.v1",
+  "ts_utc": "2026-05-25T0335Z",
+  "from_slug": "sanctum-helper-g",
+  "from_display": "Sanctum Helper G",
+  "to_slug": "sanctum",
+  "priority": "high",
+  "subject": "Ancestral Remotion (sinister-term-themes) — new sub-project P0 scaffolded + first entity demo runs",
+  "summary": "Scaffolded a new sub-project per operator brief 2026-05-25 ~03:30Z. Project key `sinister-term-themes`, display `Ancestral Remotion`, accent deep indigo #6366f1, tier 3. This is the living ASCII visualization layer for terminal sessions (per-project entities + palettes + energy-responsive animation). Operator vision: turn Claude's terminal output into a living entity that the operator can FEEL working; foundation for the Sinister OS Tony-Stark command center where the entire OS surface IS the visualization. P0 ships: project scaffold (README/CLAUDE/MISSION + 7 docs), Python stdlib-only package, 5-entity catalog DESIGNED (Sanctum/Panel/OS/Snap-Quantum/Sleight) with 1 entity SHIPPED (Sanctum 'The Seed'), 10-palette table, render engine, CLI, 6 smoke tests PASSED, demo `python -m sinister_term_themes demo sanctum --frames 5` exit 0. Registered in projects.json (picker + projects[]) — JSON valid. Brain entry + INDEX row added.",
+  "items_for_attention": [
+    {
+      "kind": "future-engine-design",
+      "severity": "advisory",
+      "detail": "P2 sidecar terminal needs to TEE Claude stdout into the render engine. Two surface options documented in docs/03-render-engine.md: (A) inline alt-screen render in same terminal, (B) named-pipe sidecar to a separate Windows Terminal pane. Final decision deferred until operator weighs in on whether they want one terminal or two."
+    },
+    {
+      "kind": "p1-backlog",
+      "severity": "info",
+      "detail": "P1 = ship the other 4 entities (sinister_panel.py / sinister_os.py / snap_api_quantum.py / sinister_sleight.py) using the same definition() interface; palette HSV-lerp; --energy CLI flag. Glyphs already designed in docs/01-entity-design.md."
+    },
+    {
+      "kind": "sinister-os-coordination",
+      "severity": "info",
+      "detail": "Operator's endgame vision is the Sinister OS command center (no consoles; whole-OS-as-UI). Ancestral Remotion is the visual language for that. docs/06-sinister-os-integration.md spells out the P4 IPC contract. When `sinister-os` lane gets to UI surfaces, they should consume `sinister_term_themes.entities` + `sinister_term_themes.palettes` as canonical data."
+    },
+    {
+      "kind": "expand-not-fork-discipline",
+      "severity": "info",
+      "detail": "Doctrine ancestral-remotion-artistic-doctrine-2026-05-25.md mandates EXPAND-not-fork (dashboard-skeleton parallel). Any new entity goes in the catalog as a row; never branch the renderer."
+    }
+  ],
+  "deliverables_index": {
+    "project_root": "projects/sinister-term-themes/",
+    "readme": "projects/sinister-term-themes/README.md",
+    "mission": "projects/sinister-term-themes/MISSION.md",
+    "claude_md": "projects/sinister-term-themes/CLAUDE.md",
+    "docs": "projects/sinister-term-themes/docs/00..06-*.md",
+    "src_package": "projects/sinister-term-themes/src/sinister_term_themes/",
+    "entity_sanctum": "projects/sinister-term-themes/src/sinister_term_themes/entities/sanctum.py",
+    "tests": "projects/sinister-term-themes/tests/test_smoke.py",
+    "brain_entry": "_shared-memory/knowledge/ancestral-remotion-artistic-doctrine-2026-05-25.md",
+    "projects_json_registration": "automations/session-templates/projects.json (picker.visible_keys + projects[])"
+  },
+  "verification_evidence": {
+    "ast_parse_check": "OK on all 7 .py files (cli/engine/palettes/__init__/__main__/entities.__init__/entities.sanctum/tests.test_smoke)",
+    "pytest": "6 passed in 2.19s (Windows / Python 3.12.10) — test_entity_registry_loads_sanctum / test_palette_table_loads_violet_core / test_engine_renders_a_frame_without_crashing / test_demo_render_exit_zero / test_cli_list_runs / test_cli_version_runs",
+    "demo_run": "python -m sinister_term_themes demo sanctum --frames 5 -> exit 0; visible ASCII glyph cycles through violet-core (idle) -> violet-core-burning (energy=1.0) -> back to violet-core; energy bar fills/empties; ANSI 256-color escapes confirmed visible in output",
+    "projects_json_valid": "json.load() succeeded (BOM-aware); picker.visible_keys + projects[] both contain sinister-term-themes; accent_color=indigo, tier=3, default_modes={swarm:true, loop:true, loop_relentless:true}"
+  },
+  "caveats": [
+    "P0 SCAFFOLD ONLY — this is NOT a working sidecar yet. The demo renders to its own stdout one frame at a time with separator lines; it does NOT tap Claude's actual stdout yet (that's P2 EnergyTap).",
+    "Only 1 of 5 entities IMPLEMENTED in code (sanctum.py). The other 4 (Panel/OS/Snap-Quantum/Sleight) are DESIGNED in docs/01-entity-design.md with glyphs + palettes + animation rules ready to copy into sibling .py files; that's P1.",
+    "Energy is currently SIMULATED (sin breathing curve over frame count) — not real bytes/sec. Real measurement is P2.",
+    "No sidecar terminal yet — runs inline in the calling terminal only. P2 deliverable."
+  ],
+  "acks_expected": false
+}

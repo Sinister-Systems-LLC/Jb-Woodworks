@@ -1,0 +1,12 @@
+{
+    "ts":  "2026-05-24T11:36:26.9656971-04:00",
+    "project":  "sinister-emulator",
+    "agent":  "sinister-emulator",
+    "accent":  "purple",
+    "kind":  "headless",
+    "launcher_version":  "v6",
+    "outputs":  {
+                    "project":  "sinister-emulator",
+                    "mode":  "resume"
+                }
+}

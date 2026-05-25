@@ -38,11 +38,17 @@ set "AUDIT_LOG=%DAEMON_LOG_DIR%\daemon.log"
 if not exist "%DAEMON_LOG_DIR%" mkdir "%DAEMON_LOG_DIR%" >nul 2>&1
 if not exist "%HEARTBEAT_DIR%" mkdir "%HEARTBEAT_DIR%" >nul 2>&1
 
-REM Per-launch log gets a UTC-ish stamp via PowerShell (wmic is deprecated and
-REM was returning corrupted output on modern Windows — daemon fast-crashed when
-REM LOCAL_DT came back empty or partially parsed). RKOJ-ELENO :: 2026-05-23.
-for /f "delims=" %%T in ('powershell -NoProfile -Command "Get-Date -Format yyyyMMddTHHmmss"') do set "STAMP=%%T"
-if "%STAMP%"=="" set "STAMP=NOSTAMP"
+REM Per-launch log gets a UTC-ish stamp (locale-independent).
+REM /loop iter 5 of eve-into-rkoj-integration follow-ups (2026-05-23): wmic
+REM is deprecated/removed on recent Win10+ builds; switched to PowerShell
+REM Get-Date which is the operator-canonical timestamp shape (yyyyMMddHHmmss
+REM matches the 14-char shape the substring slices below expect).
+REM Operator-queue row: vault-daemon.bat fast-crashing due to wmic stamp parse.
+set "LOCAL_DT="
+for /f "delims=" %%T in ('powershell.exe -NoProfile -Command "Get-Date -Format yyyyMMddHHmmss"') do (
+    if not defined LOCAL_DT set "LOCAL_DT=%%T"
+)
+set "STAMP=%LOCAL_DT:~0,8%T%LOCAL_DT:~8,6%"
 set "RUN_LOG=%DAEMON_LOG_DIR%\vault-%STAMP%.log"
 
 call :log "==== vault-daemon start (stamp=%STAMP%) ===="
@@ -91,11 +97,14 @@ goto loop
 
 REM ---------------------------------------------------------------------------
 :log
-REM RKOJ-ELENO :: 2026-05-23 — replaced wmic timestamp (was returning corrupted
-REM data on modern Windows) with PowerShell Get-Date for reliable formatting.
 set "MSG=%~1"
-for /f "delims=" %%T in ('powershell -NoProfile -Command "Get-Date -Format ''yyyy-MM-dd HH:mm:ss''"') do set "LOG_TS=%%T"
-if "%LOG_TS%"=="" set "LOG_TS=NOSTAMP"
+REM /loop iter 5: PowerShell Get-Date replaces deprecated wmic (same call site
+REM pattern as the per-launch stamp above; same yyyyMMddHHmmss shape).
+set "LOG_DT="
+for /f "delims=" %%T in ('powershell.exe -NoProfile -Command "Get-Date -Format yyyyMMddHHmmss"') do (
+    if not defined LOG_DT set "LOG_DT=%%T"
+)
+set "LOG_TS=%LOG_DT:~0,4%-%LOG_DT:~4,2%-%LOG_DT:~6,2% %LOG_DT:~8,2%:%LOG_DT:~10,2%:%LOG_DT:~12,2%"
 echo [%LOG_TS%] %MSG%
 >>"%RUN_LOG%" echo [%LOG_TS%] %MSG%
 >>"%AUDIT_LOG%" echo [%LOG_TS%] %MSG%

@@ -108,7 +108,7 @@ function Tail-PhoneJsonl {
 
 function Emit-Alert {
     param([string]$Serial, [string]$Tag, [string]$Subject, [hashtable]$Body)
-    $ts = Get-Date -Format 'yyyy-MM-ddTHHmmZ'
+    $ts = ([datetime]::UtcNow).ToString('yyyy-MM-ddTHHmmZ')
     $safeSerial = $Serial -replace '[^A-Za-z0-9]', '_'
     $fname = "${ts}-${Tag}-${safeSerial}.json"
     $path = Join-Path $InboxDir $fname

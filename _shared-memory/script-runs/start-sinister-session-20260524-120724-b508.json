@@ -1,0 +1,12 @@
+{
+    "ts":  "2026-05-24T12:07:24.2337645-04:00",
+    "project":  "sinister-os-mobile",
+    "agent":  "sinister-os-mobile",
+    "accent":  "purple",
+    "kind":  "headless",
+    "launcher_version":  "v6",
+    "outputs":  {
+                    "project":  "sinister-os-mobile",
+                    "mode":  "resume"
+                }
+}

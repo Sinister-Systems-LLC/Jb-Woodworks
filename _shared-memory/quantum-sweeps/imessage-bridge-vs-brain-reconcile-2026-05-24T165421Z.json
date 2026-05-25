@@ -1,0 +1,162 @@
+{
+  "schema": "sinister-seraphim.reconcile-corpora.v1",
+  "label": "imessage-bridge-vs-brain",
+  "corpus_a_root": "D:/Sinister Sanctum/projects/sinister-imessage-bridge",
+  "corpus_b_root": "D:/Sinister Sanctum/_shared-memory/knowledge",
+  "n_corpus_a": 17,
+  "n_corpus_b": 160,
+  "cl_threshold": 0.3,
+  "sim_threshold": 0.5,
+  "total_pairs": 2720,
+  "reconciliation_candidates_count": 5,
+  "top_reconciliation_candidates": [
+    {
+      "rank": 1,
+      "classical": 0.400714650375777,
+      "sim": 0.926109810832408,
+      "combined": 1.326824461208185,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/dashboard/README.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/imessage-bridge-p0-scaffold-2026-05-24.md"
+    },
+    {
+      "rank": 2,
+      "classical": 0.38729866623734455,
+      "sim": 0.9257480601676129,
+      "combined": 1.3130467264049575,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/memory/decisions.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/imessage-bridge-p0-scaffold-2026-05-24.md"
+    },
+    {
+      "rank": 3,
+      "classical": 0.3619128645683675,
+      "sim": 0.8718576522823656,
+      "combined": 1.2337705168507331,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/memory/gotchas.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/imessage-bridge-p0-scaffold-2026-05-24.md"
+    },
+    {
+      "rank": 4,
+      "classical": 0.45513823869537096,
+      "sim": 0.5486315407068514,
+      "combined": 1.0037697794022225,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/CLAUDE.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/imessage-bridge-p0-scaffold-2026-05-24.md"
+    },
+    {
+      "rank": 5,
+      "classical": 0.3546183142649389,
+      "sim": 0.5145068606455351,
+      "combined": 0.869125174910474,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/README.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/imessage-bridge-p0-scaffold-2026-05-24.md"
+    }
+  ],
+  "top_highest_classical": [
+    {
+      "rank": 1,
+      "classical": 0.45731794991739055,
+      "sim": 0.4279268499717409,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/docs/architecture.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/imessage-bridge-p0-scaffold-2026-05-24.md"
+    },
+    {
+      "rank": 2,
+      "classical": 0.45513823869537096,
+      "sim": 0.5486315407068514,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/CLAUDE.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/imessage-bridge-p0-scaffold-2026-05-24.md"
+    },
+    {
+      "rank": 3,
+      "classical": 0.400714650375777,
+      "sim": 0.926109810832408,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/dashboard/README.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/imessage-bridge-p0-scaffold-2026-05-24.md"
+    },
+    {
+      "rank": 4,
+      "classical": 0.38729866623734455,
+      "sim": 0.9257480601676129,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/memory/decisions.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/imessage-bridge-p0-scaffold-2026-05-24.md"
+    },
+    {
+      "rank": 5,
+      "classical": 0.3619128645683675,
+      "sim": 0.8718576522823656,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/memory/gotchas.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/imessage-bridge-p0-scaffold-2026-05-24.md"
+    },
+    {
+      "rank": 6,
+      "classical": 0.3546183142649389,
+      "sim": 0.5145068606455351,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/README.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/imessage-bridge-p0-scaffold-2026-05-24.md"
+    },
+    {
+      "rank": 7,
+      "classical": 0.3402294722188718,
+      "sim": 0.3136049865975495,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/plans/p3-bridge-daemon-acceptance.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/imessage-bridge-p0-scaffold-2026-05-24.md"
+    },
+    {
+      "rank": 8,
+      "classical": 0.31661701039446455,
+      "sim": 0.45733398389685054,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/plans/p2-send-acceptance.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/imessage-bridge-p0-scaffold-2026-05-24.md"
+    },
+    {
+      "rank": 9,
+      "classical": 0.27778249850464276,
+      "sim": 0.7525976701665722,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/dashboard/README.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-ui-canonical-dashboard-skeleton-inheritance-2026-05-24.md"
+    },
+    {
+      "rank": 10,
+      "classical": 0.26656582910139937,
+      "sim": 0.3985097581346276,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/source/README.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/imessage-bridge-p0-scaffold-2026-05-24.md"
+    },
+    {
+      "rank": 11,
+      "classical": 0.266180378482319,
+      "sim": 0.8649929370065287,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/plans/p1-readonly-acceptance.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/imessage-bridge-p0-scaffold-2026-05-24.md"
+    },
+    {
+      "rank": 12,
+      "classical": 0.2655231938522112,
+      "sim": 0.9662611287840934,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/docs/applescript-surface.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/imessage-bridge-p0-scaffold-2026-05-24.md"
+    },
+    {
+      "rank": 13,
+      "classical": 0.26356684455878115,
+      "sim": 0.6378061504775066,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/plans/p4-cross-lane-acceptance.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/imessage-bridge-p0-scaffold-2026-05-24.md"
+    },
+    {
+      "rank": 14,
+      "classical": 0.2568876557274378,
+      "sim": 0.6709208962621582,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/memory/decisions.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-ui-canonical-dashboard-skeleton-inheritance-2026-05-24.md"
+    },
+    {
+      "rank": 15,
+      "classical": 0.2211662924999683,
+      "sim": 0.9947382978161377,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-imessage-bridge/memory/decisions.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/launcher-v6-concise-rewrite-2026-05-23.md"
+    }
+  ],
+  "wall_seconds": 5.261499643325806
+}

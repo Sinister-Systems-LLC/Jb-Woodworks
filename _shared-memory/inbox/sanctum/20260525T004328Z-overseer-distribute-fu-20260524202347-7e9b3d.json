@@ -1,0 +1,15 @@
+{
+    "ts_utc":  "2026-05-25T00:43:28Z",
+    "_author":  "RKOJ-ELENO :: 2026-05-25",
+    "to":  "sanctum",
+    "subject":  "Fleet-update fan-out: doctrine_update priority=normal",
+    "message":  "BRAIN new: contradiction-engine-doctrine-2026-05-24 - Contradiction Engine doctrine (universal contradict",
+    "rationale":  "Overseer auto-distributed because this fleet-update either targeted you OR mentioned your lane slug. Review + ack if actionable.",
+    "source_id":  "fu-20260524202347-7e9b3d",
+    "source_ts_utc":  "2026-05-25T00:23:47Z",
+    "from":  "overseer",
+    "source_priority":  "normal",
+    "tag":  "[OVERSEER-DISTRIBUTE]",
+    "source_pushed_by":  "sanctum",
+    "source_kind":  "doctrine_update"
+}

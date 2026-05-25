@@ -23,12 +23,20 @@ if not defined SANCTUM_ROOT (
     exit /b 1
 )
 
-set "EVE_EXE=%SANCTUM_ROOT%\automations\eve-launcher\dist\EVE\EVE.exe"
+REM v9 (2026-05-24 evening): probe stable user-profile copy FIRST so the
+REM launcher survives parallel-agent dist/EVE wipes during fleet rebuilds.
+REM The stable copy is mirrored from dist/EVE/ by automations/eve-launcher
+REM after each successful build (see make-icon.py + build-eve-exe.bat).
+set "EVE_EXE_STABLE=%USERPROFILE%\.eve\EVE.exe"
+set "EVE_EXE_DIST=%SANCTUM_ROOT%\automations\eve-launcher\dist\EVE\EVE.exe"
+set "EVE_EXE="
+if exist "%EVE_EXE_STABLE%" set "EVE_EXE=%EVE_EXE_STABLE%"
+if not defined EVE_EXE if exist "%EVE_EXE_DIST%" set "EVE_EXE=%EVE_EXE_DIST%"
 set "PS1_LAUNCHER=%SANCTUM_ROOT%\automations\start-sinister-session.ps1"
 
 pushd "%SANCTUM_ROOT%"
 
-if exist "%EVE_EXE%" (
+if defined EVE_EXE (
     REM v8: run EVE.exe inline (this same window) so operator sees the picker
     REM immediately. EVE.exe handles its own stdin/stdout in this console.
     "%EVE_EXE%" %*
@@ -44,8 +52,9 @@ if exist "%EVE_EXE%" (
     color 4F
     echo.
     echo  [FAIL] Neither EVE.exe nor start-sinister-session.ps1 found.
-    echo         EVE.exe: %EVE_EXE%
-    echo         PS1:     %PS1_LAUNCHER%
+    echo         EVE.exe stable: %EVE_EXE_STABLE%
+    echo         EVE.exe dist:   %EVE_EXE_DIST%
+    echo         PS1:            %PS1_LAUNCHER%
     echo         Fix: cd %SANCTUM_ROOT%\automations\eve-launcher ^&^& build-eve-exe.bat
     echo.
     pause

@@ -1,0 +1,28 @@
+{
+  "schema": "sinister-seraphim.corpus-qbc.v1",
+  "label": "sinister-bumble-emu-deep",
+  "root": "D:\\Sinister Sanctum\\projects\\sinister-bumble-emu",
+  "n_docs_found": 3,
+  "n_docs_used": 3,
+  "cap": 80,
+  "sim_variant": "zzfm-r1-K4",
+  "total_triads": 1,
+  "qbc_count": 0,
+  "qbc_pct": 0.0,
+  "max_advantage_pp": -13.255943224716887,
+  "median_advantage_pp": -13.255943224716887,
+  "top10_qbc": [],
+  "top5_highest_classical": [
+    {
+      "classical": 0.4238431939387038,
+      "sim": 0.5564026261858727,
+      "advantage_pp": -13.255943224716887,
+      "docs": [
+        "D:/Sinister Sanctum/projects/sinister-bumble-emu/_SCAFFOLD-BRIEF.md",
+        "D:/Sinister Sanctum/projects/sinister-bumble-emu/eleno/README.md",
+        "D:/Sinister Sanctum/projects/sinister-bumble-emu/me/README.md"
+      ]
+    }
+  ],
+  "wall_seconds": 0.005999088287353516
+}

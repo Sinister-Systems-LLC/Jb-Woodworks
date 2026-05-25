@@ -1,0 +1,218 @@
+{
+  "schema": "sinister-seraphim.reconcile-corpora.v1",
+  "label": "letstext-vs-brain",
+  "corpus_a_root": "D:/Sinister Sanctum/projects/sinister-letstext",
+  "corpus_b_root": "D:/Sinister Sanctum/_shared-memory/knowledge",
+  "n_corpus_a": 198,
+  "n_corpus_b": 160,
+  "cl_threshold": 0.3,
+  "sim_threshold": 0.5,
+  "total_pairs": 31680,
+  "reconciliation_candidates_count": 12,
+  "top_reconciliation_candidates": [
+    {
+      "rank": 1,
+      "classical": 0.44198608396307265,
+      "sim": 0.9698423295053162,
+      "combined": 1.411828413468389,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/TEAMWORK.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/multi-agent-git-coordination-2026-05-23.md"
+    },
+    {
+      "rank": 2,
+      "classical": 0.3421688038063774,
+      "sim": 0.9429452447957904,
+      "combined": 1.2851140486021677,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/TEAMWORK.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/per-agent-branch-convention.md"
+    },
+    {
+      "rank": 3,
+      "classical": 0.33995372412803426,
+      "sim": 0.7239700281346915,
+      "combined": 1.0639237522627258,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/_README.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/spawned-window-capabilities-2026-05-23.md"
+    },
+    {
+      "rank": 4,
+      "classical": 0.3310610744026464,
+      "sim": 0.7239700281346911,
+      "combined": 1.0550311025373376,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/letstext-logos/_README.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/spawned-window-capabilities-2026-05-23.md"
+    },
+    {
+      "rank": 5,
+      "classical": 0.33156104519410123,
+      "sim": 0.7114680018081458,
+      "combined": 1.0430290470022472,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText-Legal/_README.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/spawned-window-capabilities-2026-05-23.md"
+    },
+    {
+      "rank": 6,
+      "classical": 0.4337504444201739,
+      "sim": 0.5990037109020163,
+      "combined": 1.0327541553221902,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/TEAMWORK.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/multi-agent-git-index-contention-storm-2026-05-23.md"
+    },
+    {
+      "rank": 7,
+      "classical": 0.33033077622870666,
+      "sim": 0.659286293331098,
+      "combined": 0.9896170695598047,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/letstext-pfp-animations/_README.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/spawned-window-capabilities-2026-05-23.md"
+    },
+    {
+      "rank": 8,
+      "classical": 0.3906084237124361,
+      "sim": 0.5774592744329864,
+      "combined": 0.9680676981454225,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/TEAMWORK.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/verify-head-before-commit-multi-agent.md"
+    },
+    {
+      "rank": 9,
+      "classical": 0.30442707697608284,
+      "sim": 0.5987939661772682,
+      "combined": 0.903221043153351,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/imessage-bridge/docs/14-MD-AUTOUPDATE-PROTOCOL.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/verify-head-before-commit-multi-agent.md"
+    },
+    {
+      "rank": 10,
+      "classical": 0.33459984896296563,
+      "sim": 0.5626971420640481,
+      "combined": 0.8972969910270137,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/docs/LETSTEXT-SESSION-START.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/multi-agent-branch-contention-isolation-pattern.md"
+    },
+    {
+      "rank": 11,
+      "classical": 0.30918153652028285,
+      "sim": 0.5271816025526891,
+      "combined": 0.836363139072972,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/.claude/memory/p.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sanctioned-bypasses-doctrine-2026-05-21.md"
+    },
+    {
+      "rank": 12,
+      "classical": 0.30918153652028285,
+      "sim": 0.5271816025526891,
+      "combined": 0.836363139072972,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/letstext2.0/memory-snapshot/p.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sanctioned-bypasses-doctrine-2026-05-21.md"
+    }
+  ],
+  "top_highest_classical": [
+    {
+      "rank": 1,
+      "classical": 0.44198608396307265,
+      "sim": 0.9698423295053162,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/TEAMWORK.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/multi-agent-git-coordination-2026-05-23.md"
+    },
+    {
+      "rank": 2,
+      "classical": 0.4337504444201739,
+      "sim": 0.5990037109020163,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/TEAMWORK.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/multi-agent-git-index-contention-storm-2026-05-23.md"
+    },
+    {
+      "rank": 3,
+      "classical": 0.3906084237124361,
+      "sim": 0.5774592744329864,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/TEAMWORK.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/verify-head-before-commit-multi-agent.md"
+    },
+    {
+      "rank": 4,
+      "classical": 0.3839196920479367,
+      "sim": 0.18074703928202362,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/TEAMWORK.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/multi-agent-branch-contention-isolation-pattern.md"
+    },
+    {
+      "rank": 5,
+      "classical": 0.3421688038063774,
+      "sim": 0.9429452447957904,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/TEAMWORK.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/per-agent-branch-convention.md"
+    },
+    {
+      "rank": 6,
+      "classical": 0.33995372412803426,
+      "sim": 0.7239700281346915,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/_README.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/spawned-window-capabilities-2026-05-23.md"
+    },
+    {
+      "rank": 7,
+      "classical": 0.33459984896296563,
+      "sim": 0.5626971420640481,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/docs/LETSTEXT-SESSION-START.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/multi-agent-branch-contention-isolation-pattern.md"
+    },
+    {
+      "rank": 8,
+      "classical": 0.3328086398913193,
+      "sim": 0.3806066543460091,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/docs/LETSTEXT-SESSION-START.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/multi-agent-git-coordination-2026-05-23.md"
+    },
+    {
+      "rank": 9,
+      "classical": 0.33156104519410123,
+      "sim": 0.7114680018081458,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText-Legal/_README.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/spawned-window-capabilities-2026-05-23.md"
+    },
+    {
+      "rank": 10,
+      "classical": 0.3310610744026464,
+      "sim": 0.7239700281346911,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/letstext-logos/_README.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/spawned-window-capabilities-2026-05-23.md"
+    },
+    {
+      "rank": 11,
+      "classical": 0.33033077622870666,
+      "sim": 0.659286293331098,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/letstext-pfp-animations/_README.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/spawned-window-capabilities-2026-05-23.md"
+    },
+    {
+      "rank": 12,
+      "classical": 0.30918153652028285,
+      "sim": 0.5271816025526891,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/.claude/memory/p.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sanctioned-bypasses-doctrine-2026-05-21.md"
+    },
+    {
+      "rank": 13,
+      "classical": 0.30918153652028285,
+      "sim": 0.5271816025526891,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/letstext2.0/memory-snapshot/p.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sanctioned-bypasses-doctrine-2026-05-21.md"
+    },
+    {
+      "rank": 14,
+      "classical": 0.30442707697608284,
+      "sim": 0.5987939661772682,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/imessage-bridge/docs/14-MD-AUTOUPDATE-PROTOCOL.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/verify-head-before-commit-multi-agent.md"
+    },
+    {
+      "rank": 15,
+      "classical": 0.3036361480131139,
+      "sim": 0.20240979753146351,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-letstext/LetsText/source/docs/LETSTEXT-SESSION-START.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/multi-agent-git-index-contention-storm-2026-05-23.md"
+    }
+  ],
+  "wall_seconds": 47.92999982833862
+}

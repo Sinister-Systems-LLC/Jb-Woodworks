@@ -1,0 +1,267 @@
+{
+  "schema": "sinister-seraphim.reconcile-corpora.v1",
+  "label": "os-mobile-vs-brain",
+  "corpus_a_root": "D:/Sinister Sanctum/projects/sinister-os-mobile/",
+  "corpus_b_root": "D:/Sinister Sanctum/_shared-memory/knowledge/",
+  "n_corpus_a": 15,
+  "n_corpus_b": 165,
+  "cl_threshold": 0.3,
+  "sim_threshold": 0.5,
+  "total_pairs": 2475,
+  "reconciliation_candidates_count": 5,
+  "top_reconciliation_candidates": [
+    {
+      "rank": 1,
+      "classical": 0.4773159182496522,
+      "sim": 0.8583270004463609,
+      "combined": 1.335642918696013,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os-mobile/SESSION-START.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-os-mobile-doctrine-2026-05-24.md"
+    },
+    {
+      "rank": 2,
+      "classical": 0.6540010615087782,
+      "sim": 0.6530784622405322,
+      "combined": 1.3070795237493105,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os-mobile/CLAUDE.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-os-mobile-doctrine-2026-05-24.md"
+    },
+    {
+      "rank": 3,
+      "classical": 0.545084913735426,
+      "sim": 0.6025710653198998,
+      "combined": 1.1476559790553258,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os-mobile/README.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-os-mobile-doctrine-2026-05-24.md"
+    },
+    {
+      "rank": 4,
+      "classical": 0.37768973290753177,
+      "sim": 0.6692678668956283,
+      "combined": 1.0469575998031602,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os-mobile/sandbox/docs/anti-brick-safety.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-os-mobile-sandbox-cuttlefish-2026-05-24.md"
+    },
+    {
+      "rank": 5,
+      "classical": 0.4153387260561394,
+      "sim": 0.5991999732129669,
+      "combined": 1.0145386992691063,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os-mobile/sandbox/README.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-os-mobile-sandbox-cuttlefish-2026-05-24.md"
+    }
+  ],
+  "top_highest_classical": [
+    {
+      "rank": 1,
+      "classical": 0.6540010615087782,
+      "sim": 0.6530784622405322,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os-mobile/CLAUDE.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-os-mobile-doctrine-2026-05-24.md"
+    },
+    {
+      "rank": 2,
+      "classical": 0.545084913735426,
+      "sim": 0.6025710653198998,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os-mobile/README.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-os-mobile-doctrine-2026-05-24.md"
+    },
+    {
+      "rank": 3,
+      "classical": 0.5262106371844322,
+      "sim": 0.1446840501581393,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os-mobile/plans/master-plan-2026-05-24.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-os-mobile-doctrine-2026-05-24.md"
+    },
+    {
+      "rank": 4,
+      "classical": 0.4773159182496522,
+      "sim": 0.8583270004463609,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os-mobile/SESSION-START.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-os-mobile-doctrine-2026-05-24.md"
+    },
+    {
+      "rank": 5,
+      "classical": 0.4153387260561394,
+      "sim": 0.5991999732129669,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os-mobile/sandbox/README.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-os-mobile-sandbox-cuttlefish-2026-05-24.md"
+    },
+    {
+      "rank": 6,
+      "classical": 0.39097625179988255,
+      "sim": 0.3554011152099863,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os-mobile/research/branding-spec-2026-05-24.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-ui-canonical-dashboard-skeleton-inheritance-2026-05-24.md"
+    },
+    {
+      "rank": 7,
+      "classical": 0.37768973290753177,
+      "sim": 0.6692678668956283,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os-mobile/sandbox/docs/anti-brick-safety.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-os-mobile-sandbox-cuttlefish-2026-05-24.md"
+    },
+    {
+      "rank": 8,
+      "classical": 0.35471471193079585,
+      "sim": 0.14175645942217605,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os-mobile/docs/architecture.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-os-mobile-doctrine-2026-05-24.md"
+    },
+    {
+      "rank": 9,
+      "classical": 0.3073987987657182,
+      "sim": 0.27870101176386036,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os-mobile/sandbox/docs/quantum-fingerprints.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-os-mobile-sandbox-cuttlefish-2026-05-24.md"
+    },
+    {
+      "rank": 10,
+      "classical": 0.30014282978881696,
+      "sim": 0.13027886167812994,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os-mobile/plans/master-plan-2026-05-24.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/_INDEX.md"
+    },
+    {
+      "rank": 11,
+      "classical": 0.2885697306946296,
+      "sim": 0.811047546576055,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os-mobile/CLAUDE.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/_INDEX.md"
+    },
+    {
+      "rank": 12,
+      "classical": 0.2755680812353456,
+      "sim": 0.08728577124029069,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os-mobile/sandbox/keybox/README.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-os-mobile-sandbox-cuttlefish-2026-05-24.md"
+    },
+    {
+      "rank": 13,
+      "classical": 0.26307459389867505,
+      "sim": 0.5950284802650384,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os-mobile/research/kernel-spec-2026-05-24.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-os-mobile-doctrine-2026-05-24.md"
+    },
+    {
+      "rank": 14,
+      "classical": 0.26269986690231184,
+      "sim": 0.7104466881081221,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os-mobile/SESSION-START.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/_INDEX.md"
+    },
+    {
+      "rank": 15,
+      "classical": 0.24357162138269037,
+      "sim": 0.07302913481978786,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os-mobile/CLAUDE.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-os-doctrine-2026-05-24.md"
+    },
+    {
+      "rank": 16,
+      "classical": 0.2358702781438483,
+      "sim": 0.8489607802891868,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os-mobile/sandbox/README.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-os-mobile-doctrine-2026-05-24.md"
+    },
+    {
+      "rank": 17,
+      "classical": 0.2269082755915564,
+      "sim": 0.80419390979795,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os-mobile/plans/master-plan-2026-05-24.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-os-doctrine-2026-05-24.md"
+    },
+    {
+      "rank": 18,
+      "classical": 0.22578952136471403,
+      "sim": 0.12926734495282519,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os-mobile/CLAUDE.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sanctioned-bypasses-doctrine-2026-05-21.md"
+    },
+    {
+      "rank": 19,
+      "classical": 0.22562596302275342,
+      "sim": 0.24457373614793726,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os-mobile/research/patterns-md-mobile-gap-audit-2026-05-24.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-ui-canonical-dashboard-skeleton-inheritance-2026-05-24.md"
+    },
+    {
+      "rank": 20,
+      "classical": 0.22377334027484952,
+      "sim": 0.09849037100031419,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os-mobile/CLAUDE.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/agent-identity-eve.md"
+    },
+    {
+      "rank": 21,
+      "classical": 0.22223758965797158,
+      "sim": 0.7105503814021008,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os-mobile/sandbox/README.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/_INDEX.md"
+    },
+    {
+      "rank": 22,
+      "classical": 0.2214629240426594,
+      "sim": 0.4315609567188126,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os-mobile/plans/master-plan-2026-05-24.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-ui-canonical-dashboard-skeleton-inheritance-2026-05-24.md"
+    },
+    {
+      "rank": 23,
+      "classical": 0.2177648315819183,
+      "sim": 0.9132273027097224,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os-mobile/docs/architecture.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-os-doctrine-2026-05-24.md"
+    },
+    {
+      "rank": 24,
+      "classical": 0.21739903033394214,
+      "sim": 0.08208164543108466,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os-mobile/CLAUDE.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/per-project-bot-adoption-playbook-2026-05-23.md"
+    },
+    {
+      "rank": 25,
+      "classical": 0.215467905259955,
+      "sim": 0.9165317548131089,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os-mobile/SESSION-START.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/no-bullshit-tested-before-claimed-doctrine-2026-05-23.md"
+    },
+    {
+      "rank": 26,
+      "classical": 0.2112457170924371,
+      "sim": 0.7040118229137542,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os-mobile/research/cvd-rendering-budget-2026-05-24.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-ui-canonical-dashboard-skeleton-inheritance-2026-05-24.md"
+    },
+    {
+      "rank": 27,
+      "classical": 0.20907895609641675,
+      "sim": 0.9401017297122974,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os-mobile/SESSION-START.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/complete-everything-sweep-pattern.md"
+    },
+    {
+      "rank": 28,
+      "classical": 0.205954896486031,
+      "sim": 0.4449909141330094,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os-mobile/README.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/_INDEX.md"
+    },
+    {
+      "rank": 29,
+      "classical": 0.20564609218143684,
+      "sim": 0.5351818839966069,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os-mobile/plans/master-plan-2026-05-24.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-vault-architecture.md"
+    },
+    {
+      "rank": 30,
+      "classical": 0.20511968534477604,
+      "sim": 0.919116619452413,
+      "doc_a": "D:/Sinister Sanctum/projects/sinister-os-mobile/sandbox/README.md",
+      "doc_b": "D:/Sinister Sanctum/_shared-memory/knowledge/no-bullshit-tested-before-claimed-doctrine-2026-05-23.md"
+    }
+  ],
+  "wall_seconds": 3.1689999103546143
+}

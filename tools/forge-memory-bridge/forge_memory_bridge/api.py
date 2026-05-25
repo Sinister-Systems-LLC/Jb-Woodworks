@@ -107,10 +107,17 @@ def _record_path(namespace: str, key: str) -> Path:
 
 
 def _read_json(p: Path) -> dict | None:
+    """Read a forge-memory record. BOM-tolerant via utf-8-sig per the
+    `powershell-out-file-bom-bites-python-readers-2026-05-23` doctrine.
+
+    Internal forge writes go through `_write_json` which writes without
+    a BOM, so this is defense-in-depth for the case where a memory record
+    gets hand-edited via PowerShell `Out-File` or similar.
+    """
     if not p.exists():
         return None
     try:
-        return json.loads(p.read_text(encoding="utf-8"))
+        return json.loads(p.read_text(encoding="utf-8-sig"))
     except (json.JSONDecodeError, OSError):
         return None
 
