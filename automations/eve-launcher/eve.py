@@ -2973,6 +2973,107 @@ def _read_update_marker() -> dict | None:
         return None
 
 
+def _kill_existing_eve_instances() -> list[int]:
+    """Kill any EVE.exe / python-eve.py processes that aren't this PID.
+
+    RKOJ-ELENO :: 2026-05-25 :: operator hard-canonical — if EVE starts and
+    another is already open, kill the old one. 2 EVEs must never run at once.
+    Returns list of killed PIDs.
+    """
+    _CNW = 0x08000000  # CREATE_NO_WINDOW
+    my_pid = os.getpid()
+    killed: list[int] = []
+
+    def _kill_pid(pid: int) -> None:
+        try:
+            subprocess.run(["taskkill", "/F", "/PID", str(pid)],
+                           capture_output=True, text=True, timeout=5, creationflags=_CNW)
+            killed.append(pid)
+        except Exception:
+            pass
+
+    # EVE.exe instances by image name
+    try:
+        r = subprocess.run(
+            ["tasklist", "/FI", "IMAGENAME eq EVE.exe", "/FO", "CSV", "/NH"],
+            capture_output=True, text=True, timeout=5, creationflags=_CNW,
+        )
+        for line in r.stdout.splitlines():
+            parts = [p.strip().strip('"') for p in line.split(",")]
+            if len(parts) < 2:
+                continue
+            try:
+                pid = int(parts[1])
+            except ValueError:
+                continue
+            if pid != my_pid:
+                _kill_pid(pid)
+    except Exception:
+        pass
+
+    # python.exe instances running eve.py (unfrozen launcher)
+    try:
+        r = subprocess.run(
+            ["wmic", "process", "where",
+             "name='python.exe' and commandline like '%eve.py%'",
+             "get", "processid", "/format:csv"],
+            capture_output=True, text=True, timeout=5, creationflags=_CNW,
+        )
+        for line in r.stdout.splitlines():
+            line = line.strip()
+            if not line or not line[-1].isdigit():
+                continue
+            parts = line.rsplit(",", 1)
+            try:
+                pid = int(parts[-1].strip())
+            except ValueError:
+                continue
+            if pid != my_pid:
+                _kill_pid(pid)
+    except Exception:
+        pass
+
+    return killed
+
+
+def _auto_update_exe() -> str:
+    """Check if a newer EVE.exe build exists in dist/; auto-copy if possible.
+
+    RKOJ-ELENO :: 2026-05-25 :: operator 'make sure auto update system works
+    and have banner if restart 100% needed'. Returns one of:
+      'updated'   — dist was newer, copied successfully to root EVE.exe
+      'needed'    — dist is newer but copy failed (exe in use or permission)
+      'current'   — no dist or dist not newer
+    """
+    if not SANCTUM_ROOT_PATH:
+        return "current"
+
+    dist_candidates = [
+        SANCTUM_ROOT_PATH / "automations" / "eve-launcher" / "dist" / "EVE" / "EVE.exe",
+        SANCTUM_ROOT_PATH / "automations" / "eve-launcher" / "dist" / "EVE.exe",
+    ]
+    dist_exe = next((p for p in dist_candidates if p.exists()), None)
+    if dist_exe is None:
+        return "current"
+
+    root_exe = SANCTUM_ROOT_PATH / "EVE.exe"
+    try:
+        dist_mtime = dist_exe.stat().st_mtime
+        root_mtime = root_exe.stat().st_mtime if root_exe.exists() else 0.0
+        if dist_mtime <= root_mtime + 10:  # same or root is newer (10s tolerance)
+            return "current"
+        # dist is meaningfully newer — try to copy
+        import shutil as _shutil
+        import tempfile as _tmp
+        # Atomic replace: copy to .new then rename so we never leave a partial exe
+        tmp = root_exe.parent / (root_exe.name + ".new")
+        _shutil.copy2(str(dist_exe), str(tmp))
+        tmp.replace(root_exe)
+        return "updated"
+    except Exception:
+        return "needed"
+
+
 def _render_update_available_banner() -> None:
     """Paint a single-line UPDATE AVAILABLE banner if marker exists.
 
@@ -3572,6 +3673,15 @@ def main(argv: list[str] | None = None) -> int:
             pass
         return 1
 
+    # RKOJ-ELENO :: 2026-05-25 :: single-instance guard + auto-update.
+    # Kill any other EVE.exe first (gives us the file lock on root EVE.exe so
+    # the auto-copy can proceed). Brief sleep lets OS release file handles.
+    _killed = _kill_existing_eve_instances()
+    if _killed:
+        time.sleep(0.6)  # wait for OS to release handles from killed processes
+
+    _update_status = _auto_update_exe()
+
     # Prereq flow (skip shell warn under --quiet)
     # RKOJ-ELENO :: 2026-05-24T23:40Z :: operator screenshot #50 — pumpkin glyph
     # (play_banner / _LOGO_LINES) was rendering ABOVE main_menu.show_main_menu().
@@ -3579,6 +3689,18 @@ def main(argv: list[str] | None = None) -> int:
     # hero, animation, accounts panel). Legacy pumpkin banner DELETED entirely.
     enable_vt_on_windows()
     _quiet = os.environ.get("EVE_QUIET", "").strip() == "1"
+
+    # Instance guard + update status banners (shown before main menu renders)
+    if _killed:
+        print(f"  {WARN}[EVE]{RESET} Closed {len(_killed)} previous EVE instance(s) — "
+              f"PIDs: {', '.join(str(p) for p in _killed)}")
+    if _update_status == "updated":
+        print(f"  {OK}[EVE AUTO-UPDATED]{RESET} Newer EVE.exe installed from dist/. "
+              f"You're running the latest build.")
+    elif _update_status == "needed":
+        print(f"  {WARN}[RESTART NEEDED]{RESET}{BOLD} Newer EVE.exe build is available "
+              f"in dist/ but could not be auto-applied. Close EVE and relaunch to update.{RESET}")
+
     run_autonomy_bootstrap(force=False)
     fire_plugin_check_background()
     spawn_shell_preflight(verbose=False)
