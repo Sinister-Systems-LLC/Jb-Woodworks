@@ -1,0 +1,4 @@
+let ch (chan i64)
+spn (lam () { cs ch 2 })
+let v (cr ch)
+wr 1 v 4

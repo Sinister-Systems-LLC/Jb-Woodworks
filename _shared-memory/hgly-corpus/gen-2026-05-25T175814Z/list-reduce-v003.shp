@@ -1,0 +1,9 @@
+fn red (xs) {
+  let acc 3
+  lp {
+    let acc + acc xs[0]
+    brk
+  }
+  ret acc
+}
+red [10 20 30]

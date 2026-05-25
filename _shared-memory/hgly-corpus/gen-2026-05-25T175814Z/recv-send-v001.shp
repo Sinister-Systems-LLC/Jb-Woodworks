@@ -1,0 +1,5 @@
+let s (opn "/tmp/sock" R)
+let buf (alc 256)
+let n (rcv s buf 256)
+snd s buf n
+cls s

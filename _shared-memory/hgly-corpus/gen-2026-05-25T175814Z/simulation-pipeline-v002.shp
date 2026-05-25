@@ -1,0 +1,8 @@
+let s0 (snp 0)
+let s1 (stp s0 0.003)
+let b (brn s1)
+prt b 0.01
+let o (obs b)
+let m (mrg s1 b)
+rwd m s0
+mat m

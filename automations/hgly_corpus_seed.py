@@ -440,6 +440,84 @@ def _tpl_perfctr_cpuid(v: int) -> tuple[str, str, str]:
     return g, a, p
 
 
+# ---------------------------------------------------------------------------
+# Iter-11 templates :: glyph-coverage boosters (RKOJ-ELENO :: 2026-05-25)
+# Each template packs 5-8 glyphs from the missing 23 to push corpus coverage
+# from 41/64 toward 60+/64. Programs stay short + parser-lenient compatible.
+# ---------------------------------------------------------------------------
+
+
+def _tpl_mem_deep(v: int) -> tuple[str, str, str]:
+    n = 4096 * (v + 1)
+    g = (f"{GLYPH_BY_NAME['bind-const']} N {n}\n"
+         f"{GLYPH_BY_NAME['let']} p ({GLYPH_BY_NAME['mmap']} N)\n"
+         f"{GLYPH_BY_NAME['let']} sz ({GLYPH_BY_NAME['sizeof']} p)\n"
+         f"{GLYPH_BY_NAME['let']} ap ({GLYPH_BY_NAME['addr-of']} p)\n"
+         f"{GLYPH_BY_NAME['let']} v ({GLYPH_BY_NAME['deref']} ap)\n"
+         f"{GLYPH_BY_NAME['let']} c ({GLYPH_BY_NAME['cast']} v)\n"
+         f"{GLYPH_BY_NAME['munmap']} p")
+    a = (f"cst N {n}\nlet p (mmp N)\nlet sz (siz p)\nlet ap (& p)\n"
+         f"let v (* ap)\nlet c (cst! v)\numm p")
+    p = (f"import mmap; m = mmap.mmap(-1, {n}); m.close()")
+    return g, a, p
+
+
+def _tpl_concurrency_full(v: int) -> tuple[str, str, str]:
+    g = (f"{GLYPH_BY_NAME['let']} m ({GLYPH_BY_NAME['atomic']} 0)\n"
+         f"{GLYPH_BY_NAME['let']} t ({GLYPH_BY_NAME['spawn']} "
+         f"({GLYPH_BY_NAME['lambda']} () {GLYPH_BY_NAME['scope-open']} "
+         f"{GLYPH_BY_NAME['mutex-lock']} m {GLYPH_BY_NAME['fence']} SEQ "
+         f"{GLYPH_BY_NAME['mutex-unlk']} m {GLYPH_BY_NAME['scope-close']}))\n"
+         f"{GLYPH_BY_NAME['await']} t")
+    a = (f"let m (atm 0)\nlet t (spn (lam () {{ lck m fnc SEQ ulk m }}))\nawt t")
+    p = (f"import threading; m = threading.Lock(); t = threading.Thread("
+         f"target=lambda: (m.acquire(), m.release())); t.start(); t.join()")
+    return g, a, p
+
+
+def _tpl_hardware_io(v: int) -> tuple[str, str, str]:
+    port = 0x60 + v
+    g = (f"{GLYPH_BY_NAME['alias']} P {port}\n"
+         f"{GLYPH_BY_NAME['let']} b ({GLYPH_BY_NAME['port-in']} P)\n"
+         f"{GLYPH_BY_NAME['port-out']} P b\n"
+         f"{GLYPH_BY_NAME['dma-start']} 1 0 {port * 16}\n"
+         f"{GLYPH_BY_NAME['irq-mask']} 1\n"
+         f"{GLYPH_BY_NAME['msr-write']} 0x1B0 0\n"
+         f"{GLYPH_BY_NAME['ioctl']} 0 0 0")
+    a = (f"as P {port}\nlet b (pin P)\npot P b\ndma 1 0 {port * 16}\n"
+         f"irq 1\nmsr 0x1B0 0\nioc 0 0 0")
+    p = (f"# port-IO requires ring-0; stub")
+    return g, a, p
+
+
+def _tpl_simulation_pipeline(v: int) -> tuple[str, str, str]:
+    dt = 0.001 * (v + 1)
+    g = (f"{GLYPH_BY_NAME['let']} s0 ({GLYPH_BY_NAME['snapshot']} 0)\n"
+         f"{GLYPH_BY_NAME['let']} s1 ({GLYPH_BY_NAME['step']} s0 {dt})\n"
+         f"{GLYPH_BY_NAME['let']} b ({GLYPH_BY_NAME['branch-sim']} s1)\n"
+         f"{GLYPH_BY_NAME['perturb']} b 0.01\n"
+         f"{GLYPH_BY_NAME['let']} o ({GLYPH_BY_NAME['observe']} b)\n"
+         f"{GLYPH_BY_NAME['let']} m ({GLYPH_BY_NAME['merge']} s1 b)\n"
+         f"{GLYPH_BY_NAME['rewind']} m s0\n"
+         f"{GLYPH_BY_NAME['materialize']} m")
+    a = (f"let s0 (snp 0)\nlet s1 (stp s0 {dt})\nlet b (brn s1)\n"
+         f"prt b 0.01\nlet o (obs b)\nlet m (mrg s1 b)\nrwd m s0\nmat m")
+    p = (f"# hypersim primitives (Phase 8); reference impl is stub")
+    return g, a, p
+
+
+def _tpl_recv_send(v: int) -> tuple[str, str, str]:
+    g = (f"{GLYPH_BY_NAME['let']} s ({GLYPH_BY_NAME['open']} \"/tmp/sock\" R)\n"
+         f"{GLYPH_BY_NAME['let']} buf ({GLYPH_BY_NAME['alloc']} 256)\n"
+         f"{GLYPH_BY_NAME['let']} n ({GLYPH_BY_NAME['recv']} s buf 256)\n"
+         f"{GLYPH_BY_NAME['send']} s buf n\n"
+         f"{GLYPH_BY_NAME['close']} s")
+    a = (f"let s (opn \"/tmp/sock\" R)\nlet buf (alc 256)\n"
+         f"let n (rcv s buf 256)\nsnd s buf n\ncls s")
+    p = (f"import socket; s = socket.socket(); s.close()")
+    return g, a, p
+
+
 TEMPLATES: list[tuple[str, Any]] = [
     ("hello-world",                _tpl_hello_world),
     ("fizzbuzz",                   _tpl_fizzbuzz),
@@ -461,6 +539,12 @@ TEMPLATES: list[tuple[str, Any]] = [
     ("match-pattern",              _tpl_match_pattern),
     ("alloc-free",                 _tpl_alloc_free),
     ("perfctr-cpuid",              _tpl_perfctr_cpuid),
+    # Iter-11 glyph-coverage boosters
+    ("mem-deep",                   _tpl_mem_deep),
+    ("concurrency-full",           _tpl_concurrency_full),
+    ("hardware-io",                _tpl_hardware_io),
+    ("simulation-pipeline",        _tpl_simulation_pipeline),
+    ("recv-send",                  _tpl_recv_send),
 ]
 
 

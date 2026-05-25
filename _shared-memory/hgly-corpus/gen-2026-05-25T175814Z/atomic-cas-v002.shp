@@ -1,0 +1,3 @@
+let p (alc 8)
+atm cas p 2
+fre p

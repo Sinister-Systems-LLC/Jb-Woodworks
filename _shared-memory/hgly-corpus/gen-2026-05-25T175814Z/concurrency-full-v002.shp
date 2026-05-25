@@ -1,0 +1,3 @@
+let m (atm 0)
+let t (spn (lam () { lck m fnc SEQ ulk m }))
+awt t

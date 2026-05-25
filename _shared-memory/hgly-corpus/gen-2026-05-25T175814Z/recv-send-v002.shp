@@ -1,0 +1,5 @@
+𓂀 s (𓃭 "/tmp/sock" R)
+𓂀 buf (𓉴 256)
+𓂀 n (𓆄 s buf 256)
+𓆑 s buf n
+𓄟 s
