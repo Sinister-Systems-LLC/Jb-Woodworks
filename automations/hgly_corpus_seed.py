@@ -506,6 +506,28 @@ def _tpl_simulation_pipeline(v: int) -> tuple[str, str, str]:
     return g, a, p
 
 
+def _tpl_bool_arith(v: int) -> tuple[str, str, str]:
+    a_val = v + 1
+    b_val = v * 2
+    g = (f"{GLYPH_BY_NAME['let']} a {a_val}\n"
+         f"{GLYPH_BY_NAME['let']} b {b_val}\n"
+         f"{GLYPH_BY_NAME['let']} q ({GLYPH_BY_NAME['div']} b a)\n"
+         f"{GLYPH_BY_NAME['if']} ({GLYPH_BY_NAME['and']} (> a 0) (< b 100)) "
+         f"{GLYPH_BY_NAME['scope-open']}\n"
+         f"  {GLYPH_BY_NAME['if']} ({GLYPH_BY_NAME['or']} "
+         f"({GLYPH_BY_NAME['not']} (= a b)) (> q 1)) "
+         f"{GLYPH_BY_NAME['scope-open']}\n"
+         f"    {GLYPH_BY_NAME['write']} 1 q 4\n"
+         f"  {GLYPH_BY_NAME['scope-close']}\n"
+         f"{GLYPH_BY_NAME['scope-close']}")
+    a = (f"let a {a_val}\nlet b {b_val}\nlet q (/ b a)\n"
+         f"if (&& (> a 0) (< b 100)) {{\n"
+         f"  if (|| (! (== a b)) (> q 1)) {{ wr 1 q 4 }}\n}}")
+    p = (f"a={a_val}; b={b_val}; q=b//a\n"
+         f"if a>0 and b<100:\n  if (a!=b) or q>1: print(q)")
+    return g, a, p
+
+
 def _tpl_recv_send(v: int) -> tuple[str, str, str]:
     g = (f"{GLYPH_BY_NAME['let']} s ({GLYPH_BY_NAME['open']} \"/tmp/sock\" R)\n"
          f"{GLYPH_BY_NAME['let']} buf ({GLYPH_BY_NAME['alloc']} 256)\n"
@@ -545,6 +567,7 @@ TEMPLATES: list[tuple[str, Any]] = [
     ("hardware-io",                _tpl_hardware_io),
     ("simulation-pipeline",        _tpl_simulation_pipeline),
     ("recv-send",                  _tpl_recv_send),
+    ("bool-arith",                 _tpl_bool_arith),
 ]
 
 

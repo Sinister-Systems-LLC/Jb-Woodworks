@@ -228,7 +228,7 @@ class _Parser:
         # an inline block in expression position. Treat them as an IDENT call
         # consuming same-line atoms (matches the IDENT path above semantics).
         # Real Stmt nodes for these ship Phase 4+.
-        if k in ("YIELD", "BREAK", "CONT", "RET"):
+        if k in ("YIELD", "BREAK", "CONT", "RET", "AS", "CST", "AMP", "PIPE", "CAST"):
             self.advance()
             node = Ident(line=t.line, col=t.col, name=t.lexeme)
             args3: List[Node] = []
@@ -261,6 +261,11 @@ class _Parser:
             self._skip_bracket_group()
             return Literal(line=t.line, col=t.col, value=None, ltype="nil")
         if k == "EOF":
+            return Literal(line=t.line, col=t.col, value=None, ltype="nil")
+        # iter-12 lenient: closing-paren / scope-close mid-binop means the
+        # prefix op was unary (e.g. `(* ap)` = deref with one arg). Return
+        # Nil sentinel so the BinOp parses + interpreter treats as 0/no-op.
+        if k in ("RPAREN", "RBRACE", "RBRACK"):
             return Literal(line=t.line, col=t.col, value=None, ltype="nil")
         raise ParseError(f"expected operand, got {k} ({t.lexeme!r})", t.line, t.col)
 

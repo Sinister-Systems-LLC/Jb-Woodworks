@@ -32,12 +32,16 @@ _ASCII_KEYWORDS = {
     "false": "FALSE", "nil": "NIL", "and": "AND", "or": "OR", "not": "NOT",
 }
 _MULTI_PUNCT = [("==", "EQ"), ("!=", "NEQ"), ("<=", "LE"), (">=", "GE"),
-                (":=", "ASSIGN"), ("&&", "AND"), ("||", "OR")]
+                (":=", "ASSIGN"), ("&&", "AND"), ("||", "OR"),
+                # iter-12: `cst!` is the cast ASCII fallback per glyph 31 in
+                # GLYPH-SYNTAX.md. Without this entry the lexer split into
+                # CST keyword + bare NOT, which the parser couldn't reassemble.
+                ("cst!", "CAST")]
 _SINGLE_PUNCT = {"{": "LBRACE", "}": "RBRACE", "(": "LPAREN", ")": "RPAREN",
                  "[": "LBRACK", "]": "RBRACK", ":": "COLON",
                  ",": "COMMA", ";": "SEMI", "+": "PLUS", "-": "MINUS",
                  "*": "STAR", "/": "SLASH", "%": "PERCENT", "<": "LT",
-                 ">": "GT", "!": "NOT", "=": "EQ"}
+                 ">": "GT", "!": "NOT", "=": "EQ", "&": "AMP", "|": "PIPE"}
 
 
 @dataclass(frozen=True)
