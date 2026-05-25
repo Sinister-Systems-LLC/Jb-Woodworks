@@ -92,6 +92,7 @@ Sinister Term commands:
   /utterances [N] [--new --mine --search X]   Tail operator-utterances.jsonl (alias /utt)
   /watch <relpath> [N]      Tail any jsonl under _shared-memory/ (sandboxed)
   /agents [N --fresh --stale --slug X]   Richer heartbeats (mode + branch + note)
+  /find <glob> [--sanctum --type d|f] [N]   Recursive name search (skips .git/venv/etc)
   /alias [name=val|remove n] List aliases, define one, or remove one
   /clear                    Clear the screen
   /help                     This message
@@ -526,6 +527,110 @@ def cmd_recall(args: list[str]) -> CommandResult:
 _HEARTBEAT_PATH = SANCTUM_ROOT / "_shared-memory" / "heartbeats" / f"{SELF_SLUG}.json"
 _MESH_LOCKS_DIR = SANCTUM_ROOT / "_shared-memory" / "mesh-locks"
 _UTTERANCES_PATH = SANCTUM_ROOT / "_shared-memory" / "operator-utterances.jsonl"
+
+
+def cmd_find(args: list[str]) -> CommandResult:
+    """iter-63: find files by name pattern under the current project or Sanctum.
+
+    Recursive glob search. Cheap and pure-Python (no subprocess), bounded by
+    a 5000-file scan cap so we never lock up sterm on a huge tree.
+
+    Usage:
+      /find <glob>              search under current cwd (e.g. /find *.py)
+      /find <glob> --here       (alias) restrict to cwd subtree
+      /find <glob> --sanctum    search across the whole Sanctum repo
+      /find <glob> --type d     directories only
+      /find <glob> --type f     files only (default)
+      /find <glob> N            cap results at N (default 30, max 200)
+    """
+    if not args:
+        return CommandResult(True,
+            "usage: /find <glob> [--sanctum --type d|f] [N]\n"
+            "  e.g. /find *.py\n"
+            "       /find heartbeats --type d --sanctum")
+    pattern = args[0]
+    use_sanctum = False
+    want_type = "f"
+    limit = 30
+    SCAN_CAP = 5000
+    i = 1
+    while i < len(args):
+        a = args[i]
+        if a == "--sanctum":
+            use_sanctum = True
+            i += 1
+            continue
+        if a == "--here":
+            use_sanctum = False
+            i += 1
+            continue
+        if a == "--type" and i + 1 < len(args):
+            t = args[i + 1].lower()
+            if t not in ("f", "file", "d", "dir", "directory"):
+                return CommandResult(True,
+                    f"--type must be f or d, got: {t}")
+            want_type = "d" if t.startswith("d") else "f"
+            i += 2
+            continue
+        try:
+            limit = max(1, min(200, int(a)))
+        except ValueError:
+            return CommandResult(True,
+                f"unknown arg: {a}. Try /find with no args for usage.")
+        i += 1
+
+    root = SANCTUM_ROOT if use_sanctum else Path.cwd()
+    if not root.exists():
+        return CommandResult(True, f"root does not exist: {root}")
+
+    # `rglob` doesn't apply gitignore — manually skip common heavy dirs
+    SKIP_DIRS = {".git", "node_modules", "__pycache__", ".pytest_cache",
+                 "venv", ".venv", "dist", "build", ".idea", ".vscode"}
+    hits: list[Path] = []
+    scanned = 0
+    try:
+        for p in root.rglob(pattern):
+            scanned += 1
+            if scanned > SCAN_CAP:
+                break
+            # Skip if any parent dir is in SKIP_DIRS
+            if any(part in SKIP_DIRS for part in p.parts):
+                continue
+            try:
+                is_dir = p.is_dir()
+            except OSError:
+                continue
+            if want_type == "f" and is_dir:
+                continue
+            if want_type == "d" and not is_dir:
+                continue
+            hits.append(p)
+            if len(hits) >= limit + 1:  # +1 so we can detect overflow
+                break
+    except (OSError, ValueError) as e:
+        return CommandResult(True, f"/find failed: {e}")
+
+    if not hits:
+        scope = "sanctum" if use_sanctum else "cwd"
+        return CommandResult(True,
+            f"(no matches for '{pattern}' under {scope})")
+
+    overflow = len(hits) > limit
+    shown = hits[:limit]
+    scope = f"sanctum ({SANCTUM_ROOT})" if use_sanctum else f"cwd ({root})"
+    suffix = f" (capped — {scanned}+ files scanned)" if overflow or scanned > SCAN_CAP else ""
+    lines = [f"Find: {len(shown)} match{'es' if len(shown) != 1 else ''}"
+             f" for '{pattern}' [{want_type}] in {scope}{suffix}"]
+    for p in shown:
+        try:
+            rel = p.relative_to(root)
+            rel_str = rel.as_posix()
+        except ValueError:
+            rel_str = str(p)
+        if len(rel_str) > 100:
+            rel_str = "..." + rel_str[-97:]
+        lines.append(f"  {rel_str}")
+    return CommandResult(True, "\n".join(lines))
 
 
 def cmd_agents(args: list[str]) -> CommandResult:
@@ -1488,6 +1593,7 @@ COMMANDS: dict[str, Callable[[list[str]], CommandResult]] = {
     "utt": cmd_utterances,         # short alias
     "watch": cmd_watch,            # iter-61 — tail any jsonl under _shared-memory
     "agents": cmd_agents,          # iter-62 — richer heartbeats with mode/branch/note
+    "find": cmd_find,              # iter-63 — recursive name search under SANCTUM_ROOT
 }
 
 
