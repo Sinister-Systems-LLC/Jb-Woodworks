@@ -129,6 +129,18 @@ class Interpreter:
                        ("int", int), ("str", _stringify),
                        ("panic", _panic), ("assert", _assert)):
             self.env.define(nm, fn, constant=True)
+        # RKOJ-ELENO :: 2026-05-25 (iter-15) :: wire Phase-8 sim primitives so
+        # corpus simulation-pipeline.shp programs run with REAL semantics
+        # instead of zero-stubs. World is module-singleton via get_world().
+        # Operator-aligned with desktop python_simulator quantum-systems sim.
+        try:
+            from .sim import builtins as _sim_builtins
+            for nm, fn in _sim_builtins().items():
+                # Don't clobber prior bindings (e.g. _stub) -- override deliberately
+                # so the 8 sim ops + 8 ASCII aliases get REAL implementations.
+                self.env.define(nm, fn, constant=False)
+        except Exception:
+            pass  # sim is optional; corpus still parses + interpreter runs without
 
     def run(self, prog: Program, args: Optional[List[str]] = None) -> int:
         self.env.define("argv", list(args or []))

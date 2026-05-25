@@ -194,10 +194,28 @@ def reset_world(init: Optional[Dict[str, Any]] = None,
     return _WORLD
 
 
+# Canonical Unicode glyphs for the 8 sim ops (Egyptian Hieroglyph block).
+# Matches GLYPHS rows 57..64 in automations/hgly_corpus_seed.py + the
+# docs/GLYPH-SYNTAX.md table. Pinned here so sim.py stays decoupled from
+# the seeder module (which lives in automations/ outside the package).
+_SIM_GLYPHS = {
+    "\U000132FB": "snapshot",
+    "\U00013303": "step",
+    "\U00013319": "branch",
+    "\U00013347": "merge",
+    "\U00013371": "observe",
+    "\U000133A2": "perturb",
+    "\U000133C3": "rewind",
+    "\U000133DB": "materialize",
+}
+
+
 def builtins() -> Dict[str, Any]:
-    """Return a dict of sim builtin functions for interpreter/VM injection."""
+    """Return a dict of sim builtin functions for interpreter/VM injection.
+    Maps every reachable name (ASCII alias, full name, canonical glyph) to
+    the corresponding World op so .shp programs work in any glyph/ASCII mix."""
     w = get_world
-    return {
+    base = {
         "snp":         lambda *a: w().snapshot(*a),
         "snapshot":    lambda *a: w().snapshot(*a),
         "stp":         lambda *a: w().step(*a),
@@ -215,3 +233,9 @@ def builtins() -> Dict[str, Any]:
         "mat":         lambda *a: w().materialize(*a),
         "materialize": lambda *a: w().materialize(*a),
     }
+    # Register the canonical Unicode glyphs themselves as builtin keys so
+    # .shp programs using the glyph form (corpus default) dispatch to the
+    # same op as the ASCII fallback. Iter-15 wiring.
+    for glyph, name in _SIM_GLYPHS.items():
+        base[glyph] = base[name]
+    return base
