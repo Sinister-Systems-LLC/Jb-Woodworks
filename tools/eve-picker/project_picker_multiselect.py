@@ -471,9 +471,13 @@ def _render_multi(rows: list[dict], visual: list[dict],
             print(f"  {ln}")
 
     print()
+    # RKOJ-ELENO :: 2026-05-25T07:17Z Sub-Q :: Quick-launch (Q) hint added
+    # per operator hard-canonical "quickest way to open my termionials".
+    # Q = launch selected with all defaults (no grid, no Prompt-AgentModes).
     print(f"  {DIM}---{RESET} "
           f"{WHITE}Space{RESET}) toggle  "
           f"{WHITE}Enter{RESET}) configure  "
+          f"{BRIGHTP}Q{RESET}) {OK}Quick-launch (skip all prompts){RESET}  "
           f"{WHITE}A{RESET}) all  "
           f"{WHITE}N{RESET}) none  "
           f"{WHITE}B{RESET}) Back  "
@@ -532,7 +536,22 @@ def _stage_multi_select(rows: list[dict]) -> Optional[list[int]]:
             selected = set(range(len(rows)))
         elif key == "n":
             selected = set()
-        elif key in ("b", "ESC", "q"):
+        # RKOJ-ELENO :: 2026-05-25T07:17Z Sub-Q :: Quick-launch (Q key).
+        # Operator hard-canonical 07:17Z (Image 7+8) "quickest way to open my
+        # termionials". Q at picker -> bypass grid + bypass Prompt-AgentModes
+        # entirely. Sets SINISTER_QUICK_LAUNCH=1 sentinel which launch_selected
+        # propagates per-spawn. Same selected set as Enter (auto-pick cursor row
+        # if none selected). _read_key lowercases all keys so we match "q".
+        # Note: "q" was previously a back-out alias; we now repurpose it as
+        # quick-launch since b/ESC already cover back-out, and operator hard-
+        # canonical promotes Q (uppercase intent) to a fleet-wide shortcut.
+        elif key == "q":
+            if not selected:
+                row_index = visual[selectable_positions[cursor_idx]]["row_index"]
+                selected.add(row_index)
+            os.environ["SINISTER_QUICK_LAUNCH"] = "1"
+            return sorted(selected)
+        elif key in ("b", "ESC"):
             return None
         elif key == "x":
             sys.exit(0)
@@ -735,6 +754,11 @@ def launch_selected(configs: list[dict], stagger_seconds: float = 0.7) -> int:
         env["SINISTER_DEFAULT_PRIORITY"] = str(c["priority"])
         if c["loop_condition"]:
             env["SINISTER_DEFAULT_LOOP_CONDITION"] = c["loop_condition"]
+        # RKOJ-ELENO :: 2026-05-25T07:17Z Sub-Q :: propagate quick-launch
+        # sentinel so the PS1 launcher's Prompt-AgentModes early-returns w/
+        # defaults (no prompts at all).
+        if os.environ.get("SINISTER_QUICK_LAUNCH") == "1":
+            env["SINISTER_QUICK_LAUNCH"] = "1"
 
         cmd = [
             "powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass",
@@ -779,15 +803,36 @@ def show_multi_picker() -> list[dict]:
     indices = _stage_multi_select(rows)
     if not indices:
         return []
-    configs = _stage_grid_config(rows, indices)
-    if not configs:
-        return []
+    # RKOJ-ELENO :: 2026-05-25T07:17Z Sub-Q :: quick-launch fast path. If the
+    # operator pressed Q at the picker, skip the grid-config stage entirely
+    # and build configs from the project's static defaults (projects.json
+    # tier, agent name, accent already injected by _load_picker_rows).
+    if os.environ.get("SINISTER_QUICK_LAUNCH") == "1":
+        configs: list[dict] = []
+        for ri in indices:
+            r = rows[ri]
+            configs.append({
+                "key": r["key"],
+                "display": r["display"],
+                "agent_name": r.get("agent_name") or r.get("default_agent_name") or r["display"],
+                "accent": r.get("accent") or r.get("default_accent") or "purple",
+                "swarm": True,
+                "loop": True,
+                "loop_condition": "",
+                "priority": int(r.get("tier") or 3),
+            })
+    else:
+        configs = _stage_grid_config(rows, indices)
+        if not configs:
+            return []
     print()
     print(f"  {BRIGHTP}--- launching {len(configs)} sessions (staggered) ---{RESET}")
     launch_selected(configs)
     print()
     print(f"  {OK}all launched.{RESET} {DIM}returning to main menu...{RESET}")
     time.sleep(1.2)
+    # Clear sentinel so next picker session starts clean.
+    os.environ.pop("SINISTER_QUICK_LAUNCH", None)
     return configs
 
 

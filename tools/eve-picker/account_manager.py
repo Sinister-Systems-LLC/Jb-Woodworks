@@ -944,13 +944,25 @@ def _render_actions_menu() -> None:
     except Exception:
         for ln in body:
             print(f"  {ln}")
+    # RKOJ-ELENO :: 2026-05-25T07:17Z Sub-Q :: B4 footer migration -- canonical
+    # eve_ui.print_sub_page_footer (extras = page-specific L/O + status hint).
     print()
-    print(f"  {C['DIM']}---{C['RESET']} "
-          f"{C['PURPLE']}L){C['RESET']} Login   "
-          f"{C['PURPLE']}O){C['RESET']} Logout   "
-          f"{C['PURPLE']}B){C['RESET']} Back   "
-          f"{C['PURPLE']}X){C['RESET']} Exit   "
-          f"{C['DIM']}(status auto-refreshes){C['RESET']}")
+    try:
+        import sys as _sys
+        from pathlib import Path as _P
+        _here = _P(__file__).resolve().parent
+        if str(_here) not in _sys.path:
+            _sys.path.insert(0, str(_here))
+        from eve_ui import print_sub_page_footer as _psf  # type: ignore
+        _psf("L)ogin   O)gout   status auto-refreshes")
+    except Exception:
+        print(f"  {C['DIM']}---{C['RESET']} "
+              f"{C['PURPLE']}L){C['RESET']} Login   "
+              f"{C['PURPLE']}O){C['RESET']} Logout   "
+              f"{C['PURPLE']}B){C['RESET']} Back   "
+              f"{C['PURPLE']}H){C['RESET']} Home   "
+              f"{C['PURPLE']}X){C['RESET']} Exit   "
+              f"{C['DIM']}(status auto-refreshes){C['RESET']}")
 
 
 def _route_home() -> None:

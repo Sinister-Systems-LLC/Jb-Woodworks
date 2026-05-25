@@ -1981,7 +1981,10 @@ function Launch-Session($projRec, $agentName, $accent, $phrase, $modes = $null) 
     $diamond = [char]0x25C6  # ◆ -- Unicode bullet works inside bash OSC printf
     $accountForTitle = if ($selectedAccountName) { $selectedAccountName } elseif ($env:SINISTER_ACCOUNT) { $env:SINISTER_ACCOUNT } else { 'operator' }
     # Bash-side title (printf inside launch.sh) -- full Sinister format with ◆ separators.
-    $windowTitle = "$agentName $diamond swarm=$swarmTag $diamond loop=$loopTag $diamond acct=$accountForTitle $diamond T$_titleTier $diamond Sinister"
+    # RKOJ-ELENO :: 2026-05-25T07:19Z :: operator hard-canonical "make the names work".
+    # Title now LEADS with "Sinister $agentName" so the lane is obvious in the alt-tab
+    # carousel + taskbar (Image 8: "Sinister Sanctum" was the operator's expected format).
+    $windowTitle = "Sinister $agentName $diamond swarm=$swarmTag $diamond loop=$loopTag $diamond acct=$accountForTitle $diamond T$_titleTier"
     # mintty `-t` arg ASCII-safe variant (Win32 CreateProcess arg encoding can mangle
     # multi-byte unicode; bash OSC inside the spawned shell handles ◆ correctly). The
     # two converge once bash printf fires on line 1907 -- `-t` just bridges the cold
@@ -1994,7 +1997,10 @@ function Launch-Session($projRec, $agentName, $accent, $phrase, $modes = $null) 
     # The bash OSC printf at line ~1907 reinstates the full ◆-separated title once
     # bash starts (~50ms after spawn), so this cold-open placeholder doesn't need the
     # pretty formatting -- it just needs to NOT crash mintty.
-    $windowTitleAscii = "${agentName}-swarm=${swarmTag}-loop=${loopTag}-acct=${accountForTitle}-T${_titleTier}-Sinister"
+    # RKOJ-ELENO :: 2026-05-25T07:19Z :: lane prefix also added to ASCII fallback so the
+    # cold-open window title (visible for ~50ms before OSC printf fires) ALSO reads as
+    # "Sinister-<lane>-...". Operator hard-canonical "make the names work and set here".
+    $windowTitleAscii = "Sinister-${agentName}-swarm=${swarmTag}-loop=${loopTag}-acct=${accountForTitle}-T${_titleTier}"
 
     # RKOJ-ELENO :: 2026-05-23 :: Phase 1/2 — account name resolved earlier (above
     # the colormap block). $selectedAccountName + $selectedApiKey already set there.
@@ -2601,7 +2607,7 @@ fi
 # RUNLOG
 # ============================================================
 
-function Write-RunLog($projectKey, $agentName, $accent, $kind) {
+function Write-RunLog($projectKey, $agentName, $accent, $kind, $modesRec = $null) {
     try {
         if (-not (Test-Path $ScriptRunsDir)) { New-Item -ItemType Directory -Path $ScriptRunsDir -Force | Out-Null }
         $rec = [pscustomobject]@{
@@ -2615,6 +2621,39 @@ function Write-RunLog($projectKey, $agentName, $accent, $kind) {
         }
         $path = Join-Path $ScriptRunsDir ("start-sinister-session-{0}-{1}.json" -f (Get-Date).ToString('yyyyMMdd-HHmmss'), [guid]::NewGuid().ToString().Substring(0,4))
         [System.IO.File]::WriteAllText($path, ($rec | ConvertTo-Json -Depth 6), [System.Text.UTF8Encoding]::new($false))
+    } catch {}
+    # RKOJ-ELENO :: 2026-05-25T07:19Z :: last-spawn.json for Q) Quick-launch (iter-25 P0.2).
+    # Operator hard-canonical 07:19Z: "make this entire process way more efficient with
+    # the quickest way to open my terminals". eve.py Q) reads this row + sets
+    # $env:SINISTER_QUICK_LAUNCH=1, then re-invokes start-sinister-session.ps1 -Project
+    # <project> to skip every prompt. Single-row file (overwrite on each spawn) for the
+    # zero-friction case; per-lane history is also appended to last-spawn-history.jsonl
+    # for future multi-lane recall (eve.py Q) currently reads only last-spawn.json).
+    try {
+        $lastSpawnPath = Join-Path $ScriptRunsDir 'last-spawn.json'
+        $modesOut = $null
+        if ($modesRec) {
+            $modesOut = [pscustomobject]@{
+                swarm = [bool]$modesRec.swarm
+                loop = [bool]$modesRec.loop
+                loop_relentless = [bool]$modesRec.loop_relentless
+                loop_condition = [string]$modesRec.loop_condition
+                priority = [int]$modesRec.priority
+            }
+        }
+        $lastRec = [pscustomobject]@{
+            ts_utc = (Get-Date).ToUniversalTime().ToString('o')
+            lane = $agentName
+            project_key = $projectKey
+            accent = $accent
+            kind = $kind
+            modes = $modesOut
+        }
+        [System.IO.File]::WriteAllText($lastSpawnPath, ($lastRec | ConvertTo-Json -Depth 6), [System.Text.UTF8Encoding]::new($false))
+        # Append to history for future multi-lane recall (eve.py Q currently reads single-row only).
+        $histPath = Join-Path $ScriptRunsDir 'last-spawn-history.jsonl'
+        $histLine = ($lastRec | ConvertTo-Json -Depth 6 -Compress)
+        Add-Content -Path $histPath -Value $histLine -Encoding UTF8
     } catch {}
 }
 
@@ -2658,7 +2697,7 @@ if ($Project) {
     $modes = Prompt-AgentModes -ProjectRec $projRec
     $phrase = Build-Phrase $projRec $resolvedAgent 'resume' $isGeneral $false $modes
     if (-not $NoLaunch) { Launch-Session $projRec $resolvedAgent $resolvedAccent $phrase $modes }
-    Write-RunLog $Project $resolvedAgent $resolvedAccent 'headless'
+    Write-RunLog $Project $resolvedAgent $resolvedAccent 'headless' $modes
     exit 0
 }
 
@@ -2723,7 +2762,7 @@ do {
                     $modes = Prompt-AgentModes -ProjectRec $projRec
                     $phrase = Build-Phrase $projRec $resolvedAgent 'resume' $isGeneral $false $modes
                     if (-not $NoLaunch) { Launch-Session $projRec $resolvedAgent $accentVal $phrase $modes }
-                    Write-RunLog $targetKey $resolvedAgent $accentVal 'autoresume-fresh'
+                    Write-RunLog $targetKey $resolvedAgent $accentVal 'autoresume-fresh' $modes
                 } else {
                     Write-Host "  [FAIL] project not found: $targetKey" -ForegroundColor $C.Fail
                     Start-Sleep -Seconds 2
@@ -2741,7 +2780,7 @@ do {
                 $modes = Prompt-AgentModes -ProjectRec $projRec
                 $phrase = Build-Phrase $projRec $resolvedAgent 'resume' ($targetKey -eq 'general') $false $modes
                 if (-not $NoLaunch) { Launch-Session $projRec $resolvedAgent $accentVal $phrase $modes }
-                Write-RunLog $targetKey $resolvedAgent $accentVal 'autoresume'
+                Write-RunLog $targetKey $resolvedAgent $accentVal 'autoresume' $modes
             }
         }
         'newproject' {
@@ -2761,7 +2800,7 @@ do {
                 $modes = Prompt-AgentModes -ProjectRec $projRec
                 $phrase = Build-Phrase $projRec $resolvedAgent 'scaffold' $false $true $modes
                 if (-not $NoLaunch) { Launch-Session $projRec $resolvedAgent 'purple' $phrase $modes }
-                Write-RunLog $new.key $resolvedAgent 'purple' 'newproject'
+                Write-RunLog $new.key $resolvedAgent 'purple' 'newproject' $modes
                 $projectsJson = ReadProjectsJson
                 $visible = Get-VisibleProjects $projectsJson
             }
@@ -2778,7 +2817,7 @@ do {
                 $modes = Prompt-AgentModes -ProjectRec $projRec
                 $phrase = Build-Phrase $projRec $resolvedAgent 'resume' $isGeneral $false $modes
                 if (-not $NoLaunch) { Launch-Session $projRec $resolvedAgent $accentVal $phrase $modes }
-                Write-RunLog $targetKey $resolvedAgent $accentVal 'project'
+                Write-RunLog $targetKey $resolvedAgent $accentVal 'project' $modes
             } else {
                 Write-Host "  [FAIL] project not found: $targetKey" -ForegroundColor $C.Fail
                 Start-Sleep -Seconds 2

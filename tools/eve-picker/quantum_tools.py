@@ -625,10 +625,21 @@ def render_menu() -> None:
     except Exception:
         for ln in body:
             print(f"  {ln}")
+    # RKOJ-ELENO :: 2026-05-25T07:17Z Sub-Q :: B4 footer migration -- canonical
+    # eve_ui helper (was inline). Fallback retained for offline import paths.
     print()
-    print(f"  {DIM}---{RESET} {PURPLE}B){RESET} Back   "
-          f"{PURPLE}H){RESET} Home   {PURPLE}X){RESET} Exit   "
-          f"{DIM}(1-{len(_TOOLS)} to run){RESET}")
+    try:
+        import sys as _sys
+        from pathlib import Path as _P
+        _here = _P(__file__).resolve().parent
+        if str(_here) not in _sys.path:
+            _sys.path.insert(0, str(_here))
+        from eve_ui import print_sub_page_footer as _psf  # type: ignore
+        _psf(f"1-{len(_TOOLS)} to run")
+    except Exception:
+        print(f"  {DIM}---{RESET} {PURPLE}B){RESET} Back   "
+              f"{PURPLE}H){RESET} Home   {PURPLE}X){RESET} Exit   "
+              f"{DIM}(1-{len(_TOOLS)} to run){RESET}")
 
 
 def dispatch(choice: str, arg: str = "") -> int:

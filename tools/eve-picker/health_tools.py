@@ -272,13 +272,28 @@ def _route_home() -> None:
 
 def menu_loop() -> int:
     """Canonical Health sub-page (RKOJ-ELENO 2026-05-24T22:40Z).
-    Header + body + footer (B/H/X/R) per eve-ui-uniformity-doctrine-2026-05-24.md."""
+    Header + body + footer (B/H/X/R) per eve-ui-uniformity-doctrine-2026-05-24.md.
+
+    RKOJ-ELENO :: 2026-05-25T07:17Z Sub-Q :: B4 footer migration -- route
+    through eve_ui.print_sub_page_footer (canonical helper) so footer styling
+    stays in lockstep with the rest of EVE when the helper evolves.
+    """
     while True:
         health_status()
         print()
-        print(f"  {DIM}---{RESET} {PURPLE}B){RESET} Back   "
-              f"{PURPLE}H){RESET} Home   "
-              f"{PURPLE}X){RESET} Exit   {DIM}(R)efresh{RESET}")
+        try:
+            import sys as _sys
+            from pathlib import Path as _P
+            _here = _P(__file__).resolve().parent
+            if str(_here) not in _sys.path:
+                _sys.path.insert(0, str(_here))
+            from eve_ui import print_sub_page_footer as _psf  # type: ignore
+            _psf("R)efresh")
+        except Exception:
+            # Fallback to inline if eve_ui import fails (offline / partial install)
+            print(f"  {DIM}---{RESET} {PURPLE}B){RESET} Back   "
+                  f"{PURPLE}H){RESET} Home   "
+                  f"{PURPLE}X){RESET} Exit   {DIM}(R)efresh{RESET}")
         try:
             resp = input("  > ").strip().lower()
         except (EOFError, KeyboardInterrupt):

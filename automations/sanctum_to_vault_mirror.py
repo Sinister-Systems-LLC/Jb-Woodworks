@@ -9,9 +9,15 @@ Operator (verbatim 2026-05-25 ~07:08Z): "place the sinister vault live and
 place the entire sinster sanctum there and link to leo over sinister link
 and auto update that and github."
 
-Mirrors D:\\Sinister Sanctum -> D:\\sinister-vault\\sanctum-mirror\\<machine-id>\\
+Mirrors D:\\Sinister Sanctum -> D:\\Sinister Sanctum\\_vault\\sanctum-mirror\\<machine-id>\\
 on a 15-minute cadence (via SinisterSanctumToVaultMirror schtask) so Syncthing
 replicates the tree to Leo and to any other paired peer.
+
+I7 PATH CANONICALIZATION (Sub-Q 2026-05-25T07:17Z): previously wrote to
+D:\\sinister-vault\\ but Sub-N's vault_github_sync + Sub-O's eve_self_update +
+eve_update_notifier all read _vault/sanctum-mirror/. Sub-P's smoke flagged
+the mismatch. Now canonical = REPO_ROOT/_vault/sanctum-mirror/<machine-id>/
+(matches existing _vault/ gitignored path + Sub-N + Sub-O).
 
 First run = full copy. Subsequent runs = rsync-style delta (size+mtime).
 
@@ -46,9 +52,13 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, List, Tuple
 
-VERSION = "1.0.0"
+VERSION = "1.1.0"  # Sub-Q :: I7 path canonicalization to _vault/sanctum-mirror/
 SANCTUM_ROOT = Path(r"D:\Sinister Sanctum")
-VAULT_ROOT = Path(r"D:\sinister-vault")
+# RKOJ-ELENO :: 2026-05-25T07:17Z Sub-Q :: VAULT_ROOT now lives INSIDE the
+# Sanctum tree at _vault/ (the gitignored sibling that Syncthing/vault daemon
+# already watch). Old D:\sinister-vault path is left as a one-way symlink/
+# junction by d-drive-reorg.ps1 but we no longer write there.
+VAULT_ROOT = SANCTUM_ROOT / "_vault"
 MIRROR_BASE = VAULT_ROOT / "sanctum-mirror"
 LOG_PATH = SANCTUM_ROOT / "_shared-memory" / "vault-mirror-log.jsonl"
 SCHTASK_NAME = "SinisterSanctumToVaultMirror"
@@ -233,9 +243,14 @@ def main() -> int:
     if not SANCTUM_ROOT.exists():
         sys.stderr.write(f"missing Sanctum root: {SANCTUM_ROOT}\n")
         return 2
+    # _vault/ lives inside Sanctum (gitignored); auto-create if missing rather
+    # than fatal-exit (Sub-Q canonicalization 2026-05-25T07:17Z).
     if not VAULT_ROOT.exists():
-        sys.stderr.write(f"missing vault root: {VAULT_ROOT}\n")
-        return 2
+        try:
+            VAULT_ROOT.mkdir(parents=True, exist_ok=True)
+        except OSError as exc:
+            sys.stderr.write(f"could not create vault root {VAULT_ROOT}: {exc}\n")
+            return 2
     t0 = time.time()
     stats = plan_and_mirror(dry_run=args.dry_run)
     elapsed = time.time() - t0

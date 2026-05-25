@@ -162,11 +162,24 @@ def _render_menu() -> None:
     for key, title, _action, hint in _ACTIONS:
         print(f"    {C['PURPLE']}{key}){C['RESET']} {C['WHITE']}{title:<18}{C['RESET']} "
               f"{C['DIM']}{hint}{C['RESET']}")
+    # RKOJ-ELENO :: 2026-05-25T07:17Z Sub-Q :: B4 footer migration -- canonical
+    # eve_ui.print_sub_page_footer (now also surfaces Home key for consistency
+    # with rest of EVE; previously this page omitted H).
     print()
-    print(f"  {C['DIM']}---{C['RESET']} "
-          f"{C['PURPLE']}B){C['RESET']} Back   "
-          f"{C['PURPLE']}X){C['RESET']} Exit   "
-          f"{C['DIM']}(R refresh){C['RESET']}")
+    try:
+        import sys as _sys
+        from pathlib import Path as _P
+        _here = _P(__file__).resolve().parent
+        if str(_here) not in _sys.path:
+            _sys.path.insert(0, str(_here))
+        from eve_ui import print_sub_page_footer as _psf  # type: ignore
+        _psf("R refresh")
+    except Exception:
+        print(f"  {C['DIM']}---{C['RESET']} "
+              f"{C['PURPLE']}B){C['RESET']} Back   "
+              f"{C['PURPLE']}H){C['RESET']} Home   "
+              f"{C['PURPLE']}X){C['RESET']} Exit   "
+              f"{C['DIM']}(R refresh){C['RESET']}")
 
 
 def _wait_for_enter(prompt: str = "(Enter to return)") -> None:
