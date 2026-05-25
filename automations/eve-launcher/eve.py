@@ -2085,6 +2085,97 @@ def _view_mesh_status() -> None:
             return
 
 
+def _quick_launch_from_last_spawn() -> None:
+    """Q) Quick-launch :: replay the last spawn with ZERO primer prompts.
+
+    Operator hard-canonical 2026-05-25T07:19Z verbatim: *"make this entire process
+    way more efficient with the quickest way to open my terminals and make the
+    names work and set here"* (iter-25 P0.2).
+
+    Reads ``_shared-memory/script-runs/last-spawn.json`` (written by Write-RunLog
+    in start-sinister-session.ps1 after every successful spawn). Sets
+    ``SINISTER_QUICK_LAUNCH=1`` + ``SINISTER_LAST_LANE`` + per-mode env hints so
+    the PS1's existing Prompt-AgentModes short-circuit (line ~1436) skips every
+    Read-Host. If the row is missing or unreadable, prints a "(no prior spawn;
+    use N) New)" hint and returns to the picker.
+
+    Author: RKOJ-ELENO :: 2026-05-25.
+    """
+    import json as _json
+    if SANCTUM_ROOT_PATH is None:
+        print(f"  {FAIL}[Q] sanctum root not resolved{RESET}")
+        time.sleep(1.2)
+        return
+    last_path = SANCTUM_ROOT_PATH / "_shared-memory" / "script-runs" / "last-spawn.json"
+    if not last_path.exists():
+        print(f"  {WARN}[Q] no prior spawn (last-spawn.json missing){RESET}")
+        print(f"  {DIM}    -> use N) New, or pick a number to spawn -- next spawn will populate.{RESET}")
+        time.sleep(1.6)
+        return
+    try:
+        row = _json.loads(last_path.read_text(encoding="utf-8"))
+    except Exception as e:
+        print(f"  {FAIL}[Q] failed to read last-spawn.json: {e}{RESET}")
+        print(f"  {DIM}    -> use N) New){RESET}")
+        time.sleep(1.6)
+        return
+    lane = row.get("lane") or ""
+    project_key = row.get("project_key") or ""
+    if not project_key:
+        print(f"  {WARN}[Q] last-spawn.json has no project_key -- use N) New){RESET}")
+        time.sleep(1.4)
+        return
+    # Set env hints; the PS1's Prompt-AgentModes block at ~line 1436 already
+    # short-circuits on SINISTER_QUICK_LAUNCH=1. SINISTER_LAST_LANE is purely
+    # informational (carried into the spawned shell for debug / banner display).
+    os.environ["SINISTER_QUICK_LAUNCH"] = "1"
+    if lane:
+        os.environ["SINISTER_LAST_LANE"] = lane
+    modes = row.get("modes") or {}
+    # If the prior spawn captured modes, plumb them as PS1 defaults so the
+    # short-circuit returns IDENTICAL config (not just generic defaults).
+    if isinstance(modes, dict):
+        if "swarm" in modes:
+            os.environ["SINISTER_DEFAULT_SWARM"] = "1" if modes.get("swarm") else "0"
+        if "loop" in modes:
+            os.environ["SINISTER_DEFAULT_LOOP"] = "1" if modes.get("loop") else "0"
+        if modes.get("loop_condition"):
+            os.environ["SINISTER_DEFAULT_LOOP_CONDITION"] = str(modes["loop_condition"])
+        if modes.get("priority"):
+            try:
+                os.environ["SINISTER_DEFAULT_PRIORITY"] = str(int(modes["priority"]))
+            except Exception:
+                pass
+    print()
+    print(f"  {BRIGHTP}[Q] Quick-launch{RESET}  {WHITE}{lane}{RESET} {DIM}({project_key}){RESET}")
+    print(f"  {DIM}    all prompts skipped -- replaying last spawn config.{RESET}")
+    print()
+    try:
+        rc = dispatch_project(project_key)
+    except Exception as e:
+        print(f"  {FAIL}[Q] dispatch crashed: {e} -- falling back to N) New){RESET}")
+        # Clean up env so the fallback dispatch_interactive() doesn't inherit
+        # quick-launch flags (would skip the operator's NEW-project primer).
+        for k in ("SINISTER_QUICK_LAUNCH", "SINISTER_LAST_LANE"):
+            os.environ.pop(k, None)
+        time.sleep(1.2)
+        try:
+            dispatch_interactive()
+        except Exception as e2:
+            print(f"  {FAIL}[Q] interactive fallback also failed: {e2}{RESET}")
+            time.sleep(2)
+        return
+    # Clear the quick-launch flag after spawn so the next picker action takes the
+    # normal primer flow (operator might want to spawn a DIFFERENT project next).
+    for k in ("SINISTER_QUICK_LAUNCH", "SINISTER_LAST_LANE",
+              "SINISTER_DEFAULT_SWARM", "SINISTER_DEFAULT_LOOP",
+              "SINISTER_DEFAULT_LOOP_CONDITION", "SINISTER_DEFAULT_PRIORITY"):
+        os.environ.pop(k, None)
+    if rc and rc != 0:
+        print(f"  {WARN}[Q] dispatch returned rc={rc}{RESET}")
+        time.sleep(0.8)
+
+
 def _view_queue() -> None:
     """Canonical Queue sub-page :: top 3 open OPERATOR-ACTION-QUEUE rows.
 
@@ -2850,8 +2941,57 @@ def _accounts_compact_line() -> str:
         return ""
 
 
+def _read_update_marker() -> dict | None:
+    """Return parsed eve-update-available.json or None.
+
+    Sub-iter25-update-notify (RKOJ-ELENO :: 2026-05-25 ~07:10Z). Operator
+    hard-canonical: "make the eexe update oiver sinsiter link and leo will
+    have popup to say update availabe or something". This is the read side
+    of the marker contract written by automations/eve_self_update.py. Best-
+    effort: malformed JSON / missing file / permission denied -> return None
+    so the banner just doesn't render (never crash the picker).
+    """
+    if SANCTUM_ROOT_PATH is None:
+        return None
+    marker = SANCTUM_ROOT_PATH / "_shared-memory" / "eve-update-available.json"
+    if not marker.exists():
+        return None
+    try:
+        import json as _json
+        body = marker.read_text(encoding="utf-8")
+        data = _json.loads(body)
+        if not isinstance(data, dict):
+            return None
+        # Minimal validation: at least remote_sha must look like a hex sha.
+        remote_sha = data.get("remote_sha", "")
+        if not (isinstance(remote_sha, str) and len(remote_sha) == 64
+                and all(c in "0123456789abcdefABCDEF" for c in remote_sha)):
+            return None
+        return data
+    except (OSError, ValueError, Exception):
+        # Malformed JSON, race with writer, unicode error -- treat as absent.
+        return None
+
+
+def _render_update_available_banner() -> None:
+    """Paint a single-line UPDATE AVAILABLE banner if marker exists.
+
+    Renders at the TOP of banner() so the operator sees it before any picker
+    chrome. Stays under 1 line so it does not displace the centered-menu
+    layout. Press U keystroke is wired in _run_project_picker.
+    """
+    data = _read_update_marker()
+    if not data:
+        return
+    sha = (data.get("remote_sha") or "")[:8]
+    print(f"  {BRIGHTP}[UPDATE AVAILABLE -- press U to apply (sha: {sha}){RESET}")
+
+
 def banner(state) -> None:
     """ANSI-render the picker banner using fields from PickerState + status line."""
+    # Sub-iter25-update-notify: paint update banner BEFORE the EVE chrome so
+    # operator/Leo see it on every picker render until --apply runs.
+    _render_update_available_banner()
     now = time.strftime("%Y-%m-%d %H:%M")
     account = os.environ.get("SINISTER_ACCOUNT", "operator")
     # RKOJ-ELENO 2026-05-24: precedence env-var > prefs defaults. So when no CLI/env
@@ -3026,7 +3166,8 @@ def render_picker(state, selected=None, highlight=None) -> None:
     # selected; A selects all; C clears selection. (Note: `A` was previously the
     # automations menu — that's now reached via T) Tools -> 6) Sanctum Automations.)
     print(f"  {DIM}--- {RESET}{PURPLE}ENTER){RESET} Start selected   "
-          f"{PURPLE}A){RESET} Select All   "
+          f"{PURPLE}Q){RESET} Quick-launch (replay last)   "
+          f"{PURPLE}A){RESET} All   "
           f"{PURPLE}C){RESET} Clear   "
           f"{PURPLE}B){RESET} Back   "
           f"{PURPLE}X){RESET} Exit {DIM}---{RESET}")
@@ -3543,7 +3684,7 @@ def main(argv: list[str] | None = None) -> int:
             try:
                 raw = _arrow_input(
                     f"  {WHITE}Toggle # or ENTER to start ({len(_selected)} selected) "
-                    f"{DIM}[arrows nav · A/C/B/X/T/H/L/Q/U/M/O/G/N/R/K/S/F/ /q]{RESET} "
+                    f"{DIM}[arrows nav · Q=quick-launch · A/C/B/X/T/H/L/J/U/M/O/G/N/R/K/S/F/ /q]{RESET} "
                     f"{PURPLE}>{RESET} "
                 )
                 raw = (raw or "").strip()
@@ -3624,10 +3765,69 @@ def main(argv: list[str] | None = None) -> int:
                 _log_session_end("normal_exit")
                 return 0
 
-            # Q (queue) :: canonical sub-page (RKOJ-ELENO 2026-05-24T22:40Z)
-            # Operator directive 2026-05-24: Q is Queue. X is the new exit key.
-            if raw.lower() in ("q", "queue", "qq"):
+            # Q (Quick-launch) :: canonical (RKOJ-ELENO 2026-05-25T07:19Z iter-25 P0.2).
+            # Operator hard-canonical 2026-05-25T07:19Z verbatim: *"make this entire
+            # process way more efficient with the quickest way to open my terminals and
+            # make the names work and set here"*. Single keystroke replays the last
+            # spawn (lane + project + modes) with ZERO primer prompts, via
+            # SINISTER_QUICK_LAUNCH=1 + start-sinister-session.ps1 -Project <key>.
+            # Reads _shared-memory/script-runs/last-spawn.json (written by Write-RunLog
+            # after every successful spawn). Falls back to a "no prior spawn" hint
+            # when the file is missing. Supersedes the 2026-05-24T22:40Z Q->Queue
+            # binding -- Queue is still reachable via long-form `queue` / `qq` / J.
+            if raw.lower() == "q":
+                _quick_launch_from_last_spawn()
+                state = lib.build_picker_state(boot_ms=state.boot_ms)
+                continue
+            if raw.lower() in ("queue", "qq", "j"):
                 _view_queue()
+                state = lib.build_picker_state(boot_ms=state.boot_ms)
+                continue
+
+            # U (update apply) -- sub-iter25-update-notify (2026-05-25 ~07:10Z).
+            # Operator hard-canonical: "make the eexe update oiver sinsiter link
+            # and leo will have popup to say update availabe or something".
+            # When the marker file exists, U applies the update (banner advertises
+            # this). When NO marker exists, U falls through to utterances below
+            # (legacy behavior preserved). The banner makes the contextual key
+            # meaning obvious to the operator/Leo.
+            if raw.lower() in ("u", "update") and _read_update_marker():
+                print(f"  {BRIGHTP}[U]{RESET} applying EVE.exe update...")
+                _updater = None
+                if SANCTUM_ROOT_PATH is not None:
+                    _updater = SANCTUM_ROOT_PATH / "automations" / "eve_self_update.py"
+                if _updater is None or not _updater.exists():
+                    print(f"  {FAIL}[U] updater missing: {_updater}{RESET}")
+                    time.sleep(1.5)
+                    state = lib.build_picker_state(boot_ms=state.boot_ms)
+                    continue
+                try:
+                    _cp = subprocess.run(
+                        [sys.executable, str(_updater), "--transport", "auto"],
+                        capture_output=True, text=True, timeout=180,
+                    )
+                    _out = (_cp.stdout or "").strip()
+                    _err = (_cp.stderr or "").strip()
+                    if _cp.returncode == 0 and "replaced" in _out:
+                        print(f"  {OK}[U] update applied; restarting...{RESET}")
+                        if _out:
+                            print(f"  {DIM}{_out}{RESET}")
+                        time.sleep(1.2)
+                        _log_session_end("update_applied")
+                        sys.exit(0)
+                    else:
+                        print(f"  {WARN}[U] updater rc={_cp.returncode}{RESET}")
+                        if _out:
+                            print(f"  {DIM}{_out}{RESET}")
+                        if _err:
+                            print(f"  {DIM}{_err}{RESET}")
+                        time.sleep(2.0)
+                except subprocess.TimeoutExpired:
+                    print(f"  {FAIL}[U] updater timed out after 180s{RESET}")
+                    time.sleep(1.5)
+                except Exception as _exc:
+                    print(f"  {FAIL}[U] updater crashed: {_exc}{RESET}")
+                    time.sleep(1.5)
                 state = lib.build_picker_state(boot_ms=state.boot_ms)
                 continue
 

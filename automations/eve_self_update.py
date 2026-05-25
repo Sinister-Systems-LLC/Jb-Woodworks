@@ -73,6 +73,14 @@ DEFAULT_EVE_PATHS = [
 ]
 LOG_PATH = REPO_ROOT / "_shared-memory" / "eve-update-log.jsonl"
 
+# Sub-iter25-update-notify (RKOJ-ELENO :: 2026-05-25 ~07:10Z). Operator hard-
+# canonical: "make the eexe update oiver sinsiter link and leo will have popup
+# to say update availabe or something". When the check-sha-differs branch
+# fires, write this marker so EVE.exe's picker can paint an UPDATE-AVAILABLE
+# banner on next render. Path is inside _shared-memory/ so the LINK poller's
+# git sync propagates the marker to Leo's machine automatically.
+UPDATE_MARKER_PATH = REPO_ROOT / "_shared-memory" / "eve-update-available.json"
+
 REMOTE_BASE = (
     "https://raw.githubusercontent.com/"
     "Sinister-Systems-LLC/Sinister-Sanctum/main"
@@ -118,6 +126,42 @@ def _log(row: dict) -> None:
     except OSError as exc:
         # Last-ditch: stderr only, do not crash caller.
         print(f"[eve_self_update] log write failed: {exc}", file=sys.stderr)
+
+
+def _write_update_marker(
+    *,
+    remote_sha: str,
+    local_sha: str | None,
+    source_url: str,
+) -> None:
+    """Write the update-available marker that EVE.exe's picker watches.
+
+    Best-effort: a failed write must not crash the updater. The marker is
+    overwritten atomically (write tmp + replace) so a half-written file is
+    never observed.
+    """
+    payload = {
+        "remote_sha": remote_sha,
+        "local_sha": local_sha,
+        "detected_at_utc": _utc_now(),
+        "source_url": source_url,
+    }
+    try:
+        UPDATE_MARKER_PATH.parent.mkdir(parents=True, exist_ok=True)
+        tmp = UPDATE_MARKER_PATH.with_suffix(f".json.tmp.{os.getpid()}")
+        tmp.write_text(json.dumps(payload, ensure_ascii=False, indent=2),
+                       encoding="utf-8")
+        os.replace(tmp, UPDATE_MARKER_PATH)
+    except OSError as exc:
+        print(f"[eve_self_update] marker write failed: {exc}", file=sys.stderr)
+
+
+def _clear_update_marker() -> None:
+    """Delete the update-available marker (called after successful apply)."""
+    try:
+        UPDATE_MARKER_PATH.unlink(missing_ok=True)
+    except OSError as exc:
+        print(f"[eve_self_update] marker clear failed: {exc}", file=sys.stderr)
 
 
 # ---------------------------------------------------------------------------
@@ -783,12 +827,30 @@ def check_and_update(
     if local_sha == remote_sha and not force:
         result["action"] = "in-sync"
         result["exit"] = 0
+        # Sub-iter25-update-notify: any stale marker is now wrong -- clear it.
+        _clear_update_marker()
         _log(result)
         return result
 
     # Detect live EVE.exe processes (info-only on dry-run).
     running = is_eve_running(eve_path)
     result["running_pids"] = [getattr(p, "pid", None) for p in running]
+
+    # Sub-iter25-update-notify (RKOJ-ELENO :: 2026-05-25 ~07:10Z). Drift
+    # detected -- write the marker so EVE.exe's picker paints the UPDATE
+    # AVAILABLE banner. Done BEFORE dry-run return so audit/dry-run runs
+    # still seed the marker for Leo's machine via _shared-memory/ sync.
+    if source == "link-mirror":
+        _marker_source_url = "link-mirror"
+    elif source == "full-binary":
+        _marker_source_url = REMOTE_BIN_URL
+    else:
+        _marker_source_url = REMOTE_SHA_URL
+    _write_update_marker(
+        remote_sha=remote_sha,
+        local_sha=local_sha,
+        source_url=_marker_source_url,
+    )
 
     if dry_run:
         if running:
@@ -876,6 +938,8 @@ def check_and_update(
             result["swap_strategy"] = swap.get("strategy")
             result["local_sha_after"] = swap.get("sha_after") or remote_sha
             result["exit"] = 0
+            # Sub-iter25-update-notify: update applied -- banner can disappear.
+            _clear_update_marker()
             _log(result)
             return result
         # Persistent failure — clean up tmp, exit gracefully.
@@ -902,6 +966,8 @@ def check_and_update(
     result["swap_strategy"] = "atomic_swap-legacy"
     result["local_sha_after"] = remote_sha
     result["exit"] = 0
+    # Sub-iter25-update-notify: update applied -- banner can disappear.
+    _clear_update_marker()
     _log(result)
     return result
 
