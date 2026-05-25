@@ -337,6 +337,26 @@ switch ($Action) {
             }
             [System.IO.File]::WriteAllText($inviteFile, ($persist | ConvertTo-Json -Depth 6), [System.Text.UTF8Encoding]::new($false))
 
+            # Author: RKOJ-ELENO :: 2026-05-25 -- Sub-G UX fix for operator utterance 07:08:40Z.
+            # Write a state stub so the EVE main menu shows feedback that an invite was issued
+            # (without overwriting an existing paired state if peer already accepted earlier).
+            $existing = Read-State
+            if (-not $existing -or -not $existing.state -or $existing.state -ne 'paired') {
+                $stub = @{
+                    state          = 'invited'
+                    invited_at_utc = (Utc-Now)
+                    invite_id      = $inviteId
+                    expires_utc    = $expiresAt
+                    peer           = @{
+                        display = $invite.peer_display
+                        name    = $invite.peer_name
+                    }
+                    transport      = $invite.transport
+                    psk_hash       = Hash-PSK $psk
+                }
+                Write-State $stub
+            }
+
             if ($Json) {
                 Write-Output (@{ invite_code = $code; invite_id = $inviteId; expires_utc = $expiresAt; psk_mask = (Mask-Psk $psk) } | ConvertTo-Json -Depth 4)
             } else {

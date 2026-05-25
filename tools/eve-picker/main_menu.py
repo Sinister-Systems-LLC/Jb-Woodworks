@@ -324,6 +324,13 @@ def _link_header_line() -> str:
                     f"{DIM}(press {RESET}{PURPLE}L{RESET}{DIM} to pair with peer){RESET}")
         s = json.loads(LINK_STATE_JSON.read_text(encoding="utf-8-sig", errors="replace"))
         peer = (s.get("peer") or {}).get("display") or (s.get("peer") or {}).get("name") or "?"
+        # 'invited' is the post-GenerateInvite, pre-AcceptInvite stub state.
+        # Operator hard-canonical 2026-05-25T07:08:40Z UX fix.
+        state_val = s.get("state") or ""
+        if state_val == "invited":
+            peer_label = peer if peer != "?" else "peer"
+            return (f"{PURPLE}Sinister LINK :: invited{RESET}  "
+                    f"{DIM}(awaiting acceptance from {peer_label}; press {RESET}{PURPLE}L{RESET}{DIM} for status){RESET}")
         last = s.get("last_sync_utc") or ""
         if not last:
             return (f"{PURPLE}Sinister LINK :: linked to {peer}{RESET}  "
