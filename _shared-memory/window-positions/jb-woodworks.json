@@ -1,0 +1,12 @@
+{
+    "x":  1894,
+    "y":  934,
+    "w":  675,
+    "h":  473,
+    "monitor_index":  0,
+    "ts_utc":  "2026-05-25T06:28:08Z",
+    "captured_at":  "2026-05-25T02:28:08.3021828-04:00",
+    "project_key":  "jb-woodworks",
+    "agent_pid":  43680,
+    "watcher":  "window-position-monitor.ps1:sweep"
+}

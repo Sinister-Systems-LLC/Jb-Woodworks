@@ -1,4 +1,30 @@
-﻿## 2026-05-25 06:16 UTC — sanctum iter-22 LEO HANDOFF: deploy/ + UAC auto-install + EVE.exe auto-update + _internal P0 fix + tag pushed
+﻿## 2026-05-25 06:27 UTC — sanctum iter-22 CLOSE: PR #5 opened, 3-swarm audit clean, poller gap fixed
+
+**Author:** RKOJ-ELENO :: 2026-05-25 (sanctum lane)
+
+Shipped this turn (continuing iter-22 after sub-B/C/D/E fan-out):
+- Acked 4 NEW operator utterances (05:58Z urgent Leo-deploy / 02:18Z loop-relentless / 02:45Z no-bat-no-ps1 / 22:45Z phase-2 jcode)
+- Pushed agent branch to origin (a99097c..2bd44f9 — 3 commits)
+- 3-agent verification swarm: deploy/ readiness (sub-A) + EVE.exe auto-update smoke (sub-B) + Sinister Link e2e (sub-C); all returned with 2 fix-this-iter gaps
+- FIX: 0-byte `automations/sinister-link-poller.ps1` populated; canonical impl is `automations/sinister_link_poller.py` (calls Sync+Health, logs poll-log.jsonl, skips when unpaired); .ps1 now a 33-line backwards-compat shim
+- FIX: `deploy/first_time_setup.py` SCHTASKS structure now supports `runner=python|powershell`; SinisterLinkPoller schtask points at .py
+- FIX: `deploy/README.md` reconciled (claimed 7 schtasks → 3 with names+schedules; `--apply` misdirection → "default APPLY, pass --dry-run")
+- Brain row: leo-deploy-folder-bootstrap-doctrine-2026-05-25.md (NEW)
+- PR #5: https://github.com/Sinister-Systems-LLC/Sinister-Sanctum/pull/5
+
+Open for iter-23 (carry-forward from resume-point + this iter's queue):
+- (61) centered menu each EVE.exe page
+- (65) Enter binding + unlimited flows pages + EVE.exe close
+- (66) more animations + live (jcode parity, Phase 2)
+- (67) "100% real" cleanup + jcode usage labeling
+- IMAGE-4: spawn-setup-wizard.ps1 mintty exit 126 fix (lines 136+184)
+- EVE.exe icon embed (operator 22:45Z)
+- Sub-K iter-21 (Leo MCP+Docker+bots+autonomy) verify-return
+- Sub-L iter-21 (Overseer first-fire audit Sinister Term) verify-return
+- EVE.exe rebuild after items land (verify-eve-features.ps1 -AutoRebuild -SyncMirror)
+- `_shared-memory/fleet-updates.jsonl` is 76.82MB (GitHub LFS warn) — propose split/rotate next iter
+
+## 2026-05-25 06:16 UTC — sanctum iter-22 LEO HANDOFF: deploy/ + UAC auto-install + EVE.exe auto-update + _internal P0 fix + tag pushed
 
 **Author:** RKOJ-ELENO :: 2026-05-25 (sanctum lane)
 
