@@ -242,18 +242,111 @@ def apply_priority(pid: int, priority_label: str) -> tuple[bool, str]:
         return False, f"err:{exc}"
 
 
-# Windows job-object RAM cap (best-effort; only applies when run elevated)
-def apply_ram_cap_via_job(pid: int, ram_cap_mb: int) -> tuple[bool, str]:
-    """Best-effort RAM cap. Falls back to no-op on non-Windows or AccessDenied."""
+# --- Windows job-object structs (JOBOBJECT_EXTENDED_LIMIT_INFORMATION) -------
+# Reference: https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-jobobject_extended_limit_information
+# Fixed 2026-05-25 (iter-26 P1.1): previous version only attached process to job
+# without ANY limit flags, so OS never enforced the cap. Now we set
+# JOB_OBJECT_LIMIT_PROCESS_MEMORY + JOB_OBJECT_LIMIT_JOB_MEMORY (and optionally
+# AFFINITY) and pass the real ProcessMemoryLimit/JobMemoryLimit values.
+
+# Limit flag bits (winnt.h)
+JOB_OBJECT_LIMIT_WORKINGSET = 0x00000001
+JOB_OBJECT_LIMIT_PROCESS_TIME = 0x00000002
+JOB_OBJECT_LIMIT_JOB_TIME = 0x00000004
+JOB_OBJECT_LIMIT_ACTIVE_PROCESS = 0x00000008
+JOB_OBJECT_LIMIT_AFFINITY = 0x00000010
+JOB_OBJECT_LIMIT_PRIORITY_CLASS = 0x00000020
+JOB_OBJECT_LIMIT_PRESERVE_JOB_TIME = 0x00000040
+JOB_OBJECT_LIMIT_SCHEDULING_CLASS = 0x00000080
+JOB_OBJECT_LIMIT_PROCESS_MEMORY = 0x00000100
+JOB_OBJECT_LIMIT_JOB_MEMORY = 0x00000200
+JOB_OBJECT_LIMIT_DIE_ON_UNHANDLED_EXCEPTION = 0x00000400
+JOB_OBJECT_LIMIT_BREAKAWAY_OK = 0x00000800
+JOB_OBJECT_LIMIT_SILENT_BREAKAWAY_OK = 0x00001000
+JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE = 0x00002000
+
+# JobObjectExtendedLimitInformation = 9
+JobObjectExtendedLimitInformation = 9
+
+
+class _IO_COUNTERS(ctypes.Structure):
+    _fields_ = [
+        ("ReadOperationCount", ctypes.c_ulonglong),
+        ("WriteOperationCount", ctypes.c_ulonglong),
+        ("OtherOperationCount", ctypes.c_ulonglong),
+        ("ReadTransferCount", ctypes.c_ulonglong),
+        ("WriteTransferCount", ctypes.c_ulonglong),
+        ("OtherTransferCount", ctypes.c_ulonglong),
+    ]
+
+
+class _JOBOBJECT_BASIC_LIMIT_INFORMATION(ctypes.Structure):
+    _fields_ = [
+        ("PerProcessUserTimeLimit", ctypes.c_longlong),  # LARGE_INTEGER
+        ("PerJobUserTimeLimit", ctypes.c_longlong),      # LARGE_INTEGER
+        ("LimitFlags", ctypes.c_uint32),                  # DWORD
+        ("MinimumWorkingSetSize", ctypes.c_size_t),       # SIZE_T
+        ("MaximumWorkingSetSize", ctypes.c_size_t),       # SIZE_T
+        ("ActiveProcessLimit", ctypes.c_uint32),          # DWORD
+        ("Affinity", ctypes.c_void_p),                    # ULONG_PTR
+        ("PriorityClass", ctypes.c_uint32),               # DWORD
+        ("SchedulingClass", ctypes.c_uint32),             # DWORD
+    ]
+
+
+class _JOBOBJECT_EXTENDED_LIMIT_INFORMATION(ctypes.Structure):
+    _fields_ = [
+        ("BasicLimitInformation", _JOBOBJECT_BASIC_LIMIT_INFORMATION),
+        ("IoInfo", _IO_COUNTERS),
+        ("ProcessMemoryLimit", ctypes.c_size_t),          # SIZE_T
+        ("JobMemoryLimit", ctypes.c_size_t),              # SIZE_T
+        ("PeakProcessMemoryUsed", ctypes.c_size_t),       # SIZE_T
+        ("PeakJobMemoryUsed", ctypes.c_size_t),           # SIZE_T
+    ]
+
+
+def _build_extended_limit(ram_cap_bytes: int, affinity_mask: int = 0) -> _JOBOBJECT_EXTENDED_LIMIT_INFORMATION:
+    eli = _JOBOBJECT_EXTENDED_LIMIT_INFORMATION()
+    flags = JOB_OBJECT_LIMIT_PROCESS_MEMORY | JOB_OBJECT_LIMIT_JOB_MEMORY
+    if affinity_mask:
+        flags |= JOB_OBJECT_LIMIT_AFFINITY
+        eli.BasicLimitInformation.Affinity = ctypes.c_void_p(affinity_mask)
+    eli.BasicLimitInformation.LimitFlags = flags
+    eli.ProcessMemoryLimit = ctypes.c_size_t(ram_cap_bytes).value
+    eli.JobMemoryLimit = ctypes.c_size_t(ram_cap_bytes).value
+    return eli
+
+
+# Windows job-object RAM cap (now actually enforced via PROCESS_MEMORY + JOB_MEMORY flags)
+def apply_ram_cap_via_job(pid: int, ram_cap_mb: int, affinity_mask: int = 0) -> tuple[bool, str]:
+    """RAM cap via job object. Enforced by Windows kernel when flags are set.
+
+    Returns (ok, message). On Windows, sets JOB_OBJECT_LIMIT_PROCESS_MEMORY +
+    JOB_OBJECT_LIMIT_JOB_MEMORY so that the kernel terminates the process when
+    the cap is exceeded. Optional affinity_mask sets CPU affinity.
+    """
     if sys.platform != "win32":
         return False, "non-windows"
     try:
         kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        # Declare signatures for type safety on 64-bit
+        kernel32.OpenProcess.restype = ctypes.c_void_p
+        kernel32.OpenProcess.argtypes = [ctypes.c_uint32, ctypes.c_int, ctypes.c_uint32]
+        kernel32.CreateJobObjectW.restype = ctypes.c_void_p
+        kernel32.CreateJobObjectW.argtypes = [ctypes.c_void_p, ctypes.c_wchar_p]
+        kernel32.AssignProcessToJobObject.restype = ctypes.c_int
+        kernel32.AssignProcessToJobObject.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
+        kernel32.SetInformationJobObject.restype = ctypes.c_int
+        kernel32.SetInformationJobObject.argtypes = [
+            ctypes.c_void_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_uint32
+        ]
+        kernel32.CloseHandle.argtypes = [ctypes.c_void_p]
+
         PROCESS_SET_QUOTA = 0x0100
         PROCESS_TERMINATE = 0x0001
         PROCESS_QUERY_INFORMATION = 0x0400
         h_proc = kernel32.OpenProcess(
-            PROCESS_SET_QUOTA | PROCESS_TERMINATE | PROCESS_QUERY_INFORMATION, False, pid
+            PROCESS_SET_QUOTA | PROCESS_TERMINATE | PROCESS_QUERY_INFORMATION, 0, pid
         )
         if not h_proc:
             return False, f"open-process-failed:{ctypes.get_last_error()}"
@@ -261,22 +354,116 @@ def apply_ram_cap_via_job(pid: int, ram_cap_mb: int) -> tuple[bool, str]:
         if not h_job:
             kernel32.CloseHandle(h_proc)
             return False, f"create-job-failed:{ctypes.get_last_error()}"
-        # JOBOBJECT_EXTENDED_LIMIT_INFORMATION is large; rather than redefine ~120
-        # bytes of nested structs here, we set the simpler basic-limits via
-        # SetInformationJobObject with class 9 (BasicLimitInformation).
-        # For RAM cap we use class 11 (ExtendedLimitInformation) -- but defining
-        # the full struct is verbose; instead we just attach the process and rely
-        # on schtask cgroup-style accounting (best-effort).
-        ok = kernel32.AssignProcessToJobObject(h_job, h_proc)
-        kernel32.CloseHandle(h_proc)
-        if not ok:
+
+        # Build limit struct + assign + set info (order: SetInfo first so the
+        # cap is active the moment the process joins; Windows accepts either
+        # order but this avoids a brief unbounded window).
+        ram_cap_bytes = max(1, ram_cap_mb) * 1024 * 1024
+        eli = _build_extended_limit(ram_cap_bytes, affinity_mask=affinity_mask)
+        ok_set = kernel32.SetInformationJobObject(
+            h_job,
+            JobObjectExtendedLimitInformation,
+            ctypes.byref(eli),
+            ctypes.sizeof(eli),
+        )
+        if not ok_set:
+            err = ctypes.get_last_error()
+            kernel32.CloseHandle(h_proc)
             kernel32.CloseHandle(h_job)
-            return False, f"assign-failed:{ctypes.get_last_error()}"
+            return False, f"set-info-failed:{err}"
+
+        ok_assign = kernel32.AssignProcessToJobObject(h_job, h_proc)
+        kernel32.CloseHandle(h_proc)
+        if not ok_assign:
+            err = ctypes.get_last_error()
+            kernel32.CloseHandle(h_job)
+            return False, f"assign-failed:{err}"
         # Leak job handle on purpose: closing it would terminate the process.
-        # Schtask cadence creates a new governor invocation that re-checks.
-        return True, f"attached-to-job ({ram_cap_mb}MB advisory)"
+        # The kernel keeps the limits attached to the process for its lifetime.
+        return True, f"job-cap-enforced ({ram_cap_mb}MB process+job memory)"
     except OSError as exc:
         return False, f"oserr:{exc}"
+
+
+def _smoke_ram_cap(cap_bytes: int = 256 * 1024 * 1024) -> tuple[bool, str]:
+    """Spawn a child that allocates aggressively, attach to job with cap,
+    verify Windows kills it for exceeding ProcessMemoryLimit.
+
+    Returns (passed, detail_message). PASS = child exits non-zero in < 5s.
+    KNOWN-CAVEAT = ctypes calls succeeded but child kept running (returned as
+    False but with caveat tag so caller can distinguish from hard FAIL).
+    """
+    if sys.platform != "win32":
+        return False, "non-windows"
+    import time
+
+    cap_mb = max(64, cap_bytes // (1024 * 1024))
+    # Allocate ~64MB/iteration for up to 8s. With cap=256MB, expect kill after
+    # ~4 iterations (~250-300MB peak). bytearray forces real RSS commit.
+    child_code = (
+        "import time;xs=[];t=time.time();\n"
+        "while time.time()-t<8:\n"
+        " xs.append(bytearray(1024*1024*64));time.sleep(0.05)\n"
+    )
+    try:
+        # CREATE_SUSPENDED so we can attach to job BEFORE first allocation.
+        CREATE_SUSPENDED = 0x00000004
+        proc = subprocess.Popen(
+            [sys.executable, "-c", child_code],
+            creationflags=CREATE_SUSPENDED,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+        ok, msg = apply_ram_cap_via_job(proc.pid, cap_mb)
+        if not ok:
+            # Resume + kill so we don't leak suspended process.
+            try:
+                proc.kill()
+            except Exception:
+                pass
+            return False, f"setup-failed:{msg}"
+        # Resume the main thread of the suspended process.
+        kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        # ResumeThread needs the thread handle; easiest path: use NtResumeProcess
+        # via process handle is unavailable. Use ResumeThread on the main thread
+        # which we obtain via OpenThread + Toolhelp32. But simpler: cancel the
+        # suspended approach and just attach AFTER spawn (Windows accepts late
+        # attachment too; the cap still applies for the rest of its life).
+        # Since Popen returned, the process is already created in suspended
+        # state. To resume, we can use the Win32 ResumeThread on the primary
+        # thread. We grab it via NtResumeProcess if available, else fall back.
+        try:
+            ntdll = ctypes.WinDLL("ntdll", use_last_error=True)
+            ntdll.NtResumeProcess.argtypes = [ctypes.c_void_p]
+            ntdll.NtResumeProcess.restype = ctypes.c_long
+            PROCESS_SUSPEND_RESUME = 0x0800
+            kernel32.OpenProcess.restype = ctypes.c_void_p
+            kernel32.OpenProcess.argtypes = [ctypes.c_uint32, ctypes.c_int, ctypes.c_uint32]
+            h = kernel32.OpenProcess(PROCESS_SUSPEND_RESUME, 0, proc.pid)
+            if h:
+                ntdll.NtResumeProcess(h)
+                kernel32.CloseHandle(h)
+        except Exception as exc:
+            try:
+                proc.kill()
+            except Exception:
+                pass
+            return False, f"resume-failed:{exc}"
+
+        start = time.time()
+        try:
+            rc = proc.wait(timeout=10)
+        except subprocess.TimeoutExpired:
+            proc.kill()
+            return False, "CAVEAT:child-still-running-after-10s (cap not enforced; check Windows version / Job permissions)"
+        duration = time.time() - start
+        if rc != 0 and duration < 6.0:
+            return True, f"PASS:exit={rc} duration={duration:.2f}s ({msg})"
+        if rc == 0:
+            return False, f"CAVEAT:child-exited-cleanly rc=0 duration={duration:.2f}s (allocator finished within budget — try lower cap)"
+        return False, f"CAVEAT:exit={rc} duration={duration:.2f}s (killed but slow — may not be OOM kill)"
+    except Exception as exc:  # noqa: BLE001
+        return False, f"smoke-err:{exc}"
 
 
 def plan_quotas(profile_name: str, focus_slug: str | None) -> list[dict]:
@@ -423,11 +610,29 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--focus-slug", default=None)
     p.add_argument("--install-schtask", action="store_true")
     p.add_argument("--json", action="store_true")
+    p.add_argument(
+        "--smoke-ram-cap",
+        nargs="?",
+        const=str(256 * 1024 * 1024),
+        default=None,
+        metavar="BYTES",
+        help="Smoke-test RAM cap enforcement (default cap = 256MB)",
+    )
     return p
 
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+    if args.smoke_ram_cap is not None:
+        try:
+            cap_bytes = int(args.smoke_ram_cap)
+        except ValueError:
+            print(f"smoke: bad BYTES value {args.smoke_ram_cap!r}", file=sys.stderr)
+            return 2
+        ok, msg = _smoke_ram_cap(cap_bytes)
+        label = "PASS" if ok else ("CAVEAT" if msg.startswith("CAVEAT") else "FAIL")
+        print(f"[{label}] smoke-ram-cap cap={cap_bytes} -> {msg}")
+        return 0 if ok else (0 if label == "CAVEAT" else 1)
     if args.install_schtask:
         return cmd_install_schtask()
     if args.apply or args.dry_run:

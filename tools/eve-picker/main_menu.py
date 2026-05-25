@@ -358,32 +358,71 @@ def _link_header_line() -> str:
         return f"{WARN}Sinister LINK :: unlinked{RESET}"
 
 
+def _session_gem_line() -> str:
+    """Gem-ic one-liner: accounts count + session quota math.
+
+    RKOJ-ELENO :: 2026-05-25 :: operator 'the ratio of some math of how much
+    session time we have left and what we could do with that. simple more of a
+    gemic.' Shows linked/total accounts + 5h % free + estimated remaining
+    sessions (max20x baseline = 50 sessions / 5h window).
+    """
+    try:
+        a = json.loads(ACCOUNTS_JSON.read_text(encoding="utf-8-sig", errors="replace"))
+        accts = a.get("accounts", [])
+        total = len(accts)
+        linked = sum(1 for x in accts if x.get("enabled") and x.get("linked"))
+    except Exception:
+        linked, total = 0, 0
+
+    acct_gem = (f"{PURPLE}◆{RESET} {WHITE}{linked}{RESET}{DIM}/{total}{RESET}"
+                f" {SOFT}accts{RESET}")
+
+    quota_part = ""
+    live = _probe_live_usage_cached()
+    if live and live.get("status") == "ok":
+        sess = live.get("session") or {}
+        p5 = sess.get("pct")
+        wk = live.get("weekly_all") or {}
+        p7 = wk.get("pct")
+        if isinstance(p5, (int, float)):
+            used = int(p5)
+            remain = 100 - used
+            # max20x = ~50 sessions / 5h window baseline estimate
+            est = max(0, int(round(remain / 100.0 * 50)))
+            h_bar = f"{OK}{remain}%{RESET} {DIM}free{RESET}"
+            w_bar = (f"  {DIM}·{RESET}  {SOFT}7d:{RESET} {DIM}{int(p7)}% used{RESET}"
+                     if isinstance(p7, (int, float)) else "")
+            quota_part = (f"  {DIM}·{RESET}  {SOFT}5h:{RESET} {h_bar}"
+                          f"  {DIM}~{est} sessions{RESET}{w_bar}")
+    return acct_gem + quota_part
+
+
 def _hero_lines() -> list[str]:
+    """Gem-ic hero block. Clean + concise per operator 2026-05-25."""
     mcp, bots = _counts()
     acct = _active_account_label()
     live = _count_live_agents()
     ver = _eve_version()
-    today = time.strftime("%Y-%m-%d")
     live_word = "agent" if live == 1 else "agents"
-    connected = _connected_account_count()
     lines: list[str] = []
     # Big ASCII EVE title (6 rows, gradient-colored)
     lines.extend(_eve_ascii_colored())
     lines.append("")
-    # Sinister LINK header (operator hard-canonical 2026-05-25): rendered
-    # FIRST after the EVE banner so it's the most-visible status indicator.
+    # LINK status -- most important status, first
     lines.append(_link_header_line())
-    # Server / client / version / path / acct (no 'acct:' label per operator 2026-05-24T23:30Z)
-    lines.extend([
-        f"{SOFT}server:{RESET} {WHITE}Sanctum{RESET}    {SOFT}client:{RESET} {WHITE}EVE{RESET}",
-        f"{PURPLE}EVE-OPUS-4.7{RESET}  {DIM}·{RESET}  {DIM}v{ver}{RESET}",
-        f"{SOFT}{SANCTUM_ROOT}{RESET}",
-        f"{WHITE}{acct}{RESET}",
+    # Compact info: model · version · account on one line
+    lines.append(
+        f"{PURPLE}EVE-OPUS-4.7{RESET}  {DIM}·{RESET}  "
+        f"{DIM}v{ver}{RESET}  {DIM}·{RESET}  {WHITE}{acct}{RESET}"
+    )
+    # Fleet counters
+    lines.append(
         f"{SOFT}mcp:{RESET} {OK}{mcp}{RESET}   "
         f"{SOFT}bots:{RESET} {OK}{bots}{RESET}   "
-        f"{SOFT}live:{RESET} {OK}{live} {live_word}{RESET}",
-        _orb_line(connected, _TICK),
-    ])
+        f"{SOFT}live:{RESET} {OK}{live} {live_word}{RESET}"
+    )
+    # Gem line: accounts + session quota math
+    lines.append(_session_gem_line())
     return lines
 
 
@@ -480,21 +519,17 @@ def _accounts_inline_lines() -> list[str]:
         if anchor:
             next_name = anchor.get("label", anchor.get("name", "?"))
 
-    # No-cap header: total count of real accounts + breakdown chip. Format:
-    #   Claude accounts (N)  M enabled (K linked, U unlinked)  strategy  next -> ...
-    next_tag = f"{OK}{next_name}{RESET}" if next_name else f"{DIM}none{RESET}"
-    cursor_tag = f" {DIM}c{cursor}{RESET}" if strategy == "round-robin-strict" else ""
+    # Compact header: ◆ accounts  strategy  next: name
+    next_tag = f"{OK}{next_name}{RESET}" if next_name else f"{DIM}—{RESET}"
+    strat_short = "rr" if strategy.startswith("round-robin") else strategy
     out.append(
-        f"{WHITE}Claude accounts{RESET} {DIM}({len(accts)}){RESET}  "
-        f"{BRIGHTP}{len(enabled_accts)} enabled{RESET} "
-        f"{DIM}({len(linked_accts)} linked, {len(unlinked_accts)} unlinked){RESET}  "
-        f"{DIM}{strategy}{RESET}{cursor_tag}  "
-        f"{DIM}next ->{RESET} {next_tag}  "
+        f"{PURPLE}◆{RESET} {WHITE}{len(accts)}{RESET} {SOFT}accounts{RESET}  "
+        f"{BRIGHTP}{len(linked_accts)} linked{RESET}  "
+        f"{DIM}{strat_short}{RESET}  "
+        f"{DIM}next:{RESET} {next_tag}  "
         f"{DIM}[{RESET}{PURPLE}O{RESET}{DIM}]nboard{RESET}"
     )
 
-    # Resolve one live-probe call (cached) for the default acct -- the only
-    # slot anthropic-usage-probe can speak for (it reads the live OAuth cred).
     live = _probe_live_usage_cached()
 
     disabled_named: list[str] = []
@@ -506,7 +541,6 @@ def _accounts_inline_lines() -> list[str]:
         linked = bool(acct.get("linked", False))
 
         if not enabled:
-            # Only render REAL disabled accounts (no synthesized empty slots).
             if label and not str(label).startswith("(unconfigured"):
                 disabled_named.append(str(label))
             continue
@@ -515,19 +549,10 @@ def _accounts_inline_lines() -> list[str]:
         is_default = (name == default_name)
         marker = f"{BRIGHTP}*{RESET}" if is_default else " "
         is_next = (label == next_name) if next_name else False
-        arrow = f" {OK}<-NEXT{RESET}" if is_next else ""
+        arrow = f"  {OK}← NEXT{RESET}" if is_next else ""
 
-        # LINKED/UNLINKED tag (operator hard-canonical 2026-05-25).
-        if linked:
-            status_tag = f"{OK}ON LINKED{RESET}"
-        else:
-            status_tag = f"{WARN}ON UNLINKED{RESET}"
+        status_tag = f"{OK}ON{RESET}" if linked else f"{WARN}UN{RESET}"
 
-        # Usage column -- NEVER show a fake percent. Cases (probe-first):
-        # 1) default + probe ok: show REAL "5h 76%  7d 80% [MEASURED]"
-        # 2) probe failed: "probe: refresh needed" or other status
-        # 3) unlinked + no probe: "not logged in"
-        # 4) fallback: raw spawns_today + "(no probe)"
         if is_default and live and live.get("status") == "ok":
             sess = live.get("session") or {}
             wk = live.get("weekly_all") or {}
@@ -535,31 +560,27 @@ def _accounts_inline_lines() -> list[str]:
             p7 = wk.get("pct")
             parts = []
             if isinstance(p5, (int, float)):
-                parts.append(f"{WHITE}5h {int(p5)}%{RESET}")
+                remain = 100 - int(p5)
+                est = max(0, int(round(remain / 100.0 * 50)))
+                parts.append(f"{SOFT}5h{RESET} {OK}{remain}%{RESET}{DIM} free (~{est}){RESET}")
             if isinstance(p7, (int, float)):
                 parts.append(f"{DIM}7d {int(p7)}%{RESET}")
-            measured_tag = f" {OK}[MEASURED]{RESET}" if parts else f" {OK}[MEASURED]{RESET} {DIM}headers ok{RESET}"
-            usage_str = ("  ".join(parts) + measured_tag) if parts else measured_tag.lstrip()
+            usage_str = "  ".join(parts) if parts else f"{OK}[ok]{RESET}"
         elif is_default and live and str(live.get("status", "")).startswith("probe-failed"):
-            why = "refresh needed" if live.get("refresh_needed") else live.get("status")
-            usage_str = f"{WARN}[probe: {why}]{RESET} {DIM}spawns {today} today{RESET}"
+            usage_str = f"{WARN}refresh needed{RESET} {DIM}· {today} today{RESET}"
         elif not linked:
             usage_str = f"{DIM}not logged in{RESET}"
         else:
-            usage_str = f"{DIM}spawns {today} today{RESET} {DIM}(no probe){RESET}"
+            usage_str = f"{DIM}{today} today{RESET}"
 
-        label_inline = f"{WHITE}{label}{RESET} {DIM}[{RESET}{PURPLE}{plan_tier}{RESET}{DIM}]{RESET}"
+        plan_chip = f"{DIM}[{RESET}{PURPLE}{plan_tier}{RESET}{DIM}]{RESET}"
         out.append(
-            f"{marker} {status_tag}  {label_inline}  "
-            f"{usage_str}{arrow}"
+            f"{marker} {status_tag}  {WHITE}{label}{RESET} {plan_chip}  {usage_str}{arrow}"
         )
 
     if disabled_named:
         names = ", ".join(disabled_named)
-        out.append(
-            f"{DIM}+ {len(disabled_named)} disabled: {names} "
-            f"(press {RESET}{PURPLE}O{RESET}{DIM} to onboard){RESET}"
-        )
+        out.append(f"{DIM}+ {len(disabled_named)} off: {names}  (O=onboard){RESET}")
     return out
 
 
@@ -711,6 +732,50 @@ def _menu_lines(highlight: int) -> list[str]:
     return out
 
 
+def _marquee_transition(label: str = "") -> None:
+    """Brief marquee sweep animation between menu pages.
+
+    RKOJ-ELENO :: 2026-05-25 :: operator: 'i want a animation transition
+    between pages like a marquee flows past the screen ... small and simple
+    that will just look so cool.'
+
+    Renders 1 row of sinister-branded marquee that sweeps left-to-right across
+    the terminal width, then clears. Total: ~12 frames × 16ms = ~200ms.
+    Glyph: cp1252-safe stars + diamond + label. No threads; blocking is fine
+    for a sub-200ms transition that happens only on deliberate keypress.
+    """
+    try:
+        import msvcrt
+        cols = _term_cols()
+        # Build the marquee string: ◆ SINISTER ◆ <label> ◆  repeated
+        core_label = f" ◆ SINISTER ◆ {label} ◆ " if label else " ◆ SINISTER ◆ "
+        # Tile it to fill 2× width so we can slide it
+        tile = (core_label * ((cols * 2 // len(core_label)) + 2))
+        frames = 14
+        # Sinister marquee palette: deep violet → bright purple → lavender
+        palette = [
+            "\033[38;2;48;24;80m",   # deep violet
+            "\033[38;2;96;48;128m",  # mid violet
+            "\033[38;2;144;96;200m", # bright violet
+            "\033[38;2;176;128;232m",# lavender
+            "\033[38;2;144;96;200m",
+            "\033[38;2;96;48;128m",
+        ]
+        for frame in range(frames):
+            # Slide offset grows each frame
+            offset = int(frame * cols / frames)
+            row = tile[offset: offset + cols]
+            color = palette[frame % len(palette)]
+            sys.stdout.write(f"\r{color}{BOLD}{row[:cols]}{RESET}")
+            sys.stdout.flush()
+            time.sleep(0.014)
+        # Clear the row
+        sys.stdout.write(f"\r{' ' * cols}\r")
+        sys.stdout.flush()
+    except Exception:
+        pass
+
+
 def _prompt_line() -> str:
     return f"{WHITE}> pick a letter:{RESET}"
 
@@ -737,7 +802,7 @@ _TICK = 0  # module-level monotonic counter so the animation visibly advances
 # These row trackers are updated by _render() each frame so the partial
 # redraw helper knows where to position the cursor.
 _ANIM_ROW_START: int = 0     # 1-based terminal row where animation band starts
-_ANIM_ROW_HEIGHT: int = 6    # number of animation rows
+_ANIM_ROW_HEIGHT: int = 10   # number of animation rows
 _ACCT_ROW_START: int = 0     # 1-based terminal row where accounts panel starts
 _ACCT_ROW_HEIGHT: int = 0    # number of account-panel rows
 _ANIM_BAND_WIDTH: int = 0    # animation band visible width (matches _animation_lines)
@@ -781,7 +846,7 @@ def _render(highlight: int) -> None:
         buf.append(_center(line, cols) + "\n"); row_cursor += 1
     buf.append("\n"); row_cursor += 1
     # Animation band (each row is its own pre-centered string)
-    anim = _animation_lines(_TICK, cols, height=6)
+    anim = _animation_lines(_TICK, cols, height=10)
     _ANIM_ROW_START = row_cursor
     _ANIM_ROW_HEIGHT = len(anim)
     # Cache the visible band width so partial redraws keep same geometry
@@ -843,7 +908,7 @@ def _partial_animation_redraw() -> None:
     # Save cursor so the input prompt position is preserved
     buf.append("\033[s")
     # Repaint animation band
-    anim = _animation_lines(_TICK, cols, height=_ANIM_ROW_HEIGHT or 6)
+    anim = _animation_lines(_TICK, cols, height=_ANIM_ROW_HEIGHT or 10)
     for i, line in enumerate(anim):
         # \033[<row>;1H = move to absolute row, col 1; \033[2K = clear entire line
         buf.append(f"\033[{_ANIM_ROW_START + i};1H\033[2K")
@@ -1400,6 +1465,9 @@ def show_main_menu(callbacks: Optional[dict[str, Callable[[], None]]] = None) ->
             os._exit(0)
         fn = actions.get(letter)
         if fn is not None:
+            # Marquee sweep transition (operator 2026-05-25: 'animation between pages')
+            label = next((lbl for (l, lbl, _) in _MENU_ITEMS if l.lower() == letter), "")
+            _marquee_transition(label)
             fn()
             # After a sub-page (Account Manager / Tools / Onboarding) returns,
             # the screen has the sub-page's residue. Reset _FIRST_RENDER so the

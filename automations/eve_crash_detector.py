@@ -65,7 +65,8 @@ EVE_EXE_CANDIDATES = [
     SANCTUM_ROOT / "automations" / "eve-launcher" / "dist" / "EVE.exe",
 ]
 # Cooldown: don't restart more than once every N seconds (prevents boot-loop)
-RESTART_COOLDOWN_S = 90
+RESTART_COOLDOWN_S = 180      # 3 min between restarts (was 90s -- too aggressive)
+MAX_RESTARTS_PER_HOUR = 3     # stop restart loop after 3 failures in 1h
 _RESTART_STATE = SANCTUM_ROOT / "_shared-memory" / ".eve-last-restart.json"
 INCIDENT_LOOKBACK_S = 5 * 60
 
@@ -265,13 +266,20 @@ def _eve_exe_path() -> Path | None:
 
 
 def _restart_cooldown_ok() -> bool:
-    """Return True if enough time has passed since last restart."""
+    """Return True if enough time has passed since last restart AND under hourly cap."""
     try:
         if not _RESTART_STATE.exists():
             return True
         state = json.loads(_RESTART_STATE.read_text(encoding="utf-8"))
         last_ts = state.get("ts", 0)
-        return (time.time() - last_ts) >= RESTART_COOLDOWN_S
+        if (time.time() - last_ts) < RESTART_COOLDOWN_S:
+            return False
+        # Count restarts in the last hour to prevent restart loops
+        restarts_1h = [t for t in state.get("history", []) if (time.time() - t) < 3600]
+        if len(restarts_1h) >= MAX_RESTARTS_PER_HOUR:
+            print(f"[eve-crash-detector] auto-restart: hourly cap {MAX_RESTARTS_PER_HOUR} hit -- suppressed.")
+            return False
+        return True
     except Exception:
         return True
 
@@ -328,10 +336,20 @@ def auto_restart_eve(reason: str) -> bool:
 
     time.sleep(1.5)
 
-    # Step 4: write cooldown stamp BEFORE launch so re-entrant schtask fires see it
+    # Step 4: write cooldown stamp + history BEFORE launch so re-entrant schtask fires see it
     try:
-        _RESTART_STATE.write_text(json.dumps({"ts": time.time(), "reason": reason}),
-                                   encoding="utf-8")
+        prev = {}
+        if _RESTART_STATE.exists():
+            try:
+                prev = json.loads(_RESTART_STATE.read_text(encoding="utf-8"))
+            except Exception:
+                pass
+        history = [t for t in prev.get("history", []) if (time.time() - t) < 3600]
+        history.append(time.time())
+        _RESTART_STATE.write_text(
+            json.dumps({"ts": time.time(), "reason": reason, "history": history}),
+            encoding="utf-8",
+        )
     except Exception:
         pass
 

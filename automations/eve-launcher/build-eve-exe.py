@@ -174,10 +174,15 @@ def self_heal_defender() -> None:
 
 def mirror_to_stable() -> None:
     stable = Path.home() / ".eve"
-    if stable.exists():
-        shutil.rmtree(stable, ignore_errors=True)
-    stable.mkdir(parents=True, exist_ok=True)
-    # Walk dist/EVE and copy everything
+    try:
+        if stable.exists():
+            shutil.rmtree(stable, ignore_errors=True)
+        stable.mkdir(parents=True, exist_ok=True)
+    except Exception:
+        warn("~/.eve dir reset failed (locked); skipping mirror to stable.")
+        return
+    skipped = 0
+    # Walk dist/EVE and copy everything; skip locked files gracefully
     for src in DIST_EVE.rglob("*"):
         rel = src.relative_to(DIST_EVE)
         dst = stable / rel
@@ -185,12 +190,19 @@ def mirror_to_stable() -> None:
             dst.mkdir(parents=True, exist_ok=True)
         else:
             dst.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(src, dst)
-    # Self-heal mirror too
+            try:
+                shutil.copy2(src, dst)
+            except PermissionError:
+                skipped += 1
+    if skipped:
+        warn(f"~/.eve mirror: {skipped} file(s) locked/skipped (EVE still running?)")
     src_zip = BUILD_EVE / "base_library.zip"
     if src_zip.is_file():
-        (stable / "_internal").mkdir(parents=True, exist_ok=True)
-        shutil.copy2(src_zip, stable / "_internal" / "base_library.zip")
+        try:
+            (stable / "_internal").mkdir(parents=True, exist_ok=True)
+            shutil.copy2(src_zip, stable / "_internal" / "base_library.zip")
+        except PermissionError:
+            pass
     if (stable / "EVE.exe").is_file():
         info(f"[OK] mirrored to {stable / 'EVE.exe'}")
     else:
@@ -220,7 +232,7 @@ def regenerate_sha_sidecar() -> None:
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--no-mirror", action="store_true",
-                    help="skip mirror to %USERPROFILE%\\.eve\\")
+                    help="skip mirror to USERPROFILE/.eve/")
     ap.add_argument("--no-deploy", action="store_true",
                     help="skip copy to repo root + deploy/")
     ns = ap.parse_args(argv or sys.argv[1:])

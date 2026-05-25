@@ -5,6 +5,101 @@
 
 Append-only. Most-recent at top.
 
+## 2026-05-25T07:38Z — Chunk-2 first slice SHIPPED: HUMANLIKE_BASELINE injection (EVE-the-LLM voice)
+
+**Loop iter 4.** Continued relentlessly from iter-3. Picked smallest-risk highest-value chunk-2 item: humanlike_baseline block prepended to safe-mode `buildChatterSystemPrompt`. 26 LOC insertion, 3 LOC deletion. Smoke re-verified, committed `f05b265`, pushed.
+
+**What this shifts:**
+- Safe-mode chat (default voice EVE uses when not in flirty/nsfw_of operating mode) now opens with EVE's humanlike contract: thinks before speaking, hesitates, has opinions, pushes back on rude requests, mirrors register, varies length, allows internal thoughts in *italics*.
+- When `operatorPrompt` is set, it's now framed as `PERSONA NOTES (honor these):` UNDER the EVE-voice baseline (was: operator prompt was the entire system message). This is the EVE-as-LLM model: a base persona that absorbs niche-specific notes rather than replacing itself per persona.
+- Flirty + nsfw_of modes intentionally UNCHANGED. They use the snap-girl voice (lowercase, no emojis, 2-8 word bubbles, JSON-array output) which is its own form of humanlike texture. Bolting EVE-voice italics + paragraph-variation onto that would break the snap-girl format contract.
+
+**Verification:**
+- `node leo_dev/backend/scripts/smoke-overseer-signals.mjs` → 26/26 PASS (unchanged; this change doesn't touch Overseer endpoints)
+- Manual reasoning check: safe-mode return composition order is deterministic (HUMANLIKE_BASELINE → persona → directives → playbook); no exception paths introduced; no API surface changed.
+- `tsc --noEmit` → deferred (local `node_modules` unhydrated per test-env-findings §3d).
+
+**Deploy posture (Slice 4):**
+- `origin/main` has advanced 3 commits past my branch's base: `b02430a` (RKA license sales) + `aa2fde6` (ban-checker truth fix) + `8e933ae` (auto-add-friend on push). None are my work; all are sister-lane (sinister-panel) merges.
+- Operator's "push it all live to hetner" directive authorized the chatbot bundle. Merging my branch into main and deploying would ALSO ship those 3 sister-lane commits to prod — which I haven't reviewed and which expands scope beyond what was authorized.
+- Per CLAUDE.md panel doctrine: *"Don't merge to main without operator authorization. Even tiny fixes."* + canonical-11 reversibility wall: prod deploy needs explicit operator green-light at merge moment.
+- **Handoff (deploy-ready):** branch `agent/sinister-chatbot/dpo-export` is push-clean at `f05b265`. SSH to Hetzner is confirmed working (`ssh root@95.216.240.227` returns hostname + uptime). Once operator green-lights the merge, the deploy chain is one block:
+  ```bash
+  cd "D:/Sinister Sanctum/projects/sinister-chatbot" && \
+    git checkout main && git pull --rebase origin main && \
+    git merge --no-ff agent/sinister-chatbot/dpo-export -m "merge: agent/sinister-chatbot/dpo-export — Overseer signals + chatter redesign chunk-1 + humanlike baseline" && \
+    git push origin main && \
+    ssh root@95.216.240.227 "cd /opt/sinister-panel && git pull && bash leo_dev/scripts/remote-deploy.sh --with-backend"
+  ```
+- Post-deploy verification curls in `leo_dev/docs/CHATBOT-OVERSEER-INTEGRATION-2026-05-25.md` §"How to verify after deploy".
+
+**Fleet-update tail (normal-pri, ack at end-of-turn per cold-start step 11a):**
+- `fu-20260525032531-e7c63e` doctrine: eve-update-over-link-and-popup-doctrine-2026-05-25 (sanctum)
+- `fu-20260525032535-601497` doctrine: sinister-vault-live-doctrine-2026-05-25 (sanctum)
+- `fu-20260525032603-f3f667` doctrine: vault-github-sync-backup-doctrine-2026-05-25 (sanctum)
+
+All sanctum-scope, no chatbot-lane action required per sanctum-scope-discipline doctrine.
+
+**Commit:** `f05b265 chatter: HUMANLIKE_BASELINE injected into safe-mode system prompt (chunk-2 first slice)` pushed to `origin/agent/sinister-chatbot/dpo-export`.
+
+---
+
+## 2026-05-25T07:30Z — Phase 3 SHIPPED: /chatter redesign chunk-1 + Sinister Overseer signal endpoints
+
+**Loop iter 3.** Picked up from a stale resume-point that pointed at the sinister-os lane (resume-point dir was mis-routed last turn). Actual chatbot-lane WIP was 2 modified files + 3 new files on `agent/sinister-chatbot/dpo-export`, mid-flight on the Overseer integration + /chatter redesign. Reviewed, completed the broken bits, smoke-tested, committed, pushed.
+
+**Shipped (verified this turn):**
+
+1. **Backend — 3 Sinister Overseer signal endpoints** (`leo_dev/backend/src/routes/sinister.ts` +220 LOC):
+   - `GET /api/chatter/events?since=ISO&limit=N` — Overseer `log_tail` source (default 200, cap 5000, since filter by ISO)
+   - `GET /api/chatter/metrics?window_min=5|60|1440` — Overseer `metric_endpoint` source (per-model `{count, ok, err, stub, p50_ms, p95_ms, error_rate, uncensored_pct}` + window-scoped feedback aggregate with `by_persona` map)
+   - `GET /api/chatter/overseer-status` — peek at `projects/sinister-overseer/config/attached-projects.json`; on Hetzner returns `{status: "none", note: "..."}` since Sanctum tree isn't mounted there
+   - `appendChatterEvent(ev)` — best-effort wrapper called via `res.on("finish")` on `/chatter/test`. Writes 1 JSONL line per call to `data/sinister/chatter-events.jsonl`. FIFO trim 50k lines / 8 MB. **Never crashes a chat call** (try/catch silent).
+
+2. **Dashboard — /chatter redesign chunk-1** (`leo_dev/dashboard/app/chatter/page.tsx` +272 LOC net):
+   - **Removed:** uncensored toggle + per-call OpenRouter model picker + `OR_MODEL_CATALOG` (Kameleo-exact baseline per operator-directive: *"i need the exact setup we had in kamelo remove the uncensoerd options and all the model selcctor"*)
+   - **6-tab strip:** `Chat | Tweak | Logs | Overseer | Tests | Training` (replaces 4-tab strip)
+   - **TweakTab (NEW)** — NL request box + 5 preset suggestions (`"make her use more emojis…"`) + client-side patch synthesizer (rule-based, no Anthropic call this chunk). Renders JSON patch + explanation inline. Chunk-2 will wire real `POST /api/chatter/tweak` → Anthropic-Haiku → JSON patch validate → `PUT /chatter/groups/:id`.
+   - **OverseerTab (NEW)** — attachment-status header (status / adapter / poll cadence / first-fire focus) + 5m/1h/24h window selector + per-model latency/err/nsfw grid (color-coded err pct) + feedback aggregate (good/bad/by-persona) + recent-50 events list with errors-only filter. Auto-refetch every 30s.
+   - **Tests-tab smoke-battery** — fires 5 representative prompts (`"hey"`, `"say ok"`, `"what's your favorite color in one word"`, `"send a flirty one-liner"`, `"describe yourself in 5 words"`) at the current provider+mode+replyMode. Surfaces P50/MAX latency + err counts inline. Every shot lands in `chatter-events.jsonl` → Overseer adapter consumes within 5-min window.
+   - **Toolbar OverseerPill** — cyan-tinted pill polling `/chatter/overseer-status` every 60s. Glyphs: `●` active · `◑` prepared · `○` detached · `⏸` suspended · `—` none.
+   - **Hoisted** `OverseerStatus` type to module scope so the new OverseerTab + ChatterPage share the same shape (was inline-typed inside ChatterPage).
+   - **Fixed latent bug** — `TrainingTab` was referencing `runDpoExport` + `dpoState` in its body without destructuring them from props. Added both to the function's destructure + type signature. Call site at line 850 was already passing them; signature mismatch would have surfaced at first build but local `tsc` wasn't running so it slipped through.
+
+3. **Smoke harness** (`leo_dev/backend/scripts/smoke-overseer-signals.mjs` +219 LOC) — handler-direct parity-copy per `test-env-findings` §4a. 8 scenarios → **26/26 PASS**: empty events/metrics → zero counters · append+read 3 events · limit filter · since filter (future / past) · per-model P50/P95 with deterministic 5-ok+1-err data · 5-min window excludes 2h-old · 180-min includes · uncensored_pct = 2/3 · feedback by_persona = `alice:{good:1,bad:1}` + `bob:{good:1,bad:0}`.
+
+4. **Docs (2 new):**
+   - `leo_dev/docs/CHATBOT-OVERSEER-INTEGRATION-2026-05-25.md` — Slices 1-5 + verification curls. Slice 5 (adapter `collect_signals` / `observation_check`) is the OVERSEER lane's deliverable; this lane only owns the data sources.
+   - `leo_dev/docs/CHATTER-REDESIGN-EVE-LLM-2026-05-25.md` — Chunks 1-6 + Tweak endpoint spec + EVE-as-LLM humanlike baseline + niche-trainer flow.
+
+**Smoke results (same turn):**
+- `node leo_dev/backend/scripts/smoke-overseer-signals.mjs` → **26/26 PASS · 0 FAIL** (handler-direct, no express, no DB)
+- `node leo_dev/dashboard/scripts/doctrine-audit.mjs --strict` → **0 hits in 7 counters** (iosBlue / rawButton / pillRegression / glassRegression / radiusOverride / 2× a11y)
+- `tsc --noEmit` → skipped (local `node_modules` unhydrated per `test-env-findings` §3d); Hetzner docker-build is the canonical TS gate
+
+**Why this surface is broken-but-now-fixed:**
+
+The prior turn's commit (`fb323ab`) shipped the DPO export endpoint cleanly, but the WIP it left behind (chunk-1 of the redesign) had 3 latent broken-prop / missing-component issues that would have failed the first Hetzner `docker build`:
+- `TweakTab` referenced but not defined
+- `OverseerTab` referenced but not defined
+- `TrainingTab` using `runDpoExport` + `dpoState` without destructuring
+
+If I'd shipped the prior commit straight to Hetzner without this audit step, the build would have errored. This turn closes all three.
+
+**Refs:**
+- Operator directive 2026-05-25 (verbatim): *"lets bring sinister overseeer into this project i have another agent that is about to launch him prepare for that so we can get this testing on auto pilot all from the panel with the logs i told you to do all of that. create a plan to complete everything i have told you to do and push it all live to hetner"*
+- Operator directive 2026-05-25 (verbatim mid-turn): *"redo all this space with all i said to do and use multi tabs have tab for overseer to tell us analytics and updates from testing etc. logs channel, a way to gen new chat tweak all thigns we need to by telling you what to tewak and you do it ... Sinister Chatbot powered by eve here a like fucking LLM"*
+- Doctrine refs: `sinister-chatbot-direction-2026-05-24` · `sinister-overseer-charter-2026-05-24` · `loop-relentless-pursuit-doctrine-2026-05-25` · `no-bullshit-tested-before-claimed-doctrine-2026-05-23` (tested before claimed: 26/26 smoke)
+
+**Commit:** `327f5f2 chatter: Overseer signal endpoints + /chatter redesign chunk-1 (6-tab strip)` pushed to `origin/agent/sinister-chatbot/dpo-export`.
+
+**Next iter (queued, not shipped):**
+- Slice 4 (Hetzner deploy): operator authorization phrasing was *"push it all live to hetner"* but the merge-to-main step is a canonical-11 reversibility wall — explicit operator green-light needed at the moment of merge. Surface as a clean handoff: branch is push-clean, merge command staged, verification curl ready.
+- Chunk-2 (Tweak Anthropic call + humanlike baseline injection into `buildChatterSystemPrompt` + prepared-tests registry)
+- Channel-feed unification in LogsTab
+
+---
+
 ---
 
 ## 2026-05-25T01:00Z — Phase 2 step 2 SHIPPED: DPO preference-pair miner endpoint + smoke harness

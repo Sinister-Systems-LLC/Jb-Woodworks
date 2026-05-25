@@ -1118,6 +1118,45 @@ function Get-MemoryRecallInject {
     }
 }
 
+function Get-VerticalsAuditInject {
+    # Operator hard-canonical 2026-05-25 RKOJ-ELENO: "when a new agent is made the first thing
+    # they are to do is audit the entire sinister sanctum folder and look for cross references
+    # and compile things they need for their project setup and plans to use other verticals".
+    # Calls agent-verticals-audit.py --agent <slug> --inline and embeds the fleet verticals
+    # cross-reference into the cold-start phrase so every agent knows what the fleet can do.
+    param([string]$AgentName)
+    try {
+        $pyPath = $null
+        foreach ($c in @(
+            "$env:LOCALAPPDATA\Programs\Python\Python312\python.exe",
+            "$env:PROGRAMFILES\Python312\python.exe",
+            (Get-Command python -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source -ErrorAction SilentlyContinue)
+        )) { if ($c -and (Test-Path $c -ErrorAction SilentlyContinue)) { $pyPath = $c; break } }
+        if (-not $pyPath) { return '' }
+        $script = Join-Path $SanctumRoot 'automations\agent-verticals-audit.py'
+        if (-not (Test-Path $script)) { return '' }
+        $slug = $AgentName.ToLower() -replace '\s+', '-'
+        $psi = New-Object System.Diagnostics.ProcessStartInfo
+        $psi.FileName = $pyPath
+        $psi.Arguments = "`"$script`" --agent $slug --root `"$SanctumRoot`" --inline"
+        $psi.RedirectStandardOutput = $true
+        $psi.RedirectStandardError = $true
+        $psi.UseShellExecute = $false
+        $psi.CreateNoWindow = $true
+        $proc = [System.Diagnostics.Process]::Start($psi)
+        if (-not $proc.WaitForExit(4000)) {
+            try { $proc.Kill() } catch {}
+            return ''
+        }
+        $stdout = $proc.StandardOutput.ReadToEnd().Trim()
+        if (-not $stdout -or $stdout.Length -lt 10) { return '' }
+        if ($stdout.Length -gt 900) { $stdout = $stdout.Substring(0, 897) + '...' }
+        return " FLEET_VERTICALS (audit for $slug -- read skills/VERTICALS-PENDING.md for full detail): $stdout"
+    } catch {
+        return ''
+    }
+}
+
 function Get-SinisterMemoryInject {
     # P2 sinister-memory integration (2026-05-25 RKOJ-ELENO): pre-fetch last-5 iter-close
     # memories for the spawning agent and embed in the cold-start phrase so every spawn
@@ -1178,7 +1217,14 @@ function Build-Phrase($projRec, $agentName, $mode, $isGeneral, $isScaffold, $mod
     $projKey = $projRec.key
     $base = "Working on $display at $root as the '$agentName' lane. Open $root\CLAUDE.md for the project's cold-start protocol. Log progress to _shared-memory\PROGRESS\$agentName.md and write a heartbeat to _shared-memory\heartbeats\<slug>.json each turn. Memory recall available via the forge-memory CLI: ``forge-memory recall '<topic>' --limit 5`` brings prior disk-stored memories into context (composes with the Ruflo MCP semantic store; fixes jcode-parity-probe rows 9-10 auto-recall gap for claude-only spawns). Commit + push cadence: per _shared-memory\knowledge\frequent-detailed-commits-per-agent-2026-05-25.md, commit + push after each shipped deliverable on your agent branch with the detailed format (Shipped/Smoke/Refs). On-demand push: powershell -File automations\sanctum-auto-push.ps1 -Action PushNow -Slug $agentName."
     if ($isScaffold) {
-        $phrase = $base + " Mode: SCAFFOLD. Read _SCAFFOLD-BRIEF.md, then create the initial repo skeleton (README.md + CLAUDE.md + SESSION-START.md + .gitignore + source/). Keep it minimal but runnable. When done, append a Built summary to _SCAFFOLD-BRIEF.md."
+        # Operator 2026-05-25: "when a new agent is made the first thing they are to do is
+        # audit the entire sinister sanctum folder and look for cross references and compile
+        # things they need for their project setup and plans to use other verticals of ours".
+        # Verticals audit runs at spawn time and is embedded in the scaffold phrase.
+        $verticalsInject = ''
+        try { $verticalsInject = Get-VerticalsAuditInject -AgentName $agentName } catch {}
+        $phrase = $base + " Mode: SCAFFOLD. FIRST: read skills/VERTICALS-PENDING.md to see every available fleet vertical (bots, skills, tools, candidate Ruflo skills). Cross-reference which verticals your project needs and create a verticals plan at _shared-memory/plans/$agentName-verticals-<utc>/plan.md BEFORE writing code. Then: Read _SCAFFOLD-BRIEF.md and create the initial repo skeleton (README.md + CLAUDE.md + SESSION-START.md + .gitignore + source/)."
+        if ($verticalsInject) { $phrase += $verticalsInject }
     }
     elseif ($isGeneral) {
         # RKOJ-ELENO :: 2026-05-24 :: operator 21:24Z setup-helper-agent directive. When the

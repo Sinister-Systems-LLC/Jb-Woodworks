@@ -30,3 +30,5 @@ Iter-22 was the **first iteration ever tagged for a version-based snapshot syste
 - The first version-tagged iter was iter-22 because that's when the deploy/ folder + Leo handoff coalesced into a snapshottable baseline. Earlier iters are reachable via commit SHA in `_shared-memory/PROGRESS/Sinister Sanctum.md`, just not tagged.
 - Append-only: NEVER edit or remove a row. To correct, add a new row noting the correction and tag a new version.
 - Tooling: `python automations/version_snapshot.py --list` renders this table; `--create LABEL` appends a row + creates the tag.
+| 2026-05-25T08:14:23Z | v22.1.0-eve-ui-multi-agent-gpu-vault-sinister-memory-overseer | 3cfc563ec284 | eve-ui-multi-agent-gpu-vault-sinister-memory-overseer | Snapshot v22.1.0-eve-ui-multi-agent-gpu-vault-sinister-memory-overseer from 3cfc563ec284 | `git checkout v22.1.0-eve-ui-multi-agent-gpu-vault-sinister-memory-overseer` |
+| 2026-05-25T08:23:59Z | v22.1.1-github-push-all-subs-returned | bf81c65367f1 | github-push-all-subs-returned | Snapshot v22.1.1-github-push-all-subs-returned from bf81c65367f1 | `git checkout v22.1.1-github-push-all-subs-returned` |

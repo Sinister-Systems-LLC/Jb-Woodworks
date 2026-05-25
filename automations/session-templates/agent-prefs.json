@@ -1,5 +1,5 @@
 {
-    "version":  3,
+    "version":  4,
     "_schema":  "per_user_v1",
     "_migrated_to_per_user_at_utc":  "2026-05-25T00:46:49Z",
     "available_colors":  [
@@ -20,59 +20,136 @@
                                                      "projects":  {
                                                                       "jb-woodworks":  {
                                                                                            "agent_name":  "jb-woodworks",
-                                                                                           "accent_color":  "purple"
+                                                                                           "accent_color":  "purple",
+                                                                                           "modes":  {
+                                                                                                         "swarm":  true,
+                                                                                                         "loop":  "relentless"
+                                                                                                     }
                                                                                        },
                                                                       "general":  {
                                                                                       "agent_name":  "general",
-                                                                                      "accent_color":  "purple"
+                                                                                      "accent_color":  "purple",
+                                                                                      "modes":  {
+                                                                                                    "swarm":  true,
+                                                                                                    "loop":  "relentless"
+                                                                                                }
                                                                                   },
                                                                       "letstext":  {
                                                                                        "agent_name":  "letstext",
-                                                                                       "accent_color":  "purple"
+                                                                                       "accent_color":  "purple",
+                                                                                       "modes":  {
+                                                                                                     "swarm":  true,
+                                                                                                     "loop":  "relentless"
+                                                                                                 }
                                                                                    },
                                                                       "eve-compliance":  {
                                                                                              "agent_name":  "eve-compliance",
-                                                                                             "accent_color":  "purple"
+                                                                                             "accent_color":  "purple",
+                                                                                             "modes":  {
+                                                                                                           "swarm":  true,
+                                                                                                           "loop":  "relentless"
+                                                                                                       }
                                                                                          },
                                                                       "sinister-panel":  {
                                                                                              "agent_name":  "sinister-panel",
-                                                                                             "accent_color":  "purple"
+                                                                                             "accent_color":  "purple",
+                                                                                             "modes":  {
+                                                                                                           "swarm":  true,
+                                                                                                           "loop":  "relentless"
+                                                                                                       }
                                                                                          },
                                                                       "showmasters":  {
                                                                                           "agent_name":  "showmasters",
-                                                                                          "accent_color":  "purple"
+                                                                                          "accent_color":  "purple",
+                                                                                          "modes":  {
+                                                                                                        "swarm":  true,
+                                                                                                        "loop":  "relentless"
+                                                                                                    }
                                                                                       },
                                                                       "sinister-snap-api-quantum":  {
                                                                                                         "agent_name":  "sinister-snap-api-quantum",
                                                                                                         "accent_color":  "purple",
-                                                                                                        "last_saved_at_utc":  "2026-05-25T01:17:07Z"
+                                                                                                        "last_saved_at_utc":  "2026-05-25T01:17:07Z",
+                                                                                                        "modes":  {
+                                                                                                                      "swarm":  true,
+                                                                                                                      "loop":  "relentless"
+                                                                                                                  }
                                                                                                     },
                                                                       "sinister-overseer":  {
                                                                                                 "agent_name":  "sinister-overseer",
                                                                                                 "accent_color":  "purple",
-                                                                                                "last_saved_at_utc":  "2026-05-25T02:32:18Z"
+                                                                                                "last_saved_at_utc":  "2026-05-25T02:32:18Z",
+                                                                                                "modes":  {
+                                                                                                              "swarm":  true,
+                                                                                                              "loop":  "relentless"
+                                                                                                          }
                                                                                             },
                                                                       "sinister-os":  {
                                                                                           "agent_name":  "sinister-os",
                                                                                           "accent_color":  "purple",
-                                                                                          "last_saved_at_utc":  "2026-05-25T03:46:41Z"
+                                                                                          "last_saved_at_utc":  "2026-05-25T03:46:41Z",
+                                                                                          "modes":  {
+                                                                                                        "swarm":  true,
+                                                                                                        "loop":  "relentless"
+                                                                                                    }
                                                                                       },
                                                                       "kernel-apk":  {
                                                                                          "agent_name":  "kernel-apk",
                                                                                          "accent_color":  "purple",
-                                                                                         "last_saved_at_utc":  "2026-05-25T06:01:00Z"
+                                                                                         "last_saved_at_utc":  "2026-05-25T06:01:00Z",
+                                                                                         "modes":  {
+                                                                                                       "swarm":  true,
+                                                                                                       "loop":  "relentless"
+                                                                                                   }
                                                                                      },
-                                                                      "sinister-chatbot":  {
-                                                                                               "agent_name":  "sinister-chatbot",
-                                                                                               "accent_color":  "purple",
-                                                                                               "last_saved_at_utc":  "2026-05-25T06:03:28Z"
-                                                                                           },
                                                                       "sanctum":  {
                                                                                       "agent_name":  "sanctum",
                                                                                       "accent_color":  "purple",
-                                                                                      "last_saved_at_utc":  "2026-05-25T06:03:50Z"
-                                                                                  }
+                                                                                      "last_saved_at_utc":  "2026-05-25T06:03:50Z",
+                                                                                      "modes":  {
+                                                                                                    "swarm":  true,
+                                                                                                    "loop":  "relentless"
+                                                                                                }
+                                                                                  },
+                                                                      "sinister-chatbot":  {
+                                                                                               "agent_name":  "sinister-chatbot",
+                                                                                               "accent_color":  "purple",
+                                                                                               "last_saved_at_utc":  "2026-05-25T07:17:31Z",
+                                                                                               "modes":  {
+                                                                                                             "swarm":  true,
+                                                                                                             "loop":  "relentless"
+                                                                                                         }
+                                                                                           },
+                                                                      "sinister-memory":  {
+                                                                                              "agent_name":  "sinister-memory",
+                                                                                              "accent_color":  "purple",
+                                                                                              "last_saved_at_utc":  "2026-05-25T07:46:20Z",
+                                                                                              "modes":  {
+                                                                                                            "swarm":  true,
+                                                                                                            "loop":  "relentless"
+                                                                                                        }
+                                                                                          }
                                                                   }
-                                                 }
-              }
+                                                 },
+                  "zonia@local":  {
+                                      "projects":  {
+                                                       "sinister-memory":  {
+                                                                               "agent_name":  "sinister-memory",
+                                                                               "accent_color":  "purple",
+                                                                               "last_saved_at_utc":  "2026-05-25T07:45:20Z"
+                                                                           }
+                                                   }
+                                  }
+              },
+    "_v4_note":  "RKOJ-ELENO :: 2026-05-25T06:35Z :: v4 adds top-level defaults block per operator hard-canonical 06:30Z \u0027make sure loop and swarm mode come on by deafult for each agent\u0027. modes.loop = \u0027relentless\u0027 + modes.swarm = true is now the fleet-wide default. Doctrine: loop-swarm-default-on-doctrine-2026-05-25.md.",
+    "defaults":  {
+                     "swarm_mode":  true,
+                     "loop_mode":  true,
+                     "loop_relentless":  true,
+                     "skip_modes_prompt":  false,
+                     "modes":  {
+                                   "swarm":  true,
+                                   "loop":  "relentless"
+                               }
+                 }
 }

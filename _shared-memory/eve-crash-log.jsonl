@@ -1,3 +1,7 @@
 {"ts": "2026-05-25T06:22:08Z", "event": "scan_detected", "signals": [{"signal": "B_no_window", "hits": [{"pid": 16540, "age_s": 140}], "triggered": true}, {"signal": "D_orphan_conhost", "hits": [{"pid": 26336, "dead_ppid": 35080}, {"pid": 39900, "dead_ppid": 17496}, {"pid": 40248, "dead_ppid": 38248}, {"pid": 43472, "dead_ppid": 46068}, {"pid": 48028, "dead_ppid": 22320}], "triggered": true}]}
 {"ts": "2026-05-25T06:54:51Z", "event": "pre_compile_cleared"}
 {"ts": "2026-05-25T07:04:09Z", "event": "pre_compile_cleared"}
+{"ts": "2026-05-25T07:13:09Z", "event": "scan_detected", "signals": [{"signal": "B_no_window", "hits": [{"pid": 37872, "age_s": 212}], "triggered": true}, {"signal": "D_orphan_conhost", "hits": [{"pid": 26336, "dead_ppid": 35080}, {"pid": 32812, "dead_ppid": 43228}, {"pid": 33684, "dead_ppid": 16056}, {"pid": 39900, "dead_ppid": 17496}, {"pid": 40248, "dead_ppid": 38248}], "triggered": true}]}
+{"ts": "2026-05-25T08:22:20Z", "event": "auto_restart", "reason": "scan_auto_restart", "exe": "D:\\Sinister Sanctum\\EVE.exe"}
+{"ts": "2026-05-25T08:24:00Z", "event": "auto_restart", "reason": "scan_auto_restart", "exe": "D:\\Sinister Sanctum\\EVE.exe"}
+{"ts": "2026-05-25T08:26:56Z", "event": "auto_restart", "reason": "scan_auto_restart", "exe": "D:\\Sinister Sanctum\\EVE.exe"}

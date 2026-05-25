@@ -1,3 +1,9 @@
+<!-- decay:
+  category: preference
+  confidence: 1
+  reinforcements: 0
+  half_life_days: 365
+-->
 # EVE Update over Sinister LINK + Popup Doctrine
 
 > **Author:** RKOJ-ELENO :: 2026-05-25 (Sub-O)

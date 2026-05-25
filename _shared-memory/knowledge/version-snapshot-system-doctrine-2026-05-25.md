@@ -1,3 +1,9 @@
+<!-- decay:
+  category: preference
+  confidence: 1
+  reinforcements: 0
+  half_life_days: 365
+-->
 # Version-snapshot system doctrine (2026-05-25)
 
 **Author:** RKOJ-ELENO :: 2026-05-25

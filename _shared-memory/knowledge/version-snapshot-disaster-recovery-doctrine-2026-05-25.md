@@ -1,4 +1,10 @@
 <!-- Author: RKOJ-ELENO :: 2026-05-25 -->
+<!-- decay:
+  category: preference
+  confidence: 1
+  reinforcements: 0
+  half_life_days: 365
+-->
 # Version-snapshot disaster-recovery doctrine
 
 > **Status:** binding for every fleet agent that touches `deploy/`, `automations/`, `CLAUDE.md`, or `_shared-memory/knowledge/`.

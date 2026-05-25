@@ -151,84 +151,68 @@ def _ansi_fg(rgb: tuple[int, int, int]) -> str:
     return f"\x1b[38;2;{rgb[0]};{rgb[1]};{rgb[2]}m"
 
 
-def render_animation_frame(tick: int, width: int = 80, height: int = 6) -> list[str]:
+def render_animation_frame(tick: int, width: int = 80, height: int = 10) -> list[str]:
     """Return list of `height` rendered lines for a single animation frame.
 
     Sinister-themed palette + visible horizontal drift + glow pulse + sparkle.
 
-    RKOJ-ELENO :: 2026-05-25T01:36Z :: operator screenshot #66 *"more animation
-    and live here"*. Prior render felt static (1-in-30 shimmer, palette drift
-    every 8 ticks, no horizontal scroll). This iteration:
-      * Shimmer density 1-in-30  -> 1-in-12 (more bright cells)
-      * Palette drift  tick//8   -> tick//4 (visibly moving)
-      * NEW: horizontal scroll   -- entire pattern shifts 1 col every 2 ticks
-        (creates a "river of stars" feel that scrolls left frame-to-frame)
-      * NEW: sparkle accents `*` `+` chars appear ~1-in-160 cells, pulse
-        brighter than base shimmer for "live" sparkle
-      * Brightness cap on shimmer cells: kept at shimmer_glow 0.45 amplitude
-        so individual bright cells stay subtle even at higher density.
+    RKOJ-ELENO :: 2026-05-25 v3 :: operator "make this larger and more animated":
+      * Height default 6 -> 10 (larger field)
+      * Scroll speed tick//2 -> tick (2x faster river-of-stars drift)
+      * Shimmer density 1-in-12 -> 1-in-7 (denser glow cells)
+      * Sparkle accent 1-in-160 -> 1-in-50 (3x more bright sparkles)
+      * Glyph set expanded: '.:*+o' (more texture variety per row)
+      * Vertical wave: row-dependent phase offset adds diagonal ripple
 
-    GLOWING: each cell modulates brightness by a sine of (col + row + tick)
-    cycling through dim->mid->bright->mid->dim. Subtle (0.55..1.0 range).
-
-    cp1252-safe glyphs: '.:*+' only (no Unicode crash on Windows cmd).
+    cp1252-safe glyphs: '.:*+o' only (no Unicode crash on Windows cmd).
     """
     if width <= 0 or height <= 0:
         return []
-    # SLOW: shimmer phase stretched 4x
-    t = (tick % 160) / 160.0
-    # FASTER drift (was tick//8) -- one palette step every 4 ticks
-    drift = (tick // 4) % len(_PALETTE)
-    # NEW: horizontal scroll offset -- entire pattern shifts left 1 col every
-    # 2 ticks. Creates a "river of stars" feel. The modulo width keeps the
-    # offset bounded so per-cell hashes don't drift to infinity.
-    scroll = (tick // 2) % max(1, width)
+    # Shimmer phase -- full cycle every 100 ticks (faster than 160)
+    t = (tick % 100) / 100.0
+    # Palette drift: one step every 3 ticks (was 4 -- slightly faster)
+    drift = (tick // 3) % len(_PALETTE)
+    # Horizontal scroll: 1 col per tick (was every 2 ticks -- 2x faster "river")
+    scroll = tick % max(1, width)
+    # Vertical wave phase: each row is offset so the field has diagonal ripple
+    row_wave_scale = 0.4
 
-    glyphs = ".:*+"
-    sparkle_glyphs = "*+"  # cp1252-safe pulsing accents
+    glyphs = ".:*+o"
+    sparkle_glyphs = "*+o"  # cp1252-safe pulsing accents
     lines: list[str] = []
     for row in range(height):
         parts: list[str] = []
+        row_phase = row * row_wave_scale
         for col in range(width):
-            # Apply horizontal scroll: effective column is the rendering col
-            # plus the scroll offset, so each frame the pattern at col=N is
-            # what was at col=N+1 last frame (visible right->left drift).
             ecol = (col + scroll) % max(1, width)
-            # palette index drifts horizontally + undulates per row
             distance = (ecol + drift + row * 2) % (len(_PALETTE) + 4)
             base = palette_color(distance)
 
-            # GLOW: per-cell brightness pulse (subtle, range 0.55..1.0)
-            # Sine of (col*0.25 + row*0.5 + tick*0.05) -- slow per-cell breathing
-            glow_phase = math.sin(ecol * 0.25 + row * 0.5 + tick * 0.05) * 0.5 + 0.5
-            glow_mul = 0.55 + glow_phase * 0.45
+            # GLOW: per-cell brightness with vertical wave for diagonal ripple
+            glow_phase = math.sin(ecol * 0.25 + row_phase + tick * 0.07) * 0.5 + 0.5
+            glow_mul = 0.50 + glow_phase * 0.50
             glowed = (
                 int(base[0] * glow_mul),
                 int(base[1] * glow_mul),
                 int(base[2] * glow_mul),
             )
 
-            # Density bumped 30 -> 12. Each shimmer cell stays subtle via the
-            # shimmer_glow 0.45 amplitude cap (no white-hot blowouts).
-            sparkle_hash = (ecol * 31 + row * 17 + tick * 7) % 12
+            # Shimmer density 1-in-7 (was 1-in-12) -- more glow cells
+            sparkle_hash = (ecol * 31 + row * 17 + tick * 7) % 7
             if sparkle_hash == 0:
                 pos = ecol / max(1, width - 1)
                 final = shimmer_glow(glowed, pos, t)
             else:
                 final = glowed
 
-            # NEW: pulsing sparkle accent ~1-in-160 cells. These pulse a
-            # brighter glow (0.85 overlay vs 0.45) and use a fixed accent
-            # glyph (* / +) for a "live sparkle" feel without going Unicode.
-            accent_hash = (ecol * 53 + row * 29 + tick * 11) % 160
+            # Sparkle accent ~1-in-50 (was 1-in-160) -- 3x more bright sparkles
+            accent_hash = (ecol * 53 + row * 29 + tick * 11) % 50
             if accent_hash < 2:
-                # Pulse brightness based on tick so each sparkle "twinkles"
                 twinkle = abs(math.sin((tick + ecol + row) * 0.6)) * 0.5 + 0.5
-                final = _blend_color(final, _GLOW_HIGHLIGHT, 0.55 * twinkle)
-                glyph = sparkle_glyphs[(tick // 2) % len(sparkle_glyphs)]
+                final = _blend_color(final, _GLOW_HIGHLIGHT, 0.65 * twinkle)
+                glyph = sparkle_glyphs[tick % len(sparkle_glyphs)]
             else:
-                # alternate glyph per (row, col, tick) for "moving" texture
-                glyph = glyphs[(ecol + row + tick // 4) % len(glyphs)]
+                glyph = glyphs[(ecol + row + tick // 3) % len(glyphs)]
             parts.append(_ansi_fg(final) + glyph)
         parts.append(_RESET)
         lines.append("".join(parts))
