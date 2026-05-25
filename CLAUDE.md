@@ -67,6 +67,23 @@ Composes with: `loop-relentless-pursuit-2026-05-25` + `one-terminal-per-project-
 
 Full doctrine: `_shared-memory/knowledge/full-relentless-swarm-fanout-mindset-doctrine-2026-05-25.md`.
 
+**Python entrypoint (iter 2026-05-25T13:05Z):** the swarm fan-out is reified as `automations/sinister_swarm.py` — a Python port of jcode's `try_join_all` swarm primitive (`C:\Users\Zonia\Desktop\jcode-0.12.4\src\server\swarm.rs:1024-1038`). Invoke as `python automations/sinister_swarm.py fanout --slug-prefix <p> --slices-file <json>` where the JSON file is an array of `{id, prompt, owned_paths, lane}` slices. Each slice mesh-checks every `owned_paths` entry (skipping on lock conflict), spawns an isolated mintty Claude via `start-sinister-session.ps1` with `SINISTER_SLICE_ID` / `SINISTER_SLICE_PROMPT` / `SINISTER_SLICE_RESULT_PATH` env vars, polls heartbeats + `_shared-memory/inbox/swarm-results/<slug_prefix>/<slice_id>.json` until result or per-slice timeout (`timeout_s / max(1,len(slices))`), and aggregates an ordered result list. Also: `... smoke` runs a dry-run self-test; `... list-locks [--slug X]` shells through to `mesh-coordinator.ps1 -Action List`. Per `no-bat-no-ps1-do-it-for-me-doctrine-2026-05-25`: this is the canonical Python primitive for any fleet agent that needs to fan out N parallel slices.
+
+## Operator hard-canonical 2026-05-25 — CHECK AGENT EXISTS BEFORE DELEGATE; AUTO-START IF NOT
+
+Operator (verbatim 2026-05-25T11:39:56Z): *"you need to open a sanctum agent so they can work on it. you also need to update memory to check if you have an agent to complete the project if now auto start them in the correct manner"*
+
+**Binding for every fleet agent, fleet-wide.** Before ANY of: writing `[DELEGATE]`-tagged inbox msg / posting scoped fleet-update naming a slug / mesh-coord inbox-owner handoff / Overseer chatbot lane delegation — the sender MUST:
+
+1. **Stat** `_shared-memory/heartbeats/<target-slug>.json` mtime. Cap = 30 min.
+2. **Fresh** (<30 min) → proceed with the delegate.
+3. **Stale or missing** → auto-spawn target via `automations/start-sinister-session.ps1`, wait <=30 s for heartbeat to appear, THEN write the delegate.
+4. **Spawn fails** → ONE-line surface to `_shared-memory/OPERATOR-ACTION-QUEUE.md` (last resort, not first).
+
+Banned: DELEGATE-to-dead-agent · wait-on-reply-from-non-running-peer · operator-must-launch-target · stale-heartbeat-but-no-spawn · trusted-slug-bypass.
+
+Full doctrine: `_shared-memory/knowledge/auto-start-if-no-agent-doctrine-2026-05-25.md`.
+
 ## Operator hard-canonical 2026-05-25 — SINGLE-REPO PUSH POLICY
 
 Operator (verbatim 2026-05-25 ~00:50Z): *"make sure the only fodler we are pushing to is the the sinister sanctum. ... lets text will have their own. showmasters will, jb will. but nothing else."*
@@ -82,7 +99,7 @@ Full doctrine: `_shared-memory/knowledge/single-repo-push-policy-2026-05-25.md` 
 
 Operator (verbatim 2026-05-24, 21:40Z): *"allow infinite accounts and all pages on the eve exe need to have a uniform ui look ... we dont do shit half ass"*
 
-- **Uniform UI:** every EVE.exe sub-page = header `{DARKP}---{RESET} {WHITE}{BOLD}<title>{RESET} {DARKP}---{RESET}` + 3-15-line body using canonical tokens (PURPLE/BRIGHTP/OK/WARN/FAIL/DIM/WHITE/SOFT/DARKP) + footer `B) Back  X) Exit  (page-specific keys)`. `B`/empty-Enter → main picker; `X` → `sys.exit(0)`.
+- **Uniform UI:** every EVE.exe sub-page = header `{DARKP}---{RESET} {WHITE}{BOLD}<title>{RESET} {DARKP}---{RESET}` + 3-15-line body using canonical tokens (PURPLE/BRIGHTP/OK/WARN/FAIL/DIM/WHITE/SOFT/DARKP) + footer `B) Back  H) Home  X) Exit  (page-specific keys)`. `B`/empty-Enter → main picker; `X` → `sys.exit(0)`.
 - **Infinite accounts:** 4-slot list is a STARTER, not a cap. `claude-accounts.ps1 -Action Add` supports arbitrary names. Accounts panel + Health view + round-robin iterator must scale to N without 4-slot assumptions.
 - **No half-ass:** multi-surface features ship ALL surfaces together OR are not claimed shipped.
 
