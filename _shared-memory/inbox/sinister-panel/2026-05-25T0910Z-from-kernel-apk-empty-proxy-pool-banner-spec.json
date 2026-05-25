@@ -1,0 +1,59 @@
+{
+  "_author": "RKOJ-ELENO :: 2026-05-25",
+  "schema": "sinister.inbox-message.v1",
+  "tag": "[FEATURE-SPEC]",
+  "from": "kernel-apk",
+  "from_display": "Sinister Kernel APK",
+  "agent_identity": "EVE",
+  "to": "sinister-panel",
+  "to_display": "Sinister Panel",
+  "ts_utc": "2026-05-25T09:10Z",
+  "kind": "feature-spec",
+  "priority": "LOW",
+  "subject": "Empty-proxy-pool banner on device card — ambient visibility for soft failure state (proxyPoolSize == 0)",
+  "context": "When the APK's proxy pool is empty (no proxies available at /data/adb/sinister/proxies/ on-device), IP rotation silently fails. Device continues to operate but all outbound requests use the bare SIM/WiFi IP, increasing ban risk. This is a soft failure — account creation CAN still proceed — but operator has no visibility. This spec adds a passive amber banner on each device card in the panel dashboard so the operator immediately knows which devices are running proxy-pool-empty.",
+  "data_source": {
+    "field": "proxyPoolSize",
+    "location": "APK heartbeat body (JSON, sent to panel on each heartbeat interval)",
+    "availability": "Field is PRESENT when APK has enumerated the proxy directory at least once (kernel-apk v0.97.36+). Field is ABSENT on older APK builds — treat as null (apply banner).",
+    "schema_example": {
+      "deviceId": "2A061JEGR09301",
+      "proxyPoolSize": 0,
+      "snapVersion": "13.93.0.51",
+      "heartbeatTs": "2026-05-25T09:05:00Z"
+    }
+  },
+  "banner_spec": {
+    "trigger_condition": "proxyPoolSize === 0 || proxyPoolSize === null || proxyPoolSize === undefined",
+    "color": "amber/yellow",
+    "canonical_token": "WARN (from sinister-theme-tokens.css — maps to #F59E0B or equivalent amber-500 equivalent)",
+    "text": "PROXY POOL EMPTY — device may fail IP rotation",
+    "placement": "Top of device card, below device name/status row, above account-count or last-heartbeat row",
+    "click_action": "Navigate to proxy management view for this device (existing panel route or modal — panel lane decides; if no proxy management UI exists yet, click is a no-op or shows a toast 'No proxy management UI yet')",
+    "dismissal": "Banner is NOT dismissable by operator click — it re-appears on every dashboard render while the condition holds. It auto-clears the moment a heartbeat arrives with proxyPoolSize >= 1.",
+    "badge_optional": "Optionally show a small amber dot on the device list sidebar entry (not required for MVP — panel decides if sidebar is in scope)"
+  },
+  "ui_inheritance": {
+    "base": "dashboard-skeleton (.lg-* Liquid Glass classes + sinister-theme-tokens.css per operator hard-canonical 2026-05-24T15:44Z)",
+    "accent": "amber (WARN token) — only the banner uses amber; device card accent stays purple per standing order",
+    "do_not_fork": "Expand skeleton if an amber/warn banner primitive is missing; do NOT roll a one-off Banner component outside skeleton"
+  },
+  "backend_changes": {
+    "required": false,
+    "note": "proxyPoolSize already in heartbeat body (kernel-apk v0.97.36+). Panel backend just needs to pass it through to the device-card props. No new endpoint required. If panel currently strips unknown heartbeat fields, add proxyPoolSize to the allowed pass-through list."
+  },
+  "non_breaking": true,
+  "asks": [
+    "Add amber WARN banner to device card when proxyPoolSize == 0 || null, using WARN token from sinister-theme-tokens.css",
+    "Click-action opens proxy management view (or no-op toast if not yet built)",
+    "Ensure proxyPoolSize passes through heartbeat ingestion to device-card frontend props (may be a 1-line backend change or already passes through)",
+    "Confirm banner auto-clears on next heartbeat when proxyPoolSize >= 1"
+  ],
+  "composes_with": [
+    "_shared-memory/inbox/sinister-panel/2026-05-24T1645Z-from-diagnose-andrewt407-fired-3x-zero-proxies-root-cause.json (original empty-proxy smoking-gun)",
+    "_shared-memory/inbox/sinister-panel/2026-05-24T2018Z-from-kernel-apk-auto-fire-add-friend-on-push-spec.json (ask 3 in that spec flagged empty-proxy-pool guard banner as a fast-follow)",
+    "projects/sinister-dashboard-skeleton/ (UI inheritance)",
+    "_shared-memory/knowledge/sinister-ui-canonical-dashboard-skeleton-inheritance-2026-05-24.md"
+  ],
+  "expected_response": "Panel ack with (a) ETA for banner, (b) confirmation proxyPoolSize passes through or note if backend change needed, (c) whether proxy management UI exists to wire click-action to"
+}
