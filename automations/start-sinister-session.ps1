@@ -1717,6 +1717,31 @@ function Launch-Session($projRec, $agentName, $accent, $phrase, $modes = $null) 
         }
     }
 
+    # RKOJ-ELENO :: 2026-05-25 :: iter-25 P0.4 wire for launch_rate_limit_governor.py.
+    # Advisory only by default (FULL-POWER doctrine: NEVER block a spawn on local
+    # bookkeeping). Set SINISTER_LAUNCH_GOVERNOR_BLOCK=1 to make this a hard gate.
+    # Governor exists at automations/launch_rate_limit_governor.py with --pre-launch.
+    if ($projRec -and $projRec.key) {
+        $governorScript = Join-Path $SanctumRoot 'automations\launch_rate_limit_governor.py'
+        if (Test-Path $governorScript) {
+            try {
+                $govOut = & python $governorScript --pre-launch $projRec.key --json 2>$null
+                $govRc  = $LASTEXITCODE
+                if ($govOut) {
+                    Write-Host "  [GOV] $(([string]$govOut).Trim())" -ForegroundColor $C.Dim
+                }
+                if ($govRc -ne 0 -and $env:SINISTER_LAUNCH_GOVERNOR_BLOCK -eq '1') {
+                    Write-Host "  [GOV] BLOCK: governor exited $govRc and SINISTER_LAUNCH_GOVERNOR_BLOCK=1; aborting spawn" -ForegroundColor $C.Fail
+                    return
+                } elseif ($govRc -ne 0) {
+                    Write-Host "  [GOV] governor advisory exit=$govRc (not blocking; set SINISTER_LAUNCH_GOVERNOR_BLOCK=1 to enforce)" -ForegroundColor $C.Warn
+                }
+            } catch {
+                Write-Host "  [GOV] launch_rate_limit_governor invoke failed: $($_.Exception.Message)" -ForegroundColor $C.Warn
+            }
+        }
+    }
+
     $swarmEnv = if ($modes -and $modes.swarm) { '1' } else { '' }
     $loopEnv  = if ($modes -and $modes.loop)  { '1' } else { '' }
     # RKOJ-ELENO :: 2026-05-24 :: operator ~20:00Z loop-condition. Bash single-quote
