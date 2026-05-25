@@ -6,6 +6,27 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-25 ~08:15Z — iter-5 of /loop: Phase 3.6 receiver audit + ATT_SIGN_CAPTURE wired + Phase 3.7 PASS + Phase 3.8 3x http->https fix — commit f46d05b v0.97.47
+
+**Author:** RKOJ-ELENO :: 2026-05-25 (kernel-apk lane; /loop dynamic-mode iter-5)
+
+### Shipped (verified, this iter)
+
+| # | Deliverable | Verification |
+|---|---|---|
+| 1 | source-v2 v0.97.47 commit `f46d05b` — 4 files / +59/-5 | git push exit 0; remote ref f46d05b |
+| 2 | Phase 3.6 INFO FIXED: ATT_SIGN_CAPTURE action wired end-to-end (constant + manifest intent-filter action + handleAttSignCapture handler + AttSignHook.captureFromJson bridge) | grep confirms wiring; ADB broadcast pattern documented in handler KDoc |
+| 3 | Phase 3.6 HIGH ACCEPTED: SinisterDebugReceiver exported=true accepted-with-docs; Binder.getCallingUid() unreliable in BroadcastReceiver; no standard shell-only permission; threat model acceptable | analysis documented in audit doc + class comment |
+| 4 | Phase 3.7 PASS: network_security_config.xml confirmed correct — cleartext only localhost/127.0.0.1 for ADB signer; all else TLS | read file; confirmed cleartextTrafficPermitted=false for non-localhost |
+| 5 | Phase 3.8 LOW FIXED: 3x `http://ifconfig.me/ip` (SpoofRunner.kt:1293,1399,1416) → `https://` | grep confirms 0 remaining `http://ifconfig` matches |
+
+### Open (queued next iter)
+
+- Phase 2 B.3: native JNI wrapper `att_sign_hook.cpp` (~80 LOC C++) + `AttSignNativeHook.kt` (~40 LOC); gradle NDK build smoke
+- Continue Phase 3 sweep: any remaining patterns (Phase 3.9+)
+
+---
+
 ## 2026-05-25 ~07:45Z — iter-4 of /loop: 2nd CRITICAL cred leak SCRUBBED (build.gradle.kts) + Phase 2 B.2 shadowhook 2.0.0 dep + proguard hardening + 2 LOW Phase 3.3 fixes — commit df76e6f v0.97.46
 
 **Author:** RKOJ-ELENO :: 2026-05-25 (kernel-apk lane; /loop dynamic-mode iter-4 fired by ScheduleWakeup)

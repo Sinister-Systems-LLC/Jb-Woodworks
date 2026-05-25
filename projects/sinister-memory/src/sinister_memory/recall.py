@@ -122,5 +122,5 @@ def format_hits_markdown(hits: list[Hit]) -> str:
     for h in hits:
         path_rel = h.path
         loc = f"{path_rel}:{h.line}"
-        lines.append(f"- **[{h.layer}]** `{h.slug or '—'}` `{loc}` — {h.snippet}")
+        lines.append(f"- **[{h.layer}]** `{h.slug or '--'}` `{loc}` -- {h.snippet}")
     return "\n".join(lines)

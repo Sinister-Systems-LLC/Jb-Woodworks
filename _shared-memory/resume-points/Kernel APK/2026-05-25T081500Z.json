@@ -1,0 +1,59 @@
+{
+  "schema_version": "sinister.resume-point.v1",
+  "ts_utc": "2026-05-25T08:15:00Z",
+  "project": "Kernel APK",
+  "agent_name": "kernel-apk",
+  "mode": "loop-dynamic",
+  "iter": 5,
+  "focus_intent": "iter-5: Phase 3.6 SinisterDebugReceiver audit (HIGH accepted-with-docs + INFO ATT_SIGN_CAPTURE fixed) + Phase 3.7 network_security_config PASS + Phase 3.8 3x http://ifconfig.me/ip -> https:// fixed. v0.97.47 commit f46d05b pushed. Next iter: Phase 2 B.3 native JNI wrapper (att_sign_hook.cpp + AttSignNativeHook.kt).",
+  "loop_directive_verbatim": "create a plan to complete everything you need to do and keep testing",
+  "git": {
+    "source_v2_HEAD": "f46d05b (v0.97.47)",
+    "source_v2_origin": "https://github.com/Sinister-Systems-LLC/Sinister-APK.git",
+    "sanctum_branch": "(varies; check on resume)"
+  },
+  "iter_5_source_v2_changes": [
+    "SinisterDebugReceiver.kt: A_ATT_SIGN_CAPTURE constant + handleAttSignCapture handler + coroutines import + JSONObject import",
+    "AndroidManifest.xml: com.sinister.detector.debug.ATT_SIGN_CAPTURE action added to receiver intent-filter",
+    "SpoofRunner.kt:1293,1399,1416: http://ifconfig.me/ip -> https://ifconfig.me/ip (3 occurrences)",
+    "build.gradle.kts: versionCode 242->243, versionName 0.97.46->0.97.47"
+  ],
+  "iter_5_sanctum_changes": [
+    "_shared-memory/audits/kernel-apk-leak-security-error-audit-2026-05-25.md iter-5 section prepended",
+    "_shared-memory/PROGRESS/Sinister Kernel APK.md iter-5 row added",
+    "this resume-point"
+  ],
+  "phase_3_cumulative_totals": {
+    "critical": 2,
+    "critical_scrubbed": 2,
+    "high": 2,
+    "high_scrubbed": 0,
+    "high_accepted_with_docs": 1,
+    "high_deferred": 1,
+    "medium": 3,
+    "medium_fixed": 1,
+    "medium_surfaced": 2,
+    "low": 5,
+    "low_fixed": 5,
+    "info_or_pass": 7
+  },
+  "loop_condition_status": {
+    "signal_1": "OPERATIONAL",
+    "signal_2": "UNBLOCKED + future-proofed",
+    "signal_3": "PARTIAL",
+    "signal_4": "Phase B.1+B.2 done; B.3 JNI wrapper next. ATT_SIGN_CAPTURE manual-fill path NOW WIRED (att-sign-broadcast.py can inject ring entries). Manual-fill works TODAY.",
+    "signal_5": "HARNESS READY",
+    "all_5_satisfied": false
+  },
+  "next_iter_priority_queue": [
+    "Phase 2 B.3: app/src/main/cpp/att_sign_hook.cpp (~80 LOC C++) + AttSignNativeHook.kt (~40 LOC Kotlin external fun) + CMakeLists.txt + build.gradle.kts NDK wiring; gradle assembleDebug smoke",
+    "Phase 3 continued: any remaining sweep patterns (Phase 3.9+)"
+  ],
+  "wakeup_disposition": "ScheduleWakeup 270s (cache-warm); continues /loop",
+  "compose_links": [
+    "_shared-memory/plans/kernel-apk-complete-and-harden-2026-05-25/plan.md",
+    "_shared-memory/plans/kernel-apk-complete-and-harden-2026-05-25/phase-2-att-sign-hook-impl.md (B.2 done; B.3 next)",
+    "_shared-memory/audits/kernel-apk-leak-security-error-audit-2026-05-25.md (iter-2 through iter-5)",
+    "_shared-memory/audits/phase-b-hook-lib-selection-2026-05-25.md"
+  ]
+}

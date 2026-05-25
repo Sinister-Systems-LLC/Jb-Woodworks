@@ -28,7 +28,12 @@ param(
     [switch]$WithQualityLoop,
     [int]$QualityLoopIters = 3,
     [int]$QualityLoopPlateau = 2,
-    [switch]$DryRun
+    [switch]$DryRun,
+
+    # P1 sinister-memory integration (2026-05-25): pass -AutoSave -Summary <text> alongside
+    # -Action Tally -Lane <slug> to persist an iter-close memory via sinister-memory save.
+    [switch]$AutoSave,
+    [string]$Summary = ''
 )
 
 $ErrorActionPreference = 'Stop'
@@ -455,6 +460,23 @@ if (-not (Test-Path `$p)) { 0; return }
             Invoke-Tally -LaneFilter $Lane
         } else {
             Invoke-Tally
+        }
+        # P1 sinister-memory auto-save: persist iter-close memory when -AutoSave -Summary -Lane provided.
+        if ($AutoSave -and $Summary -and $Lane -and $Lane -ne 'sanctum') {
+            try {
+                $smCli = $null
+                foreach ($c in @(
+                    "$env:LOCALAPPDATA\Programs\Python\Python312\Scripts\sinister-memory.exe",
+                    "$env:LOCALAPPDATA\Programs\Python\Python312\Scripts\sinister-memory",
+                    (Get-Command sinister-memory -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source -ErrorAction SilentlyContinue)
+                )) { if ($c -and (Test-Path $c -ErrorAction SilentlyContinue)) { $smCli = $c; break } }
+                if (-not $smCli) { $smCli = 'sinister-memory' }
+                $iterNum = [int]((Get-Date -Format 'yyMMddHH'))
+                & $smCli save "tally-auto" $Summary --agent $Lane --reindex 2>$null
+                Write-Output "[sinister-memory] iter-close memory saved for lane=$Lane"
+            } catch {
+                Write-Output "[sinister-memory] auto-save skipped: $($_.Exception.Message)"
+            }
         }
     }
     'Drain' {

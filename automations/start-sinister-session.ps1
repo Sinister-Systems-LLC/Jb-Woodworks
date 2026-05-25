@@ -1118,6 +1118,53 @@ function Get-MemoryRecallInject {
     }
 }
 
+function Get-SinisterMemoryInject {
+    # P2 sinister-memory integration (2026-05-25 RKOJ-ELENO): pre-fetch last-5 iter-close
+    # memories for the spawning agent and embed in the cold-start phrase so every spawn
+    # resumes with cross-session continuity. Parallel to Get-MemoryRecallInject (forge-memory
+    # keyword recall); this function contributes the structured iter-close narrative layer.
+    # Falls back to '' gracefully; never blocks spawn if sinister-memory is missing.
+    param([string]$AgentName)
+    try {
+        $smCli = $null
+        $candidates = @(
+            "$env:LOCALAPPDATA\Programs\Python\Python312\Scripts\sinister-memory.exe",
+            "$env:LOCALAPPDATA\Programs\Python\Python312\Scripts\sinister-memory",
+            "$env:USERPROFILE\AppData\Local\Programs\Python\Python312\Scripts\sinister-memory.exe"
+        )
+        try {
+            $found = Get-Command sinister-memory -ErrorAction Stop
+            if ($found) { $smCli = $found.Source }
+        } catch {}
+        if (-not $smCli) {
+            foreach ($c in $candidates) { if (Test-Path $c -ErrorAction SilentlyContinue) { $smCli = $c; break } }
+        }
+        if (-not $smCli) { return '' }
+
+        $slug = $AgentName.ToLower() -replace '\s+', '-'
+        $psi = New-Object System.Diagnostics.ProcessStartInfo
+        $psi.FileName = $smCli
+        $psi.Arguments = "inject-spawn-phrase $slug --limit 5"
+        $psi.RedirectStandardOutput = $true
+        $psi.RedirectStandardError = $true
+        $psi.UseShellExecute = $false
+        $psi.CreateNoWindow = $true
+        $proc = [System.Diagnostics.Process]::Start($psi)
+        if (-not $proc.WaitForExit(3000)) {
+            try { $proc.Kill() } catch {}
+            return ''
+        }
+        $stdout = $proc.StandardOutput.ReadToEnd().Trim()
+        if (-not $stdout -or $stdout.Length -lt 10) { return '' }
+        # Collapse multi-line chunk to one inline sentence (spawn phrase is single-line).
+        $oneLine = $stdout -replace '[\r\n]+', ' ' -replace '\s{2,}', ' '
+        if ($oneLine.Length -gt 600) { $oneLine = $oneLine.Substring(0, 597) + '...' }
+        return " SINISTER_MEMORY (last iter-close memories for $slug): $oneLine"
+    } catch {
+        return ''
+    }
+}
+
 function Build-Phrase($projRec, $agentName, $mode, $isGeneral, $isScaffold, $modes = $null) {
     # Operator 2026-05-23 evening (multiple screenshots): child Claude refused prior phrase
     # framing it as "long instruction block claiming pre-authorization for a list of activities,
@@ -1180,6 +1227,18 @@ function Build-Phrase($projRec, $agentName, $mode, $isGeneral, $isScaffold, $mod
                 $phrase += $memInject
             } else {
                 try { _SpawnProgress -Stage 'memory recall' -Status 'SKIP' -ElapsedMs $_recallMs -Detail 'no hits / no CLI' } catch {}
+            }
+            # P2 sinister-memory inject-spawn-phrase (2026-05-25 RKOJ-ELENO): structured
+            # iter-close narrative layer alongside forge-memory keyword recall.
+            $_smT0 = Get-Date
+            try { _SpawnProgress -Stage 'sinister-memory inject' -Status 'RUN' } catch {}
+            $smInject = Get-SinisterMemoryInject -AgentName $agentName
+            $_smMs = [int]((Get-Date) - $_smT0).TotalMilliseconds
+            if ($smInject) {
+                try { _SpawnProgress -Stage 'sinister-memory inject' -Status 'OK' -ElapsedMs $_smMs -Detail 'iter-close memories injected' } catch {}
+                $phrase += $smInject
+            } else {
+                try { _SpawnProgress -Stage 'sinister-memory inject' -Status 'SKIP' -ElapsedMs $_smMs -Detail 'no prior memories / CLI missing' } catch {}
             }
         } else {
             try { _SpawnProgress -Stage 'memory recall' -Status 'SKIP' -Detail 'env-skip' } catch {}
@@ -2181,8 +2240,25 @@ if [ -n "`${SINISTER_FLEET_BURST_LIMIT:-}" ]; then
         fi
     fi
 fi
-claude --dangerously-skip-permissions '$bashPhrase'
-_claude_exit_code=`$?
+# RKOJ-ELENO :: 2026-05-25 :: iter-26 P1.2 — route `claude` through claude-wrapper.ps1
+# so spawned sessions inherit auto-429 detect + auto-MarkLimited + auto-rotation.
+# Operator hard-canonical 2026-05-24 ~23:10Z: "this entire round robin needs to be
+# auto. detect the accounts that should be used and what is out of credits etc."
+# Wrapper streams claude stdout/stderr verbatim (no UX change), watches a tail
+# buffer for 13 rate-limit patterns, calls AutoMark429 on hit and rotates+retries.
+# Master-spawn-authority doctrine: `--dangerously-skip-permissions` retained.
+# Bypass via env: SINISTER_NO_WRAPPER=1 falls back to bare claude (escape hatch).
+if [ -n "`${SINISTER_DRY_RUN:-}" ]; then
+    printf '\n  > [DRY-RUN] resolved claude invocation:\n'
+    printf '            powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$SanctumRoot\automations\claude-wrapper.ps1" -- --dangerously-skip-permissions %s\n' "'$bashPhrase'"
+    _claude_exit_code=0
+elif [ "`${SINISTER_NO_WRAPPER:-0}" = "1" ]; then
+    claude --dangerously-skip-permissions '$bashPhrase'
+    _claude_exit_code=`$?
+else
+    powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$SanctumRoot\automations\claude-wrapper.ps1" -- --dangerously-skip-permissions '$bashPhrase'
+    _claude_exit_code=`$?
+fi
 # RKOJ-ELENO :: 2026-05-24T21:38Z :: operator "this agent just crashed with this error.
 # fix this add auto fix to eve and make sure this never happens again". Bun (the runtime
 # under claude.exe) segfaults on some sessions; when it does, the parent bash env can
