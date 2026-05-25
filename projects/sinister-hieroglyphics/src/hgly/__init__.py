@@ -12,8 +12,14 @@ except Exception:
 from .ir import (Module, Function, Block, Effect, Type, TInt, TFloat, TBool,
                  TStr, TUnit, TList, TTuple, TStruct, TFn, TPtr, TLinear,
                  lower_ast, TypeChecker, TypeError, print_ir)  # noqa: F401
+try:
+    from .codegen import (compile_module, compile_and_run, dump, VM,
+                          CompiledModule, CompiledFn, Instr)  # noqa: F401
+    _HAS_CODEGEN = True
+except Exception:
+    _HAS_CODEGEN = False
 
-__version__ = "0.0.4"
+__version__ = "0.0.5"
 
 __all__ = ["parse", "parse_file", "ParseError", "Module", "Function", "Block",
            "Effect", "Type", "TInt", "TFloat", "TBool", "TStr", "TUnit",
@@ -21,3 +27,6 @@ __all__ = ["parse", "parse_file", "ParseError", "Module", "Function", "Block",
            "TypeChecker", "TypeError", "print_ir", "__version__"]
 if _HAS_INTERP:
     __all__ += ["Interpreter", "HglyPanic"]
+if _HAS_CODEGEN:
+    __all__ += ["compile_module", "compile_and_run", "dump", "VM",
+                "CompiledModule", "CompiledFn", "Instr"]
