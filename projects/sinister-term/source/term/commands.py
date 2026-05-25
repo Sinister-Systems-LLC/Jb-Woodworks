@@ -91,6 +91,7 @@ Sinister Term commands:
   /locks                    List active mesh-coordinator locks (owner / path / ttl / age)
   /utterances [N] [--new --mine --search X]   Tail operator-utterances.jsonl (alias /utt)
   /watch <relpath> [N]      Tail any jsonl under _shared-memory/ (sandboxed)
+  /agents [N --fresh --stale --slug X]   Richer heartbeats (mode + branch + note)
   /alias [name=val|remove n] List aliases, define one, or remove one
   /clear                    Clear the screen
   /help                     This message
@@ -525,6 +526,105 @@ def cmd_recall(args: list[str]) -> CommandResult:
 _HEARTBEAT_PATH = SANCTUM_ROOT / "_shared-memory" / "heartbeats" / f"{SELF_SLUG}.json"
 _MESH_LOCKS_DIR = SANCTUM_ROOT / "_shared-memory" / "mesh-locks"
 _UTTERANCES_PATH = SANCTUM_ROOT / "_shared-memory" / "operator-utterances.jsonl"
+
+
+def cmd_agents(args: list[str]) -> CommandResult:
+    """iter-62: richer /heartbeats — show fleet agents with mode + branch_intent
+    + status_note (from /touch).
+
+    Default sort = newest first. Args:
+      /agents                 all agents
+      /agents --fresh         only fresh (<30 min) heartbeats
+      /agents --stale         only stale heartbeats
+      /agents --slug X        only agents matching slug substring
+      /agents N               limit to top N rows after filter
+    """
+    if not HEARTBEATS_DIR.exists():
+        return CommandResult(True, "(no heartbeats dir)")
+    import time as _t
+    only_fresh = False
+    only_stale = False
+    slug_filter: str | None = None
+    limit = 50
+    i = 0
+    while i < len(args):
+        a = args[i]
+        if a == "--fresh":
+            only_fresh = True
+            i += 1
+            continue
+        if a == "--stale":
+            only_stale = True
+            i += 1
+            continue
+        if a == "--slug" and i + 1 < len(args):
+            slug_filter = args[i + 1].lower()
+            i += 2
+            continue
+        try:
+            limit = max(1, min(500, int(a)))
+        except ValueError:
+            return CommandResult(True,
+                f"unknown arg: {a}. Try /agents with no args for usage.")
+        i += 1
+
+    now = _t.time()
+    rows: list[tuple[float, str, dict]] = []
+    try:
+        for hb in HEARTBEATS_DIR.glob("*.json"):
+            try:
+                mtime = hb.stat().st_mtime
+            except OSError:
+                continue
+            data: dict = {}
+            try:
+                data = json.loads(hb.read_text(encoding="utf-8", errors="replace"))
+                if not isinstance(data, dict):
+                    data = {}
+            except Exception:
+                pass
+            agent = data.get("agent") or hb.stem
+            age_min = max(0, int((now - mtime) // 60))
+            fresh = age_min < 30
+            if only_fresh and not fresh:
+                continue
+            if only_stale and fresh:
+                continue
+            if slug_filter and slug_filter not in agent.lower():
+                continue
+            rows.append((mtime, agent, data))
+    except OSError as e:
+        return CommandResult(True, f"/agents failed: {e}")
+
+    if not rows:
+        flt = []
+        if only_fresh: flt.append("--fresh")
+        if only_stale: flt.append("--stale")
+        if slug_filter: flt.append(f"--slug {slug_filter}")
+        return CommandResult(True,
+            f"(no agents{' (' + ' '.join(flt) + ')' if flt else ''})")
+
+    rows.sort(key=lambda r: -r[0])  # newest first
+    shown = rows[:limit]
+    fresh_n = sum(1 for r in rows if (now - r[0]) / 60 < 30)
+    stale_n = len(rows) - fresh_n
+    out = [f"Agents: {len(shown)} of {len(rows)} "
+           f"(fresh<30m={fresh_n}, stale={stale_n})"]
+    for mtime, agent, data in shown:
+        age_min = max(0, int((now - mtime) // 60))
+        marker = "●" if age_min < 30 else "○"
+        mode = (data.get("mode") or "")[:18]
+        full_branch = data.get("branch_intent") or ""
+        note = data.get("status_note") or ""
+        # Show branch slug only (after last /) for compactness — rsplit FIRST
+        # then truncate so we get the topic, not the agent/lane/ prefix.
+        branch_short = (full_branch.rsplit("/", 1)[-1] if full_branch else "")[:32]
+        line = (f"  {marker} {agent:<28} {age_min:>4}m  "
+                f"{mode:<18}  {branch_short:<32}")
+        if note:
+            line += f"  · {note[:40]}"
+        out.append(line)
+    return CommandResult(True, "\n".join(out))
 
 
 def cmd_watch(args: list[str]) -> CommandResult:
@@ -1387,6 +1487,7 @@ COMMANDS: dict[str, Callable[[list[str]], CommandResult]] = {
     "utterances": cmd_utterances,  # iter-60 — recent operator utterances
     "utt": cmd_utterances,         # short alias
     "watch": cmd_watch,            # iter-61 — tail any jsonl under _shared-memory
+    "agents": cmd_agents,          # iter-62 — richer heartbeats with mode/branch/note
 }
 
 
