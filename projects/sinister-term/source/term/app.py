@@ -87,6 +87,18 @@ try:
     _HAVE_HARDENER = True
 except Exception:
     _HAVE_HARDENER = False
+
+# RKOJ-ELENO :: 2026-05-25 :: cmux-spec event bus (iter-44). Publish boot /
+# dispatch / exit events so future Feed panel + crash replay can consume
+# without coupling to app.py internals. Best-effort import — if event_bus
+# isn't on the path, the publish_event no-op keeps app.py running.
+try:
+    from term.event_bus import publish as _publish_event
+    _HAVE_EVENT_BUS = True
+except Exception:
+    _HAVE_EVENT_BUS = False
+    def _publish_event(name: str, category: str, payload=None):  # noqa: E501
+        return None
     _HARDENER = None
 
 
@@ -249,6 +261,48 @@ def _emit_pill_and_popup_if_enabled() -> None:
             _log_crash("term.app._emit_pill_and_popup", e)
 
 
+def _confirm_exit(console: Console) -> bool:
+    """RKOJ-ELENO :: 2026-05-25 :: extra popup before close.
+
+    Operator hard-canonical 2026-05-25T~14:14Z: *"make the x button have a
+    extra popup before just closing"*. Returns True if the operator
+    confirms exit; False to stay in the shell.
+
+    Bypass via env: SINISTER_TERM_FAST_EXIT=1 skips the prompt so scripted
+    shutdowns + auto-restart watchers don't hang on stdin.
+
+    Robust to TTY-less environments: if stdin isn't a TTY (piped scripts,
+    CI), default to confirming exit so the process actually terminates.
+    """
+    if os.environ.get("SINISTER_TERM_FAST_EXIT", "").lower() in ("1", "true", "on"):
+        return True
+    try:
+        import sys as _sys
+        if not _sys.stdin.isatty():
+            return True
+    except Exception:
+        pass
+    try:
+        console.print(
+            "[#A06EFF]┌─ Exit Sinister Term? ─────────────────[/#A06EFF]\n"
+            "[#A06EFF]│[/#A06EFF] [#FFFFFF]Press [bold]y[/bold] to exit, "
+            "anything else to stay.[/#FFFFFF]\n"
+            "[#A06EFF]└────────────────────────────────────────[/#A06EFF]"
+        )
+        # Use a plain input() — prompt_toolkit's session is in an awkward
+        # state at EOF/exit-dispatch, but bare input() always works.
+        try:
+            ans = input("> ").strip().lower()
+        except (EOFError, KeyboardInterrupt):
+            # If they Ctrl+D again at the confirmation prompt, they really
+            # want to leave.
+            return True
+        return ans in ("y", "yes")
+    except Exception:
+        # Never block exit on a broken console — fall through to confirm.
+        return True
+
+
 def run() -> None:
     console = Console()
     console.print(BANNER)
@@ -257,6 +311,13 @@ def run() -> None:
             _LOG.info("STERM_BOOT", cwd=str(Path.cwd()))
         except Exception:
             pass
+    try:
+        _publish_event(
+            "sterm_boot", "lifecycle",
+            payload={"cwd": str(Path.cwd())},
+        )
+    except Exception:
+        pass
 
     HIST_DIR.mkdir(parents=True, exist_ok=True)
     hist_path = HIST_DIR / "history.jsonl"
@@ -310,7 +371,13 @@ def run() -> None:
             console.print("[dim](^C — press again or type /exit to quit)[/dim]")
             continue
         except EOFError:
-            # RKOJ-ELENO :: 2026-05-23 :: friendly Ctrl+D farewell (themed purple)
+            # RKOJ-ELENO :: 2026-05-25 :: X-button popup confirmation
+            # (operator-bind 2026-05-25T~14:14Z: "make the x button have a
+            # extra popup before just closing"). Window-X via SIGHUP / Ctrl+D
+            # both surface as EOFError on prompt_toolkit. Confirm-on-exit
+            # avoids the accidental-close foot-gun.
+            if not _confirm_exit(console):
+                continue
             console.print("[#A06EFF]> sterm out[/#A06EFF]")
             break
 
@@ -337,15 +404,31 @@ def run() -> None:
         line = expand_line(line, load_aliases())
 
         result = dispatch(line)
+        try:
+            _publish_event(
+                "dispatch", "agent",
+                payload={"line": line[:200], "handled": bool(result.handled)},
+            )
+        except Exception:
+            pass
         if result.handled:
             if result.output:
                 console.print(result.output)
             if result.exit_term:
+                # RKOJ-ELENO :: 2026-05-25 :: confirm /exit too — same popup
+                # as the window-X path. Skippable via SINISTER_TERM_FAST_EXIT=1
+                # env for scripted shutdowns.
+                if not _confirm_exit(console):
+                    continue
                 break
             continue
 
         _run_shell_command(line, console)
 
+    try:
+        _publish_event("sterm_exit", "lifecycle", payload={})
+    except Exception:
+        pass
     console.print("[dim]◈ Sinister Term exited.[/dim]")
 
 
