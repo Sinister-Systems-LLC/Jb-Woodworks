@@ -88,6 +88,7 @@ Sinister Term commands:
   /uptime                   Session duration + event count + ascii frames + cache size
   /branch                   Current branch + upstream + ahead/behind + dirty count + HEAD
   /touch [status...]        Pulse sterm heartbeat NOW (+ optional status note)
+  /locks                    List active mesh-coordinator locks (owner / path / ttl / age)
   /alias [name=val|remove n] List aliases, define one, or remove one
   /clear                    Clear the screen
   /help                     This message
@@ -520,6 +521,69 @@ def cmd_recall(args: list[str]) -> CommandResult:
 
 
 _HEARTBEAT_PATH = SANCTUM_ROOT / "_shared-memory" / "heartbeats" / f"{SELF_SLUG}.json"
+_MESH_LOCKS_DIR = SANCTUM_ROOT / "_shared-memory" / "mesh-locks"
+
+
+def cmd_locks(_args: list[str]) -> CommandResult:
+    """iter-59: list active mesh-coordinator locks.
+
+    Composes with `mesh-coordination-and-resource-lifecycle-2026-05-24`
+    doctrine: before any risky edit, /locks shows who holds what so we
+    don't trample a sister-agent's in-flight work.
+
+    Lock files live in `_shared-memory/mesh-locks/*.json`. Each lock JSON
+    is expected to contain {owner, path, ttl_seconds, acquired_at_utc}
+    but tolerant if any are missing. Files modified more than ttl_seconds
+    ago are flagged as `(stale)` so operator can decide whether to reclaim.
+    """
+    if not _MESH_LOCKS_DIR.exists():
+        try:
+            rel = _MESH_LOCKS_DIR.relative_to(SANCTUM_ROOT).as_posix()
+        except ValueError:
+            rel = str(_MESH_LOCKS_DIR)
+        return CommandResult(True, f"(no mesh-locks dir at {rel})")
+    import time as _t
+    rows: list[tuple[float, str, dict]] = []  # (mtime, fname, parsed_or_empty)
+    try:
+        for lf in _MESH_LOCKS_DIR.glob("*.json"):
+            try:
+                mtime = lf.stat().st_mtime
+            except OSError:
+                continue
+            data: dict = {}
+            try:
+                data = json.loads(lf.read_text(encoding="utf-8", errors="replace"))
+                if not isinstance(data, dict):
+                    data = {}
+            except Exception:
+                pass
+            rows.append((mtime, lf.name, data))
+    except OSError as e:
+        return CommandResult(True, f"/locks failed: {e}")
+    if not rows:
+        return CommandResult(True, "(no active mesh-coordinator locks)")
+    rows.sort(key=lambda r: -r[0])  # newest first
+
+    now = _t.time()
+    lines = [f"Mesh locks: {len(rows)} active"]
+    for mtime, fname, data in rows:
+        age_s = max(0.0, now - mtime)
+        age = _format_duration(age_s)
+        owner = data.get("owner") or data.get("agent") or "?"
+        path = data.get("path") or data.get("focus") or data.get("target") or "?"
+        ttl = data.get("ttl_seconds")
+        stale = ""
+        if isinstance(ttl, (int, float)) and ttl > 0 and age_s > ttl:
+            stale = "  (stale)"
+        ttl_str = f"ttl={int(ttl)}s" if isinstance(ttl, (int, float)) else "ttl=?"
+        # Truncate path to keep one-liner tidy
+        path_s = str(path)
+        if len(path_s) > 50:
+            path_s = path_s[:47] + "..."
+        lines.append(
+            f"  {owner:<24}  {path_s:<50}  {ttl_str}  age={age}{stale}"
+        )
+    return CommandResult(True, "\n".join(lines))
 
 
 def cmd_touch(args: list[str]) -> CommandResult:
@@ -1124,6 +1188,7 @@ COMMANDS: dict[str, Callable[[list[str]], CommandResult]] = {
     "uptime": cmd_uptime,  # iter-56 — sterm session duration + activity counters
     "branch": cmd_branch,  # iter-57 — branch + ahead/behind + dirty count
     "touch": cmd_touch,    # iter-58 — manually pulse sinister-term heartbeat
+    "locks": cmd_locks,    # iter-59 — mesh-coordinator lock state
 }
 
 
