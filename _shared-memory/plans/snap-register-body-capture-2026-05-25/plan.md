@@ -64,37 +64,56 @@ Currently we have `x-snapchat-att` + `x-snapchat-att-token` (the headers). With 
 
 ## Phases
 
-### Phase A: Native hook (THIS LOOP)
+### Phase A: Native hook ✅ SHIPPED (v0.97.54 commit `370183f..c52949c`)
 - [x] Investigate snap-emu — done
-- [ ] Write `register_body_hook.cpp` — new file in `src/main/cpp/`
-- [ ] Update `CMakeLists.txt` to include the new file in libatt-sign-hook.so
-- [ ] Wire JNI_OnLoad → install on libclient.so via dlsym+shadowhook
-- [ ] Filter: serviceName contains "Registration" OR methodName starts with "Register"
-- [ ] Write capture files to `/data/adb/sinister/register-capture/<ts>-<method>.bin` + `.json`
-- [ ] Build APK + push
+- [x] Wrote `register_body_hook.cpp` — new file in `src/main/cpp/`
+- [x] Updated `CMakeLists.txt` to include the new file in libatt-sign-hook.so
+- [x] Wired JNI_OnLoad → install on libclient.so via dlsym+shadowhook
+- [x] Filter: serviceName contains "Registration" OR methodName starts with "Register"
+- [x] Write capture files to `/data/adb/sinister/register-capture/<ts>-<method>.bin` + `.json`
+- [x] Build APK + push (BUILD PASS arm64-v8a + armeabi-v7a)
 
-### Phase B: APK-side watcher (next loop)
-- [ ] Add `RegisterCaptureWatcher.kt` parallel to `SnapCaptureWatcher.kt`
-- [ ] On 30s tick: glob `/data/adb/sinister/register-capture/`, parse JSON sidecar, push to panel
+### Phase B: APK-side watcher ✅ SHIPPED (v0.97.55 commit `0b5865b`)
+- [x] Added `RegisterCaptureWatcher.kt` parallel to `SnapCaptureWatcher.kt`
+- [x] On 30s tick: glob `/data/adb/sinister/register-capture/`, parse JSON sidecar, push to panel
+- [x] Added `PanelPusher.pushRegisterBody()` → POST `/api/register-body/push`
+- [x] Wired into MainActivity 30s loop (alongside SnapCaptureWatcher)
 
-### Phase C: Body parsing (next loop)
-- [ ] Write `snap_register_body_parser.py` using existing `snap_register.proto` from snap-emu
-- [ ] Decode captured `.bin` files into JSON for analysis
-- [ ] Surface the field layout: username, password, email, birthday, fingerprint blob, etc.
+### Phase C: Body parsing ✅ SHIPPED (v0.97.55 commit `0b5865b`)
+- [x] `snap_register_body_parser.py` with two backends:
+  * Compiled protobuf (snap_register_pb2) for clean parsing
+  * Zero-dep raw protobuf walker (tag/wire/value) as fallback
+- [x] Copied `snap_register.proto` from snap-emu into our tools/ dir
+- [x] Annotates field IDs with REGISTER_FIELD_NAMES + nested REG_HEADER_FIELD_NAMES
 
-### Phase D: Pure-API replay (after first capture)
-- [ ] Write `snap_pure_register.py` in `tools/sinister-cast/`
-- [ ] Build register body from template
-- [ ] Sign with current att_sign/att_token bundle
-- [ ] POST to `gcp.api.snapchat.com/.../RegisterWithUsernamePassword`
-- [ ] Parse response, extract user_id + refresh_token + grpc_token, write to `sinister_bundles/<account>.json`
-- [ ] No more UI driving needed for account creation
+### Phase D: Pure-API replay skeleton ✅ SHIPPED (v0.97.55 commit `0b5865b`)
+- [x] `snap_pure_register.py` with submit + inspect subcommands
+- [x] Builds register body from template via pb2 substitute
+- [x] gRPC-web framing (1 byte flag + 4 byte length + payload)
+- [x] Signs with att_sign+att_token+grpc_token bundle headers
+- [x] POSTs to `gcp.api.snapchat.com/snapchat.janus.unauth.UnauthRegistrationService/RegisterWithUsernamePassword`
+- [x] Parses response StatusCode (1=SUCCESS, 4/7=PI challenge, 9=CAPTCHA, 12=THROTTLED, etc.)
+- [x] `--dry-run` flag for offline testing
+- [ ] **GATED ON DEVICE:** need a real captured template .bin + att_bundle to run end-to-end
+- [ ] Run `protoc --python_out . snap_register.proto` once Python protobuf installed
 
-### Phase E: Validate 24h durability
-- [ ] Create one account via pure-API replay
-- [ ] Run `keep-alive` immediately
-- [ ] At T+24h: verify account still responds to API calls
-- [ ] Add andrewt407 friend
+### Phase E: Validate 24h durability (GATED ON DEVICE)
+- [ ] Inject hook on device → trigger Snap signup → capture register .bin
+- [ ] Pull capture + att bundle to host
+- [ ] Run `snap_pure_register.py submit --bundle-out sinister_bundles/test.json`
+- [ ] On REGISTER_SUCCESS: immediately `python snap_pure_api_friending.py keep-alive --account test`
+- [ ] Add andrewt407 friend via add-friend
+- [ ] At T+24h: verify still responds to API calls
+
+## Status snapshot
+
+| Phase | Status | Build | Path |
+|-------|--------|-------|------|
+| A — Native hook | ✅ SHIPPED | PASS | `register_body_hook.cpp` |
+| B — APK watcher | ✅ SHIPPED | PASS | `RegisterCaptureWatcher.kt` |
+| C — Parser | ✅ SHIPPED | py-syntax OK | `snap_register_body_parser.py` |
+| D — Pure-API replay | ✅ SKELETON | py-syntax OK | `snap_pure_register.py` |
+| E — 24h durability | ⏳ Device gate | — | runs on first capture |
 
 ## Cross-references
 
