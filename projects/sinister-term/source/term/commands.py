@@ -90,6 +90,7 @@ Sinister Term commands:
   /touch [status...]        Pulse sterm heartbeat NOW (+ optional status note)
   /locks                    List active mesh-coordinator locks (owner / path / ttl / age)
   /utterances [N] [--new --mine --search X]   Tail operator-utterances.jsonl (alias /utt)
+  /watch <relpath> [N]      Tail any jsonl under _shared-memory/ (sandboxed)
   /alias [name=val|remove n] List aliases, define one, or remove one
   /clear                    Clear the screen
   /help                     This message
@@ -524,6 +525,91 @@ def cmd_recall(args: list[str]) -> CommandResult:
 _HEARTBEAT_PATH = SANCTUM_ROOT / "_shared-memory" / "heartbeats" / f"{SELF_SLUG}.json"
 _MESH_LOCKS_DIR = SANCTUM_ROOT / "_shared-memory" / "mesh-locks"
 _UTTERANCES_PATH = SANCTUM_ROOT / "_shared-memory" / "operator-utterances.jsonl"
+
+
+def cmd_watch(args: list[str]) -> CommandResult:
+    """iter-61: tail any jsonl/text log under _shared-memory.
+
+    Generic companion to the lane-specific tail builtins (/utterances,
+    /events). The path arg is resolved relative to SANCTUM_ROOT and
+    sandboxed to `_shared-memory/` so this builtin can't accidentally
+    dump the operator's home dir or any path outside the fleet's shared
+    memory.
+
+    Usage:
+      /watch <relative-path-from-shared-memory> [N]
+    Examples:
+      /watch fleet-updates.jsonl                 last 10 rows of fleet-updates
+      /watch fleet-updates.jsonl 30              last 30 rows
+      /watch sinister-link-poll-log.jsonl 5
+      /watch overseer-distribute-log.jsonl
+    """
+    if not args:
+        return CommandResult(True,
+            "usage: /watch <relative-path-from-_shared-memory> [N]\n"
+            "  e.g. /watch fleet-updates.jsonl 20\n"
+            "Paths are sandboxed under _shared-memory/.")
+    rel = args[0]
+    limit = 10
+    if len(args) > 1:
+        try:
+            limit = max(1, min(500, int(args[1])))
+        except ValueError:
+            return CommandResult(True,
+                f"second arg must be an integer line count, got: {args[1]}")
+
+    shared = SANCTUM_ROOT / "_shared-memory"
+    target = (shared / rel).resolve()
+    try:
+        target.relative_to(shared.resolve())
+    except ValueError:
+        return CommandResult(True,
+            f"refused: path escapes _shared-memory/ sandbox: {rel}")
+    if not target.exists():
+        return CommandResult(True, f"(no file at _shared-memory/{rel})")
+    if target.is_dir():
+        return CommandResult(True,
+            f"(path is a directory: _shared-memory/{rel} — give a file)")
+
+    # Read last ~256 KiB tail for efficiency on big logs
+    try:
+        size = target.stat().st_size
+        with target.open("rb") as fh:
+            if size > 256 * 1024:
+                fh.seek(size - 256 * 1024)
+                _ = fh.readline()  # discard partial line
+            tail_bytes = fh.read()
+    except OSError as e:
+        return CommandResult(True, f"/watch failed: {e}")
+    try:
+        text = tail_bytes.decode("utf-8", errors="replace")
+    except Exception as e:
+        return CommandResult(True, f"/watch decode failed: {e}")
+
+    lines = [ln for ln in text.splitlines() if ln.strip()]
+    if not lines:
+        return CommandResult(True, f"(empty: _shared-memory/{rel})")
+    shown = lines[-limit:]
+    out = [f"Watch: {len(shown)} of {len(lines)} lines in _shared-memory/{rel}"]
+    for ln in shown:
+        # If it parses as JSON object, render compactly; otherwise raw
+        try:
+            obj = json.loads(ln)
+            if isinstance(obj, dict):
+                ts = obj.get("ts_utc") or obj.get("timestamp") or ""
+                # Pick a short key to lead with
+                lead = (obj.get("kind") or obj.get("event") or obj.get("name")
+                        or obj.get("subject") or obj.get("title") or "")
+                preview = ln if len(ln) <= 120 else ln[:117] + "..."
+                if ts or lead:
+                    out.append(f"  {ts[:19]}  {lead[:20]:<20}  {preview[:90]}")
+                else:
+                    out.append(f"  {preview[:120]}")
+            else:
+                out.append(f"  {ln[:120]}")
+        except Exception:
+            out.append(f"  {ln[:120]}")
+    return CommandResult(True, "\n".join(out))
 
 
 def cmd_utterances(args: list[str]) -> CommandResult:
@@ -1300,6 +1386,7 @@ COMMANDS: dict[str, Callable[[list[str]], CommandResult]] = {
     "locks": cmd_locks,        # iter-59 — mesh-coordinator lock state
     "utterances": cmd_utterances,  # iter-60 — recent operator utterances
     "utt": cmd_utterances,         # short alias
+    "watch": cmd_watch,            # iter-61 — tail any jsonl under _shared-memory
 }
 
 
