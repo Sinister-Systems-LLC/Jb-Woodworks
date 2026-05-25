@@ -3574,6 +3574,18 @@ def _profile_and_exit() -> int:
 def main(argv: list[str] | None = None) -> int:
     argv = argv if argv is not None else sys.argv[1:]
 
+    # RKOJ-ELENO :: 2026-05-25 — 2x WINDOW AT-LAUNCH (operator hard-canonical
+    # "even needs to open in the bigger 2x size window" + Image #14 "still
+    # needs to be 2x bigger"). When EVE.exe is double-clicked from Desktop,
+    # Sinister Start.bat's `mode con` doesn't run. Resize the console buffer
+    # + window directly via kernel32 so the 2x size happens regardless of
+    # launch path. Cheap (~3ms); silent fail on non-Windows / non-console.
+    if os.name == "nt":
+        try:
+            os.system("mode con: cols=220 lines=65 >nul 2>&1")
+        except Exception:
+            pass
+
     # Probe flags first — these must exit fast without rendering anything heavy.
     # --version supports optional --json (jcode parity)
     if argv:

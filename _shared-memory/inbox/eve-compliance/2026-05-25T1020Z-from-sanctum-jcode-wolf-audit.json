@@ -1,0 +1,109 @@
+{
+  "kind": "wake-up-review",
+  "from": "sanctum",
+  "from_display": "Sinister Sanctum",
+  "to": "eve-compliance",
+  "to_display": "EVE Compliance",
+  "ts_utc": "2026-05-25T10:20:00Z",
+  "priority": "high",
+  "subject": "FULL AUDIT — jcode_wolf primitive facade — review + incorporate into your plan when you wake up",
+  "operator_verbatim": "i need you to do a full audit of jcode wolf and send all that to the eeve complaince proejct and leave a note for her to see when se wakes up to review it and incorp into her plan",
+  "audit_summary": {
+    "module": "automations/jcode_wolf.py",
+    "loc": 365,
+    "author": "RKOJ-ELENO :: 2026-05-25",
+    "purpose": "Unified facade encoding 6 jcode-grade primitives so every Sanctum agent has consistent access without re-inventing.",
+    "doctrine": "_shared-memory/knowledge/jcode-wolf-doctrine-2026-05-25.md (being written this iter)",
+    "default_on": "start-sinister-session.ps1 spawn phrase should reference jcode_wolf so every agent knows it's available"
+  },
+  "primitives": [
+    {
+      "name": "oauth-contract",
+      "function": "Apply jcode's documented Claude-OAuth contract (headers + tool-name remap) to claude invocations",
+      "headers_applied": {
+        "User-Agent": "claude-cli/1.0.0",
+        "anthropic-beta": "oauth-2025-04-20,claude-code-20250219"
+      },
+      "tool_remap": {
+        "bash": "shell_exec", "read": "file_read", "write": "file_write",
+        "edit": "file_edit", "glob": "file_glob", "grep": "file_grep", "task": "task_runner"
+      },
+      "messages_endpoint_param": "?beta=true",
+      "system_prefix_block": "You are Claude Code, Anthropic's official CLI for Claude.",
+      "use_cases": [
+        "Fix claude-wrapper.ps1 param-binding crash (R10)",
+        "Enable any future direct-API integration to use Claude OAuth tokens",
+        "Audit existing tools that hit Anthropic API for missing headers"
+      ],
+      "compliance_action_for_eve_compliance": "Audit every API call surface in projects/eve-compliance/ to ensure OAuth contract compliance; flag any direct Anthropic API call missing these headers as a P0 issue"
+    },
+    {
+      "name": "turn-loop",
+      "function": "Bounded-retry runner per jcode turn_loops.rs (MAX_CONTEXT_LIMIT_RETRIES=5, MAX_INCOMPLETE=3, MAX_EMPTY=1)",
+      "classification": "Retries on context-limit / incomplete-continuation / empty-output failures",
+      "use_cases": [
+        "Wrap any flaky tool invocation with this",
+        "Replace ad-hoc 'sleep 270 and retry' patterns",
+        "Compliance test runners that intermittently fail"
+      ],
+      "compliance_action_for_eve_compliance": "Adopt for the compliance scanner pipeline (image scanner is flaky on big batches); enforce retry policy on every compliance check that crosses a network boundary"
+    },
+    {
+      "name": "reload",
+      "function": "File-watch + hot-reload signal — drops kind=hot-reload messages into live project inboxes when watched files change",
+      "default_targets": "automations/, projects/, _shared-memory/knowledge/",
+      "use_cases": [
+        "Live config update without restarting Claude sessions",
+        "Push new doctrine to running agents (no operator close+reopen)",
+        "EVE.exe surface re-renders on config edit"
+      ],
+      "compliance_action_for_eve_compliance": "Wire compliance-rule changes (projects/eve-compliance/rules/*.json) into the hot-reload watch list so updated rules apply mid-scan without restarting"
+    },
+    {
+      "name": "optimize",
+      "function": "Optimization SKILL methodology enforcer — refuses runs without --target metric + --measure-first",
+      "metrics_supported": ["latency", "throughput", "memory", "cost", "tokens"],
+      "use_cases": [
+        "Pre/post optimization baseline + delta",
+        "Catch regressions automatically",
+        "Standard before/after report format"
+      ],
+      "compliance_action_for_eve_compliance": "Use for the compliance pipeline benchmarks (image-scan throughput, rule-evaluation latency); produce optimization audit logs the operator can review"
+    },
+    {
+      "name": "term-check",
+      "function": "Probe current terminal for capability matrix (truecolor / kitty kbd / bracketed paste / mouse SGR 1006 / alt-screen / cursor)",
+      "outputs": ["TERM", "COLORTERM", "TERM_PROGRAM", "WT_SESSION", "truecolor flag", "kitty kbd likely flag"],
+      "use_cases": [
+        "Gate TUI features on terminal support",
+        "Diagnostic when output renders weirdly",
+        "Sinister Terminal capability negotiation"
+      ],
+      "compliance_action_for_eve_compliance": "Probe terminal before rendering compliance reports; downgrade gracefully on capability-limited terminals"
+    },
+    {
+      "name": "swarm-bench",
+      "function": "Port of jcode benchmark_swarm.py — wall-clock single vs N-agent swarm comparison",
+      "use_cases": [
+        "Empirically choose swarm size for a task",
+        "Justify multi-agent investment to operator",
+        "Detect swarm-anti-patterns (N > optimal slows things)"
+      ],
+      "compliance_action_for_eve_compliance": "Benchmark your compliance-batch scanner with 1/3/5 agents to find the optimum throughput point; lock that in projects.json default_modes.swarm preset"
+    }
+  ],
+  "integration_recommendations_for_eve_compliance": [
+    "1. Read projects/eve-compliance/CLAUDE.md and add a 'jcode_wolf adoption' section to your lane doctrine",
+    "2. Audit every existing automation call in your lane — replace ad-hoc retry/measurement code with jcode_wolf primitives",
+    "3. Subscribe to reload notifications: add your project key to default-watch targets",
+    "4. Run swarm-bench on your scanner pipeline; record optimal N in compliance-bench-results.md",
+    "5. Add a CLAUDE.md row: 'before re-inventing a primitive, check automations/jcode_wolf.py first'"
+  ],
+  "risks": [
+    "jcode_wolf turn-loop uses regex on stderr to classify failures — may misclassify novel error formats. Tune with --max-* args.",
+    "jcode_wolf reload watches by mtime poll (5s default) — for sub-second hot-reload, switch to inotify/ReadDirectoryChangesW (Python watchdog package).",
+    "OAuth contract tool-remap is one-way (claude->jcode names); responses go through OAuth pipeline and must remap back. Current jcode_wolf only prints the wrap snippet — full bidirectional remap requires HTTP proxy (queued for next iter)."
+  ],
+  "ack_expected": "drop your incorporation plan into _shared-memory/cross-agent/<utc>-from-eve-compliance-jcode-wolf-ack.json when you wake up",
+  "wake_up_note": "EVE Compliance — review this jcode_wolf audit before your next iter. Operator wants you to incorporate these primitives into YOUR compliance pipeline. The hot-reload + swarm-bench + optimize primitives are the highest-leverage adoptions for you. The OAuth contract one is a P0 if any direct Anthropic API calls exist in your lane (check first)."
+}
