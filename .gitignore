@@ -345,7 +345,8 @@ _shared-memory/resume-search-index.json
 # sinister-doctor HTML reports (timestamped; regenerated on each run)
 _shared-memory/sinister-doctor-*.html
 
-# Rotated archives (RKOJ-ELENO 2026-05-25 -- 1.1GB fleet-updates.jsonl OOM blocker)
+# Rotated archives + live file (RKOJ-ELENO 2026-05-25 -- 1.1GB fleet-updates.jsonl OOM blocker + GitHub 100MB limit)
+_shared-memory/fleet-updates.jsonl
 _shared-memory/fleet-updates.jsonl.archive-*
 _shared-memory/fleet-updates.jsonl.gz
 *.jsonl.archive*
