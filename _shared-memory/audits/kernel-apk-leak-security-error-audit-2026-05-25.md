@@ -1,9 +1,35 @@
 # kernel-apk source-v2 — Leak/Security/Error Audit 2026-05-25
 
 > **Author:** RKOJ-ELENO :: 2026-05-25 (kernel-apk lane Phase 3)
-> **Scope:** Grep-based static audit of `D:\Sinister Sanctum\projects\sinister-kernel-apk\source-v2\Sinister-Detector\source\apk\app\src\main\java\com\sinister\detector\`
+> **Scope:** Grep-based static audit of `D:\Sinister Sanctum\projects\sinister-kernel-apk\source-v2\Sinister-Detector\source\apk\app\src\main\java\com\sinister\detector\` + build infrastructure (app/build.gradle.kts + proguard-rules.pro + AndroidManifest.xml)
 > **Triggered by:** operator hard-canonical 2026-05-25T06:25Z *"keep fixing leaks, errors, secuirty flaws, anyhting like that that you can come up with"*
 > **Composes with:** parent plan `_shared-memory/plans/kernel-apk-complete-and-harden-2026-05-25/plan.md` Phase 3
+
+## iter-4 (2026-05-25T07:40Z) — Phase 3.5 build-config/proguard/manifest sweep + Phase 2 B.2 shadowhook bundle + 2 LOW Phase 3.3 cleanup fixes
+
+### Phase 3.5 findings (4 new)
+
+| # | Severity | Location | Issue | iter-4 disposition |
+|---|---|---|---|---|
+| 1 | 🔴 **CRITICAL** | `app/build.gradle.kts:18-21` | `panelBasicAuth` fallback default was the SAME burned base64 (`Basic YW5kcmV3OnlwVkxUcmN0bHF2bTdTUkc=` = `andrew:ypVLTrctlqvm7SRG`) scrubbed from PanelPusher.kt comment iter-2. Anyone cloning source got real creds in BuildConfig at compile time without local.properties. **More dangerous than iter-2's comment leak** — this was in ACTIVE BUILD PATH. | **FIXED iter-4 (commit pending)**: fallback default replaced with empty string + Gradle logger.warn() when fallback hit. Build still succeeds (no behavior break); PanelPusher gets empty auth → panel returns 401 → observable failure instead of silent burned-cred-pass. Operator MUST set PANEL_BASIC_AUTH in local.properties for working builds. |
+| 2 | 🟡 **MEDIUM** | `app/proguard-rules.pro` | Essentially EMPTY (default Android template only). `isMinifyEnabled = false` on release means rules don't fire today, but the moment minification is enabled (e.g. for size optimization on Leo machines), native JNI methods + reflection-target classes get stripped silently → AttSignHook + shadowhook .so crash at runtime with NoSuchMethodError. | **FIXED iter-4**: 7 keep blocks added — BuildConfig + native methods + AttSignHook family + SinisterDebugReceiver + Play Integrity. Future-proofs Phase 2 B.2-B.5 implementation. |
+| 3 | 🟠 **HIGH** | `AndroidManifest.xml:127-129` | `SinisterDebugReceiver` is `android:exported="true"` with intent-filter actions including `START_QUEUE`, `RUN_TEST_SIGNUP`, `DEPLOY_CANONICAL_MODULES`, `SET_WALLPAPER` (and att-sign-broadcast plans to add `ATT_SIGN_CAPTURE`). Any installed app can fire these intents — receiver should require shell-signature permission OR check `Binder.getCallingUid() == Process.SHELL_UID` in onReceive. | **DEFERRED iter-5** — needs careful review of intended use (some debug intents need to come from non-shell sources for testing); will pair with verifying actual receiver code uses uid-check. Surfaced; not unilaterally restricted. |
+| 4 | 🟢 **INFO** | `AndroidManifest.xml` receiver filter | `com.sinister.detector.debug.ATT_SIGN_CAPTURE` action (used by iter-2's `tools/sinister-cast/att-sign-broadcast.py`) is NOT in the receiver's intent-filter list. Either (a) the receiver wildcards by action prefix (verify in code) OR (b) the broadcast will silently no-op until added. | **DEFERRED iter-5** — verify SinisterDebugReceiver.kt source first; add manifest entry only if receiver requires explicit action listing. |
+
+### Phase 2 B.2 SHIPPED iter-4
+
+Added `implementation("com.bytedance.android:shadowhook:2.0.0")` to `app/build.gradle.kts:dependencies`. Per Phase 2 B.1 audit (`phase-b-hook-lib-selection-2026-05-25.md`). APK size delta expected ~422KB pre-extract, multi-ABI .so split TBD on first build. Next sub-iter B.3: native JNI wrapper landing under `app/src/main/cpp/att_sign_hook.cpp`.
+
+### Phase 3.3 LOW fixes SHIPPED iter-4
+
+| LOC | Fix |
+|---|---|
+| `SpoofRunner.kt:1099` | Deleted commented-out `try { SurfaceSpoofer.spoofAll() } catch (_: Throwable) {}` dead-code line. Explanatory comment + DISABLED log line above already convey intent. |
+| `SpoofRunner.kt:1502` | Converted silent swallow `catch (_: Throwable) {}` → `catch (t: Throwable) { Log.w("Sinister/Spoof", "leak_audit retry $retries: LeakAutoFix threw, swallowed: ...") }`. LeakAutoFix failures now observable in logcat. |
+
+### Version bump
+
+`versionCode 241 → 242`, `versionName "0.97.44" → "0.97.46"` (skipping 0.97.45 since that was an iter-2 comment-only commit; iter-4 substantive changes warrant 0.97.46).
 
 ## iter-3 (2026-05-25T07:25Z) — Phase 3.3 error-handling + 3.4 anti-pattern sweep
 

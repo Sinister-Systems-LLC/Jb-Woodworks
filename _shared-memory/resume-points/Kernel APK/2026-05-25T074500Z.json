@@ -1,0 +1,63 @@
+{
+  "schema_version": "sinister.resume-point.v1",
+  "ts_utc": "2026-05-25T07:45:00Z",
+  "project": "Kernel APK",
+  "agent_name": "kernel-apk",
+  "mode": "loop-dynamic",
+  "iter": 4,
+  "focus_intent": "iter-4: 2nd CRITICAL cred leak SCRUBBED (build.gradle.kts fallback) + Phase 2 B.2 shadowhook 2.0.0 dep added + proguard hardening + 2 LOW SpoofRunner cleanups. v0.97.46 source-v2 commit df76e6f pushed. Next iter: Phase 2 B.3 native JNI wrapper + Phase 3.6 DebugReceiver protection + Phase 3.7 network_security_config audit.",
+  "loop_directive_verbatim": "create a plan to complete everything you need to do and keep testing",
+  "git": {
+    "source_v2_HEAD": "df76e6f (v0.97.46)",
+    "source_v2_origin": "https://github.com/Sinister-Systems-LLC/Sinister-APK.git",
+    "sanctum_branch": "(varies; check on resume)"
+  },
+  "iter_4_source_v2_changes": [
+    "app/build.gradle.kts: PANEL_BASIC_AUTH fallback default '' + logger.warn() when hit",
+    "app/build.gradle.kts: added implementation(com.bytedance.android:shadowhook:2.0.0) per Phase 2 B.1",
+    "app/build.gradle.kts: versionCode 241->242, versionName 0.97.44->0.97.46",
+    "app/proguard-rules.pro: 7 keep blocks (BuildConfig + native + AttSignHook + Receiver + Integrity)",
+    "SpoofRunner.kt:1099 dead code removed",
+    "SpoofRunner.kt:1502 silent swallow -> log+swallow"
+  ],
+  "iter_4_sanctum_changes": [
+    "_shared-memory/audits/kernel-apk-leak-security-error-audit-2026-05-25.md iter-4 section appended",
+    "_shared-memory/inbox/sinister-panel/2026-05-25T0745Z-from-kernel-apk-CRITICAL-creds-leaked-in-buildgradle-too.json",
+    "PROGRESS row + this resume-point"
+  ],
+  "phase_3_cumulative_totals": {
+    "critical": 2,
+    "critical_scrubbed": 2,
+    "high": 2,
+    "high_surfaced": 1,
+    "high_deferred": 1,
+    "medium": 3,
+    "medium_fixed": 1,
+    "medium_surfaced": 2,
+    "low": 2,
+    "low_fixed": 2,
+    "info_or_pass": 5
+  },
+  "loop_condition_status": {
+    "signal_1": "OPERATIONAL",
+    "signal_2": "UNBLOCKED + future-proofed",
+    "signal_3": "PARTIAL",
+    "signal_4": "Phase B.1 done, B.2 done (shadowhook dep wired); B.3-B.6 ahead. Manual-fill via att-sign-broadcast.py still works for diagnose lane.",
+    "signal_5": "HARNESS READY",
+    "all_5_satisfied": false
+  },
+  "next_iter_priority_queue": [
+    "Phase 2 B.3: native JNI wrapper app/src/main/cpp/att_sign_hook.cpp (~80 LOC C++) + AttSignNativeHook.kt (~40 LOC); gradle ndk-build smoke",
+    "Phase 3.6: SinisterDebugReceiver code review + uid-check OR android:permission patch + manifest verify ATT_SIGN_CAPTURE action add if needed",
+    "Phase 3.7: network_security_config.xml audit (cleartext domains; defense-in-depth for cred rotation)",
+    "Phase 3.8: per-file URL audit (8 hardcoded HTTPs URLs from 3.1 INFO row)"
+  ],
+  "wakeup_disposition": "ScheduleWakeup 270s (cache-warm); continues /loop",
+  "compose_links": [
+    "_shared-memory/plans/kernel-apk-complete-and-harden-2026-05-25/plan.md",
+    "_shared-memory/plans/kernel-apk-complete-and-harden-2026-05-25/phase-2-att-sign-hook-impl.md (B.2 done; B.3 next)",
+    "_shared-memory/audits/kernel-apk-leak-security-error-audit-2026-05-25.md (iter-2 + iter-3 + iter-4)",
+    "_shared-memory/audits/phase-b-hook-lib-selection-2026-05-25.md",
+    "_shared-memory/inbox/sinister-panel/2026-05-25T0700Z + 2026-05-25T0745Z (coordinated cred-rotation incident)"
+  ]
+}

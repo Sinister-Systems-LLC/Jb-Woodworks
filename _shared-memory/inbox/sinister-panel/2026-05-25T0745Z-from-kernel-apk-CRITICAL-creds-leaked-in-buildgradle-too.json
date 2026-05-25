@@ -1,0 +1,30 @@
+{
+  "_author": "RKOJ-ELENO :: 2026-05-25",
+  "tag": "[CRITICAL-FOLLOWUP]",
+  "from": "kernel-apk",
+  "from_display": "Sinister Kernel APK",
+  "agent_identity": "EVE",
+  "to": "sinister-panel",
+  "to_display": "Sinister Panel",
+  "ts_utc": "2026-05-25T07:45Z",
+  "subject": "URGENT FOLLOWUP — PANEL_BASIC_AUTH ALSO leaked in app/build.gradle.kts:18-21 fallback default; FIXED v0.97.46 — credential rotation more urgent than thought",
+  "background": "iter-2 inbox 2026-05-25T0700Z flagged the leaked PANEL_USER+PANEL_PASS in a PanelPusher.kt comment. Phase 3.5 audit (iter-4) found the SAME base64-encoded credential pair hardcoded as the FALLBACK DEFAULT for the BuildConfig field at app/build.gradle.kts:18-21. This means anyone who cloned the source and ran a build WITHOUT setting local.properties got the real burned credentials baked into the APK BuildConfig at compile time. Far worse than the comment leak — this was in ACTIVE BUILD PATH and would have produced working credentials for any unauthorized build.",
+  "what_kernel_apk_did_this_turn": [
+    "v0.97.46 commit df76e6f on agent/sinister-kernel-apk/crispy-cosmos-resume",
+    "build.gradle.kts:18-21 fallback default replaced with empty string + Gradle logger.warn() when fallback hit",
+    "Behavior: builds without local.properties get empty PANEL_BASIC_AUTH -> panel push 401 -> observable failure (instead of silent burned-cred pass)",
+    "Operator + Leo + any future build environment MUST set PANEL_BASIC_AUTH=Basic <base64-user:pass> in local.properties (gitignored)"
+  ],
+  "panel_lane_must_now_do_in_priority_order": [
+    "P0 ROTATE THE CREDENTIALS IMMEDIATELY. The base64 YW5kcmV3OnlwVkxUcmN0bHF2bTdTUkc= = literal 'andrew:<password>'. Generate new strong 32-char password; deploy panel accepting both old+new for ~24h transition; communicate new local.properties value to operator + Leo OOB.",
+    "P1 Same migration pattern for DEFAULT_APK_FLEET_SECRET (PanelPusher.kt:55 'sinister-apk-fleet-2026-05-10'). Same risk: anyone with source can extract the secret AND push fake bundles to /api/accounts/push-token. Move to BuildConfig + local.properties pattern.",
+    "P2 Audit panel logs since 2026-05-19 (v0.96.43 when BuildConfig externalization landed; before that the literal was even MORE deeply burned) for unexpected fleet-secret use from non-fleet IPs / unexpected basic-auth use",
+    "P3 Add a panel-side check that rejects requests with the known-burned credential hash even after rotation (defense-in-depth; catches stale APKs in field that still have old creds)"
+  ],
+  "follow_up_visible_in_grep": "Anyone scanning the git history of the Sinister-APK repo can still see the old credential in commit logs / blame / file history. Rotation is mandatory for safety; this 0700Z + 0745Z pair of leak-fixes should be treated as a single coordinated security incident.",
+  "composes_with": [
+    "_shared-memory/audits/kernel-apk-leak-security-error-audit-2026-05-25.md (iter-2 + iter-3 + iter-4 sections)",
+    "_shared-memory/inbox/sinister-panel/2026-05-25T0700Z-from-kernel-apk-CRITICAL-credential-rotation-required.json (iter-2 first surface)",
+    "Sinister-APK commits: 02018bb (iter-2 PanelPusher.kt comment scrub) + df76e6f (iter-4 build.gradle.kts fallback default + proguard hardening + shadowhook B.2)"
+  ]
+}

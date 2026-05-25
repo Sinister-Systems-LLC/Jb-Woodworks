@@ -6,6 +6,68 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-25 ~07:45Z — iter-4 of /loop: 2nd CRITICAL cred leak SCRUBBED (build.gradle.kts) + Phase 2 B.2 shadowhook 2.0.0 dep + proguard hardening + 2 LOW Phase 3.3 fixes — commit df76e6f v0.97.46
+
+**Author:** RKOJ-ELENO :: 2026-05-25 (kernel-apk lane; /loop dynamic-mode iter-4 fired by ScheduleWakeup)
+
+### Shipped (verified, this iter)
+
+| # | Deliverable | Verification |
+|---|---|---|
+| 1 | source-v2 v0.97.46 commit `df76e6f` — 3 files / +62/-10 | git push exit 0; remote ref updated |
+| 2 | 🔴 CRITICAL: build.gradle.kts:18-21 fallback default — was leaked base64 `andrew:<redacted>` — replaced with empty + logger.warn() | grep confirms removal; behavior: empty auth -> panel 401 -> observable failure (no silent pass with burned creds) |
+| 3 | Phase 2 B.2: `implementation("com.bytedance.android:shadowhook:2.0.0")` added | per B.1 audit pick; dep in dependencies block |
+| 4 | 🟡 MEDIUM proguard-rules.pro: 7 keep blocks for BuildConfig + native + AttSignHook family + Receiver + Integrity | future-proofs Phase 2 B.3-B.5 when minify turns on |
+| 5 | 🟢 LOW SpoofRunner.kt:1099 dead-code removed | grep verifies absence |
+| 6 | 🟢 LOW SpoofRunner.kt:1502 silent swallow -> log+swallow | LeakAutoFix failures now observable in logcat |
+| 7 | versionCode 241 -> 242, versionName 0.97.44 -> 0.97.46 | gradle file bumped |
+| 8 | Cross-lane CRITICAL-FOLLOWUP inbox to sinister-panel | tags both leaks as coordinated security incident; same credential rotation required |
+| 9 | iter-4 audit appended to `_shared-memory/audits/kernel-apk-leak-security-error-audit-2026-05-25.md` | 4 findings (1 critical-fixed / 1 medium-fixed / 1 high-deferred / 1 info-deferred) |
+
+### Phase 3.5 surfaces this iter
+
+| # | Severity | Location | Status |
+|---|---|---|---|
+| 1 | 🔴 CRITICAL | build.gradle.kts:18-21 PANEL_BASIC_AUTH fallback was leaked base64 | **FIXED** |
+| 2 | 🟡 MEDIUM | proguard-rules.pro was default-template only (would break minified Phase 2 builds) | **FIXED** |
+| 3 | 🟠 HIGH | AndroidManifest.xml SinisterDebugReceiver exported=true with debug intent actions | DEFERRED iter-5 (needs uid-check verification first) |
+| 4 | 🟢 INFO | AndroidManifest.xml missing ATT_SIGN_CAPTURE action in receiver filter | DEFERRED iter-5 (verify receiver source first) |
+
+### Phase 3 cumulative totals (iter-2 + iter-3 + iter-4)
+
+| Severity | Count | Status |
+|---|---|---|
+| 🔴 CRITICAL | 2 | BOTH SCRUBBED (PanelPusher.kt comment + build.gradle.kts fallback; commits 02018bb + df76e6f) |
+| 🟠 HIGH | 2 | 1 SURFACED (DEFAULT_APK_FLEET_SECRET BuildConfig migration) + 1 DEFERRED (DebugReceiver exported) |
+| 🟡 MEDIUM | 3 | 1 FIXED (proguard) + 2 SURFACED (DEFAULT_URL + PanelPusher.kt 1700-LOC) |
+| 🟢 LOW | 2 | BOTH FIXED (SpoofRunner.kt:1099 dead code + 1502 silent swallow) |
+| 🟢 INFO/PASS | 5 | 0 shell-injection / 0 ANR / 0 retry-storm / 0 silent-fail-with-empty / ATT_SIGN_CAPTURE-manifest deferred |
+
+**Total: 14 findings across 4 iters; 5 fixed inline, 4 surfaced to other lanes, 5 informational/deferred.**
+
+### Loop_condition delta
+
+| Signal | iter-3 | iter-4 |
+|---|---|---|
+| 1 | OPERATIONAL | unchanged |
+| 2 | UNBLOCKED + future-proofed | unchanged |
+| 3 | PARTIAL | unchanged |
+| 4 | B.1 done, B.2-B.6 ahead | **B.2 done** (shadowhook dep wired); B.3-B.6 ahead |
+| 5 | HARNESS READY | unchanged |
+
+### Next iter (iter-5) priorities
+
+1. Phase 2 B.3: native JNI wrapper `app/src/main/cpp/att_sign_hook.cpp` (~80 LOC C++) + companion `AttSignNativeHook.kt` (~40 LOC) with `external fun installNative()`. Smoke: gradle parse + ndk-build smoke (needs Android SDK).
+2. Phase 3.6: SinisterDebugReceiver code review (verify uid-check OR add `android:permission`). 1-line manifest patch + smoke verify.
+3. Phase 3.7: network_security_config.xml audit (cleartext domains?). Defense-in-depth for cred-rotation.
+4. Phase 3.8: per-file URL audit (8 hardcoded HTTPs URLs from 3.1 INFO row).
+
+### Self-pacing
+
+ScheduleWakeup 270s (cache-warm) for iter-5.
+
+---
+
 ## 2026-05-25 ~07:25Z — iter-3 of /loop: Phase 2 B.1 hook-lib pick (shadowhook + Pine fallback) + Phase 3.3 error sweep + Phase 3.4 anti-pattern sweep
 
 **Author:** RKOJ-ELENO :: 2026-05-25 (kernel-apk lane; /loop dynamic-mode fired by ScheduleWakeup)
