@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # Author: RKOJ-ELENO :: 2026-05-25
 # Author: RKOJ-ELENO :: 2026-05-25 Sub-F extension (hot-swap support)
+# Author: RKOJ-ELENO :: 2026-05-25 Sub-O extension (Sinister LINK transport)
 # eve_self_update.py -- Self-updater for EVE.exe.
 #
 # Operator hard-canonical 2026-05-25 (CLAUDE.md): "we dont use bat files or
@@ -10,6 +11,11 @@
 # Operator hard-canonical 2026-05-25 ~06:14Z (Sub-F extension): "you can still
 # udpate while exe is running, we should have made this a feature. if not do
 # it not and fully audit and smoke test it."
+# Operator hard-canonical 2026-05-25 ~07:12Z (Sub-O extension): "make the eexe
+# update oiver sinsiter link and leo will have popup to say update availabe or
+# something". 2-transport waterfall: link (p2p via vault mirror) -> github
+# (fallback). New flags `--transport <github|link|auto>` (default auto) and
+# `--peer <machine-id>`. Existing CLI surface preserved.
 #
 # This module:
 #   1. Resolves the local EVE.exe path(s) (repo + AppData install dir).
@@ -36,6 +42,10 @@
 #   python automations/eve_self_update.py --audit    # report state, no writes
 #   python automations/eve_self_update.py --no-hot-swap         # original retry-only
 #   python automations/eve_self_update.py --force-kill-stuck    # opt-in kill fallback
+#   python automations/eve_self_update.py --transport link      # force LINK only
+#   python automations/eve_self_update.py --transport github    # force github only
+#   python automations/eve_self_update.py --transport auto      # link, fall back to github (default)
+#   python automations/eve_self_update.py --peer <machine-id>   # pick LINK peer
 
 from __future__ import annotations
 
@@ -69,6 +79,16 @@ REMOTE_BASE = (
 )
 REMOTE_SHA_URL = f"{REMOTE_BASE}/EVE.exe.sha256"
 REMOTE_BIN_URL = f"{REMOTE_BASE}/EVE.exe"
+
+# Sinister LINK transport (Sub-O extension 2026-05-25). Each peer mirrors its
+# canonical files into _vault/sanctum-mirror/<machine-id>/. The vault daemon
+# (Sub-M) syncs that subtree across peers; we just read filesystem-locally
+# from the mirrored copy. Vault HTTP API at :5078 is reserved for the
+# sinister_link_vault_transport.py helper (Sub-M) when filesystem mirror
+# is not populated yet.
+VAULT_MIRROR_ROOT = REPO_ROOT / "_vault" / "sanctum-mirror"
+VAULT_HTTP_BASE = "http://127.0.0.1:5078"
+LINK_PEER_HINT_FILE = REPO_ROOT / "_shared-memory" / "eve-update-peer.txt"
 
 CHUNK = 1024 * 256  # 256 KiB
 MAX_LOCK_RETRIES = 5
@@ -155,6 +175,157 @@ def get_remote_eve_sha() -> tuple[str | None, str]:
     if status2 == 200 and isinstance(body2, (bytes, bytearray)):
         return hashlib.sha256(body2).hexdigest(), "full-binary"
     return None, "unreachable"
+
+
+# ---------------------------------------------------------------------------
+# Sinister LINK transport (Sub-O extension, 2026-05-25 ~07:12Z)
+# ---------------------------------------------------------------------------
+
+
+def _list_link_peers() -> list[str]:
+    """Return machine-ids visible under _vault/sanctum-mirror/.
+
+    Each subdirectory is one peer. Best-effort: missing root returns []
+    (vault not yet populated by Sub-M).
+    """
+    if not VAULT_MIRROR_ROOT.exists():
+        return []
+    peers: list[str] = []
+    try:
+        for entry in VAULT_MIRROR_ROOT.iterdir():
+            if entry.is_dir() and not entry.name.startswith("."):
+                peers.append(entry.name)
+    except OSError:
+        return []
+    peers.sort()
+    return peers
+
+
+def _default_link_peer() -> str | None:
+    """Choose a peer when caller did not specify --peer.
+
+    Order:
+      1. Hint file `_shared-memory/eve-update-peer.txt` (operator override)
+      2. Any peer whose folder contains BOTH EVE.exe and EVE.exe.sha256
+      3. First peer alphabetically with EVE.exe.sha256
+      4. None (no peers usable)
+    """
+    try:
+        if LINK_PEER_HINT_FILE.exists():
+            hint = LINK_PEER_HINT_FILE.read_text(encoding="utf-8").strip()
+            if hint:
+                return hint
+    except OSError:
+        pass
+
+    peers = _list_link_peers()
+    # Prefer peers with full payload.
+    for peer in peers:
+        peer_dir = VAULT_MIRROR_ROOT / peer
+        if (peer_dir / "EVE.exe").exists() and (peer_dir / "EVE.exe.sha256").exists():
+            return peer
+    # Otherwise any peer with at least the sidecar.
+    for peer in peers:
+        if (VAULT_MIRROR_ROOT / peer / "EVE.exe.sha256").exists():
+            return peer
+    return None
+
+
+def _resolve_link_update_source(peer_machine_id: str | None = None) -> dict:
+    """Resolve the LINK update source on the local filesystem.
+
+    Returns a dict with keys:
+      ok            : bool  -- True if both sha + bin paths exist
+      peer          : str | None
+      sha_path      : Path | None
+      bin_path      : Path | None
+      sha           : str | None (validated 64-hex)
+      reason        : str    -- 'ok' / 'no-peers' / 'peer-missing' / 'sha-missing' /
+                                'bin-missing' / 'sha-malformed'
+    """
+    out: dict = {
+        "ok": False,
+        "peer": None,
+        "sha_path": None,
+        "bin_path": None,
+        "sha": None,
+        "reason": "no-peers",
+    }
+    if not VAULT_MIRROR_ROOT.exists():
+        out["reason"] = "vault-mirror-missing"
+        return out
+
+    peer = peer_machine_id or _default_link_peer()
+    if not peer:
+        out["reason"] = "no-peers"
+        return out
+
+    out["peer"] = peer
+    peer_dir = VAULT_MIRROR_ROOT / peer
+    if not peer_dir.exists():
+        out["reason"] = "peer-missing"
+        return out
+
+    sha_path = peer_dir / "EVE.exe.sha256"
+    bin_path = peer_dir / "EVE.exe"
+    out["sha_path"] = sha_path
+    out["bin_path"] = bin_path
+
+    if not sha_path.exists():
+        out["reason"] = "sha-missing"
+        return out
+
+    try:
+        body = sha_path.read_text(encoding="utf-8").strip()
+        sha = body.split()[0] if body else ""
+    except OSError:
+        out["reason"] = "sha-read-failed"
+        return out
+
+    if len(sha) != 64 or not all(c in "0123456789abcdefABCDEF" for c in sha):
+        out["reason"] = "sha-malformed"
+        return out
+
+    out["sha"] = sha.lower()
+    if not bin_path.exists():
+        out["reason"] = "bin-missing"
+        return out
+
+    out["ok"] = True
+    out["reason"] = "ok"
+    return out
+
+
+def get_link_eve_sha(peer_machine_id: str | None = None) -> tuple[str | None, str, str | None]:
+    """Return (sha, source, peer) for the Sinister LINK transport.
+
+    source values: 'link-mirror' (filesystem) / 'link-unreachable'
+    """
+    resolved = _resolve_link_update_source(peer_machine_id)
+    if resolved["ok"]:
+        return resolved["sha"], "link-mirror", resolved["peer"]
+    return None, "link-unreachable", resolved.get("peer")
+
+
+def copy_from_link(peer_bin: Path, dest: Path) -> bool:
+    """Copy the EVE.exe payload from the vault mirror to dest.
+
+    Filesystem copy (vault has already replicated bytes to local disk via
+    Sub-M's transport). Returns True on success.
+    """
+    try:
+        shutil.copy2(peer_bin, dest)
+        return True
+    except OSError as exc:
+        _log(
+            {
+                "event": "link_copy_failed",
+                "peer_bin": str(peer_bin),
+                "dest": str(dest),
+                "error": repr(exc),
+            }
+        )
+        return False
 
 
 # ---------------------------------------------------------------------------
@@ -522,6 +693,35 @@ def defender_self_heal(path: Path) -> str:
 # ---------------------------------------------------------------------------
 
 
+def _resolve_transport(
+    transport: str,
+    peer: str | None,
+) -> tuple[str | None, str, str | None, Path | None]:
+    """Pick the active transport. Returns (sha, source, peer, link_bin_path).
+
+    transport:
+      'link'   -- LINK only; returns (None, 'link-unreachable', ...) if vault empty.
+      'github' -- GitHub raw only (original behavior).
+      'auto'   -- LINK first, GitHub fallback if LINK unreachable.
+    """
+    if transport == "github":
+        sha, source = get_remote_eve_sha()
+        return sha, source, None, None
+
+    if transport == "link":
+        resolved = _resolve_link_update_source(peer)
+        if resolved["ok"]:
+            return resolved["sha"], "link-mirror", resolved["peer"], resolved["bin_path"]
+        return None, "link-unreachable", resolved.get("peer"), None
+
+    # auto
+    resolved = _resolve_link_update_source(peer)
+    if resolved["ok"]:
+        return resolved["sha"], "link-mirror", resolved["peer"], resolved["bin_path"]
+    sha, source = get_remote_eve_sha()
+    return sha, source, resolved.get("peer"), None
+
+
 def check_and_update(
     eve_path: Path,
     *,
@@ -530,6 +730,8 @@ def check_and_update(
     allow_hot_swap: bool = True,
     force_kill_stuck: bool = False,
     kill_bat_path: Path | None = None,
+    transport: str = "github",
+    peer: str | None = None,
 ) -> dict:
     """Returns a result dict; also appended to the log.
 
@@ -537,6 +739,11 @@ def check_and_update(
       allow_hot_swap   : default True; use rename-in-use trick when locked.
       force_kill_stuck : default False; opt-in escalation if hot-swap also fails.
       kill_bat_path    : override path to Kill-Stuck-EVE.bat.
+
+    New 2026-05-25 Sub-O params:
+      transport        : 'github' (default for backward compat) | 'link' | 'auto'.
+      peer             : Sinister LINK peer machine-id (only used when transport
+                         is 'link' or 'auto').
     """
     result: dict = {
         "event": "check_and_update",
@@ -545,18 +752,30 @@ def check_and_update(
         "force": force,
         "allow_hot_swap": allow_hot_swap,
         "force_kill_stuck": force_kill_stuck,
+        "transport": transport,
+        "peer_requested": peer,
     }
 
     local_sha = get_local_eve_sha(eve_path)
     result["local_sha_before"] = local_sha
 
-    remote_sha, source = get_remote_eve_sha()
+    remote_sha, source, resolved_peer, link_bin_path = _resolve_transport(transport, peer)
     result["remote_sha"] = remote_sha
     result["remote_source"] = source
+    result["peer_resolved"] = resolved_peer
 
     if remote_sha is None:
         result["action"] = "skipped"
-        result["reason"] = "remote-unreachable"
+        # Surface the LINK-specific reason when applicable so operators know
+        # to populate the vault mirror or rely on github transport.
+        if source == "link-unreachable":
+            if transport == "link":
+                result["reason"] = "link-unreachable"
+            else:
+                # auto mode tried LINK then github; both failed.
+                result["reason"] = "remote-unreachable (link+github)"
+        else:
+            result["reason"] = "remote-unreachable"
         result["exit"] = 0
         _log(result)
         return result
@@ -606,12 +825,22 @@ def check_and_update(
         pass
 
     tmp = eve_path.with_suffix(f".exe.tmp.{os.getpid()}")
-    if not download_with_retry(REMOTE_BIN_URL, tmp):
-        result["action"] = "failed"
-        result["error"] = "download-failed"
-        result["exit"] = 3
-        _log(result)
-        return result
+    if source == "link-mirror" and link_bin_path is not None:
+        # LINK transport: bytes already on local disk via vault mirror; just copy.
+        if not copy_from_link(link_bin_path, tmp):
+            result["action"] = "failed"
+            result["error"] = "link-copy-failed"
+            result["exit"] = 3
+            _log(result)
+            return result
+    else:
+        # github (or auto fell back to github)
+        if not download_with_retry(REMOTE_BIN_URL, tmp):
+            result["action"] = "failed"
+            result["error"] = "download-failed"
+            result["exit"] = 3
+            _log(result)
+            return result
 
     try:
         got_sha = _hash_file(tmp)
@@ -682,14 +911,27 @@ def check_and_update(
 # ---------------------------------------------------------------------------
 
 
-def audit(eve_paths: list[Path]) -> dict:
+def audit(
+    eve_paths: list[Path],
+    *,
+    transport: str = "github",
+    peer: str | None = None,
+) -> dict:
     """Report running EVE.exe processes + local-vs-remote SHA + would-be action.
 
     No filesystem writes (other than the log row). Safe to run at any time.
+
+    Sub-O 2026-05-25: `transport` / `peer` allow auditing LINK transport
+    without going through GitHub. Default 'github' preserves backward compat:
+    callers that pass no flags see the same behavior as before.
     """
-    remote_sha, source = get_remote_eve_sha()
+    remote_sha, source, resolved_peer, _link_bin = _resolve_transport(transport, peer)
     report: dict = {
         "event": "audit",
+        "transport": transport,
+        "peer_requested": peer,
+        "peer_resolved": resolved_peer,
+        "link_peers_available": _list_link_peers(),
         "remote_sha": remote_sha,
         "remote_source": source,
         "targets": [],
@@ -724,7 +966,20 @@ def audit(eve_paths: list[Path]) -> dict:
 def _print_audit(report: dict) -> None:
     src = report.get("remote_source")
     rsha = report.get("remote_sha")
+    tr = report.get("transport")
+    peer_req = report.get("peer_requested")
+    peer_res = report.get("peer_resolved")
+    peers_avail = report.get("link_peers_available") or []
     print("[eve_self_update] AUDIT")
+    print(f"  transport     : {tr}")
+    print(f"  peer_request  : {peer_req}")
+    print(f"  peer_resolved : {peer_res}")
+    print(f"  link_peers    : {peers_avail}")
+    if src == "link-unreachable" and tr == "link":
+        print("  note          : vault-unreachable, falling back to github "
+              "(unless --transport link forced this run)")
+    elif src == "link-unreachable" and tr == "auto":
+        print("  note          : vault-unreachable, falling back to github")
     print(f"  remote_sha    : {rsha}")
     print(f"  remote_source : {src}")
     for tg in report.get("targets", []):
@@ -783,6 +1038,26 @@ def _parse_args(argv: list[str]) -> argparse.Namespace:
         default=None,
         help=f"Override path to kill bat. Default: {DEFAULT_KILL_BAT}",
     )
+    # Sub-O 2026-05-25: Sinister LINK transport.
+    p.add_argument(
+        "--transport",
+        choices=("github", "link", "auto"),
+        default="github",
+        help=(
+            "Source for the canonical EVE.exe. 'github' (default; preserves "
+            "backward compat) | 'link' (peer-to-peer via _vault/sanctum-mirror) "
+            "| 'auto' (LINK first, GitHub fallback)."
+        ),
+    )
+    p.add_argument(
+        "--peer",
+        default=None,
+        help=(
+            "Sinister LINK peer machine-id under _vault/sanctum-mirror/. "
+            "Defaults to first peer with a full payload, then the operator's "
+            "hint at _shared-memory/eve-update-peer.txt."
+        ),
+    )
     return p.parse_args(argv)
 
 
@@ -791,7 +1066,7 @@ def main(argv: list[str] | None = None) -> int:
     targets = [Path(p) for p in ns.path] if ns.path else list(DEFAULT_EVE_PATHS)
 
     if ns.audit:
-        report = audit(targets)
+        report = audit(targets, transport=ns.transport, peer=ns.peer)
         _print_audit(report)
         return 0
 
@@ -807,6 +1082,8 @@ def main(argv: list[str] | None = None) -> int:
                 allow_hot_swap=ns.allow_hot_swap,
                 force_kill_stuck=ns.force_kill_stuck,
                 kill_bat_path=kill_bat,
+                transport=ns.transport,
+                peer=ns.peer,
             )
         except Exception as exc:  # noqa: BLE001
             _log(
