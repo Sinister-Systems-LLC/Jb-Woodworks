@@ -45,6 +45,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from overseer.actions.spawn_sub_lane import SpawnResult, SpawnSubLaneAction
+from overseer.prompt_profiler import PromptProfiler
 from overseer.sensors.divergence import DivergenceOpportunity, DivergenceSensor
 
 SANCTUM_ROOT = Path("D:/Sinister Sanctum")
@@ -76,10 +77,39 @@ class OverseerOrchestrator:
     sensor: DivergenceSensor = field(default_factory=DivergenceSensor)
     action: SpawnSubLaneAction = field(default_factory=SpawnSubLaneAction)
     state: OrchestratorState = field(default_factory=OrchestratorState)
+    _profiles_refreshed: bool = field(default=False, init=False, repr=False)
 
     # ---- public api ----------------------------------------------------
+
+    def _refresh_prompt_profiles(self) -> None:
+        """Scan operator utterances and build/refresh style profiles.
+
+        Called once per session on first run_once() invocation — NOT on every
+        5-min cycle — to avoid unnecessary disk I/O.  Profiles are written to
+        _shared-memory/prompt-profiles/<profile_id>.json and consumed by
+        spawn-phrase augmentation so newly spawned sub-lanes inherit the
+        operator's working style.
+        """
+        if self._profiles_refreshed:
+            return
+        self._profiles_refreshed = True
+        try:
+            profiler = PromptProfiler(self.sanctum_root)
+            results = profiler.scan(["operator"])
+            for pid, prof in results.items():
+                sys.stdout.write(
+                    f"[overseer] prompt-profiler refreshed profile={pid!r}"
+                    f" utterances={prof.get('utterance_count', 0)}"
+                    f" directness={prof.get('style', {}).get('directness', '?')}\n"
+                )
+        except Exception as exc:  # noqa: BLE001 -- never crash the main loop
+            sys.stderr.write(f"[overseer] prompt-profiler refresh failed: {exc}\n")
+
     def run_once(self, dry_run: bool = True) -> dict:
         """One scan pass. Returns a summary dict."""
+        # Refresh prompt profiles once per session before any scan work.
+        self._refresh_prompt_profiles()
+
         self.state.iterations += 1
         self.state.last_scan_utc = datetime.now(timezone.utc).isoformat()
 
