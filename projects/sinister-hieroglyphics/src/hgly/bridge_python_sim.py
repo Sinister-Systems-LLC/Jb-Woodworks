@@ -133,6 +133,12 @@ def qsubmit(system: Any = "superconducting", payload: Any = None) -> Dict[str, A
             payload = json.loads(payload) if isinstance(payload, str) else {"value": payload}
         except json.JSONDecodeError:
             payload = {"value": str(payload)}
+    # iter-22 wire-protocol nudge: the desktop sim's zmq_router_server.py
+    # routes on `msg_type` field (MsgTask / MsgHeartbeat / GetChipConfig /
+    # ...). Default to MsgHeartbeat when caller didn't specify -- it's the
+    # safest no-op that every quantum system responds to with status data.
+    if "msg_type" not in payload:
+        payload["msg_type"] = "MsgHeartbeat"
     port = _port_for(system)
     if port and _port_alive(port):
         r = _real_request(port, payload)

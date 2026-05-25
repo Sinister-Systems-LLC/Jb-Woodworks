@@ -1,0 +1,46 @@
+# quantum_sim_demo.shp -- Phase 8 end-to-end demo
+# Author: RKOJ-ELENO :: 2026-05-25
+#
+# Exercises the full hgly pipeline: source -> lex -> parse -> AST -> IR
+# -> interpreter -> sim primitives + python_simulator bridge.
+#
+# Run via:
+#   python -c "import sys; sys.path.insert(0,'projects/sinister-hieroglyphics/src');
+#              from hgly import parse, Interpreter;
+#              Interpreter().run(parse(open('projects/sinister-hieroglyphics/examples/quantum_sim_demo.shp', encoding='utf-8').read()))"
+
+# Step 1: snapshot current world state (hgly.sim.World singleton)
+let s0 := snapshot(0)
+println("snapshot s0 created")
+
+# Step 2: advance time by 1ms (numeric state drifts by t*0.01)
+let s1 := step(s0, 0.001)
+println("step s0 -> s1, dt=0.001s")
+
+# Step 3: fork an alternate timeline
+let b := branch(s1)
+println("branched alternate timeline from s1")
+
+# Step 4: apply small perturbation (deterministic noise <= 0.02)
+let bp := perturb(b, 0.02)
+println("perturbed branch with eps=0.02")
+
+# Step 5: observe a measurement (deterministic from snapshot id)
+let m := observe(bp, "energy")
+println("observed energy from perturbed branch:")
+println(m)
+
+# Step 6: drive the EXTERNAL desktop quantum sim via the bridge
+# (falls back to synth if the desktop sim isn't on :7000)
+let q := qsubmit("superconducting", "{}")
+println("desktop sim response:")
+println(q)
+
+# Step 7: merge the perturbed branch back into the main timeline
+let m2 := merge(s1, bp)
+println("merged s1 + perturbed branch")
+
+# Step 8: materialize the final state as canonical world
+let final := materialize(m2)
+println("final world state committed")
+println(final)
