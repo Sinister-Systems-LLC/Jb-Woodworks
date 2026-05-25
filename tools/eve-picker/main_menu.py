@@ -646,21 +646,14 @@ _TITLE_WIDTH = 26  # title-start to description-start gap
 # scroll through them make it all legit looking. clean in theme and speedy."
 #
 # Glow palette: 256-color background indices that look subtle-purple in
-# mintty / windows-terminal. Pulse cycles slowly (every 4 ticks) through
+# mintty / windows-terminal. Pulse cycles slowly (every 3 ticks) through
 # three near-shades so the bar "breathes" without flickering.
-#   53 = #5f005f  deep magenta-purple (dimmest)
 #   54 = #5f0087  mid Sinister purple
-#   60 = #5f5f87  cool slate-purple (lightest, accent shimmer)
-# RKOJ-ELENO :: 2026-05-25T00:15Z :: operator screenshot #55 -- *"no the
-# highlights needs to highlight the entire thing and have a cooler effect
-# to it than that shit"*. Prior impl wrapped the row text in bg but because
-# each row segment carried its own SGR + final RESET, the bg only painted
-# the FIRST segment (key cell). Fix: build the row as ONE concatenated
-# string and wrap once -- bg now extends edge-to-edge.
-# Cooler effects: (1) edge-glow vertical bars at row edges (U+258C/U+2590
-# in BRIGHTP), (2) slow 2-shade pulse 53<->54 every 6 ticks, (3) bold+
-# bright-white text on selected row, (4) underline for "bar" feel.
-_GLOW_BG_PALETTE = (53, 54)
+#   92 = #8700d7  brighter Sinister purple (stronger pop)
+#   55 = #5f00af  deep-bright violet
+# RKOJ-ELENO :: 2026-05-25 :: bumped palette from (53,54) to (54,92,55)
+# for stronger visibility + arrow indicator added per v2 polish pass.
+_GLOW_BG_PALETTE = (54, 92, 55)
 _EDGE_GLOW_FG = "\033[38;5;177m"  # BRIGHTP for edge bar glyphs
 _EDGE_GLYPH_L = "▌"  # LEFT HALF BLOCK -- left-edge accent
 _EDGE_GLYPH_R = "▐"  # RIGHT HALF BLOCK -- right-edge accent
@@ -698,8 +691,11 @@ def _highlight_row(text: str, is_selected: bool, tick: int = 0) -> str:
     Unselected rows: padded to (_BAR_WIDTH + 2) so they occupy the same
     column width as selected rows (prevents nav shift).
 
-    Selected rows: bg-wrapped row + edge-glow glyphs in BRIGHTP. Bg pulses
-    palette 53 <-> 54 every 6 ticks (slow breath, NOT strobe).
+    Selected rows: bg-wrapped row + edge-glow glyphs in BRIGHTP + arrow
+    indicator + bold bright-white fg. Bg pulses palette 54->92->55 every
+    3 ticks (brighter breath, NOT strobe).
+
+    RKOJ-ELENO :: 2026-05-25 :: v2 — brighter palette (54,92,55) + ▶ arrow.
     """
     visible = _visible_len(text)
     if not is_selected:
@@ -707,14 +703,17 @@ def _highlight_row(text: str, is_selected: bool, tick: int = 0) -> str:
         # 1sp left + 1sp right matches the 1-char edge-glyph footprint
         return " " + text + " " * pad_total + " "
     if not _ANSI:
-        pad_total = max(0, _BAR_WIDTH - visible)
-        return f">{text}" + " " * pad_total + "<"
-    bg_idx = _GLOW_BG_PALETTE[(tick // 6) % len(_GLOW_BG_PALETTE)]
+        pad_total = max(0, _BAR_WIDTH - visible - 2)
+        return f"▶ {text}" + " " * pad_total + "<"
+    bg_idx = _GLOW_BG_PALETTE[(tick // 3) % len(_GLOW_BG_PALETTE)]
     bg_code = f"\033[48;5;{bg_idx}m"
-    pad_total = max(0, _BAR_WIDTH - visible)
+    bold = "\033[1m"
+    fg = "\033[97m"
+    arrow = "▶ "
+    pad_total = max(0, _BAR_WIDTH - visible - len(arrow))
     edge_l = f"{_EDGE_GLOW_FG}{_EDGE_GLYPH_L}{RESET}"
     edge_r = f"{_EDGE_GLOW_FG}{_EDGE_GLYPH_R}{RESET}"
-    bg_block = f"{bg_code}{text}{' ' * pad_total}{RESET}"
+    bg_block = f"{bg_code}{bold}{fg}{arrow}{text}{' ' * pad_total}{RESET}"
     return f"{edge_l}{bg_block}{edge_r}"
 
 

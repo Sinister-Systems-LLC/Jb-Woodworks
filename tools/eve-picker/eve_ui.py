@@ -229,11 +229,13 @@ def handle_nav(resp: str) -> str | None:
 # ---------------------------------------------------------------------------
 
 # Glow palette: 256-color background indices that look subtle-purple in
-# mintty / windows-terminal. Pulse cycles slowly (every 4 ticks).
-#   53 = #5f005f  deep magenta-purple (dimmest)
+# mintty / windows-terminal. Pulse cycles slowly (every 3 ticks).
 #   54 = #5f0087  mid Sinister purple
-#   60 = #5f5f87  cool slate-purple (lightest, accent shimmer)
-_GLOW_BG_PALETTE = (53, 54, 60)
+#   92 = #8700d7  brighter Sinister purple (pop)
+#   55 = #5f00af  deep-bright violet
+# RKOJ-ELENO :: 2026-05-25 :: bumped from (53,54,60) to (54,92,55) for
+# stronger visibility on operator's display.
+_GLOW_BG_PALETTE = (54, 92, 55)
 _DEFAULT_BAR_WIDTH = 56
 
 
@@ -241,10 +243,9 @@ def highlight_row(text: str, is_selected: bool, tick: int = 0,
                   bar_width: int = _DEFAULT_BAR_WIDTH) -> str:
     """Render a selectable list row.
 
-    If `is_selected`: subtle purple-glow background bar extends edge-to-edge
-    with extra l/r padding (the "enlarge" effect). Background pulses slowly
-    via `tick // 4 % len(palette)` -- gentle 3-frame breath. Foreground
-    forced to bright-white-bold so it pops against the purple bg.
+    If `is_selected`: brighter purple-glow background bar extends edge-to-edge
+    with arrow indicator + bold bright-white foreground. Bg pulses slowly via
+    `tick // 3 % len(palette)` -- gentle 3-frame breath.
 
     If not selected: plain text, padded to bar width so all rows occupy the
     same footprint (so the selected bar doesn't shift the layout).
@@ -255,20 +256,17 @@ def highlight_row(text: str, is_selected: bool, tick: int = 0,
     visible = visible_len(text)
     if not is_selected:
         pad_total = max(0, bar_width - visible)
-        left = 2
-        right = pad_total - left
-        if right < 0:
-            right = 0
-        return " " * left + text + " " * right
+        return " " * 2 + text + " " * max(0, pad_total - 2)
     if not _ANSI:
         pad_total = max(0, bar_width - visible - 2)
-        return f"> {text}" + " " * pad_total
-    bg_idx = _GLOW_BG_PALETTE[(tick // 4) % len(_GLOW_BG_PALETTE)]
+        return f"▶ {text}" + " " * pad_total
+    bg_idx = _GLOW_BG_PALETTE[(tick // 3) % len(_GLOW_BG_PALETTE)]
     bg_code = f"\033[48;5;{bg_idx}m"
-    pad_total = max(0, bar_width - visible - 4)
-    left_pad = " " * 2
-    right_pad = " " * (2 + pad_total)
-    return f"{bg_code}{left_pad}{text}{right_pad}{RESET}"
+    bold = "\033[1m"
+    fg = "\033[97m"
+    arrow = "▶ "
+    pad_total = max(0, bar_width - visible - len(arrow) - 4)
+    return f"{bg_code}{bold}{fg} {arrow}{text}{' ' * (2 + pad_total)}{RESET}"
 
 
 # ---------------------------------------------------------------------------

@@ -338,6 +338,33 @@ def _load_picker_rows() -> list[dict]:
 
 
 # ---------------------------------------------------------------------------
+# Last-selection persistence helpers
+# ---------------------------------------------------------------------------
+
+def _save_last_selection(rows: list[dict], indices: list[int]) -> None:
+    """Persist selected project keys to _shared-memory/last-picker-selection.json."""
+    try:
+        path = SANCTUM_ROOT / "_shared-memory" / "last-picker-selection.json"
+        keys = [rows[i]["key"] for i in indices]
+        path.write_text(json.dumps({"keys": keys, "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}, indent=2), encoding="utf-8")
+    except Exception:
+        pass
+
+
+def _load_last_selection(rows: list[dict]) -> list[int]:
+    """Load last-selected keys, return as row indices."""
+    try:
+        path = SANCTUM_ROOT / "_shared-memory" / "last-picker-selection.json"
+        if not path.exists():
+            return []
+        data = json.loads(path.read_text(encoding="utf-8"))
+        keys = set(data.get("keys", []))
+        return [i for i, r in enumerate(rows) if r["key"] in keys]
+    except Exception:
+        return []
+
+
+# ---------------------------------------------------------------------------
 # Stage 1 — multi-select with arrow keys
 # ---------------------------------------------------------------------------
 
@@ -448,15 +475,32 @@ def _render_multi(rows: list[dict], visual: list[dict],
         r = entry["row"]
         ri = entry["row_index"]
         is_cursor = (vi == cursor_visual)
-        mark = "x" if ri in selected else " "
-        tier_badge = str(r.get("tier") or 3)
-        box_color = OK if ri in selected else SOFT
-        # Compact row: [x]  3  Sinister Panel
-        raw = (f"{box_color}[{mark}]{RESET}  "
-               f"{DIM}{tier_badge}{RESET}  "
-               f"{WHITE}{r['display']}{RESET}")
+
+        # Selected items: green checkmark; unselected: dim space
+        if ri in selected:
+            mark = f"{OK}✓{RESET}"  # green checkmark ✓
+        else:
+            mark = f"{DIM} {RESET}"  # empty space
+
+        # Tier badge with color
+        tier_val = int(r.get("tier") or 3)
+        if tier_val == 1:
+            tier_badge = f"{FAIL}T1{RESET}"
+        elif tier_val == 2:
+            tier_badge = f"{WARN}T2{RESET}"
+        else:
+            tier_badge = f"{DIM}T3{RESET}"
+
+        # Truncated description (right column)
+        desc = (r.get("tag") or r.get("display") or "")[:38]
+
+        # Full row with description
+        raw = (f"{mark}  {tier_badge}  "
+               f"{WHITE}{r['display']:<22}{RESET}  "
+               f"{DIM}{desc}{RESET}")
+
         if _HAS_EVE_UI:
-            body.append(eve_ui.highlight_row(raw, is_cursor, tick=tick, bar_width=52))
+            body.append(eve_ui.highlight_row(raw, is_cursor, tick=tick, bar_width=60))
         else:
             prefix = ">" if is_cursor else " "
             line = f"{prefix} {raw}"
@@ -464,26 +508,29 @@ def _render_multi(rows: list[dict], visual: list[dict],
                 line = f"{BOLD}{line}{RESET}"
             body.append(line)
     if _HAS_EVE_UI:
-        for ln in eve_ui.center_block(body, width=68):
+        for ln in eve_ui.center_block(body, width=72):
             print(ln)
     else:
         for ln in body:
             print(f"  {ln}")
 
     print()
-    # RKOJ-ELENO :: 2026-05-25T07:17Z Sub-Q :: Quick-launch (Q) hint added
-    # per operator hard-canonical "quickest way to open my termionials".
-    # Q = launch selected with all defaults (no grid, no Prompt-AgentModes).
+    # RKOJ-ELENO :: 2026-05-25 :: v2 picker footer — ENTER=instant launch,
+    # C=configure, presets F/1/P, Space=toggle+next.
     print(f"  {DIM}---{RESET} "
-          f"{WHITE}Space{RESET}) toggle  "
-          f"{WHITE}Enter{RESET}) configure  "
-          f"{BRIGHTP}Q{RESET}) {OK}Quick-launch (skip all prompts){RESET}  "
-          f"{WHITE}A{RESET}) all  "
-          f"{WHITE}N{RESET}) none  "
+          f"{BRIGHTP}ENTER{RESET}) {OK}Launch now{RESET}  "
+          f"{WHITE}C{RESET}) Configure  "
+          f"{WHITE}Space{RESET}) toggle+next  "
+          f"{WHITE}F{RESET}) Fleet (T1+T2)  "
+          f"{WHITE}1{RESET}) T1 only  "
+          f"{WHITE}A{RESET}) All  "
+          f"{WHITE}N{RESET}) None  "
+          f"{WHITE}P{RESET}) Last session  "
           f"{WHITE}B{RESET}) Back  "
           f"{WHITE}X{RESET}) Exit  "
           f"{DIM}---{RESET}")
-    print(f"  {DIM}selected: {len(selected)} / {len(rows)}{RESET}")
+    print(f"  {BRIGHTP}{len(selected)}{RESET}{DIM}/{len(rows)} selected{RESET}  "
+          f"{DIM}·{RESET}  {OK}loop: ON{RESET}  {DIM}·{RESET}  {OK}swarm: ON{RESET}")
 
 
 def DARKP_OR_DIM() -> str:
@@ -522,35 +569,54 @@ def _stage_multi_select(rows: list[dict]) -> Optional[list[int]]:
         elif key == "END":
             cursor_idx = len(selectable_positions) - 1
         elif key == "SPACE":
+            # Toggle selection AND advance cursor down by 1 automatically
             row_index = visual[selectable_positions[cursor_idx]]["row_index"]
             if row_index in selected:
                 selected.remove(row_index)
             else:
                 selected.add(row_index)
-        elif key == "ENTER":
+            cursor_idx = (cursor_idx + 1) % len(selectable_positions)
+        # RKOJ-ELENO :: 2026-05-25 :: v2 — ENTER = instant launch with defaults
+        # (loop=ON, swarm=ON). No grid config. Save selection for P preset.
+        elif key in ("ENTER", "q"):
             if not selected:
                 row_index = visual[selectable_positions[cursor_idx]]["row_index"]
                 selected.add(row_index)
+            _save_last_selection(rows, sorted(selected))
             return sorted(selected)
+        # C key: open grid configure screen before launch
+        elif key == "c":
+            cur_indices = sorted(selected)
+            if not cur_indices:
+                row_index = visual[selectable_positions[cursor_idx]]["row_index"]
+                cur_indices = [row_index]
+            result = _stage_grid_config(rows, cur_indices)
+            if result is not None:
+                # Grid config completed: launch from here and signal outer to skip
+                print()
+                print(f"  {BRIGHTP}--- launching {len(result)} sessions (configured) ---{RESET}")
+                launch_selected(result)
+                print()
+                print(f"  {OK}all launched.{RESET} {DIM}returning...{RESET}")
+                time.sleep(1.0)
+                os.environ.pop("SINISTER_QUICK_LAUNCH", None)
+                # Return empty list to signal show_multi_picker() not to re-launch
+                return []
+            # User backed out of grid — return to picker
+        # F key: select all T1 + T2 projects
+        elif key == "f":
+            selected = set(i for i, r in enumerate(rows) if int(r.get("tier") or 3) in (1, 2))
+        # 1 key: select T1 tier only
+        elif key == "1":
+            selected = set(i for i, r in enumerate(rows) if int(r.get("tier") or 3) == 1)
+        # P key: restore last selection
+        elif key == "p":
+            indices = _load_last_selection(rows)
+            selected = set(indices)
         elif key == "a":
             selected = set(range(len(rows)))
         elif key == "n":
             selected = set()
-        # RKOJ-ELENO :: 2026-05-25T07:17Z Sub-Q :: Quick-launch (Q key).
-        # Operator hard-canonical 07:17Z (Image 7+8) "quickest way to open my
-        # termionials". Q at picker -> bypass grid + bypass Prompt-AgentModes
-        # entirely. Sets SINISTER_QUICK_LAUNCH=1 sentinel which launch_selected
-        # propagates per-spawn. Same selected set as Enter (auto-pick cursor row
-        # if none selected). _read_key lowercases all keys so we match "q".
-        # Note: "q" was previously a back-out alias; we now repurpose it as
-        # quick-launch since b/ESC already cover back-out, and operator hard-
-        # canonical promotes Q (uppercase intent) to a fleet-wide shortcut.
-        elif key == "q":
-            if not selected:
-                row_index = visual[selectable_positions[cursor_idx]]["row_index"]
-                selected.add(row_index)
-            os.environ["SINISTER_QUICK_LAUNCH"] = "1"
-            return sorted(selected)
         elif key in ("b", "ESC"):
             return None
         elif key == "x":
@@ -792,46 +858,43 @@ def launch_selected(configs: list[dict], stagger_seconds: float = 0.7) -> int:
 # ---------------------------------------------------------------------------
 
 def show_multi_picker() -> list[dict]:
-    """Show two-stage picker. Returns configs (also launches them).
+    """Show instant-launch picker. ENTER always launches with defaults.
+    C key opens grid config inside _stage_multi_select (returns [] to skip re-launch).
+    Returns configs (also launches them), or [] if user backed out.
 
-    Returns [] if user backed out at any point.
+    RKOJ-ELENO :: 2026-05-25 :: v2 — ENTER is always instant launch
+    (loop=ON swarm=ON). No SINISTER_QUICK_LAUNCH distinction needed.
     """
     rows = _load_picker_rows()
     if not rows:
-        print(f"  {FAIL}[picker] no projects loaded (check projects.json){RESET}")
+        print(f"  {FAIL}[picker] no projects loaded{RESET}")
         return []
     indices = _stage_multi_select(rows)
-    if not indices:
+    # [] = C-key path already launched; None = backed out
+    if indices is None:
         return []
-    # RKOJ-ELENO :: 2026-05-25T07:17Z Sub-Q :: quick-launch fast path. If the
-    # operator pressed Q at the picker, skip the grid-config stage entirely
-    # and build configs from the project's static defaults (projects.json
-    # tier, agent name, accent already injected by _load_picker_rows).
-    if os.environ.get("SINISTER_QUICK_LAUNCH") == "1":
-        configs: list[dict] = []
-        for ri in indices:
-            r = rows[ri]
-            configs.append({
-                "key": r["key"],
-                "display": r["display"],
-                "agent_name": r.get("agent_name") or r.get("default_agent_name") or r["display"],
-                "accent": r.get("accent") or r.get("default_accent") or "purple",
-                "swarm": True,
-                "loop": True,
-                "loop_condition": "",
-                "priority": int(r.get("tier") or 3),
-            })
-    else:
-        configs = _stage_grid_config(rows, indices)
-        if not configs:
-            return []
+    if not indices:
+        # C-key path: grid config launched internally, nothing to do here
+        return []
+    configs: list[dict] = []
+    for ri in indices:
+        r = rows[ri]
+        configs.append({
+            "key": r["key"],
+            "display": r["display"],
+            "agent_name": r.get("agent_name") or r["display"],
+            "accent": r.get("accent") or "purple",
+            "swarm": True,
+            "loop": True,
+            "loop_condition": "",
+            "priority": int(r.get("tier") or 3),
+        })
     print()
-    print(f"  {BRIGHTP}--- launching {len(configs)} sessions (staggered) ---{RESET}")
+    print(f"  {BRIGHTP}--- launching {len(configs)} sessions ---{RESET}")
     launch_selected(configs)
     print()
-    print(f"  {OK}all launched.{RESET} {DIM}returning to main menu...{RESET}")
-    time.sleep(1.2)
-    # Clear sentinel so next picker session starts clean.
+    print(f"  {OK}all launched.{RESET} {DIM}returning...{RESET}")
+    time.sleep(1.0)
     os.environ.pop("SINISTER_QUICK_LAUNCH", None)
     return configs
 
