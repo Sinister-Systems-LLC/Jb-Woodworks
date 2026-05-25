@@ -18,8 +18,14 @@ try:
     _HAS_CODEGEN = True
 except Exception:
     _HAS_CODEGEN = False
+try:
+    from .sim import (World, Snapshot, get_world, reset_world,
+                      builtins as sim_builtins)  # noqa: F401
+    _HAS_SIM = True
+except Exception:
+    _HAS_SIM = False
 
-__version__ = "0.0.5"
+__version__ = "0.0.6"
 
 __all__ = ["parse", "parse_file", "ParseError", "Module", "Function", "Block",
            "Effect", "Type", "TInt", "TFloat", "TBool", "TStr", "TUnit",
