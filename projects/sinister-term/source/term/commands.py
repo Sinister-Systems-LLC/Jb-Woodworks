@@ -96,6 +96,7 @@ Sinister Term commands:
   /doctrine [--sanctum --search X]   List operator hard-canonicals from CLAUDE.md
   /crashlog [N --mine --module X]   Read eve-crash-log.jsonl (alias /crashes)
   /grep <pattern> [path] [--glob X] [-i] [N]   Content search (skips .git/venv/binaries)
+  /fu [N --priority --kind --mine --unacked]   Tail fleet-updates.jsonl (alias /fleet-updates)
   /alias [name=val|remove n] List aliases, define one, or remove one
   /clear                    Clear the screen
   /help                     This message
@@ -533,6 +534,136 @@ _UTTERANCES_PATH = SANCTUM_ROOT / "_shared-memory" / "operator-utterances.jsonl"
 
 
 _CRASH_LOG_PATH = SANCTUM_ROOT / "_shared-memory" / "eve-crash-log.jsonl"
+
+
+_FLEET_UPDATES_PATH = SANCTUM_ROOT / "_shared-memory" / "fleet-updates.jsonl"
+
+
+def cmd_fleet_updates(args: list[str]) -> CommandResult:
+    """iter-67: read fleet-updates.jsonl (alias /fu).
+
+    Cross-lane broadcast log: every agent posts here via
+    `automations/fleet-update.ps1 -Action Push`. Surface row shape:
+      {id, ts_utc, priority, kind, message, target_slugs, pushed_by, acks}
+
+    Usage:
+      /fu                          last 10
+      /fu N                        last N (1..500)
+      /fu --priority high          only high-pri rows
+      /fu --kind doctrine_update   filter by kind
+      /fu --mine                   only target_slugs naming sinister-term, OR
+                                   pushed_by=sinister-term
+      /fu --unacked                only rows NOT acked by sinister-term yet
+    """
+    limit = 10
+    pri: str | None = None
+    kind_filter: str | None = None
+    only_mine = False
+    only_unacked = False
+    i = 0
+    while i < len(args):
+        a = args[i]
+        if a == "--priority" and i + 1 < len(args):
+            pri = args[i + 1].lower()
+            i += 2
+            continue
+        if a == "--kind" and i + 1 < len(args):
+            kind_filter = args[i + 1].lower()
+            i += 2
+            continue
+        if a == "--mine":
+            only_mine = True
+            i += 1
+            continue
+        if a == "--unacked":
+            only_unacked = True
+            i += 1
+            continue
+        try:
+            limit = max(1, min(500, int(a)))
+        except ValueError:
+            return CommandResult(True,
+                f"unknown arg: {a}. Try /fu with no args for usage.")
+        i += 1
+
+    if not _FLEET_UPDATES_PATH.exists():
+        try:
+            rel = _FLEET_UPDATES_PATH.relative_to(SANCTUM_ROOT).as_posix()
+        except ValueError:
+            rel = str(_FLEET_UPDATES_PATH)
+        return CommandResult(True, f"(no fleet-updates at {rel})")
+
+    rows: list[dict] = []
+    try:
+        with _FLEET_UPDATES_PATH.open("r", encoding="utf-8", errors="replace") as fh:
+            for ln in fh:
+                ln = ln.strip()
+                if not ln:
+                    continue
+                try:
+                    obj = json.loads(ln)
+                    if isinstance(obj, dict):
+                        rows.append(obj)
+                except Exception:
+                    continue
+    except OSError as e:
+        return CommandResult(True, f"/fu failed: {e}")
+
+    if pri:
+        rows = [r for r in rows if (r.get("priority") or "").lower() == pri]
+    if kind_filter:
+        rows = [r for r in rows
+                if kind_filter in (r.get("kind") or "").lower()]
+    if only_mine:
+        def _is_mine(r: dict) -> bool:
+            if (r.get("pushed_by") or "").lower() == SELF_SLUG:
+                return True
+            tgt = r.get("target_slugs") or {}
+            # target_slugs can be dict, list, or string in observed data
+            if isinstance(tgt, dict):
+                return SELF_SLUG in {k.lower() for k in tgt.keys()}
+            if isinstance(tgt, list):
+                return SELF_SLUG in {str(s).lower() for s in tgt}
+            if isinstance(tgt, str):
+                return SELF_SLUG.lower() in tgt.lower()
+            return False
+        rows = [r for r in rows if _is_mine(r)]
+    if only_unacked:
+        rows = [r for r in rows
+                if SELF_SLUG not in (r.get("acks") or [])]
+
+    if not rows:
+        flt = []
+        if pri: flt.append(f"--priority {pri}")
+        if kind_filter: flt.append(f"--kind {kind_filter}")
+        if only_mine: flt.append("--mine")
+        if only_unacked: flt.append("--unacked")
+        return CommandResult(True,
+            f"(no fleet-updates{' (' + ' '.join(flt) + ')' if flt else ''})")
+
+    shown = rows[-limit:]
+    try:
+        rel = _FLEET_UPDATES_PATH.relative_to(SANCTUM_ROOT).as_posix()
+    except ValueError:
+        rel = str(_FLEET_UPDATES_PATH)
+    out = [f"Fleet-updates: {len(shown)} of {len(rows)} in {rel}"]
+    for r in shown:
+        ts = (r.get("ts_utc") or "?")[:19] + "Z"
+        pri_label = (r.get("priority") or "?")[:5]
+        # Priority badge color hint: high → [HI], normal → [no], low → [lo]
+        if pri_label == "high":
+            badge = "[HI]"
+        elif pri_label == "low":
+            badge = "[lo]"
+        else:
+            badge = "[no]"
+        kind = (r.get("kind") or "?")[:16]
+        pusher = (r.get("pushed_by") or "?")[:14]
+        msg = (r.get("message") or "")[:70]
+        n_acks = len(r.get("acks") or [])
+        ack_str = f"({n_acks} ack)" if n_acks else ""
+        out.append(f"  {ts}  {badge}  {kind:<16}  {pusher:<14}  {msg} {ack_str}")
+    return CommandResult(True, "\n".join(out))
 
 
 def cmd_grep(args: list[str]) -> CommandResult:
@@ -1924,6 +2055,8 @@ COMMANDS: dict[str, Callable[[list[str]], CommandResult]] = {
     "crashlog": cmd_crashlog,      # iter-65 — read eve-crash-log.jsonl
     "crashes": cmd_crashlog,       # alias
     "grep": cmd_grep,              # iter-66 — content search across files
+    "fleet-updates": cmd_fleet_updates,  # iter-67 — read fleet-updates.jsonl
+    "fu": cmd_fleet_updates,             # short alias
 }
 
 
