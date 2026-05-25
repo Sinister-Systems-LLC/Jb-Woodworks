@@ -27,6 +27,7 @@ import hashlib
 import json
 import os
 import socket
+import time
 from typing import Any, Dict, Optional, Tuple
 
 try:
@@ -133,12 +134,15 @@ def qsubmit(system: Any = "superconducting", payload: Any = None) -> Dict[str, A
             payload = json.loads(payload) if isinstance(payload, str) else {"value": payload}
         except json.JSONDecodeError:
             payload = {"value": str(payload)}
-    # iter-22 wire-protocol nudge: the desktop sim's zmq_router_server.py
-    # routes on `msg_type` field (MsgTask / MsgHeartbeat / GetChipConfig /
-    # ...). Default to MsgHeartbeat when caller didn't specify -- it's the
-    # safest no-op that every quantum system responds to with status data.
-    if "msg_type" not in payload:
-        payload["msg_type"] = "MsgHeartbeat"
+    # iter-23 wire-protocol fix: desktop adapters parse `MsgType` (capitalized)
+    # from inbound JSON and normalize internally to `msg_type`. Sending lowercase
+    # makes parse_general_message return msg_type=None => router falls through
+    # all if-branches => no reply => bridge timeout => synth fallback.
+    # All 4 adapters (superconducting/ion_trap/neutral_atom/photonic) use the
+    # same {'MsgType': ..., 'SN': ...} envelope; default to a benign Heartbeat.
+    if "MsgType" not in payload and "msg_type" not in payload:
+        payload["MsgType"] = "MsgHeartbeat"
+        payload["SN"] = int(time.time() * 1000) % 2147483647
     port = _port_for(system)
     if port and _port_alive(port):
         r = _real_request(port, payload)
