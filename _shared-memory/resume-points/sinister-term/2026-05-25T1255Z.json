@@ -1,0 +1,42 @@
+{
+  "_author": "RKOJ-ELENO :: 2026-05-25",
+  "lane": "sinister-term",
+  "ts_utc": "2026-05-25T12:55:30Z",
+  "branch": "agent/sinister-term/sa-ph4-shipped-2026-05-25",
+  "trigger": "iter-44 shipped + jcode-stealing subagent in flight",
+  "shipped_this_iter": [
+    "Recovered sinister-ascii/{renderer.py + render_loop.py + __main__.py} after sister-agent index churn dropped them mid-commit.",
+    "Shipped term/event_bus.py (cmux clean-room port: Event dataclass + jsonl persistence + 16 MiB rotation + 4096 ring + subscribe gap=true + category whitelist + 16 KiB payload cap; 328 lines).",
+    "Wrote tests/test_event_bus.py (17 tests, all pass).",
+    "Recreated tests/test_sinister_ascii.py (17 tests, all pass).",
+    "Full pytest: 77 passed in 6.10s.",
+    "Spawned general-purpose agent for cmux research; received audit; wrote audit doc at _shared-memory/audits/cmux-integration-audit-2026-05-25.md.",
+    "Spawned general-purpose agent in parallel to mine jcode for paste/image/input/logging/Ctrl+C tolerance hardening (writes to term/paste_handler.py + image_handler.py + hardened_input.py + extends concise_log.py + crash_recovery.py).",
+    "iter-44 commit 0498f28 pushed to origin/agent/sinister-term/sa-ph4-shipped-2026-05-25."
+  ],
+  "in_flight": [
+    "jcode-stealing subagent (background) — paste/image/input loop hardening + concise_log + crash_recovery parity. ETA unknown."
+  ],
+  "next_iter_priorities": [
+    "Verify jcode-stealing subagent landed + tests green.",
+    "SA-PH5 intensity sampler: read claude session jsonl size delta + sinister-bus broadcast count as activity_signal, wire into the render loop so the entity glows brighter when Claude is working hard.",
+    "SA-PH6 sterm in-band integration: invoke sinister-ascii in a dedicated thread between prompts while claude is running (when SINISTER_ASCII=on); never blocks input.",
+    "SA-PH7 fill remaining 13 project entities (sinister-emulator, sinister-bus, sinister-designer, eve-exe, eve-compliance, letstext, ...).",
+    "P2-1 /recall builtin (forge-memory recall) in term/commands.py.",
+    "P2-2 sinister-bus MCP heartbeat call in app.py startup.",
+    "P2-3 /swarm <task> builtin spawning 3 mintty children.",
+    "P3-1 sterm.exe PyInstaller one-file build + desktop shortcut.",
+    "P3-2 EVE.exe picker entry 'S) Sinister Term standalone'.",
+    "Wire event_bus into app.py keystroke loop + swarm.py + crash_recovery.safe_loop."
+  ],
+  "git": {
+    "branch": "agent/sinister-term/sa-ph4-shipped-2026-05-25",
+    "head": "0498f28 (iter-44 pushed)"
+  },
+  "loop_condition_check": {
+    "queue_empty": false,
+    "queue_remaining": "P2-1..P2-4 + P3-1..P3-3 + SA-PH5..SA-PH9 + jcode-port-verify + RKOJ-dashboard-integration",
+    "utterances_unacked": 0,
+    "verdict": "KEEP GOING — relentless"
+  }
+}
