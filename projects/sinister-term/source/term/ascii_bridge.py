@@ -158,6 +158,22 @@ class AsciiBridge:
         if t and t.is_alive():
             t.join(timeout=max(0.0, join_timeout_s))
 
+    def set_project(self, project_key: str) -> bool:
+        """iter-54: swap the per-project entity. If running, restarts the
+        thread cleanly. Returns True if the new project resolves to a known
+        entity."""
+        if not project_key or not isinstance(project_key, str):
+            return False
+        was_running = bool(self._thread and self._thread.is_alive())
+        if was_running:
+            self.stop()
+        self._project_key = project_key
+        self._frames = 0
+        self._last_intensity = 0.0
+        if was_running:
+            return self.start()
+        return True
+
     # ---- internal loop ----
 
     def _run(self) -> None:

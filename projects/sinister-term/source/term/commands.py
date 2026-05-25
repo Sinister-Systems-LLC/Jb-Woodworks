@@ -83,6 +83,7 @@ Sinister Term commands:
   /recall <term> [term2...]  Search the brain at _shared-memory/knowledge/*.md
   /swarm <sub> [args]       Fan-out: list / spawn / dm / broadcast (try /swarm)
   /events [N] [--cat C] [--name N] [--disk]  Tail cmux event_bus (ring or jsonl)
+  /ascii [on|off|status|project K|list]  Control SA-PH6 living-entity overlay
   /alias [name=val|remove n] List aliases, define one, or remove one
   /clear                    Clear the screen
   /help                     This message
@@ -514,6 +515,92 @@ def cmd_recall(args: list[str]) -> CommandResult:
     return CommandResult(True, "\n".join(lines))
 
 
+def cmd_ascii(args: list[str]) -> CommandResult:
+    """iter-54: operator-facing control of the SA-PH6 ascii_bridge.
+
+    Lets the operator toggle the living-entity overlay without restarting
+    sterm or fiddling with SINISTER_ASCII env. Swap the entity per project
+    without leaving the shell.
+
+    Usage:
+      /ascii                          show current status
+      /ascii on                       start the bridge (if importable)
+      /ascii off                      stop the bridge
+      /ascii status                   detailed status
+      /ascii project <project-key>    swap the per-project entity
+      /ascii list                     list all known entities
+    """
+    try:
+        from term import ascii_bridge as _br
+    except Exception as e:
+        return CommandResult(True, f"ascii_bridge unavailable: {e}")
+
+    if not args:
+        s = _br.default_bridge().status()
+        state = "ON" if s.running else "off"
+        return CommandResult(True,
+            f"ascii: {state}  project={s.project_key}  frames={s.frames_rendered}  "
+            f"intensity={s.last_intensity:.2f}  (try /ascii on|off|status|project|list)")
+
+    sub = args[0].lower()
+    rest = args[1:]
+    bridge = _br.default_bridge()
+
+    if sub == "on":
+        ok = bridge.start()
+        s = bridge.status()
+        if ok:
+            return CommandResult(True,
+                f"ascii: ON  project={s.project_key}  refresh={s.refresh_seconds}s")
+        return CommandResult(True,
+            f"ascii: failed to start ({s.error or 'unknown error'})")
+
+    if sub == "off":
+        bridge.stop()
+        return CommandResult(True, "ascii: off")
+
+    if sub == "status":
+        s = bridge.status()
+        lines = [
+            f"ascii bridge status:",
+            f"  running:        {s.running}",
+            f"  project_key:    {s.project_key}",
+            f"  refresh_secs:   {s.refresh_seconds}",
+            f"  frames_rendered:{s.frames_rendered}",
+            f"  last_intensity: {s.last_intensity:.3f}",
+            f"  started_at:     {s.started_at}",
+            f"  error:          {s.error or '(none)'}",
+        ]
+        return CommandResult(True, "\n".join(lines))
+
+    if sub == "project":
+        if not rest:
+            return CommandResult(True, "usage: /ascii project <project-key>")
+        ok = bridge.set_project(rest[0])
+        s = bridge.status()
+        if ok:
+            return CommandResult(True,
+                f"ascii: project={s.project_key}  running={s.running}")
+        return CommandResult(True, f"ascii: failed to swap project ({s.error or 'unknown'})")
+
+    if sub == "list":
+        # Make sure sinister_ascii is on path then list the entity registry
+        if not _br._ensure_ascii_on_path():
+            return CommandResult(True, "ascii: sinister_ascii not importable")
+        try:
+            from sinister_ascii.entities import ENTITIES
+            lines = [f"ascii: {len(ENTITIES)} per-project entities:"]
+            for k in sorted(ENTITIES.keys()):
+                e = ENTITIES[k]
+                lines.append(f"  {k:<22} -> {e.name:<22} motion={e.motion_kind}")
+            return CommandResult(True, "\n".join(lines))
+        except Exception as e:
+            return CommandResult(True, f"ascii list failed: {e}")
+
+    return CommandResult(True,
+        f"unknown ascii subcommand: {sub}. Try /ascii with no args for usage.")
+
+
 def cmd_events(args: list[str]) -> CommandResult:
     """iter-53: read recent cmux-bus events.
 
@@ -721,6 +808,7 @@ COMMANDS: dict[str, Callable[[list[str]], CommandResult]] = {
     "recall": cmd_recall,  # P2-1 iter-50
     "swarm": cmd_swarm,    # P2-3 iter-51
     "events": cmd_events,  # iter-53 — read the cmux event_bus
+    "ascii": cmd_ascii,    # iter-54 — control SA-PH6 ascii_bridge
 }
 
 
