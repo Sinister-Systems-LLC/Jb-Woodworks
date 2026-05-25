@@ -98,6 +98,12 @@ def run_autonomous_loop() -> dict[str, Any]:
     cmd = [bash_path, str(AUTONOMOUS_LOOP)]
     log.info(f"Running: {' '.join(cmd)}")
 
+    # RKOJ-ELENO :: 2026-05-25 (iter-20) :: operator screenshot ~18:09Z shows
+    # this bash.exe spawn flashing a visible cmd window. Inject CREATE_NO_WINDOW
+    # (0x08000000) so the child runs fully hidden. Same fix pattern as
+    # eve.py iter-3 monkey-patch. Windows-only flag; safe no-op elsewhere.
+    _no_win = 0x08000000 if os.name == "nt" else 0
+
     started = time.time()
     try:
         proc = subprocess.run(
@@ -106,6 +112,7 @@ def run_autonomous_loop() -> dict[str, Any]:
             text=True,
             timeout=600,
             env={**os.environ},
+            creationflags=_no_win,
         )
     except subprocess.TimeoutExpired:
         return {"ok": False, "error": "loop timeout after 600s"}
