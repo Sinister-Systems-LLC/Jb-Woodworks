@@ -1,0 +1,5 @@
+let fd (opn "/tmp/in1.txt" R)
+let buf (alc 1024)
+rd fd buf 1024
+cls fd
+fre buf

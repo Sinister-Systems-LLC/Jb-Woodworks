@@ -13,7 +13,8 @@ import hgly  # noqa: E402
 
 
 def test_version() -> None:
-    assert hgly.__version__ == "0.0.1", f"unexpected version: {hgly.__version__}"
+    # Bumped to 0.0.2 in Phase 2 bootstrap (parser shipped).
+    assert hgly.__version__ == "0.0.2", f"unexpected version: {hgly.__version__}"
 
 
 if __name__ == "__main__":
