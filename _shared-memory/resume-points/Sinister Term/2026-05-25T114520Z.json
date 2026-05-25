@@ -1,0 +1,47 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-25T11:46:59.2766625Z",
+    "project":  "sinister-term",
+    "agent_name":  "Sinister Term",
+    "mode":  "resume",
+    "focus_intent":  "",
+    "git":  {
+                "branch":  "agent/sinister-sanctum/auto-start-no-agent-doctrine-2026-05-25",
+                "head":  "e6c08c9d5db08aca8113c2df3344a37bb74897cf",
+                "head_msg":  "sanctum: master TODO plan covering every operator ask + shipped vs gated breakdown (Author: RKOJ-ELENO :: 2026-05-25)",
+                "recent_commits":  [
+                                       "e6c08c9 sanctum: master TODO plan covering every operator ask + shipped vs gated breakdown (Author: RKOJ-ELENO :: 2026-05-25)",
+                                       "3cc759f sanctum: FULL-RELENTLESS SWARM FAN-OUT mindset doctrine + CLAUDE.md anchor",
+                                       "c62f6d3 sanctum: skills inventory + Sinister Designer scaffold + skills_router CLI",
+                                       "47bdeda sanctum iter-24: register body Phase B+C+D shipped (v0.97.55) ΓÇö only E gated on device (Author: RKOJ-ELENO :: 2026-05-25)",
+                                       "288ee7a sanctum: Sinister Sleight 8-color palette + glow upgrade + doctrine",
+                                       "37a5e9f sinister-os iter-23: VM preview FIX (novnc/x11vnc/port) + dashboard-skeleton inheritance design",
+                                       "5ae368e sanctum P0 FREEZE FIX: non-blocking probe + X-button handler + render watchdog",
+                                       "62e6e24 sanctum iter-23: snap register body capture plan (v0.97.54 hook shipped)",
+                                       "9841ebf sanctum iter-28 batch: jcode_wolf + crash_restore + Stop-EVE.bat + EVE.exe 2x at-launch",
+                                       "7b45c0d sinister-os iter-22: EXECUTION plan + same-day VM preview (Phase 1A) + jcode .desktop pattern"
+                                   ]
+            },
+    "progress_top3":  [
+                          "2026-05-25 11:44 â€” shipped: Sinister ASCII sub-project scaffold (SA-PH0 + SA-PH1 + SA-PH2 partial) + master plan + PH14 regression fix + cross-lane delegate",
+                          "2026-05-21 11:40 â€” recovered: PROGRESS file restored after concurrent inbox reorg",
+                          "2026-05-21 11:30 â€” shipped: PH7-PH11 Sinister Term enhancements"
+                      ],
+    "latest_plan":  {
+                        "dir":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\sinister-term-complete-everything-2026-05-25",
+                        "artifact":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\sinister-term-complete-everything-2026-05-25\\plan.md"
+                    },
+    "inbox_unread_count":  0,
+    "last_5_files_touched_24h":  [
+                                     "_shared-memory\\heartbeats\\sinister-vault.beat",
+                                     "_shared-memory\\knowledge\\_INDEX.md",
+                                     "_shared-memory\\eve-crash-log.jsonl",
+                                     "_shared-memory\\.eve-last-restart.json",
+                                     "_shared-memory\\loop-watchdog-state.json"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Sinister Term.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\plans\\sinister-term-complete-everything-2026-05-25\\plan.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}

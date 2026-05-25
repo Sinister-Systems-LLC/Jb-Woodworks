@@ -108,6 +108,92 @@ def build_parser() -> argparse.ArgumentParser:
     p_inj.add_argument("agent_slug")
     p_inj.add_argument("--limit", type=int, default=5)
 
+    # supersede
+    p_sup = sub.add_parser("supersede", help="mark memory NEW as superseding OLD")
+    p_sup.add_argument("new_id", help="path / stable id of the replacement memory")
+    p_sup.add_argument("old_id", help="path / stable id of the superseded memory")
+    p_sup.add_argument("--reason", default="", help="short why")
+
+    # supersede-chain
+    p_chain = sub.add_parser("supersede-chain", help="show the supersedes chain touching MEMORY_ID")
+    p_chain.add_argument("memory_id")
+
+    # mark-edge (typed graph edge per jcode EdgeKind taxonomy)
+    p_edge = sub.add_parser(
+        "mark-edge",
+        help="generic typed edge: Supersedes/Contradicts/RelatesTo/HasTag/InCluster",
+    )
+    p_edge.add_argument("src_id")
+    p_edge.add_argument("dst_id")
+    p_edge.add_argument(
+        "--kind",
+        required=True,
+        choices=("Supersedes", "Contradicts", "RelatesTo", "HasTag", "InCluster"),
+    )
+    p_edge.add_argument("--weight", type=float, default=None)
+    p_edge.add_argument("--reason", default="")
+
+    # cascade-retrieve
+    p_casc = sub.add_parser(
+        "cascade-retrieve",
+        help="BFS through edges graph from MEMORY_ID up to N hops",
+    )
+    p_casc.add_argument("memory_id")
+    p_casc.add_argument("--depth", type=int, default=2)
+    p_casc.add_argument(
+        "--kind",
+        action="append",
+        choices=("Supersedes", "Contradicts", "RelatesTo", "HasTag", "InCluster"),
+    )
+
+    # decay-recall
+    p_dr = sub.add_parser(
+        "decay-recall",
+        help="BM25 recall re-ranked by time-decay (recent memories boosted)",
+    )
+    p_dr.add_argument("topic")
+    p_dr.add_argument("--limit", type=int, default=5)
+    p_dr.add_argument("--half-life-days", type=float, default=None)
+    p_dr.add_argument(
+        "--category",
+        choices=("fact", "preference", "correction", "entity", "procedure", "inferred"),
+        help="use per-category half-life (overridden by --half-life-days if both set)",
+    )
+    p_dr.add_argument("--alpha", type=float, default=0.5)
+    p_dr.add_argument(
+        "--layer",
+        action="append",
+        choices=("brain", "progress", "heartbeat", "per-agent"),
+    )
+    p_dr.add_argument("--agent")
+    p_dr.add_argument("--gap-filter", action="store_true", help="enable jcode-style gap filter")
+
+    # cluster-dedupe
+    p_cd = sub.add_parser(
+        "cluster-dedupe",
+        help="run Jaccard dedupe pass over the index; marks dupes as superseded",
+    )
+    p_cd.add_argument("--threshold", type=float, default=0.85)
+    p_cd.add_argument("--limit", type=int, default=5000)
+    p_cd.add_argument(
+        "--layer",
+        action="append",
+        choices=("brain", "progress", "heartbeat", "per-agent"),
+        help="restrict dedupe to one or more layers (default: progress + per-agent)",
+    )
+    p_cd.add_argument("--dry-run", action="store_true")
+
+    # verify
+    p_v = sub.add_parser("verify", help="grade a memory file against its source via Haiku/heuristic")
+    p_v.add_argument("memory_path", help="path to the memory file to grade")
+    p_v.add_argument("--source", help="path to the source-of-truth file (optional)")
+    p_v.add_argument(
+        "--prefer",
+        choices=("auto", "online", "heuristic"),
+        default="auto",
+    )
+    p_v.add_argument("--model", default="claude-haiku-4-5-20251001")
+
     # version
     sub.add_parser("version", help="print version + exit")
 
@@ -185,11 +271,129 @@ def cmd_version(_args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_supersede(args: argparse.Namespace) -> int:
+    _root, db = _resolve_root_and_db(args)
+    from . import supersede
+
+    supersede.mark_supersedes(args.new_id, args.old_id, args.reason, db)
+    print(f"marked: {args.new_id} supersedes {args.old_id}")
+    return 0
+
+
+def cmd_supersede_chain(args: argparse.Namespace) -> int:
+    _root, db = _resolve_root_and_db(args)
+    from . import supersede
+
+    chain = supersede.chain_for(args.memory_id, db)
+    if not chain:
+        print("(no supersedes edges touching this id)")
+        return 0
+    for row in chain:
+        print(f"{row['ts_utc']} -- {row['new_id']} supersedes {row['old_id']} ({row['reason']})")
+    return 0
+
+
+def cmd_mark_edge(args: argparse.Namespace) -> int:
+    _root, db = _resolve_root_and_db(args)
+    from . import supersede
+
+    supersede.mark_edge(
+        src_id=args.src_id,
+        dst_id=args.dst_id,
+        kind=args.kind,
+        db_path=db,
+        weight=args.weight,
+        reason=args.reason,
+    )
+    print(f"edge: {args.src_id} --{args.kind}--> {args.dst_id}")
+    return 0
+
+
+def cmd_cascade_retrieve(args: argparse.Namespace) -> int:
+    _root, db = _resolve_root_and_db(args)
+    from . import supersede
+
+    related = supersede.cascade_retrieve(args.memory_id, db, depth=args.depth, kinds=args.kind)
+    if not related:
+        print("(no related memories within depth)")
+        return 0
+    for r in related:
+        print(r)
+    return 0
+
+
+def cmd_decay_recall(args: argparse.Namespace) -> int:
+    _root, db = _resolve_root_and_db(args)
+    from .decay import recall_with_decay
+    from .recall import format_hits_markdown
+
+    hits = recall_with_decay(
+        query=args.topic,
+        db_path=db,
+        limit=args.limit,
+        layers=args.layer,
+        agent=args.agent,
+        alpha=args.alpha,
+        half_life_days=args.half_life_days,
+        category=args.category,
+        gap_filter=args.gap_filter,
+    )
+    print(format_hits_markdown(hits))
+    return 0
+
+
+def cmd_cluster_dedupe(args: argparse.Namespace) -> int:
+    _root, db = _resolve_root_and_db(args)
+    from . import cluster
+
+    stats = cluster.dedupe(
+        db_path=db,
+        threshold=args.threshold,
+        layers=args.layer or ("progress", "per-agent"),
+        limit=args.limit,
+        dry_run=args.dry_run,
+    )
+    print(
+        f"scanned={stats['scanned']} clusters={stats['clusters']} "
+        f"edges_added={stats['edges_added']} dry_run={stats['dry_run']}"
+    )
+    return 0
+
+
+def cmd_verify(args: argparse.Namespace) -> int:
+    from . import verify
+
+    mem_path = Path(args.memory_path)
+    try:
+        memory_text = mem_path.read_text(encoding="utf-8", errors="replace")
+    except OSError as exc:
+        print(f"sinister-memory: cannot read memory: {exc}", file=sys.stderr)
+        return 2
+
+    source_path = Path(args.source) if args.source else None
+    v = verify.verify_memory(
+        memory_text=memory_text,
+        source_path=source_path,
+        model=args.model,
+        prefer=args.prefer,
+    )
+    print(f"verdict={v.verdict} model={v.model} cost_usd={v.cost_estimate_usd:.6f}")
+    print(f"reason: {v.reason}")
+    return 0
+
+
 DISPATCH = {
     "recall": cmd_recall,
     "save": cmd_save,
     "index": cmd_index,
     "inject-spawn-phrase": cmd_inject_spawn,
+    "supersede": cmd_supersede,
+    "supersede-chain": cmd_supersede_chain,
+    "mark-edge": cmd_mark_edge,
+    "cascade-retrieve": cmd_cascade_retrieve,
+    "decay-recall": cmd_decay_recall,
+    "cluster-dedupe": cmd_cluster_dedupe,
+    "verify": cmd_verify,
     "version": cmd_version,
 }
 

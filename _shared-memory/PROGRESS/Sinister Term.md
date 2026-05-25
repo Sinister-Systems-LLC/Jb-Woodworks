@@ -4,6 +4,9 @@ This file accumulates milestones for THIS agent across sessions. Most recent at 
 
 ---
 
+## 2026-05-25 11:44 — shipped: Sinister ASCII sub-project scaffold (SA-PH0 + SA-PH1 + SA-PH2 partial) + master plan + PH14 regression fix + cross-lane delegate
+Operator (2026-05-25T11:36Z): *"call it sinister ascii"*. Scaffolded `projects/sinister-term/sinister-ascii/` — README with operator vision + 5 anchor color families (crimson/cobalt/verdant/royal-indigo/sinister-violet) + 12 starter per-project entities (EVE-prime / Glyph-keeper / Forge-spark / Mind-weave / Watcher / Spark-tongue / Vault-warden / Memory-river / Hammer-of-cores / Panel-conductor / Linksmith / Sovereign) + 5 motion primitives (orbit/pulse/drift/spiral/breathe) with irrational-period anti-loop math. PH14 pytest regression fixed: restored test_dispatch.py + test_keybindings.py + test_status.py + conftest.py + added test_sinister_ascii_smoke.py — pytest 3 → 43 tests (all pass, 2.51s). Master plan written at `_shared-memory/plans/sinister-term-complete-everything-2026-05-25/plan.md` covering P0-P4. Cross-lane delegate sent to sanctum (launch 8 agents + create `eve-exe` project + add to picker; operator 11:37Z + 11:39Z) via inbox + cross-agent + fleet-update broadcast (fu-20260525074343-b159d8). New doctrine: `_shared-memory/knowledge/auto-start-agent-before-delegate-doctrine-2026-05-25.md` (check heartbeat before [DELEGATE]; auto-launch if stale).
+
 ## 2026-05-21 11:40 — recovered: PROGRESS file restored after concurrent inbox reorg
 Sibling agent (likely Sanctum on `agent/sinister-sanctum/launcher-v15-v16-2026-05-21` worktree) reset `_shared-memory/inbox/*` to .gitkeep stubs at ~11:20Z while I was mid-session. Lost the initial HELLO-ACK + first PROGRESS write. Re-creating both. Also taking the fleet-update message context (5 agents active: sanctum, term, rkoj, panel, apk) for forward work. NOT moving any files in other lanes — just restoring my own.
 

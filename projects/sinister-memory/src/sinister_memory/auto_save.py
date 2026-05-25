@@ -14,7 +14,7 @@ from __future__ import annotations
 import re
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Optional
+from typing import Optional  # noqa: F401
 
 
 SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9._-]{1,64}$")
@@ -31,22 +31,47 @@ def per_agent_dir(slug: str, root: Path) -> Path:
     return Path(root) / "_shared-memory" / "sinister-memory" / "per-agent" / _validate_slug(slug)
 
 
+# Schema v2: adds category + confidence + format_version. Cherry-picked from
+# jcode v0.12.4 src/memory.rs:96-111 MemoryEntry struct. Brain entry:
+# jcode-memory-audit-and-cherry-picks-2026-05-25.
+FRONTMATTER_VERSION = 2
+VALID_CATEGORIES = frozenset({"fact", "preference", "correction", "entity", "procedure", "inferred"})
+
+
 def save_iter_close(
     slug: str,
     iter_num: int,
     summary: str,
     root: Path,
     do_reindex: bool = False,
+    category: Optional[str] = None,
+    confidence: Optional[float] = None,
+    trust: Optional[str] = None,
 ) -> Path:
     """Write the iter-close memory file and return its path.
 
-    The file is markdown with a YAML-ish frontmatter block. Body is the summary
-    verbatim. Bash-safe: backticks in the summary are escaped so PowerShell
-    here-strings consuming the file later don't break.
+    The file is markdown with a YAML-ish frontmatter block (schema v2 -- includes
+    optional category/confidence/trust fields cherry-picked from jcode). Body is
+    the summary verbatim. Bash-safe: backticks in the summary are escaped so
+    PowerShell here-strings consuming the file later don't break.
+
+    Args:
+      category  : one of VALID_CATEGORIES; controls per-category half-life in decay
+      confidence: 0.0 - 1.0; reinforcement signal; used by future prune_low_confidence
+      trust     : one of {"high", "medium", "low"}; provenance grade (jcode-style)
     """
     slug_l = _validate_slug(slug)
     if not isinstance(iter_num, int) or iter_num < 0:
         raise ValueError(f"iter_num must be non-negative int, got {iter_num!r}")
+
+    if category is not None and category.lower() not in VALID_CATEGORIES:
+        raise ValueError(
+            f"invalid category {category!r}; must be one of {sorted(VALID_CATEGORIES)}"
+        )
+    if confidence is not None and not (0.0 <= float(confidence) <= 1.0):
+        raise ValueError(f"confidence must be in [0.0, 1.0], got {confidence!r}")
+    if trust is not None and trust.lower() not in {"high", "medium", "low"}:
+        raise ValueError(f"trust must be one of high/medium/low, got {trust!r}")
 
     summary = summary or "(no summary)"
     # Defensive: clamp absurdly long summaries
@@ -58,17 +83,24 @@ def save_iter_close(
     out_path = out_dir / f"iter-{iter_num:04d}.md"
 
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    body = (
-        f"---\n"
-        f"author: RKOJ-ELENO\n"
-        f"slug: {slug_l}\n"
-        f"iter: {iter_num}\n"
-        f"saved_at: {now}\n"
-        f"length: {len(summary)}\n"
-        f"---\n\n"
-        f"# {slug_l} :: iter-{iter_num:04d}\n\n"
-        f"{summary}\n"
-    )
+    fm_lines = [
+        "---",
+        f"format_version: {FRONTMATTER_VERSION}",
+        "author: RKOJ-ELENO",
+        f"slug: {slug_l}",
+        f"iter: {iter_num}",
+        f"saved_at: {now}",
+        f"length: {len(summary)}",
+    ]
+    if category is not None:
+        fm_lines.append(f"category: {category.lower()}")
+    if confidence is not None:
+        fm_lines.append(f"confidence: {float(confidence):.3f}")
+    if trust is not None:
+        fm_lines.append(f"trust: {trust.lower()}")
+    fm_lines.append("---")
+    body = "\n".join(fm_lines) + f"\n\n# {slug_l} :: iter-{iter_num:04d}\n\n{summary}\n"
+
     out_path.write_text(body, encoding="utf-8")
 
     if do_reindex:
@@ -78,6 +110,31 @@ def save_iter_close(
         indexer.build(Path(root), indexer.default_db_path(root))
 
     return out_path
+
+
+def parse_frontmatter(path: Path) -> dict:
+    """Read a saved iter-close file and return its frontmatter as a dict.
+
+    Back-compat: v1 files (no format_version) are returned with the keys they have;
+    callers should treat missing format_version as 1.
+    """
+    try:
+        text = Path(path).read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return {}
+    if not text.startswith("---\n"):
+        return {}
+    end = text.find("\n---\n", 4)
+    if end == -1:
+        return {}
+    block = text[4:end]
+    out: dict = {}
+    for line in block.splitlines():
+        if ":" not in line:
+            continue
+        k, _, v = line.partition(":")
+        out[k.strip()] = v.strip()
+    return out
 
 
 def list_iters(slug: str, root: Path) -> list[Path]:

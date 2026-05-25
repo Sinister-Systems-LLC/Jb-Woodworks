@@ -114,6 +114,34 @@ def try_ruflo_augment(query: str, fts_hits: list[Hit], limit: int = 5) -> list[H
     return fts_hits
 
 
+def apply_gap_filter(hits: Sequence[Hit], drop_ratio: float = 0.25, min_kept: int = 1) -> list[Hit]:
+    """Drop the noise tail when there's a large relative score drop between
+    consecutive hits. Cherry-picked from jcode v0.12.4 src/memory.rs:724-746.
+
+    Args:
+      hits      : hits already sorted best-first. Hit.score stores -relevance so
+                  smaller absolute score == better; positive relevance == -score.
+      drop_ratio: when the relative drop between consecutive relevances exceeds
+                  this fraction of the top relevance, truncate.
+      min_kept  : never drop below this many results.
+
+    Returns the truncated list (preserves input order).
+    """
+    if len(hits) <= min_kept:
+        return list(hits)
+    relevances = [-h.score for h in hits]
+    top = relevances[0] if relevances else 0.0
+    if top <= 0:
+        return list(hits)
+    cutoff = len(hits)
+    for i in range(1, len(hits)):
+        gap = relevances[i - 1] - relevances[i]
+        if gap > drop_ratio * top:
+            cutoff = i
+            break
+    return list(hits[: max(cutoff, min_kept)])
+
+
 def format_hits_markdown(hits: list[Hit]) -> str:
     """Render hits as a markdown list for CLI output or spawn-phrase embedding."""
     if not hits:
