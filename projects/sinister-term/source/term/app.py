@@ -65,6 +65,30 @@ try:
 except Exception:
     _log_crash = None
 
+# RKOJ-ELENO :: 2026-05-25 :: paste robustness + double-Ctrl+C tolerance
+# (ported from jcode src/tui/app/input.rs + ui_overlays.rs). Best-effort
+# imports so older installs still boot.
+try:
+    from term.paste_handler import (
+        PasteBuffer as _PasteBuffer,
+        install_paste_handler as _install_paste_handler,
+        expand_placeholders as _expand_placeholders,
+    )
+    _PASTE_BUFFER = _PasteBuffer()
+    _HAVE_PASTE = True
+except Exception:
+    _HAVE_PASTE = False
+    _PASTE_BUFFER = None
+    _expand_placeholders = lambda line, _buf: line  # noqa: E731
+
+try:
+    from term.hardened_input import InputLoopHardener as _Hardener
+    _HARDENER = _Hardener()
+    _HAVE_HARDENER = True
+except Exception:
+    _HAVE_HARDENER = False
+    _HARDENER = None
+
 
 HIST_DIR = SANCTUM_ROOT / "_shared-memory" / "sinister-term-history"
 HEARTBEAT = SANCTUM_ROOT / "_shared-memory" / "heartbeats" / "sinister-term.json"
@@ -255,18 +279,52 @@ def run() -> None:
     _write_heartbeat()
     _set_window_title()
 
+    # RKOJ-ELENO :: 2026-05-25 :: install paste handler so multi-line pastes
+    # get the [pasted N lines] placeholder treatment (jcode parity).
+    if _HAVE_PASTE and _PASTE_BUFFER is not None:
+        try:
+            def _on_placeholder(result):
+                if _LOG is not None:
+                    try:
+                        _LOG.info("STERM_PASTE_PLACEHOLDER",
+                                  lines=result.line_count,
+                                  has_url=result.image_url is not None)
+                    except Exception:
+                        pass
+            _install_paste_handler(session, _PASTE_BUFFER, on_placeholder=_on_placeholder)
+        except Exception:
+            pass
+
     while True:
         _set_window_title()  # refresh on every prompt so cd changes show
         _emit_pill_and_popup_if_enabled()  # name pill + jcode popup overlay
         try:
             line = session.prompt(_prompt_text())
         except KeyboardInterrupt:
-            console.print("[dim](^C — type /exit to quit)[/dim]")
+            # RKOJ-ELENO :: 2026-05-25 :: double-Ctrl+C exit pattern (jcode
+            # ui_overlays.rs:367 "press twice to confirm"). First press → hint
+            # only; second within window → clean exit.
+            if _HAVE_HARDENER and _HARDENER is not None and _HARDENER.on_ctrl_c():
+                console.print("[#A06EFF]> sterm out (^C^C)[/#A06EFF]")
+                break
+            console.print("[dim](^C — press again or type /exit to quit)[/dim]")
             continue
         except EOFError:
             # RKOJ-ELENO :: 2026-05-23 :: friendly Ctrl+D farewell (themed purple)
             console.print("[#A06EFF]> sterm out[/#A06EFF]")
             break
+
+        # Reset Ctrl+C tracker on any successful prompt — operator did
+        # something, they're not trying to exit.
+        if _HAVE_HARDENER and _HARDENER is not None:
+            _HARDENER.reset_ctrl_c()
+
+        # RKOJ-ELENO :: 2026-05-25 :: expand [pasted N lines] placeholders
+        # BEFORE strip/dispatch so the underlying shell/command sees the
+        # full text the operator originally pasted.
+        if _HAVE_PASTE and _PASTE_BUFFER is not None and len(_PASTE_BUFFER) > 0:
+            line = _expand_placeholders(line, _PASTE_BUFFER)
+            _PASTE_BUFFER.clear()  # one-shot per submit
 
         line = line.strip()
         if not line:
