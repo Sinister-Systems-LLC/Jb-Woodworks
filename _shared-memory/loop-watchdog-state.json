@@ -2,51 +2,51 @@
     "schema_version":  "sinister.loop-watchdog-state.v1",
     "agents":  {
                    "sanctum":  {
-                                   "last_poke_cycle_id":  "tick-23",
+                                   "last_poke_cycle_id":  "tick-33",
                                    "last_mtime_utc":  "2026-05-25T03:11:58Z",
                                    "last_iter":  21,
                                    "last_focus":  "Iter-21 RESUME: ack 5 NEW operator utterances (all already shipped per iter-19/20 resume-points), cleared 5 stale watchdog pokes, push 2 unpushed commits on agent branch (origin be9d3ab -\u003e HEAD 2a3be82), refresh heartbeat to clear stall signal. Loop relentless rule 8: re-poll utterances + inbox + fleet-updates after each ship.",
-                                   "last_poke_utc":  "2026-05-25T04:56:48Z",
-                                   "ticks_same_iter":  17,
-                                   "last_age_min":  104.7,
-                                   "last_seen_utc":  "2026-05-25T04:56:43Z",
-                                   "ticks_same_focus":  17
+                                   "last_poke_utc":  "2026-05-25T05:52:20Z",
+                                   "ticks_same_iter":  27,
+                                   "last_age_min":  160.3,
+                                   "last_seen_utc":  "2026-05-25T05:52:18Z",
+                                   "ticks_same_focus":  27
                                },
                    "jb-woodworks":  {
-                                        "last_poke_cycle_id":  "tick-23",
+                                        "last_poke_cycle_id":  "tick-33",
                                         "last_mtime_utc":  "2026-05-25T02:47:54Z",
                                         "last_iter":  1,
                                         "last_focus":  "",
-                                        "last_poke_utc":  "2026-05-25T04:56:45Z",
-                                        "ticks_same_iter":  22,
-                                        "last_age_min":  128.8,
-                                        "last_seen_utc":  "2026-05-25T04:56:43Z",
+                                        "last_poke_utc":  "2026-05-25T05:52:19Z",
+                                        "ticks_same_iter":  32,
+                                        "last_age_min":  184.4,
+                                        "last_seen_utc":  "2026-05-25T05:52:18Z",
                                         "ticks_same_focus":  1
                                     },
                    "sanctum-mintty-fix":  {
-                                              "last_poke_cycle_id":  "tick-23",
+                                              "last_poke_cycle_id":  "tick-33",
                                               "last_mtime_utc":  "2026-05-25T02:34:10Z",
                                               "last_iter":  19,
                                               "last_focus":  "RELENTLESS LOOP SYSTEM SHIPPED iter-19. Foreground: brain entry loop-relentless-pursuit-doctrine-2026-05-25 (4 sub-rules 8-11) + CLAUDE.md new TOP hard-canonical block (rules 8-11) + _INDEX.md row + decay sidecar 211/211 + HIGH fleet-update push. 3 sub-agents back: (F) loop-relentless-watchdog.ps1 + install-loop-watchdog-task.ps1 (DryRun found 3 stalled: me + sibling sanctum + sinister-chatbot); (G) agent-poke.ps1 + Desktop Poke-All-Sinister-Agents.bat (smoke verified); (H) launcher Build-Phrase RELENTLESS phrase + projects.json v10 27 projects flagged loop_relentless=true. Now running real watchdog Scan to poke stalled siblings; operator action: install schtask via install-loop-watchdog-task.ps1.",
-                                              "last_poke_utc":  "2026-05-25T04:56:47Z",
-                                              "ticks_same_iter":  23,
-                                              "last_age_min":  142.6,
-                                              "last_seen_utc":  "2026-05-25T04:56:43Z",
-                                              "ticks_same_focus":  23
+                                              "last_poke_utc":  "2026-05-25T05:52:19Z",
+                                              "ticks_same_iter":  33,
+                                              "last_age_min":  198.1,
+                                              "last_seen_utc":  "2026-05-25T05:52:18Z",
+                                              "ticks_same_focus":  33
                                           },
                    "sinister-chatbot":  {
-                                            "last_poke_cycle_id":  "tick-23",
+                                            "last_poke_cycle_id":  "tick-33",
                                             "last_mtime_utc":  "2026-05-25T01:40:32Z",
                                             "last_iter":  2,
                                             "last_focus":  "Phase 2 step 2 SHIPPED: DPO preference-pair miner endpoint at /api/chatter/training-dpo-export. 3-tier matching (exact → fuzzy ≥0.4 → weak). Per-persona JSONL output at data/sinister/training-dpo/\u003cslug\u003e.jsonl. Toolbar button on /chatter pings it; convo log surfaces match_breakdown. Dead TestsTab props cleaned.",
-                                            "last_poke_utc":  "2026-05-25T04:56:49Z",
-                                            "ticks_same_iter":  23,
-                                            "last_age_min":  196.2,
-                                            "last_seen_utc":  "2026-05-25T04:56:43Z",
-                                            "ticks_same_focus":  23
+                                            "last_poke_utc":  "2026-05-25T05:52:22Z",
+                                            "ticks_same_iter":  33,
+                                            "last_age_min":  251.8,
+                                            "last_seen_utc":  "2026-05-25T05:52:18Z",
+                                            "ticks_same_focus":  33
                                         }
                },
     "created_utc":  "2026-05-25T02:36:05Z",
-    "last_tick_utc":  "2026-05-25T04:56:43Z",
-    "tick_count":  23
+    "last_tick_utc":  "2026-05-25T05:52:18Z",
+    "tick_count":  33
 }

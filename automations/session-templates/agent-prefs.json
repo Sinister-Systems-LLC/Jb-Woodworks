@@ -60,16 +60,16 @@
                                                                                                 "accent_color":  "purple",
                                                                                                 "last_saved_at_utc":  "2026-05-25T02:32:18Z"
                                                                                             },
-                                                                      "sanctum":  {
-                                                                                      "agent_name":  "sanctum",
-                                                                                      "accent_color":  "purple",
-                                                                                      "last_saved_at_utc":  "2026-05-25T03:08:56Z"
-                                                                                  },
                                                                       "sinister-os":  {
                                                                                           "agent_name":  "sinister-os",
                                                                                           "accent_color":  "purple",
                                                                                           "last_saved_at_utc":  "2026-05-25T03:46:41Z"
-                                                                                      }
+                                                                                      },
+                                                                      "sanctum":  {
+                                                                                      "agent_name":  "sanctum",
+                                                                                      "accent_color":  "purple",
+                                                                                      "last_saved_at_utc":  "2026-05-25T05:48:50Z"
+                                                                                  }
                                                                   }
                                                  }
               }

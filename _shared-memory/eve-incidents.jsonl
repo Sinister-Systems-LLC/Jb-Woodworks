@@ -2,3 +2,4 @@
 {"ts_utc":"2026-05-24T22:21:49Z","kind":"claude-nonzero-exit","exit_code":3,"account":"operator","project":"eve-compliance","agent":"eve-compliance"}
 {"ts_utc":"2026-05-25T04:00:46Z","kind":"claude-nonzero-exit","exit_code":3,"account":"operator","project":"sinister-os","agent":"sinister-os"}
 {"ts_utc":"2026-05-25T04:05:08Z","kind":"claude-nonzero-exit","exit_code":3,"account":"operator","project":"sinister-os","agent":"sinister-os"}
+{"ts_utc":"2026-05-25T05:01:24Z","kind":"claude-nonzero-exit","exit_code":3,"account":"operator","project":"sanctum","agent":"sanctum"}

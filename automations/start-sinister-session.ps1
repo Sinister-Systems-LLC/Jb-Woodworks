@@ -1877,7 +1877,15 @@ function Launch-Session($projRec, $agentName, $accent, $phrase, $modes = $null) 
     # multi-byte unicode; bash OSC inside the spawned shell handles ◆ correctly). The
     # two converge once bash printf fires on line 1907 -- `-t` just bridges the cold
     # window-open gap.
-    $windowTitleAscii = "$agentName | swarm=$swarmTag | loop=$loopTag | acct=$accountForTitle | T$_titleTier | Sinister"
+    # RKOJ-ELENO :: 2026-05-25 :: BUG FIX -- title MUST NOT contain '|' or spaces.
+    # PS 5.1 Start-Process -ArgumentList fails to quote the -t arg reliably; mintty's
+    # argv parser then sees `-t sanctum` (first word only) followed by `|` and tries to
+    # exec `|` as a program -> exit 126 "Failed to run '|': No such file or directory".
+    # Single-word ASCII title with '-' separators is shell/argv-safe in all paths.
+    # The bash OSC printf at line ~1907 reinstates the full ◆-separated title once
+    # bash starts (~50ms after spawn), so this cold-open placeholder doesn't need the
+    # pretty formatting -- it just needs to NOT crash mintty.
+    $windowTitleAscii = "${agentName}-swarm=${swarmTag}-loop=${loopTag}-acct=${accountForTitle}-T${_titleTier}-Sinister"
 
     # RKOJ-ELENO :: 2026-05-23 :: Phase 1/2 — account name resolved earlier (above
     # the colormap block). $selectedAccountName + $selectedApiKey already set there.
@@ -2281,7 +2289,15 @@ fi
                 '-o', "BackgroundColour=$bgRgb",
                 '-o', "CursorColour=$curRgb",
                 '-o', 'FontSize=11',
-                '-o', 'Font=Cascadia Mono',
+                # RKOJ-ELENO :: 2026-05-25 :: BUG FIX -- 'Cascadia Mono' contains a space
+                # which triggers the same PS 5.1 Start-Process -ArgumentList quoting failure
+                # as the $windowTitleAscii bug. mintty splits on the space: parses
+                # `-o Font=Cascadia` (font dialog warns), then tries to exec `Mono` as the
+                # child program -> exit 126 "Failed to run 'Mono'". Consolas is single-word,
+                # ships on every Windows 10/11, and is the mintty default fallback anyway.
+                # If operator wants Cascadia look back: install it + change to 'Consolas' to
+                # any single-word installed font name OR fix Start-Process quoting plumbing.
+                '-o', 'Font=Consolas',
                 '-o', 'Term=xterm-256color',
                 '-o', 'Transparency=low',
                 '-o', 'OpaqueWhenFocused=yes',

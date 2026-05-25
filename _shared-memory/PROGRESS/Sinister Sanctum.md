@@ -1,4 +1,32 @@
-﻿## 2026-05-25 02:38 UTC — sanctum iter-19: RELENTLESS LOOP SYSTEM SHIPPED (operator 02:18Z "make it actually work aggressive")
+﻿## 2026-05-25 05:53 UTC — sanctum iter-22: cold-start RESUME consolidation (locks cleared + branch fix + 26 watchdog pokes acked + 2 utterances acked + heartbeat)
+
+**Author:** RKOJ-ELENO :: 2026-05-25 (sanctum lane)
+
+**Triage on resume:**
+- HEAD = e090b40 (iter-21 9-subagent ship, sanctum work) committed on wrong-prefix branch `agent/sinister-os/iter15-doctrine-adopt-2026-05-25` (push-policy convention violation). Cut new `agent/sinister-sanctum/iter22-consolidate-pokes-push-2026-05-25` from HEAD. Sinister-os branch leaves as label artifact (no data loss).
+- `.git/index.lock` (May 25 01:49Z) + `.git/next-index-46660.lock` (~37hr old) were both stale → removed. No live git process held them per tasklist.
+- 26 `loop-watchdog-poke` files (sanctum/ + sanctum-mintty-fix/ + jb-woodworks/ inboxes) → moved to `_acked/` per LOOP MODE RELENTLESS rule 11 (poke = "operator intent on stall", we're now active, signal handled).
+- 121 overseer-distribute messages remain in sanctum inbox — auto-distributed rate-limit fan-outs, already auto-actioned by claude-accounts.ps1 routing; FYI-only, no per-row action needed.
+
+**Operator utterances acked (was 2 NEW):**
+- `2026-05-25T00:58:47Z` (push-policy) → RESOLVED with deliverable list (sanctum-push-policy.ps1 + agent-branch-router.ps1 + docs/BRANCH-CONVENTION.md + 2 brain entries + CLAUDE.md hard-canonical, all iter-21 verified).
+- `2026-05-25T01:25:35Z` (image 65-67) → ACKED with partial-shipped status: (62)(63)(64) already in prior iters; STILL OPEN (61)(65)(66)(67) + IMAGE-4 mintty exit 126 → swarm-ship next iter.
+
+**Smoke:**
+- `git rev-parse --abbrev-ref HEAD` = agent/sinister-sanctum/iter22-consolidate-pokes-push-2026-05-25 ✓
+- `ls .git/*.lock` = (empty) ✓
+- `cat _shared-memory/heartbeats/sanctum.json` valid JSON with ts_utc 2026-05-25T05:52:43Z ✓
+- `ack-operator-utterance.ps1` both rows: exit 0, status flips persisted ✓
+
+**Next iter open queue:**
+- Push agent/sinister-sanctum/iter22-... to origin (sanctum-auto-push.ps1 PushNow)
+- Swarm-ship image-65-67 open items (61 centered menu / 65 enter binding+unlimited / 66 animations / 67 100%-real cleanup) + IMAGE-4 mintty exit 126 in spawn-setup-wizard.ps1 (lines 136+184)
+- Verify Sub-E (claude login flow, in-flight since iter-19) returned
+- Forever-improve Review on iter-22 deliverables
+
+---
+
+## 2026-05-25 02:38 UTC — sanctum iter-19: RELENTLESS LOOP SYSTEM SHIPPED (operator 02:18Z "make it actually work aggressive")
 
 **Author:** RKOJ-ELENO :: 2026-05-25 (sanctum-mintty-fix lane)
 

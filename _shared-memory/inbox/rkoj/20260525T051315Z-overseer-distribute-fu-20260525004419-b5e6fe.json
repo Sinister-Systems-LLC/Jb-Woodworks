@@ -1,0 +1,15 @@
+{
+    "ts_utc":  "2026-05-25T05:13:15Z",
+    "_author":  "RKOJ-ELENO :: 2026-05-25",
+    "to":  "rkoj",
+    "subject":  "Fleet-update fan-out: doctrine_update priority=normal",
+    "message":  "BRAIN updated: ancestral-remotion-artistic-doctrine-2026-05-25 - Author: RKOJ-ELENO :: 2026-05-25",
+    "rationale":  "Overseer auto-distributed because this fleet-update either targeted you OR mentioned your lane slug. Review + ack if actionable.",
+    "source_id":  "fu-20260525004419-b5e6fe",
+    "source_ts_utc":  "2026-05-25T04:44:19Z",
+    "from":  "overseer",
+    "source_priority":  "normal",
+    "tag":  "[OVERSEER-DISTRIBUTE]",
+    "source_pushed_by":  "sanctum",
+    "source_kind":  "doctrine_update"
+}
