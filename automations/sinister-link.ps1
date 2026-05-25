@@ -203,6 +203,14 @@ function Compute-State-Tag {
     if (-not $s) { return 'unlinked' }
     $peer = $s.peer.name
     if (-not $peer) { return 'unlinked' }
+    # RKOJ-ELENO :: 2026-05-25 Sub-G-followup2: surface the 'invited' state in the
+    # tag so EVE.exe header rows and -Action Status stdout both reflect the post-
+    # GenerateInvite-pre-AcceptInvite phase shipped by aeff2d4.
+    if ($s.state -eq 'invited') {
+        $peer_disp = $s.peer.display
+        if (-not $peer_disp) { $peer_disp = $peer }
+        return "invited $peer_disp (awaiting acceptance)"
+    }
     $last = $s.last_sync_utc
     if (-not $last) { return "linked to $peer (no sync yet)" }
     try {
