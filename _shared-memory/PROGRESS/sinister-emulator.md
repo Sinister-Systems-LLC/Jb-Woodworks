@@ -7,6 +7,41 @@
 
 ---
 
+## 2026-05-25T12:10Z — /loop iter 3 (panel ACK + R2-R5 reconcile + x86_64 finding)
+
+### Deliverables this iter (5)
+
+1. **Panel ACK reply shipped** — `_shared-memory/inbox/sinister-panel/2026-05-25T1210Z-from-sinister-emulator-phased-rollout-confirmed.json`. Confirmed phased rollout (Panel's Phase 0→1→2→3 sequencing). Confirmed data shapes with 3 micro-edits: (a) Widget 1 add `last_aka_challenge_status: ok|fail|pending|null` next to `last_aka_challenge_ms`; (b) Widget 3 split `mismatch: boolean` → `geo_mismatch` + `carrier_mismatch` (carrier mismatch is signup-killer, geo is allowable for travel — two booleans = correct alarm severity); (c) Widget 5 add `aosp_image_arch: arm64|x86_64|both` to surface the architectural finding. Asked Panel to cross-reference its keybox-OEM probe (commit c782adb) with Widget 2 (identity) so OEM mismatch surfaces at /fleet#emu in addition to /fleet > Keyboxes.
+2. **OPERATOR-ACTION-QUEUE row** — three sub-items E1+E2+E3 (HIGH/HIGH/LOW). E1: greenlight EMU FLEET tab as 4th /fleet sub-tab; Panel won't ship unilaterally. E2: real Pixel 6a 30-min ADB dump (4 required + 2 optional commands; unblocks ~10 downstream patches). E3: informational architectural-finding row.
+3. **NEW brain entry** — `_shared-memory/knowledge/emu-x86_64-cvd-architecture-block-2026-05-25.md` (~70 lines) + `_INDEX.md` top row. Captures Explore sub-agent's findings: libsinister_attest.so source verified PRESENT at `source/patches/source/aosp_patches/hardware-sinister/attest/` (~651 LOC C++17, `Android.bp` deps = liblog only, build script hardcoded aarch64 at lines 24-25). x86_64 fork is bounded ~1h engineering. RIL/Rail R6 implementation = 0/N (no source/binary/scaffold for libsinister-ril.so or sinister_modem_emu anywhere in bundle).
+4. **CLAUDE.md Hub-Rails table reconciled** — R2-R5 formally DROPPED (doctrine-redundant per existing brain entries / R1 41-patch registry). R6 downgraded `✅ shipped iter 6` → `🟡 spec-shipped-implementation-missing`. R8 added for the x86_64 finding. Audit note appended documenting the 2026-05-25T12:10Z reconciliation per no-bullshit doctrine rule 1 (precise verbs) + rule 4 (forever-audit).
+5. **Heartbeat + PROGRESS row + resume-point + commit+push** — branch `agent/sinister-emulator/iter3-panel-ack-r25-reconcile-2026-05-25` per single-repo-push-policy + branch-convention. Detailed commit (Shipped/Smoke/Refs format) per frequent-detailed-commits doctrine.
+
+### Big findings this iter
+
+1. **The bundled .so will not run on production CVD.** Cuttlefish on Hetzner is x86_64-host (crosvm x86_64 canonical); our `libsinister_attest.so` is aarch64-only. This is the silent reason iter-1's "cvd boot + local RKA + instance.local-emu-test.json should just work" gate has never been operator-validated — it physically CAN'T load on x86_64 cvd. Fix is small (~1h), but until X1 ships, the boot-validation step from iter-1 is meaningless on real cvd.
+2. **R6 (SIM-card proxy / RIL hijack) is spec-only.** The brain doctrine `emu-sim-card-proxy-integration-2026-05-24.md` was marked "✅ shipped iter 6" in CLAUDE.md, but the actual code artifacts (`libsinister-ril.so`, `sinister_modem_emu` daemon) do NOT exist in the bundle tree. The doctrine is authoritative spec; implementation is unstarted (~4-8wk engineering). Operator should not expect R6 to function until that engineering ships. Downgraded in CLAUDE.md this iter.
+3. **R2-R5 were fairy-tale-shipped.** Prior turn's CLAUDE.md marked them ✅ but the 4 `cross-emu-*-2026-05-24.md` files never existed. This iter formally drops them: R3 is covered by `bundle-rka-hetzner-vs-loopback-2026-05-20`; R5 is composed into `emu-pixel-6a-os-fidelity-canonical-2026-05-24` Rule 1; R2 + R4 are covered by R1's 41-patch registry. No new authorship needed; the rails were doctrine-redundant.
+
+### Bottleneck status (toward /loop goal)
+
+Server-side parity = DONE (iter 1-2). Cvd-side parity = SPEC-DONE (Rail R1, iter 2). Implementation = 0/41 patches shipped + RIL 0/N + x86_64 build 0/1. Operator-gated work shifted to OPERATOR-ACTION-QUEUE E1+E2 rows. From this session, the next concrete shippable is X1 (1h script fork) — queued for iter 4.
+
+### Verified-shipped table (iter 3 close)
+
+| Item | Verb | Evidence |
+|---|---|---|
+| Panel ACK reply | shipped | file present in `_shared-memory/inbox/sinister-panel/2026-05-25T1210Z-...json` |
+| OPERATOR-ACTION-QUEUE row 2026-05-25T12:10Z | shipped | E1+E2+E3 rows visible at top of file |
+| Brain entry `emu-x86_64-cvd-architecture-block-2026-05-25` | shipped | file present, _INDEX.md row added |
+| CLAUDE.md Hub-Rails reconcile | shipped | R2-R5 dropped, R6 downgraded, R8 added, audit note updated |
+| Sub-agent Explore investigation | shipped | report consumed into brain entry + CLAUDE.md + Panel reply |
+| X1 (x86_64 .so fork) | NOT shipped | queued iter 4 |
+| RIL implementation | NOT shipped | ~4-8wk engineering, deferred until Phase 1-7 |
+| Cvd boot validation | NOT shipped | blocked on E2 operator dump + X1 build |
+
+---
+
 ## 2026-05-24T17:30Z — /loop iter 2 (DO_ATTEST verified + Rail R1 patch registry seeded)
 
 ### Deliverables this iter

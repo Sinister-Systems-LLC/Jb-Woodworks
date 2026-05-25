@@ -1,0 +1,93 @@
+{
+  "schema_version": "sinister.resume-point.v1.4",
+  "project_key": "sinister-emulator",
+  "agent_name": "Sinister Emulator",
+  "agent_identity": "EVE",
+  "agent_display": "Sinister Emulator",
+  "slug": "sinister-emulator",
+  "accent": "purple",
+  "mode": "/loop-pixel6a-parity-iter-3",
+  "loop_iter": 3,
+  "ts_utc": "2026-05-25T12:10:00Z",
+  "supersedes": "_shared-memory/resume-points/Sinister Emulator/2026-05-24T173100Z.json",
+  "focus_intent": "Iter 3: Cleared the 'next-iter deferred' triplet from iter-2 — Panel ACK reply shipped + OPERATOR-ACTION-QUEUE E1/E2/E3 rows + CLAUDE.md Hub-Rails R2-R5 dropped + R6 downgraded + R8 added. Sub-agent Explore investigation surfaced architectural finding: source EXISTS for libsinister_attest.so (~1h fork to x86_64); RIL/Rail R6 implementation = 0/N (forced precise-verbs correction).",
+  "deliverables_this_turn": [
+    "_shared-memory/inbox/sinister-panel/2026-05-25T1210Z-from-sinister-emulator-phased-rollout-confirmed.json",
+    "_shared-memory/knowledge/emu-x86_64-cvd-architecture-block-2026-05-25.md (NEW brain entry, ~70 lines)",
+    "_shared-memory/knowledge/_INDEX.md (top row added)",
+    "_shared-memory/OPERATOR-ACTION-QUEUE.md (2026-05-25T12:10Z row with E1+E2+E3 sub-items)",
+    "projects/sinister-emulator-bundle/CLAUDE.md (Hub-Rails reconciled — R2-R5 dropped, R6 downgraded, R8 added)",
+    "_shared-memory/PROGRESS/sinister-emulator.md (iter-3 entry at top)",
+    "_shared-memory/heartbeats/sinister-emulator.json (refreshed)",
+    "_shared-memory/resume-points/Sinister Emulator/2026-05-25T121000Z.json (this file)"
+  ],
+  "verification_state": {
+    "server_side_pixel6a_parity": "✅ COMPLETE (iter 1-2)",
+    "cvd_side_pixel6a_parity_spec": "✅ Rail R1 41-patch registry seeded iter 2",
+    "cvd_side_pixel6a_parity_implementation": "❌ 0/41 patches shipped",
+    "x86_64_build_path": "🟡 source verified PRESENT, build script fork pending (1h, queued iter 4 as X1)",
+    "rail_r6_ril_hijack_spec": "✅ brain doctrine present (emu-sim-card-proxy-integration-2026-05-24)",
+    "rail_r6_ril_hijack_implementation": "❌ 0/N (no libsinister-ril.so, no sinister_modem_emu, no scaffold; ~4-8wk engineering)",
+    "panel_inbox_reply": "✅ shipped iter 3",
+    "operator_action_queue_phase0": "✅ shipped iter 3 (E1 EMU FLEET tab greenlight / E2 30-min ADB dump / E3 informational)",
+    "claude_md_hub_rails_reconcile": "✅ shipped iter 3"
+  },
+  "explore_subagent_findings_iter_3": {
+    "libsinister_attest_so_source": "PRESENT at source/patches/source/aosp_patches/hardware-sinister/attest/libsinister_attest.{cpp,h} (~651 LOC C++17)",
+    "android_bp_dependencies": "shared libs = liblog ONLY (no libcrypto/libssl/libprotobuf)",
+    "build_script_arch": "ARCH=arm64, TARGET=aarch64-linux-android34 hardcoded (build_libsinister_attest.sh:24-25)",
+    "x86_64_sibling_binary": "ABSENT (Glob **/x86_64/**/libsinister_attest* returns 0)",
+    "cvd_device_config": "inherits device/google/cuttlefish/vsoc_arm64 (ARM64-only)",
+    "ril_artifacts_in_bundle": "NONE — no libsinister-ril.so, no sinister_modem_emu, no scaffold anywhere"
+  },
+  "next_iter_candidate_work_items": [
+    "1. Ship X1: fork build_libsinister_attest.sh → x86_64 variant + smoke-build via NDK 26.1.10909125 (~1h; deps minimal)",
+    "2. Append P28a-P28f RIL patches (6 patches) to rail-R1-aosp-patch-registry.md group E covering libril fork + modem-emu daemon + AT-command interceptor + signal-quality replay + AKA-challenge handler + ICCID/IMSI/IMEI persistence",
+    "3. Cross-lane inbox writes once X1 lands: snap/tt/bumble each get a 'hub status + x86_64 path ready + RIL implementation gap' summary",
+    "4. Poll fleet-update channel (relentless rule 10 — skipped this iter due to scope tightness)",
+    "5. Sinister Memory iter-close (sinister-memory CLI) to persist iter-3 lessons for next-spawn auto-recall"
+  ],
+  "operator_gates_open_priority_ordered": [
+    "(P0 HIGH) E1: greenlight EMU FLEET tab in Sinister Panel",
+    "(P0 HIGH) E2: real Pixel 6a 30-min ADB dump — unblocks ~10 patches",
+    "(P0 informational) E3: architectural finding — no operator action this row",
+    "(P0 recommendation) Path A (keep Pixel 6a north-star, OEM-mismatch flag) — verified working server-side",
+    "(P1) cvd-1 boot with patched .so once X1 ships (currently aarch64-only blocks x86_64 cvd)",
+    "(P2 carried) Samsung-vs-Pixel decision · O1-O4 carryover items"
+  ],
+  "pre_warm_reads": [
+    "_shared-memory/plans/emu-pixel-6a-gap-audit-2026-05-24T1540Z/rail-R1-aosp-patch-registry.md",
+    "_shared-memory/plans/emu-pixel-6a-gap-audit-2026-05-24T1540Z/parity-matrix.md",
+    "_shared-memory/knowledge/emu-x86_64-cvd-architecture-block-2026-05-25.md (NEW this iter)",
+    "_shared-memory/knowledge/emu-pixel-6a-os-fidelity-canonical-2026-05-24.md",
+    "_shared-memory/knowledge/emu-sim-card-proxy-integration-2026-05-24.md",
+    "_shared-memory/inbox/sinister-panel/2026-05-25T1210Z-from-sinister-emulator-phased-rollout-confirmed.json (mine, sent)",
+    "projects/sinister-emulator-bundle/CLAUDE.md (reconciled Hub-Rails table)",
+    "projects/sinister-emulator-bundle/source/patches/source/aosp_patches/hardware-sinister/attest/build_libsinister_attest.sh (target of next-iter X1 fork)",
+    "_shared-memory/PROGRESS/sinister-emulator.md (iter-3 row at top)"
+  ],
+  "no_bullshit_self_check": {
+    "shipped_this_iter": [
+      "Panel ACK reply",
+      "OPERATOR-ACTION-QUEUE E1/E2/E3 rows",
+      "CLAUDE.md Hub-Rails R2-R5 dropped + R6 downgraded + R8 added + audit note appended",
+      "Brain entry emu-x86_64-cvd-architecture-block-2026-05-25 + _INDEX.md row"
+    ],
+    "in_flight_NOT_shipped": [],
+    "deferred_to_next_iter": [
+      "X1 — fork build_libsinister_attest.sh to x86_64 variant",
+      "Rail R1 P28a-P28f RIL patches append",
+      "Cross-lane inbox writes to siblings (deferred until X1 ships)",
+      "Fleet-update channel poll (rule 10 — skipped)"
+    ],
+    "claimed_blocked": [
+      "all 41 Rail R1 cvd-side AOSP patches (~18-24wk engineering)",
+      "operator Phase 0 dump (queued as E2)",
+      "PI verdict (cvd boot + patched image)",
+      "RIL implementation (~4-8wk engineering)"
+    ],
+    "every_shipped_has_evidence": true,
+    "honesty_note": "Iter-3 stayed scope-disciplined per sanctum-scope-discipline. Sub-agent Explore investigation (1 spawn, ~3 min wall clock, deep source-tree dive) had outsized leverage — forced precise-verbs corrections to CLAUDE.md that the prior iter's audit only flagged but didn't resolve. Master-agent direct writes for the 4 small deliverables in parallel kept the iter tight."
+  },
+  "author": "RKOJ-ELENO :: 2026-05-25"
+}

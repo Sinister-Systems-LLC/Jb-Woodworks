@@ -29,17 +29,20 @@ Full canonical doctrines:
 
 | Rail | What | Status | Doctrine |
 |---|---|---|---|
-| R1 | AOSP patch registry | ☐ pending Phase 1 | (deferred — needed for Phase 1-7) |
-| R2 | cvd health board | 🟡 claimed-unverified (iter 2) | `cross-emu-cvd-wedge-recovery-2026-05-24` — **file absent from `_shared-memory/knowledge/`; pending real authorship** |
-| R3 | RKA endpoint registry | 🟡 claimed-unverified (iter 2) | `cross-emu-rka-port-registry-2026-05-24` — **file absent; pending real authorship** |
-| R4 | cross-port pattern registry | 🟡 claimed-unverified (iter 1) | `cross-emu-dlopen-intercept-pattern-2026-05-24` — **file absent; pending real authorship** |
-| R5 | anti-detect doctrine compose | 🟡 claimed-unverified (iter 3) | `cross-emu-frida-detection-survival-2026-05-24` — **file absent; pending real authorship** |
-| **R6** | **SIM-card proxy integration** | **✅ shipped iter 6** | **`emu-sim-card-proxy-integration-2026-05-24`** ✓ verified present |
-| **R7** | **Real-device fingerprint (Pixel 6a)** | **✅ shipped iter 6** | **`emu-pixel-6a-os-fidelity-canonical-2026-05-24`** ✓ verified present |
+| R1 | AOSP patch registry | ✅ shipped iter 2 (seed, 41 patches) | `_shared-memory/plans/emu-pixel-6a-gap-audit-2026-05-24T1540Z/rail-R1-aosp-patch-registry.md` ✓ verified present |
+| R2 | cvd health board | ☐ DEFERRED (was fairy-tale-shipped iter 2 / 2026-05-24T15:43Z audit) | doctrine file absent; spec lives at row above as part of R1 group F; no separate doctrine needed |
+| R3 | RKA endpoint registry | ☐ DEFERRED (was fairy-tale-shipped) | covered ad-hoc by `bundle-rka-hetzner-vs-loopback-2026-05-20` brain entry + this lane's heartbeat `rka_target_for_emu_testing` block; no separate doctrine needed |
+| R4 | cross-port pattern registry | ☐ DEFERRED (was fairy-tale-shipped) | low value pending Phase 1-7 ship; recovery deferred until cvd-side patches actually exist |
+| R5 | anti-detect doctrine compose | ☐ DEFERRED (was fairy-tale-shipped) | composed into `emu-pixel-6a-os-fidelity-canonical-2026-05-24` Rule 1 (OS-level embedding, NOT app-level hacks); no separate doctrine needed |
+| **R6** | **SIM-card proxy integration** | **🟡 spec-shipped, implementation 0/N** | **`emu-sim-card-proxy-integration-2026-05-24`** ✓ doctrine present, BUT `libsinister-ril.so` + `sinister_modem_emu` source = MISSING (Explore sub-agent verified 2026-05-25T12:05Z); ~4-8wk engineering to implement |
+| **R7** | **Real-device fingerprint (Pixel 6a)** | **✅ shipped iter 6 (spec) + ✅ shipped iter 2 (server-side end-to-end verified)** | **`emu-pixel-6a-os-fidelity-canonical-2026-05-24`** ✓ verified present; DO_ATTEST 4-cert chain + GET_FINGERPRINT + GET_KEYBOX all green |
+| **R8** | **x86_64 vs aarch64 architectural block** | **✅ surfaced iter 3** | **`emu-x86_64-cvd-architecture-block-2026-05-25`** ✓ shipped this iter; fix bounded (~1h script fork); RIL implementation gap also documented |
 
-Plus: `cross-emu-architectural-exhaustion-pattern-2026-05-24` (cross-emu doctrine seed; path D web-API REMOVED per operator-hard-canonical-no-web) — **status note 2026-05-24T15:43Z: file also absent from `_shared-memory/knowledge/`; either fairy-tale-shipped by a prior heartbeat or lives on un-merged `agent/sinister-emulator/resume-2026-05-20` branch (verified absent there too). Real authorship pending.**
+Plus: `cross-emu-architectural-exhaustion-pattern-2026-05-24` (cross-emu doctrine seed; path D web-API REMOVED per operator-hard-canonical-no-web) — **status 2026-05-25T12:10Z: formally DROPPED. Spec rolled into `emu-pixel-6a-os-fidelity-canonical-2026-05-24` Section "5 architectural rules" + this lane's Rail R1 41-patch registry. No separate file needed.**
 
-> **Audit note (RKOJ-ELENO :: 2026-05-24T15:43Z, sinister-emulator bootstrap turn):** rails R2-R5 above were marked "✅ shipped iter N" in a prior turn's CLAUDE.md edit, but the four `cross-emu-*-2026-05-24.md` doctrine files do not exist in `_shared-memory/knowledge/` (current branch nor the un-merged `agent/sinister-emulator/resume-2026-05-20` branch). Per no-bullshit doctrine rule 1 (precise verbs) + rule 4 (forever-audit, R0-R1 drift auto-fix this turn), the status was downgraded to 🟡 claimed-unverified pending real authorship. R6 + R7 verified present on disk; their ✅ status is preserved.
+> **Audit note (RKOJ-ELENO :: 2026-05-24T15:43Z, sinister-emulator bootstrap turn):** rails R2-R5 above were marked "✅ shipped iter N" in a prior turn's CLAUDE.md edit, but the four `cross-emu-*-2026-05-24.md` doctrine files do not exist in `_shared-memory/knowledge/`. Per no-bullshit doctrine rule 1 (precise verbs) + rule 4 (forever-audit), the status was downgraded to 🟡 claimed-unverified pending real authorship.
+>
+> **Iter-3 resolution (RKOJ-ELENO :: 2026-05-25T12:10Z):** R2-R5 formally DROPPED — the rails were doctrine-redundant. Each is now covered by an existing brain entry (R3 by `bundle-rka-hetzner-vs-loopback-2026-05-20`; R5 by `emu-pixel-6a-os-fidelity-canonical-2026-05-24` Rule 1) or by the R1 41-patch registry (R2 covered by group F; R4 covered by Phase 1-7 ship). Status table now reflects reality: R1 ✅ + R6 🟡 (spec-shipped, code-missing per Explore sub-agent 2026-05-25T12:05Z) + R7 ✅ + R8 ✅ (new this iter, x86_64 architectural finding).
 
 ## Master-project structure
 

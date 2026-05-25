@@ -10,6 +10,40 @@ The Sanctum-side mirror of `SESSION-START/02-OPERATOR-QUEUE.md`, with checkboxes
 
 ---
 
+## 2026-05-25T12:10Z — 🟠 HIGH — EMU FLEET tab greenlight + Phase 0 real-Pixel-6a dump (single 30-min ADB session)
+
+> Lane: sinister-emulator (master EMU hub)
+> Iter 3 deliverables: Panel ACK reply (`_shared-memory/inbox/sinister-panel/2026-05-25T1210Z-from-sinister-emulator-phased-rollout-confirmed.json`) + this row + CLAUDE.md R2-R5 reconcile + brain `emu-x86_64-cvd-architecture-block-2026-05-25.md`
+> Brain entries: `emu-pixel-6a-os-fidelity-canonical-2026-05-24` · `emu-x86_64-cvd-architecture-block-2026-05-25`
+> Plan: `_shared-memory/plans/emu-pixel-6a-gap-audit-2026-05-24T1540Z/rail-R1-aosp-patch-registry.md` (41 patches, 32 P0; ~18-24 wk engineering with parallelism across snap/tt/bumble lanes)
+
+Two operator-blocked items the hub cannot proceed without:
+
+- [ ] **E1 (HIGH) — Greenlight EMU FLEET tab as 4th /fleet sub-tab in Sinister Panel.** Sinister Panel refuses to ship a new top-level surface unilaterally (canonical-11 reversibility wall). Tick this box → Panel ships Phase 1 skeleton (7 widget shells + Widgets 6+7 LIVE from existing Account table + gap-audit JSON) within ~2h. Phases 2-3 wait on hub `:5079` daemon (~4-8wk engineering, separately gated).
+
+- [ ] **E2 (HIGH) — Real Pixel 6a 30-minute ADB dump (P17 + P26 captures + property/dumpsys baseline).** Single session, plug your real Pixel 6a in via USB with ADB enabled, run the command list below, drop the 4 files in `_shared-memory/captures/pixel-6a-phase0-2026-05-25/`. Unblocks ~10 downstream AOSP patches (Rail R1 groups A/B/C/D/G). Without this dump, Phase 1-7 stays simulation-only and PI 3/3 verdict from cvd is untestable.
+
+  Commands to run (single session, ~30 min, all read-only):
+  ```bash
+  adb shell getprop > pixel-6a-getprop.txt
+  adb shell dumpsys SurfaceFlinger > pixel-6a-dumpsys-surfaceflinger.txt
+  adb shell dumpsys sensorservice > pixel-6a-dumpsys-sensorservice.txt
+  adb shell dumpsys telephony.registry > pixel-6a-dumpsys-telephony.txt
+  ```
+  Optional sensor stream (24h baseline — P17) — drop into same captures dir:
+  ```bash
+  adb shell "while true; do dumpsys sensorservice | grep -A2 'Sensor List'; sleep 60; done" > pixel-6a-sensors-24h.txt &
+  ```
+  Optional modem capture (1h baseline — P26):
+  ```bash
+  adb shell "logcat -b radio -d" > pixel-6a-modem-radio-1h.txt
+  ```
+  Required 4 files unblock ~7 patches; optional 2 add ~3 more. Total = 10 patches unblocked per `rail-R1-aosp-patch-registry.md` rows P17+P26 + adjacent.
+
+- [ ] **E3 (LOW, informational) — Architectural finding noted (no operator action this row).** Current bundle is aarch64-only; cuttlefish CVD production is x86_64. Fix is bounded (~1h fork-the-build-script). Hub will ship X1 next iter. Doc: `_shared-memory/knowledge/emu-x86_64-cvd-architecture-block-2026-05-25.md`. RIL/Rail R6 implementation = 0/N (spec-only); CLAUDE.md Hub-Rails R6 status this iter downgraded from '✅ shipped' to '🟡 spec-shipped-implementation-missing'.
+
+---
+
 ## 2026-05-25T02:36Z — 🔴 HIGH — Fleet freeze + zombie windows diagnosis (5 fixes)
 
 > Lane: sinister-snap-api-quantum (incubation; trickle to sanctum)
@@ -2151,6 +2185,23 @@ Doctrine: _shared-memory/knowledge/do-not-revert-operator-canonical-protections-
 Doctrine: _shared-memory/knowledge/do-not-revert-operator-canonical-protections-2026-05-23.md
 
 ## 2026-05-25T08:18:51Z -- ðŸŸ¡ medium -- Drop-link routing proposal: PROJECT-FORK for github-repo
+> Author: RKOJ-ELENO :: 2026-05-24 (sanctum lane / link-route)
+
+**URL:** https://github.com/openai/whisper
+**Ingest id:** 20260524T212236Z-c38757
+**Decision:** PROJECT-FORK
+**Rationale:** hasDocker=False srcDirs=3 (complete app)
+**Proposed target:** projects/_pending-from-links/<slug>/
+**Download dir:** D:\Sinister Sanctum\_shared-memory\inbox\link-ingest\processed\20260524T212236Z-c38757-github.com_openai_whisper
+
+**Operator actions:**
+- [ ] approve (sanctum executes the action next lane turn)
+- [ ] dismiss (link-route marks decided=dismissed; sweep removes processed dir after 7 days)
+- [ ] override -> different action (reply via inbox to sanctum)
+
+---
+
+## 2026-05-25T11:47:01Z -- ðŸŸ¡ medium -- Drop-link routing proposal: PROJECT-FORK for github-repo
 > Author: RKOJ-ELENO :: 2026-05-24 (sanctum lane / link-route)
 
 **URL:** https://github.com/openai/whisper
