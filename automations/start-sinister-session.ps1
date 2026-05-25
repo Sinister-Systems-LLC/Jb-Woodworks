@@ -1344,11 +1344,18 @@ function Build-Phrase($projRec, $agentName, $mode, $isGeneral, $isScaffold, $mod
         # work. make it agressive and make it hafve agents relentless pursue goal within our
         # guidelines using our tools iwhen on." Flip default loop spawn to RELENTLESS preset.
         # Kept ≤105 chars to clear classifier; full rules in CLAUDE.md + relentless doctrine slug.
-        $phrase += " LOOP MODE on RELENTLESS (CLAUDE.md LOOP MODE + loop-relentless-pursuit-2026-05-25 + use our tools)."
-        # RKOJ-ELENO :: 2026-05-25 :: relentless variant pointer (≤130 chars) — operator-facing
-        # cue so child knows: ship-then-next-iter, check queues/utterances/fleet-updates, cap
-        # ScheduleWakeup at 270s, contradict on 3 same-focus heartbeats. Full rules in CLAUDE.md.
-        $phrase += " RELENTLESS variant: see CLAUDE.md LOOP MODE rule 8 (relentless pursuit + tool-reach + no-end-turn-with-work-queued)."
+        # RKOJ-ELENO :: 2026-05-25T06:35Z :: gate RELENTLESS phrase on $modes.loop_relentless.
+        # Default = relentless per operator hard-canonical 06:30Z 'make sure loop and swarm
+        # mode come on by deafult for each agent'. If operator typed 'on' (non-relentless),
+        # ship plain LOOP MODE phrase.
+        $isRelentless = $true
+        if ($modes.PSObject.Properties.Name -contains 'loop_relentless') { $isRelentless = [bool]$modes.loop_relentless }
+        if ($isRelentless) {
+            $phrase += " LOOP MODE on RELENTLESS (CLAUDE.md LOOP MODE + loop-relentless-pursuit-2026-05-25 + use our tools)."
+            $phrase += " RELENTLESS variant: see CLAUDE.md LOOP MODE rule 8 (relentless pursuit + tool-reach + no-end-turn-with-work-queued)."
+        } else {
+            $phrase += " LOOP MODE on (CLAUDE.md LOOP MODE rules 1-7 — non-relentless; ship+iterate but normal ScheduleWakeup cadence)."
+        }
         # RKOJ-ELENO :: 2026-05-24 :: operator ~20:05Z "you need to of course expand on what
         # they say as it could be couple words you turn into a couple sentences". Example given:
         # "/loop do not stop testing, auditing, fixing, expanding things until you have created
@@ -1384,27 +1391,62 @@ function Build-Phrase($projRec, $agentName, $mode, $isGeneral, $isScaffold, $mod
 
 function Prompt-AgentModes {
     # RKOJ-ELENO :: 2026-05-24 v3 :: two-question prompt + loop-default-on.
-    # Operator verbatim 2026-05-24T19:36Z: *"always have loop on by default. Once i pick
-    # project ask me if i want to use swarm. then ask if i want to keep loop on"*.
-    # Precedence for the *default value* of each toggle (highest first):
-    #   1. projects.json entry's default_modes.{swarm,loop}
-    #   2. env vars SINISTER_DEFAULT_SWARM / SINISTER_DEFAULT_LOOP
-    #   3. swarm=off, loop=on (fleet defaults — operator-set 2026-05-24T19:36Z)
+    # RKOJ-ELENO :: 2026-05-25T06:35Z v4 :: loop=relentless + swarm=on DEFAULT for every
+    # spawn per operator hard-canonical 06:30Z 'make sure loop and swarm mode come on by
+    # deafult for each agent'. Empty-Enter picks new defaults. Operator can still type
+    # 'off'/'n' to disable, or 'on' for non-relentless loop.
+    # Doctrine: loop-swarm-default-on-doctrine-2026-05-25.md.
+    # Precedence (highest first):
+    #   1. projects.json default_modes.{swarm,loop} (loop = 'relentless'/'on'/'off' string or bool)
+    #   2. env vars SINISTER_DEFAULT_SWARM / SINISTER_DEFAULT_LOOP (0/1)
+    #   3. swarm=on, loop=relentless (fleet defaults — operator-set 2026-05-25T06:30Z)
     param($ProjectRec = $null)
-    $defSwarm = if ($env:SINISTER_DEFAULT_SWARM) { ($env:SINISTER_DEFAULT_SWARM -eq '1') } else { $false }
+    $defSwarm = if ($env:SINISTER_DEFAULT_SWARM) { ($env:SINISTER_DEFAULT_SWARM -eq '1') } else { $true }
     $defLoop  = if ($env:SINISTER_DEFAULT_LOOP)  { ($env:SINISTER_DEFAULT_LOOP  -eq '1') } else { $true  }
+    $defLoopRelentless = $true
     if ($ProjectRec -and $ProjectRec.PSObject.Properties.Name -contains 'default_modes' -and $ProjectRec.default_modes) {
         $dm = $ProjectRec.default_modes
         if ($dm.PSObject.Properties.Name -contains 'swarm') { $defSwarm = [bool]$dm.swarm }
-        if ($dm.PSObject.Properties.Name -contains 'loop')  { $defLoop  = [bool]$dm.loop  }
+        if ($dm.PSObject.Properties.Name -contains 'loop') {
+            $loopVal = $dm.loop
+            if ($loopVal -is [string]) {
+                $lv = $loopVal.ToLower().Trim()
+                if ($lv -eq 'off' -or $lv -eq 'false' -or $lv -eq '0') {
+                    $defLoop = $false; $defLoopRelentless = $false
+                } elseif ($lv -eq 'relentless') {
+                    $defLoop = $true; $defLoopRelentless = $true
+                } else {
+                    $defLoop = $true; $defLoopRelentless = $false
+                }
+            } else {
+                $defLoop = [bool]$loopVal
+            }
+        }
+        if ($dm.PSObject.Properties.Name -contains 'loop_relentless') { $defLoopRelentless = [bool]$dm.loop_relentless }
     }
-    # RKOJ-ELENO :: 2026-05-24 :: env preset for loop-condition (e.g. headless re-spawn).
     $defLoopCond = if ($env:SINISTER_DEFAULT_LOOP_CONDITION) { $env:SINISTER_DEFAULT_LOOP_CONDITION } else { '' }
     if ($env:SINISTER_SKIP_MODES_PROMPT -eq '1') {
-        return @{ swarm = $defSwarm; loop = $defLoop; loop_condition = $defLoopCond }
+        return @{ swarm = $defSwarm; loop = $defLoop; loop_relentless = $defLoopRelentless; loop_condition = $defLoopCond; priority = 3 }
     }
-    function _PromptYN([string]$Question, [bool]$Default) {
-        $defStr = if ($Default) { 'Y/n' } else { 'y/N' }
+    # RKOJ-ELENO :: 2026-05-25T07:17Z Sub-Q :: QUICK-LAUNCH MODE.
+    # Operator hard-canonical 07:17Z (Image 7+8): "make this entire process way more
+    # efficent with the quickest way to open my termionials". Picker passes
+    # SINISTER_QUICK_LAUNCH=1 when operator hits Q at the picker; we then skip ALL
+    # prompts and return defaults. Also: env override SINISTER_QUICK=1 for headless.
+    if ($env:SINISTER_QUICK_LAUNCH -eq '1' -or $env:SINISTER_QUICK -eq '1') {
+        $defPri = 3
+        if ($ProjectRec -and $ProjectRec.PSObject.Properties.Name -contains 'tier' -and $ProjectRec.tier) {
+            try { $defPri = [int]$ProjectRec.tier } catch { $defPri = 3 }
+        }
+        if ($env:SINISTER_DEFAULT_PRIORITY) {
+            try { $defPri = [int]$env:SINISTER_DEFAULT_PRIORITY } catch {}
+        }
+        Write-Host ''
+        Write-Host '  [quick-launch] all prompts skipped (swarm=on loop=relentless priority=T' $defPri ')' -ForegroundColor $C.Dim
+        return @{ swarm = $defSwarm; loop = $defLoop; loop_relentless = $defLoopRelentless; loop_condition = $defLoopCond; priority = $defPri }
+    }
+    function _PromptYN([string]$Question, [bool]$Default, [string]$DefaultLabel = '') {
+        $defStr = if ($DefaultLabel) { $DefaultLabel } elseif ($Default) { 'Y/n' } else { 'y/N' }
         Write-Host -NoNewline ('  ' + $Question + ' [' + $defStr + ']: ') -ForegroundColor $C.LightP
         $ans = Read-Host
         if (-not $ans) { return $Default }
@@ -1421,8 +1463,57 @@ function Prompt-AgentModes {
     }
     Write-Host ''
     Write-Host '  Modes (jcode-parity autonomy):' -ForegroundColor $C.White
-    $swarm = _PromptYN 'Use swarm? (spawn parallel sub-agents for multi-file work)' $defSwarm
-    $loop  = _PromptYN 'Keep loop on? (keep iterating + expanding; do not stop on first solution)' $defLoop
+    Write-Host '  (operator 2026-05-25T07:17Z: empty-Enter at FIRST prompt = accept ALL defaults, skip the rest.)' -ForegroundColor $C.Dim
+    # RKOJ-ELENO :: 2026-05-25T07:17Z Sub-Q :: 1-Enter shortcut. Operator
+    # hard-canonical "quickest way to open my termionials". If operator hits
+    # Enter at the swarm question, we ACCEPT all defaults and skip the
+    # remaining loop / priority prompts entirely.
+    $swarmDefStr = if ($defSwarm) { 'Y/n' } else { 'y/N' }
+    Write-Host -NoNewline ('  Use swarm? (spawn parallel sub-agents for multi-file work) [' + $swarmDefStr + ', Enter=ALL defaults]: ') -ForegroundColor $C.LightP
+    $swarmAns = Read-Host
+    if (-not $swarmAns) {
+        $defPriOneShot = 3
+        if ($ProjectRec -and $ProjectRec.PSObject.Properties.Name -contains 'tier' -and $ProjectRec.tier) {
+            try { $defPriOneShot = [int]$ProjectRec.tier } catch { $defPriOneShot = 3 }
+        }
+        if ($env:SINISTER_DEFAULT_PRIORITY) {
+            try { $defPriOneShot = [int]$env:SINISTER_DEFAULT_PRIORITY } catch {}
+        }
+        $loopLabel = if ($defLoopRelentless) { 'relentless' } elseif ($defLoop) { 'on' } else { 'off' }
+        Write-Host ('  [1-Enter shortcut] swarm=' + ($defSwarm.ToString().ToLower()) + ' loop=' + $loopLabel + ' priority=T' + $defPriOneShot) -ForegroundColor $C.Dim
+        return @{ swarm = $defSwarm; loop = $defLoop; loop_relentless = $defLoopRelentless; loop_condition = $defLoopCond; priority = $defPriOneShot }
+    }
+    $a = $swarmAns.ToLower().Trim()
+    $swarm = switch -Regex ($a) {
+        '^(y|yes|on|true|1)$'   { $true  }
+        '^(n|no|off|false|0)$'  { $false }
+        default {
+            $defWord = if ($defSwarm) { 'yes' } else { 'no' }
+            Write-Host ('  (unrecognized: "' + $swarmAns + '") -> using default: ' + $defWord) -ForegroundColor $C.Dim
+            $defSwarm
+        }
+    }
+    # RKOJ-ELENO :: 2026-05-25T06:35Z :: loop is now tri-state at prompt level.
+    Write-Host -NoNewline ('  Loop mode? (off / on / relentless) [default: relentless]: ') -ForegroundColor $C.LightP
+    $loopAns = Read-Host
+    $loopRelentless = $defLoopRelentless
+    if (-not $loopAns) {
+        $loop = $defLoop
+        $loopRelentless = $defLoopRelentless
+    } else {
+        $la = $loopAns.ToLower().Trim()
+        switch -Regex ($la) {
+            '^(off|n|no|false|0)$'         { $loop = $false; $loopRelentless = $false }
+            '^(relentless|r|rel)$'         { $loop = $true;  $loopRelentless = $true  }
+            '^(on|y|yes|true|1)$'          { $loop = $true;  $loopRelentless = $false }
+            default {
+                $defWord = if ($defLoopRelentless) { 'relentless' } elseif ($defLoop) { 'on' } else { 'off' }
+                Write-Host ('  (unrecognized: "' + $loopAns + '") -> using default: ' + $defWord) -ForegroundColor $C.Dim
+                $loop = $defLoop
+                $loopRelentless = $defLoopRelentless
+            }
+        }
+    }
     # RKOJ-ELENO :: 2026-05-24 :: operator ~20:00Z "if i enable loop on the question after
     # swarm it asks me the loop condition. for example in the snap apk creator i told it
     # loop do not stop until you have created a snapchat account and pushed to panel for
@@ -1464,7 +1555,7 @@ function Prompt-AgentModes {
     Write-Host '  > preparing spawn (live progress):' -ForegroundColor $C.LightP
     Write-Host '    [stage                ] status     elapsed' -ForegroundColor $C.Dim
     Write-Host '    ------------------------ ---------- --------' -ForegroundColor $C.Dim
-    return @{ swarm = $swarm; loop = $loop; loop_condition = $loopCond; priority = $priority }
+    return @{ swarm = $swarm; loop = $loop; loop_relentless = $loopRelentless; loop_condition = $loopCond; priority = $priority }
 }
 
 # Per-stage progress emitter. Called from Launch-Session at each stage boundary so operator
@@ -1771,6 +1862,24 @@ function Launch-Session($projRec, $agentName, $accent, $phrase, $modes = $null) 
                 }
             }
             $selectedAccountName = $next.name
+            # RKOJ-ELENO :: 2026-05-25 :: pre-launch rate-limit governor (sub-E iter-25 P0.4).
+            # Per operator hard-canonical 2026-05-25T07:00:45Z "rate-limit in check"+"no issues
+            # running all agents"+"operator-floor reserve". Governor reads slot scores +
+            # operator-floor reservation; non-zero exit = abort spawn before mintty opens so
+            # operator sees the reason instead of an in-mintty crash. Composes with
+            # claude-wrapper auto-429 (post-launch). The pre-launch_rate_limit_governor.py
+            # script is fail-safe: missing => no-op (exit 0).
+            $_governorPy = Join-Path $SanctumRoot 'automations\launch_rate_limit_governor.py'
+            if (Test-Path $_governorPy) {
+                $_projectKey = if ($Project -and $Project.key) { $Project.key } else { 'sanctum' }
+                $_gOut = & python $_governorPy --pre-launch $_projectKey --account $selectedAccountName 2>&1
+                if ($LASTEXITCODE -ne 0) {
+                    Write-Host "  [GOVERNOR] pre-launch refused project='$_projectKey' acct='$selectedAccountName' (rc=$LASTEXITCODE): $(($_gOut | Out-String).Trim())" -ForegroundColor $C.Warn
+                    Write-Host '  [press Enter to return to picker]' -ForegroundColor $C.Dim
+                    Read-Host | Out-Null
+                    return
+                }
+            }
             # RKOJ-ELENO :: 2026-05-24 :: OAuth pivot (operator 22:50Z "we want logged in
             # claude 20x max session and going off that usage"). If the chosen slot is
             # auth_mode='oauth', swap its credentials.<slot>.json into ~/.claude/.credentials.json
