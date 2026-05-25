@@ -45,7 +45,15 @@ param(
     [double]$RegressTolerance = 0.0,
     [string]$CounterArgClaim = '',
     [string]$SanctumRoot = 'D:\Sinister Sanctum',
-    [switch]$DryRun
+    [switch]$DryRun,
+    # RKOJ-ELENO :: 2026-05-25 :: checkpoint+revert wiring (operator hard-canonical
+    # "stops once quality goes down and reverts back to the peak of the part").
+    # Pass repo-relative paths (files or dirs) to snapshot before each ImproveCommand.
+    # When -RevertOnRegression is set and stopReason='regression', the loop calls
+    # `python automations/loop_checkpoint.py restore-best` to restore the peak iter.
+    # Both params are no-op when empty/unset; legacy callers keep working unchanged.
+    [string[]]$CheckpointPaths = @(),
+    [switch]$RevertOnRegression
 )
 
 $ErrorActionPreference = 'Stop'
@@ -84,9 +92,65 @@ $bestIter = -1
 $stopReason = 'max-iters'
 $startUtc = _Now
 
+# RKOJ-ELENO :: 2026-05-25 :: checkpoint manager probe. Python module ships at
+# automations/loop_checkpoint.py (see no-bat-no-ps1 doctrine for why new artifact
+# is .py not .ps1). If the file is missing OR python is not on PATH, checkpoint
+# wiring silently no-ops -- legacy behavior preserved.
+$ckptScript = Join-Path $SanctumRoot 'automations\loop_checkpoint.py'
+$ckptEnabled = ($CheckpointPaths.Count -gt 0) -and (Test-Path $ckptScript)
+if ($ckptEnabled) {
+    Write-Host "  checkpoint paths: $($CheckpointPaths -join ', ')" -ForegroundColor DarkGray
+}
+
+function _CkptSave {
+    param([int]$IterN)
+    if (-not $ckptEnabled) { return }
+    if ($DryRun) {
+        Write-Host "  [dry-run] would checkpoint iter=$IterN" -ForegroundColor DarkGray
+        return
+    }
+    try {
+        $args = @('save', '--lane', $Lane, '--run-id', $runId, '--iter', "$IterN",
+                  '--paths') + $CheckpointPaths + @('--sanctum-root', $SanctumRoot)
+        $out = & python $ckptScript @args 2>&1
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "  [WARN] checkpoint save failed: $out" -ForegroundColor Yellow
+        }
+    } catch {
+        Write-Host "  [WARN] checkpoint save exception: $_" -ForegroundColor Yellow
+    }
+}
+
+function _CkptRestoreBest {
+    if (-not $ckptEnabled) { return $null }
+    if ($DryRun) {
+        Write-Host "  [dry-run] would restore-best lane=$Lane run=$runId" -ForegroundColor DarkGray
+        return $null
+    }
+    try {
+        $out = & python $ckptScript 'restore-best' '--lane' $Lane '--run-id' $runId `
+                                    '--sanctum-root' $SanctumRoot 2>&1 | Out-String
+        if ($LASTEXITCODE -eq 0) {
+            return $out.Trim()
+        } else {
+            Write-Host "  [WARN] restore-best failed (exit=$LASTEXITCODE): $out" -ForegroundColor Yellow
+            return $null
+        }
+    } catch {
+        Write-Host "  [WARN] restore-best exception: $_" -ForegroundColor Yellow
+        return $null
+    }
+}
+
 Write-Host "quality-monotonic-loop: run_id=$runId lane=$Lane task='$TaskName' max=$MaxIters plateau=$PlateauCount" -ForegroundColor Cyan
 
 for ($iter = 0; $iter -lt $MaxIters; $iter++) {
+    # Snapshot BEFORE the iter's improve fires so iter=0 has a baseline + every
+    # subsequent iter snapshots its own pre-improve state. Restore picks the
+    # iter with max score from quality-loop-log.jsonl, so the baseline at iter=0
+    # also acts as the "ship-the-current-version" rollback if everything degrades.
+    _CkptSave -IterN $iter
+
     if ($iter -gt 0 -and $ImproveCommand -and -not $DryRun) {
         # Red-team BEFORE applying improvement (composes with contradict-system focus)
         if ($CounterArgClaim) {
@@ -143,6 +207,19 @@ for ($iter = 0; $iter -lt $MaxIters; $iter++) {
     }
 }
 
+# RKOJ-ELENO :: 2026-05-25 :: revert-to-peak on regression. Operator hard-canonical
+# "stops once quality goes down and reverts back to the peak of the part". Only
+# fires when -RevertOnRegression and stopReason indicates degradation.
+$revertInfo = $null
+if ($RevertOnRegression -and ($stopReason -eq 'regression' -or $stopReason -like 'plateau-*') -and $ckptEnabled) {
+    Write-Host ''
+    Write-Host "[REVERT] $stopReason detected; restoring peak iter $bestIter (score=$bestScore)..." -ForegroundColor Yellow
+    $revertInfo = _CkptRestoreBest
+    if ($revertInfo) {
+        Write-Host "[REVERT] $revertInfo" -ForegroundColor Green
+    }
+}
+
 $summary = [pscustomobject]@{
     run_id = $runId
     started_utc = $startUtc
@@ -154,11 +231,14 @@ $summary = [pscustomobject]@{
     best_iter = $bestIter
     stop_reason = $stopReason
     score_history = $scoreHistory
+    checkpoint_paths = $CheckpointPaths
+    reverted = ($null -ne $revertInfo)
 }
 _AppendLog ($summary | Select-Object *, @{n='kind';e={'summary'}})
 
 Write-Host ''
 Write-Host "FINAL: best_score=$bestScore at iter $bestIter / $($scoreHistory.Count) iters / stop=$stopReason" -ForegroundColor Cyan
+if ($revertInfo) { Write-Host "REVERTED to iter $bestIter" -ForegroundColor Cyan }
 Write-Host "log: $logFile (run_id=$runId)"
 
 return $bestScore

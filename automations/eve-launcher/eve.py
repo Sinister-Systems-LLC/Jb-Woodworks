@@ -608,6 +608,14 @@ def _maybe_run_first_run_wizard(force: bool = False) -> None:
     if not detector.exists():
         return
     # Detector exit codes: 0=ready, 1=hard-block first-run, 2=soft-warn.
+    # RKOJ-ELENO :: 2026-05-25 (eve-exe iter-4) :: BUG FIX -- operator hard-canonical
+    # 2026-05-25 ~13:40Z "stop having the setup run for me make it a true 1 and done
+    # and other things just make them load on updates etc". Prior logic fired the
+    # wizard on returncode != 0, which meant EVERY launch on a soft-warn (network
+    # blip, MCP server briefly down, scheduled task not yet registered) triggered
+    # the full 5-step wizard. ONLY hard-blocks (exit 1) should fire the wizard;
+    # soft-warns (exit 2) are advisory and the marker drops anyway so subsequent
+    # launches short-circuit even if a transient soft-warn flares.
     try:
         r = _subprocess.run(
             ["powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass",
@@ -616,8 +624,9 @@ def _maybe_run_first_run_wizard(force: bool = False) -> None:
         )
     except Exception:
         return
-    if r.returncode == 0 and not force:
-        # Drop EVE marker so we skip the detector on next launch.
+    if r.returncode in (0, 2) and not force:
+        # Drop EVE marker so we skip the detector on next launch -- soft-warns
+        # are advisory, not blockers. "True one-and-done" per operator directive.
         try:
             eve_marker.parent.mkdir(parents=True, exist_ok=True)
             eve_marker.write_text(
@@ -626,7 +635,7 @@ def _maybe_run_first_run_wizard(force: bool = False) -> None:
             )
         except Exception:
             pass
-        return  # already set up; skip wizard
+        return  # already set up OR only soft-warns; skip wizard
     # First-run OR forced: surface banner + invoke wizard interactively
     print()
     if force:
