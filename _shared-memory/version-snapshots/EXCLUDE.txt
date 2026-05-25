@@ -1,0 +1,59 @@
+# EXCLUDE.txt — globs that version_snapshot.py skips when walking the repo
+# Author: RKOJ-ELENO :: 2026-05-25
+# Format: one glob per line; '#' starts a comment; blank lines OK.
+# Matched via fnmatch.fnmatch() against the path RELATIVE to repo root.
+
+# Anthropic SDK caches (mutate every Claude call; would bloat every snapshot)
+_shared-memory/anthropic-usage-cache.*.json
+_shared-memory/anthropic-usage-cache.*.json.bak-*
+
+# OAuth credentials + secrets (security)
+_shared-memory/claude-accounts.json
+_shared-memory/claude-accounts.json.bak-*
+_shared-memory/forge-bridge-token.txt
+_shared-memory/forge-bridge-token.txt.bak-*
+_vault/auth/**
+_vault/secrets/**
+
+# All .bak files (transient)
+**/*.bak
+**/*.bak-*
+**/*.bak.*
+
+# Python bytecode + virtual envs + tool caches
+**/__pycache__/**
+**/*.pyc
+**/.venv/**
+**/venv/**
+**/node_modules/**
+**/.pytest_cache/**
+**/.ruff_cache/**
+**/.mypy_cache/**
+
+# Build artifacts (large, regeneratable)
+automations/window-manager/build/**
+automations/window-manager/dist/**
+build/**
+dist/**
+*.spec
+
+# Ephemeral / runtime state
+_shared-memory/heartbeats/**
+_shared-memory/spawned-windows.jsonl
+_shared-memory/spawned-windows.jsonl.lock
+_shared-memory/loop-watchdog-state.json
+_shared-memory/script-runs/**
+_shared-memory/window-positions/**
+
+# Projects/ junctions — never walk into per-project repos
+# (use os.walk(followlinks=False) + is_symlink/is_junction check)
+projects/**
+
+# Temp + tmp suffixes
+**/*.tmp
+**/*.tmp.*
+**/*.temp
+EVE.exe.tmp.*
+
+# Sub-agent transcript caches
+.claude/tasks/**
