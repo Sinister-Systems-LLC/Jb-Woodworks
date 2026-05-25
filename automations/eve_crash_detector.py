@@ -58,6 +58,15 @@ EVE_IMAGE_NAMES = {"eve.exe"}
 ALIVE_GRACE_S = 15        # signal B grace
 ALIVE_LONG_S = 300        # signal A "alive too long"
 LOCK_STALE_S = 30 * 60    # signal E
+
+# Auto-restart: paths tried in order
+EVE_EXE_CANDIDATES = [
+    SANCTUM_ROOT / "EVE.exe",
+    SANCTUM_ROOT / "automations" / "eve-launcher" / "dist" / "EVE.exe",
+]
+# Cooldown: don't restart more than once every N seconds (prevents boot-loop)
+RESTART_COOLDOWN_S = 90
+_RESTART_STATE = SANCTUM_ROOT / "_shared-memory" / ".eve-last-restart.json"
 INCIDENT_LOOKBACK_S = 5 * 60
 
 
@@ -247,6 +256,149 @@ def run_kill_bat(reason: str, signals: list[dict]) -> int:
     return rc
 
 
+def _eve_exe_path() -> Path | None:
+    """Return first existing EVE.exe candidate."""
+    for p in EVE_EXE_CANDIDATES:
+        if p.exists():
+            return p
+    return None
+
+
+def _restart_cooldown_ok() -> bool:
+    """Return True if enough time has passed since last restart."""
+    try:
+        if not _RESTART_STATE.exists():
+            return True
+        state = json.loads(_RESTART_STATE.read_text(encoding="utf-8"))
+        last_ts = state.get("ts", 0)
+        return (time.time() - last_ts) >= RESTART_COOLDOWN_S
+    except Exception:
+        return True
+
+
+def auto_restart_eve(reason: str) -> bool:
+    """Kill EVE.exe then relaunch it detached. Returns True if relaunch fired.
+
+    RKOJ-ELENO :: 2026-05-25 :: operator hard-canonical:
+    'auto detect when it sticks and make sure auto update works as it keeps
+     fucking crashing and causing agents to stall'.
+
+    Steps:
+    1. psutil.terminate() all eve.exe procs (graceful first)
+    2. wait 2s, force-kill any survivors
+    3. run Kill-Stuck-EVE.bat (cleans title-matched windows + orphan python)
+    4. wait 1.5s
+    5. Popen EVE.exe detached so watchdog schtask exits cleanly
+    6. write cooldown stamp
+    """
+    if not _restart_cooldown_ok():
+        print("[eve-crash-detector] auto-restart: cooldown active, skipping.")
+        return False
+
+    eve_exe = _eve_exe_path()
+    print(f"[eve-crash-detector] auto-restart triggered: {reason}")
+    print(f"[eve-crash-detector] EVE.exe path: {eve_exe}")
+
+    # Step 1-2: terminate EVE procs
+    procs = _eve_procs()
+    for p in procs:
+        try:
+            p.terminate()
+            print(f"  terminated PID {p.pid}")
+        except (psutil.NoSuchProcess, psutil.AccessDenied):
+            pass
+    if procs:
+        psutil.wait_procs(procs, timeout=3)
+    # Force-kill survivors
+    still = _eve_procs()
+    for p in still:
+        try:
+            p.kill()
+            print(f"  force-killed PID {p.pid}")
+        except (psutil.NoSuchProcess, psutil.AccessDenied):
+            pass
+
+    # Step 3: run Kill-Stuck-EVE.bat (cleans orphan python + titled windows)
+    if KILL_BAT.exists():
+        try:
+            subprocess.run([str(KILL_BAT)], shell=False, timeout=20,
+                           capture_output=True)
+        except Exception:
+            pass
+
+    time.sleep(1.5)
+
+    # Step 4: write cooldown stamp BEFORE launch so re-entrant schtask fires see it
+    try:
+        _RESTART_STATE.write_text(json.dumps({"ts": time.time(), "reason": reason}),
+                                   encoding="utf-8")
+    except Exception:
+        pass
+
+    # Step 5: relaunch
+    if eve_exe is None:
+        print("[eve-crash-detector] auto-restart: EVE.exe NOT FOUND — skipping relaunch.")
+        _append_jsonl(CRASH_LOG, {"ts": _now_iso(), "event": "auto_restart_no_exe",
+                                   "reason": reason})
+        return False
+
+    try:
+        # DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP so the watchdog schtask
+        # can exit without killing the newly launched EVE window.
+        DETACHED = 0x00000008
+        NEW_GROUP = 0x00000200
+        subprocess.Popen(
+            [str(eve_exe)],
+            creationflags=DETACHED | NEW_GROUP,
+            close_fds=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        print(f"[eve-crash-detector] auto-restart: launched {eve_exe}")
+        _append_jsonl(CRASH_LOG, {
+            "ts": _now_iso(), "event": "auto_restart", "reason": reason,
+            "exe": str(eve_exe),
+        })
+        return True
+    except Exception as exc:
+        print(f"[eve-crash-detector] auto-restart: launch FAILED: {exc}", file=sys.stderr)
+        _append_jsonl(CRASH_LOG, {"ts": _now_iso(), "event": "auto_restart_failed",
+                                   "reason": reason, "error": str(exc)})
+        return False
+
+
+def install_watchdog_schtask() -> int:
+    """Install SinisterEVEWatchdog schtask: scan+auto-kill+auto-restart every 60s.
+
+    RKOJ-ELENO :: 2026-05-25 :: operator 'auto detect when it sticks'.
+    Idempotent: Delete+recreate so the XML always matches current python path.
+    """
+    python_exe = sys.executable
+    this_script = Path(__file__).resolve()
+    cmd = (f'"{python_exe}" "{this_script}" --scan --auto-kill --auto-restart')
+    task_name = "SinisterEVEWatchdog"
+    # Delete old if present (idempotent)
+    subprocess.run(["schtasks", "/Delete", "/TN", task_name, "/F"],
+                   capture_output=True)
+    # Create: run every 1 minute indefinitely
+    result = subprocess.run([
+        "schtasks", "/Create",
+        "/TN", task_name,
+        "/TR", cmd,
+        "/SC", "MINUTE", "/MO", "1",
+        "/RL", "HIGHEST",
+        "/F",
+    ], capture_output=True, text=True)
+    if result.returncode == 0:
+        print(f"[eve-crash-detector] {task_name} schtask installed (every 1 min).")
+        _append_jsonl(CRASH_LOG, {"ts": _now_iso(), "event": "watchdog_installed",
+                                   "task": task_name})
+        return 0
+    else:
+        print(f"[eve-crash-detector] schtask create FAILED: {result.stderr.strip()}", file=sys.stderr)
+        return 5
+
+
 def pre_compile_clear(dry_run: bool = False) -> int:
     """Always-kill EVE.exe before rebuild. Returns 0 cleared, 2 still alive."""
     procs = _eve_procs()
@@ -313,11 +465,18 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="EVE.exe crash / hang detector + auto-rescue")
     ap.add_argument("--scan", action="store_true", help="run detection; exit 1 if crash detected")
     ap.add_argument("--auto-kill", action="store_true", help="with --scan: run Kill-Stuck-EVE.bat on detection")
+    ap.add_argument("--auto-restart", action="store_true",
+                    help="with --scan --auto-kill: also relaunch EVE.exe after killing (cooldown 90s)")
     ap.add_argument("--pre-compile", action="store_true", help="kill any running EVE.exe before rebuild")
     ap.add_argument("--dry-run", action="store_true", help="with --pre-compile: don't actually kill")
     ap.add_argument("--status", action="store_true", help="print log tail + current EVE procs")
     ap.add_argument("--json", action="store_true", help="emit JSON to stdout (with --scan)")
+    ap.add_argument("--install-watchdog", action="store_true",
+                    help="install SinisterEVEWatchdog schtask (scan+kill+restart every 60s)")
     args = ap.parse_args()
+
+    if args.install_watchdog:
+        return install_watchdog_schtask()
 
     if args.status:
         return cmd_status()
@@ -336,8 +495,12 @@ def main() -> int:
                 if s.get("triggered"):
                     print(f"  -> {s['signal']}: {s.get('hits', s.get('error', ''))}")
         if crashed and args.auto_kill:
-            rc = run_kill_bat(reason="scan_auto_kill", signals=signals)
-            print(f"[eve-crash-detector] Kill-Stuck-EVE.bat exit={rc}")
+            if args.auto_restart:
+                # auto_restart does kill + relaunch atomically
+                auto_restart_eve(reason="scan_auto_restart")
+            else:
+                rc = run_kill_bat(reason="scan_auto_kill", signals=signals)
+                print(f"[eve-crash-detector] Kill-Stuck-EVE.bat exit={rc}")
         elif crashed:
             _append_jsonl(CRASH_LOG, {"ts": _now_iso(), "event": "scan_detected",
                                        "signals": [s for s in signals if s.get("triggered")]})

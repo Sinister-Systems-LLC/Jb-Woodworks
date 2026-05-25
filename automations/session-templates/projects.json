@@ -1,489 +1,489 @@
 {
-    "_comment": "Persistent project registry. v6 (2026-05-23): added picker block driving the launcher's concise 11-entry visible list + ordering. Non-launcher consumers (RKOJ Qt agents_tab, sinister-eve, forge picker) continue to iterate the full projects array. v7 (2026-05-23 evening): appended letstext lane (operator-private messaging-app venture at D:\\Personal\\LetsText; cyan accent per agent-prefs). v8 (2026-05-24T22:10Z): consolidated sinister-os-mobile into sinister-os per operator directive 'combine project sinister os and sinister os mobile' \u00e2\u20ac\u201d mobile lane removed from picker + projects[]; mobile content now lives at projects/sinister-os/mobile/. v9 (2026-05-24T23:55Z): appended sinister-overseer lane (meta-agent / agent-of-agents; cyan accent; tier=3; P0 scaffolded by sanctum-overseer-scaffold per operator brief 2026-05-24 ~23:48Z). v10 (RKOJ-ELENO :: 2026-05-25T02:30Z): added default_modes.loop_relentless=true to every project with loop=true per operator 02:18Z 'make the loop system on our agents actually work. make it agressive and make it hafve agents relentless pursue goal' \u2014 relentless preset flips every loop spawn to in-turn next-iter + tool-reach + 270s wakeup cap (full doctrine: loop-relentless-pursuit-doctrine-2026-05-25). v11 (RKOJ-ELENO :: 2026-05-25T06:35Z): added default_modes.loop='relentless' (string) + default_modes.swarm=true to EVERY project per operator hard-canonical 'make sure loop and swarm mode come on by deafult for each agent'. loop_relentless boolean retained for backward-compat. rkoj swarm flipped false->true. Doctrine: loop-swarm-default-on-doctrine-2026-05-25.md. v12 (RKOJ-ELENO :: 2026-05-25T07:45Z by sanctum-sub-r): sinister-memory lane P0 scaffolded per operator 07:30Z 'add to eve exe a project start for Sinister Memroy and complie all thigsn he needs there to get started' \u2014 unified memory engine (brain + PROGRESS + heartbeats + Ruflo MCP) under one Python CLI + library + spawn-phrase injector. SQLite FTS5 + BM25, stdlib-only, 5/5 pytest PASS. claude_md repointed from CLAUDE.md to README.md (CLAUDE.md not yet authored at P0); github=Sinister-Sanctum per single-repo policy; tier=2; added to picker.visible_keys.",
-    "version": 12,
-    "default": "sanctum",
-    "picker": {
-        "visible_keys": [
-            "sanctum",
-            "sinister-chatbot",
-            "sinister-panel",
-            "kernel-apk",
-            "sinister-emulator",
-            "rkoj",
-            "snap-emulator-api",
-            "tiktok-emulator-api",
-            "bumble-emulator-api",
-            "sinister-freeze",
-            "jb-woodworks",
-            "showmasters",
-            "letstext",
-            "eve-compliance",
-            "sinister-generator",
-            "jkor",
-            "sinister-snap-api-quantum",
-            "sinister-os",
-            "sinister-imessage-bridge",
-            "sinister-sleight",
-            "sinister-overseer",
-            "sinister-term-themes",
-            "sinister-memory"
-        ],
-        "special_keys": [
-            "general",
-            "__autoresume__",
-            "__newproject__"
-        ]
-    },
-    "projects": [
-        {
-            "key": "sanctum",
-            "display": "Sanctum",
-            "tag": "orchestration hub",
-            "root": "D:\\Sinister Sanctum",
-            "session_start": "D:\\Sinister Sanctum\\SESSION-START\\README.md",
-            "claude_md": "D:\\Sinister Sanctum\\CLAUDE.md",
-            "github": "Sinister-Systems-LLC/Sinister-Sanctum",
-            "tier": 1,
-            "default_modes": {
-                "swarm": true,
-                "loop": "relentless",
-                "loop_relentless": true
-            }
-        },
-        {
-            "key": "sinister-panel",
-            "display": "Sinister Panel",
-            "tag": "Control Center @ snap.sinijkr.com",
-            "root": "D:\\Sinister Sanctum\\projects\\sinister-panel\\source",
-            "session_start": "",
-            "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-panel\\source\\CLAUDE.md",
-            "github": "Sinister-Systems-LLC/Sinister-Panel",
-            "tier": 2,
-            "default_modes": {
-                "swarm": true,
-                "loop": "relentless",
-                "loop_relentless": true
-            }
-        },
-        {
-            "key": "kernel-apk",
-            "display": "Kernel APK",
-            "tag": "KernelSU / DETECTOR",
-            "root": "D:\\Sinister Sanctum\\projects\\sinister-kernel-apk\\source",
-            "session_start": "",
-            "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-kernel-apk\\source\\CLAUDE.md",
-            "github": "Sinister-Systems-LLC/Sinister-Kernel-APK",
-            "default_modes": {
-                "swarm": true,
-                "loop": "relentless",
-                "loop_relentless": true
-            },
-            "tier": 2
-        },
-        {
-            "key": "sinister-emulator",
-            "display": "Sinister Emulator",
-            "tag": "Shared emulator core",
-            "root": "D:\\Sinister Sanctum\\projects\\sinister-emulator-bundle",
-            "session_start": "",
-            "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-emulator-bundle\\CLAUDE.md",
-            "github": "Sinister-Systems-LLC/Sinister-Emulator",
-            "default_modes": {
-                "swarm": true,
-                "loop": "relentless",
-                "loop_relentless": true
-            }
-        },
-        {
-            "key": "rkoj",
-            "display": "RKOJ",
-            "tag": "Forge + Term + Workstation + Mind + Claw + tools (unified)",
-            "root": "D:\\Sinister Sanctum\\projects\\rkoj",
-            "session_start": "",
-            "claude_md": "",
-            "github": "Sinister-Systems-LLC/Sinister-Sanctum",
-            "branch_prefix": "agent/rkoj/",
-            "focus": "the unified RKOJ project",
-            "umbrella": true,
-            "components": [
-                "sinister-forge",
-                "sinister-term",
-                "rkoj-workstation",
-                "sinister-mind",
-                "sinister-claw"
-            ],
-            "default_modes": {
-                "swarm": true,
-                "loop": "relentless",
-                "loop_relentless": true
-            }
-        },
-        {
-            "key": "snap-emulator-api",
-            "display": "Snap Emulator API",
-            "tag": "Snap API EMU",
-            "root": "D:\\Sinister Sanctum\\projects\\sinister-snap-emu\\source",
-            "session_start": "D:\\Sinister Sanctum\\projects\\sinister-snap-emu\\source\\SESSION-START.md",
-            "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-snap-emu\\source\\CLAUDE.md",
-            "github": "Sinister-Systems-LLC/Sinister-Snap-API-EMU",
-            "default_modes": {
-                "swarm": true,
-                "loop": "relentless",
-                "loop_relentless": true
-            },
-            "tier": 2
-        },
-        {
-            "key": "tiktok-emulator-api",
-            "display": "TikTok Emulator API",
-            "tag": "TikTok API EMU",
-            "root": "D:\\Sinister Sanctum\\projects\\sinister-tiktok-emu\\source",
-            "session_start": "D:\\Sinister Sanctum\\projects\\sinister-tiktok-emu\\source\\SESSION-START.md",
-            "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-tiktok-emu\\source\\CLAUDE.md",
-            "github": "Sinister-Systems-LLC/Sinister-TikTok-API-EMU",
-            "default_modes": {
-                "swarm": true,
-                "loop": "relentless",
-                "loop_relentless": true
-            }
-        },
-        {
-            "key": "bumble-emulator-api",
-            "display": "Bumble Emulator API",
-            "tag": "Bumble API EMU",
-            "root": "D:\\Sinister Sanctum\\projects\\sinister-bumble-emu",
-            "session_start": "",
-            "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-bumble-emu\\CLAUDE.md",
-            "github": "Sinister-Systems-LLC/Sinister-Bumble-Emu",
-            "default_modes": {
-                "swarm": true,
-                "loop": "relentless",
-                "loop_relentless": true
-            }
-        },
-        {
-            "key": "sinister-freeze",
-            "display": "Sinister Freeze",
-            "tag": "Car-sales suite (Ferrari of Winter Park)",
-            "root": "D:\\Sinister Sanctum\\projects\\sinister-freeze",
-            "session_start": "",
-            "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-freeze\\CLAUDE.md",
-            "github": "Sinister-Systems-LLC/Sinister-Freeze",
-            "default_modes": {
-                "swarm": true,
-                "loop": "relentless",
-                "loop_relentless": true
-            }
-        },
-        {
-            "key": "jb-woodworks",
-            "display": "JB Woodworks",
-            "tag": "Custom woodworking marketing site",
-            "root": "D:\\Sinister Sanctum\\projects\\jb-woodworks",
-            "session_start": "",
-            "claude_md": "D:\\Sinister Sanctum\\projects\\jb-woodworks\\CLAUDE.md",
-            "github": "Sinister-Systems-LLC/Jb-Woodworks",
-            "default_modes": {
-                "swarm": true,
-                "loop": "relentless",
-                "loop_relentless": true
-            }
-        },
-        {
-            "key": "showmasters",
-            "display": "Showmasters",
-            "tag": "Show Masters Production Logistics marketing site",
-            "root": "D:\\Sinister Sanctum\\projects\\showmasters\\site",
-            "session_start": "",
-            "claude_md": "D:\\Sinister Sanctum\\projects\\showmasters\\site\\CLAUDE.md",
-            "github": "Sinister-Systems-LLC/Showmasters",
-            "default_modes": {
-                "swarm": true,
-                "loop": "relentless",
-                "loop_relentless": true
-            }
-        },
-        {
-            "key": "letstext",
-            "display": "LetsText",
-            "tag": "messaging UI / design system (operator-private venture)",
-            "root": "D:\\Personal\\LetsText",
-            "session_start": "D:\\Personal\\LetsText\\SESSION-START.md",
-            "claude_md": "D:\\Personal\\LetsText\\CLAUDE.md",
-            "github": "",
-            "external_root": true,
-            "external_root_reason": "Operator-private venture outside Sanctum tree; not present on collaborator (Leo) machines",
-            "default_modes": {
-                "swarm": true,
-                "loop": "relentless",
-                "loop_relentless": true
-            }
-        },
-        {
-            "key": "eve-compliance",
-            "display": "EVE Compliance",
-            "tag": "AI EVE image scanner + per-agency moderation + admin review + training feedback loop (carved out of letstext 2026-05-24 per operator directive)",
-            "root": "D:\\Sinister Sanctum\\projects\\eve-compliance",
-            "session_start": "D:\\Sinister Sanctum\\projects\\eve-compliance\\SESSION-START.md",
-            "claude_md": "D:\\Sinister Sanctum\\projects\\eve-compliance\\CLAUDE.md",
-            "github": "https://github.com/z0nian/LetsText",
-            "external_root": false,
-            "default_modes": {
-                "swarm": true,
-                "loop": "relentless",
-                "loop_relentless": true
-            }
-        },
-        {
-            "key": "sinister-generator",
-            "display": "Sinister Generator",
-            "tag": "Fleet-wide image generation (nano-banana app layer)",
-            "root": "D:\\Sinister Sanctum\\projects\\sinister-generator",
-            "session_start": "",
-            "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-generator\\CLAUDE.md",
-            "github": "",
-            "default_modes": {
-                "swarm": true,
-                "loop": "relentless",
-                "loop_relentless": true
-            }
-        },
-        {
-            "key": "jkor",
-            "display": "JKOR",
-            "tag": "JKOR operator dashboard (control panel; not image-gen \u00e2\u20ac\u201d that lives in sinister-generator)",
-            "root": "D:\\Sinister Sanctum\\projects\\jkor",
-            "session_start": "",
-            "claude_md": "D:\\Sinister Sanctum\\projects\\jkor\\CLAUDE.md",
-            "github": "",
-            "default_modes": {
-                "swarm": true,
-                "loop": "relentless",
-                "loop_relentless": true
-            }
-        },
-        {
-            "key": "sinister-snap-api-quantum",
-            "display": "Sinister Snap API Quantum",
-            "tag": "Quantum-Seraphim test env (Snap-EMU + Sinister-EMU dual-lane)",
-            "root": "D:\\Sinister Sanctum\\projects\\sinister-snap-api-quantum",
-            "session_start": "",
-            "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-snap-api-quantum\\CLAUDE.md",
-            "github": "",
-            "default_modes": {
-                "swarm": true,
-                "loop": "relentless",
-                "loop_relentless": true
-            }
-        },
-        {
-            "key": "sinister-os",
-            "display": "Sinister OS",
-            "tag": "Sinister OS (PC + Mobile) :: Linux desktop replacement + Pixel 6a custom Android, both EVE-controlled \u00e2\u20ac\u201d mobile sub-lane at projects/sinister-os/mobile/",
-            "root": "D:\\Sinister Sanctum\\projects\\sinister-os",
-            "session_start": "",
-            "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-os\\CLAUDE.md",
-            "github": "",
-            "tier": 3,
-            "sub_lanes": {
-                "mobile": {
-                    "root": "D:\\Sinister Sanctum\\projects\\sinister-os\\mobile",
-                    "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-os\\mobile\\CLAUDE.md",
-                    "session_start": "D:\\Sinister Sanctum\\projects\\sinister-os\\mobile\\SESSION-START.md",
-                    "branch_prefix": "agent/sinister-os-mobile/",
-                    "note": "Pixel 6a custom Android. Branch namespace preserved post-consolidation 2026-05-24."
-                }
-            },
-            "default_modes": {
-                "swarm": true,
-                "loop": "relentless",
-                "loop_relentless": true
-            }
-        },
-        {
-            "key": "sinister-imessage-bridge",
-            "display": "iMessage Bridge",
-            "tag": "iMessage send/recv + chat.db indexing on operator's Mac farm (P0)",
-            "root": "D:\\Sinister Sanctum\\projects\\sinister-imessage-bridge",
-            "session_start": "",
-            "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-imessage-bridge\\CLAUDE.md",
-            "github": "",
-            "default_modes": {
-                "swarm": true,
-                "loop": "relentless",
-                "loop_relentless": true
-            },
-            "tier": 2
-        },
-        {
-            "key": "sinister-sleight",
-            "display": "Sinister Sleight",
-            "tag": "Sinister Sleight :: full-auto trading bot (paper-first; quantum-enhanced)",
-            "root": "D:\\Sinister Sanctum\\projects\\sinister-sleight",
-            "session_start": "",
-            "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-sleight\\CLAUDE.md",
-            "github": "",
-            "accent_color": "gold",
-            "default_modes": {
-                "swarm": true,
-                "loop": "relentless",
-                "loop_relentless": true
-            },
-            "tier": 3
-        },
-        {
-            "key": "sinister-overseer",
-            "display": "Sinister Overseer",
-            "tag": "Sinister Overseer :: meta-agent that watches + fixes + learns across attached projects (token-efficient model-tier routing)",
-            "root": "D:\\Sinister Sanctum\\projects\\sinister-overseer",
-            "session_start": "D:\\Sinister Sanctum\\projects\\sinister-overseer\\SESSION-START.md",
-            "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-overseer\\CLAUDE.md",
-            "github": "",
-            "accent_color": "cyan",
-            "default_modes": {
-                "swarm": true,
-                "loop": "relentless",
-                "loop_relentless": true
-            },
-            "tier": 3,
-            "resume_prompt_third_question": "Which project would you like to begin overseer work for? (e.g. eve-compliance / sinister-chatbot / sinister-sleight; pre-attached lanes in config/attached-projects.json status='prepared')",
-            "resume_prompt_third_question_env": "SINISTER_OVERSEER_TARGET_PROJECT"
-        },
-        {
-            "key": "sinister-term-themes",
-            "display": "Ancestral Remotion",
-            "tag": "Ancestral Remotion :: Sinister Term Themes - living ASCII visualization layer (per-project entities + palettes + energy-responsive animation; Sinister OS command-center foundation)",
-            "root": "D:\\Sinister Sanctum\\projects\\sinister-term-themes",
-            "session_start": "",
-            "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-term-themes\\CLAUDE.md",
-            "github": "",
-            "accent_color": "indigo",
-            "default_modes": {
-                "swarm": true,
-                "loop": "relentless",
-                "loop_relentless": true
-            },
-            "tier": 3
-        },
-        {
-            "key": "general",
-            "display": "General",
-            "tag": "No fixed scope; full memory; ad-hoc operator queries",
-            "root": "D:\\Sinister Sanctum",
-            "session_start": "",
-            "claude_md": "D:\\Sinister Sanctum\\CLAUDE.md",
-            "github": "",
-            "general": true,
-            "default_modes": {
-                "swarm": true,
-                "loop": "relentless",
-                "loop_relentless": true
-            }
-        },
-        {
-            "key": "sinister-forge",
-            "display": "Sinister Forge",
-            "tag": "Forge TUI (subsumed under RKOJ in picker)",
-            "root": "D:\\Sinister Sanctum\\projects\\sinister-forge\\source",
-            "session_start": "",
-            "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-forge\\CLAUDE.md",
-            "github": "Sinister-Systems-LLC/Sinister-Forge",
-            "_subsumed_by": "rkoj",
-            "default_modes": {
-                "swarm": true,
-                "loop": "relentless",
-                "loop_relentless": true
-            }
-        },
-        {
-            "key": "sinister-term",
-            "display": "Sinister Term",
-            "tag": "Term shell (subsumed under RKOJ in picker)",
-            "root": "D:\\Sinister Sanctum\\projects\\sinister-term\\source",
-            "session_start": "",
-            "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-term\\CLAUDE.md",
-            "github": "Sinister-Systems-LLC/Sinister-Term",
-            "_subsumed_by": "rkoj",
-            "default_modes": {
-                "swarm": true,
-                "loop": "relentless",
-                "loop_relentless": true
-            }
-        },
-        {
-            "key": "sinister-mind",
-            "display": "Sinister Mind",
-            "tag": "Brain-graph visualiser (subsumed under RKOJ in picker)",
-            "root": "D:\\Sinister Sanctum\\projects\\sinister-mind\\source",
-            "session_start": "",
-            "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-mind\\CLAUDE.md",
-            "github": "Sinister-Systems-LLC/Sinister-Mind",
-            "_subsumed_by": "rkoj",
-            "default_modes": {
-                "swarm": true,
-                "loop": "relentless",
-                "loop_relentless": true
-            }
-        },
-        {
-            "key": "sinister-memory",
-            "display": "Sinister Memory",
-            "tag": "Per-agent + per-project memory engine; cross-session persistence; CLI + MCP recall",
-            "root": "D:\\Sinister Sanctum\\projects\\sinister-memory",
-            "session_start": "",
-            "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-memory\\README.md",
-            "github": "Sinister-Sanctum",
-            "tier": 2,
-            "default_modes": {
-                "swarm": true,
-                "loop": "relentless",
-                "loop_relentless": true
-            }
-        },
-        {
-            "key": "sinister-claw",
-            "display": "Sinister Claw",
-            "tag": "iOS + Android companion (subsumed under RKOJ in picker)",
-            "root": "D:\\Sinister Sanctum\\projects\\sinister-claw\\source",
-            "session_start": "",
-            "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-claw\\CLAUDE.md",
-            "github": "Sinister-Systems-LLC/Sinister-Claw",
-            "_subsumed_by": "rkoj",
-            "default_modes": {
-                "swarm": true,
-                "loop": "relentless",
-                "loop_relentless": true
-            }
-        },
-        {
-            "key": "rkoj-workstation",
-            "display": "RKOJ Workstation",
-            "tag": "Operator workbench EXE (subsumed under RKOJ in picker)",
-            "root": "D:\\Sinister Sanctum\\automations\\window-manager",
-            "session_start": "",
-            "claude_md": "D:\\Sinister Sanctum\\automations\\window-manager\\CLAUDE.md",
-            "github": "Sinister-Systems-LLC/Sinister-Sanctum",
-            "_subsumed_by": "rkoj",
-            "default_modes": {
-                "swarm": true,
-                "loop": "relentless",
-                "loop_relentless": true
-            }
-        },
-        {
-            "key": "sinister-chatbot",
-            "display": "Sinister Chatbot",
-            "tag": "EVE-powered chatbot test env @ /chatter (local LLM + good/bad feedback)",
-            "root": "D:\\Sinister Sanctum\\projects\\sinister-chatbot",
-            "session_start": "D:\\Sinister Sanctum\\projects\\sinister-chatbot\\SESSION-START.md",
-            "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-chatbot\\CLAUDE.md",
-            "github": "Sinister-Systems-LLC/Sinister-Panel",
-            "default_modes": {
-                "swarm": true,
-                "loop": "relentless",
-                "loop_relentless": true
-            },
-            "tier": 2
-        }
+  "_comment": "Persistent project registry. v6 (2026-05-23): added picker block driving the launcher's concise 11-entry visible list + ordering. Non-launcher consumers (RKOJ Qt agents_tab, sinister-eve, forge picker) continue to iterate the full projects array. v7 (2026-05-23 evening): appended letstext lane (operator-private messaging-app venture at D:\\Personal\\LetsText; cyan accent per agent-prefs). v8 (2026-05-24T22:10Z): consolidated sinister-os-mobile into sinister-os per operator directive 'combine project sinister os and sinister os mobile' â€” mobile lane removed from picker + projects[]; mobile content now lives at projects/sinister-os/mobile/. v9 (2026-05-24T23:55Z): appended sinister-overseer lane (meta-agent / agent-of-agents; cyan accent; tier=3; P0 scaffolded by sanctum-overseer-scaffold per operator brief 2026-05-24 ~23:48Z). v10 (RKOJ-ELENO :: 2026-05-25T02:30Z): added default_modes.loop_relentless=true to every project with loop=true per operator 02:18Z 'make the loop system on our agents actually work. make it agressive and make it hafve agents relentless pursue goal' — relentless preset flips every loop spawn to in-turn next-iter + tool-reach + 270s wakeup cap (full doctrine: loop-relentless-pursuit-doctrine-2026-05-25). v11 (RKOJ-ELENO :: 2026-05-25T06:35Z): added default_modes.loop='relentless' (string) + default_modes.swarm=true to EVERY project per operator hard-canonical 'make sure loop and swarm mode come on by deafult for each agent'. loop_relentless boolean retained for backward-compat. rkoj swarm flipped false->true. Doctrine: loop-swarm-default-on-doctrine-2026-05-25.md. v12 (RKOJ-ELENO :: 2026-05-25T07:45Z by sanctum-sub-r): sinister-memory lane P0 scaffolded per operator 07:30Z 'add to eve exe a project start for Sinister Memroy and complie all thigsn he needs there to get started' — unified memory engine (brain + PROGRESS + heartbeats + Ruflo MCP) under one Python CLI + library + spawn-phrase injector. SQLite FTS5 + BM25, stdlib-only, 5/5 pytest PASS. claude_md repointed from CLAUDE.md to README.md (CLAUDE.md not yet authored at P0); github=Sinister-Sanctum per single-repo policy; tier=2; added to picker.visible_keys.",
+  "version": 12,
+  "default": "sanctum",
+  "picker": {
+    "visible_keys": [
+      "sanctum",
+      "sinister-chatbot",
+      "sinister-panel",
+      "kernel-apk",
+      "sinister-emulator",
+      "rkoj",
+      "snap-emulator-api",
+      "tiktok-emulator-api",
+      "bumble-emulator-api",
+      "sinister-freeze",
+      "jb-woodworks",
+      "showmasters",
+      "letstext",
+      "eve-compliance",
+      "sinister-generator",
+      "jkor",
+      "sinister-snap-api-quantum",
+      "sinister-os",
+      "sinister-imessage-bridge",
+      "sinister-sleight",
+      "sinister-overseer",
+      "sinister-term-themes",
+      "sinister-memory"
+    ],
+    "special_keys": [
+      "general",
+      "__autoresume__",
+      "__newproject__"
     ]
+  },
+  "projects": [
+    {
+      "key": "sanctum",
+      "display": "Sanctum",
+      "tag": "orchestration hub",
+      "root": "D:\\Sinister Sanctum",
+      "session_start": "D:\\Sinister Sanctum\\SESSION-START\\README.md",
+      "claude_md": "D:\\Sinister Sanctum\\CLAUDE.md",
+      "github": "Sinister-Systems-LLC/Sinister-Sanctum",
+      "tier": 1,
+      "default_modes": {
+        "swarm": true,
+        "loop": "relentless",
+        "loop_relentless": true
+      }
+    },
+    {
+      "key": "sinister-panel",
+      "display": "Sinister Panel",
+      "tag": "Control Center @ snap.sinijkr.com",
+      "root": "D:\\Sinister Sanctum\\projects\\sinister-panel\\source",
+      "session_start": "",
+      "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-panel\\source\\CLAUDE.md",
+      "github": "Sinister-Systems-LLC/Sinister-Panel",
+      "tier": 2,
+      "default_modes": {
+        "swarm": true,
+        "loop": "relentless",
+        "loop_relentless": true
+      }
+    },
+    {
+      "key": "kernel-apk",
+      "display": "Kernel APK",
+      "tag": "KernelSU / DETECTOR",
+      "root": "D:\\Sinister Sanctum\\projects\\sinister-kernel-apk\\source",
+      "session_start": "",
+      "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-kernel-apk\\source\\CLAUDE.md",
+      "github": "Sinister-Systems-LLC/Sinister-Kernel-APK",
+      "default_modes": {
+        "swarm": true,
+        "loop": "relentless",
+        "loop_relentless": true
+      },
+      "tier": 2
+    },
+    {
+      "key": "sinister-emulator",
+      "display": "Sinister Emulator",
+      "tag": "Shared emulator core",
+      "root": "D:\\Sinister Sanctum\\projects\\sinister-emulator-bundle",
+      "session_start": "",
+      "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-emulator-bundle\\CLAUDE.md",
+      "github": "Sinister-Systems-LLC/Sinister-Emulator",
+      "default_modes": {
+        "swarm": true,
+        "loop": "relentless",
+        "loop_relentless": true
+      }
+    },
+    {
+      "key": "rkoj",
+      "display": "RKOJ",
+      "tag": "Forge + Term + Workstation + Mind + Claw + tools (unified)",
+      "root": "D:\\Sinister Sanctum\\projects\\rkoj",
+      "session_start": "",
+      "claude_md": "",
+      "github": "Sinister-Systems-LLC/Sinister-Sanctum",
+      "branch_prefix": "agent/rkoj/",
+      "focus": "the unified RKOJ project",
+      "umbrella": true,
+      "components": [
+        "sinister-forge",
+        "sinister-term",
+        "rkoj-workstation",
+        "sinister-mind",
+        "sinister-claw"
+      ],
+      "default_modes": {
+        "swarm": true,
+        "loop": "relentless",
+        "loop_relentless": true
+      }
+    },
+    {
+      "key": "snap-emulator-api",
+      "display": "Snap Emulator API",
+      "tag": "Snap API EMU",
+      "root": "D:\\Sinister Sanctum\\projects\\sinister-snap-emu\\source",
+      "session_start": "D:\\Sinister Sanctum\\projects\\sinister-snap-emu\\source\\SESSION-START.md",
+      "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-snap-emu\\source\\CLAUDE.md",
+      "github": "Sinister-Systems-LLC/Sinister-Snap-API-EMU",
+      "default_modes": {
+        "swarm": true,
+        "loop": "relentless",
+        "loop_relentless": true
+      },
+      "tier": 2
+    },
+    {
+      "key": "tiktok-emulator-api",
+      "display": "TikTok Emulator API",
+      "tag": "TikTok API EMU",
+      "root": "D:\\Sinister Sanctum\\projects\\sinister-tiktok-emu\\source",
+      "session_start": "D:\\Sinister Sanctum\\projects\\sinister-tiktok-emu\\source\\SESSION-START.md",
+      "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-tiktok-emu\\source\\CLAUDE.md",
+      "github": "Sinister-Systems-LLC/Sinister-TikTok-API-EMU",
+      "default_modes": {
+        "swarm": true,
+        "loop": "relentless",
+        "loop_relentless": true
+      }
+    },
+    {
+      "key": "bumble-emulator-api",
+      "display": "Bumble Emulator API",
+      "tag": "Bumble API EMU",
+      "root": "D:\\Sinister Sanctum\\projects\\sinister-bumble-emu",
+      "session_start": "",
+      "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-bumble-emu\\CLAUDE.md",
+      "github": "Sinister-Systems-LLC/Sinister-Bumble-Emu",
+      "default_modes": {
+        "swarm": true,
+        "loop": "relentless",
+        "loop_relentless": true
+      }
+    },
+    {
+      "key": "sinister-freeze",
+      "display": "Sinister Freeze",
+      "tag": "Car-sales suite (Ferrari of Winter Park)",
+      "root": "D:\\Sinister Sanctum\\projects\\sinister-freeze",
+      "session_start": "",
+      "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-freeze\\CLAUDE.md",
+      "github": "Sinister-Systems-LLC/Sinister-Freeze",
+      "default_modes": {
+        "swarm": true,
+        "loop": "relentless",
+        "loop_relentless": true
+      }
+    },
+    {
+      "key": "jb-woodworks",
+      "display": "JB Woodworks",
+      "tag": "Custom woodworking marketing site",
+      "root": "D:\\Sinister Sanctum\\projects\\jb-woodworks",
+      "session_start": "",
+      "claude_md": "D:\\Sinister Sanctum\\projects\\jb-woodworks\\CLAUDE.md",
+      "github": "Sinister-Systems-LLC/Jb-Woodworks",
+      "default_modes": {
+        "swarm": true,
+        "loop": "relentless",
+        "loop_relentless": true
+      }
+    },
+    {
+      "key": "showmasters",
+      "display": "Showmasters",
+      "tag": "Show Masters Production Logistics marketing site",
+      "root": "D:\\Sinister Sanctum\\projects\\showmasters\\site",
+      "session_start": "",
+      "claude_md": "D:\\Sinister Sanctum\\projects\\showmasters\\site\\CLAUDE.md",
+      "github": "Sinister-Systems-LLC/Showmasters",
+      "default_modes": {
+        "swarm": true,
+        "loop": "relentless",
+        "loop_relentless": true
+      }
+    },
+    {
+      "key": "letstext",
+      "display": "LetsText",
+      "tag": "messaging UI / design system (operator-private venture)",
+      "root": "D:\\Personal\\LetsText",
+      "session_start": "D:\\Personal\\LetsText\\SESSION-START.md",
+      "claude_md": "D:\\Personal\\LetsText\\CLAUDE.md",
+      "github": "",
+      "external_root": true,
+      "external_root_reason": "Operator-private venture outside Sanctum tree; not present on collaborator (Leo) machines",
+      "default_modes": {
+        "swarm": true,
+        "loop": "relentless",
+        "loop_relentless": true
+      }
+    },
+    {
+      "key": "eve-compliance",
+      "display": "EVE Compliance",
+      "tag": "AI EVE image scanner + per-agency moderation + admin review + training feedback loop (carved out of letstext 2026-05-24 per operator directive)",
+      "root": "D:\\Sinister Sanctum\\projects\\eve-compliance",
+      "session_start": "D:\\Sinister Sanctum\\projects\\eve-compliance\\SESSION-START.md",
+      "claude_md": "D:\\Sinister Sanctum\\projects\\eve-compliance\\CLAUDE.md",
+      "github": "https://github.com/z0nian/LetsText",
+      "external_root": false,
+      "default_modes": {
+        "swarm": true,
+        "loop": "relentless",
+        "loop_relentless": true
+      }
+    },
+    {
+      "key": "sinister-generator",
+      "display": "Sinister Generator",
+      "tag": "Fleet-wide image generation (nano-banana app layer)",
+      "root": "D:\\Sinister Sanctum\\projects\\sinister-generator",
+      "session_start": "",
+      "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-generator\\CLAUDE.md",
+      "github": "",
+      "default_modes": {
+        "swarm": true,
+        "loop": "relentless",
+        "loop_relentless": true
+      }
+    },
+    {
+      "key": "jkor",
+      "display": "JKOR",
+      "tag": "JKOR operator dashboard (control panel; not image-gen â€” that lives in sinister-generator)",
+      "root": "D:\\Sinister Sanctum\\projects\\jkor",
+      "session_start": "",
+      "claude_md": "D:\\Sinister Sanctum\\projects\\jkor\\CLAUDE.md",
+      "github": "",
+      "default_modes": {
+        "swarm": true,
+        "loop": "relentless",
+        "loop_relentless": true
+      }
+    },
+    {
+      "key": "sinister-snap-api-quantum",
+      "display": "Sinister Snap API Quantum",
+      "tag": "Quantum-Seraphim test env (Snap-EMU + Sinister-EMU dual-lane)",
+      "root": "D:\\Sinister Sanctum\\projects\\sinister-snap-api-quantum",
+      "session_start": "",
+      "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-snap-api-quantum\\CLAUDE.md",
+      "github": "",
+      "default_modes": {
+        "swarm": true,
+        "loop": "relentless",
+        "loop_relentless": true
+      }
+    },
+    {
+      "key": "sinister-os",
+      "display": "Sinister OS",
+      "tag": "Sinister OS (PC + Mobile) :: Linux desktop replacement + Pixel 6a custom Android, both EVE-controlled â€” mobile sub-lane at projects/sinister-os/mobile/",
+      "root": "D:\\Sinister Sanctum\\projects\\sinister-os",
+      "session_start": "",
+      "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-os\\CLAUDE.md",
+      "github": "",
+      "tier": 3,
+      "sub_lanes": {
+        "mobile": {
+          "root": "D:\\Sinister Sanctum\\projects\\sinister-os\\mobile",
+          "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-os\\mobile\\CLAUDE.md",
+          "session_start": "D:\\Sinister Sanctum\\projects\\sinister-os\\mobile\\SESSION-START.md",
+          "branch_prefix": "agent/sinister-os-mobile/",
+          "note": "Pixel 6a custom Android. Branch namespace preserved post-consolidation 2026-05-24."
+        }
+      },
+      "default_modes": {
+        "swarm": true,
+        "loop": "relentless",
+        "loop_relentless": true
+      }
+    },
+    {
+      "key": "sinister-imessage-bridge",
+      "display": "iMessage Bridge",
+      "tag": "iMessage send/recv + chat.db indexing on operator's Mac farm (P0)",
+      "root": "D:\\Sinister Sanctum\\projects\\sinister-imessage-bridge",
+      "session_start": "",
+      "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-imessage-bridge\\CLAUDE.md",
+      "github": "",
+      "default_modes": {
+        "swarm": true,
+        "loop": "relentless",
+        "loop_relentless": true
+      },
+      "tier": 2
+    },
+    {
+      "key": "sinister-sleight",
+      "display": "Sinister Sleight",
+      "tag": "Sinister Sleight :: full-auto trading bot (paper-first; quantum-enhanced)",
+      "root": "D:\\Sinister Sanctum\\projects\\sinister-sleight",
+      "session_start": "",
+      "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-sleight\\CLAUDE.md",
+      "github": "",
+      "accent_color": "gold",
+      "default_modes": {
+        "swarm": true,
+        "loop": "relentless",
+        "loop_relentless": true
+      },
+      "tier": 3
+    },
+    {
+      "key": "sinister-overseer",
+      "display": "Sinister Overseer",
+      "tag": "Sinister Overseer :: meta-agent that watches + fixes + learns across attached projects (token-efficient model-tier routing)",
+      "root": "D:\\Sinister Sanctum\\projects\\sinister-overseer",
+      "session_start": "D:\\Sinister Sanctum\\projects\\sinister-overseer\\SESSION-START.md",
+      "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-overseer\\CLAUDE.md",
+      "github": "",
+      "accent_color": "cyan",
+      "default_modes": {
+        "swarm": true,
+        "loop": "relentless",
+        "loop_relentless": true
+      },
+      "tier": 3,
+      "resume_prompt_third_question": "Which project would you like to begin overseer work for? (e.g. eve-compliance / sinister-chatbot / sinister-sleight; pre-attached lanes in config/attached-projects.json status='prepared')",
+      "resume_prompt_third_question_env": "SINISTER_OVERSEER_TARGET_PROJECT"
+    },
+    {
+      "key": "sinister-term-themes",
+      "display": "Ancestral Remotion",
+      "tag": "Ancestral Remotion :: Sinister Term Themes - living ASCII visualization layer (per-project entities + palettes + energy-responsive animation; Sinister OS command-center foundation)",
+      "root": "D:\\Sinister Sanctum\\projects\\sinister-term-themes",
+      "session_start": "",
+      "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-term-themes\\CLAUDE.md",
+      "github": "",
+      "accent_color": "indigo",
+      "default_modes": {
+        "swarm": true,
+        "loop": "relentless",
+        "loop_relentless": true
+      },
+      "tier": 3
+    },
+    {
+      "key": "general",
+      "display": "General",
+      "tag": "No fixed scope; full memory; ad-hoc operator queries",
+      "root": "D:\\Sinister Sanctum",
+      "session_start": "",
+      "claude_md": "D:\\Sinister Sanctum\\CLAUDE.md",
+      "github": "",
+      "general": true,
+      "default_modes": {
+        "swarm": true,
+        "loop": "relentless",
+        "loop_relentless": true
+      }
+    },
+    {
+      "key": "sinister-forge",
+      "display": "Sinister Forge",
+      "tag": "Forge TUI (subsumed under RKOJ in picker)",
+      "root": "D:\\Sinister Sanctum\\projects\\sinister-forge\\source",
+      "session_start": "",
+      "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-forge\\CLAUDE.md",
+      "github": "Sinister-Systems-LLC/Sinister-Forge",
+      "_subsumed_by": "rkoj",
+      "default_modes": {
+        "swarm": true,
+        "loop": "relentless",
+        "loop_relentless": true
+      }
+    },
+    {
+      "key": "sinister-term",
+      "display": "Sinister Term",
+      "tag": "Sinister-branded Windows terminal (Python+prompt_toolkit Track A; Rust+ratatui Track B)",
+      "root": "D:\\Sinister Sanctum\\projects\\sinister-term",
+      "session_start": "",
+      "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-term\\CLAUDE.md",
+      "github": "Sinister-Sanctum",
+      "default_modes": {
+        "swarm": true,
+        "loop": "relentless",
+        "loop_relentless": true
+      },
+      "tier": 2
+    },
+    {
+      "key": "sinister-mind",
+      "display": "Sinister Mind",
+      "tag": "Brain-graph visualiser (subsumed under RKOJ in picker)",
+      "root": "D:\\Sinister Sanctum\\projects\\sinister-mind\\source",
+      "session_start": "",
+      "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-mind\\CLAUDE.md",
+      "github": "Sinister-Systems-LLC/Sinister-Mind",
+      "_subsumed_by": "rkoj",
+      "default_modes": {
+        "swarm": true,
+        "loop": "relentless",
+        "loop_relentless": true
+      }
+    },
+    {
+      "key": "sinister-memory",
+      "display": "Sinister Memory",
+      "tag": "Per-agent + per-project memory engine; cross-session persistence; CLI + MCP recall",
+      "root": "D:\\Sinister Sanctum\\projects\\sinister-memory",
+      "session_start": "",
+      "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-memory\\README.md",
+      "github": "Sinister-Sanctum",
+      "tier": 2,
+      "default_modes": {
+        "swarm": true,
+        "loop": "relentless",
+        "loop_relentless": true
+      }
+    },
+    {
+      "key": "sinister-claw",
+      "display": "Sinister Claw",
+      "tag": "iOS + Android companion (subsumed under RKOJ in picker)",
+      "root": "D:\\Sinister Sanctum\\projects\\sinister-claw\\source",
+      "session_start": "",
+      "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-claw\\CLAUDE.md",
+      "github": "Sinister-Systems-LLC/Sinister-Claw",
+      "_subsumed_by": "rkoj",
+      "default_modes": {
+        "swarm": true,
+        "loop": "relentless",
+        "loop_relentless": true
+      }
+    },
+    {
+      "key": "rkoj-workstation",
+      "display": "RKOJ Workstation",
+      "tag": "Operator workbench EXE (subsumed under RKOJ in picker)",
+      "root": "D:\\Sinister Sanctum\\automations\\window-manager",
+      "session_start": "",
+      "claude_md": "D:\\Sinister Sanctum\\automations\\window-manager\\CLAUDE.md",
+      "github": "Sinister-Systems-LLC/Sinister-Sanctum",
+      "_subsumed_by": "rkoj",
+      "default_modes": {
+        "swarm": true,
+        "loop": "relentless",
+        "loop_relentless": true
+      }
+    },
+    {
+      "key": "sinister-chatbot",
+      "display": "Sinister Chatbot",
+      "tag": "EVE-powered chatbot test env @ /chatter (local LLM + good/bad feedback)",
+      "root": "D:\\Sinister Sanctum\\projects\\sinister-chatbot",
+      "session_start": "D:\\Sinister Sanctum\\projects\\sinister-chatbot\\SESSION-START.md",
+      "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-chatbot\\CLAUDE.md",
+      "github": "Sinister-Systems-LLC/Sinister-Panel",
+      "default_modes": {
+        "swarm": true,
+        "loop": "relentless",
+        "loop_relentless": true
+      },
+      "tier": 2
+    }
+  ]
 }
