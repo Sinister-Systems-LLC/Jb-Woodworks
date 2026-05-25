@@ -98,6 +98,7 @@ Sinister Term commands:
   /grep <pattern> [path] [--glob X] [-i] [N]   Content search (skips .git/venv/binaries)
   /fu [N --priority --kind --mine --unacked]   Tail fleet-updates.jsonl (alias /fleet-updates)
   /incidents [N --severity --kind --agent]   Tail eve-incidents.jsonl (degraded states)
+  /me                       Show our own heartbeat in detail (drilldown of /agents)
   /alias [name=val|remove n] List aliases, define one, or remove one
   /clear                    Clear the screen
   /help                     This message
@@ -539,6 +540,75 @@ _CRASH_LOG_PATH = SANCTUM_ROOT / "_shared-memory" / "eve-crash-log.jsonl"
 
 _FLEET_UPDATES_PATH = SANCTUM_ROOT / "_shared-memory" / "fleet-updates.jsonl"
 _INCIDENTS_PATH = SANCTUM_ROOT / "_shared-memory" / "eve-incidents.jsonl"
+
+
+def cmd_me(_args: list[str]) -> CommandResult:
+    """iter-69: show sinister-term's own heartbeat in detail.
+
+    Operator-introspection: what fields does the spawner + loop + /touch
+    write into MY heartbeat? Drilldown view that the multi-agent `/agents`
+    summary can't show without bloating the row layout.
+    """
+    if not _HEARTBEAT_PATH.exists():
+        try:
+            rel = _HEARTBEAT_PATH.relative_to(SANCTUM_ROOT).as_posix()
+        except ValueError:
+            rel = str(_HEARTBEAT_PATH)
+        return CommandResult(True,
+            f"(no heartbeat for sinister-term yet at {rel}\n"
+            f" — try /touch to write one)")
+    try:
+        text = _HEARTBEAT_PATH.read_text(encoding="utf-8", errors="replace")
+    except OSError as e:
+        return CommandResult(True, f"/me failed: {e}")
+
+    try:
+        data = json.loads(text)
+        if not isinstance(data, dict):
+            data = {"raw": str(data)[:200]}
+    except Exception as e:
+        return CommandResult(True,
+            f"/me: heartbeat JSON corrupt ({e})\n"
+            f"raw: {text[:400]}")
+
+    import time as _t
+    try:
+        mtime = _HEARTBEAT_PATH.stat().st_mtime
+        age_s = max(0.0, _t.time() - mtime)
+        age = _format_duration(age_s)
+    except OSError:
+        age = "?"
+
+    try:
+        rel = _HEARTBEAT_PATH.relative_to(SANCTUM_ROOT).as_posix()
+    except ValueError:
+        rel = str(_HEARTBEAT_PATH)
+
+    lines = [f"My heartbeat ({rel}, age {age}):"]
+    # Preferred-order field rendering — known fields first, then anything else
+    PREFERRED_KEYS = [
+        "agent", "ts_utc", "alive", "mode", "branch_intent",
+        "status_note", "last_shipped", "cwd", "via",
+    ]
+    seen: set[str] = set()
+    for k in PREFERRED_KEYS:
+        if k not in data:
+            continue
+        seen.add(k)
+        v = data[k]
+        # Truncate long string values
+        if isinstance(v, str) and len(v) > 200:
+            v = v[:197] + "..."
+        lines.append(f"  {k:<16}: {v}")
+    # Any remaining keys (forward-compat with new fields)
+    for k, v in data.items():
+        if k in seen:
+            continue
+        if isinstance(v, str) and len(v) > 200:
+            v = v[:197] + "..."
+        lines.append(f"  {k:<16}: {v}")
+
+    return CommandResult(True, "\n".join(lines))
 
 
 def cmd_incidents(args: list[str]) -> CommandResult:
@@ -2163,6 +2233,7 @@ COMMANDS: dict[str, Callable[[list[str]], CommandResult]] = {
     "fleet-updates": cmd_fleet_updates,  # iter-67 — read fleet-updates.jsonl
     "fu": cmd_fleet_updates,             # short alias
     "incidents": cmd_incidents,          # iter-68 — read eve-incidents.jsonl
+    "me": cmd_me,                        # iter-69 — show our own heartbeat in detail
 }
 
 
