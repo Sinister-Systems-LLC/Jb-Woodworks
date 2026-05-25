@@ -3586,6 +3586,43 @@ def main(argv: list[str] | None = None) -> int:
         except Exception:
             pass
 
+    # RKOJ-ELENO :: 2026-05-25 — freeze fix. Register a Windows console control
+    # handler that catches CTRL_CLOSE_EVENT (X-button click on the console
+    # window), CTRL_LOGOFF_EVENT, and CTRL_SHUTDOWN_EVENT and force-exits the
+    # process immediately. Operator complaint 2026-05-25 verbatim: "i cliek d
+    # exe and it was stu here and x button wasnt working and i had to wait and
+    # you frozen for like 2 minutes. things like this have to stop happening."
+    # Root cause: synchronous PS1 probe blocked the main thread for ~120s, and
+    # while blocked the Windows console message pump couldn't service WM_CLOSE.
+    # The console-ctrl-handler runs on a separate OS-managed thread injected
+    # into the process, so it fires regardless of main-thread state. Default
+    # SIGINT/Ctrl-C path is preserved (return 0 -> kernel runs default handler).
+    if os.name == "nt":
+        try:
+            import ctypes  # stdlib
+            _HANDLER_ROUTINE = ctypes.WINFUNCTYPE(ctypes.c_int, ctypes.c_uint)
+
+            def _close_handler(ctrl_type: int) -> int:
+                # CTRL_CLOSE_EVENT=2, CTRL_LOGOFF_EVENT=5, CTRL_SHUTDOWN_EVENT=6
+                if ctrl_type in (2, 5, 6):
+                    try:
+                        sys.stdout.write("\n  [EVE] window close — exiting.\n")
+                        sys.stdout.flush()
+                    except Exception:
+                        pass
+                    os._exit(0)
+                return 0  # let default handler run (Ctrl-C, Ctrl-Break)
+
+            _eve_close_handler_ref = _HANDLER_ROUTINE(_close_handler)
+            # Keep a hard reference on the module so it isn't GC'd; kernel
+            # holds only a function-pointer.
+            globals()["_eve_close_handler_ref"] = _eve_close_handler_ref
+            ctypes.windll.kernel32.SetConsoleCtrlHandler(
+                _eve_close_handler_ref, True
+            )
+        except Exception:
+            pass
+
     # Probe flags first — these must exit fast without rendering anything heavy.
     # --version supports optional --json (jcode parity)
     if argv:

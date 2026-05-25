@@ -36,9 +36,12 @@ import os
 import signal
 import subprocess
 import sys
+import threading
 import time
 from pathlib import Path
 from typing import Callable, Optional
+
+# RKOJ-ELENO :: 2026-05-25 — freeze fix
 
 __version__ = "0.3.0"
 
@@ -446,28 +449,28 @@ def _hero_lines() -> list[str]:
 # ---------------------------------------------------------------------------
 
 # Process-level cache so we don't re-spawn the PS1 probe every render.
+# RKOJ-ELENO :: 2026-05-25 — freeze fix. The render thread NEVER calls
+# subprocess.run directly. On cache-miss we fire the probe in a daemon
+# thread and return whatever was last cached (or None). The bg thread
+# updates _ACCT_PROBE_CACHE when it returns; next render picks it up.
+# _ACCT_PROBE_INFLIGHT prevents firing two probes concurrently. This
+# eliminates the 2-min freeze the operator hit when the probe hung
+# (git lock / network / MCP startup / Defender scan etc).
 _ACCT_PROBE_CACHE: dict[str, object] = {"ts": 0.0, "live": None}
+_ACCT_PROBE_INFLIGHT: dict[str, bool] = {"flag": False}
+_ACCT_PROBE_LOCK = threading.Lock()
 
 
-def _probe_live_usage_cached() -> dict | None:
-    """Call anthropic-usage-probe.ps1 at most once per 60s; return parsed JSON
-    or None. Bounded 3s subprocess timeout so a slow probe never freezes the
-    main menu render (matches the eve.py P0 freeze fix 2026-05-25T00:15Z).
-    """
+def _probe_worker() -> None:
+    """Run the probe out-of-band; write result into the cache."""
     probe = SANCTUM_ROOT / "automations" / "anthropic-usage-probe.ps1"
-    if not probe.exists():
-        return None
-    now_ts = time.time()
-    cache_ts = float(_ACCT_PROBE_CACHE.get("ts", 0.0))  # type: ignore[arg-type]
-    if (now_ts - cache_ts) < 60.0 and cache_ts > 0:
-        return _ACCT_PROBE_CACHE.get("live")  # type: ignore[return-value]
     live: dict | None = None
     try:
         r = subprocess.run(
             ["powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass",
              "-File", str(probe), "-Mode", "Json",
              "-Slot", "default", "-CacheSec", "60"],
-            capture_output=True, text=True, timeout=3, errors="replace",
+            capture_output=True, text=True, timeout=10, errors="replace",
         )
         if r.returncode == 0 and r.stdout:
             try:
@@ -476,9 +479,46 @@ def _probe_live_usage_cached() -> dict | None:
                 live = None
     except Exception:
         live = None  # includes TimeoutExpired
-    _ACCT_PROBE_CACHE["ts"] = now_ts
-    _ACCT_PROBE_CACHE["live"] = live
-    return live
+    with _ACCT_PROBE_LOCK:
+        _ACCT_PROBE_CACHE["ts"] = time.time()
+        _ACCT_PROBE_CACHE["live"] = live
+        _ACCT_PROBE_INFLIGHT["flag"] = False
+
+
+def _probe_live_usage_cached() -> dict | None:
+    """Return last-known live usage data WITHOUT EVER BLOCKING the renderer.
+
+    RKOJ-ELENO :: 2026-05-25 — freeze fix. Operator hit a 2-minute freeze
+    where the X button stopped working because subprocess.run with timeout=3
+    blocked the main thread + the Windows console message pump couldn't
+    service WM_CLOSE until the call returned. New behavior:
+
+      * cache fresh (<60s)            -> return cached
+      * cache stale or empty + idle   -> spawn bg probe thread, return cached
+                                         (even if stale) IMMEDIATELY
+      * cache stale + probe in flight -> return cached (don't double-fire)
+
+    First render shows no probe data; subsequent renders (1-3s later, per
+    the partial-redraw tick) pick up the data once the bg thread completes.
+    """
+    probe = SANCTUM_ROOT / "automations" / "anthropic-usage-probe.ps1"
+    if not probe.exists():
+        return None
+    now_ts = time.time()
+    with _ACCT_PROBE_LOCK:
+        cache_ts = float(_ACCT_PROBE_CACHE.get("ts", 0.0))  # type: ignore[arg-type]
+        cached: dict | None = _ACCT_PROBE_CACHE.get("live")  # type: ignore[assignment]
+        is_fresh = (now_ts - cache_ts) < 60.0 and cache_ts > 0
+        if is_fresh:
+            return cached
+        if not _ACCT_PROBE_INFLIGHT["flag"]:
+            _ACCT_PROBE_INFLIGHT["flag"] = True
+            try:
+                threading.Thread(target=_probe_worker, daemon=True).start()
+            except Exception:
+                _ACCT_PROBE_INFLIGHT["flag"] = False
+    # Always return whatever we have right now (may be None or stale dict).
+    return cached
 
 
 def _accounts_inline_lines() -> list[str]:
@@ -807,6 +847,26 @@ _ACCT_ROW_HEIGHT: int = 0    # number of account-panel rows
 _ANIM_BAND_WIDTH: int = 0    # animation band visible width (matches _animation_lines)
 
 
+# RKOJ-ELENO :: 2026-05-25 — freeze fix. Absolute safety net: if a frame
+# render hangs for 10 seconds (any reason — wedged stdout, hung helper, etc),
+# kill the process so the operator never waits longer than that. threading.Timer
+# is cross-platform (Windows has no signal.alarm) and ~free when cancelled.
+def _render_watchdog(seconds: float = 10.0) -> threading.Timer:
+    def _kill() -> None:
+        try:
+            sys.stderr.write(
+                f"\n[EVE] render watchdog: {seconds:.0f}s elapsed, force-exiting\n"
+            )
+            sys.stderr.flush()
+        except Exception:
+            pass
+        os._exit(124)
+    t = threading.Timer(seconds, _kill)
+    t.daemon = True
+    t.start()
+    return t
+
+
 def _render(highlight: int) -> None:
     """Build the entire frame in a buffer, then write it in ONE syscall.
 
@@ -826,63 +886,70 @@ def _render(highlight: int) -> None:
     global _TICK, _FIRST_RENDER
     global _ANIM_ROW_START, _ANIM_ROW_HEIGHT, _ACCT_ROW_START, _ACCT_ROW_HEIGHT
     global _ANIM_BAND_WIDTH
-    cols = _term_cols()
-    buf: list[str] = []
-    if _ANSI:
-        if _FIRST_RENDER:
-            # One-time full-screen clear to wipe whatever the spawning shell left
-            buf.append("\033[2J\033[H")
-            _FIRST_RENDER = False
-        else:
-            # Cursor home + clear-to-end (overwrites previous frame in place)
-            buf.append("\033[H\033[J")
-    # Row tracker: count terminal rows we've written so far (1-based, top=1).
-    # After the initial cursor-home there's a leading "\n" newline (row 1 blank).
-    row_cursor = 1
-    buf.append("\n"); row_cursor += 1
-    # Hero (centered per-line)
-    for line in _hero_lines():
-        buf.append(_center(line, cols) + "\n"); row_cursor += 1
-    buf.append("\n"); row_cursor += 1
-    # Animation band (each row is its own pre-centered string)
-    anim = _animation_lines(_TICK, cols, height=10)
-    _ANIM_ROW_START = row_cursor
-    _ANIM_ROW_HEIGHT = len(anim)
-    # Cache the visible band width so partial redraws keep same geometry
-    _ANIM_BAND_WIDTH = max(40, min(cols - 8, 100))
-    for line in anim:
-        buf.append(_center(line, cols) + "\n"); row_cursor += 1
-    if anim:
+    # RKOJ-ELENO :: 2026-05-25 — freeze fix. 10s watchdog around the whole
+    # frame build. If anything wedges (helper hang, stdout block, etc) the
+    # process force-exits instead of presenting the operator a dead UI.
+    _wd = _render_watchdog(10.0)
+    try:
+        cols = _term_cols()
+        buf: list[str] = []
+        if _ANSI:
+            if _FIRST_RENDER:
+                # One-time full-screen clear to wipe whatever the spawning shell left
+                buf.append("\033[2J\033[H")
+                _FIRST_RENDER = False
+            else:
+                # Cursor home + clear-to-end (overwrites previous frame in place)
+                buf.append("\033[H\033[J")
+        # Row tracker: count terminal rows we've written so far (1-based, top=1).
+        # After the initial cursor-home there's a leading "\n" newline (row 1 blank).
+        row_cursor = 1
         buf.append("\n"); row_cursor += 1
-    # Accounts panel (operator 2026-05-24T23:20Z "i need acocunts tab here")
-    acct_lines = _accounts_inline_lines()
-    _ACCT_ROW_START = row_cursor if acct_lines else 0
-    _ACCT_ROW_HEIGHT = len(acct_lines)
-    if acct_lines:
-        a_max_w = max((_visible_len(ln) for ln in acct_lines), default=0)
-        a_pad = " " * max(0, (cols - a_max_w) // 2)
-        for ln in acct_lines:
-            buf.append(a_pad + ln + "\n"); row_cursor += 1
+        # Hero (centered per-line)
+        for line in _hero_lines():
+            buf.append(_center(line, cols) + "\n"); row_cursor += 1
         buf.append("\n"); row_cursor += 1
-    # Menu (two-column rows, BLOCK-centered: compute widest row's visible width,
-    # derive ONE left-pad, apply that same pad to every row so columns align)
-    menu = _menu_lines(highlight)
-    max_w = max((_visible_len(ln) for ln in menu), default=0)
-    block_pad = max(0, (cols - max_w) // 2)
-    pad_str = " " * block_pad
-    for line in menu:
-        if line == "":
-            buf.append("\n")
-        else:
-            buf.append(pad_str + line + "\n")
-    # Prompt + footer
-    buf.append(_center(_prompt_line(), cols) + "\n")
-    buf.append("\n")
-    buf.append(_center(_footer_line(), cols) + "\n")
-    buf.append("\n")
-    sys.stdout.write("".join(buf))
-    sys.stdout.flush()
-    _TICK += 1
+        # Animation band (each row is its own pre-centered string)
+        anim = _animation_lines(_TICK, cols, height=10)
+        _ANIM_ROW_START = row_cursor
+        _ANIM_ROW_HEIGHT = len(anim)
+        # Cache the visible band width so partial redraws keep same geometry
+        _ANIM_BAND_WIDTH = max(40, min(cols - 8, 100))
+        for line in anim:
+            buf.append(_center(line, cols) + "\n"); row_cursor += 1
+        if anim:
+            buf.append("\n"); row_cursor += 1
+        # Accounts panel (operator 2026-05-24T23:20Z "i need acocunts tab here")
+        acct_lines = _accounts_inline_lines()
+        _ACCT_ROW_START = row_cursor if acct_lines else 0
+        _ACCT_ROW_HEIGHT = len(acct_lines)
+        if acct_lines:
+            a_max_w = max((_visible_len(ln) for ln in acct_lines), default=0)
+            a_pad = " " * max(0, (cols - a_max_w) // 2)
+            for ln in acct_lines:
+                buf.append(a_pad + ln + "\n"); row_cursor += 1
+            buf.append("\n"); row_cursor += 1
+        # Menu (two-column rows, BLOCK-centered: compute widest row's visible width,
+        # derive ONE left-pad, apply that same pad to every row so columns align)
+        menu = _menu_lines(highlight)
+        max_w = max((_visible_len(ln) for ln in menu), default=0)
+        block_pad = max(0, (cols - max_w) // 2)
+        pad_str = " " * block_pad
+        for line in menu:
+            if line == "":
+                buf.append("\n")
+            else:
+                buf.append(pad_str + line + "\n")
+        # Prompt + footer
+        buf.append(_center(_prompt_line(), cols) + "\n")
+        buf.append("\n")
+        buf.append(_center(_footer_line(), cols) + "\n")
+        buf.append("\n")
+        sys.stdout.write("".join(buf))
+        sys.stdout.flush()
+        _TICK += 1
+    finally:
+        _wd.cancel()
 
 
 def _partial_animation_redraw() -> None:
