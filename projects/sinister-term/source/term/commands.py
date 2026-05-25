@@ -97,6 +97,7 @@ Sinister Term commands:
   /crashlog [N --mine --module X]   Read eve-crash-log.jsonl (alias /crashes)
   /grep <pattern> [path] [--glob X] [-i] [N]   Content search (skips .git/venv/binaries)
   /fu [N --priority --kind --mine --unacked]   Tail fleet-updates.jsonl (alias /fleet-updates)
+  /incidents [N --severity --kind --agent]   Tail eve-incidents.jsonl (degraded states)
   /alias [name=val|remove n] List aliases, define one, or remove one
   /clear                    Clear the screen
   /help                     This message
@@ -537,6 +538,110 @@ _CRASH_LOG_PATH = SANCTUM_ROOT / "_shared-memory" / "eve-crash-log.jsonl"
 
 
 _FLEET_UPDATES_PATH = SANCTUM_ROOT / "_shared-memory" / "fleet-updates.jsonl"
+_INCIDENTS_PATH = SANCTUM_ROOT / "_shared-memory" / "eve-incidents.jsonl"
+
+
+def cmd_incidents(args: list[str]) -> CommandResult:
+    """iter-68: read fleet-wide eve-incidents.jsonl.
+
+    Incidents are higher-level than crashes — operator-visible degraded
+    states (oauth slot empty, watchdog tripped, sister-agent stuck, etc).
+    Logged by various sanctum automations.
+
+    Usage:
+      /incidents                       last 10
+      /incidents N                     last N (1..500)
+      /incidents --severity high       filter by severity
+      /incidents --kind X              filter by kind/type substring
+      /incidents --agent <slug>        filter by agent/source slug
+    """
+    limit = 10
+    sev: str | None = None
+    kind_filter: str | None = None
+    agent_filter: str | None = None
+    i = 0
+    while i < len(args):
+        a = args[i]
+        if a == "--severity" and i + 1 < len(args):
+            sev = args[i + 1].lower()
+            i += 2
+            continue
+        if a == "--kind" and i + 1 < len(args):
+            kind_filter = args[i + 1].lower()
+            i += 2
+            continue
+        if a == "--agent" and i + 1 < len(args):
+            agent_filter = args[i + 1].lower()
+            i += 2
+            continue
+        try:
+            limit = max(1, min(500, int(a)))
+        except ValueError:
+            return CommandResult(True,
+                f"unknown arg: {a}. Try /incidents with no args for usage.")
+        i += 1
+
+    if not _INCIDENTS_PATH.exists():
+        try:
+            rel = _INCIDENTS_PATH.relative_to(SANCTUM_ROOT).as_posix()
+        except ValueError:
+            rel = str(_INCIDENTS_PATH)
+        return CommandResult(True, f"(no incidents log at {rel})")
+
+    rows: list[dict] = []
+    try:
+        with _INCIDENTS_PATH.open("r", encoding="utf-8", errors="replace") as fh:
+            for ln in fh:
+                ln = ln.strip()
+                if not ln:
+                    continue
+                try:
+                    obj = json.loads(ln)
+                    if isinstance(obj, dict):
+                        rows.append(obj)
+                except Exception:
+                    continue
+    except OSError as e:
+        return CommandResult(True, f"/incidents failed: {e}")
+
+    if sev:
+        rows = [r for r in rows
+                if (r.get("severity") or r.get("level") or "").lower() == sev]
+    if kind_filter:
+        rows = [r for r in rows
+                if kind_filter in (r.get("kind") or r.get("type") or "").lower()]
+    if agent_filter:
+        rows = [r for r in rows
+                if agent_filter in (r.get("agent") or r.get("source") or "").lower()]
+
+    if not rows:
+        flt = []
+        if sev: flt.append(f"--severity {sev}")
+        if kind_filter: flt.append(f"--kind {kind_filter}")
+        if agent_filter: flt.append(f"--agent {agent_filter}")
+        return CommandResult(True,
+            f"(no incidents{' (' + ' '.join(flt) + ')' if flt else ''})")
+
+    shown = rows[-limit:]
+    try:
+        rel = _INCIDENTS_PATH.relative_to(SANCTUM_ROOT).as_posix()
+    except ValueError:
+        rel = str(_INCIDENTS_PATH)
+    out = [f"Incidents: {len(shown)} of {len(rows)} in {rel}"]
+    for r in shown:
+        ts = (r.get("ts_utc") or "?")[:19] + "Z"
+        sev_v = (r.get("severity") or r.get("level") or "?").lower()
+        if sev_v == "high" or sev_v == "critical":
+            badge = "[HI]"
+        elif sev_v == "low":
+            badge = "[lo]"
+        else:
+            badge = "[no]"
+        kind = (r.get("kind") or r.get("type") or "?")[:16]
+        agent = (r.get("agent") or r.get("source") or "?")[:14]
+        msg = (r.get("message") or r.get("detail") or r.get("description") or "")[:60]
+        out.append(f"  {ts}  {badge}  {kind:<16}  {agent:<14}  {msg}")
+    return CommandResult(True, "\n".join(out))
 
 
 def cmd_fleet_updates(args: list[str]) -> CommandResult:
@@ -2057,6 +2162,7 @@ COMMANDS: dict[str, Callable[[list[str]], CommandResult]] = {
     "grep": cmd_grep,              # iter-66 — content search across files
     "fleet-updates": cmd_fleet_updates,  # iter-67 — read fleet-updates.jsonl
     "fu": cmd_fleet_updates,             # short alias
+    "incidents": cmd_incidents,          # iter-68 — read eve-incidents.jsonl
 }
 
 
