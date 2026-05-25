@@ -93,6 +93,7 @@ Sinister Term commands:
   /watch <relpath> [N]      Tail any jsonl under _shared-memory/ (sandboxed)
   /agents [N --fresh --stale --slug X]   Richer heartbeats (mode + branch + note)
   /find <glob> [--sanctum --type d|f] [N]   Recursive name search (skips .git/venv/etc)
+  /doctrine [--sanctum --search X]   List operator hard-canonicals from CLAUDE.md
   /alias [name=val|remove n] List aliases, define one, or remove one
   /clear                    Clear the screen
   /help                     This message
@@ -527,6 +528,99 @@ def cmd_recall(args: list[str]) -> CommandResult:
 _HEARTBEAT_PATH = SANCTUM_ROOT / "_shared-memory" / "heartbeats" / f"{SELF_SLUG}.json"
 _MESH_LOCKS_DIR = SANCTUM_ROOT / "_shared-memory" / "mesh-locks"
 _UTTERANCES_PATH = SANCTUM_ROOT / "_shared-memory" / "operator-utterances.jsonl"
+
+
+def cmd_doctrine(args: list[str]) -> CommandResult:
+    """iter-64: list the operator hard-canonical directives from CLAUDE.md.
+
+    The Sanctum CLAUDE.md uses `## Operator hard-canonical YYYY-MM-DD — <TITLE>`
+    section headings for binding fleet doctrine. This builtin scans the
+    top-level Sanctum CLAUDE.md (and the project-level one if present) and
+    prints each heading + the FIRST quoted operator-verbatim line found
+    under it so the operator can see the canonicals at a glance.
+
+    Usage:
+      /doctrine                       all hard-canonicals from both CLAUDE.md files
+      /doctrine --sanctum             only the top-level CLAUDE.md
+      /doctrine --search <substring>  filter by case-insensitive substring on heading
+    """
+    sanctum_md = SANCTUM_ROOT / "CLAUDE.md"
+    # Project-level CLAUDE.md sits two dirs up from term/source (term/source -> sinister-term/)
+    project_md = SANCTUM_ROOT / "projects" / "sinister-term" / "CLAUDE.md"
+
+    only_sanctum = False
+    search_term: str | None = None
+    i = 0
+    while i < len(args):
+        a = args[i]
+        if a == "--sanctum":
+            only_sanctum = True
+            i += 1
+            continue
+        if a == "--search" and i + 1 < len(args):
+            search_term = args[i + 1].lower()
+            i += 2
+            continue
+        return CommandResult(True,
+            f"unknown arg: {a}. Try /doctrine with no args for usage.")
+
+    sources = [sanctum_md]
+    if not only_sanctum:
+        sources.append(project_md)
+
+    import re as _re
+    heading_re = _re.compile(r"^##\s+Operator hard-canonical\s+(\d{4}-\d{2}-\d{2})\s+[—-]+\s+(.+)$", _re.IGNORECASE)
+    verbatim_re = _re.compile(r"\*?\"([^\"]{4,})\"\*?")
+
+    rows: list[tuple[str, str, str, str]] = []  # (source-label, date, title, first-quote)
+    for md_path in sources:
+        if not md_path.exists():
+            continue
+        label = "sanctum" if md_path == sanctum_md else "lane"
+        try:
+            text = md_path.read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            continue
+        # Walk line-by-line; when we hit a heading, scan the next ~20 lines
+        # for a verbatim quote.
+        lines = text.splitlines()
+        for idx, ln in enumerate(lines):
+            m = heading_re.match(ln.strip())
+            if not m:
+                continue
+            date, title = m.group(1), m.group(2).strip()
+            if search_term and search_term not in title.lower():
+                continue
+            quote = ""
+            for follow in lines[idx + 1: idx + 25]:
+                qm = verbatim_re.search(follow)
+                if qm:
+                    quote = qm.group(1).strip()
+                    break
+            rows.append((label, date, title, quote))
+
+    if not rows:
+        flt = ""
+        if only_sanctum:
+            flt += " --sanctum"
+        if search_term:
+            flt += f" --search {search_term}"
+        return CommandResult(True,
+            f"(no hard-canonicals{flt})")
+
+    # Sort newest-first by date, sanctum BEFORE lane within same date.
+    # Sort in two passes to avoid reverse=True flipping the label tiebreaker.
+    rows.sort(key=lambda r: 0 if r[0] == "sanctum" else 1)  # sanctum first
+    rows.sort(key=lambda r: r[1], reverse=True)              # date newest first (stable)
+
+    out = [f"Hard-canonicals: {len(rows)} doctrine{'s' if len(rows) != 1 else ''}"]
+    for label, date, title, quote in rows:
+        title_short = title if len(title) <= 70 else title[:67] + "..."
+        out.append(f"  {date} [{label:<7}] {title_short}")
+        if quote:
+            q = quote if len(quote) <= 100 else quote[:97] + "..."
+            out.append(f"            \"{q}\"")
+    return CommandResult(True, "\n".join(out))
 
 
 def cmd_find(args: list[str]) -> CommandResult:
@@ -1594,6 +1688,7 @@ COMMANDS: dict[str, Callable[[list[str]], CommandResult]] = {
     "watch": cmd_watch,            # iter-61 — tail any jsonl under _shared-memory
     "agents": cmd_agents,          # iter-62 — richer heartbeats with mode/branch/note
     "find": cmd_find,              # iter-63 — recursive name search under SANCTUM_ROOT
+    "doctrine": cmd_doctrine,      # iter-64 — list operator hard-canonicals from CLAUDE.md
 }
 
 
