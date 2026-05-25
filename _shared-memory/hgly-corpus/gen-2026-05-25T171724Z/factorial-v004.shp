@@ -1,0 +1,6 @@
+fn fact (n) {
+  let acc 1
+  for i 1 + n 1 { let acc * acc i }
+  ret acc
+}
+fact 9

@@ -1,0 +1,3 @@
+let fd (opn "/tmp/out4.txt" W)
+wr fd "data4\n" 6
+cls fd

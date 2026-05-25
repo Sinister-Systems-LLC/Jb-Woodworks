@@ -1,0 +1,6 @@
+fn flt (xs) {
+  for i 0 7 {
+    if (== % xs[i] 2 0) { yld xs[i] }
+  }
+}
+flt [1 2 3 4 5]

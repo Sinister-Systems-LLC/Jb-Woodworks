@@ -1,0 +1,4 @@
+fn hi (m) {
+  for i 0 7 { wr 1 m[i] 8 }
+}
+hi map

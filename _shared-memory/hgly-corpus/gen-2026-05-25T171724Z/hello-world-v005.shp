@@ -1,0 +1,4 @@
+fn main () {
+  wr 1 "hello5\n" 7
+}
+main

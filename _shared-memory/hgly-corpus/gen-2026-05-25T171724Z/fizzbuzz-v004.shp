@@ -1,0 +1,9 @@
+fn fb (n) {
+  for i 1 + n 1 {
+    if (== % i 15 0) { wr 1 "FizzBuzz\n" 9 }
+    el if (== % i 3 0) { wr 1 "Fizz\n" 5 }
+    el if (== % i 5 0) { wr 1 "Buzz\n" 5 }
+    el { wr 1 i 4 }
+  }
+}
+fb 19

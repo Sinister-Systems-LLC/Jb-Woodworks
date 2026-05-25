@@ -1,0 +1,4 @@
+let m (mutex 105)
+let p (lck m)
+wr 1 p 8
+ulk m

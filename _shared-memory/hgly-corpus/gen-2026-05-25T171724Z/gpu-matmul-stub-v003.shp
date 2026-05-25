@@ -1,0 +1,2 @@
+gpu matmul [256 256] [A B C]
+awt matmul

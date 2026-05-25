@@ -1,0 +1,5 @@
+𓂀 fd (𓃭 "/tmp/in4.txt" R)
+𓂀 buf (𓉴 1024)
+𓂧 fd buf 1024
+𓄟 fd
+𓉡 buf
