@@ -86,6 +86,7 @@ Sinister Term commands:
   /ascii [on|off|status|project K|list]  Control SA-PH6 living-entity overlay
   /health                   Single-screen sterm dashboard (version/branch/agents/inbox/bridge/bus)
   /uptime                   Session duration + event count + ascii frames + cache size
+  /branch                   Current branch + upstream + ahead/behind + dirty count + HEAD
   /alias [name=val|remove n] List aliases, define one, or remove one
   /clear                    Clear the screen
   /help                     This message
@@ -514,6 +515,77 @@ def cmd_recall(args: list[str]) -> CommandResult:
                               "top_titles": [t for _, _, t in top_n[:3]]})
     except Exception:
         pass
+    return CommandResult(True, "\n".join(lines))
+
+
+def _git_one(args: list[str], *, cwd: Path | None = None,
+             timeout_s: float = 2.0) -> str | None:
+    """Run a `git` invocation and return stripped stdout (or None on error)."""
+    try:
+        out = subprocess.check_output(
+            ["git", *args],
+            cwd=str(cwd or Path.cwd()),
+            text=True,
+            stderr=subprocess.DEVNULL,
+            timeout=timeout_s,
+        )
+        return out.strip()
+    except Exception:
+        return None
+
+
+def cmd_branch(_args: list[str]) -> CommandResult:
+    """iter-57: current branch + ahead/behind origin + dirty file count.
+
+    Cheap one-shot `git` poll — useful inside sterm before a /swarm
+    broadcast / commit so the operator can see they're on the expected
+    lane slug. All shells exec'd via subprocess with 2s timeout.
+    """
+    branch = _git_one(["rev-parse", "--abbrev-ref", "HEAD"])
+    if branch is None:
+        return CommandResult(True, "branch: (not in a git repo)")
+
+    lines = [f"Branch: {branch}"]
+
+    # upstream tracking
+    upstream = _git_one(["rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}"])
+    if upstream:
+        lines.append(f"  upstream:       {upstream}")
+        # ahead/behind via rev-list --left-right --count
+        counts = _git_one(["rev-list", "--left-right", "--count", "HEAD...@{u}"])
+        if counts and "\t" in counts:
+            ahead, behind = counts.split("\t", 1)
+            lines.append(f"  ahead/behind:   +{ahead} / -{behind}")
+        else:
+            lines.append("  ahead/behind:   (rev-list failed)")
+    else:
+        lines.append("  upstream:       (no upstream tracking)")
+
+    # dirty count
+    status = _git_one(["status", "--porcelain"])
+    if status is None:
+        lines.append("  working tree:   (status failed)")
+    elif not status:
+        lines.append("  working tree:   clean")
+    else:
+        rows = [l for l in status.splitlines() if l.strip()]
+        # Classify by first letter (staged) / second letter (unstaged)
+        staged = sum(1 for r in rows if r[0] != " " and r[0] != "?")
+        unstaged = sum(1 for r in rows if len(r) > 1 and r[1] != " " and r[0] != "?")
+        untracked = sum(1 for r in rows if r.startswith("??"))
+        lines.append(
+            f"  working tree:   {len(rows)} change{'s' if len(rows) != 1 else ''}"
+            f"  (staged={staged}, unstaged={unstaged}, untracked={untracked})"
+        )
+
+    # HEAD commit one-liner
+    head = _git_one(["log", "-1", "--oneline"])
+    if head:
+        # Truncate to keep line tidy
+        if len(head) > 80:
+            head = head[:77] + "..."
+        lines.append(f"  HEAD:           {head}")
+
     return CommandResult(True, "\n".join(lines))
 
 
@@ -989,6 +1061,7 @@ COMMANDS: dict[str, Callable[[list[str]], CommandResult]] = {
     "ascii": cmd_ascii,    # iter-54 — control SA-PH6 ascii_bridge
     "health": cmd_health,  # iter-55 — single-screen sterm dashboard
     "uptime": cmd_uptime,  # iter-56 — sterm session duration + activity counters
+    "branch": cmd_branch,  # iter-57 — branch + ahead/behind + dirty count
 }
 
 
