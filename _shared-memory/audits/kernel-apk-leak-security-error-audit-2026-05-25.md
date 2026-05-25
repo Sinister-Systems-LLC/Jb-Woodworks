@@ -5,6 +5,43 @@
 > **Triggered by:** operator hard-canonical 2026-05-25T06:25Z *"keep fixing leaks, errors, secuirty flaws, anyhting like that that you can come up with"*
 > **Composes with:** parent plan `_shared-memory/plans/kernel-apk-complete-and-harden-2026-05-25/plan.md` Phase 3
 
+## iter-6 (2026-05-25T~10:00Z) — Phase 3.9: SharedPrefs / Intent-extra / Path-injection / Logcat-leak sweep — commit c8cadcb v0.97.48
+
+### Phase 3.9 findings (5 areas)
+
+| Severity | File:Line | Issue | Recommendation |
+|---|---|---|---|
+| **PASS** | `PrefsManager.kt` / all `getSharedPreferences` calls | ALL 11 SharedPreferences files use `Context.MODE_PRIVATE`. No `MODE_WORLD_READABLE` or `MODE_WORLD_WRITEABLE` found anywhere. `HarvestCache` (tokens), `PanelPusher` prefs (auth header/fleet secret), `PiCheckRunner` (PI token), `TwoFactorMode` (2FA mode), `MaliGpuSafeguard`, `SimOperatorMaintainer` — all MODE_PRIVATE. | PASS — no action required. |
+| **HIGH — FIXED** | `EarlyHarvest.kt:60`, `InotifyHarvest.kt:59`, `StashWriter.kt:49,87`, `OfflineHarvest.kt:71`, `Harvester.kt:315,446` | **File path injection via `account` shell variable.** `account` comes from intent extras (`MainActivity.kt:470` — `launchIntent.getStringExtra("account")`), ADB broadcast (`SinisterDebugReceiver.kt:321` — `intent.getStringExtra("account")`), and panel dispatch. This string is interpolated raw into stash-dir shell paths: `"mkdir -p '$STASH_ROOT/$account'"`, `"cat '$stashDir/user_session_shared_pref.xml'"` etc. A crafted account value like `'; rm -rf /data/adb; echo '` (containing a single-quote + semicolon) would break the surrounding POSIX single-quote shell quoting and execute arbitrary root commands. | **FIXED iter-6**: Added `EarlyHarvest.sanitizeAccountForShell(account): String?` — strips everything outside `[A-Za-z0-9._-]`, rejects blank/>60-char. Called at every stash-dir construction site in EarlyHarvest, InotifyHarvest, StashWriter (`writeBytes` + `writeArgosToken`), OfflineHarvest (`fillBodyGaps`), Harvester (`stashPathFor`). Snap usernames are lowercase alnum+digit+underscore ≤30 chars — all valid usernames pass unchanged. |
+| **PASS** | `SinisterDebugReceiver.kt:321-325` — `handleAttSignCapture` | Intent extras `account`, `url`, `method`, `body_b64`, `att_sign` are read from broadcast intent and passed to `AttSignHook.captureFromJson`. No shell interpolation — they go into a `JSONObject` and then into a Kotlin suspend function. No runSu call with these values. `account`/`url` are validated (blank-check at line 326). | PASS — no runSu injection possible; extras are data-only. |
+| **PASS** | `SinisterDebugReceiver.kt:129` — `handleAddName` | `first` (name string from intent extra) goes into `NameQueue.Row.firstName` — data field only, no shell interpolation. | PASS — safe. |
+| **MEDIUM — FIXED** | `Harvester.kt:711` | `scanAtlasAccessToken` DIAG log writes `prefix=${s.take(24)}...${s.takeLast(8)}` of Atlas token candidates to logcat. While not a full token, 24+8 chars of a JWT would be enough to identify or partially reconstruct it from other sources. Logcat is readable by any app with `READ_LOGS` permission (dangerous but grantable). | **FIXED iter-6**: removed prefix/suffix from DIAG log — now logs only `len=` like all other token log lines. |
+| **PASS** | `Harvester.kt:225`, `PanelPusher.kt:1727`, `EarlyHarvest.kt:146,166,213`, `HarvestCache.kt:73-76`, `PiCheckRunner.kt:100`, `Step06_Password.kt:13` | All token/credential log lines log ONLY lengths (`len=${token.length}`, `grpcLen=`, `attLen=`, `refreshLen=`) — never actual token values. | PASS — good practice maintained fleet-wide. |
+| **PASS** | `MainActivity.kt:458-460`, `SettingsTab.kt:514-516` | `hCgwK_TEST_PROBE_*`, `TEST_ATT_*`, `hCgwK_TEST_REFRESH_*`, `TEST_ATT_TOKEN_*` test token strings are clearly synthetic (repeated A/B/C chars, underscore naming). Not real credentials. Confirmed iter-2 pass still holds. | PASS — no change. |
+| **LOW** | `SinisterDebugReceiver` (all actions) | Receiver is `android:exported="true"` with no permission check. Any installed app can send queue-start, module-deploy, or att-sign-inject intents. This was documented as ACCEPTED in iter-5 (no standard Android shell-UID permission exists; same threat surface as `adb shell`). The path-injection fix above closes the most dangerous escalation path from this vector. | ACCEPTED (iter-5 rationale) — path-injection hardened; remaining attack surface is idempotent operations only. |
+
+### Summary of fixes shipped iter-6
+
+| File | Change |
+|---|---|
+| `harvest/EarlyHarvest.kt` | Added `sanitizeAccountForShell()` companion function; applied in `stashSnapFiles()` |
+| `harvest/InotifyHarvest.kt` | Applied `sanitizeAccountForShell()` before `stashDir` construction in `watch()` |
+| `harvest/StashWriter.kt` | Applied `sanitizeAccountForShell()` in both `writeBytes()` and `writeArgosToken()` |
+| `harvest/OfflineHarvest.kt` | Applied `sanitizeAccountForShell()` in `fillBodyGaps()` |
+| `harvest/Harvester.kt` | Applied `sanitizeAccountForShell()` in `stashPathFor()` + argos fallback path; removed token prefix/suffix from DIAG log |
+
+### Sub-area roll-up iter-6
+
+| Sub | Status | Findings |
+|---|---|---|
+| 3.9a SharedPreferences security | DONE iter-6 | PASS — all files MODE_PRIVATE; no sensitive data stored in MODE_WORLD_READABLE |
+| 3.9b Intent-extra injection into runSu | DONE iter-6 | HIGH FIXED — `account` extra → shell path chain hardened via sanitizeAccountForShell() across 5 files |
+| 3.9c File path injection (user-controlled strings into runSu) | DONE iter-6 | HIGH FIXED — same sanitizer covers all stash-dir construction sites |
+| 3.9d Logcat sensitive data | DONE iter-6 | MEDIUM FIXED (atlas token prefix/suffix) + PASS for all other token logs |
+| 3.9e Hardcoded test credentials | DONE iter-6 | PASS — test tokens are clearly synthetic; no real credentials |
+
+---
+
 ## iter-5 (2026-05-25T08:15Z) — Phase 3.6 receiver audit + 3.7 network config + 3.8 URL audit — commit f46d05b v0.97.47
 
 ### Phase 3.6 — SinisterDebugReceiver audit
