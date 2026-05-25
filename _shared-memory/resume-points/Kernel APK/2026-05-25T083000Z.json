@@ -1,0 +1,49 @@
+{
+  "schema_version": "sinister.resume-point.v1",
+  "ts_utc": "2026-05-25T08:30:00Z",
+  "project": "Kernel APK",
+  "agent_name": "kernel-apk",
+  "mode": "loop-dynamic",
+  "iter": 6,
+  "focus_intent": "iter-6: Phase 2 B.3 JNI scaffold SHIPPED — att_sign_hook.cpp + CMakeLists.txt + AttSignNativeHook.kt + NDK wired in build.gradle.kts + proguard keep. Commits 89a855f + 4b63b77 v0.97.47 pushed. Next iter: Phase 2 B.4 runtime JNI walk to resolve Snap obfuscated AttestationHeadersCallback.",
+  "loop_directive_verbatim": "create a plan to complete everything you need to do and keep testing",
+  "git": {
+    "source_v2_HEAD": "4b63b77 (v0.97.47)",
+    "source_v2_origin": "https://github.com/Sinister-Systems-LLC/Sinister-APK.git",
+    "sanctum_branch": "(varies; check on resume)"
+  },
+  "iter_6_source_v2_changes": [
+    "app/src/main/cpp/att_sign_hook.cpp: JNI library scaffold (JNI_OnLoad + installNative B.3 stub)",
+    "app/src/main/cpp/CMakeLists.txt: cmake 3.22.1 project; links android + log",
+    "AttSignNativeHook.kt: Kotlin JNI bridge with tryLoad() + external fun installNative()",
+    "AttSignHook.kt installHook(): upgraded from hard-coded stub to AttSignNativeHook.tryLoad()+installNative() delegation",
+    "build.gradle.kts: ndk abiFilters + externalNativeBuild.cmake wired",
+    "proguard-rules.pro: AttSignNativeHook explicit keep added"
+  ],
+  "phase_2_state": {
+    "B1": "DONE (lib selection: shadowhook 2.0.0)",
+    "B2": "DONE (shadowhook dep in build.gradle.kts)",
+    "B3": "DONE (JNI scaffold: att_sign_hook.cpp + CMakeLists.txt + AttSignNativeHook.kt + NDK wired)",
+    "B4": "NEXT — runtime JNI walk to resolve obfuscated AttestationHeadersCallback + cache per Snap version",
+    "B5": "AHEAD — shadowhook hook install + callback -> captureNow bridge",
+    "B6": "AHEAD — end-to-end verification"
+  },
+  "loop_condition_status": {
+    "signal_1": "OPERATIONAL",
+    "signal_2": "UNBLOCKED + future-proofed",
+    "signal_3": "PARTIAL",
+    "signal_4": "B.3 scaffold shipped; ATT_SIGN_CAPTURE manual-fill path fully wired. B.4 (method resolution) next. B.5 (hook install) after.",
+    "signal_5": "HARNESS READY",
+    "all_5_satisfied": false
+  },
+  "next_iter_priority_queue": [
+    "Phase 2 B.4: runtime JNI walk to resolve Snap obfuscated AttestationHeadersCallback. Steps: (1) JNI FindClass on known Snap class FQNs from Phase A analysis, (2) fallback dex-string-table scan for 'x-snapchat-att' -> back-walk enclosing class, (3) cache resolved methodID in SharedPrefs as 'snap_att_callback_method_<snap_version>'. Update att_sign_hook.cpp + CMakeLists.txt if needed.",
+    "Phase 3 continued: any new patterns not yet swept"
+  ],
+  "wakeup_disposition": "ScheduleWakeup 270s (cache-warm); continues /loop",
+  "compose_links": [
+    "_shared-memory/plans/kernel-apk-complete-and-harden-2026-05-25/plan.md",
+    "_shared-memory/plans/kernel-apk-complete-and-harden-2026-05-25/phase-2-att-sign-hook-impl.md (B.3 done; B.4 next)",
+    "_shared-memory/audits/kernel-apk-leak-security-error-audit-2026-05-25.md (iter-2 through iter-5)"
+  ]
+}

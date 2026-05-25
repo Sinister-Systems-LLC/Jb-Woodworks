@@ -6,6 +6,29 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-25 ~08:30Z — iter-6 of /loop: Phase 2 B.3 JNI scaffold SHIPPED — AttSignNativeHook.kt + att_sign_hook.cpp + CMakeLists.txt + NDK wired — commits 89a855f+4b63b77 v0.97.47
+
+**Author:** RKOJ-ELENO :: 2026-05-25 (kernel-apk lane; /loop dynamic-mode iter-6)
+
+### Shipped (verified, this iter)
+
+| # | Deliverable | Verification |
+|---|---|---|
+| 1 | `app/src/main/cpp/att_sign_hook.cpp` — JNI library scaffold | JNI_OnLoad + installNative() stub; B.4-B.5 TODOs documented in comments |
+| 2 | `app/src/main/cpp/CMakeLists.txt` — cmake 3.22.1 project | links android + log; shadowhook Prefab linkage deferred to B.5 |
+| 3 | `AttSignNativeHook.kt` — Kotlin JNI bridge | tryLoad() (graceful UnsatisfiedLinkError) + `external fun installNative()` |
+| 4 | `AttSignHook.kt installHook()` upgraded | was hard-coded stub; now delegates to AttSignNativeHook.tryLoad() + installNative() |
+| 5 | `build.gradle.kts`: ndk { abiFilters arm64-v8a + armeabi-v7a } + externalNativeBuild { cmake } | NDK build wired |
+| 6 | `proguard-rules.pro`: AttSignNativeHook explicit keep added | consistent with other harvest class keeps |
+| 7 | All commits pushed to origin: `89a855f` (B.3 scaffold) + `4b63b77` (proguard) | git push exit 0 |
+
+### Open (queued next iter)
+
+- Phase 2 B.4: runtime JNI walk to resolve Snap's obfuscated AttestationHeadersCallback class + method handle (per-version cache in SharedPrefs/file)
+- Phase 3 continued sweep: any patterns not yet covered
+
+---
+
 ## 2026-05-25 ~08:15Z — iter-5 of /loop: Phase 3.6 receiver audit + ATT_SIGN_CAPTURE wired + Phase 3.7 PASS + Phase 3.8 3x http->https fix — commit f46d05b v0.97.47
 
 **Author:** RKOJ-ELENO :: 2026-05-25 (kernel-apk lane; /loop dynamic-mode iter-5)
