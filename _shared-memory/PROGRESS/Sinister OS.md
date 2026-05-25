@@ -5,6 +5,34 @@
 
 ---
 
+## 2026-05-25 ~09:00Z — Iter 19: ship EVE-LLM IPC contract reply to chatbot lane + ACK fleet-headless-doctrine
+
+Resumed on a fresh `agent/sinister-os/eve-llm-bridge-spec-2026-05-25` branch (cut from `agent/sinister-sanctum/iter23-eve-polish-icon-mintty-2026-05-25`). Resume-point pre-warm pointed at the massive-expansion plan + session-contracts (both pre-warm reads consumed). Inbox carried one cross-lane question from `sinister-chatbot` (08:40Z, low priority): EVE-the-LLM is live at `https://snap.sinijkr.com/chatter`; should it reach Sinister OS desktop + Pixel 6a launcher, and if yes what IPC contract? + one agent-poke + one fleet-update (HEADLESS_EXEC doctrine, high).
+
+**Shipped this iter (verified):**
+
+| Path | Verb | Verification |
+|---|---|---|
+| `projects/sinister-os/source/eve-llm-bridge/SPEC-2026-05-25.md` | shipped (spec-doc) | NEW; 11 sections (topology + daemon rationale + systemd unit + JSON-RPC 2.0 methods for `chat.send`/`chat.history`/`persona.list`/`persona.tweak`/`events.subscribe` + desktop integration via waybar+wofi+CLI + mobile via direct-HTTPS+Compose tile + security model + failure modes + 2 asks back to chatbot + phasing behind P3 + mobile P1 gates); `ls` confirms presence, ~14KB |
+| `_shared-memory/cross-agent/2026-05-25T0900Z-sinister-os-reply-eve-llm-surface.md` | shipped | NEW; canonical reply; YES/YES verdict + IPC summary + 2 small asks (panel_event_id in `/test` response, `?since=<ts>` filter on `/events`) |
+| `_shared-memory/inbox/sinister-chatbot/20260525T0900Z-from-sinister-os-eve-llm-spec-reply.md` | shipped | NEW; pointer-to-canonical reply lands in chatbot inbox |
+| `_shared-memory/inbox/sinister-os/_acked/` | M (2 moves) | chatbot question + agent-poke archived; `ls` of inbox shows only `_acked/` |
+| `fleet-updates.jsonl` ack | shipped | `fleet-update.ps1 -Action Acked -Id fleet-headless-doctrine-2026-05-25 -Slug sinister-os` returned `acked id=fleet-headless-doctrine-2026-05-25 slug=sinister-os`. Scope note: sinister-os `source/*` Python files target Linux runtime (no popup windows); HEADLESS_EXEC doctrine applies to fleet-wide Windows dev daemons. `source/eve-os-integration/scaffold/sinister-eve-mcp-bridge.py` + `source/hot-reconfig/watcher/sinister-config-watcher.py` are Linux daemons; compliant by venue. `mobile/sandbox/*.py` is build tooling for Pixel work; flagged for mobile sub-lane future iter if those ever run on the dev workstation. |
+| `_shared-memory/heartbeats/sinister-os.json` | M | This iter (ts=09:00Z; branch + focus updated) |
+| `_shared-memory/PROGRESS/Sinister OS.md` | M | This row |
+| `_shared-memory/resume-points/Sinister OS/<utc>.json` | written after commit | |
+
+**Why this matters (composes cleanly):**
+
+- **Operator hard-canonical "EVE-as-OS-shell"** (CLAUDE.md): EVE needs root-equivalent control + the LLM as oracle. The bridge daemon is the seam: surfaces (waybar pill / wofi sheet / `eve chat` CLI / mobile tile) never see the license key or the upstream URL; the daemon owns custody + caching + offline gracefulness.
+- **Single-repo push policy 2026-05-25**: branch matches `agent/sinister-os/<topic>-<utc>` convention; will push to Sinister-Sanctum.
+- **No-bullshit doctrine rule 1**: spec is `shipped` (design-only); daemon implementation is `unverified/queued` behind P3 + mobile P1 gates — explicitly stated in spec § 10 + heartbeat.
+- **Forever-improve degradation signals (no-bullshit rule 8)**: this PROGRESS file is well under 2000 lines; one new spec doc; no doctrine inflation. Safe to expand.
+
+**Next move (iter 20 candidate, queued):** ship sinister-voice user-service design doc (deferred from prior iter-19 candidate (a)) — companion to state-machine doc; user-session privilege model + wake-word + intent forwarding to `/run/sinister/eve.sock`. Composes-with: state-machine doc 2026-05-25 + EVE-LLM bridge spec 2026-05-25 (voice-driven chat over UDS).
+
+---
+
 ## 2026-05-25 ~04:00Z — Iter 17/18: ack 5 utterances + ship sinister-eve.service typed-state-machine design (closes jcode-full-audit row 41)
 
 Resumed on `agent/sinister-os/iter15-doctrine-adopt-2026-05-25` (HEAD `8392fb1`). Resume-point next_action = (1) ack utterances iter-16 already handled (2) ship deferred sinister-eve.service typed-state-machine design doc.
