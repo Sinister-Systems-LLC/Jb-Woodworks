@@ -251,6 +251,54 @@ claude --version
 
 ---
 
+## 7. After first run — install operator-standard tooling (v3, 2026-05-25)
+
+If you ran EVE.exe's first-run wizard (or `eve-first-run-wizard.ps1`) it will have surfaced any missing pieces. The wizard runs the installers below in `-DryRun` mode by default — to actually install:
+
+### Docker bot stack (Tier-2 LLM runtime)
+
+```powershell
+# Install Docker Desktop first if missing
+winget install Docker.DockerDesktop
+# Start Docker Desktop (whale icon must appear in tray)
+
+# Pull + build every Sinister bot compose stack
+powershell -File "D:\Sinister Sanctum\automations\install-leo-bots.ps1"
+```
+
+Pulls `ollama/ollama:latest` (~4 GB for the runtime + model on first generate) and the optional gitea mirror. Logs to `_shared-memory/setup/leo-bots-install-<utc>.log`.
+
+### MCP servers
+
+```powershell
+# Seed ~/.claude/.mcp.json from the canonical template (skips if file exists)
+Copy-Item "D:\Sinister Sanctum\automations\templates\leo-mcp-config.json" "$env:USERPROFILE\.claude\.mcp.json"
+# Substitute placeholders manually (Notepad) OR re-run eve-first-run-wizard.ps1 which auto-substitutes
+
+# Verify
+claude mcp list
+# Expect 10+ servers Connected after restarting Claude Code
+```
+
+The template includes all 12 Sinister bots + 4 npm-based MCPs (playwright, context7, sequential-thinking, memory).
+
+### Scheduled tasks (all fleet pollers)
+
+```powershell
+powershell -File "D:\Sinister Sanctum\automations\install-leo-scheduled-tasks.ps1"
+```
+
+Installs 7 tasks (SinisterSanctumAutoPush, SinisterAccountWatchdog, SinisterOAuthHealthPoll, SinisterLinkPoll, SinisterSanctumDailyBackup, SinisterSanctumDoctor, SinisterMemoryConsolidate). Idempotent. Add `-DryRun` to preview, `-UninstallAll` to remove every one.
+
+### Verify everything
+
+```powershell
+powershell -File "D:\Sinister Sanctum\automations\eve-first-run-check.ps1" -Format text
+# Expect exit 0 (all OK) OR exit 2 with only optional warns (network, vault)
+```
+
+---
+
 ## See also
 
 - `docs/ENV-VARIABLES.md` — every env var the fleet reads, full cross-reference.

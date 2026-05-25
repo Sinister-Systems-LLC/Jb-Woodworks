@@ -1,0 +1,42 @@
+// Author: RKOJ-ELENO :: 2026-05-25
+// Sinister OS — example .sin source (CUE-compatible)
+//
+// This is the canonical reference input for the (future) transpiler. The
+// three files in sample-output/ are exactly what the transpiler would emit
+// when fed THIS file. Keep this file + sample-output/ in lockstep so the
+// design doc DSL-DESIGN-2026-05-24.md can show a complete round-trip.
+
+package sinister.services
+
+service: {
+    name:    "panel-shell"
+    image:   "ghcr.io/sinister/panel-shell:latest"
+    tier:    "core"                       // core | mesh | optional
+    accent:  "purple"
+
+    mesh: {
+        expose:    true                   // -> mesh ACL rule auto-added
+        port:      3000
+        protocol:  "tcp"
+    }
+
+    reboot: "never"                       // never | on-config-change | on-kernel
+
+    health: {
+        path:    "/healthz"
+        accept:  [200, 307]               // 307 = Next.js healthz redirect (commit 761d06b)
+        timeout: "5s"
+    }
+
+    env: {
+        SINISTER_MODE:   "desktop"        // desktop | headless
+        NEXT_PUBLIC_API: "http://vault-api:5078"
+    }
+
+    depends_on: ["vault-api", "yjs-server"]
+
+    resources: {
+        cpu:    "500m"
+        memory: "512Mi"
+    }
+}

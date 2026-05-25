@@ -1,0 +1,154 @@
+{
+    "_comment_author": "RKOJ-ELENO :: 2026-05-25",
+    "_comment_purpose": "Canonical Leo / fresh-machine MCP server template. Mirrors operator's ~/.claude/.mcp.json structure (server names + commands) but redacts operator-private env values. Leo fills in API keys + paths after install. Copy to ~/.claude/.mcp.json then restart Claude Code.",
+    "_comment_doctrine": "See _shared-memory/knowledge/leo-auto-setup-doctrine-2026-05-25.md + _shared-memory/knowledge/sanctioned-bypasses-doctrine-2026-05-21.md. Never push operator's real credentials. Path placeholders use FILL-IN-PATH or rely on SINISTER_SANCTUM_ROOT env. Set env vars via Wizard step 3 (git config user.name) or via setx ANTHROPIC_API_KEY ...",
+    "_comment_servers": {
+        "sinister-bus": "Fleet orchestrator + runlog. Tier 1 Python, no API cost.",
+        "sentinel": "Date alarms (yurikey expiry, deadlines). Tier 1.",
+        "translator": "MCP-tool catalog search across 200+ tools. Tier 1.",
+        "watcher": "Source-drift detection (sha + mtime). Tier 1.",
+        "auditor": "Secrets + dedup + freshness scan. Tier 1.",
+        "custodian": "Active backup to D:\\_backups\\. Tier 1.",
+        "stealth-browser": "Undetected Chromium automation. Tier 1.",
+        "librarian": "RAG over 8500+ .md archive (Ollama + FAISS).",
+        "researcher": "Scrape -> Ollama summarize chain.",
+        "triage": "File classifier (Ollama fallback).",
+        "scribe": "Daily-digest writer (Haiku). Needs ANTHROPIC_API_KEY.",
+        "curator": "Code-library extraction (Haiku). Needs ANTHROPIC_API_KEY.",
+        "playwright": "Browser automation MCP. Auto-downloads ~150 MB Chromium on first use.",
+        "context7": "Live library docs (kills hallucinations).",
+        "sequential-thinking": "Reasoning scaffold MCP.",
+        "memory": "Cross-session knowledge graph persistence."
+    },
+    "mcpServers": {
+        "sinister-bus": {
+            "command": "python",
+            "args": ["server.py"],
+            "cwd": "${SINISTER_SANCTUM_ROOT}\\_sinister-skills\\12_LLM_ORCHESTRATION\\agents\\sinister-bus",
+            "env": {
+                "OLLAMA_HOST": "http://localhost:11434",
+                "SINISTER_HUB_ROOT": "${SINISTER_SANCTUM_ROOT}\\_sinister-skills"
+            }
+        },
+        "sentinel": {
+            "command": "python",
+            "args": ["server.py"],
+            "cwd": "${SINISTER_SANCTUM_ROOT}\\_sinister-skills\\12_LLM_ORCHESTRATION\\agents\\sentinel",
+            "env": {
+                "OLLAMA_HOST": "http://localhost:11434",
+                "SINISTER_HUB_ROOT": "${SINISTER_SANCTUM_ROOT}\\_sinister-skills"
+            }
+        },
+        "translator": {
+            "command": "python",
+            "args": ["server.py"],
+            "cwd": "${SINISTER_SANCTUM_ROOT}\\_sinister-skills\\12_LLM_ORCHESTRATION\\agents\\translator",
+            "env": {
+                "OLLAMA_HOST": "http://localhost:11434",
+                "SINISTER_HUB_ROOT": "${SINISTER_SANCTUM_ROOT}\\_sinister-skills"
+            }
+        },
+        "watcher": {
+            "command": "python",
+            "args": ["server.py"],
+            "cwd": "${SINISTER_SANCTUM_ROOT}\\_sinister-skills\\12_LLM_ORCHESTRATION\\agents\\watcher",
+            "env": {
+                "OLLAMA_HOST": "http://localhost:11434",
+                "SINISTER_HUB_ROOT": "${SINISTER_SANCTUM_ROOT}\\_sinister-skills"
+            }
+        },
+        "auditor": {
+            "command": "python",
+            "args": ["server.py"],
+            "cwd": "${SINISTER_SANCTUM_ROOT}\\_sinister-skills\\12_LLM_ORCHESTRATION\\agents\\auditor",
+            "env": {
+                "OLLAMA_HOST": "http://localhost:11434",
+                "SINISTER_HUB_ROOT": "${SINISTER_SANCTUM_ROOT}\\_sinister-skills"
+            }
+        },
+        "custodian": {
+            "command": "python",
+            "args": ["server.py"],
+            "cwd": "${SINISTER_SANCTUM_ROOT}\\_sinister-skills\\12_LLM_ORCHESTRATION\\agents\\custodian",
+            "env": {
+                "OLLAMA_HOST": "http://localhost:11434",
+                "SINISTER_HUB_ROOT": "${SINISTER_SANCTUM_ROOT}\\_sinister-skills"
+            }
+        },
+        "stealth-browser": {
+            "command": "python",
+            "args": ["server.py"],
+            "cwd": "${SINISTER_SANCTUM_ROOT}\\_sinister-skills\\12_LLM_ORCHESTRATION\\agents\\stealth-browser",
+            "env": {
+                "OLLAMA_HOST": "http://localhost:11434",
+                "SINISTER_HUB_ROOT": "${SINISTER_SANCTUM_ROOT}\\_sinister-skills"
+            }
+        },
+        "librarian": {
+            "command": "python",
+            "args": ["server.py"],
+            "cwd": "${SINISTER_SANCTUM_ROOT}\\_sinister-skills\\12_LLM_ORCHESTRATION\\agents\\librarian",
+            "env": {
+                "OLLAMA_HOST": "http://localhost:11434",
+                "SINISTER_HUB_ROOT": "${SINISTER_SANCTUM_ROOT}\\_sinister-skills"
+            }
+        },
+        "researcher": {
+            "command": "python",
+            "args": ["server.py"],
+            "cwd": "${SINISTER_SANCTUM_ROOT}\\_sinister-skills\\12_LLM_ORCHESTRATION\\agents\\researcher",
+            "env": {
+                "OLLAMA_HOST": "http://localhost:11434",
+                "SINISTER_HUB_ROOT": "${SINISTER_SANCTUM_ROOT}\\_sinister-skills"
+            }
+        },
+        "triage": {
+            "command": "python",
+            "args": ["server.py"],
+            "cwd": "${SINISTER_SANCTUM_ROOT}\\_sinister-skills\\12_LLM_ORCHESTRATION\\agents\\triage",
+            "env": {
+                "OLLAMA_HOST": "http://localhost:11434",
+                "SINISTER_HUB_ROOT": "${SINISTER_SANCTUM_ROOT}\\_sinister-skills"
+            }
+        },
+        "scribe": {
+            "command": "python",
+            "args": ["server.py"],
+            "cwd": "${SINISTER_SANCTUM_ROOT}\\_sinister-skills\\12_LLM_ORCHESTRATION\\agents\\scribe",
+            "env": {
+                "OLLAMA_HOST": "http://localhost:11434",
+                "SINISTER_HUB_ROOT": "${SINISTER_SANCTUM_ROOT}\\_sinister-skills",
+                "ANTHROPIC_API_KEY": "FILL-IN-WITH-USER-ENV"
+            }
+        },
+        "curator": {
+            "command": "python",
+            "args": ["server.py"],
+            "cwd": "${SINISTER_SANCTUM_ROOT}\\_sinister-skills\\12_LLM_ORCHESTRATION\\agents\\curator",
+            "env": {
+                "OLLAMA_HOST": "http://localhost:11434",
+                "SINISTER_HUB_ROOT": "${SINISTER_SANCTUM_ROOT}\\_sinister-skills",
+                "ANTHROPIC_API_KEY": "FILL-IN-WITH-USER-ENV"
+            }
+        },
+        "playwright": {
+            "command": "npx",
+            "args": ["-y", "@playwright/mcp@latest"]
+        },
+        "context7": {
+            "command": "npx",
+            "args": ["-y", "@upstash/context7-mcp@latest"]
+        },
+        "sequential-thinking": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+        },
+        "memory": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-memory"],
+            "env": {
+                "MEMORY_FILE_PATH": "${SINISTER_SANCTUM_ROOT}\\_sinister-skills\\01_MEMORY\\_kg-memory\\graph.json"
+            }
+        }
+    }
+}
