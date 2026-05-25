@@ -5,6 +5,31 @@
 
 ---
 
+## 2026-05-25 ~09:10Z — Iter 20: ship sinister-voice user-service design doc
+
+Continued RELENTLESS (same turn as iter 19). The voice surface was queued from prior heartbeat as iter-19 candidate (a); shipped now as iter 20 to keep the design trilogy intact (EVE daemon state machine + EVE-LLM bridge + voice oracle).
+
+**Shipped this iter (verified):**
+
+| Path | Verb | Verification |
+|---|---|---|
+| `projects/sinister-os/docs/design/sinister-voice-user-service-2026-05-25.md` | shipped (design-doc) | NEW; 13 sections (what IS/ISN'T + 5 reasons for user-service + architecture + wake-word + transcription model + local NLU 3-tier + systemd unit + IPC outbound to 3 sockets + compositor-aware mute + security/audio-never-leaves + mobile sub-lane note + 9-row failure table + voice.toml + 10 P3 acceptance tests); `Write` returned success; `ls` confirms presence |
+| `_shared-memory/PROGRESS/Sinister OS.md` | M | This row (most-recent at top) |
+
+**Why this matters (composes cleanly):**
+
+- Closes the design trilogy: system daemon (state-machine doc, iter 18) + LLM IPC (bridge spec, iter 19) + voice surface (this doc, iter 20). P3 gate can now flip with all three contracts locked.
+- **Operator hard-canonical "I can still play games"** is operationalized in § 7 (compositor-aware mute) — fullscreen game auto-mutes wake-word; headphones-out demotes TTS.
+- **Operator hard-canonical "zero telemetry"** is operationalized in § 8 (security model) — audio never leaves the machine; only transcribed text intent; RAM-only audio buffer.
+- Wake-word + transcription = 100% local FOSS (openWakeWord + whisper.cpp Distil-Whisper small.en). No cloud STT.
+- User-session privilege boundary explicit: voice runs as operator UID 1000, EVE daemon runs as `eve` system UID — mic perms inherited naturally, no `acl` workarounds.
+
+**Next move (iter 21 candidate, queued):** hotkey-overlay GTK4 UX doc (the wofi-style chat sheet from EVE-LLM bridge spec § 5.2; also covers persona-picker + system-status overlay). After that, the master-plan § 8 P3-block UI surfaces are fully designed. Then either P3 gate flip (operator) or move to mobile sub-lane P1 design work.
+
+**Push status:** local commit `5872d2d` on `agent/sinister-os/eve-llm-bridge-spec-2026-05-25` (overseer-router also routed identical content to `agent/sinister-overseer/chatbot-slice5-2026-05-25` via auto-router matching "chatbot" filename). Gitea on `localhost:3000` is down so push failed; sanctum-auto-push daemon retries on 30-min schedule. Commit is safe locally; will land on next tick. Per "never ask operator for admin" doctrine, NOT surfacing this as operator-action — auto-push self-heals when gitea returns.
+
+---
+
 ## 2026-05-25 ~09:00Z — Iter 19: ship EVE-LLM IPC contract reply to chatbot lane + ACK fleet-headless-doctrine
 
 Resumed on a fresh `agent/sinister-os/eve-llm-bridge-spec-2026-05-25` branch (cut from `agent/sinister-sanctum/iter23-eve-polish-icon-mintty-2026-05-25`). Resume-point pre-warm pointed at the massive-expansion plan + session-contracts (both pre-warm reads consumed). Inbox carried one cross-lane question from `sinister-chatbot` (08:40Z, low priority): EVE-the-LLM is live at `https://snap.sinijkr.com/chatter`; should it reach Sinister OS desktop + Pixel 6a launcher, and if yes what IPC contract? + one agent-poke + one fleet-update (HEADLESS_EXEC doctrine, high).
