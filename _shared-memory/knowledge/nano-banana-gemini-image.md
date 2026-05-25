@@ -1,3 +1,9 @@
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 0
+  half_life_days: 180
+-->
 # nano-banana — Gemini 2.5 Flash Image (fleet-wide image generation)
 
 > **Author:** RKOJ-ELENO :: 2026-05-23

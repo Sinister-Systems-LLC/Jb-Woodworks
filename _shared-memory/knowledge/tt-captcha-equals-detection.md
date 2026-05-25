@@ -1,4 +1,10 @@
 <!-- Author: RKOJ-ELENO :: 2026-05-21 (EVE on tiktok-emulator-api) -->
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 0
+  half_life_days: 180
+-->
 <!-- Brain entry status: OPERATOR-BINDING-DOCTRINE -->
 
 # tt-captcha-equals-detection

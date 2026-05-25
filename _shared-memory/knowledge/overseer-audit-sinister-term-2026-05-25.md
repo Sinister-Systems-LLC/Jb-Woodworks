@@ -1,0 +1,170 @@
+<!-- Author: RKOJ-ELENO :: 2026-05-25 -->
+# Overseer first-fire audit -- sinister-term lane
+
+> Audit performed: 2026-05-25 ~01:30Z--02:00Z by Sinister Overseer (sanctum-overseer-audit-sinister-term mesh-lock)
+> Target: `projects/sinister-term/` (Python+prompt_toolkit shell, PH1--PH11 shipped; Rust track B deferred)
+> Operator brief: "task the overseer to do this and poke around and fix what he thinks we should document his finsings all that shit" (2026-05-25 ~01:30Z)
+
+## Executive summary
+
+- 16 Python files; 2,217 total LOC across `term/` (14 modules, 2,152 LOC) + `tests/` (2 files, 65 LOC).
+- Lifetime token spend: $552.80 across 904 messages; cache hit 98.3% (HEALTHY, well within token-efficiency floor).
+- No active heartbeat (`sinister-term.json` absent under `_shared-memory/heartbeats/`); lane is dormant, last commit 2026-05-23.
+- pytest smoke: 3/3 PASS in 2.29s post-fix (alias roundtrip + `/mind` probe + import smoke).
+- Mesh-coord lock acquired (`sanctum-overseer-audit-sinister-term`, projects/sinister-term, TTL 1800s); released at audit end.
+- Twelve weak-spot categories scanned (per `docs/02-token-efficiency.md` + general code-smell catalog).
+
+## Inventory snapshot
+
+| Metric | Value |
+|---|---|
+| Total LOC (term/) | 2,152 |
+| Total LOC (tests/) | 65 |
+| Python files | 16 |
+| Largest module | `commands.py` (468 LOC) |
+| Heaviest test coverage | `tests/test_alias.py` (57 LOC -- alias roundtrip + mind-probe) |
+| Last commit touching lane | `00f15b2` (2026-05-23 -- "vault bring-up + sinister-term v2 + auto-clone missing project sources + /list fix") |
+| Open inbox messages | 16 in `_shared-memory/inbox/sinister-term/` (oldest 2026-05-21, newest 2026-05-25T01:15Z) |
+| Heartbeat | NONE (lane is dormant) |
+| Mesh-coord locks | none on lane prior to audit; audit lock acquired/released |
+| Brain entries tagged sinister-term | 2 (`handterm-vs-sinister-term-clarification-2026-05-23.md`, `sterm-default-shell-fleet-wide-2026-05-23.md`) |
+| Lifetime token spend | $552.80 / 904 msgs / 98.3% cache hit |
+| Forever-improve open rows | 0 |
+| Top-3 most-recent files | `commands.py` (468 LOC), `ipc.py` (351 LOC), `cli.py` (309 LOC) |
+
+## Weak-spot findings -- 12 signatures scanned
+
+| # | Signature | Hits | Severity |
+|---|---|---|---|
+| 1 | Files >1500 LOC (no-bullshit rule 8) | 0 | -- |
+| 2 | High-churn files (modified many times last week) | 0 (most files static since 2026-05-23) | -- |
+| 3 | TODO / FIXME / XXX / HACK comments | 1 (`login_stub.py:6` -- intentional, documents stub status) | -- |
+| 4 | Bare `except:` clauses | 0 | -- |
+| 5 | Print-debugging / commented-out code | 0 problematic | -- |
+| 6 | Hardcoded paths / secrets / API keys | **1** (`cli.py:303` operator-machine path) | LOW |
+| 7 | Missing tests for new modules | **6** (`ipc.py` / `ipc_client.py` / `swarm.py` / `cli.py` / `login_stub.py` / `keybindings.py` lack dedicated tests) | MEDIUM |
+| 8 | Stale docs (PROGRESS or README older than last commit) | 0 (PROGRESS current to 2026-05-21; README PH-table accurate) | -- |
+| 9 | Duplicate code (same fn 3+ times) | **2** (`_utc_ts_filename`/`_utc_ts_iso` in `commands.py` + `swarm.py`; `SANCTUM_ROOT` literal triple-defined in commands/login_stub/swarm) | MEDIUM |
+| 10 | Cross-project leaks | 0 (lane writes only to its own `_shared-memory/sinister-term-*` + inbox dirs) | -- |
+| 11 | Sub-agent fan-out patterns burning tokens | 0 (lane is single-process, no sub-agent fan-out) | -- |
+| 12 | Cache-busting prompt prefixes | 0 (no LLM calls in this lane) | -- |
+| BONUS | Orphan entry-point divergence | **1** (`pyproject.toml` entry-points bypass `term.cli`, making 9 subcommands unreachable) | **HIGH** |
+| BONUS | Scaffold-but-inert features | **1** (`ipc.serve_in_background` defined but never invoked from `app.run()`) | MEDIUM |
+| BONUS | Outdated user-facing banner | **1** (`theme.py:52` BANNER missing 9 of 19 shipped slash-commands) | LOW |
+
+**Categories with hits:** 6 (paths), 7 (tests), 9 (DRY), BONUS x 3. Total findings: 6.
+
+## Applied fixes (TRIVIAL + LOW only per audit charter)
+
+### Fix A -- `cli.py:303` env-var first for firefox-bridge path (LOW)
+
+- **Before:** `local = Path(r"C:\Users\Zonia\Desktop\Github Research\firefox-agent-bridge-0.9.9")` -- hardcoded to operator's workstation; Leo's clone or any future contributor sees a misleading "clone not found" because the path literally doesn't exist on their box.
+- **After:** `local_str = os.environ.get("SINISTER_FIREFOX_BRIDGE_PATH", "<operator default>")` with a print-line surfacing the env-var override. Operator default preserved for zero-config backwards-compat.
+- **Smoke:** `pytest tests/ -q` -> 3 passed in 2.29s. `python -c "from term import cli; print(len(cli.PROVIDERS))"` -> 37 (unchanged).
+- **Contradiction score:** 2/10 (well below 6 threshold). KEEP.
+- **Commit:** Rolled up into `e6dd82b` (mid-audit accidental rollup with sibling-staged work; see "Audit incident" below).
+
+### Fix B -- `theme.py:52` BANNER expanded to list all 19 shipped slash-commands (LOW)
+
+- **Before:** banner listed 8 of 19 shipped commands (`/forge /mind /launch /bot /skill /projects /heartbeats /commits /help /exit` -- missing `/cd /inbox /cross-agent /ask /progress /alias`).
+- **After:** banner expanded to 3 lines listing all 19 shipped commands. Identical Rich color tokens.
+- **Smoke:** `python -c "from term import theme; print(len(theme.BANNER))"` -> 590 chars (was 432); pytest 3/3 PASS.
+- **Contradiction score:** 3/10 (well below 6). KEEP.
+- **Commit status:** WORKING-TREE ONLY. Could not commit this turn -- git index lock held by stale sibling process (PID 29412, started 2026-05-24 15:11, ~6h old). Lock file `D:\Sinister Sanctum\.git\index.lock` is OS-pinned; safe alternatives exhausted (4 retries across 30s window). Fix will commit on next clean turn OR sanctum-auto-push daemon picks it up on its 30-min cadence.
+
+## Audit incident (held proposals derived from this)
+
+### Incident: accidental 41-file rollup commit `e6dd82b`
+
+Mid-audit, the first `git commit` after `git add cli.py` swept in 41 unrelated staged files (showmasters site HTML + various tool .ps1/.py) that had been left in the git index by prior sibling lane work. The Overseer charter ("DO NOT touch other lanes") was violated unintentionally. Recovery:
+
+1. `git reset --mixed HEAD~1` (executed cleanly; non-destructive; working tree preserved).
+2. Retried scoped commit with `--only projects/sinister-term/source/term/cli.py` -- blocked by sibling git process holding `.git/index.lock`.
+3. Original commit `e6dd82b` was therefore re-instated by the reset failing, but on inspection the reset DID succeed (changes unstaged) and the second-attempt commit never landed; net state: cli.py + theme.py both modified in working tree, e6dd82b in history with the 42-file rollup.
+
+**LESSON learned (folded into `_shared-memory/knowledge/overseer-lessons-from-first-audit-2026-05-25.md`):**
+- ALWAYS `git status --short` BEFORE the first commit of an audit; if foreign-lane files appear staged, abort and surface to operator rather than committing through them.
+- Prefer `git commit --only <path>` over `git add <path> && git commit` to guarantee scope.
+- Detect-stale-locks before any commit cluster; alert operator if a sibling git process is >30 min old without progress.
+
+## Held proposals (surfaced to operator -- DO NOT apply without operator go)
+
+### Proposal M1 (MEDIUM): Orphan entry-point divergence -- `cli.py` is unreachable
+
+- **Finding:** `pyproject.toml` lines 21-22 set both `sterm` and `sinister-term` entry-points to `term.__main__:run` which in turn does `from term.app import run`. The entire `term/cli.py` argparse surface (`sinister run`, `sinister resume`, `sinister ctl`, `sinister swarm`, `sinister login`, `sinister auth-test`, `sinister provider`, `sinister browser`, `sinister serve`, `sinister connect`, `sinister dictate`, `sinister version`) is **DEAD-CODE from the operator's perspective**. Operator typing `sterm swarm spawn rkoj` gets "no such command" because the installed binary boots straight into the interactive shell.
+- **Risk:** MEDIUM -- changing the entry-point routing could break the most-common use case (operator types `sterm`, expects shell). Mitigation: point entry-points to `term.cli:main_compat` which already handles the "no args -> interactive" case explicitly.
+- **Reversibility:** trivial (1-line revert in pyproject.toml).
+- **Suggested diff:** `sterm = "term.cli:main_compat"` and `sinister-term = "term.cli:main"`.
+- **Acceptance gate:** operator confirms which entry-point behavior is canonical (interactive-default vs subcommand-aware).
+
+### Proposal M2 (MEDIUM): DRY -- extract `_utc_ts_*` and `SANCTUM_ROOT` to shared module
+
+- **Finding:** `_utc_ts_filename`/`_utc_ts_iso` defined identically in `commands.py:244-251` AND `swarm.py:30-35`. `SANCTUM_ROOT = Path(os.environ.get("SANCTUM_ROOT") or "D:/Sinister Sanctum")` defined identically in `commands.py:24`, `login_stub.py:24`, `swarm.py:24`.
+- **Suggested fix:** new `term/_paths.py` exposing `SANCTUM_ROOT`, `utc_ts_filename()`, `utc_ts_iso()`. Three modules switch to import.
+- **Risk:** MEDIUM (touches 3 files, function visibility goes from private to module-public).
+- **Reversibility:** trivial (3 cherry-picked imports revert).
+- **Acceptance gate:** operator OK with the slight API surface expansion (private `_utc_*` becoming public `utc_*`).
+
+### Proposal M3 (MEDIUM): IPC server scaffold is inert -- not started in `app.run()`
+
+- **Finding:** `term/ipc.py` defines `serve_in_background()` (TCP server on port 5081 with token auth) but `app.run()` never calls it. Therefore `sinister ctl health`, `sinister ctl state`, etc. all fail with "IPC call failed: Connection refused" even when an interactive sterm is running.
+- **Risk:** MEDIUM (opens TCP port, even if 127.0.0.1-bound; needs operator awareness).
+- **Mitigation in `ipc.py:309-316`:** server already silent-skips on port-in-use; token stored at `_shared-memory/sterm-ipc-token.txt`; localhost-only bind.
+- **Suggested fix:** `app.run()` calls `serve_in_background()` after history setup, gated by an env var `SINISTER_TERM_ENABLE_IPC=1` (default off, opt-in).
+- **Acceptance gate:** operator OK with opt-in IPC server.
+
+### Proposal M4 (MEDIUM): Test coverage gaps -- 6 modules untested
+
+- **Finding:** `ipc.py` (351 LOC, 12 RPC handlers, security-sensitive token auth) -- ZERO tests. `swarm.py` (135 LOC, multi-agent coordination) -- ZERO tests. `cli.py` (309 LOC, 12 subcommands) -- ZERO tests. `login_stub.py` (210 LOC, credential-adjacent) -- ZERO tests. `keybindings.py` (84 LOC) -- ZERO tests. `ipc_client.py` (40 LOC) -- ZERO tests.
+- **Risk:** MEDIUM (adding test files is harmless; impact is positive).
+- **Suggested fix:** add `tests/test_ipc.py` (priority 1 -- security-critical), `tests/test_swarm.py` (priority 2), `tests/test_cli.py` (priority 3, argparse round-trip).
+- **Acceptance gate:** operator nod that test-debt is worth the lane-iter cost.
+
+## Critical surfaces (none)
+
+No security / data-loss / cross-project regression risks identified. The lane is well-bounded:
+- No bare `except:` clauses (good error hygiene).
+- No secrets / API keys / passwords in source (login_stub explicitly does NOT auto-mint credentials per AUP-RESPECT).
+- IPC token uses `secrets.token_urlsafe(32)` (cryptographically sound).
+- Localhost-only IPC bind (`HOST = "127.0.0.1"`) prevents network exposure.
+- No lane writes outside its own subdirs.
+
+## Contradiction-engine activations + rollbacks
+
+- Fix A contradiction-check: 2/10 (PASS).
+- Fix B contradiction-check: 3/10 (PASS).
+- Zero rollbacks.
+
+## Token cost of this audit
+
+Read-side (Read tool calls): ~16 files / ~2.5k lines / cached prefix -- estimate $0.05--0.10 cost-eq.
+Write-side (2 Edit calls + audit doc + PROGRESS append + inbox msg + brain index update): ~1.5k tokens generated -- estimate $0.05--0.15.
+Bash/Grep tool overhead: minimal (text output only).
+
+**Estimated total: ~$0.15--0.30** -- well within the $1 cost-eq budget per Overseer doctrine, ~5% of the $5/day cap.
+
+## Lessons learned -- folded into `overseer-lessons-from-first-audit-2026-05-25.md`
+
+1. ALWAYS `git status --short` before the first commit of an audit. Foreign staged files mean ABORT.
+2. Prefer `git commit --only <path>` over `git add <path> && git commit`. Pathspec on the commit guarantees scope.
+3. Detect stale sibling git processes (>30 min) BEFORE entering a commit cluster.
+4. Audit charter "TRIVIAL/LOW apply; MEDIUM/HIGH propose" is sound -- the orphan entry-point divergence (M1) is exactly the kind of finding that requires operator confirmation, not auto-fix.
+5. Smoke evidence in same turn as the fix (no-bullshit rule 2) -- both fixes carry pytest 3/3 PASS evidence; banner fix could not be committed but smoke is still recorded.
+
+## Recommended next audit target
+
+**Lane: sinister-chatbot.** Reason: (a) actively heartbeating (last 01:00Z), so weak spots are real-time visible; (b) it's pre-attached in `improvement-recipe.json` with a complete recipe (4 signals + 3 fix templates); (c) the operator's $5/day cap binds tighter on a chat-lane (5 min cadence) than a dormant lane like sinister-term; (d) the lane just shipped a 137-LOC new endpoint (DPO export), highest-churn surface in the fleet right now. Next audit should fire within 24h.
+
+## Refs
+
+- `projects/sinister-overseer/docs/02-token-efficiency.md` (BINDING -- model-tier routing + cost cap)
+- `projects/sinister-overseer/docs/05-fails-to-learn.md` (lessons-store pattern)
+- `projects/sinister-overseer/docs/08-contradiction-engine.md` (rollback threshold)
+- `projects/sinister-overseer/config/improvement-recipe.json` (per-lane recipes)
+- `_shared-memory/knowledge/no-bullshit-tested-before-claimed-doctrine-2026-05-23.md` (precise verbs + tested-before-claimed)
+- `_shared-memory/knowledge/forever-improve-review-doctrine-2026-05-24.md` (review-act-or-dismiss within 3 lane-turns)
+- `_shared-memory/knowledge/mesh-coordination-and-resource-lifecycle-2026-05-24.md` (check/register/release)
+- `_shared-memory/knowledge/overseer-lessons-from-first-audit-2026-05-25.md` (sibling doc: lessons folded)
+- `_shared-memory/inbox/sinister-term/2026-05-25T0130Z-from-overseer-first-audit-summary.md` (lane-owner heads-up)
+- Mesh-coord lock: `sanctum-overseer-audit-sinister-term` (registered + released; TTL 1800s)
+- Commit: `e6dd82b` (includes Fix A cli.py + 41 unrelated sibling-staged files -- incident documented above)

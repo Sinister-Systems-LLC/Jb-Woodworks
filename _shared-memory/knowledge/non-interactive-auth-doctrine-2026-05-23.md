@@ -1,3 +1,9 @@
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 0
+  half_life_days: 180
+-->
 # Non-Interactive Auth Doctrine — TTY-less spawn → env-var token fallback
 
 > **Author:** RKOJ-ELENO :: 2026-05-23
@@ -73,8 +79,39 @@ reads them transparently.
 ## Detection + auto-switch pattern for agents
 
 When an agent attempts `<cli> login`, wrap it in a probe that catches the
-non-interactive failure and surfaces the env-var ask to the operator. Skeleton
-in bash (idiomatic for the Sanctum fleet — every spawned session is git-bash):
+non-interactive failure and surfaces the env-var ask to the operator. **The
+canonical implementation now lives in `tools/sinister-login/` v0.1.0** (shipped
+2026-05-23 by rkoj-lane /loop iter 9 + 11). Two surfaces:
+
+### Python (in-process)
+
+```python
+from sinister_login import ni_auth_probe, ProbeResult, EX_CONFIG
+
+result = ni_auth_probe(cli="railway", cmd="railway login", envvar="RAILWAY_TOKEN")
+if result.has_token:
+    proceed()                          # envvar set; login skipped
+elif result.needs_token:
+    print(result.hint, file=sys.stderr)
+    sys.exit(result.exit_code)         # 78 EX_CONFIG
+```
+
+### CLI (from bash / PowerShell / scripts)
+
+```bash
+sinister-login auth-probe railway \
+    --cmd "railway login" --envvar RAILWAY_TOKEN [--timeout 30] [--json]
+# exit 0    has-token / login-OK
+# exit 78   needs-token (operator must mint + set env var); hint printed to stderr
+# exit 127  missing binary
+# exit <rc> CLI's own exit code on non-marker failure
+```
+
+### Skeleton (historical — superseded by the real impl above)
+
+The bash sketch below was the original doctrine skeleton. The shipped Python
+implementation supersedes it but pattern is identical (12 stderr markers, EOF
+on stdin so prompts can't block, EX_CONFIG=78 exit, structured operator hint).
 
 ```bash
 # Reusable non-interactive auth probe.

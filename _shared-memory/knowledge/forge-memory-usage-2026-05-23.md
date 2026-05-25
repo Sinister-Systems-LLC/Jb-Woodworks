@@ -1,4 +1,10 @@
 <!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 0
+  half_life_days: 180
+-->
 # forge-memory-bridge :: green-path usage
 
 > **Status:** operational (verified 2026-05-23 by parallel audit agent)

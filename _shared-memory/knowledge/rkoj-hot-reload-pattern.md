@@ -1,3 +1,9 @@
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 0
+  half_life_days: 180
+-->
 > **Author:** Sinister Sanctum master agent (Claude) :: 2026-05-19
 
 # RKOJ hot-reload — ship updates while the console is running + agents don't lose context

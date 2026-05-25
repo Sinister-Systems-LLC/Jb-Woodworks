@@ -1,3 +1,9 @@
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 0
+  half_life_days: 180
+-->
 > **Author:** RKOJ-ELENO :: 2026-05-21
 
 # Topic: RKOJ v0.5 → v1.1 form-parity journey — operator-feedback-driven evolution in one day

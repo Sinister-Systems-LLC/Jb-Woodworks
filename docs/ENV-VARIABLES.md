@@ -116,6 +116,42 @@ To unset (clear):
 
 ---
 
+### `SINISTER_EVE_SWARM` / `SINISTER_EVE_LOOP` / `SINISTER_EVE_LOOP_INTERVAL_S`
+
+- **What they unlock:** Per-project EVE autonomy mode for a spawned agent. Picker-overlay's S verb (AutonomyToggleDialog) writes the per-project preset into `automations/session-templates/agent-prefs.json::autonomy_preset.<key>`; RKOJ's `_make_child_env(sess)` exports them at spawn time. `SWARM=1` means swarm mode; `LOOP=1` means auto-loop the agent; `LOOP_INTERVAL_S=<n>` sets the loop cadence in seconds.
+- **Read by:** EVE.exe + RKOJ.exe via `eve_picker_lib.prompt_agent_modes_from_env()` and the spawned child claude (via `agents_tab._make_child_env`); SWARM/LOOP visibility chips on `AgentCard` mirror them.
+- **Format:** `SINISTER_EVE_SWARM=1` (truthy) / `SINISTER_EVE_LOOP=1` / `SINISTER_EVE_LOOP_INTERVAL_S=300`.
+- **Without them:** The spawned agent runs in normal (non-swarm, non-loop) mode. This is the default.
+- **Set (preferred path):** Don't set them at User scope — use the picker overlay's `S` verb → AutonomyToggleDialog → save. The preset persists per-project; spawn-time export is automatic. User-scope setting works too but applies to every spawn until unset.
+- **Doctrine:** `_shared-memory/knowledge/eve-into-rkoj-integration-2026-05-23.md`; `_shared-memory/plans/_archive/eve-into-rkoj-integration-2026-05-23T1330Z/plan.md` §5.
+
+### `SINISTER_BROWSER_HOST` / `SINISTER_BROWSER_PORT` / `SINISTER_BROWSER_TIMEOUT`
+
+- **What they unlock:** Connection target for the firefox-agent-bridge WebSocket that `tools/sinister-browser/api.py` connects to. Default `127.0.0.1:8766` with 30-second timeout.
+- **Read by:** `tools/sinister-browser/sinister_browser/api.py::Browser` (Layer B); also picked up by `skills/sinister-browser.md` operator hint when probing.
+- **Format:** Host as string, port as integer, timeout as seconds (float OK).
+- **Without them:** Defaults are used (`127.0.0.1:8766`, 30 s). Override only when running Firefox on a different machine (e.g. Leo's host via Tailscale) or when the bridge moved off its default port.
+- **Set:**
+  ```powershell
+  [Environment]::SetEnvironmentVariable('SINISTER_BROWSER_HOST','127.0.0.1','User')
+  [Environment]::SetEnvironmentVariable('SINISTER_BROWSER_PORT','8766','User')
+  [Environment]::SetEnvironmentVariable('SINISTER_BROWSER_TIMEOUT','30','User')
+  ```
+- **Doctrine:** `_shared-memory/knowledge/browser-bridge-integration-shape-2026-05-23.md`; matrix row 26.
+
+### `SINISTER_SANCTUM_ROOT`
+
+- **What it unlocks:** Path anchor for the Sanctum tree on Leo's machine (or any installation that puts the repo somewhere other than `D:\Sinister Sanctum`). Used by `eve_picker_lib`, `sinister-mind/server.py`, `sinister-vault/daemon.py`, `tools/sinister-utils/io.py`, and most tools that read fleet-shared JSON.
+- **Format:** Absolute path string. Example: `D:\Sinister Sanctum` (operator default) or `C:\Sanctum` (Leo example).
+- **Without it:** Tools default to `D:\Sinister Sanctum` (operator's canonical). Leo MUST set it if his clone lives elsewhere.
+- **Set:**
+  ```powershell
+  [Environment]::SetEnvironmentVariable('SINISTER_SANCTUM_ROOT','D:\Sinister Sanctum','User')
+  ```
+- **Doctrine:** referenced by every tool that reads `automations/session-templates/projects.json` (which the BOM-defense doctrine catalogues fleet-wide).
+
+---
+
 ## Low — service credentials (only if running that service)
 
 ### `GITEA_ADMIN_PASSWORD`

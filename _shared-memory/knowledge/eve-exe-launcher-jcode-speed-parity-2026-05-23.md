@@ -1,4 +1,10 @@
 <!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 0
+  half_life_days: 180
+-->
 # EVE.exe launcher :: jcode-speed parity for Sinister Sanctum
 
 > **Status:** doctrine, in-flight implementation, binding for the launcher lane.

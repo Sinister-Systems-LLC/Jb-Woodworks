@@ -1,4 +1,10 @@
 <!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- decay:
+  category: correction
+  confidence: 0.98
+  reinforcements: 0
+  half_life_days: 365
+-->
 # Launcher v6 concise rewrite (start-sinister-session.ps1)
 
 **Status:** shipped 2026-05-23 :: `agent/showmasters/scaffold-and-launch` :: see commit (pending, staged) for `automations/start-sinister-session.ps1` v5→v6

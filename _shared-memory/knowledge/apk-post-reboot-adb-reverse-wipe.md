@@ -1,3 +1,9 @@
+<!-- decay:
+  category: preference
+  confidence: 0.9
+  reinforcements: 0
+  half_life_days: 180
+-->
 ---
 updated: 2026-05-19
 audience: claude (all Sinister-APK agents)

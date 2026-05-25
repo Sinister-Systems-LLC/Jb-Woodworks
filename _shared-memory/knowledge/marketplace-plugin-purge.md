@@ -1,5 +1,11 @@
 <!-- Author: Sinister Sanctum master agent (Claude) | session: 2026-05-19 | round: purge-aftermath -->
 
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 0
+  half_life_days: 180
+-->
 # Topic: Marketplace plugin purge — never bulk-install from `claude-plugins-official` (or any marketplace)
 
 **Slug:** marketplace-plugin-purge

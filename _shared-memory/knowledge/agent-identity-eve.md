@@ -1,3 +1,9 @@
+<!-- decay:
+  category: preference
+  confidence: 1
+  reinforcements: 0
+  half_life_days: 365
+-->
 # Author: RKOJ-ELENO :: 2026-05-21
 
 # agent-identity-eve — fleet-wide persona rename to "EVE"

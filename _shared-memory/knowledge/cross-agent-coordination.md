@@ -1,3 +1,9 @@
+<!-- decay:
+  category: preference
+  confidence: 0.9
+  reinforcements: 1
+  half_life_days: 180
+-->
 > **Author:** Sinister Sanctum master agent (Claude) :: 2026-05-19
 
 # Cross-agent coordination — agents help agents, not just operator

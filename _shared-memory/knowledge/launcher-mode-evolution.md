@@ -1,3 +1,9 @@
+<!-- decay:
+  category: preference
+  confidence: 0.95
+  reinforcements: 0
+  half_life_days: 365
+-->
 # Author: RKOJ-ELENO :: 2026-05-21
 
 # Topic: Launcher mode evolution — full mode roster + when to pick which mode

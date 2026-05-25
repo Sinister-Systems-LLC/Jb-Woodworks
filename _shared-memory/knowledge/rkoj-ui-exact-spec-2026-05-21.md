@@ -1,3 +1,6 @@
+<!-- decay:
+  superseded_by: sinister-ui-canonical-dashboard-skeleton-inheritance-2026-05-24
+-->
 > **Author:** RKOJ-ELENO :: 2026-05-21
 
 # rkoj-ui-exact-spec — OPERATOR-CANONICAL RKOJ.exe UI doctrine

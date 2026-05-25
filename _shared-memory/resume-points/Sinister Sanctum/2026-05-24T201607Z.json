@@ -1,0 +1,47 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-24T21:13:49.5006207Z",
+    "project":  "sanctum",
+    "agent_name":  "sanctum",
+    "mode":  "resume",
+    "focus_intent":  "Spawn-flow stack closure iter9: projects.json loop:true x21, loop-condition Q3+plumb, EXPANDED-plan RESUME branch, safe-quality-loops doctrine+CLAUDE.md rules 6-7. BACKED OFF launcher progress-bar + account-viewer/add-agent panel (sister B in launcher file; coord note at cross-agent/2026-05-24T2015Z-sanctum-A-to-sanctum-B-coord-launcher-edits.md). PAUSED on operator-stacked round-robin-v2 + smart-routing + hot-swap + auto-resume-on-limit + learn-from-prefs — 4-6 clarifying questions queued (telemetry source / hot-swap mechanism / priority signal / preference-learning store / burn-down thresholds / auto-resume trigger).",
+    "git":  {
+                "branch":  "agent/sinister-os-mobile/p0-spec-2026-05-24",
+                "head":  "8bd3529505d1db4f420869a90f21a0396cec7115",
+                "head_msg":  "sinister-os: M5 mesh SCAFFOLDED ΓÇö Tailscale overlay + ACL + runbook + eve mesh CLI",
+                "recent_commits":  [
+                                       "8bd3529 sinister-os: M5 mesh SCAFFOLDED ΓÇö Tailscale overlay + ACL + runbook + eve mesh CLI",
+                                       "af1f1b8 sanctum: fleet-health.ps1 (iter-10) + claude-accounts SetKey/Status (iter-9 re-add)",
+                                       "af21f38 brain+inbox: refresh sandbox doctrine with keybox+behavioral+scenario; final cross-lane brief",
+                                       "8835676 sinister-os-mobile: Turn 4 ΓÇö kernel cloned + sepolicy draft + cvd budget + Q1-Q10 + branding-spec patch",
+                                       "e093cbc os-mobile/sandbox: behavioral fingerprints + scenario runner",
+                                       "02e9e5d sanctum: claude-accounts.ps1 -Action SetKey + -Action Status (multi-account UX)",
+                                       "eb1ad5c sinister-os: /loop iter 1 ΓÇö overlay LIVE-applied to running CachyOS VM",
+                                       "8ee9ed0 sanctum: P13 self-heal via -AutoRestore (auto-runs seed-resume-points on gap)",
+                                       "50a642d sinister-os: /loop iter 1 ΓÇö slim default + first-boot deferred + EVE-MCP R1 fix",
+                                       "f421ad5 sanctum: P13 lane resume-point coverage protection"
+                                   ]
+            },
+    "progress_top3":  [
+                          "2026-05-24 20:12 UTC — gradual-growth iter: fleet-autostart.ps1 + mesh-coord cron + CLAUDE.md step 11 composed + brain doctrine",
+                          "2026-05-24 20:10 UTC — spawn-flow stack closure: loop-default-on flip + loop-condition Q3 + EXPANDED-plan + 12 safe-loop guardrails",
+                          "2026-05-24 19:50 UTC — mesh-foundation MVP: 3 primitives + EVE.exe crash-hardening + Docker autostart + memory-backbone surface"
+                      ],
+    "latest_plan":  {
+                        "dir":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\sanctum-complete-and-expand-2026-05-23T1145Z",
+                        "artifact":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\sanctum-complete-and-expand-2026-05-23T1145Z\\master-plan.md"
+                    },
+    "inbox_unread_count":  13,
+    "last_5_files_touched_24h":  [
+                                     "projects\\sinister-panel\\source\\leo_dev\\dashboard\\.next\\static\\chunks\\app\\_not-found\\page-3182abe8e2c099b6.js",
+                                     "projects\\sinister-panel\\source\\leo_dev\\dashboard\\.next\\static\\chunks\\pages\\_app-e8b861c87f6f033c.js",
+                                     "projects\\sinister-panel\\source\\leo_dev\\dashboard\\.next\\static\\mZAUiJ0OMIP1Nd9nMUD4v\\_buildManifest.js",
+                                     "projects\\sinister-panel\\source\\leo_dev\\dashboard\\.next\\static\\mZAUiJ0OMIP1Nd9nMUD4v\\_ssgManifest.js",
+                                     "projects\\sinister-panel\\source\\leo_dev\\dashboard\\.next\\static\\chunks\\pages\\_error-c8f84f7bd11d43d4.js"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Sinister Sanctum.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\plans\\sanctum-complete-and-expand-2026-05-23T1145Z\\master-plan.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}

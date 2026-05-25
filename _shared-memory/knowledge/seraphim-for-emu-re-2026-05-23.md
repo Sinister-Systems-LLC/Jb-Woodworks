@@ -1,4 +1,10 @@
 <!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 1
+  half_life_days: 180
+-->
 # Sinister Seraphim — EMU + Reverse-Engineering integration doctrine
 
 > **Status**: doctrine, in-flight, binding for the sinister-seraphim lane.

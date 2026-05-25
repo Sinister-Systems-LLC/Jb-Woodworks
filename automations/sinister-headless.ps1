@@ -74,7 +74,28 @@ if (-not $LogPath) {
 # Build the powershell.exe argument list. CRITICAL: -WindowStyle Hidden + -NoProfile
 # + -ExecutionPolicy Bypass; spawned via Start-Process which is the only way to
 # truly suppress the console host on Windows.
-$psArgs = @('-NoProfile','-ExecutionPolicy','Bypass','-WindowStyle','Hidden','-NonInteractive')
+#
+# RKOJ-ELENO :: 2026-05-25T02:30Z :: v1 bug — Start-Process -ArgumentList with a
+# raw string ARRAY collapses to a space-joined string and re-tokenises. Args
+# containing spaces (path like 'D:\Sinister Sanctum\automations\X.ps1') get
+# split mid-arg ('D:\Sinister' becomes its own token). Verified in smoke: fleet-
+# update.ps1 received NO real args, just printed PS banner and exited.
+#
+# Fix: build the argument list as a single CommandLine string with each arg
+# explicitly double-quoted (escape internal quotes via PowerShell's `""` form).
+# Start-Process -ArgumentList accepts EITHER a string[] OR a single string;
+# passing a single pre-quoted string is the bulletproof path.
+function Quote-Arg {
+    param([string]$Value)
+    if ([string]::IsNullOrEmpty($Value)) { return '""' }
+    # If no whitespace or double-quote, no quoting needed.
+    if ($Value -notmatch '[\s"]') { return $Value }
+    # Escape embedded double-quotes by doubling: " -> ""
+    $escaped = $Value -replace '"','""'
+    return '"' + $escaped + '"'
+}
+
+$baseFlags = @('-NoProfile','-ExecutionPolicy','Bypass','-WindowStyle','Hidden','-NonInteractive')
 
 if ($PSCmdlet.ParameterSetName -eq 'Script') {
     $scriptPath = $Script
@@ -88,17 +109,20 @@ if ($PSCmdlet.ParameterSetName -eq 'Script') {
             exit 2
         }
     }
-    $psArgs += @('-File', $scriptPath)
+    $argList = @($baseFlags) + @('-File', $scriptPath)
     if ($ScriptArgs -and $ScriptArgs.Count -gt 0) {
-        $psArgs += $ScriptArgs
+        $argList += $ScriptArgs
     }
     $invocationKind = 'script'
     $invocationTarget = $scriptPath
 } else {
-    $psArgs += @('-Command', $Command)
+    $argList = @($baseFlags) + @('-Command', $Command)
     $invocationKind = 'command'
     $invocationTarget = $Command
 }
+
+# Build the bulletproof single-string command line.
+$psArgs = ($argList | ForEach-Object { Quote-Arg $_ }) -join ' '
 
 # Append-row to the invocation log
 function Write-InvocationLog {
@@ -122,6 +146,8 @@ $elapsed = 0.0
 try {
     if ($Detach) {
         # Fire-and-forget: spawn hidden, return immediately.
+        # Pass psArgs as a single pre-quoted string (Start-Process arg-array
+        # bug worked-around in build above).
         $p = Start-Process -FilePath 'powershell.exe' -ArgumentList $psArgs `
                             -WindowStyle Hidden `
                             -RedirectStandardOutput $LogPath `

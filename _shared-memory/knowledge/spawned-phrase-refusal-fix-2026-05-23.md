@@ -1,4 +1,10 @@
 <!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 0
+  half_life_days: 180
+-->
 # Spawned-phrase refusal fix (2026-05-23 evening)
 
 > **Status:** doctrine, standing-rule, binding for every launcher / spawn surface.

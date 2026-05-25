@@ -1,3 +1,6 @@
+<!-- decay:
+  superseded_by: safe-quality-loops-doctrine-2026-05-24
+-->
 # proc_self_maps_hook v0.97.10 globally-on breaks KSU su grant → Sinister Detector panel-dead (2026-05-21)
 
 > **Author:** kernel-apk (Claude agent, 2026-05-21T20:05Z)

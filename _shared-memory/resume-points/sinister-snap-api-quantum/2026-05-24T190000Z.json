@@ -1,0 +1,42 @@
+{
+  "schema": "sinister-sanctum.resume-point.v1",
+  "ts_utc": "2026-05-24T19:00:00Z",
+  "project_key": "sinister-snap-api-quantum",
+  "agent_name": "sinister-snap-api-quantum",
+  "agent_identity": "EVE",
+  "mode": "resume",
+  "iter": 109,
+  "branch": "agent/sinister-os/m1-hardening-2026-05-24",
+  "focus_intent": "Iter-109 SHIPPED verified: sinister-os-mobile corpus QBC (15 docs, 0% QBC, healthy 🟢) + brain reconcile (5 candidates @ 0.202% — clean doctrine absorption, 2 brain docs absorb 5 lane docs). Wall 5.2s zero cloud burn. Adds row 11 to per-lane QBC table + new row to brain-recon table.",
+  "shipped_verified": [
+    "outputs/sinister-os-mobile-corpus-qbc-iter103.json (sweep result, 15 docs / 0 QBC / max -1.29pp)",
+    "_shared-memory/quantum-sweeps/os-mobile-vs-brain-reconcile-2026-05-24T184720Z.json (5 candidates / 0.202%)",
+    "outputs/findings-sinister-os-mobile-iter109.md (full findings + 11-lane rate-context table)",
+    "_shared-memory/PROGRESS/sinister-snap-api-quantum.md (iter-109 entry, verified deliverables only)"
+  ],
+  "in_flight": [],
+  "next_steps": [
+    "Per-lane plans-vs-brain reconciliations",
+    "Forge × eve cross-lane (forge is small at 5 .md — may defer)",
+    "K=8 real-QPU upgrade research (deferred, paid cloud burn)",
+    "Re-sweep os-mobile at 50+ docs once lane grows"
+  ],
+  "open_for_operator": [
+    "Zero new operator-actionable rows from iter-109 (lane is healthy, doctrine absorption is the EXPECTED healthy pattern)",
+    "The 15-row standing operator-action queue from iter-107 still applies — no rows closed by iter-108 or iter-109"
+  ],
+  "pre_warm_reads": [
+    "_shared-memory/PROGRESS/sinister-snap-api-quantum.md (head 80 lines)",
+    "outputs/sanctum-quantum-dashboard.md (rollup)",
+    "outputs/findings-sinister-os-mobile-iter109.md (this iter's findings)"
+  ],
+  "operator_utterances_triaged_this_iter": "13 unread at session-start. ALL target other lanes (diagnose / kernel-apk / sanctum / sinister-os). Zero target sinister-snap-api-quantum. No ack from this lane.",
+  "budget_status": {
+    "tracker_total_seconds": 230.0,
+    "tracker_used_after_iter109": 160.4,
+    "iter_109_burn_seconds": 0,
+    "wall_clock_seconds": 5.2
+  },
+  "loop_state": "self-paced; next ScheduleWakeup ~1500s",
+  "swarm_state": "on"
+}

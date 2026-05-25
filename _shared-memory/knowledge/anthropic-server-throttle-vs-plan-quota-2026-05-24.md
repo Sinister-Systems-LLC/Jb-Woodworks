@@ -1,3 +1,9 @@
+<!-- decay:
+  category: fact
+  confidence: 0.9
+  reinforcements: 0
+  half_life_days: 90
+-->
 > **Author:** RKOJ-ELENO :: 2026-05-24
 
 # Anthropic server-throttle vs plan-quota — distinguishing two different rate-limit errors

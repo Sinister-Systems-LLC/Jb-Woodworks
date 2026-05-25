@@ -1,0 +1,42 @@
+﻿{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-24T20:25Z",
+    "project":  "sanctum",
+    "agent_name":  "sanctum",
+    "agent_display":  "Sinister Sanctum",
+    "mode":  "resume",
+    "loop_iter":  11,
+    "swarm_role":  "spawn-pipeline UX + onboarding button (sibling owns fleet-autostart + memory audit)",
+    "focus_intent":  "Operator 20:05Z launch 5 agents + 20:10Z progress bar + accounts panel + 20:19Z sibling-review directives. Mid-flight: hidden-spawn diagnostic showed 5 launchers fired but 0 reached mintty. Interactive launch (via EVE.exe click) verified working separately (diag spawned pid=29828 sinister-emulator).",
+    "shipped_this_iter":  [
+                              "eve.py O key onboarding button (parse OK; calls claude-accounts.ps1 -Action Status then prompts slot+key via getpass + runs SetKey + Test)",
+                              "eve.py Selection prompt updated to include O",
+                              "start-sinister-session.ps1 _SpawnProgress helper (RUN/OK/SKIP/FAIL with elapsed ms + Detail; aligned column layout)",
+                              "lease + mintty stages instrumented with _SpawnProgress (header + per-stage rows visible in test render)",
+                              "5 EVE launchers fired (kernel-apk, sinister-panel, sinister-os-mobile, sinister-emulator, jb-woodworks); 0 verified reached mintty in hidden-PS mode — diagnose foreground call DID succeed (sinister-emulator pid=29828)"
+                          ],
+    "open_for_next_iter":  [
+                               "Task #21 — accounts panel between picker and bottom settings (eve.py render hook)",
+                               "Wire more spawn stages (memory-recall + detect-similar + trust + monitor) into _SpawnProgress for full visibility",
+                               "Diagnose hidden-PS spawn vanish (probably -WindowStyle Hidden + Read-Host hangs, or env-var inheritance issue with Start-Process)",
+                               "Task #3 quality-monotonic into forever-improve",
+                               "Task #4 prune-as-add brain entry"
+                           ],
+    "sibling_active":  {
+                           "owns":  "fleet-autostart scheduled task at logon + memory audit vs rufus/understand-anything/obsidian/JCODE + parallel-plan creation",
+                           "slug":  "sinister-term",
+                           "coordination":  "per scope-discipline doctrine + cross-agent-awareness doctrine, sanctum stays on spawn-pipeline UX + EVE.exe surface"
+                       },
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\automations\\start-sinister-session.ps1 lines 1184-1216 (progress bar header) + 1395-1442 (lease stage) + 1727+ (mintty stage)",
+                           "D:\\Sinister Sanctum\\automations\\eve-launcher\\eve.py _account_onboarding_flow + O key handler",
+                           "C:\\Users\\Zonia\\Desktop\\ROUND-ROBIN-ACCOUNT-ONBOARDING.md (source spec)"
+                       ],
+    "stop_conditions_state":  {
+                                  "queue_lane_rows":  "~6",
+                                  "loop_iter":  11,
+                                  "utterances_acked_this_session":  10,
+                                  "active_plans_lane":  0,
+                                  "brain_rows":  "~143"
+                              }
+}

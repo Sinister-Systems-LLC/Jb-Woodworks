@@ -1,0 +1,46 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-24T21:13:49.5006207Z",
+    "project":  "sinister-freeze",
+    "agent_name":  "sinister-freeze",
+    "mode":  "resume",
+    "focus_intent":  "Frost served on http://127.0.0.1:5085/ (vault squats 5079); browser opened; refactor inline HTML onto dashboard-skeleton per CLAUDE.md UI-canonical doctrine is next",
+    "git":  {
+                "branch":  "agent/sinister-os-mobile/p0-spec-2026-05-24",
+                "head":  "8bd3529505d1db4f420869a90f21a0396cec7115",
+                "head_msg":  "sinister-os: M5 mesh SCAFFOLDED ΓÇö Tailscale overlay + ACL + runbook + eve mesh CLI",
+                "recent_commits":  [
+                                       "8bd3529 sinister-os: M5 mesh SCAFFOLDED ΓÇö Tailscale overlay + ACL + runbook + eve mesh CLI",
+                                       "af1f1b8 sanctum: fleet-health.ps1 (iter-10) + claude-accounts SetKey/Status (iter-9 re-add)",
+                                       "af21f38 brain+inbox: refresh sandbox doctrine with keybox+behavioral+scenario; final cross-lane brief",
+                                       "8835676 sinister-os-mobile: Turn 4 ΓÇö kernel cloned + sepolicy draft + cvd budget + Q1-Q10 + branding-spec patch",
+                                       "e093cbc os-mobile/sandbox: behavioral fingerprints + scenario runner",
+                                       "02e9e5d sanctum: claude-accounts.ps1 -Action SetKey + -Action Status (multi-account UX)",
+                                       "eb1ad5c sinister-os: /loop iter 1 ΓÇö overlay LIVE-applied to running CachyOS VM",
+                                       "8ee9ed0 sanctum: P13 self-heal via -AutoRestore (auto-runs seed-resume-points on gap)",
+                                       "50a642d sinister-os: /loop iter 1 ΓÇö slim default + first-boot deferred + EVE-MCP R1 fix",
+                                       "f421ad5 sanctum: P13 lane resume-point coverage protection"
+                                   ]
+            },
+    "progress_top3":  [
+                          "2026-05-24T19:46Z â€” Frost served on localhost (browser opened)",
+                          "2026-05-23T13:30Z â€” Voice corpus + Gmail OAuth ingest shipped (live on :5079)"
+                      ],
+    "latest_plan":  {
+                        "dir":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\sinister-freeze-2026-05-21",
+                        "artifact":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\sinister-freeze-2026-05-21\\deep-research.md"
+                    },
+    "inbox_unread_count":  0,
+    "last_5_files_touched_24h":  [
+                                     "_shared-memory\\script-runs\\start-sinister-session-20260524-154951-32ce.json",
+                                     "_shared-memory\\OPERATOR-ACTION-QUEUE.md",
+                                     "_shared-memory\\script-runs\\start-sinister-session-20260524-154949-c3c1.json",
+                                     "_shared-memory\\script-runs\\start-sinister-session-20260524-154947-79d2.json",
+                                     "_shared-memory\\script-runs\\start-sinister-session-20260524-154947-c42a.json"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\sinister-freeze.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\plans\\sinister-freeze-2026-05-21\\deep-research.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}

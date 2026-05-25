@@ -1,0 +1,56 @@
+{
+  "_author": "RKOJ-ELENO :: 2026-05-25",
+  "schema_version": "sinister.resume-point.v1",
+  "ts_utc": "2026-05-25T01:08:00.0000000Z",
+  "project": "Sinister Panel",
+  "agent_name": "sinister-panel",
+  "agent_identity": "EVE",
+  "mode": "resume",
+  "focus_intent": "iter 7 SHIPPED on agent branch agent/sinister-panel/att-token-missing-surface-2026-05-24 commit f967288. Backend loadTokensCompleteSet now returns attMissingSet (additive) populated when bundle has grpc+refresh but no att_token; GET /api/accounts row includes attTokenMissing boolean. Dashboard AccountsTab adds RED 'MISSING' ATT column + click-to-filter banner that toggles attMissingOnly + export column. Gates: backend tsc 0/0 + dashboard tsc 0/0 + doctrine-audit 7/7 PASS. next build kicked off but bg task output silent at 15+ min (corroborative-not-blocking per panel deploy policy — Hetzner always clean-builds from fresh .next). Push BLOCKED by NEW 2026-05-25 single-repo push policy — origin = Sinister-Systems-LLC/Sinister-Panel.git (non-Sanctum, in operator open-consolidation list). Composes with iter 6 ban-checker truth fix.",
+  "git": {
+    "main_head": "8e933ae",
+    "deployed_head_on_hetzner": "aa2fde6 (last verified iter 6 20:40Z; main has fast-forwarded since with 881c176 + 8e933ae auto-add-friend-on-push)",
+    "current_branch": "agent/sinister-panel/att-token-missing-surface-2026-05-24",
+    "current_branch_head": "f967288",
+    "agent_branches": [
+      {
+        "name": "agent/sinister-panel/att-token-missing-surface-2026-05-24",
+        "head": "f967288",
+        "commits_atop_main": 1,
+        "status": "SHIPPED (gates clean), NOT PUSHED (single-repo policy 2026-05-25 blocks push to non-Sanctum origin), AWAITS OPERATOR MERGE + DEPLOY"
+      },
+      {
+        "name": "agent/sinister-panel/auto-add-friend-on-push-2026-05-24",
+        "status": "MERGED INTO MAIN (8e933ae) since iter 6 resume-point — auto-fire add-friend(andrewt407) on every PanelPusher push"
+      },
+      {
+        "name": "agent/sinister-panel/keybox-oem-probe-2026-05-24",
+        "head": "72781f2",
+        "status": "Operator pivoted off OEM-mismatch theory iter 3 (16:22Z). Merge OR drop decision still pending."
+      }
+    ]
+  },
+  "operator_directives_active": [
+    "(NEW 2026-05-25 00:50Z) SINGLE-REPO PUSH POLICY — all projects default to Sinister-Sanctum repo except LetsText / Showmasters / JB Woodworks. Panel is in 'Open consolidation' list — operator approval required.",
+    "(2026-05-24 20:10Z) do not stop working until andrewt407 24h-survival chain completes — Panel chain-links 3+4 ARMED + LIVE; chain still blocks on kernel-apk att_token capture (P1)",
+    "(2026-05-24 20:20Z image) Frida-auto-update directive — routed to kernel-apk inbox with Panel-side design handles"
+  ],
+  "carry_forward_deferrals": [
+    "OPERATOR DECISION (NEW): Authorize push of agent/sinister-panel/att-token-missing-surface-2026-05-24 — either (a) consolidate Panel repo into Sanctum per 2026-05-25 doctrine, OR (b) push exception for this branch only, OR (c) operator merges + deploys via Hetzner pull directly.",
+    "OPERATOR DECISION: merge or drop agent/sinister-panel/keybox-oem-probe-2026-05-24",
+    "OPERATOR ACTION: upload keybox_20260523.xml to Hetzner pool via /fleet > Keyboxes UI",
+    "BLOCKED CROSS-LANE: kernel-apk shipping att_token capture (P1) — Monitor armed on Sinister Kernel APK PROGRESS",
+    "ARCHITECTURE QUESTION: RKA-licenses Phase 3 wire-up — sync /validate vs poll /active-license-hashes cache (asked in master plan)",
+    "BLOCKED CROSS-LANE: kernel-apk Q1 audit (Frida + endpoint update needs?) then Q2 design (auto-update orchestration on Panel)"
+  ],
+  "wake_triggers": [
+    "Monitor (persistent task bd3p7eouy) on _shared-memory/PROGRESS/Sinister Kernel APK.md — fires on appended row matching 'att_token|frida|endpoint|rotateIpAndVerify|atlas.*200|new account.*created'",
+    "ScheduleWakeup ~25min fallback (autonomous-loop-dynamic)"
+  ],
+  "pre_warm_reads": [
+    "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Sinister Panel.md",
+    "D:\\Sinister Sanctum\\projects\\sinister-panel\\source\\leo_dev\\docs\\MASTER-PLAN-ANDREWT407-24H-2026-05-24.md",
+    "D:\\Sinister Sanctum\\CLAUDE.md (single-repo-push-policy block + branch-convention)",
+    "D:\\Sinister Sanctum\\_shared-memory\\inbox\\sinister-panel\\"
+  ]
+}

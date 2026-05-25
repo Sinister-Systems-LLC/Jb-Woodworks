@@ -1,9 +1,9 @@
 # Sinister Bots <-> MCP Network integration
 
-**Total surface after install:** 19 MCP servers, ~200+ tools.
+**Total surface after install:** 20 MCP servers, ~210+ tools (was 19/200+ pre-vault).
 
 ```
-7 base MCP servers (operator's pre-existing)         12 Sinister Bots (this hub)
+7 base MCP servers (operator's pre-existing)         13 Sinister Bots (this hub)
 + eve                  (51 tools)                    + sentinel
 + sinister-panel       (13 tools)                    + translator
 + sinister-snap        (12 tools)                    + librarian
@@ -16,6 +16,7 @@
                                                      + custodian
                                                      + stealth-browser
                                                      + researcher
+                                                     + vault (10 tools)        # 2026-05-23 — daemon @ :5078; operator-merge pending per OPERATOR-ACTION-QUEUE.md
 ```
 
 `sinister-bus.list_network()` returns the full inventory at runtime. `sinister-bus.find(query)` substring-matches across names + kinds.

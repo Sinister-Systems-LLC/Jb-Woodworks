@@ -1,3 +1,9 @@
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 0
+  half_life_days: 180
+-->
 # Textual 8.x quiet-failure-mode trilogy (Forge P0 trio 2026-05-21)
 
 > **Author:** RKOJ-ELENO :: 2026-05-21

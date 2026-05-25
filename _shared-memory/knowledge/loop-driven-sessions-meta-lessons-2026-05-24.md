@@ -1,5 +1,11 @@
 <!-- Author: RKOJ-ELENO :: 2026-05-24 -->
 
+<!-- decay:
+  category: preference
+  confidence: 0.9
+  reinforcements: 0
+  half_life_days: 90
+-->
 # Loop-driven session meta-lessons (sinister-snap-api-quantum, iters 1-86)
 
 > **Status:** doctrine, advisory for all spawned EVE sessions running /loop

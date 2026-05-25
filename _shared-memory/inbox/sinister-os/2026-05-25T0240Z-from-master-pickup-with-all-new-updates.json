@@ -1,0 +1,90 @@
+{
+  "_author": "RKOJ-ELENO :: 2026-05-25",
+  "tag": "[OPERATOR-DELEGATE]",
+  "from": "sanctum-master-eve (eve-exe-headless-jcode-audit lane)",
+  "to": "sinister-os",
+  "to_display": "Sinister OS",
+  "ts_utc": "2026-05-25T02:40Z",
+  "priority": "CRITICAL",
+  "subject": "OPERATOR DIRECTIVE: pickup where you left off + adopt ALL new fleet updates",
+
+  "operator_verbatim_2026_05_25T02_40Z": "i need you to rgiht now launuch the sinister OS agent and get him to pickup where he left off make sure he has all new updates",
+
+  "previous_state_when_you_paused": {
+    "branch": "agent/sinister-os/p1-iter10-15-2026-05-25-2026-05-25",
+    "phase": "P0 spec shipped; M1 docker stack LIVE; M5 mesh SCAFFOLDED; massive-expansion plan iters 9-14 SHIPPED",
+    "current_focus": "Massive-expansion iters 10-14 shipped: sinister-control reboot-banner + sinister-lang DSL scaffold + rollout/no-function-loss/integration doctrines. Classifier bug caught + fixed (HOT_OVERRIDE for accent tokens)",
+    "plan_path": "_shared-memory/plans/sinister-os-massive-expansion-2026-05-24T2110Z/plan.md",
+    "last_heartbeat_ts_utc": "2026-05-25T01:35:00Z",
+    "loop_condition": "iter 10-15 plan complete OR genuine blocker -- so likely iter 15 next"
+  },
+
+  "NEW_FLEET_UPDATES_ADOPT_IMMEDIATELY": [
+    {
+      "doctrine": "no-visible-powershell-windows-doctrine-2026-05-25",
+      "path": "_shared-memory/knowledge/no-visible-powershell-windows-doctrine-2026-05-25.md",
+      "critical_for_you": "Any background ps1 you spawn MUST use automations/sinister-headless.ps1 wrapper (Start-Process -WindowStyle Hidden + redirected stdio). NO visible powershell windows. 2 scheduled tasks were PATCHED same turn for violating this. Operator hard-canonical 2026-05-25T02:25Z verbatim 'stop all shit like this from happening'."
+    },
+    {
+      "doctrine": "jcode-condensed-log-discipline-2026-05-25",
+      "path": "_shared-memory/knowledge/jcode-condensed-log-discipline-2026-05-25.md",
+      "critical_for_you": "Every terminal-output surface goes 1-line condensed: `<icon> <verb>... <elapsed>s · <sub_phase>` updated in-place via \\r. Use tools/eve-picker/status_line.py (NEW; smoke PASS). NO MORE 50-line diffs in terminals. NO MORE `Bootstrapping... (19m 12s)` without sub-phase. Operator hard-canonical 2026-05-25T02:10Z: 'we can save resources by doing it jcodes way'."
+    },
+    {
+      "doctrine": "operator-full-audit-directive-no-questions-2026-05-25",
+      "path": "_shared-memory/knowledge/operator-full-audit-directive-no-questions-2026-05-25.md",
+      "critical_for_you": "When operator says 'full audit' on anything sinister-os-related, EXECUTE IMMEDIATELY (spawn audit subagent, no clarification questions, 5-section template)."
+    },
+    {
+      "doctrine": "jcode-full-audit-2026-05-25",
+      "path": "_shared-memory/knowledge/jcode-full-audit-2026-05-25.md",
+      "critical_for_you": "640-line audit. Sanctum 6.2/10 vs jcode 8.6/10. 12-item backlog P0-P4. Sanctum WINS on cross-machine + operator transparency. Sanctum GAPS = logging verbosity + status surfacing + typed swarm state machine + memory embeddings + soft-interrupt. Apply to your sinister-os work: typed states for OS lifecycle (BOOT/RUNNING/REBOOTING/HALTED/FAILED), condensed logs in your control plane output, format_duration shared helper for `5.2s` style durations."
+    },
+    {
+      "tool": "tools/eve-picker/status_line.py (NEW ~250 LOC)",
+      "critical_for_you": "StatusLine context-manager primitive. Smoke PASS. Use this in your control-plane / boot-progress emitters. Example: `with StatusLine('rebooting') as s: s.sub('saving snapshot'); s.sub('flushing fs'); s.ok('reboot done')`. Persists verbose to history.jsonl; terminal sees only the 1 line."
+    },
+    {
+      "tool": "automations/sinister-headless.ps1 (NEW 180 LOC)",
+      "critical_for_you": "Wrap every background ps1 invocation through this. Sync: `-Script X.ps1 -ScriptArgs @('-Action','Sweep') -TimeoutSec 60`. Detach: `-Detach`. Returns rc + log path. Every call writes JSON row to headless-invocations.jsonl for audit trail."
+    },
+    {
+      "task_audited_for_you": "Get-ScheduledTask | Where-Object { $_.TaskName -match 'Sinister' } shows 19 tasks. 2 were missing -WindowStyle Hidden and have been PATCHED (SinisterBrainBroadcast + SinisterSanctumDailyBackup). Your task: if you register ANY new scheduled task for sinister-os, use sinister-headless.ps1 OR add -WindowStyle Hidden to the action."
+    }
+  ],
+
+  "your_action_on_cold_start_pickup": [
+    "(1) READ this inbox FIRST",
+    "(2) READ latest resume-point _shared-memory/resume-points/Sinister OS/<latest-utc>.json",
+    "(3) READ tail of _shared-memory/PROGRESS/Sinister OS.md (last 50 lines)",
+    "(4) READ the 4 new doctrines + 2 new tools listed above (skim TL;DR sections)",
+    "(5) AUDIT your existing sinister-os ps1 scripts for visible-window violations -- patch any that exist via sinister-headless wrapper",
+    "(6) AUDIT your existing sinister-os log emitters for multi-line verbose violations -- migrate to status_line.py where applicable",
+    "(7) CONTINUE iter 15 of massive-expansion plan (or next deliverable per resume-point) using the new primitives",
+    "(8) Heartbeat to _shared-memory/heartbeats/sinister-os.json with current_focus reflecting both the iter-15 work + the doctrine-adoption work",
+    "(9) Push detailed commit per agent-autonomy-push-and-completion-2026-05-23 (operator hard-canonical: 'i need the pushes with detailed committs to happen often per agent running')"
+  ],
+
+  "compose_with_doctrines": [
+    "no-visible-powershell-windows-doctrine-2026-05-25 (NEW; CRITICAL)",
+    "jcode-condensed-log-discipline-2026-05-25 (NEW; CRITICAL)",
+    "jcode-full-audit-2026-05-25 (NEW; informs your sinister-os state-machine design)",
+    "operator-full-audit-directive-no-questions-2026-05-25 (NEW; binding)",
+    "loop-mode-continuous-iteration-2026-05-24 (do NOT ScheduleWakeup-and-stop; iter through)",
+    "no-bullshit-tested-before-claimed-doctrine-2026-05-23 (precise verbs; smoke before claimed)",
+    "mesh-coordination-and-resource-lifecycle-2026-05-24 (claim mesh-lock before editing shared)",
+    "agent-autonomy-push-and-completion-2026-05-23 (push per-agent often with detailed commits)",
+    "single-repo-push-policy-2026-05-25 (push to sinister-sanctum only)",
+    "branch-convention-2026-05-25 (agent/sinister-os/<topic>-<utc>)",
+    "sinister-os own CLAUDE.md at projects/sinister-os/CLAUDE.md (lane-specific rules)"
+  ],
+
+  "context_sibling_lanes_active": [
+    "sanctum-master-eve (this agent; lane agent/sinister-sanctum/eve-exe-headless-jcode-audit-2026-05-25)",
+    "sanctum helper A + B (EVE.exe remaining fixes -- coordinate via mesh-locks if you touch tools/eve-picker)",
+    "kernel-apk (Undulating cycle iter 4 in-flight per separate inbox)",
+    "sinister-panel (EVE.exe panel-shell variant per separate spawn)"
+  ],
+
+  "no_ack_required": "Operator delegate; pick up + execute. Drop rows in _shared-memory/PROGRESS/Sinister OS.md per ship verified."
+}

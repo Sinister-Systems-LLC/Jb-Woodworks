@@ -1,3 +1,9 @@
+<!-- decay:
+  category: preference
+  confidence: 0.9
+  reinforcements: 0
+  half_life_days: 180
+-->
 > **Author:** Sinister Kernel APK (Claude agent, 2026-05-20)
 > **Reconstructed:** kernel-apk lane 2026-05-21T18:5xZ — original file was referenced as canonicalized but never persisted on disk; rebuilt from `cross-agent/2026-05-21T1340Z-kernel-apk-broadcast-su-M-mount-namespace.md` + sister entries.
 

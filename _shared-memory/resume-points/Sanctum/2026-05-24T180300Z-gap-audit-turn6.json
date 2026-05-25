@@ -1,0 +1,38 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-24T18:03Z",
+    "project": "sanctum",
+    "agent_name": "test-modes-gap-audit",
+    "agent_display": "Sinister Custodian (gap audit)",
+    "mode": "resume-loop",
+    "loop_iter": 6,
+    "swarm_role": "test-modes 5x-parallel; sub-area C + D-half + completion-plan owner",
+    "focus_intent": "Turn 6 dynamic /loop: shipped completion plan + personal-projects.json default_modes (7/7) + 3 utterance acks. Plan §3 lists 7 concrete remaining slices ranked by ROI; next iter = §3.H sinister-os-mobile projects.json entry (cheap unblock).",
+    "shipped_this_iter": [
+        "_shared-memory/plans/test-modes-completion-plan-2026-05-24/plan.md (NEW)",
+        "automations/session-templates/personal-projects.json - default_modes added to all 7 entries; parse-clean",
+        "3 utterance acks (16:57:59Z, 16:01:16Z, 16:06:32Z) status new->acknowledged"
+    ],
+    "open_for_next_iter": [
+        "§3.H sinister-os-mobile projects.json entry (cheap)",
+        "§3.B bat re-prompt-on-resume verification (smoke-test)",
+        "§3.C consolidated 5x-parallel status doc",
+        "§3.A R28 sinister-mermaid-render Rust fork skeleton (Sanctum-owned)",
+        "§3.E token-efficiency MCP-vs-local map (high operator-priority)",
+        "§3.F broadcast/hot-update poll consumer (closes 6h-old utterance)",
+        "§3.G docker auto-open inventory call (needs operator input)"
+    ],
+    "pre_warm_reads": [
+        "D:\\Sinister Sanctum\\_shared-memory\\plans\\test-modes-completion-plan-2026-05-24\\plan.md",
+        "D:\\Sinister Sanctum\\_shared-memory\\cross-agent\\2026-05-24T1735Z-test-modes-5x-parallel-claims.md",
+        "D:\\Sinister Sanctum\\_shared-memory\\knowledge\\jcode-parity-gap-audit-2026-05-24-test-modes.md",
+        "D:\\Sinister Sanctum\\automations\\session-templates\\projects.json"
+    ],
+    "stop_conditions_state": {
+        "brain_rows": "~140 (approaching 150 limit)",
+        "progress_test_modes_kb": "~12 KB",
+        "queue_lane_rows": "~5",
+        "plans_active_lane": 3,
+        "note": "Watching brain row count - one more big doctrine and consolidation triggers."
+    }
+}

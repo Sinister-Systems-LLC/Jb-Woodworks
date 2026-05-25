@@ -1,3 +1,9 @@
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 1
+  half_life_days: 180
+-->
 # Forge bridge REST/SSE pattern (operator's PC ↔ Sinister Claw)
 
 > **Author:** RKOJ-ELENO :: 2026-05-21

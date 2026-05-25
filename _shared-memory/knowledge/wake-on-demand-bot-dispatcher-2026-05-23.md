@@ -1,4 +1,7 @@
 <!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- decay:
+  superseded_by: resource-refcount-cleanup-sleep-wake-doctrine-2026-05-24
+-->
 # Wake-on-demand bot dispatcher pattern
 
 **Status:** proposed 2026-05-23 — operator directive *"have everything auto start or idle, sleep until a agent needs it then the agent can call and use anything it needs to"*.

@@ -1,4 +1,10 @@
 <!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 0
+  half_life_days: 180
+-->
 # Spawn validation end-to-end (Sinister Start.bat → child Claude)
 
 **Status:** validated 2026-05-23 03:54:55Z — first in-session spawn from master EVE after operator hard-canonical granted spawn authority.

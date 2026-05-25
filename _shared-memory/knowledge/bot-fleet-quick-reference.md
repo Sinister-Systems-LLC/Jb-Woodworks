@@ -1,4 +1,10 @@
 <!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 0
+  half_life_days: 180
+-->
 # Bot Fleet :: Quick Reference
 
 **Created:** 2026-05-23 (EVE on Sanctum, Phase-2 B.6 of `sanctum-complete-and-expand-2026-05-23T1145Z`)

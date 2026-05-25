@@ -1,0 +1,27 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-24T18:00:00Z",
+    "project": "sanctum",
+    "agent_name": "test-modes",
+    "agent_display": "Sinister Custodian",
+    "mode": "resume-loop",
+    "loop_iter": 5,
+    "sub_area_claim": "A: forge-memory auto-recall pre-fetch into Build-Phrase",
+    "focus_intent": "Sub-area A SHIPPED. Get-MemoryRecallInject (70 LOC) wired into Build-Phrase resume branch; closes jcode-parity-audit rows 9-10. 0.18s smoke-test PASS.",
+    "shipped_this_iter": [
+        "automations/start-sinister-session.ps1 :: Get-MemoryRecallInject (NEW) + wired into Build-Phrase resume branch",
+        "Smoke-test: 0.18s elapsed, 272-char result, top-3 forge-memory hits on operator-utterance tags",
+        "5x-parallel claim register sub-area A signed off as SHIPPED",
+        "Bat-loading concern diagnosed as misperception (8 live mintty+claude procs + headless exit-clean log)"
+    ],
+    "open_for_next_iter": [
+        "Sibling E to do end-to-end fresh-spawn smoke verifying MEMORY_RECALL appears in child phrase",
+        "Sibling D to add spawn-confirmation UX flash in eve.py",
+        "Sub-areas C/D/E remaining work per claim register"
+    ],
+    "pre_warm_reads": [
+        "D:\Sinister Sanctum\_shared-memory\cross-agent\2026-05-24T1735Z-test-modes-5x-parallel-claims.md",
+        "D:\Sinister Sanctum\automations\start-sinister-session.ps1 (Get-MemoryRecallInject + Build-Phrase)",
+        "D:\Sinister Sanctum\_shared-memory\PROGRESS\test-modes.md (top entry)"
+    ]
+}

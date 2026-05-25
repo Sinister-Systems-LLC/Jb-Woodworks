@@ -1,4 +1,10 @@
 <!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- decay:
+  category: correction
+  confidence: 1
+  reinforcements: 1
+  half_life_days: 365
+-->
 # No-bullshit / tested-before-claimed / forever-audit doctrine
 
 **Status:** doctrine, standing-rule, binding

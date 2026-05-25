@@ -1,4 +1,10 @@
 <!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- decay:
+  category: correction
+  confidence: 1
+  reinforcements: 0
+  half_life_days: 365
+-->
 # Do-not-revert operator-canonical protections (2026-05-23 evening)
 
 > **Status:** doctrine, standing-rule, binding for every spawned EVE session.

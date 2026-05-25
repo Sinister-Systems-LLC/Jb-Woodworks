@@ -1,3 +1,9 @@
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 0
+  half_life_days: 180
+-->
 # Topic: Ruflo MCP integration — multi-agent orchestration sidecar for Claude Code
 
 > **Author:** Sinister Sanctum master agent (Claude) :: 2026-05-19

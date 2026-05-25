@@ -1,3 +1,9 @@
+<!-- decay:
+  category: fact
+  confidence: 0.9
+  reinforcements: 1
+  half_life_days: 90
+-->
 > **Author:** Sinister Sanctum master agent (Claude) :: 2026-05-19
 
 # Topic: gh CLI needs `workflow` scope to push .github/workflows changes

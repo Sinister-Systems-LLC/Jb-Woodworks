@@ -1,3 +1,9 @@
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 1
+  half_life_days: 180
+-->
 > **Author:** Sinister Sanctum master agent (Claude) :: 2026-05-19
 
 # Topic: Daemon-liveness heartbeats — `_shared-memory/heartbeats/*.beat` (RKOJ + Vault)

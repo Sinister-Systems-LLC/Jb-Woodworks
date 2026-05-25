@@ -1,0 +1,49 @@
+{
+  "schema": "sinister-sanctum.resume-point.v1",
+  "ts_utc": "2026-05-25T01:20:00Z",
+  "project_key": "sinister-snap-api-quantum",
+  "agent_name": "sinister-snap-api-quantum",
+  "agent_identity": "EVE",
+  "mode": "resume",
+  "iter": 111,
+  "branch": "agent/sinister-snap-api-quantum/iter110-brain-corpus-qbc-2026-05-25",
+  "focus_intent": "Iter-110 + iter-111 SHIPPED verified in same turn. Iter-110: brain-corpus self-coherence QBC sweep (200 docs / 875 QBC / 0.067% / max +24.28pp / wall 30.0s sim-local; new quantum-fleet-discipline-doctrine-2026-05-25 co-clusters with legacy seraphim quantum family in top-6 = clean absorption). Iter-111: sanctum-quantum-dashboard refresh — header bumped 98-107 -> 98-110, added sinister-os-mobile row-11 to per-lane table, added row-0 brain self-coherence sweep table, updated /loop next-iter queue with brain-vs-unreconciled-lane targets.",
+  "shipped_verified": [
+    "outputs/brain-corpus-iter110-corpus-qbc-iter103.json (iter-110 sweep data)",
+    "outputs/findings-brain-corpus-iter110.md (iter-110 findings + cluster interpretation)",
+    "outputs/sanctum-quantum-dashboard.md (iter-111 refresh: header + row-11 + row-0 brain + next-iter queue)",
+    "_shared-memory/PROGRESS/sinister-snap-api-quantum.md (iter-110 entry at top)",
+    "_shared-memory/heartbeats/sinister-snap-api-quantum.json (iter-110 SHIPPED + iter-110 artifacts + verdict)",
+    "_shared-memory/resume-points/sinister-snap-api-quantum/2026-05-25T011800Z.json (iter-110 anchor)"
+  ],
+  "in_flight": [],
+  "next_steps": [
+    "Iter-112 A: brain-vs-each-unreconciled-lane after 2026-05-25 doctrine surge (priority candidates: snap-emu/kernel-apk/panel — re-run reconcile to see which new brain entries now match each lane)",
+    "Iter-112 B: re-sweep sinister-os-mobile against 10 new brain entries (15 lane docs × 10 new entries = 150 pairs — fast)",
+    "Iter-112 C: archive the 8 reconciled plans (Option 5 — backlog standing operator queue row #12)",
+    "Iter-112 D: stretch — sim-rkoj-cluster-coherence.py refresh to surface new doctrine cluster shifts",
+    "Deferred: K=8 real-QPU upgrade (paid cloud, operator pre-auth required)"
+  ],
+  "open_for_operator": [
+    "Zero new operator-actionable rows from iter-110/111. Lane is healthy.",
+    "Cross-cutting: 2026-05-25 push-policy is global doctrine; this lane already compliant."
+  ],
+  "pre_warm_reads": [
+    "_shared-memory/PROGRESS/sinister-snap-api-quantum.md (head 80 lines — iter-110 + iter-109 + iter-108)",
+    "outputs/sanctum-quantum-dashboard.md (full — newly refreshed with row-0 brain self-sweep)",
+    "outputs/findings-brain-corpus-iter110.md (iter-110 findings)",
+    "_shared-memory/knowledge/quantum-fleet-discipline-doctrine-2026-05-25.md (the new doctrine that co-clustered with legacy quantum family)"
+  ],
+  "operator_utterances_triaged_this_iter": "6 unread at session-start. Latest = sanctum-push-policy 2026-05-25T00:58Z (global; absorbed into brain). Zero target sinister-snap-api-quantum directly. No ack from this lane.",
+  "budget_status": {
+    "tracker_total_seconds": 230.0,
+    "tracker_used_after_iter111": 160.4,
+    "iter_110_burn_seconds": 0,
+    "iter_111_burn_seconds": 0,
+    "iter_110_wall_seconds": 30.0,
+    "iter_111_wall_seconds": 1,
+    "backend": "sim-local"
+  },
+  "loop_state": "self-paced; iter-112 candidate B (re-sweep os-mobile vs 10 new brain entries) cheapest at ~3s sim-local; ready for next turn",
+  "swarm_state": "on"
+}

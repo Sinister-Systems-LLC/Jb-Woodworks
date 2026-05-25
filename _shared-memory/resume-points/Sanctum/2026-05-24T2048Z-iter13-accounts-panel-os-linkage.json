@@ -1,0 +1,36 @@
+﻿{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-24T20:48Z",
+    "project":  "sanctum",
+    "agent_name":  "sanctum",
+    "agent_display":  "Sinister Sanctum",
+    "mode":  "resume",
+    "loop_iter":  13,
+    "swarm_role":  "accounts-panel + Sinister OS linkage doctrine (sibling Sinister TERM on fleet-autostart + memory audit + quality-monotonic-wire)",
+    "focus_intent":  "Operator 20:40Z \"link all of this into the sinister os im making as we will be switching to it\" - shipped portability doctrine + accounts panel. 14 of 22 tasks now complete.",
+    "shipped_this_iter":  [
+                              "_render_accounts_panel renders 1/4 enabled + strategy + per-account stats in picker — smoke output verified",
+                              "O key wired to picker bottom menu (add agent / onboarding flow visible)",
+                              "sinister-os-fleet-host-linkage-2026-05-24.md NEW (Tier 1 direct port / Tier 2 trivial adapt / Tier 3 arch re-host + checklist + 6 anti-patterns)",
+                              "2 fleet-update doctrine/feature pushes (OS linkage normal + accounts panel normal)",
+                              "5 tasks closed at end-of-iter: #2 #4 #13 #19 #3 (some sibling-shipped composes)"
+                          ],
+    "open_for_next_iter":  [
+                               "#20 wire remaining spawn stages (recall + detect-similar + trust + window-position-monitor fire) into _SpawnProgress for full visibility on slow spawns",
+                               "Operator-action: click EVE.exe 5x to verify (a) rename+color fix takes effect, (b) accounts panel renders, (c) O key opens onboarding"
+                           ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\automations\\eve-launcher\\eve.py _render_accounts_panel + render_picker injection + O menu row",
+                           "D:\\Sinister Sanctum\\_shared-memory\\knowledge\\sinister-os-fleet-host-linkage-2026-05-24.md",
+                           "D:\\Sinister Sanctum\\automations\\start-sinister-session.ps1 _SpawnProgress helper at line 1216-ish + remaining stage wire-points"
+                       ],
+    "stop_conditions_state":  {
+                                  "queue_lane_rows":  "~6",
+                                  "tasks_completed":  14,
+                                  "utterances_acked_this_session":  13,
+                                  "brain_rows":  "~144 (added sinister-os-fleet-host-linkage this iter)",
+                                  "tasks_total":  22,
+                                  "loop_iter":  13,
+                                  "active_plans_lane":  0
+                              }
+}

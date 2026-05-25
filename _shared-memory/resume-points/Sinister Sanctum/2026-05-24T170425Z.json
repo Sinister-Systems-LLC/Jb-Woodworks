@@ -1,0 +1,54 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-24T17:04Z",
+    "project":  "sanctum",
+    "agent_name":  "test-modes",
+    "agent_display":  "Sinister Custodian",
+    "mode":  "resume-loop",
+    "loop_iter":  2,
+    "focus_intent":  "Phase 4 executed; all live runtime configs verified ref-clean post-rename",
+    "shipped_this_iter":  [
+                              "Phase 4: D:\\Sinister -\u003e D:\\Personal\\Sinister-folders (13 items + junction preserved)",
+                              "CLAUDE.md: 5 refs updated (D:\\Sinister\\Sinister Skills -\u003e Sanctum\\_sinister-skills)",
+                              "personal-projects.json: 10 D:\\\\Sinister\\\\ refs -\u003e D:\\\\Personal\\\\Sinister-folders\\\\",
+                              "var (sibling-spawned) swept to D:\\Personal\\var",
+                              "Live-config sweep across 12 files: zero broken refs (confirmed post-Phase-4)",
+                              "Queue + PROGRESS + heartbeat updated"
+                          ],
+    "d_drive_state":  {
+                          "target_entries_present":  [
+                                                         "Backups",
+                                                         "Personal",
+                                                         "Sinister Sanctum"
+                                                     ],
+                          "outstanding":  [
+                                              {
+                                                  "operator_action":  "close Explorer/editor + re-run Phase 2",
+                                                  "name":  "LetsText",
+                                                  "reason":  "directory-level lock"
+                                              },
+                                              {
+                                                  "operator_action":  "leave (active sibling work) or re-point sibling spawn to Personal",
+                                                  "name":  "jbw-deploy",
+                                                  "reason":  "sibling-spawned dup (after my Phase 2 move)"
+                                              },
+                                              {
+                                                  "operator_action":  "same as jbw-deploy",
+                                                  "name":  "jbw-proxy",
+                                                  "reason":  "sibling-spawned dup"
+                                              }
+                                          ],
+                          "target_entries":  3,
+                          "root_entries":  6
+                      },
+    "next_loop_action":  "idle-watch for LetsText unlock OR new operator directive",
+    "quality_signals":  {
+                            "fired":  [
+                                          "branch-hygiene crisis recurring"
+                                      ],
+                            "nominal":  [
+                                            "end-of-turn summary length OK",
+                                            "token use reasonable"
+                                        ]
+                        }
+}

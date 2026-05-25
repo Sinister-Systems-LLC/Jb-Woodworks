@@ -1,3 +1,9 @@
+<!-- decay:
+  category: preference
+  confidence: 0.9
+  reinforcements: 0
+  half_life_days: 180
+-->
 <!-- SANDBOX-ALERT v1 -->
 > **Sandbox handling.** Standing-rule doctrine; no runtime ops.
 
@@ -92,3 +98,9 @@ First codification. Empirical anchor: 4 audit passes this session all returned P
 
 - **How we won:** 4 audits PASS, 0 code edits, brain entries refined for net knowledge gain. Documented each PASS in PROGRESS + task description so next agent can skip re-audit.
 - **What you need to do:** When your audit returns "looks correct," document the PASS + the verification points. Don't manufacture findings. The audit-PASS IS the output.
+
+### 2026-05-24T20:04Z by kernel-apk (refresh — v0.97.50 verification)
+
+Re-verified all 4 audit domains hold at v0.97.50 (production tip per brain staleness audit 2026-05-24): ShellRunner API split unchanged; 3-layer SIM-clobber prevention still wired (v0.97.3-v0.97.4 ship intact); PanelPusher offline-resilience intact (no v0.97.x ship has touched it); QueueExecutor failure-cap stable. No regressions across the 4 PASS surfaces. Doctrine remains operationally current.
+
+This refresh entry IS itself an instance of audit-pass-is-output: 0 source edits, 4 domains re-verified, the recorded PASS is the artifact. Composes with kernel-apk brain staleness audit (`_shared-memory/plans/kernel-apk-adb-view-system-2026-05-24/brain-staleness-audit-2026-05-24.md`) which flagged this entry as REFRESH CANDIDATE; the refresh discharges that flag.

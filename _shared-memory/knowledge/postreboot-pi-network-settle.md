@@ -1,3 +1,9 @@
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 0
+  half_life_days: 180
+-->
 # Post-reboot PI tap needs ~30s network settle, even when ping works
 
 **Discovered:** 2026-05-19 resume-pickup session, sinister-kernel-apk project

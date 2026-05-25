@@ -1,3 +1,6 @@
+<!-- decay:
+  superseded_by: launcher-v6.1-jcode-style-directives-2026-05-23
+-->
 # Author: RKOJ-ELENO :: 2026-05-22
 
 # RKOJ stream-json jcode-parity arc (v1.6.11 → v1.6.18)

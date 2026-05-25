@@ -1,4 +1,10 @@
 <!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 0
+  half_life_days: 180
+-->
 # Launcher v6.1 :: jcode-style directives A-L
 
 > **Status:** shipped 2026-05-23 evening (parse-validated across 6 phase-edits)

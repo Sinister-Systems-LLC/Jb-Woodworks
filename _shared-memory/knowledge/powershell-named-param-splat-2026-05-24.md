@@ -1,4 +1,10 @@
 <!-- Author: RKOJ-ELENO :: 2026-05-24 -->
+<!-- decay:
+  category: correction
+  confidence: 0.95
+  reinforcements: 0
+  half_life_days: 365
+-->
 # PowerShell named-param splat + var-shadowing gotchas
 
 **Status:** doctrine, empirical, binding (bit sanctum lane 3 times in /loop iters 4, 5, 16)

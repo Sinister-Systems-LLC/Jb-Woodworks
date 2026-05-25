@@ -88,7 +88,7 @@ automations\eve-launcher\dist\EVE\EVE.exe                # launch picker (52ms b
 automations\eve-launcher\dist\EVE\EVE.exe --version      # probe
 automations\eve-launcher\build-eve-exe.bat               # rebuild from source
 ```
-Boot: ~52ms (v0.2.0) / ~310ms (v0.3.0 with shared lib). Falls through to PS1 if missing.
+Boot: ~52 ms median warm-cache (v0.3.0 --onedir; cold-cache trial 1 ~370 ms; doctrine target <300 ms, PASS by 5x). Falls through to PS1 if missing.
 
 ### cross-lane-impact-diff (post-commit hook)
 ```

@@ -2,6 +2,146 @@
 
 > **Author:** RKOJ-ELENO :: 2026-05-19
 
+## Operator hard-canonical 2026-05-25 — SINGLE-REPO PUSH POLICY (3 carve-outs only)
+
+Operator (verbatim 2026-05-25 ~00:50Z): *"make sure the only fodler we are pushing to is the the sinister sanctum. no sinister panel pushing to the panel no. make sure all those files from the sinister panel github are in the sanctum organized and concise. lets text will have their own. showmasters will, jb will. but nothing else. everything needs to be sinister sanctum then. you need to make like a detailed branch work to have all the dif proejcts and make this auto happen and all agents know what to do."*
+
+**Binding for every fleet agent.**
+
+Push targets:
+- Default = Sinister Sanctum (`Sinister-Systems-LLC/Sinister-Sanctum`) for EVERY project except the 3 carve-outs.
+- LetsText (operator-private, external_root), Showmasters, JB Woodworks: their OWN repos per `projects.json` `github` field.
+- Any other project: push goes to Sinister-Sanctum/origin per agent branch convention.
+
+Branch convention:
+- Format: `agent/<project-key>/<short-topic>-<utc-date>` (e.g. `agent/sinister-sleight/p1-data-layer-2026-05-25`).
+- Project-key MUST match a `key` in `automations/session-templates/projects.json`.
+- Topic <= 30 chars, kebab-case; date = `YYYY-MM-DD` UTC.
+- Full doctrine: `docs/BRANCH-CONVENTION.md`.
+
+Auto-enforcement:
+- Pre-push: `automations/sanctum-push-policy.ps1` (refuses out-of-policy pushes, exit 13).
+- Wired into `automations/sanctum-auto-push.ps1` as pre-push hook.
+- Per-spawn: `automations/agent-branch-router.ps1` (creates/switches to canonical branch) invoked from `start-sinister-session.ps1` `Launch-Session`.
+- Audit table: `& 'D:\Sinister Sanctum\automations\sanctum-push-policy.ps1' -Action Audit`.
+
+Open consolidation (operator-approval required, surfaced in queue): `projects/sinister-panel/source/.git/`, `projects/sinister-chatbot/.git/`, `projects/sinister-snap-emu/source/.git/`, `projects/sinister-tiktok-emu/.git/` — all currently push to non-Sanctum repos or have orphan remotes.
+
+Full doctrine: `_shared-memory/knowledge/single-repo-push-policy-2026-05-25.md` + `_shared-memory/knowledge/branch-convention-2026-05-25.md` + `_shared-memory/audits/multi-repo-push-audit-2026-05-25.md`.
+
+## Operator hard-canonical 2026-05-24 — EVE UI UNIFORMITY + INFINITE ACCOUNTS + NO HALF-ASS
+
+Operator (verbatim 2026-05-24, 21:40Z):
+*"allow infinite accounts and all pages on the eve exe need to have a uniform ui look and all hgave a concise complete simple to the point layout. update memory for this. we dont do shit half ass"*
+
+**Binding for every EVE.exe surface AND every page reachable from it** (main picker + Onboarding + Health + Mesh status + Quantum tools + Queue + Utterances + Rename+Color + Auto-Resume + New Project + any future sub-page).
+
+### 1. Uniform UI across every sub-page
+
+Every sub-page MUST follow this 3-block layout:
+
+**Header (1 line):** `{DARKP}---{RESET} {WHITE}{BOLD}<Sub-page title>{RESET} {DARKP}---{RESET}`
+Example: `--- Health: Anthropic throttle status ---`
+
+**Body (3-15 lines):** themed with the canonical tokens — `PURPLE` / `BRIGHTP` / `OK` / `WARN` / `FAIL` / `DIM` / `WHITE` / `SOFT` / `DARKP`. NO new color tokens. NO ASCII-art tables; use 2-space indent + left-aligned label + value.
+
+**Footer (1 line):** `{DIM}---{RESET} {PURPLE}B){RESET} Back   {PURPLE}X){RESET} Exit   {DIM}(<page-specific shortcuts>){RESET}`
+Example: `--- B) Back   X) Exit   (R refresh)`
+
+Every sub-page handler MUST accept `B`/`back`/empty-Enter → return to main picker; `X`/`exit` → `sys.exit(0)`; page-specific keys are documented in the footer.
+
+### 2. Infinite Claude accounts
+
+The 4-slot list (`operator`/`leo`/`slot3`/`slot4`) is a starter set, NOT a cap. `claude-accounts.ps1` already supports `-Action Add -Name <any> -Label <...> -ApiKey sk-ant-...` (line 856). The Onboarding sub-page MUST let the operator add any number of accounts with arbitrary names. The accounts panel + Health view + round-robin iterator MUST scale to N accounts without hardcoded 4-slot assumptions.
+
+### 3. No half-ass
+
+Operator verbatim: *"we dont do shit half ass"*. When a feature touches multiple surfaces (e.g. "infinite accounts" requires Add CLI + Onboarding UI + accounts-panel render + round-robin iterator + Health view all updated), ALL surfaces ship together OR the feature is not claimed shipped. Composes with no-bullshit doctrine rule 1 (precise verbs: `scaffolded` vs `shipped`).
+
+### Pass criterion (for any sub-page change)
+
+1. Header + body + footer present in canonical format.
+2. `B`/Enter returns to main picker; `X` exits cleanly.
+3. Body ≤ 15 lines (split into N) Next page if more).
+4. Smoke test: launch EVE.exe → tab into the page → tab out → no error/regression.
+
+Full doctrine + per-page checklist: `_shared-memory/knowledge/eve-ui-uniformity-doctrine-2026-05-24.md`.
+
+## Operator hard-canonical 2026-05-24 — SESSION-START AUTO-UPDATE PROPAGATION
+
+Operator (verbatim 2026-05-24, 21:30Z):
+*"make sure as we update things that all session starts in the eve exe are auto updated and contain all things we add and change when where and if needed"*
+
+**Binding for every sanctum-class agent shipping a fleet-surface change.** Five propagation surfaces exist; four auto-propagate, one (`eve.py`) requires the AutoRebuild step:
+
+| Surface | Auto? | Trigger needed |
+|---|---|---|
+| `.ps1` (start-sinister-session, claude-accounts, fleet-update, etc.) | ✅ | none — read live each spawn |
+| `CLAUDE.md` hard-canonical blocks | ✅ | none — read fresh on cold-start |
+| `_shared-memory/knowledge/*.md` brain entries | ✅ | push to fleet-update channel + `_INDEX.md` row |
+| `eve.py` (EVE.exe Python source) | ❌ | `verify-eve-features.ps1 -AutoRebuild -SyncMirror` |
+| JSON configs (`projects.json`, `agent-prefs.json`, `claude-accounts.json`) | ✅ | none — read on each spawn |
+
+After ANY `eve.py` edit: run `powershell -File automations\verify-eve-features.ps1 -AutoRebuild -SyncMirror`. Detects stale bundle, rebuilds via `build-eve-exe.bat`, syncs mirror at `~/.eve/EVE.exe`. Operator must close + reopen running EVE.exe windows to see the new bundle (running instance holds old).
+
+Full doctrine: `_shared-memory/knowledge/session-start-auto-update-propagation-2026-05-24.md` (5 surfaces + ship checklist + 6 anti-patterns + the operator-sees-update flow chart).
+
+## Operator hard-canonical 2026-05-24 — SPAWN-DETECT-SIMILAR + REVIEW + PLAN + LOOP
+
+Operator (verbatim 2026-05-24, 19:58Z):
+*"now every time a agent is started from eve exe, it needs to detect if there are similar agents in similar projects working or agents of the same project working. that agent is then to review what they are doing and then create its plan of what it needs to do. when agents are opened they are to do the resume flow, review and create a plan to complete things then loop and keep creating and finishing plans."*
+
+**Binding for every EVE.exe-spawned agent** (Sanctum + every per-project lane):
+
+1. **Detect** (automated). The launcher (`start-sinister-session.ps1` Build-Phrase) injects a `DETECT-SIMILAR-AGENTS:` line into the cold-start phrase listing every same-project + similar-project heartbeat newer than 10–60 min. Powered by `automations/detect-similar-agents.ps1`.
+2. **Review.** Before planning, read the focus + recent PROGRESS row for every detected same-project agent (highest-priority) and similar-project agents (lower). Goal: avoid duplicate work + identify clean handoff seams.
+3. **Plan.** Write your own plan as `_shared-memory/plans/<lane>-<topic>-<utc>/plan.md` (or update an existing one) listing deliverables you own + dependencies on detected agents.
+4. **Coordinate.** If overlap exists, drop a row in the relevant cross-agent inbox describing what you'll do vs what you'll defer to them. Do NOT silently duplicate.
+5. **Loop.** Ship your plan items one by one (per loop-mode doctrine below). Keep generating + finishing plans until queue empty or genuinely blocked.
+
+Live in: `automations/start-sinister-session.ps1` Build-Phrase (RESUME branch — fires once per spawn, env-skippable via `SINISTER_SKIP_DETECT_SIMILAR=1`) + `automations/detect-similar-agents.ps1` (the detector). Heartbeats are the source of truth; freshness window: 10 min for similar-project, 60 min for same-project.
+
+## Operator hard-canonical 2026-05-24 — SANCTUM SCOPE = HIGH-LEVEL ONLY (no per-project work)
+
+Operator (verbatim 2026-05-24, 19:45Z):
+*"your job is not the kernel apk, keybox all that shit. leave that to the projects that run them ... But you are sinister sanctum. you do all the high level things the sinister OS, eve, project structure etc etc high level things only. unless i say different. make sure each project doesnt have clogged memory with useless info outside of their project scope."*
+
+**Binding for the master Sanctum agent (EVE on Sanctum lane).** When operator messages land in the sanctum-lane queue but belong to a per-project lane (kernel-apk, sinister-os, snap-emulator-api, jb-woodworks, etc.), the sanctum agent SURFACES them in end-of-turn for visibility and **does NOT execute** the per-project work itself.
+
+In-scope for sanctum:
+- Sinister OS (sinister-os, sinister-os-mobile lanes; sanctum orchestrates architecture but defers per-lane implementation)
+- EVE launcher + EVE.exe + session-start + spawn pipeline
+- Project structure (projects.json, agent-prefs, picker, junctions)
+- Fleet-wide doctrine (CLAUDE.md hard-canonical blocks, brain entries, cold-start protocol)
+- Cross-lane mesh (claude-accounts rotation, fleet-update channel, vault, GitHub sync daemon)
+- Doctrine-class tooling (auto-update, audit, forever-improve, quality-monotonic-loop, no-bullshit enforcement)
+
+Out-of-scope for sanctum (route to lane owner via cross-agent inbox or fleet-update channel):
+- Per-project bugfixes (ADB, keybox parsing, phone PI, add-friend, payload tuning)
+- Per-project features (kernel modules, panel endpoints, emulator quirks)
+- Per-project memory: each project's CLAUDE.md / PROGRESS / resume-points own their lane's context; sanctum brain rows must be GLOBAL or LANE-TAGGED, not full project dumps
+
+Full doctrine: `_shared-memory/knowledge/sanctum-scope-discipline-2026-05-24.md` (composes with per-project-bot-adoption-playbook + agent-identity-eve).
+
+## Operator hard-canonical 2026-05-24 — LOOP MODE = continuous iteration, NOT schedule-and-stop
+
+Operator (verbatim 2026-05-24, 19:55Z):
+*"loop isnt working agents are sotpping and not looping"*
+
+Screenshot evidence: Let'sText agent scheduled next /loop tick at 25 minutes then ended turn — operator perceived "stopped". Root cause: ambiguous loop instruction allowed agents to use long-delay ScheduleWakeup instead of in-turn iteration.
+
+**Binding for every loop=on agent.** When `loop=on` is set at picker time (or via fleet-update mode-flip):
+
+1. After each shipped deliverable, **immediately start the next iteration in the same turn** — pick next item from open queue or generate one.
+2. **Do NOT end the turn while there is queueable work.** End-of-turn summaries describe what was shipped THIS turn AND what is queued for the NEXT turn — but the next turn should fire immediately, not 25 minutes from now.
+3. Only use `ScheduleWakeup` if **genuinely blocked on external signal** (build running, operator clicking, file syncing) AND nothing else is workable.
+4. When using `ScheduleWakeup`, **cap `delaySeconds` at 270** (cache stays warm; per ScheduleWakeup tool docs). NEVER schedule >270s in loop mode.
+5. Compose with `quality-monotonic-loop.ps1` (knows when to stop based on score plateau/regression) and `no-bullshit` rule 8 (quality-degradation limits stop expansion).
+6. **Loop stop condition** — operator-set verbatim at spawn time via the third picker question (after swarm/loop yes-no). Child EXPANDS the brief into a fully-specified multi-sentence acceptance criterion (success signals + measurable thresholds + what counts as "done"). Re-checked each iter; satisfied → STOP cleanly with verification evidence. Empty → fall back to "queue-empty-or-blocker" default. Plumbed via `SINISTER_LOOP_CONDITION` env.
+7. **Quality guardrails** — every iteration honors the 12 guardrails in `_shared-memory/knowledge/safe-quality-loops-doctrine-2026-05-24.md` (read-or-measure precondition / reversibility wall / scope freeze / cost ceilings / idempotency check / diff-before-write / heartbeat liveness / sister-agent coordination / operator-interrupt priority / compaction watchdog / loop-condition re-check). Operator verbatim 2026-05-24T20:08Z: *"think of the best loops tho that will keep agents working and doing quality needed work. not starting to destory things."*
+
+Live in: `start-sinister-session.ps1` `Build-Phrase` (modes.loop branch) + `Prompt-AgentModes` (loop_condition third question) + `automations/session-templates/projects.json` (all per-project `loop:true` defaults). Updates auto-applied to spawned sessions since launcher reads `.ps1` live.
+
 ## Operator hard-canonical 2026-05-24 — UI BASE = `dashboard-skeleton`; every new dashboard EXPANDS, never forks
 
 Operator (verbatim 2026-05-24, 15:44Z, reinforcing prior 2026-05-24 mid-loop directive on same topic):
@@ -66,12 +206,12 @@ If you are **Leo** or any new operator joining the fleet, read these two docs in
 
 The snapshot tagged `leo-ready-2026-05-23` is the end-to-end-tested commit you should check out (`git checkout leo-ready-2026-05-23`) for a guaranteed-working state.
 
-## Cold-start in 10 steps (updated 2026-05-24 — operator hard-canonical)
+## Cold-start in 12 steps (0-11; updated 2026-05-24 — operator hard-canonical)
 
 0. **`understand-anything:understand-explain`** — BEFORE any substantive work, invoke the understand-anything skill on the current project's root to load architectural context (file structure, key modules, recent changes). This is the operator's "called before each project start like we used to do" requirement (2026-05-23 evening). NEVER skip; future EVE sessions must NOT remove this step. The plugin is enabled at user level + Sanctum project level; per-project lanes inherit it automatically.
 1. **`SESSION-START/`** in order (00→06) — hard rules + MCP network + operator queue + gotchas + recovery + project overview + launcher details.
-2. **`D:\Sinister\Sinister Skills\01_MEMORY\master\OPERATOR-DIRECTIVES.md`** — durable operator notes (operator-private "hidden memory" hub; this file IS readable by master agents). NEVER remove this reference.
-3. **`D:\Sinister\Sinister Skills\09_REFERENCE\SANDBOX-GOTCHAS.md`** — sandbox green-path documentation (per Rule 7 of `SESSION-START/00-RULES.md`: sandbox blocks are documented, not bypassed). NEVER remove this reference.
+2. **`D:\Sinister Sanctum\_sinister-skills\01_MEMORY\master\OPERATOR-DIRECTIVES.md`** — durable operator notes (operator-private "hidden memory" hub; this file IS readable by master agents). NEVER remove this reference.
+3. **`D:\Sinister Sanctum\_sinister-skills\09_REFERENCE\SANDBOX-GOTCHAS.md`** — sandbox green-path documentation (per Rule 7 of `SESSION-START/00-RULES.md`: sandbox blocks are documented, not bypassed). NEVER remove this reference.
 4. **`PARALLEL-AGENT-COORDINATION.md`** — ownership zones for the 5+ parallel Claude sessions.
 5. **`_shared-memory/WORKSTATION.md`** + **`DIRECTIVES.md`** (canonical-14 standing rules) + **`WORK-TOWARD.md`** (rolling shared goals).
 6. **`_shared-memory/knowledge/_INDEX.md`** — the brain. Grep before risky actions.
@@ -79,7 +219,12 @@ The snapshot tagged `leo-ready-2026-05-23` is the end-to-end-tested commit you s
 8. **`_shared-memory/operator-utterances.jsonl`** — read the last 10 rows where `status` is `new` or `acknowledged` and surface them in the first response under "Open operator utterances". Append every fresh operator message via `automations/log-operator-utterance.ps1`; ack/resolve via `automations/ack-operator-utterance.ps1`. Full doctrine at `_shared-memory/knowledge/operator-utterance-tracking-doctrine-2026-05-24.md`. Operator hard-canonical 2026-05-24: *"make sure that everything i ever say is tracked and flagged for a few and evertyhing that needs to get sdone gets done. with every agent i am in"*. NEVER remove this step.
 9. **GitHub-first sourcing** — before writing a non-trivial feature from scratch, run `automations/github-prior-art.ps1 -Topic <feature>` and surface candidates to operator. Fires on new projects + complex features (>50 LOC / new service integration / new dependency category). Full doctrine at `_shared-memory/knowledge/github-first-sourcing-doctrine-2026-05-24.md`. Operator hard-canonical 2026-05-24: *"everytimg we start a porject or look for complex feature i want us to always aerach giuthub for pre madecode that we can use and then build ours based off of per project to save time. i want everything to be as speeedy efficent and concise as possible"*. NEVER remove this step.
 10. **Forever-improve checkpoint** — at end of every meaningful work unit (new doctrine / new script / new feature / commit), run `automations/forever-improve.ps1 -Action Review -Target <work>` (or `-Action ReviewCommit -Sha HEAD`). Findings append to `_shared-memory/improvement-log.jsonl`; act on top-severity within 3 lane-turns OR dismiss with one-line reason (no rotting log). `-Action Tally` shows per-lane open/acted/dismissed/expired counts; `-Action Drain` auto-expires open rows older than 3 turns. When `loop-quality-gate` reports DEGRADED for the lane, forever-improve switches to consolidation-summary mode instead of new-feature suggestions (rule 8 of no-bullshit doctrine: forever-expand has limits). Full doctrine at `_shared-memory/knowledge/forever-improve-review-doctrine-2026-05-24.md`. Operator hard-canonical 2026-05-24 evening: *"i want everything we do to be like reviewed to see where we can imporve on things so we are forever expanding in the hin theh things we can do"*. NEVER remove this step.
-11. **Fleet-update channel poll** — read tail of `_shared-memory/fleet-updates.jsonl` once on cold-start via `powershell -File automations\fleet-update.ps1 -Action List -Tail 5 -Slug <your-slug>`. `priority=high` rows surface in the first response under "Fleet updates"; `normal` rows surface in end-of-turn summary; `low` rows ack silently. Then on every Nth heartbeat (N random in `[3,8]`) re-poll. Ack via `-Action Acked -Id <id> -Slug <your-slug>`. Operator may push outbound feature/fix/tool/doctrine announcements OR `kind=command` directives (optionally scoped via `-TargetSlugs`) through this channel — it is the polled, low-pressure complement to per-lane inboxes. Full doctrine at `_shared-memory/knowledge/fleet-update-channel-doctrine-2026-05-24.md`. Operator hard-canonical 2026-05-24: *"jsut add to the sanctum a auto update or like communication system so that when we update things we can push to all agents and then the agents random check those updates on a time basis and use them if needed or we can give commands from here to our agents etc."* NEVER remove this step.
+11. **Fleet-update poll + sibling-detect + mesh-coord Check** (composed step — operator hard-canonical 2026-05-24T19:14Z + 19:58Z + 20:02Z):
+    - **(a) Fleet-update poll:** read tail of `_shared-memory/fleet-updates.jsonl` once on cold-start via `powershell -File automations\fleet-update.ps1 -Action List -Tail 5 -Slug <your-slug>`. `priority=high` rows surface in the first response under "Fleet updates"; `normal` rows surface in end-of-turn summary; `low` rows ack silently. Re-poll every Nth heartbeat (N random in `[3,8]`). Ack via `-Action Acked -Id <id> -Slug <your-slug>`. Operator pushes outbound feature/fix/tool/doctrine OR `kind=command` directives (optionally scoped via `-TargetSlugs`). Doctrine: `_shared-memory/knowledge/fleet-update-channel-doctrine-2026-05-24.md`.
+    - **(b) Sibling-detect:** spawn cold-start phrase already invokes `automations/detect-similar-agents.ps1` and injects same/similar-project siblings + their focus. REVIEW the brief before planning your own slice; pick a NON-OVERLAPPING focus. Inbox the current owner if you genuinely need overlap. (operator 19:58Z *"detect if there are similar agents in similar projects working ... review what they are doing and then create its plan"*)
+    - **(c) Mesh-coord Check before risky edits:** before editing a shared file (anything in `automations/`, `CLAUDE.md`, `_shared-memory/knowledge/_INDEX.md`, `projects.json`, etc.), run `powershell -File automations\mesh-coordinator.ps1 -Action Check -Focus "<path-or-topic>"`. If LOCKED (exit 1), pick a different slice OR inbox the owner. If CLEAR, `Register` your own lock with TTL, then edit, then `Release` on completion. A scheduled task `SinisterMeshCoordSweep` auto-purges expired locks every 10 min. Doctrines: `_shared-memory/knowledge/mesh-coordination-and-resource-lifecycle-2026-05-24.md` + `_shared-memory/knowledge/gradual-growth-memory-push-eve-exe-ready-2026-05-24.md`. (operator 20:02Z *"as you update memory you push to agents and its ready to go in the eve exe so we can grow gradually and never stop"*)
+    
+    NEVER remove this step.
 
 **Operator tools quick-reference:** see `docs/OPERATOR-QUICK-REFERENCE.md` for every runnable script shipped iters 1-17 of /loop (sinister-doctor / per-project-protections-autofix / brain-archive-orphans / clone-missing-sources / EVE.exe / Fleet-Tour.bat / etc) with one-line descriptions + invocation. Compose this with the brain index (step 6) and operator queue (step 7).
 
@@ -92,8 +237,8 @@ Six protections that future EVE sessions MUST preserve (auto-verified by `automa
 1. `~/.claude/settings.json` → `bypassPermissions: true` + `defaultMode: "bypassPermissions"` + `claude --dangerously-skip-permissions*` in `permissions.allow[]`.
 2. `~/.claude/settings.json` → `enabledPlugins["understand-anything@understand-anything"]: true` AND same in `D:\Sinister Sanctum\.claude\settings.json`.
 3. CLAUDE.md cold-start MUST contain step 0 invoking understand-anything BEFORE other reads.
-4. CLAUDE.md cold-start MUST reference `D:\Sinister\Sinister Skills\01_MEMORY\master\OPERATOR-DIRECTIVES.md` (the hidden-memory hub).
-5. CLAUDE.md cold-start MUST reference `D:\Sinister\Sinister Skills\09_REFERENCE\SANDBOX-GOTCHAS.md` (sandbox green paths).
+4. CLAUDE.md cold-start MUST reference `D:\Sinister Sanctum\_sinister-skills\01_MEMORY\master\OPERATOR-DIRECTIVES.md` (the hidden-memory hub).
+5. CLAUDE.md cold-start MUST reference `D:\Sinister Sanctum\_sinister-skills\09_REFERENCE\SANDBOX-GOTCHAS.md` (sandbox green paths).
 6. Brain entries `sanctioned-bypasses-doctrine-2026-05-21.md` + `do-not-revert-operator-canonical-protections-2026-05-23.md` must remain in `_shared-memory/knowledge/` and be indexed in `_INDEX.md`.
 
 ## Operator hard-canonical 2026-05-23 — NO-BULLSHIT / TESTED-BEFORE-CLAIMED / FOREVER-AUDIT (with quality-degradation limits)
@@ -161,7 +306,7 @@ The operator's full workstation, not just an orchestration repo. Read **`SANCTUM
 |---|---|
 | Tools | `tools/_INDEX.md` |
 | Skills | `skills/_INDEX.md` |
-| Bots | `bots/README.md` (junctions to `D:\Sinister\Sinister Skills\12_LLM_ORCHESTRATION\agents\`) |
+| Bots | `bots/README.md` (junctions to `D:\Sinister Sanctum\_sinister-skills\12_LLM_ORCHESTRATION\agents\`) |
 | Inventions | `inventions/` (one .md per invention; case-study verdicts at `_shared-memory/case-studies/`) |
 | External imports | `_shared-memory/external-imports/CANDIDATES.md` |
 | Knowledge brain | `_shared-memory/knowledge/_INDEX.md` |
@@ -180,7 +325,7 @@ The operator's full workstation, not just an orchestration repo. Read **`SANCTUM
 - `_shared-memory/` (all of it — DIRECTIVES, WORK-TOWARD, PROGRESS, knowledge, cycle-points, codex-reviews, case-studies, external-imports, foundation-sweep reports, heartbeats)
 - `automations/window-manager/` — RKOJ workbench source (the Console EXE)
 - `automations/window-manager/dist/` — built EXE (gitignored)
-- `D:\sinister-vault\` — the 1 TB collaborative store (vault daemon at :5078, orthogonal to this repo)
+- `D:\Sinister Sanctum\_vault\` — the 1 TB collaborative store (vault daemon at :5078, orthogonal to this repo)
 
 ## What's currently pending operator clicks
 

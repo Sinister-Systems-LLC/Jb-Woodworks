@@ -1,0 +1,63 @@
+{
+  "schema_version": "sinister.resume-point.v1",
+  "ts_utc": "2026-05-25T00:41:00Z",
+  "project": "showmasters",
+  "agent_name": "showmasters",
+  "agent_identity": "EVE",
+  "mode": "resume",
+  "focus_intent": "iter-1 :: production health re-verify (6/6 PASS @ TTFB 205ms) + PROGRESS append + inbox triage. iter-2 :: local files sanity audit (24/24 main+skip; 23/24 jsonld; 0 console.log / 0 unsplash / 0 unsafe _blank). Stopped on queue-empty-or-blocker. Branch caution noted: working tree on sister-lane branch agent/sinister-os-mobile/p0-spec-2026-05-24 so no code edits this turn.",
+  "iters_this_session": 2,
+  "local_audit_2026_05_25": {
+    "html_files": 24,
+    "main_landmark": "24/24",
+    "skip_link": "24/24",
+    "jsonld_schema": "23/24 (404.html omitted by convention)",
+    "console_log_leaks": 0,
+    "unsplash_refs": 0,
+    "unsafe_target_blank": 0
+  },
+  "git": {
+    "branch": "agent/sinister-os-mobile/p0-spec-2026-05-24",
+    "branch_warning": "Sister-lane branch. Cut agent/showmasters/<topic> off doctrine HEAD before any showmasters code commits.",
+    "head_msg": "sinister-os: panel-shell healthcheck accepts Next.js 307 redirect"
+  },
+  "production": {
+    "url": "https://showmasters-web-production.up.railway.app",
+    "pages_smoke": "6/6 PASS (root + 5 priority pages 200; /this-page-should-404.html → 404)",
+    "ttfb_root_ms": 205,
+    "verified_at_utc": "2026-05-25T00:35:00Z"
+  },
+  "inbox_unread_count": 0,
+  "inbox_triaged_this_turn": [
+    {
+      "id": "2026-05-24T1350Z-from-sanctum-feature-refresh.json",
+      "verdict": "FYI broadcast; no action."
+    },
+    {
+      "id": "2026-05-24T1555Z-from-test-modes-verify-broadcast-dashboard-skeleton-ui-base.json",
+      "verdict": "Not applicable — showmasters is static marketing site (HTML/CSS/JS), not a dashboard-class surface. Skeleton inheritance applies to React/Next dashboard primitives."
+    },
+    {
+      "id": "2026-05-24T1623Z-from-snap-api-quantum-iter103-marketing-redundancy.json",
+      "verdict": "Logged as backlog (cosmetic drift risk, sender explicitly says optional). Lane-action only if drift becomes painful."
+    }
+  ],
+  "operator_utterances_unread_at_spawn": 5,
+  "operator_utterances_in_lane": 0,
+  "operator_utterances_note": "All 5 unread utterances are sanctum-lane (EVE.exe redesign / accounts / OAuth pivot / jcode animations / token menu). Out-of-scope per canonical-10 (sanctum-scope-discipline). Surfacing for visibility only.",
+  "latest_plan": {
+    "dir": "D:\\Sinister Sanctum\\_shared-memory\\plans\\showmasters-2026-05-23-finish-everything",
+    "artifact": "D:\\Sinister Sanctum\\_shared-memory\\plans\\showmasters-2026-05-23-finish-everything\\PLAN.md"
+  },
+  "open_backlog": [
+    "A. PROGRESS consolidation per queue row 947 (file = 904+ lines; archive entries older than 2026-05-23 15:50Z to _archive/Showmasters-pre-launch-2026-05-23.md).",
+    "B. PLAN.md A.iv — verify intro animation on localhost:8080 (first-load full intro vs nav-click 200ms curtain).",
+    "C. PLAN.md B/C — nano-banana batch (6 service heros + 2 city heros + 5 social templates + 11 blog headers, ~$0.94 cost). Cost-gated; not firing without explicit go.",
+    "D. quantum-sweep drift fix — template deliverable/03-Marketing.md from site/MARKETING/* canonical pages (cosmetic, low-urgency)."
+  ],
+  "pre_warm_reads": [
+    "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Showmasters.md",
+    "D:\\Sinister Sanctum\\_shared-memory\\plans\\showmasters-2026-05-23-finish-everything\\PLAN.md",
+    "D:\\Sinister Sanctum\\projects\\showmasters\\site\\CLAUDE.md"
+  ]
+}

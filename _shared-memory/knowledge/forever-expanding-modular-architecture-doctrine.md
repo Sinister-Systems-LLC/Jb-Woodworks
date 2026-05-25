@@ -1,3 +1,9 @@
+<!-- decay:
+  category: preference
+  confidence: 0.9
+  reinforcements: 0
+  half_life_days: 180
+-->
 # Forever-Expanding Modular Architecture :: Sinister fleet doctrine
 
 > **Author:** RKOJ-ELENO :: 2026-05-21

@@ -1,0 +1,47 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-24T22:05Z",
+    "project":  "letstext",
+    "agent_name":  "letstext",
+    "mode":  "resume",
+    "focus_intent":  "R7 cold-start triage: 4 unread operator utterances all sanctum/sinister-os scope (none letstext) — surfaced for routing. Dashboard-skeleton inheritance audit done: letstext is a PRE-skeleton design system (465 tsx/ts files, 93 lucide-react imports, 0 sinister-theme-tokens imports, 40+ lg-* class users); filed as CLEANUP-TODO row UI-6 (operator-decision: forward-only adoption vs phased retrofit vs carve-out exemption). No code shipped this turn by design — lane is in planned await-pivot state per R6 carve-out + no-bullshit rule 6 (laser focus, no scope-creep on arbitrary deferred items without operator nudge).",
+    "seeded_by":  "letstext agent R7 (cold-start triage + dashboard-skeleton audit)",
+    "seed_reason":  "loop check-in after lane reached planned idle state; next session should know that (1) 4 unread utterances are NOT letstext, (2) skeleton retrofit is filed as operator-decision row, (3) deferred CLEANUP-TODO items P1/P2 await pivot signal",
+    "git":  {
+                "branch":  "agent/letstext/master-plan-resume-2026-05-24",
+                "head":  "0667618",
+                "head_msg":  "test(compliance): add 43 new tests — strike/cooldown integration (mocked prisma) + text-moderation scanner (R6 ship — clean since)"
+            },
+    "progress_top3":  [
+                          "R7 2026-05-24T22:05Z cold-start triage + dashboard-skeleton audit (UI-6 filed, await pivot)",
+                          "R6 2026-05-24T20:55Z audit + 43 new tests (52/52 PASS) + EVE Compliance lane carved out + bootstrapped + EVE.exe registered + Sinister Start.bat spawned",
+                          "R5 2026-05-24T20:00Z frontend pivot shipped (demo CTA + lucide refactor)"
+                      ],
+    "unread_utterances_routing":  {
+                                      "2026-05-24T21:25:50Z":  "sanctum — keep-going + eve-exe-integration",
+                                      "2026-05-24T21:32:27Z":  "sanctum — automatic-tools + cross-agent-dispatch",
+                                      "2026-05-24T21:50:29Z":  "sanctum — eve-exe-redesign (main menu + jcode animations + sections)",
+                                      "2026-05-24T22:00:56Z":  "sanctum — keep-working + memory-work + parallel-mode"
+                                  },
+    "dashboard_skeleton_audit":  {
+                                     "total_dashboard_files":  465,
+                                     "lucide_react_imports":  "93 files",
+                                     "sinister_theme_tokens_imports":  0,
+                                     "lg_class_files":  "40+",
+                                     "verdict":  "PRE-skeleton design system; retrofit = operator-decision item",
+                                     "filed":  "CLEANUP-TODO row UI-6"
+                                 },
+    "pending_letstext_followups_if_operator_pivots":  [
+                                                          "UI-6 (skeleton retrofit — pick direction first)",
+                                                          "S-7 (Zod migration of 25 admin POST routes — mechanical)",
+                                                          "UI-2 (sidebar mobile drawer collapse — architectural)",
+                                                          "UI-1 (5-page mobile redesign — multi-day)"
+                                                      ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\CLAUDE.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\letstext.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\heartbeats\\letstext.json",
+                           "C:\\Users\\Zonia\\Desktop\\LetsText\\CLEANUP-TODO.md"
+                       ],
+    "cross_lane_routing":  "Anything compliance/moderation → _shared-memory/inbox/eve-compliance/. Anything sanctum/eve-exe → already in operator-utterances queue for sanctum agent. Letstext stays in narrow lane (chat UI / payments / inbox / employees / marketing / design system)."
+}

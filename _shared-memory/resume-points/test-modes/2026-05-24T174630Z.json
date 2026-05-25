@@ -1,0 +1,42 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-24T17:46:30Z",
+    "project":  "sanctum",
+    "agent_name":  "test-modes",
+    "session_tag":  "test-modes-loop-iter4",
+    "mode":  "resume",
+    "loop_iter":  4,
+    "focus_intent":  "5x-parallel turn (E-extension): shipped gap-audit §9.1-§9.6 verified-evidence block + acked 3 in-lane utterances + flagged operator-action capacity blocker. Composes with sibling iter5 sub-area B (burn-first), sibling iter4 sub-area A (forge-memory), sibling gap-audit sub-area C (R8 fix).",
+    "shipped_this_iter":  [
+                              "_shared-memory/knowledge/jcode-parity-gap-audit-2026-05-24-test-modes.md §9.1-§9.6 (verified-evidence: rotation/per-project-ask/resume-inject/quality-guard/gap-matrix/evidence)",
+                              "ack-operator-utterance.ps1 x3 — 17:18:40Z + 17:21:54Z + 17:22:56Z all with concrete deliverable strings pointing to §9",
+                              "Claim register E-extension entry — added [SHIPPED by test-modes /loop iter 4] row so subsequent siblings see the verified-proof block exists",
+                              "Live smoke-test: Get-NextAvailableAccount → name=operator strategy=burn-first enabled_count=1 (verified sibling B's flip is live)",
+                              "Empirical proof of resume-inject: this session's opening prompt contains the RESUME CONTEXT (auto-injected...) block — recorded in §9.3 + §9.6",
+                              "Heartbeat + PROGRESS turn row (no-bullshit-compliant: every claim has file:line / smoke / quote evidence)"
+                          ],
+    "open_for_next_iter":  [
+                               "OPERATOR-ACTION: enable additional Claude accounts (Leo or slot3/slot4) so burn-first failover has a target — until then burn-first ≡ load-balance (capacity blocker, not logic)",
+                               "Sub-area C remaining hard-gaps (R23 claude-hooks PH13 / R24 Skill_Seekers PH12 / R25 agentgrep PH14 / R28 sinister-mermaid-render Rust fork)",
+                               "Sub-area D remainder: audit all 24 projects.json entries for default_modes; verify bat re-prompt-on-resume fires on auto-resume path",
+                               "Sub-area E remainder: consolidated status doc still pending; 5/13 utterances still need ack from siblings"
+                           ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\knowledge\\jcode-parity-gap-audit-2026-05-24-test-modes.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\cross-agent\\2026-05-24T1735Z-test-modes-5x-parallel-claims.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\claude-accounts.json",
+                           "D:\\Sinister Sanctum\\automations\\claude-accounts.ps1",
+                           "D:\\Sinister Sanctum\\automations\\start-sinister-session.ps1"
+                       ],
+    "git":  {
+                "branch":  "agent/sinister-os-mobile/p0-spec-2026-05-24",
+                "head":  "(use git rev-parse HEAD at restore-time)",
+                "head_msg":  "(sibling-switched; multi-test-modes contention)"
+            },
+    "siblings_in_flight":  {
+                               "test-modes-session-iter4":  "Sub-area A SHIPPED 18:00Z (forge-memory auto-recall Get-MemoryRecallInject wired into Build-Phrase)",
+                               "test-modes-gap-audit":  "Sub-area C PARTIAL 17:52Z (R8 probe-defect fixed; 4 hard-gaps still planned)",
+                               "test-modes-iter5":  "Sub-area B SHIPPED 17:50Z (burn-first rotation) + D+E PARTIAL",
+                               "test-modes-loop-iter4 (this)":  "Sub-area E-extension SHIPPED 17:46Z (gap-audit §9 verified-evidence block + 3 acks + capacity-blocker surfaced)"
+                           }
+}

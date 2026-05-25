@@ -1,0 +1,39 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-24T19:47:00Z",
+    "project": "sinister-freeze",
+    "agent_name": "sinister-freeze",
+    "mode": "resume",
+    "focus_intent": "Frost is serving on http://127.0.0.1:5085/ (background uvicorn task buff71quz). Port 5079 taken by sinister-vault-api. Browser opened to dashboard. Health endpoint returns ok (anthropic + telegram not configured; local-fallback active). Next: refactor freeze/app.py inline _INDEX_HTML onto projects/sinister-dashboard-skeleton tokens per CLAUDE.md UI-canonical hard-canonical 2026-05-24.",
+    "live_service": {
+        "host": "127.0.0.1",
+        "port": 5085,
+        "url": "http://127.0.0.1:5085/",
+        "background_task_id": "buff71quz",
+        "log_file": "C:/Users/Zonia/AppData/Local/Temp/claude/D--Sinister-Sanctum-projects-sinister-freeze/dccffdc1-bf99-403c-a5d0-a39538254009/tasks/buff71quz.output"
+    },
+    "git": {
+        "branch": "agent/sinister-os-mobile/p0-spec-2026-05-24",
+        "note": "branch carried over from prior mobile-OS session; freeze-lane file edits remain isolated to projects/sinister-freeze/ + _shared-memory/{heartbeats,PROGRESS,resume-points}/. No commit this turn."
+    },
+    "progress_top1": "2026-05-24T19:46Z — Frost served on localhost; default browser opened to http://127.0.0.1:5085/",
+    "operator_utterance_addressed": "place all in local host and open in my browser once ready i want to view things",
+    "ports_in_use": {
+        "5079": "sinister-vault-api (squatted; Frost re-homed to 5085)",
+        "5085": "freeze.app:app (this lane)"
+    },
+    "open_followups": [
+        "Refactor freeze/app.py _INDEX_HTML to consume projects/sinister-dashboard-skeleton/dashboard-skeleton/ tokens (.lg-* classes + sinister-theme-tokens.css; --accent stays Frost purple #7A3DD4) per CLAUDE.md 2026-05-24 UI-canonical",
+        "Persist Frost as a real service (systemd-style task or NSSM) so it auto-starts; right now it dies when this session ends",
+        "Wire ANTHROPIC_API_KEY + Telegram bot env so brief/wrap stop local-fallback rendering",
+        "Resolve port-conflict policy: either move vault back to its documented :5078 or pin Frost default to 5085 in freeze/config.py"
+    ],
+    "pre_warm_reads": [
+        "D:/Sinister Sanctum/projects/sinister-freeze/CLAUDE.md",
+        "D:/Sinister Sanctum/projects/sinister-freeze/source/freeze/app.py",
+        "D:/Sinister Sanctum/projects/sinister-freeze/source/freeze/config.py",
+        "D:/Sinister Sanctum/_shared-memory/PROGRESS/sinister-freeze.md",
+        "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-ui-canonical-dashboard-skeleton-inheritance-2026-05-24.md"
+    ],
+    "inbox_unread_count": 0
+}

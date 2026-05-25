@@ -1,3 +1,9 @@
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 0
+  half_life_days: 180
+-->
 # lukeprivacy KPM at rest does NOT regress PI
 
 **Discovered:** 2026-05-19 resume-pickup session, sinister-kernel-apk project

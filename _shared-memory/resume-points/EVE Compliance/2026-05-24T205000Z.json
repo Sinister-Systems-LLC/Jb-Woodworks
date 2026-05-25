@@ -1,0 +1,36 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-24T20:50Z",
+    "project":  "eve-compliance",
+    "agent_name":  "eve-compliance",
+    "mode":  "first-spawn-bootstrap",
+    "focus_intent":  "R0 lane bootstrap — EVE Compliance lane created from letstext R5 handoff per operator 2026-05-24 directive. Read CLAUDE.md + SESSION-START.md + PROGRESS for full handoff context. First work unit: run verification suite to confirm 52/52 still green, then pick NCMEC auto-draft as first feature (#1 in open follow-up queue).",
+    "seeded_by":  "letstext-handoff R5 spawn (operator directive 2026-05-24)",
+    "seed_reason":  "first session of new lane; provides operator-visible starting context the moment EVE.exe spawns this lane",
+    "git":  {
+                "branch":  "(no git on lane home D:\\Sinister Sanctum\\projects\\eve-compliance — actual code work happens on canonical letstext repo C:\\Users\\Zonia\\Desktop\\LetsText, branch agent/letstext/master-plan-resume-2026-05-24)",
+                "head":  "(letstext canonical: 0667618)",
+                "head_msg":  "test(compliance): add 43 new tests — strike/cooldown integration (mocked prisma) + text-moderation scanner"
+            },
+    "progress_top3":  [
+                          "R0 2026-05-24T20:50Z lane bootstrapped — CLAUDE.md + SESSION-START + PROGRESS + heartbeat + inbox handoff seeded; projects.json + agent-prefs.json registration in same turn",
+                          "Inherited 4 commits from letstext lane on agent/letstext/master-plan-resume-2026-05-24 (image moderation pipeline shipped end-to-end + 52/52 tests green)",
+                          "Operator demo deadline: TOMORROW. Runbook at C:\\Users\\Zonia\\Desktop\\LetsText\\docs\\DEMO-IMAGE-MODERATION.md is the recording script — do not regress."
+                      ],
+    "last_5_files_touched_24h":  [
+                                     "D:\\Sinister Sanctum\\projects\\eve-compliance\\CLAUDE.md (NEW this spawn)",
+                                     "D:\\Sinister Sanctum\\projects\\eve-compliance\\SESSION-START.md (NEW this spawn)",
+                                     "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\EVE Compliance.md (NEW this spawn)",
+                                     "D:\\Sinister Sanctum\\_shared-memory\\heartbeats\\eve-compliance.json (NEW this spawn)",
+                                     "D:\\Sinister Sanctum\\_shared-memory\\inbox\\eve-compliance\\2026-05-24T2050Z-from-letstext-handoff.json (NEW this spawn)"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\CLAUDE.md",
+                           "D:\\Sinister Sanctum\\projects\\eve-compliance\\CLAUDE.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\EVE Compliance.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\heartbeats\\eve-compliance.json",
+                           "D:\\Sinister Sanctum\\_shared-memory\\inbox\\eve-compliance\\2026-05-24T2050Z-from-letstext-handoff.json",
+                           "C:\\Users\\Zonia\\Desktop\\LetsText\\docs\\DEMO-IMAGE-MODERATION.md"
+                       ],
+    "first_session_work_unit":  "1. Verify suite: cd C:\\Users\\Zonia\\Desktop\\LetsText\\backend && npx tsc --noEmit && npx vitest run | 2. Pick NCMEC auto-draft (open follow-up #1) or whatever operator pivots to | 3. Plan → ship → test → commit on agent/eve-compliance/<topic> branch"
+}

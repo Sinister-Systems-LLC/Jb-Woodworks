@@ -1,3 +1,9 @@
+<!-- decay:
+  category: fact
+  confidence: 0.9
+  reinforcements: 0
+  half_life_days: 90
+-->
 ---
 updated: 2026-05-19
 audience: claude (all Sinister-APK + sister-project agents)

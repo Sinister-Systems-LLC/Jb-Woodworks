@@ -1,0 +1,45 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-24T20:00Z",
+    "project":  "letstext",
+    "agent_name":  "letstext",
+    "mode":  "resume",
+    "focus_intent":  "R5 demo-deadline directive COMPLETE — 10/10 tasks shipped on agent/letstext/master-plan-resume-2026-05-24: master-plan recovery (e591fd3, 60 files +6629/-38), ENG-20 image moderation pipeline (0c78029, 12 files +2307/-6), frontend pivot demo CTA + icon refactor (5978cf8, 1 file +64/-5). Tests 14/14 green. Awaiting operator review for tomorrow's demo video.",
+    "seeded_by":  "letstext agent R5 (demo deadline run)",
+    "seed_reason":  "loop completion checkpoint per cold-start step 10 + operator deadline",
+    "git":  {
+                "branch":  "agent/letstext/master-plan-resume-2026-05-24",
+                "head":  "5978cf8",
+                "head_msg":  "feat(landing): add demo CTA section + showcase image moderation + showcase row-3 lucide refactor"
+            },
+    "progress_top3":  [
+                          "R5 2026-05-24T20:00Z frontend pivot shipped (demo CTA + lucide refactor) + 14/14 vitest pass + branch pushed (3 commits, 73 files, +8998/-49)",
+                          "R4 2026-05-24T19:50Z ENG-20 image-moderation pipeline shipped end-to-end (Claude Haiku 4.5 + mock fallback, ContentScan extended, 7 admin endpoints, dashboard tab, training export, demo seed, runbook)",
+                          "R3 2026-05-24T19:30Z discovered + committed 2026-05-18 master-plan work (60 files, S-005/S-009/S-014/S-017/S-020/ENG-1/ENG-14/MKT-3 + 945-line compliance schema)"
+                      ],
+    "last_5_files_touched_24h":  [
+                                     "C:\\Users\\Zonia\\Desktop\\LetsText\\dashboard\\app\\landing-page.tsx (R5 CTA + icon refactor)",
+                                     "C:\\Users\\Zonia\\Desktop\\LetsText\\backend\\src\\lib\\image-moderation.ts (R4 ENG-20 scanner)",
+                                     "C:\\Users\\Zonia\\Desktop\\LetsText\\backend\\src\\routes\\image-moderation.ts (R4 admin endpoints)",
+                                     "C:\\Users\\Zonia\\Desktop\\LetsText\\backend\\prisma\\schema.prisma (R3 master-plan + R4 ENG-20 additions)",
+                                     "C:\\Users\\Zonia\\Desktop\\LetsText\\docs\\DEMO-IMAGE-MODERATION.md (R4 runbook)"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\CLAUDE.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\letstext.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\heartbeats\\letstext.json",
+                           "C:\\Users\\Zonia\\Desktop\\LetsText\\docs\\DEMO-IMAGE-MODERATION.md"
+                       ],
+    "operator_actionable_before_demo":  [
+                                            "cd C:\\Users\\Zonia\\Desktop\\LetsText\\backend && npx prisma db push   (materialize new schema)",
+                                            "Optional: set ANTHROPIC_API_KEY in Railway env (else mock mode)",
+                                            "Optional: cd backend && npx tsx scripts/seed-moderation-demo.ts   (pre-populate demo queue)",
+                                            "Open PR from agent/letstext/master-plan-resume-2026-05-24 → main when ready"
+                                        ],
+    "deferred_followups":  [
+                               "ChatArea cooldown friendly message (frontend, reads 403 cooldownUntil)",
+                               "NCMEC auto-draft on confirmed CSAM (schema relation already exists)",
+                               "PhotoDNA hash for CSAM_HASH_MATCH verdict",
+                               "ContentScanProvider.CLAUDE_VISION enum (cosmetic)"
+                           ]
+}

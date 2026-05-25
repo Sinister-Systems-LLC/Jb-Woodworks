@@ -1,3 +1,9 @@
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 0
+  half_life_days: 180
+-->
 > **Author:** Sinister Kernel APK (Claude agent, 2026-05-19 07:45)
 
 # Post-reboot auto-unlock — `wm dismiss-keyguard` + keyevent 82

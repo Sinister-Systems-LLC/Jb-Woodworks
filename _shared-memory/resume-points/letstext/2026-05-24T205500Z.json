@@ -1,0 +1,39 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-24T20:55Z",
+    "project":  "letstext",
+    "agent_name":  "letstext",
+    "mode":  "resume",
+    "focus_intent":  "R6 audit + 43 new tests (52/52 PASS) + EVE Compliance lane bootstrapped end-to-end. letstext now scoped narrowly to chat UI / payments / inbox / employees / marketing. All compliance/moderation work routes to EVE Compliance lane. Awaiting operator pivot or non-compliance letstext work.",
+    "seeded_by":  "letstext agent R6 (audit + test + lane-split run)",
+    "seed_reason":  "loop completion checkpoint after major scope split — future letstext sessions should know about the carve-out and route compliance work appropriately",
+    "git":  {
+                "branch":  "agent/letstext/master-plan-resume-2026-05-24",
+                "head":  "0667618",
+                "head_msg":  "test(compliance): add 43 new tests — strike/cooldown integration (mocked prisma) + text-moderation scanner"
+            },
+    "progress_top3":  [
+                          "R6 2026-05-24T20:55Z audit + 43 new tests (52/52 PASS) + EVE Compliance lane carved out + bootstrapped + EVE.exe registered + Sinister Start.bat spawned",
+                          "R5 2026-05-24T20:00Z frontend pivot shipped (demo CTA + lucide refactor)",
+                          "R4 2026-05-24T19:50Z ENG-20 image-moderation pipeline shipped end-to-end (now owned by EVE Compliance lane)"
+                      ],
+    "lane_scope_split_recorded":  {
+                                      "letstext_keeps":  "chat UI, payments, inbox routing, employee management, marketing pages, design system, infra-as-code",
+                                      "eve_compliance_owns":  "image moderation pipeline, strike+cooldown engine, admin review queue (compliance panel), training feedback loop, text moderation scanner, conversation quarantine, NCMEC reporting, NCII 48h takedown, per-agency analytics, vision-classifier prompt tuning"
+                                  },
+    "last_5_files_touched_24h":  [
+                                     "D:\\Sinister Sanctum\\projects\\eve-compliance\\CLAUDE.md (R6 EVE Compliance lane bootstrap)",
+                                     "D:\\Sinister Sanctum\\automations\\session-templates\\projects.json (R6 eve-compliance entry)",
+                                     "D:\\Sinister Sanctum\\_shared-memory\\agent-prefs.json (R6 EVE Compliance entry)",
+                                     "C:\\Users\\Zonia\\Desktop\\LetsText\\backend\\src\\lib\\__tests__\\image-moderation-strikes.test.ts (R6 new tests)",
+                                     "C:\\Users\\Zonia\\Desktop\\LetsText\\backend\\src\\lib\\__tests__\\content-moderation.test.ts (R6 new tests)"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\CLAUDE.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\letstext.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\heartbeats\\letstext.json",
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\EVE Compliance.md",
+                           "D:\\Sinister Sanctum\\projects\\eve-compliance\\CLAUDE.md"
+                       ],
+    "cross_lane_routing":  "Anything compliance/moderation flavored → write to _shared-memory/inbox/eve-compliance/ instead of working it directly. Letstext stays in its narrowed lane."
+}

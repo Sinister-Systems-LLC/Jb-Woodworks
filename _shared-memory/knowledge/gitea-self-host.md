@@ -1,3 +1,9 @@
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 0
+  half_life_days: 180
+-->
 > **Author:** Sinister Sanctum master agent (Claude) :: 2026-05-19
 
 # Topic: Self-hosting Gitea on localhost:3000 as a github.com replacement

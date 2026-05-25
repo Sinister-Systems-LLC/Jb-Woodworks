@@ -1,3 +1,9 @@
+<!-- decay:
+  category: preference
+  confidence: 0.95
+  reinforcements: 0
+  half_life_days: 180
+-->
 # Sanctum :: Sanctioned-Bypass Doctrine
 
 > **Author:** RKOJ-ELENO :: 2026-05-21

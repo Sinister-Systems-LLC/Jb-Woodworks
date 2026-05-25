@@ -1,0 +1,49 @@
+﻿{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-24T21:21Z",
+    "project":  "sanctum",
+    "agent_name":  "sanctum",
+    "agent_display":  "Sinister Sanctum",
+    "mode":  "resume",
+    "loop_iter":  14,
+    "swarm_role":  "EVE.exe UX + spawn-pipeline visibility (sibling sanctum-mesh-foundation owns spawn-banner + claude-accounts-status CLI + bot/MCP audits + link-download.ps1)",
+    "focus_intent":  "Operator stop-stopping directive + multiple stacked asks (accounts panel + round-robin status + add-agent button + log progress). Shipped all in this iter; EVE.exe REBUILT + mirror synced; 7/7 features verified in bundle.",
+    "shipped_this_iter":  [
+                              "eve.py picker panel: Connected Claude accounts title + [round-robin status] bar with cursor + NEXT arrow per row",
+                              "eve.py O key + _account_onboarding_flow + bottom-menu entry",
+                              "EVE.exe REBUILT twice via PyInstaller; mirror at ~/.eve refreshed",
+                              "agent-prefs.json pollution cleaned (smoke-test artifacts removed)",
+                              "start-sinister-session.ps1 fleet-updates poll wired + 6 _SpawnProgress stages",
+                              "verify-eve-features.ps1 NEW (7/7 features OK in source + bundle current)",
+                              "4 fleet-update pushes (panel feature high / fleet-updates fix high / verify tool normal / earlier feature normal)",
+                              "8 operator-utterance acks (19:14Z/19:25Z/19:26Z + 19:57Z/20:11Z/20:19Z/20:27Z/20:42Z/20:50Z/21:08Z)"
+                          ],
+    "open_for_next_iter":  [
+                               "Brain consolidation: 3-5 superseded rows to archive (rule 8 signal: count ~174 \u003e 150 threshold)",
+                               "Operator action: close + reopen EVE.exe to load new bundle with accounts panel + O key",
+                               "Potential further work: per-account last_spawn timestamp in panel, banner round-robin indicator, sibling collaboration opportunities"
+                           ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\automations\\eve-launcher\\eve.py _render_accounts_panel + _account_onboarding_flow + O key handler",
+                           "D:\\Sinister Sanctum\\automations\\start-sinister-session.ps1 fleet-updates poll + _SpawnProgress wires",
+                           "D:\\Sinister Sanctum\\automations\\verify-eve-features.ps1 (NEW)",
+                           "D:\\Sinister Sanctum\\_shared-memory\\heartbeats\\sanctum-mesh-foundation.json (sibling state)"
+                       ],
+    "smoke_results":  {
+                          "eve_rebuild_mirror_sync":  "PASS (mirror matches dist)",
+                          "launcher_parse":  "PASS",
+                          "eve_rebuild_dist":  "PASS (1861130 bytes mtime 17:17:05)",
+                          "accounts_panel_render":  "PASS (7/7 features in bundle)",
+                          "eve_py_parse":  "PASS",
+                          "fleet_updates_smoke":  "PASS (sanctum sees 3 high-priority rows visible)"
+                      },
+    "stop_conditions_state":  {
+                                  "queue_lane_rows":  "~6 (all sibling-lane or operator-action)",
+                                  "tasks_completed":  22,
+                                  "utterances_acked_this_session":  15,
+                                  "brain_rows":  "~174 (rule 8 active; ITER FOCUSED ON CODE not new doctrine)",
+                                  "tasks_total":  22,
+                                  "loop_iter":  14,
+                                  "active_plans_lane":  0
+                              }
+}

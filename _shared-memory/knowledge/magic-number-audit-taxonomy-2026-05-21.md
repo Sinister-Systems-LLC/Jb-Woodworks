@@ -1,3 +1,9 @@
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 0
+  half_life_days: 180
+-->
 # Magic-Number Audit Taxonomy (Kernel APK doctrine, 2026-05-21)
 
 > **Author:** kernel-apk (Claude agent, 2026-05-21)

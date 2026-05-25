@@ -1,3 +1,9 @@
+<!-- decay:
+  category: preference
+  confidence: 0.9
+  reinforcements: 1
+  half_life_days: 180
+-->
 > **Author:** Sinister Kernel APK (Claude agent, 2026-05-19)
 
 # Topic: Sinister Detector APK as single phone-side orchestrator for KSU modules

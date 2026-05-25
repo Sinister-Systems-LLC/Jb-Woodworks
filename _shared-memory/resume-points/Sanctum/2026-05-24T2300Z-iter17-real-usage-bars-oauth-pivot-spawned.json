@@ -1,0 +1,65 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-24T23:00Z",
+    "project": "sanctum",
+    "agent_name": "sanctum",
+    "agent_display": "Sinister Sanctum",
+    "mode": "resume",
+    "loop_iter": 17,
+    "swarm_role": "real-usage bars + slot-name regex blocker fix + OAuth-pivot orchestration + Sinister Sleight scaffold orchestration (parallel sub-agents)",
+    "focus_intent": "Operator stacked 6 directives across iters 16-17. ALL addressed in parallel via sub-agents + foreground ships. Major in-flight: OAuth-pivot (sub-agent). External-blocked: operator paste-keys + close-reopen EVE.exe.",
+    "shipped_this_iter_16_plus_17": [
+        "automations/claude-usage-meter.ps1 NEW (REAL billable-token + msg-count from Claude Code transcripts; tier-aware msg+token caps; Json + Text modes; env-overridable caps)",
+        "tools/eve-picker/account_manager.py refactored (real meter wiring; _bar() semantic=used|remaining param; _slugify_slot helper; Sinister Gmail -> sinister-gmail UX)",
+        "automations/eve-launcher/eve.py refactored (real meter wiring in _render_accounts_panel; slug auto-normalize in _account_onboarding_flow)",
+        "EVE.exe REBUILT 2x (iter 16: 1979416 bytes; iter 17: fresh again with slug fix)",
+        "projects/sinister-sleight/ NEW (parallel sub-agent prior; 26 files; README + CLAUDE + MISSION + docs/00-06 + pyproject + src + tests; 3/3 pytest PASS)",
+        "Brain entries indexed: sinister-sleight-project-charter-2026-05-24 + trading-bot-doctrine-2026-05-24",
+        "projects.json row: sinister-sleight (tier=3, accent=gold, swarm+loop true, picker.visible_keys updated)",
+        "Cross-agent inbox: sleight->quantum (quantum-integration request) + sleight->generator (future dashboard imagery)",
+        "OPERATOR-ACTION-QUEUE row: sinister-sleight decision points (yfinance vs Polygon / Alpaca account / kill-switch ack)",
+        "PROGRESS files: Sinister Sanctum.md iter-16 entry + Sinister Sleight.md NEW",
+        "6 operator utterances logged + acked (4 resolved, 2 acknowledged-pending OAuth sub-agent)",
+        "3 fleet-update pushes (high: real-usage bars; normal: sinister-sleight; high: slug fix)",
+        "Mesh-coord lock acquired + released for account_manager.py refactor"
+    ],
+    "in_flight": [
+        "OAuth-pivot sub-agent (agentId=ad4f61c63bee7843a) -- claude-oauth-accounts.ps1 + schema migration + Bulk-Setup flow + start-sinister-session swap-before-spawn + slot-attributed usage meter + MarkLimited CLI + cap-cost honest assessment"
+    ],
+    "open_for_next_iter": [
+        "When OAuth sub-agent returns: verify ship + run smoke + ack resolve utterance 22:56:32Z",
+        "Operator action: PASTE actual names+emails+keys list (operator said 'here are my keys' but list missing from message)",
+        "Operator action: close+reopen running EVE.exe to load new bundle (mirror sync blocked while running)",
+        "Per-page UI audit: Health (H) / Quantum (T) / Mesh (M) sub-pages need canonical header+footer+nav (carried from iter 15 open_next)",
+        "5-account smoke test via new Bulk-Setup flow once OAuth ships",
+        "Run quality-monotonic-loop + forever-improve checkpoint on this iter's work"
+    ],
+    "pre_warm_reads": [
+        "D:\\Sinister Sanctum\\automations\\claude-usage-meter.ps1",
+        "D:\\Sinister Sanctum\\tools\\eve-picker\\account_manager.py",
+        "D:\\Sinister Sanctum\\automations\\eve-launcher\\eve.py (around line 640 _render_accounts_panel + 791 onboarding)",
+        "D:\\Sinister Sanctum\\projects\\sinister-sleight\\ (full P0 scaffold)",
+        "D:\\Sinister Sanctum\\CLAUDE.md (top 6 hard-canonical blocks)"
+    ],
+    "smoke_results_iter_17": {
+        "slugify_unit_7_cases": "PASS 7/7",
+        "eve_py_parse": "PASS",
+        "account_manager_parse": "PASS",
+        "eve_exe_rebuild": "PASS (dist mtime fresh; mirror copy blocked = expected)",
+        "claude_accounts_ps1_Status": "PASS (4 slots; 1 enabled; 1 rate-limited tracked)",
+        "claude_accounts_status_Board": "PASS",
+        "claude_accounts_status_Bar": "PASS",
+        "claude_usage_meter_Text": "PASS (8910 msgs 5h fleet)",
+        "claude_usage_meter_Json_1h": "PASS",
+        "account_manager_smoke": "PASS (RED bar at 999% real)"
+    },
+    "stop_conditions_state": {
+        "queue_lane_rows": "~8",
+        "tasks_completed_session": "~30",
+        "utterances_acked_this_session": 24,
+        "brain_rows": "~181 (+3 this iter total: 2 sleight + 1 prior sibling)",
+        "active_plans_lane": 1,
+        "loop_iter": 17,
+        "loop_continue_or_pause": "external-blocked (OAuth sub-agent + operator paste-keys + EVE.exe close-reopen); will resume on sub-agent notify"
+    }
+}

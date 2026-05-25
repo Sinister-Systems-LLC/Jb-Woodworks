@@ -1,4 +1,10 @@
 <!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- decay:
+  category: preference
+  confidence: 1
+  reinforcements: 0
+  half_life_days: 365
+-->
 # Agent autonomy — push own branches + complete work without operator gate (2026-05-23 evening)
 
 > **Status:** doctrine, binding, operator hard-canonical 2026-05-23 evening.

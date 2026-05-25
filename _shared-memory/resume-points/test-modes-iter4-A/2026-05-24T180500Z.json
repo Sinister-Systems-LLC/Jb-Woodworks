@@ -1,0 +1,27 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-24T18:05:00Z",
+    "project": "sanctum",
+    "agent_name": "test-modes",
+    "agent_display": "Sinister Custodian",
+    "mode": "resume-loop",
+    "loop_iter": 5,
+    "sub_area_claims": ["A: forge-memory auto-recall pre-fetch (SHIPPED 18:00Z)", "D-ext: headless -Project path now prompts (SHIPPED 18:05Z)"],
+    "focus_intent": "Two sub-areas shipped this session: (A) Get-MemoryRecallInject (70 LOC) + Build-Phrase wiring closes jcode-parity rows 9-10; (D-ext) headless -Project path now calls Prompt-AgentModes - closes EVE.exe dispatch gap that iter6's interactive-only fix missed.",
+    "shipped_this_iter": [
+        "automations/start-sinister-session.ps1 line 1714: $modes = (env-only) -> Prompt-AgentModes -ProjectRec $projRec",
+        "Claim register sub-area D extension SHIPPED row added",
+        "Smoke-test: -Project sanctum -NoLaunch with SKIP_MODES_PROMPT=1 exits 0 (bypass works for headless callers)"
+    ],
+    "open_for_next_iter": [
+        "Sub-area C row-ship: pick one of R23/R24/R25/R28 hard-gaps",
+        "Sub-area E consolidated status doc",
+        "End-to-end interactive spawn verify both MEMORY_RECALL inject AND modes-prompt fire together",
+        "Counter-arg integration into forever-improve.ps1 workflow"
+    ],
+    "pre_warm_reads": [
+        "D:\Sinister Sanctum\_shared-memory\cross-agent\2026-05-24T1735Z-test-modes-5x-parallel-claims.md",
+        "D:\Sinister Sanctum\automations\start-sinister-session.ps1 (line 1714 headless path)",
+        "D:\Sinister Sanctum\_shared-memory\PROGRESS\test-modes.md (top entry 18:05Z)"
+    ]
+}

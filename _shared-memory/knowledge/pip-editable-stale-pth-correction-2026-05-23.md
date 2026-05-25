@@ -1,4 +1,10 @@
 <!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- decay:
+  category: correction
+  confidence: 0.95
+  reinforcements: 0
+  half_life_days: 365
+-->
 # pip-show says installed ≠ import works (stale .pth correction)
 
 **Status:** correction 2026-05-23T08:30Z — addendum to `pip-editable-hides-mcp-cwd-emptiness-2026-05-23.md`.

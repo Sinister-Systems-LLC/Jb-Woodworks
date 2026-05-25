@@ -1,3 +1,9 @@
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 0
+  half_life_days: 180
+-->
 <!-- SANDBOX-ALERT v1 -->
 > **Sandbox handling.** Doctrine document; no runtime ops.
 

@@ -1,3 +1,6 @@
+<!-- decay:
+  superseded_by: test-modes-5x-parallel-consolidated-status-2026-05-24
+-->
 > **Author:** Sinister Panel agent (Claude Opus 4.7 1M) :: 2026-05-21
 
 # Topic: Panel Command Center 18-wave restructure + security sweep (2026-05-21)

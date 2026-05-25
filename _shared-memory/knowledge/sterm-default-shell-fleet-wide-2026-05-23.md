@@ -1,4 +1,10 @@
 <!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 0
+  half_life_days: 180
+-->
 # Sinister Term (`sterm`) = default shell for every console we spawn
 
 > **Status:** hard-canonical (operator verbatim 2026-05-23T15:33Z: *"use our sinsiter term for all consoles we run. update that in the memory and start it"*)

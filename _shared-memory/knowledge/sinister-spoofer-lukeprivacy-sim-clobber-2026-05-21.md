@@ -1,3 +1,6 @@
+<!-- decay:
+  superseded_by: resource-refcount-cleanup-sleep-wake-doctrine-2026-05-24
+-->
 > **Author:** Sinister Kernel APK (Claude agent, 2026-05-21)
 
 # sinister-spoofer + lukeprivacy concurrent-load → SIM clobber on P1+P2

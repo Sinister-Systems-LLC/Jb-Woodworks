@@ -1,4 +1,10 @@
 <!-- Author: RKOJ-ELENO :: 2026-05-24 -->
+<!-- decay:
+  category: fact
+  confidence: 0.95
+  reinforcements: 0
+  half_life_days: 30
+-->
 # jcode → EVE.exe Parity Audit (2026-05-24)
 
 > **Origin:** operator hard-canonical 2026-05-24T15:58Z (logged):

@@ -1,3 +1,9 @@
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 0
+  half_life_days: 90
+-->
 > **Author:** RKOJ-ELENO :: 2026-05-21
 
 # Topic: Junction-based path migration — move heavyweight dirs without breaking 1300+ refs

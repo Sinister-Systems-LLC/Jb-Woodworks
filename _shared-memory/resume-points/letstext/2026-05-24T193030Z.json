@@ -1,0 +1,37 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-24T19:30Z",
+    "project":  "letstext",
+    "agent_name":  "letstext",
+    "mode":  "resume",
+    "focus_intent":  "R3 forever-improve audit: surfaced 1477+/-38 uncommitted 2026-05-18-master-plan work on canonical repo (S-005 / S-009 / S-014 / S-017 / S-020 / ENG-1 / ENG-14 / MKT-3 + 945-line prisma compliance schema). NOT committed (overlap with R2 destructive auth-pivot scope still blocked). Awaiting operator disposition + 'ONLY login valid' scope confirm.",
+    "seeded_by":  "letstext agent R3 (forever-improve sweep)",
+    "seed_reason":  "appended to mode=resume after meaningful deliverable per cold-start step 10 + Sanctum CLAUDE.md autonomy doctrine",
+    "git":  {
+                "branch":  "(canonical-only git layer is at C:\\Users\\Zonia\\Desktop\\LetsText on master — D:\\Personal\\LetsText has empty .git/ shell, D:\\LetsText has no .git)",
+                "head":  "(use 'git -C C:/Users/Zonia/Desktop/LetsText rev-parse HEAD' at restore-time)",
+                "head_msg":  "(use 'git -C C:/Users/Zonia/Desktop/LetsText log -1 --oneline')"
+            },
+    "progress_top3":  [
+                          "R3 2026-05-24T19:30Z forever-improve audit surfaced 1477+/-38 uncommitted master-plan work on canonical repo (S-005/S-009/S-014/S-017/S-020/ENG-1/ENG-14/MKT-3 + prisma)",
+                          "R2 2026-05-24T17:58Z operator pivot triage — most auth infra already shipped (Turnstile/2FA/dev-license/rate-limit) — blocked on 'ONLY login valid' scope",
+                          "R1 2026-05-24T17:32Z cold-start bootstrap; no letstext-specific operator utterance in tail; canonical repo identified at C:\\Users\\Zonia\\Desktop\\LetsText"
+                      ],
+    "last_5_files_touched_24h":  [
+                                     "_shared-memory/PROGRESS/letstext.md (R3 append this turn)",
+                                     "_shared-memory/heartbeats/letstext.json (R3 overwrite this turn)",
+                                     "_shared-memory/resume-points/LetsText/2026-05-24T193030Z.json (R3 write — this file)"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\CLAUDE.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\letstext.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\heartbeats\\letstext.json",
+                           "C:\\Users\\Zonia\\Desktop\\LetsText\\CLAUDE.md"
+                       ],
+    "open_decisions_awaiting_operator":  [
+                                             "Where IS canonical letstext? In-repo CLAUDE.md asserts D:/LetsText/ (no .git) — drift to resolve",
+                                             "Disposition of 1477+/-38 uncommitted master-plan work: (a) commit to agent/letstext/* (b) feature branch + PR (c) discard, redo as part of auth pivot",
+                                             "R2 carry-over: 'ONLY login valid' scope = (a) revoke all others (b) whitelist drew + 2FA gate for others (c) SUPER_ADMIN-tier-only restriction",
+                                             "Image 3 demo CTA section — source not found in any of canonical/2.0/letstext2.0; needs operator file pointer"
+                                         ]
+}

@@ -1,3 +1,9 @@
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 0
+  half_life_days: 180
+-->
 # resume-point-write.ps1 hangs on 24h-files full-tree scan under multi-agent shared-CWD load (2026-05-21)
 
 > **Author:** kernel-apk (Claude agent, 2026-05-21T18:4xZ)

@@ -1,0 +1,47 @@
+{
+  "schema": "sinister-sanctum.resume-point.v1",
+  "ts_utc": "2026-05-25T01:26:00Z",
+  "project_key": "sinister-snap-api-quantum",
+  "agent_name": "sinister-snap-api-quantum",
+  "agent_identity": "EVE",
+  "mode": "resume",
+  "iter": 113,
+  "branch": "agent/sinister-snap-api-quantum/iter110-brain-corpus-qbc-2026-05-25",
+  "focus_intent": "Iter-113 SHIPPED verified. Reps-ceiling sweep r∈{1,2,3} on brain top-20 K=4 ZZ-FM. 14/20 prefer r=3, 6/20 prefer r=2, 0/20 prefer r=1. Max ceiling +40.57pp at r=3 vs iter-110 +24.28pp at r=1 = +67% lift. Median headroom +15.02pp. DOCTRINE UPDATE: encoding-collapse plateau is depth-bound, NOT Hilbert-space-bound. NEW cluster surfaced (RKOJ polish-cluster-version 3-doc consecutive-version family = merge candidate). Wall 12.8s sim-local.",
+  "shipped_verified": [
+    "iter113-reps-ceiling-sweep.py (reproducible probe)",
+    "outputs/iter113-reps-ceiling-sweep.json (raw data: r* + ceiling_pp + headroom_pp per top-20 triad)",
+    "outputs/findings-iter113-reps-ceiling.md (writeup + doctrine update + new-cluster surface + iter-115b foreshadow)",
+    "_shared-memory/PROGRESS/sinister-snap-api-quantum.md (iter-113 entry at top)",
+    "_shared-memory/heartbeats/sinister-snap-api-quantum.json (iter-113 SHIPPED)"
+  ],
+  "in_flight": [],
+  "next_steps": [
+    "Iter-114: finite-shot CPUQVM on iter-113 ceiling-triads (~5s sim) — calibrate which r*=3 triads survive 1024-shot noise (predicts cloud-Wukong worth)",
+    "Iter-115: IQP feature map + three-encoding robustness filter (~15s) — builds on iter-112 cross-encoding signal",
+    "Iter-115b (NEW from iter-113 finding): K=4 ZZ-FM r=3 FULL-brain sweep (not just top-20) — does the +15pp median headroom apply to the entire 1.3M-triad space, or just to top-20?",
+    "Iter-116: brain-vs-code drift sweep (highest leverage from concepts doc; ~60s)",
+    "Iter-117: dynamic-window doctrine archaeology (~90s)"
+  ],
+  "open_for_operator": [
+    "Doctrine-consolidation candidate surfaced this iter: RKOJ polish-cluster-version 3-doc family (v1.6.20-25 + v1.6.27-31 + v1.6.37-44) — ceiling +34.24pp at r=3. Consider merging into single rolling polish-cluster doc.",
+    "Concept menu (10 capabilities) ready in outputs/python-simulator-concepts-expansion.md if operator wants to greenlight iters 114-117 immediately"
+  ],
+  "pre_warm_reads": [
+    "outputs/findings-iter113-reps-ceiling.md (this iter)",
+    "outputs/findings-iter112-k8-vs-k4.md (prior iter K-axis)",
+    "outputs/python-simulator-concepts-expansion.md (10-concept menu)",
+    "_shared-memory/PROGRESS/sinister-snap-api-quantum.md (head 150 — iter-113 + iter-112 + iter-110)"
+  ],
+  "operator_utterances_triaged_this_iter": "Operator 01:20Z prompt ('really use python sim + expand concepts + token-efficient') is being executed across iters 112+113+114 (concepts demonstrated empirically, not just listed in a doc). Six prior unread remain global, not snap-quantum.",
+  "budget_status": {
+    "tracker_total_seconds": 230.0,
+    "tracker_used_after_iter113": 160.4,
+    "iter_113_burn_seconds": 0,
+    "iter_113_wall_seconds": 12.8,
+    "backend": "sim-local"
+  },
+  "loop_state": "self-paced; iter-114 (finite-shot CPUQVM on iter-113 ceiling-triads) is the cheapest next step at ~5s sim-local",
+  "swarm_state": "on (still not used — single sim-call iters are not worth parallel-agent overhead)",
+  "this_session_iter_count": 4
+}

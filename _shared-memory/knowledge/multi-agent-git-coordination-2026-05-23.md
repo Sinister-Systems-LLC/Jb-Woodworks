@@ -1,4 +1,10 @@
 <!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- decay:
+  category: correction
+  confidence: 0.95
+  reinforcements: 0
+  half_life_days: 365
+-->
 # Multi-agent git coordination (2026-05-23 evening)
 
 > **Status:** doctrine, standing-rule, binding for every EVE session that touches git.

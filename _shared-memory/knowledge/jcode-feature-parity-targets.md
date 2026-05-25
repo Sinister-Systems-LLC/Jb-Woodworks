@@ -1,3 +1,9 @@
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 1
+  half_life_days: 180
+-->
 # jcode → Sinister feature parity targets (mining roadmap)
 
 > **Author:** RKOJ-ELENO :: 2026-05-21

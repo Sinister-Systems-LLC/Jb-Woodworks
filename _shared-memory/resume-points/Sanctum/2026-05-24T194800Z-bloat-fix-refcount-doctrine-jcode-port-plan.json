@@ -1,0 +1,44 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-24T19:48Z",
+    "project": "sanctum",
+    "agent_name": "sanctum",
+    "agent_display": "Sinister Sanctum",
+    "mode": "resume",
+    "loop_iter": 8,
+    "swarm_role": "loop-swarm-A: perf + jcode-port lane (sister session owns mesh-safety/round-robin-atomic + window-mon timeout per their 19:31Z heartbeat)",
+    "focus_intent": "Operator 19:14Z + 19:30Z + 19:36Z pivot stack: launcher crash root cause + refcount cleanup + sleep/wake + REAL jcode swarm port (5 sanctum agents from EVE.exe target). Token-efficient: 4 parallel research subagents (≤250 words each) returned the jcode swarm/mermaid/memory/compact-log architecture; aggregated into a 5-deliverable port plan. ROOT CAUSE perf killer found + fixed: 1.66 GB runaway _comment in claude-accounts.json (loaded into RAM on every spawn).",
+    "shipped_this_iter": [
+        "_shared-memory/claude-accounts.json: 1664.27 MB -> 3.5 KB (line 2 _comment was 783,932,094 chars; stream-repair atomic swap after JSON-parse verify; backup-marker at .bak-bloat)",
+        "automations/claude-accounts.ps1: + Reconcile-AccountSessions (drains stale claude.exe leases) + -Action Reconcile CLI + auto-call from Get-NextAvailableAccount; smoke PASS (26->3 matching live claude.exe)",
+        "automations/start-sinister-session.ps1: + 'preparing spawn...' feedback line in Prompt-AgentModes (single point covers all 5 callsites; fixes apparent-hang Ctrl+C screenshot)",
+        "automations/forever-improve.ps1: + -WithQualityLoop switch wiring quality-monotonic-loop.ps1 (subagent A; 3-iter smoke PASS with stop=plateau-2-iters; _shared-memory/quality-loop-log.jsonl populated)",
+        "_shared-memory/knowledge/resource-refcount-cleanup-sleep-wake-doctrine-2026-05-24.md NEW (refcount semantics + 4-state lifecycle + measurable criterion)",
+        "_shared-memory/knowledge/jcode-port-plan-eve-2026-05-24.md NEW (4-area aggregate from 4 parallel research subagents: swarm/mermaid/memory/compact-log + 5 concrete D1-D5 deliverables)",
+        "_shared-memory/knowledge/_INDEX.md: + 1 brain row for refcount doctrine",
+        "_shared-memory/PROGRESS/Sinister Sanctum.md: turn entry"
+    ],
+    "open_for_next_iter": [
+        "D1 swarm registry skeleton: _shared-memory/swarm-state/<id>.json schema + reaper that marks closed_at_utc on spawned-windows.jsonl rows whose PIDs are dead (~500 LOC Python; extends sister-session's spawned-windows lock work)",
+        "D3 compact log primitives in sinister-term: 5 primitives from jcode-tui-tool-display (batch header / tool-name resolution / token-budget truncation / badge severity coloring / footer suppression)",
+        "D2 memory MCP wrapper: mcp__ruflo__memory_search + Haiku verify-before-inject; replace existing 5s forge-memory recall block in Build-Phrase",
+        "D4 mermaid gated stub: eve --diagram <file.mmd> => mmdc if on PATH else friendly hint at R28 Rust-fork doctrine (operator action: npm i -g @mermaid-js/mermaid-cli)",
+        "Surface to operator: capacity unlock for leo/slot3/slot4 (still enabled=false; only 1 of 4 slots active; round-robin can't disperse load until >=1 more enabled)"
+    ],
+    "pre_warm_reads": [
+        "D:\\Sinister Sanctum\\_shared-memory\\knowledge\\jcode-port-plan-eve-2026-05-24.md",
+        "D:\\Sinister Sanctum\\_shared-memory\\knowledge\\resource-refcount-cleanup-sleep-wake-doctrine-2026-05-24.md",
+        "D:\\Sinister Sanctum\\automations\\claude-accounts.ps1",
+        "D:\\Sinister Sanctum\\automations\\start-sinister-session.ps1",
+        "C:\\Users\\Zonia\\Desktop\\jcode-0.12.4\\src\\server\\comm_session.rs (line 290 spawn_swarm_agent)",
+        "C:\\Users\\Zonia\\Desktop\\jcode-0.12.4\\crates\\jcode-tui-tool-display\\src\\lib.rs (lines 5-29 + format primitives)"
+    ],
+    "stop_conditions_state": {
+        "brain_rows": "~159 (added 2 new docs; >150 threshold tripped — consolidation flagged for sanctum-master per no-bullshit rule 8)",
+        "active_plans_lane": 1,
+        "queue_lane_rows": "~6",
+        "perf_recovered_mb": 1664.27,
+        "lease_leak_drained": "26 -> 3 matching live claude.exe count"
+    },
+    "sister_session_compose": "2026-05-24T19:31:57Z heartbeat (sanctum.json) shipped 4 mesh-safety items (round-robin atomic block / window-mon 720m->60m + 5s->15s + hwnd-zero-exit / spawned-windows.jsonl sentinel lock / forge-memory 5s->3s timeout). Their changes are PREVENTIVE (prevent the leak); mine are CURATIVE (drain existing leak + repair the 1.66 GB bloat). Both edit claude-accounts.ps1 and start-sinister-session.ps1 in non-overlapping regions."
+}

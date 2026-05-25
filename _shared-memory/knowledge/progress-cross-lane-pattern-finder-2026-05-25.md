@@ -1,4 +1,10 @@
 <!-- Author: RKOJ-ELENO :: 2026-05-25 -->
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 0
+  half_life_days: 180
+-->
 # PROGRESS cross-lane pattern-finder — duplicate-work detector across fleet lanes
 
 > **Status:** doctrine, smoke-tested (iter 99 of sinister-snap-api-quantum lane, 2026-05-25T00:30Z)

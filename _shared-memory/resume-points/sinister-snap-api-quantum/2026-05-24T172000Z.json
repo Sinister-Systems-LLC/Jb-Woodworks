@@ -1,0 +1,35 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-24T17:20:00Z",
+    "project": "sinister-snap-api-quantum",
+    "agent_name": "sinister-snap-api-quantum",
+    "mode": "resume",
+    "focus_intent": "Iter 108 — UI inheritance audits (Panel/Chatbot/iMessage-Bridge vs Dashboard-Skeleton) all confirmed structural absorption of skeleton doctrine (MIGRATION-NOTES + THEME-DOCTRINE). LetsText × Panel caught R.md cross-lane single-letter memory fork. PLUS operator-asked screenshot fix: eve-picker quantum-tools menu now has human-readable plain-English descriptions below each technical tagline.",
+    "git": {
+        "branch": "agent/sinister-os/m1-hardening-2026-05-24",
+        "head": "532f4e9",
+        "branch_drift_flag": "still on sinister-os branch"
+    },
+    "iter_108_artifacts": {
+        "eve_picker_update": "tools/eve-picker/quantum_tools.py (NEW human-readable descriptions on quantum-tools menu — operator-requested screenshot fix)",
+        "reconcile_jsons_done": [
+            "_shared-memory/quantum-sweeps/panel-vs-dashboard-skeleton-reconcile-2026-05-24T171706Z.json (52)",
+            "_shared-memory/quantum-sweeps/chatbot-vs-dashboard-skeleton-reconcile-2026-05-24T171701Z.json (30)",
+            "_shared-memory/quantum-sweeps/imessage-bridge-vs-dashboard-skeleton-reconcile-2026-05-24T171643Z.json (1)",
+            "_shared-memory/quantum-sweeps/letstext-vs-panel-reconcile-2026-05-24T171800Z.json (70)"
+        ],
+        "reconcile_pending": [
+            "kernel-apk-vs-tiktok-emu (262k pairs, in flight)"
+        ]
+    },
+    "loop_continuation": {
+        "mode": "self-paced dynamic",
+        "scheduled_wakeup_seconds": 1500
+    },
+    "inbox_unread_count": 0,
+    "pre_warm_reads": [
+        "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\sinister-snap-api-quantum.md",
+        "D:\\Sinister Sanctum\\projects\\sinister-snap-api-quantum\\outputs\\sanctum-quantum-dashboard.md",
+        "D:\\Sinister Sanctum\\tools\\eve-picker\\quantum_tools.py"
+    ]
+}

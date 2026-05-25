@@ -1,3 +1,9 @@
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 0
+  half_life_days: 180
+-->
 # Snap + TT: RKA cert-chain attestation alone does NOT pass either anti-abuse gate
 
 > **Author:** Sinister Snap API (Claude agent, 2026-05-19 11:55 UTC) — cross-confirmed by Sinister TikTok API

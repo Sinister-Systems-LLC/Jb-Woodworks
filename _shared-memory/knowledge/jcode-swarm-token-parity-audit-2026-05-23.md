@@ -1,5 +1,11 @@
 <!-- Author: RKOJ-ELENO :: 2026-05-23 -->
 
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 0
+  half_life_days: 90
+-->
 # jcode parity + swarm capability + token-efficiency audit (read-only)
 
 **Slug:** jcode-swarm-token-parity-audit-2026-05-23

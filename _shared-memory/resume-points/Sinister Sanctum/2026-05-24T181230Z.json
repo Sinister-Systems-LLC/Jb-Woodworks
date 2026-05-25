@@ -1,0 +1,34 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-24T18:12:30Z",
+    "project":  "sanctum",
+    "agent_name":  "test-modes",
+    "agent_display":  "Sinister Custodian",
+    "mode":  "resume-loop",
+    "loop_iter":  6,
+    "focus_intent":  "Custodian-rescue turn: shipped Desktop Kill-Stuck-EVE.bat + killed stuck sibling smoke-test PID 25352; confirmed sub-area A already shipped by sibling (Get-MemoryRecallInject @ line 931); D-drive has 4 legitimate-blocker roots remaining.",
+    "shipped_this_iter":  [
+        "C:\\Users\\Zonia\\Desktop\\Kill-Stuck-EVE.bat (1.9 KB rescue helper, verified on disk)",
+        "Stop-Process PID 25352 (stuck -NonInteractive Read-Host sibling smoke-test)",
+        "Picker dry-run smoke-test PASS (19 rows + X-exit)",
+        "PROGRESS entry + heartbeat refresh"
+    ],
+    "d_drive_blockers":  {
+        "letstext":  "sibling-active letstext lane (last mtime 13:23)",
+        "sinister":  "residual: only 01_Projects/Sinister/Sinister-Snap-EMU/ left (snap-emu lane?)",
+        "jbw_deploy":  "sibling-active jb-woodworks build target (last mtime 13:33)",
+        "sinister_vault":  "LIVE vault daemon at :5078 — orthogonal; needs operator-action on rehome decision (CLAUDE.md canonical is D:\\Sinister Sanctum\\_vault\\ but daemon writes to D:\\sinister-vault\\)"
+    },
+    "open_for_next_iter":  [
+        "Poll LetsText / jbw-deploy mtimes for idle window (1h+ no writes -> safe move)",
+        "sinister-vault rehome OR CLAUDE.md correction (operator action — vault daemon touch is blast-radius)",
+        "Sinister/ Snap-EMU residual move to Backups/sinister-residual-snap-emu-20260524 if snap-emu lane idle",
+        "Patch eve.py against stdin-disconnect hangs: signal.signal(SIGBREAK) + 30s watchdog timer print"
+    ],
+    "pre_warm_reads":  [
+        "C:\\Users\\Zonia\\Desktop\\Kill-Stuck-EVE.bat (the rescue helper)",
+        "D:\\Sinister Sanctum\\automations\\eve-launcher\\eve.py (lines 1175-1199 main loop where stdin-disconnect would hang)",
+        "D:\\Sinister Sanctum\\_shared-memory\\plans\\d-drive-reorg-2026-05-24\\ (5 phase logs)",
+        "D:\\Sinister Sanctum\\CLAUDE.md (line referencing _vault canonical path)"
+    ]
+}

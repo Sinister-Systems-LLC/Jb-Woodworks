@@ -1,0 +1,44 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-24T20:00Z",
+    "project": "sanctum",
+    "agent_name": "sanctum",
+    "agent_display": "Sinister Sanctum",
+    "mode": "resume",
+    "loop_iter": 11,
+    "swarm_role": "loop-swarm-A: scope-discipline + spawn-detect-similar + tier system + account onboarding (sister session owned mesh-safety + modes-prompt-split)",
+    "focus_intent": "Operator 19:50/19:55/19:58Z stacked pivot: (a) operator-actionable account-onboarding (round-robin walkthrough on desktop + accounts-per-server banner + 2x window), (b) tier 1-4 importance system in picker + projects.json, (c) spawn-detect-similar + review + plan + loop as new cold-start contract. All shipped + smoke-tested this turn.",
+    "shipped_this_iter": [
+        "C:\\Users\\Zonia\\Desktop\\Sinister Start.bat: mode con 160x50 (window 2x size per op 19:50Z)",
+        "automations/eve-launcher/eve.py: _accounts_compact_line() banner row + tier badges in render_picker",
+        "tools/eve-picker/eve_picker_lib.py: PickerRow.tier field + projects.json read-through (default 3)",
+        "automations/session-templates/projects.json: tier=1 sanctum, tier=2 panel/kernel-apk/snap-emu-api/imsg/chatbot",
+        "automations/start-sinister-session.ps1: SINISTER_TIER env in spawn launch.sh + DETECT-SIMILAR-AGENTS injection in Build-Phrase",
+        "automations/detect-similar-agents.ps1 NEW: heartbeat scan by token-overlap with age filters (10m similar / 60m same)",
+        "CLAUDE.md: SPAWN-DETECT-SIMILAR + REVIEW + PLAN + LOOP hard-canonical block at top",
+        "docs/ROUND-ROBIN-ACCOUNT-ONBOARDING.md NEW + C:\\Users\\Zonia\\Desktop\\ copy (operator can test now)",
+        "fleet-update push id=fu-20260524160005-3f365c (priority=high) broadcast detector + tier + walkthrough",
+        "operator-utterance acks: 19:36 + 19:40 + 19:41 (sanctum-tagged) with deliverable trails"
+    ],
+    "open_for_next_iter": [
+        "Tier-aware Get-NextAvailableAccount: T1 reserves operator slot (read SINISTER_TIER passed from picker into routing decision)",
+        "Agent-transfer-on-rate-limit: when Mark-AccountRateLimited fires, push fleet-update with target_slugs of affected spawns + re-route hint",
+        "Docker Desktop bootup scheduled task (likely already on, verify schtasks /Query)",
+        "Skills + MCP autostart audit: sentinel/translator/librarian/sinister-bus/vault — confirm all five auto-start on Windows reboot",
+        "Diagnose 'no bots' in child sessions (operator 19:36 obs) — likely a ~/.claude/.mcp.json path issue, but ~/.claude.json fix landed earlier turn",
+        "Per-project memory hygiene helper (operator 19:40: keep each project's CLAUDE.md/PROGRESS scoped to lane)"
+    ],
+    "pre_warm_reads": [
+        "D:\\Sinister Sanctum\\CLAUDE.md (top 3 hard-canonical blocks: detect-similar + scope-discipline + loop-continuous)",
+        "D:\\Sinister Sanctum\\automations\\detect-similar-agents.ps1",
+        "D:\\Sinister Sanctum\\automations\\claude-accounts.ps1 (Get-NextAvailableAccount — tier-aware extension landing point)",
+        "D:\\Sinister Sanctum\\docs\\ROUND-ROBIN-ACCOUNT-ONBOARDING.md"
+    ],
+    "stop_conditions_state": {
+        "brain_rows": "~160 (added detect-similar cold-start step; near 150 threshold — consolidation flag remains)",
+        "active_plans_lane": 1,
+        "queue_lane_rows": "~6",
+        "tasks_completed_this_turn": "8 of 13 (5 still open)"
+    },
+    "sister_session_compose": "Sister-session shipped modes-prompt-split + mesh-safety + loop-iteration canonical block earlier this evening. This iter extended cold-start phrase with detect-similar + tier env + scope-discipline canonical block (top of CLAUDE.md) without touching sister-session's mesh-safety edits."
+}

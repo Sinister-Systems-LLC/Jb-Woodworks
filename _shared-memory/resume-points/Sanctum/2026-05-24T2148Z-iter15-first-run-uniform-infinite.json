@@ -1,0 +1,51 @@
+﻿{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-24T21:48Z",
+    "project":  "sanctum",
+    "agent_name":  "sanctum",
+    "agent_display":  "Sinister Sanctum",
+    "mode":  "resume",
+    "loop_iter":  15,
+    "swarm_role":  "first-run + propagation + infinite-accounts + UI uniformity (sibling owns Mesh/Health audit + doctrine front-matter)",
+    "focus_intent":  "Operator stacked 4 directives 21:24-21:40Z. ALL shipped + rebuilt + verified. EVE.exe ready for fresh-PC bring-up (Leo path tested via -Force/dry-run).",
+    "shipped_this_iter":  [
+                              "3 new automation scripts (eve-first-run-check + wizard + verify with -AutoRebuild)",
+                              "2 CLAUDE.md hard-canonical blocks (propagation + UI-uniformity sibling)",
+                              "2 brain entries (propagation + UI-uniformity sibling)",
+                              "1 .py edit (eve.py: first-run gate + setup-helper + O-key constraint relax)",
+                              "2 .ps1 edits (start-sinister-session.ps1 SETUP-HELPER mode + claude-accounts.ps1 SetKey auto-add)",
+                              "EVE.exe REBUILT 2x + mirror synced 2x",
+                              "4 fleet-update pushes + 4 operator acks"
+                          ],
+    "open_for_next_iter":  [
+                               "Per-page UI audit: Health (H), Quantum (T), Mesh (M) subpages need header+footer+nav canonical layout",
+                               "Operator action: close + reopen EVE.exe to load new bundle (1865439 bytes, mtime 17:45:32)",
+                               "Optional: write 5-account smoke test that adds 4 new accounts via Onboarding flow + verifies panel renders all 5+ rows"
+                           ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\automations\\eve-first-run-check.ps1",
+                           "D:\\Sinister Sanctum\\automations\\eve-first-run-wizard.ps1",
+                           "D:\\Sinister Sanctum\\automations\\verify-eve-features.ps1 (-AutoRebuild + -SyncMirror flags)",
+                           "D:\\Sinister Sanctum\\_shared-memory\\knowledge\\session-start-auto-update-propagation-2026-05-24.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\knowledge\\eve-ui-uniformity-doctrine-2026-05-24.md (sibling)",
+                           "D:\\Sinister Sanctum\\CLAUDE.md (top 3 hard-canonical blocks all active)"
+                       ],
+    "smoke_results_iter_15":  {
+                                  "verify_auto_rebuild":  "PASS (detected stale + rebuilt + mirror synced in one call)",
+                                  "first_run_wizard_dryrun":  "PASS (renders correctly, no writes)",
+                                  "first_run_detector_force":  "PASS (exit 1, reasons=force-flag-set)",
+                                  "setup_helper_phrase":  "PASS (SETUP-HELPER text injected when env set)",
+                                  "all_parses":  "PASS (eve.py + 3 .ps1 files)",
+                                  "setkey_auto_add":  "PASS (4-\u003e5 accounts with arbitrary name alice-test)",
+                                  "first_run_detector_already_setup":  "PASS (exit 0, is_first_run=false)"
+                              },
+    "stop_conditions_state":  {
+                                  "queue_lane_rows":  "~6",
+                                  "tasks_completed":  24,
+                                  "utterances_acked_this_session":  18,
+                                  "brain_rows":  "~178 (+2 this iter total: propagation + UI-uniformity sibling)",
+                                  "tasks_total":  24,
+                                  "loop_iter":  15,
+                                  "active_plans_lane":  0
+                              }
+}

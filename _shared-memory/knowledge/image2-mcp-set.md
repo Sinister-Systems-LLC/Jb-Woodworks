@@ -1,3 +1,9 @@
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 1
+  half_life_days: 180
+-->
 # Topic: Image 2 MCP set — Playwright + Context7 + Sequential-thinking + KG-memory
 
 > **Author:** Sinister Sanctum master agent (Claude) :: 2026-05-19

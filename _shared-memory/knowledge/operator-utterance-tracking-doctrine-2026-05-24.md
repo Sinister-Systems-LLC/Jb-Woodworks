@@ -1,3 +1,9 @@
+<!-- decay:
+  category: preference
+  confidence: 0.95
+  reinforcements: 0
+  half_life_days: 365
+-->
 # Operator-utterance tracking doctrine
 
 > Author: RKOJ-ELENO :: 2026-05-24

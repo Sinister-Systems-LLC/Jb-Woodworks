@@ -1,3 +1,9 @@
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 0
+  half_life_days: 180
+-->
 > **Author:** RKOJ-ELENO :: 2026-05-23
 
 # Topic: Sanctum mirror dirs orphan/corrupt; canonical product repos are truth

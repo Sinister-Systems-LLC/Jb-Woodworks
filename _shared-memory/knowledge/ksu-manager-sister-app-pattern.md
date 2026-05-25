@@ -1,3 +1,9 @@
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 0
+  half_life_days: 180
+-->
 > **Author:** Sinister Kernel APK (Claude agent, 2026-05-19)
 
 # Topic: Sister-app pattern when KSU Manager cert hash is kernel-pinned

@@ -1,0 +1,43 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-24T17:56Z",
+    "project":  "sanctum",
+    "agent_name":  "test-modes",
+    "session_tag":  "test-modes-iter6",
+    "mode":  "resume-loop",
+    "loop_iter":  6,
+    "loop_mode":  "dynamic-self-paced",
+    "next_wake_safety_net_seconds":  1200,
+    "focus_intent":  "Iter6: Sub-area B-continuation SHIPPED (retry-after parsing in spawn .sh, 3/3 patterns smoke-tested). Sub-area D fully COMPLETE (25/25 projects have default_modes). Sub-area E: 8 utterance acks (was 5). Plan-table for iter7-10 written in PROGRESS.",
+    "shipped_this_iter":  [
+                              "start-sinister-session.ps1 spawn .sh 429 retry-after parsing (2-stage extraction, 3/3 smoke-test PASS, 60s fallback preserved)",
+                              "Sub-area D verified COMPLETE: 25/25 projects.json default_modes",
+                              "3 more utterance acks: 16:06:32 / 16:01:16 / 16:08:32",
+                              "Claim register updated: D=SHIPPED, B-continuation=SHIPPED, E partial bumped 5->8 acks"
+                          ],
+    "open_for_next_iter":  [
+                               "Iter7: Sub-area E consolidated status doc (knowledge/test-modes-5x-parallel-consolidated-status-2026-05-24.md)",
+                               "Iter8: Counter-arg integration into forever-improve.ps1 post-turn workflow",
+                               "Iter9: Token-efficiency review of launcher cold-start phrase",
+                               "Iter10: Process 5+ remaining lane-relevant utterances",
+                               "Halt-check at each iter: audit no-bullshit rule 8 signals; switch to consolidation if any fire"
+                           ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\cross-agent\\2026-05-24T1735Z-test-modes-5x-parallel-claims.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\test-modes.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\knowledge\\jcode-parity-gap-audit-2026-05-24-test-modes.md",
+                           "D:\\Sinister Sanctum\\automations\\counter-arg.ps1",
+                           "D:\\Sinister Sanctum\\automations\\forever-improve.ps1"
+                       ],
+    "git":  {
+                "branch":  "agent/sinister-os-mobile/p0-spec-2026-05-24",
+                "head":  "(use git rev-parse HEAD at restore-time)",
+                "head_msg":  "(sibling-switched; multi-test-modes contention)"
+            },
+    "siblings_known":  {
+                           "test-modes-session-iter4":  "Sub-area A SHIPPED 18:00Z (forge-memory Build-Phrase wire)",
+                           "test-modes-gap-audit":  "Sub-area C PARTIAL 17:52Z (R8 probe-fix + gap-audit doc; row-ship remaining)",
+                           "test-modes-iter5":  "Sub-area B SHIPPED 17:50Z (burn-first rotation)",
+                           "test-modes-iter6":  "Sub-area B-continuation + D + partial E (this session)"
+                       }
+}

@@ -1,0 +1,47 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-24T21:13:49.5061194Z",
+    "project":  "sanctum",
+    "agent_name":  "sanctum",
+    "mode":  "resume",
+    "focus_intent":  "Mesh-foundation MVP shipped: mesh-coordinator.ps1 + bot-lifecycle.ps1 + heartbeat-sweep.ps1 + EVE.exe crash-hardening (eve.py:808-845, 1302-1340) + Docker AutoStart=true + 6 utterances acked + memory-backbone surface for operator + 4 parallel sub-agent surveys (jcode/memory/crash/agent-map). Token-efficient: no Opus burns on grep work. Sibling: sanctum-mesh-safety owns sanctum.json; sinister-term owns jcode-port; test-modes owns EVE.exe v0.4.4.",
+    "git":  {
+                "branch":  "agent/sinister-os-mobile/p0-spec-2026-05-24",
+                "head":  "8bd3529505d1db4f420869a90f21a0396cec7115",
+                "head_msg":  "sinister-os: M5 mesh SCAFFOLDED ΓÇö Tailscale overlay + ACL + runbook + eve mesh CLI",
+                "recent_commits":  [
+                                       "8bd3529 sinister-os: M5 mesh SCAFFOLDED ΓÇö Tailscale overlay + ACL + runbook + eve mesh CLI",
+                                       "af1f1b8 sanctum: fleet-health.ps1 (iter-10) + claude-accounts SetKey/Status (iter-9 re-add)",
+                                       "af21f38 brain+inbox: refresh sandbox doctrine with keybox+behavioral+scenario; final cross-lane brief",
+                                       "8835676 sinister-os-mobile: Turn 4 ΓÇö kernel cloned + sepolicy draft + cvd budget + Q1-Q10 + branding-spec patch",
+                                       "e093cbc os-mobile/sandbox: behavioral fingerprints + scenario runner",
+                                       "02e9e5d sanctum: claude-accounts.ps1 -Action SetKey + -Action Status (multi-account UX)",
+                                       "eb1ad5c sinister-os: /loop iter 1 ΓÇö overlay LIVE-applied to running CachyOS VM",
+                                       "8ee9ed0 sanctum: P13 self-heal via -AutoRestore (auto-runs seed-resume-points on gap)",
+                                       "50a642d sinister-os: /loop iter 1 ΓÇö slim default + first-boot deferred + EVE-MCP R1 fix",
+                                       "f421ad5 sanctum: P13 lane resume-point coverage protection"
+                                   ]
+            },
+    "progress_top3":  [
+                          "2026-05-24 15:35 UTC — mesh-safety: 4 surgical fixes for 5-agent concurrency",
+                          "2026-05-24 18:50 - shipped: round-robin-strict flip + quality-monotonic-loop + contradict-system wire (operator 18:40Z pivot)",
+                          "2026-05-24T14:35Z â€” Fleet \"10-min freeze\" root cause + fix (measured, not speculated)"
+                      ],
+    "latest_plan":  {
+                        "dir":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\sanctum-complete-and-expand-2026-05-23T1145Z",
+                        "artifact":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\sanctum-complete-and-expand-2026-05-23T1145Z\\master-plan.md"
+                    },
+    "inbox_unread_count":  13,
+    "last_5_files_touched_24h":  [
+                                     "automations\\eve-launcher\\eve.py",
+                                     "tools\\eve-picker\\eve_picker_lib.py",
+                                     "_shared-memory\\knowledge\\_INDEX.md",
+                                     "_shared-memory\\resume-points\\sinister-freeze\\2026-05-24T194700Z.json",
+                                     "_shared-memory\\heartbeats\\sanctum-mesh-foundation.json"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Sinister Sanctum.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\plans\\sanctum-complete-and-expand-2026-05-23T1145Z\\master-plan.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}

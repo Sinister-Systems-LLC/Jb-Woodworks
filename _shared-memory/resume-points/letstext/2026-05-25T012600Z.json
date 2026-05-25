@@ -1,0 +1,48 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-25T01:26:00Z",
+    "project": "letstext",
+    "agent_name": "letstext",
+    "mode": "resume",
+    "focus_intent": "await-pivot maintained (R8); broadcast ack'd; cross-lane WT bleed flagged for deferred salvage",
+    "git": {
+        "branch_origin": "agent/letstext/master-plan-resume-2026-05-24",
+        "note_local_wt": "Canonical WT at C:/Users/Zonia/Desktop/LetsText currently checked out at agent/eve-compliance/cooldown-ui-2026-05-25 (EVE Compliance lane active R2). letstext branch is clean on origin; 1 file uncommitted (CLEANUP-TODO.md UI-6 row from R7) parked on sibling's WT.",
+        "recent_commits_letstext": [
+            "0667618 test(compliance): +43 new tests (strike/cooldown integration + text-moderation scanner)",
+            "5978cf8 feat(landing): demo CTA + image-moderation showcase + lucide refactor",
+            "0c78029 feat(compliance): ENG-20 image-moderation pipeline",
+            "e591fd3 chore(compliance): 2026-05-18 master plan + 945-line prisma compliance schema"
+        ],
+        "sibling_branch_active": "agent/eve-compliance/cooldown-ui-2026-05-25 (EVE Compliance, heartbeat 2026-05-25T01:00Z, loop 1/6)"
+    },
+    "progress_top3": [
+        "2026-05-25T01:24Z — R8 cold-start triage + overseer broadcast ack + cross-lane WT bleed flagged",
+        "2026-05-24T22:05Z — R7 cold-start triage + dashboard-skeleton inheritance audit",
+        "2026-05-24T20:55Z — R6 +43 new tests + EVE Compliance lane carved out + handoff complete"
+    ],
+    "inbox_unread_count": 0,
+    "unread_operator_utterance_count_this_turn": 8,
+    "utterance_route_summary": "all 8 -> sanctum or sanctum-push-policy (none letstext-scope)",
+    "broadcasts_read_this_turn": [
+        "20260525T011349Z overseer-distribute single-repo-push + BRANCH-CONVENTION.md (letstext carve-out exempt; informational)",
+        "2026-05-24T15:55Z dashboard-skeleton UI BASE (already triaged R7)"
+    ],
+    "deferred_for_next_letstext_owned_wt_turn": [
+        "Commit CLEANUP-TODO.md UI-6 row (R7's documentation edit, currently parked on eve-compliance branch WT)"
+    ],
+    "open_pivots_operator_can_unblock_immediately": [
+        "UI-3 Dashboard-skeleton retrofit (multi-day, operator-direction-gated per CLEANUP-TODO row)",
+        "S-7 Zod migration of 25 admin POST routes",
+        "UI-2 Sidebar mobile drawer collapse",
+        "UI-1 5-page mobile redesign",
+        "Image 3 demo CTA source lookup (R2 leftover)"
+    ],
+    "lane_carve_out_reminder": "letstext owns chat UI / payments / inbox routing / employee mgmt / marketing / design system / infra. Compliance + moderation + NCMEC + image-moderation pipeline routes to EVE Compliance lane.",
+    "pre_warm_reads": [
+        "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\letstext.md",
+        "D:\\Sinister Sanctum\\_shared-memory\\heartbeats\\letstext.json",
+        "D:\\Sinister Sanctum\\automations\\session-contracts.md",
+        "D:\\Sinister Sanctum\\docs\\BRANCH-CONVENTION.md"
+    ]
+}

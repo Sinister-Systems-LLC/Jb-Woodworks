@@ -1,4 +1,10 @@
 <!-- Author: RKOJ-ELENO :: 2026-05-24 -->
+<!-- decay:
+  category: preference
+  confidence: 1
+  reinforcements: 0
+  half_life_days: 180
+-->
 # Forever-improve review doctrine
 
 **Status:** doctrine, standing-rule, binding, fleet-wide
@@ -86,6 +92,7 @@ If neither happens, `-Action Drain` forces `status: expired` (no rotting log). O
 - **`agent-continuity-no-long-naps-doctrine`** — improvements drained quickly so a returning agent doesn't inherit a 50-row open backlog.
 - **`operator-utterance-tracking-doctrine-2026-05-24`** — same JSONL append-with-lock pattern (`improvement-log.lock` mirrors `.operator-utterances.lock`).
 - **`do-not-revert-operator-canonical-protections-2026-05-23`** — cold-start step 10 is anti-revert protected (must be in CLAUDE.md, must reference `forever-improve.ps1`).
+- **`quality-monotonic-loop.ps1`** — pass `-WithQualityLoop` to `Review` to piggyback a score-trajectory run (score = `-1 * open_findings(target)`, MaxIters=3, Plateau=2). Example: `powershell -File automations/forever-improve.ps1 -Action Review -Target automations/foo.ps1 -Lane sanctum -WithQualityLoop`. Each work unit now auto-records its findings-count trajectory in `_shared-memory/quality-loop-log.jsonl`.
 
 ## Hard-stops (binding NEVERs)
 

@@ -1,3 +1,6 @@
+<!-- decay:
+  superseded_by: no-bullshit-tested-before-claimed-doctrine-2026-05-23
+-->
 > **Author:** RKOJ-ELENO :: 2026-05-21
 
 # Topic: PyInstaller tmp-file race — sibling agent's atomic-write breaks Analysis phase

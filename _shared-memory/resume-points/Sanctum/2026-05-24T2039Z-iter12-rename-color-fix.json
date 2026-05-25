@@ -1,0 +1,39 @@
+﻿{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-24T20:39Z",
+    "project":  "sanctum",
+    "agent_name":  "sanctum",
+    "agent_display":  "Sinister Sanctum",
+    "mode":  "resume",
+    "loop_iter":  12,
+    "swarm_role":  "rename+color fix lane (sibling Sinister TERM on fleet-autostart + memory audit vs rufus/JCODE/obsidian/UA)",
+    "focus_intent":  "Operator 20:30Z urgent rename+color broken. Root cause found at line 1896 - hardcoded purple overrode prefs in EVE.exe headless path. Fixed + smoke verified.",
+    "shipped_this_iter":  [
+                              "Root-cause: line 1896 $resolvedAccent = if ($AccentColor) { $AccentColor } else { \u0027purple\u0027 } - the else fell through to literal purple instead of reading prefs.per_project[$Project].accent_color",
+                              "Fix: replaced with elseif that reads prefs first; falls to purple only if no per_project entry",
+                              "Smoke: Persist(kernel-apk, ZONIA-KERN, cyan) -\u003e ReadPrefsJson -\u003e headless sim = ZONIA-KERN/cyan PASS",
+                              "Fleet-update high priority push fu-20260524163710-ae184d"
+                          ],
+    "bug_diagnostics_summary":  "Confirmed Persist-AgentPref + ReadPrefsJson + Get-ProjectAgentName roundtrip works for both dashed (kernel-apk) and non-dashed (sanctum) project keys. The data layer is fine. The bug was in the consumer (headless -Project entry point) hardcoding accent.",
+    "open_for_next_iter":  [
+                               "Task #21 accounts panel in eve.py picker render (between rows and bottom settings)",
+                               "Task #19 per-account banner context/memory/MAIN_USAGE enhancement",
+                               "Task #3 wire quality-monotonic-loop into forever-improve.ps1 -Action Review",
+                               "Task #4 prune-as-add brain entry (operator-confirm pending)",
+                               "Task #20 wire MORE spawn stages (recall, detect-similar, trust, monitor) into _SpawnProgress for full visibility",
+                               "Operator-action: click EVE.exe 5x to verify rename+color fix in actual spawn"
+                           ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\automations\\start-sinister-session.ps1 lines 1889-1925 (headless -Project path with fix)",
+                           "D:\\Sinister Sanctum\\automations\\session-templates\\agent-prefs.json (live per-project state)",
+                           "D:\\Sinister Sanctum\\automations\\eve-launcher\\eve.py dispatch_project (passes -Project to launcher)"
+                       ],
+    "sibling_state":  "Sinister TERM continues: fleet-autostart scheduled task + memory audit vs rufus/JCODE/obsidian/UA + parallel-plan creation. Composes with my scope.",
+    "stop_conditions_state":  {
+                                  "queue_lane_rows":  "~6",
+                                  "loop_iter":  12,
+                                  "utterances_acked_this_session":  12,
+                                  "active_plans_lane":  0,
+                                  "brain_rows":  "~143"
+                              }
+}

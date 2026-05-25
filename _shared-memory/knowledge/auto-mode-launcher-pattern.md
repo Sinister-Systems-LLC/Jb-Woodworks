@@ -1,3 +1,9 @@
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 0
+  half_life_days: 180
+-->
 # Author: Sinister Sanctum master agent (test, Claude) :: 2026-05-20
 
 # Topic: Autonomous-loop launcher mode — full plan-review + scope-synthesize + /loop self-execute

@@ -1,0 +1,55 @@
+{
+  "schema": "sinister-sanctum.resume-point.v1",
+  "ts_utc": "2026-05-25T01:22:00Z",
+  "project_key": "sinister-snap-api-quantum",
+  "agent_name": "sinister-snap-api-quantum",
+  "agent_identity": "EVE",
+  "mode": "resume",
+  "iter": 112,
+  "branch": "agent/sinister-snap-api-quantum/iter110-brain-corpus-qbc-2026-05-25",
+  "focus_intent": "Iter-112 SHIPPED verified. Operator (01:20Z) asked to really use python simulator + expand on concepts. Iter-112 (a) opened K=8 ANGLE r=1 brain self-sweep head-to-head vs iter-110 K=4 ZZ-FM (1.90x more QBC, +24.77pp max-adv, 12.3s wall = 2.4x faster than K=4), (b) shipped concepts-expansion doc covering 10 unused sim capabilities (encoding sweep, reps-ceiling, finite-shot calibration, SWAP vs inversion, kernel ridge regression, entanglement entropy, dynamic-window, k-tuple, brain-vs-code cross-modality) with iter-113-117 plan at ~3.5 min total sim. KEY QUALITATIVE FINDING: cross-encoding agreement = robustness signal. Legacy multi-agent-git + JCode backbone stable across encodings; new quantum-doctrine triad encoding-dependent (expected for meta-doctrine).",
+  "shipped_verified": [
+    "iter112-k8-angle-brain-sweep.py (reproducible probe script)",
+    "outputs/iter112-k8-angle-brain-sweep.json (1662 QBC / 0.123% / max +24.77pp / wall 12.3s)",
+    "outputs/findings-iter112-k8-vs-k4.md (head-to-head writeup, cross-encoding interpretation, 1.9x QBC ratio doctrine update from iter-44 65x)",
+    "outputs/python-simulator-concepts-expansion.md (10-concept menu + iter 113-117 plan, ~3.5 min total sim)",
+    "_shared-memory/PROGRESS/sinister-snap-api-quantum.md (iter-112 entry at top)",
+    "_shared-memory/heartbeats/sinister-snap-api-quantum.json (iter 112 SHIPPED + artifacts + verdict)"
+  ],
+  "in_flight": [],
+  "next_steps": [
+    "Iter-113: reps sweep r ∈ {1..5} on iter-110 top-50 triads (~10s sim) — find r* per triad",
+    "Iter-114: finite-shot CPUQVM (1024 shots) on top-10 triads (~5s sim) — calibrate cloud-worthiness",
+    "Iter-115: add IQP feature map to memory_kernel._sim_inversion_overlap, three-encoding robustness filter on top-20 (~15s sim) — directly builds on iter-112 cross-encoding signal",
+    "Iter-116: brain-vs-code drift sweep automations/*.ps1 vs brain entries (~60s sim) — doctrine-compliance auditor (highest leverage from concepts doc)",
+    "Iter-117: dynamic-window QBC at 3 timestamps (~90s sim) — doctrine archaeology",
+    "Deferred: K=8 real-QPU upgrade (paid cloud, needs operator pre-auth)"
+  ],
+  "open_for_operator": [
+    "Zero new operator-actionable rows. Lane healthy under two encodings.",
+    "Concepts-expansion doc invites operator review: 10 sim concepts + iter 113-117 plan ready to execute if you greenlight"
+  ],
+  "pre_warm_reads": [
+    "outputs/findings-iter112-k8-vs-k4.md (this iter findings)",
+    "outputs/python-simulator-concepts-expansion.md (the 10-concept menu)",
+    "outputs/iter112-k8-angle-brain-sweep.json (raw sweep data + iter-110 baseline)",
+    "_shared-memory/PROGRESS/sinister-snap-api-quantum.md (head 100 lines — iter-112, iter-110, iter-109)"
+  ],
+  "operator_utterances_triaged_this_iter": "Operator delivered 01:20Z prompt directly (continue + token-efficient + use python sim + expand concepts). Iter-112 directly addresses all 4 asks. Six prior unread (last = sanctum-push-policy) remain global, not snap-quantum.",
+  "budget_status": {
+    "tracker_total_seconds": 230.0,
+    "tracker_used_after_iter112": 160.4,
+    "iter_112_burn_seconds": 0,
+    "iter_112_wall_seconds": 12.3,
+    "backend": "sim-local"
+  },
+  "loop_state": "self-paced; iter-113 (reps sweep) is cheapest at ~10s sim-local — ready for next /loop turn",
+  "swarm_state": "on (not used this iter — single-call sim was the right shape; multi-agent would have added context overhead without parallelism gain)",
+  "token_efficiency_notes": [
+    "Re-used iter-110 numbers from prior heartbeat/PROGRESS (no JSON re-Read)",
+    "Did NOT spawn parallel sub-agents (would add context cost without parallelism gain on single sim call + single writeup)",
+    "Drafted concepts doc IN PARALLEL with iter-112 sweep running in background (no idle wait)",
+    "Used find_qbc_triads(corpus_mode='full') directly — no script-glue rewrite needed",
+    "Targeted Grep for memory_kernel internals (not full Reads) until the K-parameter location was known"
+  ]
+}

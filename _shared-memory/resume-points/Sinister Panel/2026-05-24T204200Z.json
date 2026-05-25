@@ -1,0 +1,55 @@
+{
+  "_author": "RKOJ-ELENO :: 2026-05-24",
+  "schema_version": "sinister.resume-point.v1",
+  "ts_utc": "2026-05-24T20:42:00.0000000Z",
+  "project": "Sinister Panel",
+  "agent_name": "sinister-panel",
+  "agent_identity": "EVE",
+  "mode": "resume",
+  "focus_intent": "Loop iter 6 deploy completion. SHIPPED LIVE: aa2fde6 deployed to Hetzner with RKA license sales (Phase 1 backend + Phase 2 dashboard UI) + ban-checker truth fix (apkBundle.ts demote grpc+refresh-without-att HEALTHY→REFRESH_PENDING) + master plan doc. Migration 20260524180000_rka_licenses applied in prod DB. All endpoints verified alive. Panel chain-links 3 (add-friend) + 4 (24h-survival cron) ARMED + LIVE on prod. Waiting on kernel-apk to ship att_token capture (P1) for chain unblock.",
+  "git": {
+    "main_head": "aa2fde6",
+    "deployed_head_on_hetzner": "aa2fde6 (HTTP 200 + migration applied verified at 20:40Z)",
+    "agent_branches": [
+      {
+        "name": "agent/sinister-panel/rka-licenses-2026-05-24",
+        "status": "✅ MERGED + DEPLOYED iter 6 (b02430a merge commit)"
+      },
+      {
+        "name": "agent/sinister-panel/ban-checker-truth-fix-2026-05-24",
+        "status": "✅ MERGED + DEPLOYED iter 6 (aa2fde6 merge commit)"
+      },
+      {
+        "name": "agent/sinister-panel/survival-24h-cron-2026-05-24",
+        "status": "MERGED + DEPLOYED iter 4 (e276bb4 since 17:10Z)"
+      },
+      {
+        "name": "agent/sinister-panel/keybox-oem-probe-2026-05-24",
+        "head": "72781f2",
+        "commits_atop_main": 4,
+        "status": "Operator pivoted off OEM-mismatch theory iter 3 (16:22Z). NOT auto-merged with the 20:30Z 'push all live' because operator explicitly told it to stop. Merge OR drop decision pending."
+      }
+    ]
+  },
+  "operator_directives_active": [
+    "do not stop working until you create a snapcchat account with the apk, harvest to panel, add andrewt407 on snapchat and then after all that that account lasts 24 hours with no bans (20:10Z /loop) — Panel chain-links 3+4 ARMED + LIVE; chain still blocks on kernel-apk att_token capture",
+    "keep working and push all live to hetzner (20:30Z) — COMPLETED THIS ITER",
+    "Frida-auto-update directive (20:20Z image) — routed to kernel-apk inbox with Panel-side design handles"
+  ],
+  "carry_forward_deferrals": [
+    "OPERATOR DECISION: merge or drop agent/sinister-panel/keybox-oem-probe-2026-05-24",
+    "OPERATOR ACTION: upload keybox_20260523.xml to Hetzner pool via /fleet > Keyboxes UI",
+    "BLOCKED CROSS-LANE: kernel-apk shipping att_token capture (P1) — Monitor armed on Sinister Kernel APK PROGRESS",
+    "ARCHITECTURE QUESTION: RKA-licenses Phase 3 wire-up — sync /validate vs poll /active-license-hashes cache (asked in master plan)",
+    "BLOCKED CROSS-LANE: kernel-apk Q1 audit (Frida + endpoint update needs?) then Q2 design (auto-update orchestration on Panel)"
+  ],
+  "wake_triggers": [
+    "Monitor (persistent task bd3p7eouy) on _shared-memory/PROGRESS/Sinister Kernel APK.md — fires on appended row matching 'att_token|frida|endpoint|rotateIpAndVerify|atlas.*200|new account.*created'",
+    "ScheduleWakeup ~25min fallback (autonomous-loop-dynamic)"
+  ],
+  "pre_warm_reads": [
+    "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Sinister Panel.md",
+    "D:\\Sinister Sanctum\\projects\\sinister-panel\\source\\leo_dev\\docs\\MASTER-PLAN-ANDREWT407-24H-2026-05-24.md",
+    "D:\\Sinister Sanctum\\_shared-memory\\inbox\\sinister-panel\\"
+  ]
+}

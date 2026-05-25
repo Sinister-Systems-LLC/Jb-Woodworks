@@ -1,4 +1,10 @@
 <!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- decay:
+  category: preference
+  confidence: 0.9
+  reinforcements: 1
+  half_life_days: 180
+-->
 # Naming clarification :: "handterm" in operator-speak = our `sinister-term`
 
 > **Status:** binding (operator clarified verbatim 2026-05-23 evening)

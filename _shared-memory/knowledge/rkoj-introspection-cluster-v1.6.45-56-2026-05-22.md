@@ -1,3 +1,9 @@
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 0
+  half_life_days: 180
+-->
 # Author: RKOJ-ELENO :: 2026-05-22
 
 # RKOJ v1.6.45 → v1.6.56 introspection cluster — tags · history · diff · export-all · summarize · uptime · forget-last

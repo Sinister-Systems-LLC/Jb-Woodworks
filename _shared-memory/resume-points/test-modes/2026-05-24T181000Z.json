@@ -1,0 +1,42 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-24T18:10Z",
+    "project":  "sanctum",
+    "agent_name":  "test-modes",
+    "session_tag":  "test-modes-iter7",
+    "mode":  "resume-loop",
+    "loop_iter":  7,
+    "loop_mode":  "dynamic-self-paced",
+    "next_wake_safety_net_seconds":  1200,
+    "focus_intent":  "Iter7: Sub-area E SHIPPED. Consolidated status doc written (6 ship + 1 partial of 7 deliverables across all 5 siblings). 3 more utterance acks (8 -> 11). Halt-check flagged 2/10 no-bullshit signals; iter8-10 plan favors consolidation over expansion.",
+    "shipped_this_iter":  [
+                              "_shared-memory/knowledge/test-modes-5x-parallel-consolidated-status-2026-05-24.md (NEW, full scoreboard + matrices)",
+                              "3 utterance acks: 15:40:57 / 15:42:25 / 16:05:32",
+                              "Claim register Sub-area E -> SHIPPED",
+                              "Halt-check verification (cold-start=11/threshold-10, brain=157/threshold-150 -> flagged)"
+                          ],
+    "open_for_next_iter":  [
+                               "Iter8: counter-arg auto-invoke from forever-improve.ps1 Review actions",
+                               "Iter9: launcher cold-start phrase token-efficiency audit",
+                               "Iter10: consolidation sweep (cold-start steps 8-11 -> mega-step; archive stale brain rows; close out 5x coordination if all SHIPPED)",
+                               "Sub-area C row-ship (R23/R24/R25/R28) remains sibling-owned (Forge/Sanctum)"
+                           ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\knowledge\\test-modes-5x-parallel-consolidated-status-2026-05-24.md",
+                           "D:\\Sinister Sanctum\\automations\\counter-arg.ps1",
+                           "D:\\Sinister Sanctum\\automations\\forever-improve.ps1",
+                           "D:\\Sinister Sanctum\\automations\\start-sinister-session.ps1"
+                       ],
+    "git":  {
+                "branch":  "agent/sinister-os-mobile/p0-spec-2026-05-24",
+                "head":  "(use git rev-parse HEAD at restore-time)"
+            },
+    "halt_check":  {
+                       "signals_tripped":  2,
+                       "details":  [
+                                       "cold-start steps = 11 (threshold 10) -> EDGE",
+                                       "brain rows = 157 (threshold 150) -> TRIPPED"
+                                   ],
+                       "response":  "shipped only consolidation artifacts this iter (status doc + acks); no new doctrine/script/expansion. iter10 reserved for consolidation sweep."
+                   }
+}

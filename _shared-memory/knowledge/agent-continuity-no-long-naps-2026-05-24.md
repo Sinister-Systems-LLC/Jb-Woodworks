@@ -1,4 +1,10 @@
 <!-- Author: RKOJ-ELENO :: 2026-05-24 -->
+<!-- decay:
+  category: preference
+  confidence: 0.9
+  reinforcements: 0
+  half_life_days: 180
+-->
 # Agent continuity — no long naps (BANNED >5min self-imposed waits)
 
 **Status:** doctrine, standing-rule, binding, fleet-wide

@@ -1,3 +1,9 @@
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 0
+  half_life_days: 180
+-->
 # Sinister OS — doctrine
 
 > **Author:** RKOJ-ELENO :: 2026-05-24

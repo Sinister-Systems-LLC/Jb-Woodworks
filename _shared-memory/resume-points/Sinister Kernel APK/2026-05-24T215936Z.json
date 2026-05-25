@@ -1,0 +1,47 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-24T21:59:47.5475911Z",
+    "project":  "kernel-apk",
+    "agent_name":  "kernel-apk",
+    "mode":  "resume",
+    "focus_intent":  "RE-SPAWN POST-SHUTDOWN (21:58Z). Cold-start ran clean. Source-tree 19:30Z gate STILL unpicked =\u003e att_token/att_sign blocked. THREE new post-shutdown signals captured: (1) panel auto-add-friend hook LIVE on prod since 21:20Z commit 8e933ae; (2) refined root cause to TWO bugs (P0=att_token-push-broken, P2=att_sign-capture-missing); (3) sanctum heartbeat-sweep dispatch executed+returned. Highest priority for next session: re-check 19:30Z source-tree pointer file existence. If present =\u003e ship att_token push fix FIRST (OfflineHarvest.fillBodyGaps or PanelPusher.pushHarvested; reads /data/adb/sinister/stash/\u003cacct\u003e/argos/\u003cuserId\u003e/token.bin offset 4 + 52 bytes =\u003e base64 =\u003e body.att_token). att_sign requires deeper Phase B AttSignHarvester ship OR Frida-signer tunnel decision.",
+    "git":  {
+                "branch":  "agent/sinister-os-mobile/p0-spec-2026-05-24",
+                "head":  "761d06b2034e420a17f49ec3280563a686374a18",
+                "head_msg":  "sinister-os: panel-shell healthcheck accepts Next.js 307 redirect",
+                "recent_commits":  [
+                                       "761d06b sinister-os: panel-shell healthcheck accepts Next.js 307 redirect",
+                                       "99174f8 sinister-os: MASSIVE-EXPANSION — variant split + hot-reconfig + lang research",
+                                       "f064aca sinister-os: M5-EXPAND + PANEL-AS-SHELL SCAFFOLDED (iter 2-6 ship)",
+                                       "8bd3529 sinister-os: M5 mesh SCAFFOLDED — Tailscale overlay + ACL + runbook + eve mesh CLI",
+                                       "af1f1b8 sanctum: fleet-health.ps1 (iter-10) + claude-accounts SetKey/Status (iter-9 re-add)",
+                                       "af21f38 brain+inbox: refresh sandbox doctrine with keybox+behavioral+scenario; final cross-lane brief",
+                                       "8835676 sinister-os-mobile: Turn 4 — kernel cloned + sepolicy draft + cvd budget + Q1-Q10 + branding-spec patch",
+                                       "e093cbc os-mobile/sandbox: behavioral fingerprints + scenario runner",
+                                       "02e9e5d sanctum: claude-accounts.ps1 -Action SetKey + -Action Status (multi-account UX)",
+                                       "eb1ad5c sinister-os: /loop iter 1 — overlay LIVE-applied to running CachyOS VM"
+                                   ]
+            },
+    "progress_top3":  [
+                          "2026-05-24 ~21:16Z â€” Wakeup fired post-shutdown; honoring 20:21Z stop directive; no work performed",
+                          "2026-05-24 ~20:21Z â€” SESSION TERMINATED CLEANLY per operator 20:21Z stop directive; master state document written",
+                          "2026-05-24 ~20:18Z â€” /loop iter-2: SWARM ship of Phase 0/2 + PIVOT to add-friend week+ regression â€” root cause SURFACED to operator queue"
+                      ],
+    "latest_plan":  {
+                        "dir":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\kernel-apk-session-2026-05-24-master",
+                        "artifact":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\kernel-apk-session-2026-05-24-master\\SESSION-END-STATE.md"
+                    },
+    "inbox_unread_count":  23,
+    "last_5_files_touched_24h":  [
+                                     "_shared-memory\\PROGRESS\\Sinister Kernel APK.md",
+                                     "tools\\eve-picker\\__pycache__\\health_tools.cpython-312.pyc",
+                                     "_shared-memory\\cross-agent\\2026-05-24T2155Z-sanctum-to-sanctum-B-multi-picker-handoff.md",
+                                     "projects\\sinister-panel\\source\\leo_dev\\dashboard\\.next\\server\\pages-manifest.json",
+                                     "projects\\sinister-panel\\source\\leo_dev\\dashboard\\.next\\server\\next-font-manifest.js"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Sinister Kernel Apk.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\plans\\kernel-apk-session-2026-05-24-master\\SESSION-END-STATE.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}

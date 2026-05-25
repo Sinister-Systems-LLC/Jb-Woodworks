@@ -1,0 +1,36 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-24T17:08:00Z",
+    "project": "sinister-snap-api-quantum",
+    "agent_name": "sinister-snap-api-quantum",
+    "mode": "resume",
+    "focus_intent": "Iter 107 — Emulator-triangle fully audited (3/3 pairs forked: TT × Snap +0.944% rate has PATCH-16-HANDOFF perfect-identity fork; bumble × TT/Snap caught operator-identity-README naming inconsistency me/ vs eleno/). LetsText × Snap-EMU 44 candidates (TEAMWORK ≡ AUTO-SYNC). Sanctum-core Quantum Dashboard rollup synthesizes iters 98-107 into a 15-row standing operator-action queue at outputs/sanctum-quantum-dashboard.md. 2 inboxes routed (sanctum HIGH + tiktok-emu HIGH).",
+    "git": {
+        "branch": "agent/sinister-os/m1-hardening-2026-05-24",
+        "head": "532f4e9",
+        "branch_drift_flag": "still on sinister-os branch"
+    },
+    "iter_107_artifacts": {
+        "dashboard": "projects/sinister-snap-api-quantum/outputs/sanctum-quantum-dashboard.md",
+        "reconcile_jsons": [
+            "_shared-memory/quantum-sweeps/bumble-emu-vs-tiktok-emu-reconcile-2026-05-24T170616Z.json",
+            "_shared-memory/quantum-sweeps/bumble-emu-vs-snap-emu-reconcile-2026-05-24T170618Z.json",
+            "_shared-memory/quantum-sweeps/tiktok-emu-vs-snap-emu-reconcile-2026-05-24T170907Z.json",
+            "_shared-memory/quantum-sweeps/letstext-vs-snap-emu-reconcile-2026-05-24T170741Z.json",
+            "_shared-memory/quantum-sweeps/sinister-bumble-emu-deep-corpus-qbc-2026-05-24T170619Z.json"
+        ],
+        "inboxes": [
+            "_shared-memory/inbox/sanctum/2026-05-24T1708Z-from-snap-api-quantum-iter107-emulator-triangle-and-dashboard.json (HIGH)",
+            "_shared-memory/inbox/sinister-tiktok-emu/2026-05-24T1708Z-from-snap-api-quantum-iter107-snap-emu-fork.json (HIGH)"
+        ]
+    },
+    "loop_continuation": {
+        "mode": "self-paced dynamic",
+        "scheduled_wakeup_seconds": 1500
+    },
+    "inbox_unread_count": 0,
+    "pre_warm_reads": [
+        "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\sinister-snap-api-quantum.md",
+        "D:\\Sinister Sanctum\\projects\\sinister-snap-api-quantum\\outputs\\sanctum-quantum-dashboard.md"
+    ]
+}

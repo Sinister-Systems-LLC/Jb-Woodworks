@@ -1,0 +1,44 @@
+﻿{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-24T19:54Z",
+    "project":  "sanctum",
+    "agent_name":  "sanctum",
+    "agent_display":  "Sinister Sanctum",
+    "mode":  "resume",
+    "loop_iter":  9,
+    "swarm_role":  "spawn-pipeline + scope/doctrine lane (sibling Sinister TERM owns mesh-coordinator + bot-lifecycle + jcode-port)",
+    "focus_intent":  "Operator stacked 4 directives in rapid succession (19:14Z mesh + 19:30Z spawn-speed + 19:45Z scope-discipline + auto-update + 19:55Z loop-broken). Shipped: 4 surgical spawn-pipeline fixes (prior turn), fleet-update.ps1 auto-update channel (this turn), CLAUDE.md scope + loop hard-canonical, brain entries, 3 doctrines distributed via channel.",
+    "shipped_this_iter":  [
+                              "automations/fleet-update.ps1 NEW (~165 LOC, List/Push/Acked/Stats actions, sentinel-file lock, 10s stale-reclaim, target_slugs filtering, ack-deduping)",
+                              "CLAUDE.md two new hard-canonical blocks: SANCTUM SCOPE = HIGH-LEVEL ONLY + LOOP MODE = continuous iteration",
+                              "start-sinister-session.ps1 Build-Phrase modes.loop branch rewritten with 270s cap + in-turn-next-iteration + no-schedule-and-stop",
+                              "_shared-memory/knowledge/sanctum-scope-discipline-2026-05-24.md NEW",
+                              "brain _INDEX.md: 3 new rows inserted (scope / loop / spawn-mesh-safety) above sibling mesh-coordination row",
+                              "3 fleet-update channel pushes: high-priority loop-fix fleet-wide, high-priority scope-discipline sanctum+sinister-term, normal window-restore fix-confirmation fleet-wide"
+                          ],
+    "open_for_next_iter":  [
+                               "5 EVE.exe launch test (operator 19:40Z) — defer to next turn so spawns also pick up the new CLAUDE.md cold-start blocks",
+                               "Wire quality-monotonic-loop into forever-improve.ps1 -Action Review (task #3 carry-forward)",
+                               "EXE account viewer + jcode animations (task #2) — sibling Sinister TERM owns the UI; sanctum provides data",
+                               "Brain entry consolidation pass — count approaching 160 (no-bullshit signal 1: \u003e150 trips consolidation), schedule a /loop iter that aggregates 5-10 superseded rows into archived siblings"
+                           ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\automations\\fleet-update.ps1",
+                           "D:\\Sinister Sanctum\\CLAUDE.md (top 2 hard-canonical blocks)",
+                           "D:\\Sinister Sanctum\\_shared-memory\\knowledge\\sanctum-scope-discipline-2026-05-24.md",
+                           "D:\\Sinister Sanctum\\_shared-memory\\fleet-updates.jsonl"
+                       ],
+    "smoke_results":  {
+                          "fleet_update_push_list_acked_stats":  "PASS (Push fu-20260524154650-d2634b / List visible / Acked / Stats total=5 high=4 normal=1 / acked-filter works)",
+                          "sibling_brain_check":  "mesh-coordination-and-resource-lifecycle row 9 already covers MCP-bot layer + Docker autostart - no duplication",
+                          "start_sinister_session_parse_after_loop_edit":  "PASS",
+                          "fleet_update_parse":  "PASS"
+                      },
+    "sibling_complement_note":  "Sinister TERM same-turn ships covered different concurrency layers (mesh-coordinator/bot-lifecycle/heartbeat-sweep/EVE-crash-fix/Docker-AutoStart). My layer = spawn pipeline + account lease + fleet-update channel + doctrine. Stack composes: process refcount (prior) + MCP-bot lock (sibling) + spawn pipeline (this) + auto-update channel (this).",
+    "stop_conditions_state":  {
+                                  "queue_lane_rows":  "~6",
+                                  "loop_iter":  9,
+                                  "active_plans_lane":  0,
+                                  "brain_rows":  "~143 (+3 this turn: scope + loop + spawn-mesh)"
+                              }
+}

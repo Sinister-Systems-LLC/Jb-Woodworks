@@ -1,3 +1,9 @@
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 0
+  half_life_days: 180
+-->
 > **Author:** Sinister Sanctum master agent (Claude) :: 2026-05-19
 
 # Topic: PyInstaller hook-distutils.py fails when `distutils` is in spec excludes — also: missing `select`/`_socket` causes EXE bootloader to crash with "Failed to load Python DLL"

@@ -1,0 +1,34 @@
+{
+  "schema_version": "sinister.resume-point.v1",
+  "ts_utc": "2026-05-24T22:15Z",
+  "project": "eve-compliance",
+  "agent_name": "eve-compliance",
+  "mode": "resume",
+  "focus_intent": "R1 NCMEC auto-draft SHIPPED (open follow-up #1 closed; commit 7ac12b1 on agent/eve-compliance/ncmec-auto-draft; 68/68 vitest PASS). Next iter: pick #2 ChatArea cooldown friendly UI — find chat-area upload code in dashboard/, hook 403 + cooldownUntil response, render friendly toast/banner with live countdown.",
+  "git": {
+    "branch": "agent/eve-compliance/ncmec-auto-draft (canonical letstext repo at C:/Users/Zonia/Desktop/LetsText)",
+    "head": "7ac12b1",
+    "head_msg": "feat(compliance): NCMEC CyberTipline auto-draft on confirmed CSAM good-catch"
+  },
+  "progress_top3": [
+    "R1 2026-05-24T22:15Z NCMEC auto-draft shipped — 16 new vitest tests, 0 regressions (68/68), 3 new admin endpoints, idempotent trigger wired into /:id/good-catch",
+    "R0 2026-05-24T20:50Z lane bootstrapped — CLAUDE.md + SESSION-START + PROGRESS + heartbeat + inbox handoff seeded",
+    "Inherited 4 commits from letstext lane on agent/letstext/master-plan-resume-2026-05-24 (image moderation pipeline shipped end-to-end + 52/52 baseline)"
+  ],
+  "last_5_files_touched_24h": [
+    "C:/Users/Zonia/Desktop/LetsText/backend/src/lib/ncmec-reports.ts (NEW)",
+    "C:/Users/Zonia/Desktop/LetsText/backend/src/lib/__tests__/ncmec-reports.test.ts (NEW)",
+    "C:/Users/Zonia/Desktop/LetsText/backend/src/routes/image-moderation.ts (auto-draft trigger + 3 new endpoints)",
+    "D:/Sinister Sanctum/_shared-memory/PROGRESS/EVE Compliance.md (R1 row prepended)",
+    "D:/Sinister Sanctum/_shared-memory/heartbeats/eve-compliance.json (R1 update)"
+  ],
+  "pre_warm_reads": [
+    "D:/Sinister Sanctum/CLAUDE.md",
+    "D:/Sinister Sanctum/projects/eve-compliance/CLAUDE.md",
+    "D:/Sinister Sanctum/_shared-memory/PROGRESS/EVE Compliance.md",
+    "C:/Users/Zonia/Desktop/LetsText/backend/src/lib/ncmec-reports.ts",
+    "C:/Users/Zonia/Desktop/LetsText/backend/src/lib/image-moderation.ts",
+    "C:/Users/Zonia/Desktop/LetsText/docs/DEMO-IMAGE-MODERATION.md"
+  ],
+  "first_session_work_unit": "Iter R2: #2 ChatArea cooldown UX. Grep dashboard/ for /multipart/init, /presign, /stream, fetch.+upload — find the request site, hook 403 response, build cooldown banner with countdown. Compose with existing dashboard-skeleton tokens (no new colors)."
+}

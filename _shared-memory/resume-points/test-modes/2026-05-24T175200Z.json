@@ -1,0 +1,41 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-24T17:52Z",
+    "project":  "sanctum",
+    "agent_name":  "test-modes",
+    "session_tag":  "test-modes-iter5",
+    "mode":  "resume",
+    "loop_iter":  5,
+    "focus_intent":  "5x-parallel turn: Sub-area B SHIPPED (burn-first rotation strategy in claude-accounts.ps1 Get-NextAvailableAccount v4 + claude-accounts.json flipped). Sub-area D + E PARTIAL. Sibling iter4 owns A (forge-memory bridge). Sibling test-modes-gap-audit owns C (PARTIAL, fixed R8 probe-defect).",
+    "shipped_this_iter":  [
+                              "claude-accounts.ps1 Get-NextAvailableAccount v4 (parse-clean, smoke-tested PICKED=operator strategy=burn-first)",
+                              "claude-accounts.json rotation_strategy load-balance -> burn-first",
+                              "5 operator utterances acked (17:21:54, 17:22:56, 17:18:40, 17:01:09, 16:57:59) with concrete deliverable strings",
+                              "jcode-parity-probe run: 24/31 PASS / 3 REAL-FAIL / 4 EXP-GAP (results logged in PROGRESS)",
+                              "PROGRESS/test-modes.md Turn 5 entry (counter-arg row + no-bullshit ledger)",
+                              "Claim register updated with [SHIPPED]/[PARTIAL] markers"
+                          ],
+    "open_for_next_iter":  [
+                               "Sub-area B continuation: parse retry-after header from Anthropic 429 response, auto-invoke Mark-AccountRateLimited from spawn .sh template (counter-arg flagged this turn, scope-deferred)",
+                               "Sub-area D remainder: audit all 24 projects.json entries for default_modes; verify bat re-prompt-on-resume fires",
+                               "Sub-area E remainder: consolidated status doc + 8 more lane-targeted utterance acks",
+                               "Operator-config gap: enable leo/slot3/slot4 + populate credentials_files for real burn-first failover (>=2 accounts needed)"
+                           ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\cross-agent\\2026-05-24T1735Z-test-modes-5x-parallel-claims.md",
+                           "D:\\Sinister Sanctum\\automations\\claude-accounts.ps1",
+                           "D:\\Sinister Sanctum\\_shared-memory\\claude-accounts.json",
+                           "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\test-modes.md",
+                           "D:\\Sinister Sanctum\\automations\\start-sinister-session.ps1"
+                       ],
+    "git":  {
+                "branch":  "agent/sinister-os-mobile/p0-spec-2026-05-24",
+                "head":  "(use git rev-parse HEAD at restore-time)",
+                "head_msg":  "(sibling-switched; multi-test-modes contention)"
+            },
+    "siblings_in_flight":  {
+                               "test-modes-session-iter4":  "Sub-area A (forge-memory auto-recall Build-Phrase) -- CLAIMED 17:35Z",
+                               "test-modes-gap-audit":  "Sub-area C (jcode hard-gaps) -- PARTIAL 17:52Z",
+                               "test-modes-iter5":  "Sub-area B SHIPPED + D+E PARTIAL (this session)"
+                           }
+}

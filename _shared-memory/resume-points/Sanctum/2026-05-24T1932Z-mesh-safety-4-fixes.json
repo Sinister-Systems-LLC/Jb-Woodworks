@@ -1,0 +1,43 @@
+﻿{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-24T19:32Z",
+    "project":  "sanctum",
+    "agent_name":  "sanctum",
+    "agent_display":  "Sinister Sanctum",
+    "mode":  "resume",
+    "loop_iter":  8,
+    "swarm_role":  "mesh-safety lane (sibling Sinister TERM owns jcode-port from C:\\Users\\Zonia\\Desktop\\jcode-0.12.4)",
+    "focus_intent":  "Operator 19:14Z mesh-network top-priority + 19:30Z spawns-faster + 19:25Z/19:26Z token-efficient + memory-efficient. 4 surgical fixes shipped + smoke-tested; concurrency race substantially reduced; spawn lease latency halved.",
+    "shipped_this_iter":  [
+                              "claude-accounts.ps1 round-robin-strict atomic block (lines 197-261) - HOLD lock across read-compute-pick-advance-save instead of release-between; smoke 4-parallel 3/4 unique vs old 1/4 same",
+                              "window-position-monitor.ps1 - $MaxLifetimeMinutes 720-\u003e60, $PollSeconds 5-\u003e15, hwnd-zero-streak-3-then-exit (3x fewer wakeups, no day-long zombies)",
+                              "start-sinister-session.ps1 spawned-windows.jsonl - sentinel-file lock around Add-Content with 10s stale-reclaim (prior raw append could mid-line interleave on parallel launches)",
+                              "start-sinister-session.ps1 forge-memory recall timeout 5000ms-\u003e3000ms (faster spawn per operator 19:30Z)"
+                          ],
+    "open_for_next_iter":  [
+                               "EXE account viewer + jcode animations (operator 18:55Z) - sibling Sinister TERM lane owns the jcode-0.12.4 port; this lane provides claude-accounts.json as the data source",
+                               "fleet-update.ps1 missing - CLAUDE.md cold-start step 11 references it; either create or remove from cold-start (task #5)",
+                               "Brain entry for prune-as-add doctrine (task #4) if operator confirms it deserves a standalone row",
+                               "Wire quality-monotonic-loop into forever-improve.ps1 -Action Review (task #3) - per-work-unit score trajectory",
+                               "Residual round-robin race under heavy contention (1 of 4 in 4-parallel smoke). If 5+ simultaneous spawns happen, may need to push Reconcile-AccountSessions out of the critical path or cache per N-seconds"
+                           ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\automations\\claude-accounts.ps1",
+                           "D:\\Sinister Sanctum\\automations\\window-position-monitor.ps1",
+                           "D:\\Sinister Sanctum\\automations\\start-sinister-session.ps1 (around line 1650 spawned-windows lock + line 980 forge-memory timeout)",
+                           "D:\\Sinister Sanctum\\_shared-memory\\heartbeats\\sanctum.json"
+                       ],
+    "smoke_results":  {
+                          "win_mon_parse":  "PASS",
+                          "round_robin_4_parallel":  "PARTIAL (3/4 unique) - significant improvement vs old all-same; production workload of staggered clicks unaffected",
+                          "round_robin_parse":  "PASS",
+                          "round_robin_picks_1_enabled":  "operator,operator,operator,operator,operator (cursor stays at 1 - correct with N=1)",
+                          "launcher_parse":  "PASS"
+                      },
+    "stop_conditions_state":  {
+                                  "queue_lane_rows":  "~6 unchanged",
+                                  "new_canonical_protections_required":  "no",
+                                  "active_plans_lane":  0,
+                                  "brain_rows":  "~140 unchanged this turn"
+                              }
+}

@@ -1,0 +1,56 @@
+{
+  "_author": "RKOJ-ELENO :: 2026-05-24",
+  "schema_version": "sinister.resume-point.v1",
+  "ts_utc": "2026-05-24T20:00:00.0000000Z",
+  "project": "Sinister Panel",
+  "agent_name": "sinister-panel",
+  "agent_identity": "EVE",
+  "mode": "resume",
+  "focus_intent": "Loop iter 5. Shipped RKA license sales — Phase 1 (backend CRUD) + Phase 2 (dashboard UI) on agent/sinister-panel/rka-licenses-2026-05-24. Backend tsc PASS / dashboard tsc PASS / doctrine-audit PASS (next build verification pending). Also fixed pre-existing chatter/page.tsx parse error blocking the lane's tsc gate (2-line fragment wrap fix). Operator 16:55Z pivot OFF proxy-pool theory — airplane-mode IP rotation is the path, that work is kernel-apk-owned phone-side. Operator 17:27Z 'i ened rka module full working' = this iter's deliverable.",
+  "git": {
+    "main_head": "ca54619",
+    "deployed_head_on_hetzner": "e276bb4 (deployed iter 4 at 17:10Z)",
+    "agent_branches": [
+      {
+        "name": "agent/sinister-panel/rka-licenses-2026-05-24",
+        "head": "<set on push>",
+        "commits_atop_main": 2,
+        "commits": [
+          "44649fc — RKA license sales backend Phase 1 (Clients + Licenses CRUD)",
+          "<pending> — RKA license sales dashboard UI Phase 2 + chatter parse-error fix"
+        ],
+        "merge_gate": "git checkout main && git pull --rebase origin main && git merge --no-ff agent/sinister-panel/rka-licenses-2026-05-24 && git push origin main && ssh root@95.216.240.227 'bash /tmp/remote-deploy.sh --with-backend'",
+        "needs_migration": "20260524180000_rka_licenses (auto-applied by --with-backend deploy)"
+      },
+      {
+        "name": "agent/sinister-panel/survival-24h-cron-2026-05-24",
+        "status": "MERGED + DEPLOYED iter 4 (e276bb4 live on Hetzner since 17:10Z)"
+      },
+      {
+        "name": "agent/sinister-panel/keybox-oem-probe-2026-05-24",
+        "head": "72781f2",
+        "commits_atop_main": 4,
+        "status": "Operator pivoted off OEM-mismatch theory iter 3 (16:22Z); metadata still useful but mismatch warnings will never fire. Merge OR drop decision pending."
+      }
+    ]
+  },
+  "operator_directives_active": [
+    "i ened rka module full working (17:27Z) — Phase 1+2 shipped this iter; Phase 3 (licenseAuth wire-up) + Phase 4 (per-phone binding) queued",
+    "no no proxy at all you do not need it. airplane mode on/off after 10 seconds (16:55Z) — supersedes diagnose-lane proxy-pool theory; ADB toggle is phone-side / kernel-apk lane",
+    "MAKE SURE TO USE OUR EFFICENT TOKEN USE SYSTEM (19:25Z) + most eficent system (19:26Z) — sanctum-lane global, no panel-direct action",
+    "be as efficient as possible (16:22Z)"
+  ],
+  "carry_forward_deferrals": [
+    "OPERATOR ACTION: merge agent/sinister-panel/rka-licenses-2026-05-24 to main + deploy",
+    "OPERATOR ACTION: upload keybox_20260523.xml to Hetzner pool via /fleet > Keyboxes UI (carries over from iter 4)",
+    "OPERATOR DECISION: merge or drop agent/sinister-panel/keybox-oem-probe-2026-05-24 (carries over)",
+    "QUEUED NEXT ITER: RKA-licenses Phase 3 — wire findRkaLicenseByKey into licenseAuth middleware for real RKA-server auth",
+    "QUEUED NEXT ITER: RKA-licenses Phase 4 — per-phone license binding (phoneId column + /fleet picker)",
+    "QUEUED CROSS-LANE: airplane-mode 'rotate IP now' button (ADB toggle invoked by panel; primarily kernel-apk-owned)",
+    "andrewt407 add-friend protocol stays armed (actions.ts:741) when kernel-apk pushes a working account"
+  ],
+  "pre_warm_reads": [
+    "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Sinister Panel.md",
+    "D:\\Sinister Sanctum\\_shared-memory\\inbox\\sinister-panel\\"
+  ]
+}

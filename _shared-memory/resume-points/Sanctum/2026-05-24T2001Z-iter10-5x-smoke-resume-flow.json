@@ -1,0 +1,41 @@
+﻿{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-24T20:01Z",
+    "project":  "sanctum",
+    "agent_name":  "sanctum",
+    "agent_display":  "Sinister Sanctum",
+    "mode":  "resume",
+    "loop_iter":  10,
+    "swarm_role":  "spawn-pipeline + doctrine + fleet-update channel lane (sibling Sinister TERM owns mesh-coordinator/bot-lifecycle/detect-similar-agents/EVE.exe-crash-hardening/Docker-AutoStart)",
+    "focus_intent":  "Operator stacked 7 directives in rapid succession 19:14-19:57Z (mesh, spawn-speed, scope, auto-update, loop-broken, window-restore, docker-bootup, onboarding-button, cross-agent-awareness, resume-review-plan-loop). Shipped: 4 spawn-pipeline fixes + fleet-update.ps1 + 4 hard-canonical blocks + 4 brain entries + 5/5 parallel-lease smoke PASS. Sibling composes with 5 more ships (detect-similar + mesh-coord + bot-lifecycle + heartbeat-sweep + Docker autostart).",
+    "shipped_across_2_iters":  [
+                                   "Iter 8 (prior): claude-accounts atomic round-robin + window-monitor 720-\u003e60 + spawned-windows mutex + forge-memory 5s-\u003e3s timeout",
+                                   "Iter 9: fleet-update.ps1 NEW + CLAUDE.md sanctum-scope + loop-mode + sanctum-scope-discipline brain entry + spawn-mesh-safety brain entry",
+                                   "Iter 10 (this): Build-Phrase RESUME 4-step flow + 5/5 parallel-lease smoke + fleet-update push of doctrine + verified sibling composition"
+                               ],
+    "open_for_next_iter":  [
+                               "Task #18: EVE.exe onboarding button (read C:\\Users\\Zonia\\Desktop\\ROUND-ROBIN-ACCOUNT-ONBOARDING.md, add picker entry like O for Onboarding, walks through Path A SetKey flow interactively)",
+                               "Task #19: Per-account banner context/memory/MAIN_USAGE display (extend claude-accounts.json schema + eve.py banner)",
+                               "Task #3: Wire quality-monotonic-loop into forever-improve.ps1 -Action Review",
+                               "Task #4: prune-as-add brain entry (if operator confirms it should be standalone vs folded into no-bullshit rule 8)"
+                           ],
+    "pre_warm_reads":  [
+                           "C:\\Users\\Zonia\\Desktop\\ROUND-ROBIN-ACCOUNT-ONBOARDING.md (Path A flow for onboarding button)",
+                           "D:\\Sinister Sanctum\\automations\\eve-launcher\\eve.py (picker menu entries + key handlers — where to add O for Onboarding)",
+                           "D:\\Sinister Sanctum\\automations\\claude-accounts.ps1 (Action SetKey + Action Status — already in onboarding .md)",
+                           "D:\\Sinister Sanctum\\automations\\fleet-update.ps1 (newly built; channel for future doctrine pushes)"
+                       ],
+    "smoke_results_iter_10":  {
+                                  "fleet_update_push":  "PASS (id fu-20260524160055-391e1a)",
+                                  "detect_similar_smoke":  "PASS (785-char JSON returned for project=sanctum)",
+                                  "build_phrase_resume_4step_parse":  "PASS",
+                                  "five_parallel_lease":  "PASS 5/5 UNIQUE in 7.8s"
+                              },
+    "stop_conditions_state":  {
+                                  "queue_lane_rows":  "~6",
+                                  "loop_iter":  10,
+                                  "utterances_acked_this_session":  8,
+                                  "active_plans_lane":  0,
+                                  "brain_rows":  "~143 (+3 this iter total: scope + loop + spawn-mesh)"
+                              }
+}

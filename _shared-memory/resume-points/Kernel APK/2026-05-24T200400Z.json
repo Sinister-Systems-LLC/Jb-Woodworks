@@ -1,0 +1,64 @@
+{
+  "schema_version": "sinister.resume-point.v1",
+  "ts_utc": "2026-05-24T20:04:00Z",
+  "project": "Kernel APK",
+  "agent_name": "kernel-apk",
+  "mode": "resume",
+  "focus_intent": "LOOP-mode iter post-19:35Z swarm: leak-audit DeviceSerial-mandatory bugfix (DRY-RUN now usable) + brain hygiene (1 archive + 2 refresh footers + 1 new ASCII-only sub-agent doctrine); source-edit still operator-gated by clone tree corruption (3rd evidence point this iter)",
+  "git": {
+    "branch": "agent/sinister-kernel-apk/crispy-cosmos-resume",
+    "inner_source_repo_status": "CORRUPT (unchanged): 4 missing tree objects + orphan tmp_pack per diagnose lane fsck 13:55Z + my git status fail",
+    "local_head_label": "cda2e4e v0.97.9 (vs live ship v0.97.50)",
+    "sanctum_branch": "agent/sinister-os-mobile/p0-spec-2026-05-24 (cross-lane state from sinister-os-mobile EVE; sanctum auto-push tracks)"
+  },
+  "progress_top3": [
+    "2026-05-24 20:04Z -- LOOP-mode iter: leak-audit -DryRun bugfix + 1 archive + 2 refresh footers + 1 new ASCII-only doctrine + diagnose ping (8 deliverables, all clone-independent)",
+    "2026-05-24 19:35Z -- SWARM mode (4 parallel sub-agents); shipped 11 clone-independent deliverables (bridge.py / viewer.html / leak-audit.ps1 / brain doctrine / staleness audit / phase-c map / queue row / cross-lane ask / brain Discoveries append)",
+    "2026-05-24 18:55Z -- PLAN delivered for 18:14Z operator directive (ADB-view + PC-leak + UI cleanup)"
+  ],
+  "latest_plan": {
+    "dir": "_shared-memory/plans/kernel-apk-adb-view-system-2026-05-24/",
+    "artifacts": [
+      "plan.md",
+      "phase-c-string-rename-map.md",
+      "brain-staleness-audit-2026-05-24.md"
+    ]
+  },
+  "inbox_unread_count": 0,
+  "last_5_files_touched_24h": [
+    "_shared-memory/PROGRESS/Sinister Kernel APK.md",
+    "_shared-memory/heartbeats/kernel-apk.json",
+    "tools/sinister-cast/leak-audit.ps1",
+    "_shared-memory/knowledge/sub-agent-ascii-only-prompt-template-doctrine-2026-05-24.md",
+    "_shared-memory/inbox/diagnose/2026-05-24T2004Z-from-kernel-apk-resync-source-tree-blocker-and-brain-hygiene.json"
+  ],
+  "pre_warm_reads": [
+    "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Sinister Kernel APK.md",
+    "D:\\Sinister Sanctum\\_shared-memory\\plans\\kernel-apk-adb-view-system-2026-05-24\\plan.md",
+    "D:\\Sinister Sanctum\\_shared-memory\\plans\\kernel-apk-adb-view-system-2026-05-24\\phase-c-string-rename-map.md",
+    "D:\\Sinister Sanctum\\_shared-memory\\plans\\kernel-apk-adb-view-system-2026-05-24\\brain-staleness-audit-2026-05-24.md",
+    "D:\\Sinister Sanctum\\_shared-memory\\heartbeats\\kernel-apk.json",
+    "D:\\Sinister Sanctum\\_shared-memory\\knowledge\\sub-agent-ascii-only-prompt-template-doctrine-2026-05-24.md"
+  ],
+  "this_iter_artifacts": {
+    "script_fix": "tools/sinister-cast/leak-audit.ps1 (DeviceSerial-mandatory -> conditional on -DryRun; DRY-RUN -Json smoke PASS, both .md + .json output verified)",
+    "brain_archive": "_shared-memory/knowledge/_archive/factory-reset-cures-modem-stuck-pdp-2026-05-21.md (moved from live; not in _INDEX.md so no row to update)",
+    "brain_refresh_1": "_shared-memory/knowledge/audit-pass-is-output-2026-05-21.md (appended 20:04Z section: v0.97.50 verification; 4 audit domains hold)",
+    "brain_refresh_2": "_shared-memory/knowledge/snap-account-24h-survival-doctrine-2026-05-21.md (appended 20:04Z section: ship-status table through v0.97.50)",
+    "brain_new": "_shared-memory/knowledge/sub-agent-ascii-only-prompt-template-doctrine-2026-05-24.md (NEW; codifies em-dash gotcha prompt-level guardrail)",
+    "cross_lane": "_shared-memory/inbox/diagnose/2026-05-24T2004Z-from-kernel-apk-resync-source-tree-blocker-and-brain-hygiene.json"
+  },
+  "source_edit_block": {
+    "still_in_effect": true,
+    "evidence": "3rd independent evidence point this iter: diagnose lane fsck 13:55Z + my git status 17:58Z + brain staleness audit cross-check v0.97.50 vs cda2e4e all confirm",
+    "queue_row_for_operator": "_shared-memory/OPERATOR-ACTION-QUEUE.md 2026-05-24T19:30Z unchanged (operator picks a/b/c)"
+  },
+  "carry_forward": [
+    "Operator picks (a)/(b)/(c) on OPERATOR-ACTION-QUEUE 19:30Z row to unblock source edits",
+    "Apply Phase C string-rename diff (sed recipe ready) -- single commit once source-tree restored",
+    "Build SinisterCastService.kt APK-side companion (Phase A.1) once source-tree restored; bridge.py contract frozen",
+    "Run leak-audit.ps1 LIVE against P1 + P2 once they reconnect; baseline pre/post Phase B fix",
+    "Next iter: nothing actionable on kernel-apk scope until source-tree unblocks OR kernel-apk-addressed operator utterance arrives -- correct LOOP-mode pause per rule 3 (genuinely blocked on external signal)"
+  ],
+  "operator_directive_at_session": "spawn via EVE.exe with SWARM=on LOOP=on RESUME mode; cold-start phrase auto-injected detect-similar (no fresh similar agents within window) + 7 unread sanctum-addressed utterances surfaced not executed per sanctum-scope discipline; loop iter shipped 8 deliverables and pauses cleanly per loop-mode rule 3"
+}

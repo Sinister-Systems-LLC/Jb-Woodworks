@@ -1,0 +1,34 @@
+{
+  "schema_version": "sinister.resume-point.v1",
+  "ts_utc": "2026-05-25T01:45Z",
+  "project": "eve-compliance",
+  "agent_name": "eve-compliance",
+  "mode": "resume",
+  "focus_intent": "R2 ChatArea cooldown friendly UI SHIPPED (open follow-up #2 closed; commit 334a03b on agent/eve-compliance/cooldown-ui-2026-05-25; 58/58 vitest PASS; branch pushed to z0nian/LetsText per single-repo-push-policy carve-out). Next iter: #3 PhotoDNA hash integration — research API surface area, scaffold lib + scanner integration to replace sha256-of-bytes CSAM_HASH_MATCH placeholder.",
+  "git": {
+    "branch": "agent/eve-compliance/cooldown-ui-2026-05-25 (canonical letstext repo at C:/Users/Zonia/Desktop/LetsText)",
+    "head": "334a03b",
+    "head_msg": "eve-compliance R2: ChatArea cooldown friendly UI (open follow-up #2)"
+  },
+  "progress_top3": [
+    "R2 2026-05-25T01:45Z ChatArea cooldown friendly UI shipped — 5-surface change (backend endpoint + parser lib + react-query hook + banner component + chat-area + upload-manager wire-up); 6 new vitest tests (58/58 PASS); 29-case frontend test file ready for dashboard test infra",
+    "R1 2026-05-24T22:15Z NCMEC auto-draft shipped on parallel branch (commit 7ac12b1, 68/68 vitest, 16 new tests)",
+    "R0 2026-05-24T20:50Z lane bootstrapped — inherited 4 commits from letstext lane (image moderation pipeline shipped end-to-end + 52/52 baseline)"
+  ],
+  "last_5_files_touched_24h": [
+    "C:/Users/Zonia/Desktop/LetsText/dashboard/lib/cooldown-error.ts (NEW pure parser+formatter)",
+    "C:/Users/Zonia/Desktop/LetsText/dashboard/components/inbox/media-cooldown-banner.tsx (NEW)",
+    "C:/Users/Zonia/Desktop/LetsText/dashboard/hooks/use-media-cooldown.ts (NEW)",
+    "C:/Users/Zonia/Desktop/LetsText/dashboard/lib/upload-manager.ts (cooldown detection + queue abort)",
+    "C:/Users/Zonia/Desktop/LetsText/backend/src/lib/image-moderation.ts (added getCooldownStatusForUser)"
+  ],
+  "pre_warm_reads": [
+    "D:/Sinister Sanctum/CLAUDE.md",
+    "D:/Sinister Sanctum/projects/eve-compliance/CLAUDE.md",
+    "D:/Sinister Sanctum/_shared-memory/PROGRESS/EVE Compliance.md",
+    "C:/Users/Zonia/Desktop/LetsText/backend/src/lib/image-moderation.ts",
+    "C:/Users/Zonia/Desktop/LetsText/backend/src/routes/upload.ts",
+    "C:/Users/Zonia/Desktop/LetsText/docs/DEMO-IMAGE-MODERATION.md"
+  ],
+  "first_session_work_unit": "Iter R3: #3 PhotoDNA hash integration. The current CSAM_HASH_MATCH path in lib/image-moderation.ts uses a sha256-of-raw-bytes placeholder (collides only on byte-identical files). Real PhotoDNA needs Microsoft's NDA + Azure approval — scaffold the hash-lookup abstraction so a real provider drops in later; for dev use a perceptual hash like pHash (npm: sharp-phash or imghash) seeded against a tiny demo blocklist file. Add unit tests for hash → match-or-no-match. Composition: this is the OTHER half of the CSAM-detection path (classifier already shipped in handoff baseline; hash-match wires up the faster pre-classifier short-circuit)."
+}

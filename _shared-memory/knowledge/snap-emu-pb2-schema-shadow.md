@@ -1,3 +1,9 @@
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 0
+  half_life_days: 180
+-->
 # Snap EMU: SHORT vs EXTENDED snap_register_pb2 — sys.path shadow gap
 
 > **Author:** Sinister Snap API (Claude agent, 2026-05-21 00:55)

@@ -1,0 +1,71 @@
+{
+  "schema_version": "sinister.resume-point.v1",
+  "ts_utc": "2026-05-24T19:35:00Z",
+  "project": "Kernel APK",
+  "agent_name": "kernel-apk",
+  "mode": "resume",
+  "focus_intent": "SWARM-mode pre-flight Phase A/B/C (SinisterCast bridge + leak-audit scanner + UI string-rename map) + brain doctrine + brain staleness audit; source-edit still operator-gated by clone tree corruption",
+  "git": {
+    "branch": "agent/sinister-kernel-apk/crispy-cosmos-resume",
+    "inner_source_repo_status": "CORRUPT — git status fails with fatal: unable to read tree (3b3617a8b494e847cd4f21b0f8afb4046dfe5294)",
+    "local_head_label": "cda2e4e v0.97.9 (vs live production v0.97.47)",
+    "sanctum_branch": "agent/sinister-os-mobile/p0-spec-2026-05-24"
+  },
+  "progress_top3": [
+    "2026-05-24 19:35Z — SWARM mode (4 parallel sub-agents); shipped 11 clone-independent deliverables (bridge.py / viewer.html / leak-audit.ps1 / brain doctrine / staleness audit / phase-c map / queue row / cross-lane ask / brain Discoveries append); em-dash gotcha caught + fixed mid-turn",
+    "2026-05-24 18:55Z — PLAN delivered for 18:14Z operator directive (ADB-view + PC-leak + UI cleanup); BLOCKER still gates source edits",
+    "2026-05-24 17:58Z — RESUME (dormant 12h+) + 4 URGENT inbox triage + BLOCKER finding (clone out-of-sync vs live production)"
+  ],
+  "latest_plan": {
+    "dir": "_shared-memory/plans/kernel-apk-adb-view-system-2026-05-24/",
+    "artifacts": [
+      "plan.md",
+      "phase-c-string-rename-map.md",
+      "brain-staleness-audit-2026-05-24.md"
+    ]
+  },
+  "inbox_unread_count": 0,
+  "last_5_files_touched_24h": [
+    "_shared-memory/PROGRESS/Sinister Kernel APK.md",
+    "_shared-memory/heartbeats/kernel-apk.json",
+    "tools/sinister-cast/leak-audit.ps1",
+    "_shared-memory/knowledge/sinistercast-pc-leak-doctrine-2026-05-24.md",
+    "_shared-memory/OPERATOR-ACTION-QUEUE.md"
+  ],
+  "pre_warm_reads": [
+    "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Sinister Kernel APK.md",
+    "D:\\Sinister Sanctum\\_shared-memory\\plans\\kernel-apk-adb-view-system-2026-05-24\\plan.md",
+    "D:\\Sinister Sanctum\\_shared-memory\\plans\\kernel-apk-adb-view-system-2026-05-24\\phase-c-string-rename-map.md",
+    "D:\\Sinister Sanctum\\_shared-memory\\heartbeats\\kernel-apk.json",
+    "D:\\Sinister Sanctum\\_shared-memory\\knowledge\\sinistercast-pc-leak-doctrine-2026-05-24.md",
+    "D:\\Sinister Sanctum\\_shared-memory\\knowledge\\operator-paced-outage-discipline-2026-05-21.md"
+  ],
+  "swarm_session_artifacts": {
+    "phase_a_pc_side": [
+      "D:\\Sinister Sanctum\\tools\\sinister-cast\\bridge.py (163 LOC, py_compile PARSE_OK)",
+      "D:\\Sinister Sanctum\\tools\\sinister-cast\\viewer.html (126 LOC)",
+      "D:\\Sinister Sanctum\\tools\\sinister-cast\\README.md (58 LOC)"
+    ],
+    "phase_b_audit_tool": [
+      "D:\\Sinister Sanctum\\tools\\sinister-cast\\leak-audit.ps1 (505 LOC, ParseFile PARSE_OK post em-dash fix, dry-run PASS)",
+      "D:\\Sinister Sanctum\\tools\\sinister-cast\\leak-audit.README.md"
+    ],
+    "phase_c_string_map": "_shared-memory/plans/kernel-apk-adb-view-system-2026-05-24/phase-c-string-rename-map.md",
+    "brain_new": "_shared-memory/knowledge/sinistercast-pc-leak-doctrine-2026-05-24.md (98 LOC, _INDEX.md updated)",
+    "brain_audit": "_shared-memory/plans/kernel-apk-adb-view-system-2026-05-24/brain-staleness-audit-2026-05-24.md (21 entries: 17 OK / 2 refresh / 1 archive)"
+  },
+  "source_edit_block": {
+    "still_in_effect": true,
+    "evidence": "git status fails with unable to read tree; live ships at v0.97.47 while this clone HEAD at v0.97.9",
+    "queue_row_for_operator": "_shared-memory/OPERATOR-ACTION-QUEUE.md 2026-05-24T19:30Z 🟠 high — 3 unblock options (a)/(b)/(c)"
+  },
+  "carry_forward": [
+    "Operator picks (a)/(b)/(c) on OPERATOR-ACTION-QUEUE 19:30Z row to unblock source edits",
+    "Apply Phase C string-rename diff (sed recipe ready) — single commit once source-tree restored",
+    "Build SinisterCastService.kt APK-side companion (Phase A.1) once source-tree restored — bridge.py contract is frozen + reviewable",
+    "Run leak-audit.ps1 against P1 + P2 (P1 0/3 PI / P2 3/3 PI per operator 17:31Z) — baseline pre/post Phase B fix",
+    "Apply brain-staleness-audit recommendations (2 refresh / 1 archive) when next consolidation window opens",
+    "Sub-agent prompt template: add explicit 'ASCII only — no em-dashes/smart-quotes/ellipsis' rule for PS1 deliverables (powershell-emdash gotcha re-bit this turn)"
+  ],
+  "operator_directive_at_session": "complete all you can / Auto mode active / your in swarm mode use all the parrallel agents (19:30Z mid-turn directive honored — 4 sub-agents dispatched, all completed with deliverables landing on disk)"
+}

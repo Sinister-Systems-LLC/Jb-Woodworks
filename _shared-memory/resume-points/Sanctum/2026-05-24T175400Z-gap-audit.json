@@ -1,0 +1,38 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-24T17:54Z",
+    "project": "sanctum",
+    "agent_name": "test-modes-gap-audit",
+    "agent_display": "Sinister Custodian (gap audit)",
+    "mode": "resume-loop",
+    "loop_iter": 5,
+    "swarm_role": "test-modes 5x-parallel sub-area C (jcode hard-gaps audit, partial)",
+    "focus_intent": "Shipped jcode-parity gap audit + R8 probe-defect fix (24->25 PASS). 2 real-fails left (R21 daemon-idle + R29 rkoj-iter7 unmerged) - both pre-existing operator-action, NOT new gaps. Sibling A shipped forge-memory pre-fetch; sibling B shipped burn-first multi-account rotation; D+E partials. Sub-area C remainder = ship one of R23/R24/R25/R28 (Forge owner for first three, Sanctum for R28).",
+    "shipped_this_iter": [
+        "automations/jcode-parity-probe.ps1 - R8 $rufloPaths updated (sanctum-internal first; npm-global fallback)",
+        "_shared-memory/knowledge/jcode-parity-gap-audit-2026-05-24-test-modes.md (NEW, 8-section verified findings; siblings appended addendum §9)",
+        "_shared-memory/cross-agent/2026-05-24T1735Z-test-modes-5x-parallel-claims.md - sub-area C marked PARTIAL with deliverable list",
+        "_shared-memory/heartbeats/test-modes-gap-audit.json - slug-ceded from test-modes (sibling iter4 owns)",
+        "_shared-memory/PROGRESS/test-modes.md - turn 5 row prepended (Shipped/In-flight/Open + no-bullshit ledger)",
+        "Operator utterance 2026-05-24T17:21:54Z acked with deliverable preview"
+    ],
+    "probe_baseline_after_my_fix": {
+        "pass": 25,
+        "real_fail": 2,
+        "expected_fail": 4,
+        "total": 31,
+        "real_fail_rows": ["R21 (daemon-idle on :5077 - operator-action, daemon auto-spawned on F2 in Forge but not at cold-start)", "R29 (Qt picker_overlay.py on rkoj-iter7 unmerged - already operator queue)"]
+    },
+    "open_for_next_iter": [
+        "Sub-area C remainder: ship ONE of R23/R24/R25/R28 (claude-hooks PH13 / Skill_Seekers PH12 / agentgrep PH14 / sinister-mermaid-render Rust fork)",
+        "R21 launcher auto-start daemon recommendation (start-sinister-session.ps1 between Phase 2 and Phase 3)",
+        "Sub-area D remainder: projects.json default_modes audit on all 24 projects + bat re-prompt-on-resume verification",
+        "Sub-area E remainder: consolidated status doc still to be written + 8 more utterances need ack"
+    ],
+    "pre_warm_reads": [
+        "D:\\Sinister Sanctum\\_shared-memory\\knowledge\\jcode-parity-gap-audit-2026-05-24-test-modes.md",
+        "D:\\Sinister Sanctum\\_shared-memory\\knowledge\\jcode-feature-matrix.md",
+        "D:\\Sinister Sanctum\\_shared-memory\\cross-agent\\2026-05-24T1735Z-test-modes-5x-parallel-claims.md",
+        "D:\\Sinister Sanctum\\automations\\jcode-parity-probe.ps1"
+    ]
+}

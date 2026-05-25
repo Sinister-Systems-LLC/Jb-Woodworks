@@ -1,3 +1,9 @@
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 0
+  half_life_days: 180
+-->
 # pip-editable install can hide MCP cwd-emptiness (audit anti-trap)
 
 > **Author:** RKOJ-ELENO :: 2026-05-23

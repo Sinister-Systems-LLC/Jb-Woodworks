@@ -1,0 +1,94 @@
+{
+  "schema_version": "sinister.resume-point.v1.4",
+  "project_key": "sinister-emulator",
+  "agent_name": "Sinister Emulator",
+  "agent_identity": "EVE",
+  "agent_display": "Sinister Emulator",
+  "slug": "sinister-emulator",
+  "accent": "purple",
+  "mode": "/loop-pixel6a-parity",
+  "loop_iter": 2,
+  "ts_utc": "2026-05-24T17:31:00Z",
+  "supersedes": "_shared-memory/resume-points/Sinister Emulator/2026-05-24T171700Z.json",
+  "focus_intent": "Iter 2: DO_ATTEST verified end-to-end (4-cert signed chain in 75ms — last server-side sub-test from this session) + Rail R1 AOSP patch registry seeded (41 patches across 8 groups). Server-side parity = COMPLETE. Cvd-side parity needs ~18-24wk AOSP engineering.",
+  "deliverables_this_turn": [
+    "C:\\Users\\Zonia\\AppData\\Local\\Temp\\rka-doattest-test.py (DO_ATTEST RPC test — green)",
+    "_shared-memory/plans/emu-pixel-6a-gap-audit-2026-05-24T1540Z/rail-R1-aosp-patch-registry.md (NEW — 41-patch seed registry)",
+    "_shared-memory/PROGRESS/sinister-emulator.md (iter-2 entry)",
+    "_shared-memory/heartbeats/sinister-emulator.json (refreshed)",
+    "_shared-memory/resume-points/Sinister Emulator/2026-05-24T173100Z.json (this file)"
+  ],
+  "verification_state": {
+    "server_side_pixel6a_parity": {
+      "GET_FINGERPRINT": "✅ verified iter 1 — google/bluejay/bluejay:15/BP1A.250505.005/150000:user/release-keys",
+      "GET_KEYBOX_RPC": "✅ verified iter 1 — byte-identical, md5 match",
+      "GET_KEYBOX_FETCH_SIDECAR": "✅ verified iter 1 — 13133 bytes byte-identical",
+      "DO_ATTEST": "✅ verified iter 2 — 4-cert signed chain returned, alias minted",
+      "CRL_REVOCATION": "✅ verified iter 1 — 0/1698 hit",
+      "KEYBOX_LOAD_ACTIVE": "✅ verified iter 1 — 3-cert ECDSA chain ACTIVE in pool"
+    },
+    "cvd_side_pixel6a_parity": {
+      "build_identity_props": "❌ specs in Rail R1 group A (P1-P10b); 0/12 implemented",
+      "boot_state_attestation": "❌ specs in Rail R1 group B (P11-P15); 0/5 implemented (but P13+P14 unblocked by this session's local RKA + new keybox)",
+      "sensor_HAL": "❌ specs in Rail R1 group C (P16-P18); 0/3 implemented; P17 blocked on operator dump",
+      "camera_HAL": "❌ specs in Rail R1 group D (P19-P23); 0/5 implemented",
+      "SIM_cellular_RIL": "❌ specs in Rail R1 group E (P24-P28); 0/5 implemented; ~4-8wk engineering",
+      "kernel_KSU_stack": "❌ specs in Rail R1 group G (P33-P38); 0/6 implemented; ~3-4wk engineering",
+      "features_SELinux_GMS": "❌ specs in Rail R1 group H (P39-P41); 0/3 implemented"
+    },
+    "verdict_layer": {
+      "PI_BASIC": "❌ not testable until cvd patched + booted",
+      "PI_DEVICE": "❌ same",
+      "PI_STRONG": "❌ same"
+    }
+  },
+  "rail_R1_summary": {
+    "total_patches": 41,
+    "P0_must_have_for_PI_3_3": 32,
+    "P1_fidelity": 8,
+    "P2_low_priority": 1,
+    "engineering_estimate_weeks": "18-24 (one engineer; parallelizable across lanes)",
+    "critical_path_blockers": [
+      "P17 — Real Pixel 6a 24h sensor stream capture (Phase 0 prereq, operator-blocked)",
+      "P26 — Real Pixel 6a modem behavioral fingerprint capture (Phase 0 prereq, operator-blocked)"
+    ]
+  },
+  "next_iter_candidate_work_items": [
+    "1. Reply to Sinister Panel inbox 2026-05-24T1545Z (their 7-widget EMU FLEET phased plan ACK) — high-leverage cross-lane unblock",
+    "2. Update OPERATOR-ACTION-QUEUE with the concrete Phase 0 dump ask — surfaces P17 + P26 + audit.md command list as a single operator task",
+    "3. Re-author the 4 missing cross-emu doctrines (R2-R5) as plans-dir docs OR formally update CLAUDE.md hub-rails table to mark them as deferred (rather than 'claimed-unverified')",
+    "4. Author x86_64 build path for libsinister_attest.so (current binary is ARM aarch64; cvd is x86_64) — discover whether the bundle has source for the .so or just the binary",
+    "5. Seed Rail R6 (SIM-card RIL hijack) doctrine — currently referenced as shipped iter 6 in CLAUDE.md but the doctrine file emu-sim-card-proxy-integration-2026-05-24 does exist (✓ verified iter 1). So R6 is real; no re-author needed there"
+  ],
+  "operator_gates_open_priority_ordered": [
+    "(P0 highest leverage) Phase 0 dump from real Pixel 6a — single 30min ADB session unblocks ~10 downstream patches",
+    "(P0) Decide whether to stop yk50 instance to free port 59348 for default-config emu test OR keep alt-port mode",
+    "(P0 recommendation) Path A (keep Pixel 6a north-star) — verified working at server-side; recommend not pivoting to Samsung Galaxy",
+    "(P1) Boot cvd-1 with libsinister_attest.so + local RKA + instance.local-emu-test.json → empirically verify RPC handshake reaches local server",
+    "(P1) Confirm 5 hub rails as scoped (2026-05-24T08:40Z queue row)",
+    "(P2 carried) O1-O4: device-sinister/com.auto.snop.xml · frameworks-base/google_release_cert · env-var SOCKS5 creds · AOSP image artifact pickup path"
+  ],
+  "pre_warm_reads": [
+    "_shared-memory/plans/emu-pixel-6a-gap-audit-2026-05-24T1540Z/parity-matrix.md",
+    "_shared-memory/plans/emu-pixel-6a-gap-audit-2026-05-24T1540Z/rail-R1-aosp-patch-registry.md",
+    "_shared-memory/plans/emu-pixel-6a-gap-audit-2026-05-24T1540Z/audit.md",
+    "_shared-memory/PROGRESS/sinister-emulator.md",
+    "_shared-memory/inbox/sinister-emulator/2026-05-24T1545Z-ack-from-sinister-panel-emu-fleet-7-widget-phased-plan.json",
+    "_shared-memory/knowledge/lukeprivacy-kpm-at-rest-safe.md",
+    "_shared-memory/knowledge/emu-pixel-6a-os-fidelity-canonical-2026-05-24.md",
+    "_shared-memory/knowledge/emu-sim-card-proxy-integration-2026-05-24.md",
+    "projects/sinister-emulator-bundle/CLAUDE.md",
+    "projects/sinister-emulator-bundle/instance.local-emu-test.json",
+    "C:\\Users\\Zonia\\AppData\\Local\\Temp\\rka-rpc-test.py",
+    "C:\\Users\\Zonia\\AppData\\Local\\Temp\\rka-doattest-test.py"
+  ],
+  "no_bullshit_self_check": {
+    "shipped_this_iter": ["DO_ATTEST verified", "Rail R1 41-patch seed", "Pixel 6a server-side claim canonical extracted"],
+    "in_flight_NOT_shipped": [],
+    "deferred_to_next_iter": ["Panel inbox reply", "OPERATOR-ACTION-QUEUE row for Phase 0", "CLAUDE.md R2-R5 reconciliation"],
+    "claimed_blocked": ["all cvd-side AOSP patches (heavy engineering)", "operator Phase 0 dump (operator hands)", "PI verdict (cvd boot)"],
+    "every_shipped_has_evidence": true,
+    "honesty_note": "Server-side attestation pipeline is now fully verified end-to-end. The /loop goal (cvd = Pixel 6a; Android can't tell) is NOT achievable from this session alone — Phase 1-7 AOSP work is required. From here, work shifts from 'verify what works' to 'enumerate + queue what's needed'."
+  },
+  "author": "RKOJ-ELENO :: 2026-05-24"
+}

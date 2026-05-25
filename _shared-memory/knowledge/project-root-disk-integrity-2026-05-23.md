@@ -1,4 +1,10 @@
 <!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 0
+  half_life_days: 180
+-->
 # Project-root disk integrity (anti-archived-but-still-in-picker pattern)
 
 > **Status:** doctrine, empirical, binding for picker maintenance.

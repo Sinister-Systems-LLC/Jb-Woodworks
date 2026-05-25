@@ -1,0 +1,41 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-24T18:55Z",
+    "project": "sanctum",
+    "agent_name": "sanctum",
+    "agent_display": "Sinister Sanctum",
+    "mode": "resume",
+    "loop_iter": 7,
+    "swarm_role": "two sanctum sessions active; this one owns rotation/contradict/quality + EXE-icon",
+    "focus_intent": "Operator 18:40Z pivot to round-robin + contradict + quality-monotonic; operator 18:51Z added prune-as-add + restore JOKR no-bg icon on EVE.exe. All 4 deliverables shipped + smoke-tested this turn.",
+    "shipped_this_iter": [
+        "_shared-memory/claude-accounts.json rotation_strategy burn-first -> round-robin-strict (smoke PASS: cursor 0->1 after pick1; correctly skips disabled accounts)",
+        "_shared-memory/counter-arguments.jsonl row 18:46Z best=a (logged the strategy flip decision BEFORE acting; composes with contradict-system focus)",
+        "automations/quality-monotonic-loop.ps1 NEW (~150 LOC; wraps counter-arg.ps1; regression+plateau both smoke-tested; per-iter rows in _shared-memory/quality-loop-log.jsonl)",
+        "automations/eve-launcher/make-icon.py NEW (idempotent PNG->ICO converter; default source = JOKR banner-hero-statement.png)",
+        "automations/eve-launcher/assets/eve-icon.ico (160030 bytes, 7 sizes 16-256, transparent padding)",
+        "EVE.exe rebuilt with new icon (build-eve-exe.bat exit 0; mirrored to %USERPROFILE%\\.eve)",
+        "_shared-memory/agent-modes/sanctum.json preserved (OTHER session wrote @18:42:50Z; THIS session smoke-tested round-robin to confirm both alive on swarm+loop)",
+        "4 operator-utterance acks: 18:40Z round-robin/contradict/quality; 18:51:00Z efficiency/prune; 18:51:30Z JOKR icon; (earlier 18:30Z screenshot confirmed via mode-flag preservation)"
+    ],
+    "open_for_next_iter": [
+        "Surface to operator: prune-as-add doctrine candidate (compose with no-bullshit rule 8) — drop a brain entry if operator confirms it should be its own row",
+        "Capacity unlock: leo/slot3/slot4 enabled=false in claude-accounts.json; round-robin-strict can't disperse load until ≥1 more account enabled (operator action)",
+        "Quality-monotonic-loop integration: wire into forever-improve.ps1 -Action Review so each work unit auto-tracks score trajectory",
+        "Visual confirm operator opens EVE.exe and sees JOKR icon in taskbar/title (may need icon cache flush: ie4uinit.exe -ClearIconCache)"
+    ],
+    "pre_warm_reads": [
+        "D:\\Sinister Sanctum\\automations\\claude-accounts.ps1",
+        "D:\\Sinister Sanctum\\automations\\quality-monotonic-loop.ps1",
+        "D:\\Sinister Sanctum\\automations\\counter-arg.ps1",
+        "D:\\Sinister Sanctum\\_shared-memory\\quality-loop-log.jsonl",
+        "D:\\Sinister Sanctum\\_shared-memory\\counter-arguments.jsonl"
+    ],
+    "stop_conditions_state": {
+        "brain_rows": "~140 (unchanged this turn — no new brain entry)",
+        "active_plans_lane": 0,
+        "queue_lane_rows": "~6 (one possibly closed: 17:00Z airplane-mode rotation row remains as informational; no new queue rows from this lane)",
+        "quality_loop_smoke": "regression+plateau both verified; loop ready for real workloads"
+    },
+    "counter_arg_link": "_shared-memory/counter-arguments.jsonl row 2026-05-24T18:46Z (round-robin-vs-burn-first decision logged before flip per contradict-system doctrine)"
+}

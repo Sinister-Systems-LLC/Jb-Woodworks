@@ -1,0 +1,43 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-24T18:42:00.0420366Z",
+    "project":  "sinister-os",
+    "agent_name":  "sinister-os",
+    "mode":  "resume",
+    "focus_intent":  "M5 mesh scaffolded; layer 2 (DoH) and layer 3 (per-app proxy) remain PROPOSED",
+    "git":  {
+                "branch":  "agent/sinister-os-mobile/p0-spec-2026-05-24",
+                "head":  "af1f1b851c6fecb1653fe91d6197eb0ad24b73a7",
+                "head_msg":  "sanctum: fleet-health.ps1 (iter-10) + claude-accounts SetKey/Status (iter-9 re-add)",
+                "recent_commits":  [
+                                       "af1f1b8 sanctum: fleet-health.ps1 (iter-10) + claude-accounts SetKey/Status (iter-9 re-add)",
+                                       "af21f38 brain+inbox: refresh sandbox doctrine with keybox+behavioral+scenario; final cross-lane brief",
+                                       "8835676 sinister-os-mobile: Turn 4 ΓÇö kernel cloned + sepolicy draft + cvd budget + Q1-Q10 + branding-spec patch",
+                                       "e093cbc os-mobile/sandbox: behavioral fingerprints + scenario runner",
+                                       "02e9e5d sanctum: claude-accounts.ps1 -Action SetKey + -Action Status (multi-account UX)",
+                                       "eb1ad5c sinister-os: /loop iter 1 ΓÇö overlay LIVE-applied to running CachyOS VM",
+                                       "8ee9ed0 sanctum: P13 self-heal via -AutoRestore (auto-runs seed-resume-points on gap)",
+                                       "50a642d sinister-os: /loop iter 1 ΓÇö slim default + first-boot deferred + EVE-MCP R1 fix",
+                                       "f421ad5 sanctum: P13 lane resume-point coverage protection",
+                                       "d630868 sanctum: seed-resume-points fleet-wide + lane-plan update (16 lanes fixed)"
+                                   ]
+            },
+    "progress_top3":  [
+
+                      ],
+    "latest_plan":  {
+                        "dir":  null,
+                        "artifact":  null
+                    },
+    "inbox_unread_count":  0,
+    "last_5_files_touched_24h":  [
+                                     "_shared-memory\\script-runs\\start-sinister-session-20260524-140241-6dc5.json",
+                                     "_shared-memory\\resume-points\\test-modes-iter4-A\\2026-05-24T180000Z.json",
+                                     "_shared-memory\\script-runs\\start-sinister-session-20260524-140240-65c9.json",
+                                     "_shared-memory\\script-runs\\start-sinister-session-20260524-140239-1321.json",
+                                     "_shared-memory\\script-runs\\start-sinister-session-20260524-140238-c2e8.json"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}

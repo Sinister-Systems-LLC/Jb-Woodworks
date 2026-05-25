@@ -1,3 +1,9 @@
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 1
+  half_life_days: 180
+-->
 # jcode Feature Matrix :: where every jcode capability lives in our Sinister stack
 
 > **Author:** RKOJ-ELENO :: 2026-05-21

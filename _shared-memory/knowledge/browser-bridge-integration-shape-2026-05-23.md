@@ -1,4 +1,10 @@
 <!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- decay:
+  category: preference
+  confidence: 0.9
+  reinforcements: 0
+  half_life_days: 180
+-->
 # Browser-bridge integration shape — wrap not clone (firefox-agent-bridge v0.9.9 audit)
 
 > **Status:** doctrine, audit, proposed

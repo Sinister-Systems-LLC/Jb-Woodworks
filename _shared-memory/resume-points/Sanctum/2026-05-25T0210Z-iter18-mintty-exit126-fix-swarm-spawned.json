@@ -1,0 +1,63 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-25T02:10Z",
+    "project": "sanctum",
+    "agent_name": "sanctum-mintty-fix",
+    "agent_display": "Sinister Sanctum",
+    "mode": "resume",
+    "loop_iter": 18,
+    "swarm_role": "P0 mintty exit-126 root-cause fixer + canonical-protections P14 author + swarm orchestrator for 6 stacked operator directives across images 61-67",
+    "focus_intent": "Operator stacked 7 directives images 61-67 + image-4 mintty bug. P0 (image-4) ROOT-CAUSED + FIXED foreground. 6 remaining directives parallelized across 4 sub-agents. 3 sub-agents back with SHIPPED reports (D=fake-100%/jcode, A=4-slot-cap, B=accounts-page+centered). 1 sub-agent in-flight (E=login/Enter/close/animations + final EVE.exe rebuild).",
+    "shipped_this_iter_foreground": [
+        "automations/spawn-setup-wizard.ps1 lines 136+184 PS-7-only scriptblock-in-replace -> explicit -match + $Matches concat (works on PS 5.1 + 7); survived sibling concurrent edit (now lines 143+195)",
+        "automations/canonical-protections-check.ps1 new P14 (Select-String guard rejects -replace '...', { ... } regression in automations/) -- PASS",
+        "_shared-memory/knowledge/ps51-scriptblock-replace-bug-2026-05-25.md NEW (~85 LOC + decay correction/1.0/365)",
+        "_shared-memory/knowledge/_INDEX.md new top row + _INDEX-DECAY-SCORES.md regenerated (201/198)",
+        "_shared-memory/fleet-updates.jsonl HIGH priority push fu-fix-ps51-scriptblock",
+        "PROGRESS row appended (Sinister Sanctum.md iter-18)",
+        "mesh-coord: registered + released on _shared-memory/knowledge/_INDEX.md (~10min)",
+        "heartbeat sanctum-mintty-fix.json (differentiated slug -- did NOT overwrite sibling sanctum.json iter-20)"
+    ],
+    "shipped_this_iter_via_sub_agents": [
+        "Sub-D (a3ce70f33e7f77cd7): 4 surfaces purged of fake '100% real'; [MEASURED] for live probes / [PROXY] for spawn-count fallback / [ESTIMATE] for transcript-derived; brain entry jcode-usage-tracking-pattern-2026-05-25 (uses /api/oauth/usage real endpoint -- upgrade target for anthropic-usage-probe.ps1)",
+        "Sub-A (a3b6eb099f6f02f32): 4-slot cap removed; 3 files (eve.py L1497+2456 / claude-accounts.ps1 banner+CLI examples / account_manager.py fallback); UN tag for enabled-but-unlinked; smoke proved 5 dynamic slots via SetKey testfive/testsix/testseven; test cleanup done",
+        "Sub-B (a0b4043956ed75b15): Accounts page simplified to 4 actions (Login/Logout/Select/Refresh); API key REMOVED; 4 EVE pages centered (Accounts + Token Analytics + Sinister LINK + already-centered preserved); eve.py -39 net lines; parse-clean"
+    ],
+    "in_flight": [
+        "Sub-E (a1547f68491fc8e23): claude login flow re-test + Enter-progress + EVE.exe close + more animations + FINAL verify-eve-features.ps1 -AutoRebuild -SyncMirror after siblings done"
+    ],
+    "open_for_next_iter": [
+        "When Sub-E returns: verify EVE.exe rebuild succeeded + smoke test fresh launch (NOT operator's running instance) + ack all 4 sub-agent ship reports together",
+        "Operator action: close+reopen running EVE.exe to load new bundle (mirror sync blocked while running)",
+        "Operator action: PASTE actual names+emails+keys list (still missing from 22:56Z message)",
+        "Per-page UI audit: Health/Quantum sub-pages need centered-menu verification (B confirmed Mesh/Queue/Utterances/Agents/Sanctum-Automations already done by prior sibling)",
+        "M2 (EffConf column in _INDEX.md per memory completion plan) -- deferred this iter for urgent operator directives",
+        "Run quality-monotonic-loop + forever-improve checkpoint on this iter's work"
+    ],
+    "pre_warm_reads": [
+        "D:\\Sinister Sanctum\\automations\\spawn-setup-wizard.ps1 (post-fix; sibling-expanded checklist)",
+        "D:\\Sinister Sanctum\\automations\\canonical-protections-check.ps1 (P14)",
+        "D:\\Sinister Sanctum\\_shared-memory\\knowledge\\ps51-scriptblock-replace-bug-2026-05-25.md",
+        "D:\\Sinister Sanctum\\_shared-memory\\knowledge\\jcode-usage-tracking-pattern-2026-05-25.md (sibling D shipped)",
+        "D:\\Sinister Sanctum\\automations\\eve-launcher\\eve.py (4 sub-agents touched it)"
+    ],
+    "smoke_results_iter_18": {
+        "spawn_setup_wizard_dryrun": "PASS (correct bash path /d/Sinister Sanctum/_shared-memory/setup/wizard-spawn-*.sh)",
+        "canonical_protections_check": "PASS=12 FAIL=2 (P14 new PASS; P12+P13 pre-existing not this scope)",
+        "brain_decay_export": "PASS (201 rows, 198 annotated, +1 from prior)",
+        "fleet_update_push": "PASS (fu-fix-ps51 high priority)",
+        "ps_match_test": "PASS ('D:\\Sinister Sanctum' -> '/d/Sinister Sanctum' via explicit -match)",
+        "sub_agent_D_smoke": "PASS (account_manager --smoke shows [PROXY] badges + no fake 100%)",
+        "sub_agent_A_smoke": "PASS (5-slot dynamic via SetKey + post-add Status shows ON LINKED/UNLINKED tags)",
+        "sub_agent_B_smoke": "PASS (eve.py py_compile + ast.parse + 4 actions present + API-key removed + 4 pages centered)"
+    },
+    "stop_conditions_state": {
+        "queue_lane_rows": "~9 (+1 operator directives row)",
+        "tasks_completed_session_this_iter": 6,
+        "utterances_acked_this_session": 25,
+        "brain_rows": "201 (+1 this iter ps51-scriptblock; +1 from sibling D jcode-usage)",
+        "active_plans_lane": 1,
+        "loop_iter": 18,
+        "loop_continue_or_pause": "in-flight Sub-E; when E returns + rebuild verified, this iter closes; immediate next iter pivots to M2 + queue work per loop-mode doctrine"
+    }
+}

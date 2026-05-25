@@ -1,0 +1,41 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-24T17:13Z",
+    "project":  "sanctum",
+    "agent_name":  "test-modes",
+    "agent_display":  "Sinister Custodian",
+    "mode":  "resume-loop",
+    "loop_iter":  3,
+    "focus_intent":  "Reorg complete (operator-side gates remain); built counter-arg.ps1 wrapper; corrected LetsText/jbw advice",
+    "shipped_this_iter":  [
+                              "counter-arg.ps1 wrapper (95 LOC, parse-OK, mutex-protected, smoke-tested)",
+                              "Diagnosed LetsText: ACTIVE sibling letstext lane committing (NOT stale lock)",
+                              "Diagnosed jbw-deploy + jbw-proxy: no .git, sibling-active (NOT git worktrees)",
+                              "Queue updated with corrected guidance (3 options for LetsText)",
+                              "Logged real counter-arg about LetsText pivot decision (best_path=c, coordinate via inbox)"
+                          ],
+    "d_drive_final_state":  {
+                                "sibling_active_3":  [
+                                                         "LetsText (letstext lane committing)",
+                                                         "jbw-deploy (jb-woodworks build target)",
+                                                         "jbw-proxy (jb-woodworks proxy)"
+                                                     ],
+                                "target_3":  [
+                                                 "Backups",
+                                                 "Personal",
+                                                 "Sinister Sanctum"
+                                             ],
+                                "root_entries":  6
+                            },
+    "open_for_next_iter":  [
+                               "poll LetsText for sibling-session boundary",
+                               "poll jbw-deploy / jbw-proxy mtimes for idle window",
+                               "check for new operator utterances"
+                           ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\OPERATOR-ACTION-QUEUE.md (rows ~284-322 = my reorg row)",
+                           "D:\\Sinister Sanctum\\_shared-memory\\counter-arguments.jsonl",
+                           "D:\\Sinister Sanctum\\automations\\counter-arg.ps1",
+                           "D:\\Sinister Sanctum\\automations\\d-drive-reorg.ps1"
+                       ]
+}

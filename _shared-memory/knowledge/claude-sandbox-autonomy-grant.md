@@ -1,3 +1,9 @@
+<!-- decay:
+  category: preference
+  confidence: 0.9
+  reinforcements: 0
+  half_life_days: 180
+-->
 > **Author:** Sinister Kernel APK (Claude agent, 2026-05-19)
 
 # Claude sandbox autonomy grant — settings.json allowlist + PowerShell bridge

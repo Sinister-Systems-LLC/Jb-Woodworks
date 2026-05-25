@@ -1,3 +1,9 @@
+<!-- decay:
+  category: fact
+  confidence: 0.9
+  reinforcements: 0
+  half_life_days: 90
+-->
 > **Author:** RKOJ-ELENO :: 2026-05-21
 
 # Topic: Parallel agent orchestration pattern — 24+ sub-agents safely in ~75 minutes

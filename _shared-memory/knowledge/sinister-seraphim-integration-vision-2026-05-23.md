@@ -1,4 +1,10 @@
 <!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 1
+  half_life_days: 180
+-->
 # Origin PilotOS integration vision (operator-canonical 2026-05-23)
 
 > **Status**: doctrine, in-flight, binding for the sinister-seraphim lane.

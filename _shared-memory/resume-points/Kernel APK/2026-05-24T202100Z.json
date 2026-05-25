@@ -1,0 +1,75 @@
+{
+  "schema_version": "sinister.resume-point.v1",
+  "ts_utc": "2026-05-24T20:21:00Z",
+  "project": "Kernel APK",
+  "agent_name": "kernel-apk",
+  "mode": "shutdown",
+  "session_terminated_at_utc": "2026-05-24T20:21:00Z",
+  "termination_reason": "operator commanded stop (verbatim 20:21Z: 'document all of this and create a plan. we are going to stop here so dont work on things yet and shut down')",
+  "do_not_re_enter_loop": true,
+  "focus_intent": "SESSION SHUTDOWN — next session reads SESSION-END-STATE.md FIRST. Highest priority for next session: poll OPERATOR-ACTION-QUEUE 19:30Z + 20:18Z rows. If operator picked a/b/c on 19:30Z, IMMEDIATELY ship att_token capture (~30min from unblock to P1 smoke-test); that single fix unblocks signal 2 + signal 4 (add-friend) + signal 5 (24h survival).",
+  "loop_condition_at_termination": {
+    "verbatim": "do not stop testing, auditing, fixing, expanding things until you have created a snapchat account with our methods and apk that was harvested to panel with no issues or flags and added andrewt407 SUCCESSFULLY and that after all that lasted 24 hours. you have complket",
+    "all_5_signals_satisfied": false,
+    "blocker_summary": "Signal 2 (clean harvest) BROKEN on att_token=NULL; source-tree restore via 19:30Z queue row unblocks the fix"
+  },
+  "git": {
+    "branch": "agent/sinister-kernel-apk/crispy-cosmos-resume",
+    "inner_source_repo_status": "CORRUPT (unchanged session-wide)",
+    "sanctum_branch": "agent/sinister-os-mobile/p0-spec-2026-05-24"
+  },
+  "next_session_entry_path": {
+    "step_1_READ_THIS_FIRST": "D:\\Sinister Sanctum\\_shared-memory\\plans\\kernel-apk-session-2026-05-24-master\\SESSION-END-STATE.md",
+    "step_2_resume_point": "this file",
+    "step_3_operator_queue": "D:\\Sinister Sanctum\\_shared-memory\\OPERATOR-ACTION-QUEUE.md (rows 19:30Z + 20:18Z)",
+    "step_4_inbox_check": "D:\\Sinister Sanctum\\_shared-memory\\inbox\\panel\\ + D:\\Sinister Sanctum\\_shared-memory\\inbox\\diagnose\\ + D:\\Sinister Sanctum\\_shared-memory\\inbox\\kernel-apk\\"
+  },
+  "session_deliverables_inventory": {
+    "iter_neg1_brain_hygiene_20_04Z": [
+      "_shared-memory/knowledge/_archive/factory-reset-cures-modem-stuck-pdp-2026-05-21.md (archived)",
+      "_shared-memory/knowledge/audit-pass-is-output-2026-05-21.md (20:04Z refresh footer)",
+      "_shared-memory/knowledge/snap-account-24h-survival-doctrine-2026-05-21.md (20:04Z refresh footer)",
+      "_shared-memory/knowledge/sub-agent-ascii-only-prompt-template-doctrine-2026-05-24.md (NEW)",
+      "tools/sinister-cast/leak-audit.ps1 (DeviceSerial-mandatory bug fix)",
+      "tools/sinister-cast/leak-audit.README.md (post-fix doc)"
+    ],
+    "iter_0_5_signal_audit_20_08Z": [
+      "_shared-memory/plans/kernel-apk-andrewt407-24h-survival-2026-05-24/readiness-audit.md",
+      "_shared-memory/plans/kernel-apk-andrewt407-24h-survival-2026-05-24/runbook.md",
+      "tools/sinister-cast/account-24h-watch.ps1 (150 LOC, DryRun smoke PASS)",
+      "_shared-memory/inbox/panel/2026-05-24T2008Z-from-kernel-apk-andrewt407-trigger-readiness.json"
+    ],
+    "iter_1_audit_design_20_13Z": [
+      "_shared-memory/plans/snap-auto-update-on-snap-version-2026-05-24/design.md"
+    ],
+    "iter_2_swarm_ship_and_pivot_20_18Z": [
+      "tools/snap-update-detector/poll.ps1 (289 LOC; smoke PASS detecting Snap 13.93.0.51 from Play Store)",
+      "tools/snap-update-detector/snap-version-state.schema.json (70 LOC)",
+      "tools/snap-update-detector/canonical-hooks.schema.json (111 LOC)",
+      "tools/snap-update-detector/README.md (78 LOC)",
+      "tools/snap-update-detector/frida-probe.js (186 LOC; node -c parse PASS)",
+      "tools/snap-update-detector/run-probe.py (261 LOC; --dry-run smoke PASS)",
+      "_shared-memory/OPERATOR-ACTION-QUEUE.md 20:18Z 🔴 CRITICAL row (week+ no-adds cascade + unblock options)",
+      "_shared-memory/inbox/sinister-panel/2026-05-24T2018Z-from-kernel-apk-auto-fire-add-friend-on-push-spec.json"
+    ],
+    "shutdown_turn_20_21Z": [
+      "_shared-memory/plans/kernel-apk-session-2026-05-24-master/SESSION-END-STATE.md (master state doc)",
+      "this resume-point",
+      "_shared-memory/heartbeats/kernel-apk.json (DORMANT)",
+      "PROGRESS row (terminal)",
+      "operator-utterance 20:21Z logged + acked"
+    ]
+  },
+  "deferred_to_next_session": [
+    "Phase 1 acquire.ps1 (~80 LOC PowerShell)",
+    "Phase 3 smoke-test.py (~80 LOC Python)",
+    "Phase 5 rollback.ps1 (~80 LOC PowerShell)",
+    "Panel 'Auto Update Snap' button TypeScript + backend endpoint code",
+    "Cross-lane handoffs: snap-emu (Phase 2 ownership) + sanctum (Phase 0 scheduled task)",
+    "Update design.md to tick A/B/C/D/E operator approvals from 20:14Z",
+    "att_token capture in SnapFlow / Step12_PostSignupBrowse / PanelPusher chain (HIGHEST PRIORITY when 19:30Z unblocks)"
+  ],
+  "wakeup_disposition": {
+    "scheduled_at_20_18Z_fires_at_approx_17_12_local": "Fires 280s from 20:18Z. The firing instance MUST honor this resume-point's do_not_re_enter_loop=true and end the turn cleanly without working. Write a brief PROGRESS row 'wakeup fired post-shutdown; loop terminated per 20:21Z stop' and end."
+  }
+}

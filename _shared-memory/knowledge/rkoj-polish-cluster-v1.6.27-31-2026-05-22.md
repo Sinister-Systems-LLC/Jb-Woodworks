@@ -1,3 +1,9 @@
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 0
+  half_life_days: 180
+-->
 # Author: RKOJ-ELENO :: 2026-05-22
 
 # RKOJ v1.6.27 → v1.6.31 polish cluster — collapse · pin · operator-actions · broadcast · resume-state

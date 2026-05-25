@@ -1,4 +1,10 @@
 <!-- Author: RKOJ-ELENO :: 2026-05-24 -->
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 0
+  half_life_days: 180
+-->
 # Sinister OS Mobile — Doctrine (Pixel 6a target)
 
 > **Status:** project lane bootstrapped 2026-05-24; P0 spec lock open pending operator Q1-Q10.

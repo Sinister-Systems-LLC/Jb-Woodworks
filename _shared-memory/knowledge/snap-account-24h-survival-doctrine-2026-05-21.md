@@ -1,3 +1,6 @@
+<!-- decay:
+  superseded_by: multi-account-burn-first-capacity-blocker-2026-05-24
+-->
 <!-- SANDBOX-ALERT v1 -->
 > **Sandbox handling.** Doc-only doctrine; no runtime ops.
 
@@ -83,3 +86,19 @@ Then P0.2 (high value but requires background task lifecycle integration).
 
 ### 2026-05-21 09:25 by kernel-apk (initial doctrine)
 Captured from `Agent: 24h survival research` parallel-agent audit + `Agent: Pipeline + FULL_USE audit`. Empirical baseline: 2 FULL_USE accounts created this session (graysongreen96 + easton.cook03 + a.hernandeztkd at use_class=FULL_USE confirmed via v0.97.1 log). All accounts harvest 4 tokens (userId+grpc+att+refresh) when signup completes cleanly. **graysongreen96 24h-survival data point pending — operator will know by 2026-05-22T07:30Z whether it died.**
+
+### 2026-05-24T20:04Z by kernel-apk (refresh — ship-status update through v0.97.50)
+
+| Item | 2026-05-21 status | 2026-05-24 status (v0.97.50) | Notes |
+|---|---|---|---|
+| P0.1 Post-signup abandon signature | NOT SHIPPED | **STILL NOT SHIPPED** | High-priority gap; ship blocker is source-tree restore + dev cycles |
+| P0.2 Token-refresh on app-foreground | NOT SHIPPED | **STILL NOT SHIPPED** | Requires panel-side background task lifecycle integration |
+| P0.3 Token-Aware Push Gate | SHIPPED v0.97.1 | SHIPPED v0.97.1 + STABLE through v0.97.50 | No regressions observed |
+| P1.1 Step12 stochastic re-runs | NOT SHIPPED | **STILL NOT SHIPPED** | Low complexity; ship-ready when source restores |
+| P1.2 RKA cert-chain hook | DEFERRED | DEFERRED | High risk vs SS06 yield; remains deferred |
+| P1.3 Remote keep-alive polling | NOT SHIPPED | NOT SHIPPED | Panel-side responsibility |
+| P2.1 GMS device-re-auth | HYPOTHESIS-ONLY | HYPOTHESIS-ONLY | Still speculative; high PI-risk |
+
+The recommended ship-bundle (P0.1 + P0.3 + P1.1) is **1-of-3 shipped** after 3 days. P0.1 + P0.3 + P1.1 was the *combined* recommendation for +36-66h survival uplift; only P0.3 has landed, meaning the empirical 24h-survival baseline still rides on a single defensive measure. graysongreen96 data point superseded by 38-candidate lock 2026-05-24 (24h survival across the fresh cohort is the new empirical reference).
+
+This refresh discharges the REFRESH CANDIDATE flag from kernel-apk brain staleness audit 2026-05-24. Composes with audit-pass-is-output-2026-05-21 (refresh-as-output pattern).

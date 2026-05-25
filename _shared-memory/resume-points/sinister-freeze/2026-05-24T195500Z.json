@@ -1,0 +1,76 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-24T19:55:00Z",
+    "project": "sinister-freeze",
+    "agent_name": "sinister-freeze",
+    "mode": "resume",
+    "focus_intent": "Frost dashboard refactored onto dashboard-skeleton tokens + .lg-* Liquid Glass classes. Warm rose-magenta accent #CB4878 (operator brief: not too red, not too purple, not too dark). Live with --reload on http://127.0.0.1:5085/ (background task b9ko7ada5). Next: (a) when JS-only ferrari/triage results return long blocks, audit pre line-wrap; (b) refactor remaining freeze surfaces to consume same tokens; (c) pin port 5085 in freeze/config.py since vault squats 5079.",
+    "live_service": {
+        "host": "127.0.0.1",
+        "port": 5085,
+        "url": "http://127.0.0.1:5085/",
+        "background_task_id": "b9ko7ada5",
+        "reload": true,
+        "reload_dir": "freeze",
+        "log_file": "C:/Users/Zonia/AppData/Local/Temp/claude/D--Sinister-Sanctum-projects-sinister-freeze/dccffdc1-bf99-403c-a5d0-a39538254009/tasks/b9ko7ada5.output"
+    },
+    "ui_inheritance": {
+        "canonical_source": "projects/sinister-dashboard-skeleton/dashboard-skeleton/tokens/globals.css",
+        "doctrine": "CLAUDE.md 2026-05-24 UI-canonical hard-canonical (inherit + EXPAND, never fork)",
+        "tokens_imported": ["surface-0..3", "text-primary..disabled", "motion-fast/med/slow", "motion-ease", "radius", "shadow-card/hero", "border-default/hover", "accent-soft/ring/glow"],
+        "lg_classes_imported": ["lg-card", "lg-card-hero", "lg-pill", "lg-button", "lg-input"],
+        "accent_override": {
+            "ramp": {
+                "50":  "#FCE7EE",
+                "100": "#F9CFDD",
+                "200": "#F0A4BD",
+                "300": "#E5779C",
+                "400": "#D85C8A",
+                "500": "#CB4878",
+                "600": "#B43A68",
+                "700": "#8E2B52",
+                "800": "#6A1F3D",
+                "900": "#481528",
+                "950": "#260A14"
+            },
+            "primary": "#CB4878",
+            "rationale": "Operator 2026-05-24 19:48Z: 'purple warm red dark mode style ... not too red not too purple not too dark'. Sits between purple-600 #7C3AED and danger #E5484D on the warm-red axis."
+        },
+        "surface_override": {
+            "surface_0": "#17111B (warm plum-tinted dark, NOT pitch)",
+            "rationale": "Operator brief 'not too dark' — bumped luminance and added warm plum tint so the gradient backdrop reads as 'pretty dark mode' not 'oled black'."
+        },
+        "body_backdrop": "3-stop radial gradient: accent-700 at top-left, accent-500 at top-right, accent-900 at bottom-center, layered over surface-0",
+        "expansion_principle": "Per CLAUDE.md UI-canonical: when this lane needs a primitive the skeleton lacks, add to skeleton FIRST then consume. Current usage stays within the imported subset; no fork."
+    },
+    "smoke_tests": [
+        "_render_index_html() → 14885 chars, no .format() error",
+        "GET / HTTP 200 (15232 bytes, 5ms)",
+        "GET /health HTTP 200",
+        "GET /brief/today HTTP 200",
+        "GET /wrap/today HTTP 200",
+        "GET /scheduler/jobs HTTP 200",
+        "GET /test-drive/upcoming HTTP 200",
+        "GET /ferrari/lookup?q=SF90 HTTP 200"
+    ],
+    "ports_in_use": {
+        "5079": "sinister-vault-api (squatted; Frost re-homed)",
+        "5085": "freeze.app:app (this lane, --reload enabled)"
+    },
+    "open_followups": [
+        "Pin Frost default port to 5085 in freeze/config.py (vault keeps 5079)",
+        "Persist Frost as a real service (Task Scheduler / NSSM) so it survives session-end",
+        "Wire ANTHROPIC_API_KEY + Telegram bot env so brief/wrap leave local-fallback",
+        "Audit pre-block line-wrap when ferrari/triage results exceed card width on narrow viewports",
+        "If skeleton lacks a Frost-specific primitive in future (e.g. lead-card, drive-pill), commit to skeleton FIRST per UI-canonical EXPAND rule"
+    ],
+    "pre_warm_reads": [
+        "D:/Sinister Sanctum/projects/sinister-freeze/CLAUDE.md",
+        "D:/Sinister Sanctum/projects/sinister-freeze/source/freeze/app.py",
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/tokens/globals.css",
+        "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton/dashboard-skeleton/THEME-DOCTRINE.md",
+        "D:/Sinister Sanctum/_shared-memory/knowledge/sinister-ui-canonical-dashboard-skeleton-inheritance-2026-05-24.md",
+        "D:/Sinister Sanctum/_shared-memory/PROGRESS/sinister-freeze.md"
+    ],
+    "inbox_unread_count": 0
+}

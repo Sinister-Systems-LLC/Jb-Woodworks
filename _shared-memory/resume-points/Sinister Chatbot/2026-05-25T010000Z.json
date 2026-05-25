@@ -1,0 +1,60 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-25T01:00Z",
+    "project": "sinister-chatbot",
+    "agent_name": "sinister-chatbot",
+    "agent_display": "Sinister Chatbot",
+    "agent_identity": "EVE",
+    "mode": "resume",
+    "loop_iter": 2,
+    "focus_intent": "Phase 2 step 2 SHIPPED: DPO preference-pair miner endpoint + toolbar button + handler-direct smoke harness (27/27 PASS). Branch agent/sinister-chatbot/dpo-export pushed to origin (Sinister-Panel.git remote, consolidation pending operator approval per 2026-05-25 push-policy).",
+    "git": {
+        "head": "fb323ab",
+        "branch": "agent/sinister-chatbot/dpo-export",
+        "remote": "origin pushed (Sinister-Panel.git — consolidation row #N/A pending)",
+        "main_head_local": "b657d08",
+        "ahead_of_main": 1
+    },
+    "progress_top5": [
+        "2026-05-25 01:00 — DPO export endpoint shipped at /api/chatter/training-dpo-export (137 LOC backend, 52 LOC frontend). exact → fuzzy ≥0.4 → weak fallback. Per-persona JSONL output.",
+        "2026-05-25 01:00 — handler-direct smoke harness scripts/smoke-dpo-export.mjs — 27/27 PASS covering 8 scenarios (empty, no-bads, exact, fuzzy, weak-permissive, weak-exact_only, persona_filter, skipped invalid, jsonl shape sanity).",
+        "2026-05-25 01:00 — Dead TestsTab props cleanup: removed unused runDpoExport+dpoState that were passed but never consumed in JSX (operator-facing DPO button lives in toolbar already).",
+        "2026-05-25 01:00 — Branch agent/sinister-chatbot/dpo-export pushed to origin successfully; PR-creation URL surfaced.",
+        "2026-05-25 01:00 — No new operator utterances scoped to chatbot lane in last 6 (all sanctum: eve.exe redesign, accounts manager, OAuth pivot, claude-login wizard, push-policy)."
+    ],
+    "latest_plan": {
+        "dir": "D:\\Sinister Sanctum\\projects\\sinister-chatbot\\leo_dev\\docs",
+        "artifact": "D:\\Sinister Sanctum\\projects\\sinister-chatbot\\leo_dev\\docs\\CHATBOT-DIRECTION-2026-05-24.md"
+    },
+    "inbox_unread_count": 0,
+    "last_files_touched": [
+        "leo_dev/backend/src/routes/sinister.ts (+137 lines: /chatter/training-dpo-export)",
+        "leo_dev/dashboard/app/chatter/page.tsx (+48 net: button + handler + dead-prop cleanup)",
+        "leo_dev/backend/scripts/smoke-dpo-export.mjs (+228 new: handler-direct DPO smoke)"
+    ],
+    "pre_warm_reads": [
+        "D:\\Sinister Sanctum\\projects\\sinister-chatbot\\leo_dev\\docs\\CHATBOT-DIRECTION-2026-05-24.md",
+        "D:\\Sinister Sanctum\\_shared-memory\\knowledge\\sinister-chatbot-test-env-findings-2026-05-24.md",
+        "D:\\Sinister Sanctum\\projects\\sinister-chatbot\\leo_dev\\backend\\src\\routes\\sinister.ts (line 1560 = DPO endpoint)",
+        "D:\\Sinister Sanctum\\projects\\sinister-chatbot\\leo_dev\\backend\\scripts\\smoke-dpo-export.mjs"
+    ],
+    "in_flight_subagents": [],
+    "verification_gates": {
+        "smoke_dpo": "27/27 PASS (handler-direct, no express, no DB)",
+        "tsc": "skipped — local node_modules unhydrated (same as test-env-findings §3d). Production docker build catches TS at deploy time.",
+        "tsc_local_path": "neither dashboard/node_modules/.bin/tsc nor backend/node_modules/.bin/tsc present",
+        "push_target": "origin/agent/sinister-chatbot/dpo-export (Sinister-Panel.git — out-of-policy per 2026-05-25 single-repo-push directive but pre-existing grandfathered remote pending consolidation)"
+    },
+    "next_logical_steps": [
+        "Once chatter-feedback.json on Hetzner accumulates ≥ 50 mixed thumbs, run the DPO export from /chatter UI → operator audits pair quality (exact:N fuzzy:N weak:N breakdown surfaces in convo log).",
+        "Phase 3 — Prisma migration for FanMemory{fanUsername, traitsJson, interestLevel, lastSummary, updatedAt}; requires operator authorization per canonical-11. Surface as queue row when starting.",
+        "Quantum-probe on Hetzner — operator open-question from prior resume-point. Cheapest path is shipping a lightweight seraphim-only sibling container (heavy lift).",
+        "Phase 5 — wire seraphim qrng bytes into chatEngine.ts as response-entropy seed (behind per-Group quantum_entropy:boolean flag)."
+    ],
+    "open_questions_for_operator": [
+        "Consolidation of projects/sinister-chatbot/.git/ → Sinister-Sanctum (per 2026-05-25 push-policy hard-canonical). Currently grandfathered to Sinister-Panel.git. Operator-approval required per CLAUDE.md row.",
+        "Branch convention: current branch is `agent/sinister-chatbot/dpo-export` (missing -YYYY-MM-DD suffix per branch-convention doctrine). Future agent-branch-router.ps1 will auto-enforce on next spawn; this branch is grandfathered.",
+        "Quantum probe sibling container (still open from prior resume-point)."
+    ],
+    "operator_burn_today": "$0.00 — DPO miner is local data-shuffling, no LLM calls. Zero OR / Anthropic spend this turn."
+}

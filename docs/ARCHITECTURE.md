@@ -6,11 +6,11 @@ How the pieces fit. For Leo + future collaborators onboarding day 1.
 
 ```
 ┌───────────────────────────────────────────────────────────┐
-│  Layer 3: Sinister Bots fleet (12 MCP agents)             │
+│  Layer 3: Sinister Bots fleet (13 MCP agents)             │
 │  - Recall (librarian, translator, researcher)             │
 │  - Audit + maintain (auditor, watcher, custodian)         │
 │  - Surface + summarize (scribe, curator, sentinel)        │
-│  - Bridge (sinister-bus, stealth-browser, triage)         │
+│  - Bridge (sinister-bus, stealth-browser, triage, vault)  │
 │  Cost: $0-$0.10/day at routine use                        │
 └───────────────────────────────────────────────────────────┘
                       ▲ (calls; never calls Opus)

@@ -1,4 +1,10 @@
 <!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 0
+  half_life_days: 180
+-->
 # Per-Project Bot-Adoption Playbook
 
 **Created:** 2026-05-23 (EVE on Sanctum, Phase-2 C.10 of `sanctum-complete-and-expand-2026-05-23T1145Z`)
@@ -79,6 +85,32 @@ Paste this block into your project's `CLAUDE.md` under a `## Cold-start (every t
 | Showmasters | (audit pending) | ≥ 5 | PROGRESS log search hits |
 | JB Woodworks | (audit pending) | ≥ 3 | PROGRESS log search hits |
 | Forge | (audit pending) | ≥ 5 | PROGRESS log search hits |
+
+### Baseline run 2026-05-23T14:30Z (rkoj-lane /loop iter 7)
+
+Captured by running the measurement command below from the rkoj-lane session
+mid-/loop. Records the absolute starting point so the next 7-day audit can
+diff against it. Per-project-lane CLAUDE.md drop-in (rkoj's just landed in
+/loop iter 2 of 2026-05-23) should start moving these counters; lanes still
+at zero are the most-likely-non-adopters.
+
+| Lane (file in `_shared-memory/PROGRESS/`) | Count @ 14:30Z |
+|---|---|
+| Sinister Panel | 0 |
+| Sinister Kernel APK | 1 |
+| rkoj | 0 |
+| rkoj-workstation | 1 |
+| Showmasters | 0 |
+| jb-woodworks | 0 |
+| Sinister Forge | 0 |
+| Sinister Sanctum | 4 |
+| **TOTAL across 8 lanes** | **6** |
+
+Note: the "Current (2026-05-23)" column above is the jcode-swarm-parity-audit's
+*sampled* count (uses different keyword patterns + may include
+cross-references in the same file). This baseline is the strict regex per the
+measurement-command block (only the lowercase-bot-with-trailing-dot pattern).
+Both numbers are useful; treat them as orthogonal signals.
 
 Measurement command (run from Sanctum, any session):
 

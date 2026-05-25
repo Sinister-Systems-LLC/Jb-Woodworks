@@ -1,3 +1,9 @@
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 1
+  half_life_days: 180
+-->
 # imessage-bridge-p0-scaffold-2026-05-24
 
 > **Author:** RKOJ-ELENO :: 2026-05-24

@@ -1,4 +1,10 @@
 <!-- Author: RKOJ-ELENO :: 2026-05-23 -->
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 1
+  half_life_days: 180
+-->
 # Quantum-memory-kernel fleet action items (operator-directed)
 
 > **Status:** doctrine, in-flight, binding for the sinister-snap-api-quantum + sinister-seraphim lanes; advisory for other fleet lanes.
