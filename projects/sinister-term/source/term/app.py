@@ -99,6 +99,20 @@ except Exception:
     _HAVE_EVENT_BUS = False
     def _publish_event(name: str, category: str, payload=None):  # noqa: E501
         return None
+
+# RKOJ-ELENO :: 2026-05-25 :: sinister-ascii bridge (SA-PH6 iter-49).
+# Daemon thread renders the per-project living entity in a corner of the
+# terminal when SINISTER_ASCII=on. Off by default. Best-effort import.
+try:
+    from term.ascii_bridge import start_if_enabled as _ascii_start
+    from term.ascii_bridge import stop_default as _ascii_stop
+    _HAVE_ASCII_BRIDGE = True
+except Exception:
+    _HAVE_ASCII_BRIDGE = False
+    def _ascii_start():
+        return False
+    def _ascii_stop():
+        return None
     _HARDENER = None
 
 
@@ -319,6 +333,13 @@ def run() -> None:
     except Exception:
         pass
 
+    # SA-PH6: start the per-project entity bridge if operator opted in.
+    try:
+        if _HAVE_ASCII_BRIDGE:
+            _ascii_start()
+    except Exception:
+        pass
+
     HIST_DIR.mkdir(parents=True, exist_ok=True)
     hist_path = HIST_DIR / "history.jsonl"
     history = FileHistory(str(hist_path))
@@ -427,6 +448,11 @@ def run() -> None:
 
     try:
         _publish_event("sterm_exit", "lifecycle", payload={})
+    except Exception:
+        pass
+    try:
+        if _HAVE_ASCII_BRIDGE:
+            _ascii_stop()
     except Exception:
         pass
     console.print("[dim]◈ Sinister Term exited.[/dim]")
