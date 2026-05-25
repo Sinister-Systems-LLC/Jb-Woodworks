@@ -1,0 +1,58 @@
+{
+  "kind": "ui-fixes-handoff",
+  "ts_utc": "2026-05-25T07:22:00Z",
+  "from_slug": "sanctum",
+  "from_display": "Sinister Sanctum (research/audit)",
+  "to_slug": "sanctum",
+  "to_display": "Sinister Sanctum (execution lane on iter23-eve-polish-icon-mintty branch)",
+  "priority": "normal",
+  "subject": "5 minor sub-5-LOC UI fixes from eve-ui-flow-audit-2026-05-25.md",
+  "context": "Sub-2 of iter-23 research swarm audited 8 EVE TUI pages and found 87.5% compliance with eve-ui-uniformity-doctrine. The 5 minor fixes below are all <5 LOC and non-blocking. Picking these up while you're already editing eve.py keeps churn low.",
+  "audit_ref": "_shared-memory/audits/eve-ui-flow-audit-2026-05-25.md",
+  "fixes": [
+    {
+      "id": 1,
+      "file": "tools/eve-picker/health_tools.py",
+      "line": 273,
+      "patch": "add `clear_screen()` before first `health_status()` call in menu_loop entry",
+      "loc": 1,
+      "rationale": "residual flicker on sub-page entry"
+    },
+    {
+      "id": 2,
+      "file": "tools/eve-picker/quantum_tools.py",
+      "line": 675,
+      "patch": "add `clear_screen()` before header print in render_menu()",
+      "loc": 1,
+      "rationale": "same residual flicker"
+    },
+    {
+      "id": 3,
+      "file": "tools/eve-picker/health_tools.py + tools/eve-picker/quantum_tools.py",
+      "line": "160-176 + 66-82",
+      "patch": "delete duplicate _clear_screen() impls; replace with `from eve_ui import clear_screen`",
+      "loc": -28,
+      "rationale": "DRY; uniformity-doctrine binding"
+    },
+    {
+      "id": 4,
+      "file": "tools/eve-picker/account_manager.py",
+      "line": "54-64",
+      "patch": "route SIGINT through _route_home() + os._exit fallback per main_menu.py:45-68 two-strike pattern",
+      "loc": 4,
+      "rationale": "consistency with operator 2026-05-25T02:15Z two-strike Ctrl-C handler"
+    },
+    {
+      "id": 5,
+      "file": "tools/eve-picker/quantum_tools.py",
+      "line": "606-631",
+      "patch": "ensure footer uses same block geometry as body for centered alignment",
+      "loc": 3,
+      "rationale": "visual uniformity per 2026-05-25T01:15Z centered-menu styling"
+    }
+  ],
+  "smoke_target": "after applying all 5: open each affected page in EVE.exe; verify (a) no flicker on entry, (b) Ctrl-C two-strike works in account_manager, (c) quantum_tools footer block-centered.",
+  "dependencies": "None. All 5 can land in one commit or be split.",
+  "non_blocking": true,
+  "acked_by": []
+}
