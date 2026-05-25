@@ -6,6 +6,31 @@ Newest entry at top. Append, do not rewrite.
 
 ---
 
+## 2026-05-25 iter-2 — P3-P6 primitives + jcode audit cherry-picks (5 patches)
+
+**Shipped (verified):**
+
+- **P3 supersede.py** — typed graph edges. `mark_supersedes` / `chain_for` / `latest_of` / `superseded_set` / `unmark` with sqlite + cycle detection. Now also: `mark_edge(kind=)` accepting EDGE_KINDS {Supersedes, Contradicts, RelatesTo, HasTag, InCluster} per jcode `memory_graph.rs:116-125`; `edges_of(memory_id, kind, direction)`; `cascade_retrieve(memory_id, depth, kinds)` BFS per jcode `src/memory.rs:1743-1750`.
+- **P4 decay.py** — exponential half-life BM25 boost. `decay_weight(age_days, half_life_days)` + `apply_decay(hits, now_ts)` + `recall_with_decay(query, ..., category=, gap_filter=)`. Per-category half-life table cherry-picked from jcode `MEMORY_ARCHITECTURE.md:419-423`: correction 365d / preference 90d / procedure 60d / fact 30d / entity 30d / inferred 7d.
+- **P5 cluster.py** — Jaccard-similarity clustering. `tokenize` / `jaccard` / `cluster_snippets(threshold)` / `dedupe(db, threshold, layers, dry_run)`. Dedupe marks duplicates as superseded by newest in each cluster.
+- **P6 verify.py** — Haiku-grader wrapper, feature-detected. Modes: ONLINE (anthropic SDK + ANTHROPIC_API_KEY), HEURISTIC (jaccard >= 0.6 -> fresh; < 0.25 -> stale), OFFLINE (ungraded). `verify_memory(memory_text, source_text=, source_path=, prefer=)`.
+- **recall.py audit patch** — `apply_gap_filter(hits, drop_ratio=0.25)` truncates noise tail on >=25% relative score drop, per jcode `src/memory.rs:724-746`.
+- **auto_save.py audit patch** — frontmatter schema v2 with `format_version: 2`, optional `category`/`confidence`/`trust` per jcode `MemoryEntry` `src/memory.rs:96-111`. Back-compat: v1 files still parse. New `parse_frontmatter(path)` helper.
+- **CLI** — 6 new subcommands: `supersede`, `supersede-chain`, `mark-edge`, `cascade-retrieve`, `decay-recall` (with `--category` + `--gap-filter`), `cluster-dedupe`, `verify`.
+- **Brain doc** — `_shared-memory/knowledge/jcode-memory-audit-and-cherry-picks-2026-05-25.md` (jcode subsystem one-paragraph summary + 5 cherry-picks + 5 explicit no-ship items + composes-with + pass criterion).
+- **Tests** — `test_p3_p6.py` (8 tests) + `test_audit_patches.py` (7 tests). Total 20/20 pytest PASS in 3.6s.
+- **Real-data smoke** — `python -m sinister_memory.cli index` -> 327 docs reindexed. `decay-recall "loop relentless" --category correction --gap-filter` returns ranked hits with mojibake-free output. `mark-edge memA memB --kind RelatesTo --weight 0.8` writes edge; `cascade-retrieve memA --depth 2` returns memB.
+
+**Swarm — 4 parallel audit agents over jcode v0.12.4 source** (per full-relentless-swarm-fanout-mindset-doctrine-2026-05-25):
+- Sub-A (STORE): 7 gaps identified, 4 cherry-picked, 3 explicitly declined (embeddings / LLM-on-write / pending-memory dedup windows).
+- Sub-B (RECALL): 6 gaps; gap-filter shipped this iter.
+- Sub-C (SUPERSEDE/DECAY/CLUSTER): 3 high-impact gaps; per-category half-life shipped this iter.
+- Sub-D (VERIFY): 7 recommendations; structured-output + Haiku 4.5 default + heuristic fallback shipped this iter.
+
+**Heartbeat:** `_shared-memory/heartbeats/sinister-memory.json` written (iter=2).
+
+---
+
 ## 2026-05-25 (this session) — P1 + P2 wired + real-data smoke (accepted at top; PROGRESS corrected)
 
 **Shipped (verified):**
