@@ -196,7 +196,7 @@ def log_run(stats: Dict[str, int], elapsed_s: float, dry_run: bool) -> None:
 
 def install_schtask() -> int:
     """Register SinisterSanctumToVaultMirror to run every 15 min."""
-    py = sys.executable
+    import shutil as _sh; _pw = _sh.which("pythonw") or str(Path(sys.executable).parent / "pythonw.exe"); py = _pw if Path(_pw).exists() else sys.executable
     script = str(Path(__file__).resolve())
     # Use schtasks.exe; if elevation refused, fall back to Startup .cmd loop.
     tr = f'"{py}" "{script}"'

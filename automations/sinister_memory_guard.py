@@ -113,7 +113,9 @@ def run_guard(cmd: list[str], cwd: Path, max_restarts: int = 0) -> None:
 
 def install_schtask(cwd: Path, cmd: list[str]) -> int:
     """Install SinisterMemoryGuard as a user schtask (starts on logon)."""
-    python_exe = sys.executable
+    import shutil as _sh
+    _pw = _sh.which("pythonw") or str(Path(sys.executable).parent / "pythonw.exe")
+    python_exe = _pw if Path(_pw).exists() else sys.executable
     this_script = Path(__file__).resolve()
     cmd_str = " ".join(f'"{c}"' if " " in c else c for c in cmd)
     action_args = f'"{this_script}" --cwd "{cwd}" --cmd {cmd_str}'

@@ -367,7 +367,10 @@ def install_schtask() -> int:
         print("[eve_update_notifier] schtask install skipped: non-Windows")
         return 0
 
-    py = sys.executable
+    # RKOJ-ELENO :: 2026-05-25 — use pythonw.exe for headless (no console window)
+    import shutil as _shutil
+    _pw = _shutil.which("pythonw") or str(Path(sys.executable).parent / "pythonw.exe")
+    py = _pw if Path(_pw).exists() else sys.executable
     script = str(REPO_ROOT / "automations" / "eve_update_notifier.py")
     cmd_args = f'"{script}" --scan --once'
     # Use PT1M (60s) cadence; restart on failure handled by retry-on-mismatch.

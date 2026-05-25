@@ -21,7 +21,18 @@ DETECTOR = SANCTUM_ROOT / "automations" / "eve_crash_detector.py"
 
 
 def _python_exe() -> str:
-    return shutil.which("python") or shutil.which("python3") or sys.executable
+    # RKOJ-ELENO :: 2026-05-25 — prefer pythonw.exe (no console window) so the
+    # crash-detector schtask runs headless and invisible to the operator.
+    # Falls back to python.exe if pythonw.exe is not on PATH (non-Windows).
+    pw = shutil.which("pythonw")
+    if pw:
+        return pw
+    # Derive pythonw.exe from current python.exe path (same install dir)
+    py = shutil.which("python") or shutil.which("python3") or sys.executable
+    pythonw = Path(py).parent / "pythonw.exe"
+    if pythonw.exists():
+        return str(pythonw)
+    return py
 
 
 def build_install_cmd() -> list[str]:

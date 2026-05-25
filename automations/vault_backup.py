@@ -233,7 +233,10 @@ def _restore_plan(target: Path, snap_id: str) -> int:
 
 def _install_schtask() -> int:
     script_path = Path(__file__).resolve()
-    cmd_str = f'python "{script_path}" --snapshot --rotate'
+    import shutil as _sh
+    _pw = _sh.which("pythonw") or str(Path(sys.executable).parent / "pythonw.exe")
+    _py = _pw if Path(_pw).exists() else "python"
+    cmd_str = f'"{_py}" "{script_path}" --snapshot --rotate'
     args = [
         "schtasks.exe", "/Create", "/F",
         "/SC", "MINUTE", "/MO", "60",

@@ -28,9 +28,12 @@ from pathlib import Path
 
 SANCTUM_ROOT = Path(r"D:\Sinister Sanctum")
 SOURCE = Path.home() / ".eve" / "_internal"
+# RKOJ-ELENO :: 2026-05-25 — added Desktop as a fourth target so the Desktop
+# EVE.exe shortcut always has its _internal/ sibling (PYI-47016 prevention).
 TARGETS = [
     SANCTUM_ROOT / "_internal",
     SANCTUM_ROOT / "deploy" / "_internal",
+    Path.home() / "Desktop" / "_internal",
 ]
 
 # RKOJ-ELENO :: 2026-05-25T07:17Z Sub-Q :: Sinister Start.bat lives at repo
@@ -40,6 +43,7 @@ BAT_SOURCE = SANCTUM_ROOT / "Sinister Start.bat"
 BAT_TARGETS = [
     Path.home() / ".eve" / "Sinister Start.bat",
     SANCTUM_ROOT / "deploy" / "Sinister Start.bat",
+    Path.home() / "Desktop" / "Sinister Start.bat",
 ]
 
 

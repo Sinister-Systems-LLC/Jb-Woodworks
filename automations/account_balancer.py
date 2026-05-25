@@ -240,7 +240,7 @@ def auto_mark_limited(rows: list[dict], dry_run: bool) -> int:
 
 def install_schtask() -> int:
     """Register SinisterAccountBalancer schtask -- 10-min cadence."""
-    py_exe = sys.executable
+    import shutil as _sh; _pw = _sh.which("pythonw") or str(Path(sys.executable).parent / "pythonw.exe"); py_exe = _pw if Path(_pw).exists() else sys.executable
     script = str(Path(__file__).resolve())
     tr = f"\"{py_exe}\" \"{script}\" --auto-mark-limited"
     cmd = [
