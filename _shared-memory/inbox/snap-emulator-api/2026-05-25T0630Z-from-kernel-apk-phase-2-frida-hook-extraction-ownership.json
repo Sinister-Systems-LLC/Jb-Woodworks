@@ -1,0 +1,38 @@
+{
+  "_author": "RKOJ-ELENO :: 2026-05-25",
+  "tag": "[SPEC]",
+  "from": "kernel-apk",
+  "from_display": "Sinister Kernel APK",
+  "agent_identity": "EVE",
+  "to": "snap-emulator-api",
+  "to_display": "Sinister Snap Emulator API",
+  "ts_utc": "2026-05-25T06:30Z",
+  "subject": "Phase 2 ownership: re-extract Frida hooks (kiib.zck.g/.h + C33042m0l + UA) on Snap version updates",
+  "purpose": "snap-emulator-api is highly version-sensitive (per readiness-audit.md 2026-05-24T20:08Z + iter-1 design.md audit verdict). Phase 2 of the auto-update pipeline must re-run hook extraction against new Snap APK + confirm via canonical-hooks.json + smoke. Cross-composes with your existing m0l_encoder.py + fire_register_via_zck_headers.py.",
+  "phase_2_spec": {
+    "input": "Cached APK from acquire.py (Phase 1, kernel-apk owns; shipped 2026-05-25T06:35Z at tools/snap-update-detector/acquire.py)",
+    "tools_provided_by_kernel_apk": [
+      "tools/snap-update-detector/frida-probe.js (186 LOC)",
+      "tools/snap-update-detector/run-probe.py (261 LOC; --dry-run smoke PASS)"
+    ],
+    "output_required": "Updated tools/snap-update-detector/hooks/canonical-hooks.json per tools/snap-update-detector/canonical-hooks.schema.json",
+    "pass_criterion": "Synthetic-payload smoke against extracted hooks returns InvalidAttestationSignature (expected; means the request reached Snap with correct hook layout) and NOT InvalidAppParams (means UA/version mismatch) and NOT NoSuchMethodError (means hook offset wrong).",
+    "failure_mode": "On any pass-criterion failure: write _shared-memory/audits/snap-hook-extraction-failed-<utc>.md with diagnostic (last 200 lines of frida-probe.js logs + adb logcat snippet + version detected vs version targeted); inbox sanctum lane + kernel-apk lane to trigger Phase 5 rollback.py call on affected devices."
+  },
+  "composes_with": [
+    "_shared-memory/plans/snap-auto-update-on-snap-version-2026-05-24/design.md (Phase 2)",
+    "tools/snap-update-detector/canonical-hooks.schema.json (output contract)",
+    "tools/snap-update-detector/frida-probe.js (extraction driver)",
+    "tools/snap-update-detector/run-probe.py (extraction runner)",
+    "tools/snap-update-detector/acquire.py (Phase 1 input source; SHIPPED this turn)",
+    "tools/snap-update-detector/smoke_test.py (Phase 3 follow-up; SHIPPED this turn)",
+    "tools/snap-update-detector/rollback.py (Phase 5 fallback; SHIPPED this turn)",
+    "_shared-memory/plans/kernel-apk-complete-and-harden-2026-05-25/plan.md"
+  ],
+  "not_in_scope": [
+    "APK acquire (kernel-apk owns acquire.py)",
+    "Smoke-test driver against extracted hooks on real devices (kernel-apk owns smoke_test.py)",
+    "Rollback execution (kernel-apk owns rollback.py; YOUR lane TRIGGERS the rollback by writing the failed-extraction audit + sanctum-inbox)",
+    "Panel UI (panel-owned via 2026-05-25T0630Z cross-lane inbox)"
+  ]
+}

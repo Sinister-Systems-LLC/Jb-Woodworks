@@ -1,0 +1,105 @@
+{
+  "_author": "RKOJ-ELENO :: 2026-05-25",
+  "tag": "[SPEC]",
+  "from": "kernel-apk",
+  "from_display": "Sinister Kernel APK",
+  "agent_identity": "EVE",
+  "to": "sinister-panel",
+  "to_display": "Sinister Panel",
+  "ts_utc": "2026-05-25T06:30Z",
+  "subject": "Auto Update Snap button spec (React + backend) — Phase 4 of snap-auto-update pipeline",
+  "purpose": "Operator hard-canonical 2026-05-24T20:14Z: 'link this to snap panel too but yea add like a auto update snap buttton or sum like that'. Panel needs UI affordance for operator-on-demand Snap version refresh + per-device deploy + smoke + rollback. Composes with snap-auto-update design.md (Phase 4) and kernel-apk-owned acquire.py + smoke_test.py + rollback.py (shipped this turn under tools/snap-update-detector/).",
+  "composes_with": [
+    "_shared-memory/plans/snap-auto-update-on-snap-version-2026-05-24/design.md (5 gates A/B/C/D/E ticked 2026-05-25T06:30Z)",
+    "tools/snap-update-detector/poll.ps1 (Phase 0; existing 289 LOC)",
+    "tools/snap-update-detector/acquire.py (Phase 1; SHIPPED 2026-05-25T06:35Z)",
+    "tools/snap-update-detector/smoke_test.py (Phase 3; SHIPPED 2026-05-25T06:35Z)",
+    "tools/snap-update-detector/rollback.py (Phase 5; SHIPPED 2026-05-25T06:35Z)",
+    "_shared-memory/plans/kernel-apk-complete-and-harden-2026-05-25/plan.md",
+    "projects/sinister-dashboard-skeleton/ (UI inheritance per operator hard-canonical 2026-05-24T15:44Z)"
+  ],
+  "react_component_spec": {
+    "file_path_suggested": "<panel-frontend>/components/devices/AutoUpdateSnapPanel.tsx",
+    "props_typescript": "interface AutoUpdateSnapPanelProps { devices: PhoneDevice[]; currentSnapVersion: string; latestSnapVersion: string; onJobStart: (jobId: string) => void; }",
+    "state_typescript": "interface State { selectedSerials: Set<string>; smokeTest: boolean; rollbackOnFailure: boolean; targetVersion: string; jobId?: string; jobStatus?: 'queued'|'running'|'success'|'partial'|'failed'; perDeviceResult?: Record<string, PerDeviceResult>; }",
+    "render_structure": [
+      "VersionDeltaCard: shows current vs latest (color: green=match, amber=behind, red=blocked)",
+      "DeviceMultiSelect: checkbox list of devices.phones[] with selected_serials state",
+      "OptionsRow: 2 toggles (smoke_test default ON, rollback_on_failure default ON) + target_version input (default 'latest')",
+      "PrimaryButton 'Auto Update Snap' (disabled if no devices selected; loading spinner during job)",
+      "ProgressTimeline: when jobStatus != null, render Phase 1/2/3/4/5 progress per device",
+      "ResultBanner: when jobStatus in success/partial/failed, summary + per-device drill-down"
+    ],
+    "interactions": [
+      "On mount: GET /api/snap/version-state -> render VersionDeltaCard",
+      "On click PrimaryButton: POST /api/snap/auto-update -> save jobId in state -> poll GET /api/snap/auto-update/{jobId} every 3s until terminal status",
+      "On manual rollback click (per-device): POST /api/snap/auto-update/{jobId}/rollback?serial=<s>",
+      "Error: show inline banner with retry button"
+    ]
+  },
+  "backend_endpoint_spec": {
+    "primary": {
+      "method": "POST",
+      "path": "/api/snap/auto-update",
+      "request_body_shape_typescript": "interface Req { target_version: string|'latest'; device_serials: string[]; smoke_test: boolean; rollback_on_failure: boolean; }",
+      "response_shape_typescript": "interface Resp { ok: true; job_id: string; queued_devices: string[]; } | { ok: false; error: string; code: 'INVALID_VERSION'|'NO_DEVICES'|'ALREADY_RUNNING'|'INTERNAL'; }",
+      "status_codes": [202, 400, 404, 409, 500],
+      "processing_flow": [
+        "1) Validate target_version (resolve 'latest' via tools/snap-update-detector/poll.ps1 state JSON)",
+        "2) Validate device_serials all exist + reachable",
+        "3) Create job_id (uuid) + queue async worker",
+        "4) Return 202 with job_id",
+        "5) Worker calls acquire.py --version <target> (Phase 1)",
+        "6) Worker iterates device_serials: smoke_test.py (Phase 3); on fail and rollback_on_failure, call rollback.py (Phase 5)",
+        "7) Persist per-device results to job state"
+      ]
+    },
+    "job_status": {
+      "method": "GET",
+      "path": "/api/snap/auto-update/{jobId}",
+      "response_shape_typescript": "interface JobResp { ok: bool; job_id: string; status: 'queued'|'running'|'success'|'partial'|'failed'; phase?: 1|2|3|4|5; per_device: Record<string, { phase: number; ok: bool; version_installed?: string; error?: string; rolled_back?: bool }>; created_at: string; updated_at: string; }"
+    },
+    "version_state": {
+      "method": "GET",
+      "path": "/api/snap/version-state",
+      "response_shape_typescript": "interface VersionState { current_installed: Record<string, string>; latest_available: string; last_polled_utc: string; }"
+    },
+    "manual_rollback": {
+      "method": "POST",
+      "path": "/api/snap/auto-update/{jobId}/rollback",
+      "query": "?serial=<deviceSerial>",
+      "response_shape_typescript": "interface RollbackResp { ok: bool; from_version: string; to_version: string; verified: bool; }"
+    },
+    "error_codes": {
+      "400": "Bad request (invalid version, empty device_serials)",
+      "401": "Unauthenticated (panel session expired)",
+      "403": "Forbidden (operator-role required)",
+      "404": "Device not found OR job_id not found",
+      "409": "Conflict (job already running for one or more devices)",
+      "422": "Unprocessable (target_version not found in APK cache and no internet to fetch)",
+      "500": "Internal (acquire/smoke/rollback subprocess failure)",
+      "503": "Service unavailable (ADB daemon down)"
+    }
+  },
+  "dependencies_on_kernel_apk_shipped_this_turn": {
+    "acquire_py": "tools/snap-update-detector/acquire.py (compile+help+dry-run PASS) — Phase 1 invoked by backend worker",
+    "smoke_test_py": "tools/snap-update-detector/smoke_test.py (compile+help+dry-run PASS) — Phase 3",
+    "rollback_py": "tools/snap-update-detector/rollback.py (compile+help+dry-run PASS) — Phase 5",
+    "all_three": "Shared JSON contract on stdout (single-line {ok, phase, ...}); shared exit codes (0/1/2/3); cache under ~/.sinister/snap-apk-cache/"
+  },
+  "verification_path_for_panel": [
+    "Mock backend POST returns 202 + job_id -> assert React component transitions to status=queued",
+    "Mock GET /jobs returns status=running -> assert ProgressTimeline renders",
+    "Mock GET /jobs returns status=success -> assert ResultBanner renders with per-device breakdown",
+    "Mock GET /jobs returns status=partial with one device rolled_back:true -> assert manual-rollback button hidden for that device",
+    "Mock POST /rollback returns ok:true -> assert UI updates"
+  ],
+  "not_in_scope": [
+    "Frida hook re-extraction (snap-emulator-api lane owns Phase 2 per 2026-05-25T0630Z inbox)",
+    "APK signature trust policy (operator decision)",
+    "Per-device CI / panel deployment infra",
+    "Account state recovery post-rollback (separate kernel-apk concern)",
+    "Cross-machine push (sinister-link doctrine; separate)"
+  ],
+  "ui_inheritance_directive_from_operator": "Operator hard-canonical 2026-05-24T15:44Z: 'everything that makes a ui needs to base off our dsahboard skeleton ... each time we make a dahsbaord and such we need to expand on that'. Panel MUST inherit from projects/sinister-dashboard-skeleton/. If any primitive (e.g. VersionDeltaCard, ProgressTimeline) is missing from skeleton: ADD to skeleton FIRST (commit there, update PATTERNS.md), then consume. NEVER fork one-off components."
+}

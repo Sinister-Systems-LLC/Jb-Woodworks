@@ -1,0 +1,44 @@
+{
+  "schema_version": "sinister.resume-point.v1",
+  "ts_utc": "2026-05-25T07:05:00Z",
+  "project": "Kernel APK",
+  "agent_name": "kernel-apk",
+  "mode": "loop-dynamic",
+  "focus_intent": "iter-2 of complete-and-harden plan. Phase 1 (Snap auto-update Python scripts + cross-lane specs + design.md ticks) SHIPPED. Phase 2 plan written + helper shipped. Phase 3 audit started; CRITICAL cred leak scrubbed. Next iter: Phase 3.3 error-handling sweep + Phase 3.4 anti-pattern sweep + Phase 2 B.1 hook library selection.",
+  "loop_directive_verbatim": "create a plan to complete everything we said we were to complete and when we complete that keep fixing leaks, errors, secuirty flaws, anyhting like that that you can come up with. and usr our sinister quantum tools",
+  "git": {
+    "sanctum_branch": "agent/kernel-apk/att-token-p0-fix-2026-05-25",
+    "kernel_apk_branch": "agent/sinister-kernel-apk/crispy-cosmos-resume",
+    "source_v2_HEAD": "02018bb (v0.97.45 PanelPusher.kt comment scrub)",
+    "source_v2_origin": "https://github.com/Sinister-Systems-LLC/Sinister-APK.git"
+  },
+  "this_iter_deliverables_count": 13,
+  "loop_condition_status": {
+    "signal_1": "OPERATIONAL",
+    "signal_2": "UNBLOCKED (source + auto-update pipeline)",
+    "signal_3": "PARTIAL",
+    "signal_4": "BLOCKED on Phase B (multi-iter); manual-fill path shipped",
+    "signal_5": "HARNESS READY",
+    "all_5_satisfied": false
+  },
+  "phase_3_findings": {
+    "critical_fixed": "PANEL_USER+PANEL_PASS leak in PanelPusher.kt comment (commit 02018bb)",
+    "high_surfaced": "DEFAULT_APK_FLEET_SECRET hardcoded — needs panel-coordinated rotation",
+    "medium_surfaced": "DEFAULT_URL=snap.sinijkr.com — needs BuildConfig migration",
+    "pass_observations": "0 runSu shell-injection vectors; 8 hardcoded HTTPs URLs queued for 3.3 audit"
+  },
+  "next_iter_priority_queue": [
+    "Phase 3.3 error-handling sweep",
+    "Phase 3.4 anti-pattern sweep",
+    "Phase 2 B.1 native hook library selection (shadowhook/sandhook/whale/LSPosed)",
+    "Phase 3.5 dependency/build-config audit",
+    "After all signals satisfy: Phase 3 forever-loop continues with broader source-v2 surface"
+  ],
+  "wakeup_disposition": "Scheduling 270s wakeup to stay in cache window + LOOP-RELENTLESS rule 8. Next firing: read this resume-point + tail PROGRESS + execute next priority queue item.",
+  "compose_links": [
+    "_shared-memory/plans/kernel-apk-complete-and-harden-2026-05-25/plan.md (parent)",
+    "_shared-memory/plans/kernel-apk-complete-and-harden-2026-05-25/phase-2-att-sign-hook-impl.md (Phase 2 sub-iter breakdown)",
+    "_shared-memory/audits/kernel-apk-leak-security-error-audit-2026-05-25.md (Phase 3 findings)",
+    "_shared-memory/cross-agent/kernel-apk-source-tree-pointer.md (canonical working dir)"
+  ]
+}

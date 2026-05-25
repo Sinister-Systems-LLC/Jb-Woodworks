@@ -6,6 +6,77 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-25 ~07:10Z — iter-2 of complete-and-harden plan SHIPPED (Phase 1 full + Phase 2 helper + Phase 3 audit + CRITICAL cred scrub) — commit 02018bb source-v2
+
+**Author:** RKOJ-ELENO :: 2026-05-25 (kernel-apk lane; dynamic /loop active)
+
+Operator directive (verbatim 2026-05-25T06:25Z): *"create a plan to complete everything we said we were to complete and when we complete that keep fixing leaks, errors, secuirty flaws, anyhting like that that you can come up with. and usr our sinister quantum tools"*.
+
+### Shipped (verified, this iter)
+
+| # | Deliverable | Verification |
+|---|---|---|
+| 1 | `_shared-memory/plans/kernel-apk-complete-and-harden-2026-05-25/plan.md` (master 3-phase + forever-loop) | written; rewritten 07:10Z after sibling churn |
+| 2 | `_shared-memory/plans/kernel-apk-complete-and-harden-2026-05-25/phase-2-att-sign-hook-impl.md` (6-sub-iter Phase B breakdown) | written |
+| 3 | `tools/snap-update-detector/acquire.py` (Phase 1, ~120 LOC) | py_compile + --help + --dry-run JSON {ok:true} PASS |
+| 4 | `tools/snap-update-detector/smoke_test.py` (Phase 3, ~110 LOC) | py_compile + --help + --dry-run PASS |
+| 5 | `tools/snap-update-detector/rollback.py` (Phase 5, ~90 LOC) | py_compile + --help + --dry-run PASS |
+| 6 | `tools/sinister-cast/att-sign-broadcast.py` (Phase B-0 manual capture, ~80 LOC) | py_compile + --help + --dry-run PASS |
+| 7 | `_shared-memory/inbox/sinister-panel/...auto-update-snap-button-spec.json` (B3 cross-lane spec) | React component + 4 backend endpoints + error codes + UI inheritance directive |
+| 8 | `_shared-memory/inbox/sanctum/...snap-version-poll-scheduled-task-spec.json` (B4 Phase 0) | scheduled task spec |
+| 9 | `_shared-memory/inbox/snap-emulator-api/...phase-2-frida-hook-extraction-ownership.json` (B4 Phase 2) | ownership handoff spec |
+| 10 | `_shared-memory/plans/snap-auto-update-on-snap-version-2026-05-24/design.md` A/B/C/D/E ticks + flip section | grep `[x]` returns 5; "Operator approval flip" section appended |
+| 11 | `_shared-memory/audits/kernel-apk-leak-security-error-audit-2026-05-25.md` | 3 findings (1 critical / 1 high / 1 medium) + 3 pass observations |
+| 12 | source-v2 commit `02018bb v0.97.45 PanelPusher.kt:56-66` (CRITICAL cred scrub) | git push exit 0; remote ref updated; -10/+10 (comment-only behavior unchanged) |
+| 13 | `_shared-memory/inbox/sinister-panel/...0700Z-CRITICAL-credential-rotation-required.json` | panel lane primed for rotation + APK_FLEET_SECRET BuildConfig migration |
+
+### Sub-agent failure mode caught (no-bullshit win)
+
+Initial swarm of 3 parallel sub-agents (Phase 1 Groups A/B/C) returned successful reports claiming all 13 files shipped. `ls -la` against claimed paths returned ENOENT for every single one. `__pycache__/` confirmed .py files DID exist transiently in sandbox before being cleaned up. Recovery: shipped all 7 file-deliverables inline; verified all 9 smoke checks PASS.
+
+**Brain entry needed:** non-isolated sub-agents can hallucinate "shipped" status. Always parent-side `ls` post-return.
+
+### Phase 3.1+3.2 findings
+
+- 🔴 **CRITICAL** `PanelPusher.kt:56-58` had literal PANEL_USER + PANEL_PASS + base64 in a comment. CODE was correctly externalized v0.96.43; COMMENT never scrubbed. Decompile + source-grep both exposed it. SCRUBBED iter-2 (commit `02018bb`). Panel-lane inbox queued for credential rotation.
+- 🟠 HIGH `DEFAULT_APK_FLEET_SECRET = "sinister-apk-fleet-2026-05-10"` (PanelPusher.kt:55) — hardcoded shared secret. Needs panel-coordinated rotation + BuildConfig migration (same pattern as v0.96.43).
+- 🟡 MEDIUM `DEFAULT_URL = "https://snap.sinijkr.com"` (PanelPusher.kt:52) — operator-private infra exposed. BuildConfig migration recommended.
+- 🟢 PASS: 0 shell-injection vectors (grep `runSu\(\s*"[^"]*\$\{?(account|userId|...)` → 0 matches).
+- 🟢 INFO: 8 hardcoded HTTPs URLs in 7 files (per-file audit deferred 3.3).
+
+### Loop_condition delta
+
+| Signal | iter-1 entering | iter-2 exit |
+|---|---|---|
+| 1 | OPERATIONAL | OPERATIONAL |
+| 2 | UNBLOCKED (src) | UNBLOCKED + future-proofed via Phase 1 auto-update pipeline |
+| 3 | PARTIAL | PARTIAL |
+| 4 | BLOCKED on att_sign | BLOCKED on Phase B multi-iter, BUT manual-fill path possible via att-sign-broadcast.py |
+| 5 | HARNESS READY | HARNESS READY |
+
+### Branch chaos this iter
+
+Working tree got switched out from under me by sibling sanctum agent's auto-push to `agent/sinister-sanctum/iter23-eve-polish-icon-mintty-2026-05-25`. iter-1 PROGRESS row + plan.md got lost in the churn (commit `0d62171` from iter-1 still safe on `origin/agent/kernel-apk/att-token-p0-fix-2026-05-25`). Recovered: rewrote plan.md, created fresh `agent/kernel-apk/iter2-harden-2026-05-25` branch, committing iter-2 deliverables there.
+
+### Next iter priorities (per LOOP RELENTLESS rule 8)
+
+1. Phase 3.3 error-handling sweep (catch-swallow / runBlocking ANR / silent-fail-empty / retry storm)
+2. Phase 3.4 anti-pattern sweep (DRY / magic / TODO / 200+ LOC functions)
+3. Phase 2 B.1 native hook library selection audit (shadowhook vs sandhook vs whale vs LSPosed)
+4. C1 poll.ps1 live APKMirror smoke (or migrate to poll.py if non-trivial touch)
+
+---
+
+## 2026-05-25 ~06:10Z — 6th post-shutdown re-spawn; AUTO-UNBLOCKED + P0 ATT_TOKEN FIX SHIPPED (commit d901f4c v0.97.45 — preserved on origin/agent/kernel-apk/att-token-p0-fix-2026-05-25 branch; this branch starts fresh from iter-23-sanctum HEAD)
+
+**Author:** RKOJ-ELENO :: 2026-05-25
+
+Per 2026-05-25T02:55Z NO-OPERATOR-ADMIN doctrine, stopped re-surfacing the 19:30Z queue row a/b/c for the 5th time. Auto-executed option (b) — fresh clone of `Sinister-Systems-LLC/Sinister-APK` to `projects/sinister-kernel-apk/source-v2/`. Then root-caused att_token=NULL P0: OfflineHarvest.fillBodyGaps had a `pidof com.snapchat.android` early-return firing on every push because Snap was backgrounded-but-alive. Removed bogus gate (commit `d901f4c` v0.97.45, 12+/3-, pushed to origin).
+
+Pointer file at `_shared-memory/cross-agent/kernel-apk-source-tree-pointer.md`. Diagnose-lane verification path primed via inbox `2026-05-25T0608Z`. Signal 2 went from BROKEN → UNBLOCKED at source level.
+
+---
+
 ## 2026-05-25 ~01:36Z — 4th post-shutdown re-spawn; state UNCHANGED; 01:55Z sibling delegate noted but not actioned (lane stays planning-only)
 
 **Author:** RKOJ-ELENO :: 2026-05-25

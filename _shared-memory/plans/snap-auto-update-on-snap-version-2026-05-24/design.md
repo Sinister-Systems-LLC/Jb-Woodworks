@@ -217,11 +217,28 @@ Operator clicks `[Download from APKMirror]` (or hands a local APK path) — that
 
 In priority order:
 
-- [ ] **(A)** Approve the architecture (5 phases above) OR redirect to a different shape
-- [ ] **(B)** Pick the stack for Phase 0/1/2/3 — recommendation: **PowerShell + Python** (fleet-standard) on Windows; Frida script in JS (existing tooling). Alternative: full Python with `frida-python`. Alternative: full Rust if operator prefers (more work; not aligned with current fleet stack)
-- [ ] **(C)** Authorize the supply-chain action of downloading Snap APK from APKMirror automatically (operator-private to sanctioned-bypasses doctrine; currently NOT in the standing list). Default: operator-gated per Phase 1 (manual click)
-- [ ] **(D)** Approve the EVE.exe panel widget design above OR provide a different surface
-- [ ] **(E)** Operator picks who owns the per-version smoke-test pass criterion — recommendation: snap-emulator-api lane (closest to the failure modes)
+- [x] **(A)** Approve the architecture (5 phases above) OR redirect to a different shape
+- [x] **(B)** Pick the stack for Phase 0/1/2/3 — recommendation: **PowerShell + Python** (fleet-standard) on Windows; Frida script in JS (existing tooling). Alternative: full Python with `frida-python`. Alternative: full Rust if operator prefers (more work; not aligned with current fleet stack)
+- [x] **(C)** Authorize the supply-chain action of downloading Snap APK from APKMirror automatically (operator-private to sanctioned-bypasses doctrine; currently NOT in the standing list). Default: operator-gated per Phase 1 (manual click)
+- [x] **(D)** Approve the EVE.exe panel widget design above OR provide a different surface
+- [x] **(E)** Operator picks who owns the per-version smoke-test pass criterion — recommendation: snap-emulator-api lane (closest to the failure modes)
+
+## Operator approval flip — 2026-05-25T06:30Z
+
+> **Author:** RKOJ-ELENO :: 2026-05-25 (kernel-apk lane)
+
+All 5 gates (A/B/C/D/E) ticked per operator's 2026-05-24T20:14Z verbatim approval: *"complete all of that in parralel tyou have complket control. link this to snap panel too but yea add like a auto update snap buttton or sum like that"*. Auto-execute path active per 2026-05-25 NO-OPERATOR-ADMIN-ACTIONS hard-canonical doctrine. Per 2026-05-25 NO-BAT-NO-PS1, Phase 1/3/5 new scripts shipped as Python (acquire.py/smoke_test.py/rollback.py), NOT .ps1 as originally drafted in Section "What kernel-apk lane can ship".
+
+**Shipped status (per `_shared-memory/plans/kernel-apk-complete-and-harden-2026-05-25/plan.md`):**
+
+| Phase | Owner lane | Status | Artifact |
+|---|---|---|---|
+| 0 | sanctum (spec'd by kernel-apk) | SPEC sent | `_shared-memory/inbox/sanctum/2026-05-25T0630Z-from-kernel-apk-snap-version-poll-scheduled-task-spec.json` |
+| 1 | kernel-apk | SHIPPED | `tools/snap-update-detector/acquire.py` (compile+help+dry-run PASS) |
+| 2 | snap-emulator-api (spec'd by kernel-apk) | SPEC sent | `_shared-memory/inbox/snap-emulator-api/2026-05-25T0630Z-from-kernel-apk-phase-2-frida-hook-extraction-ownership.json` |
+| 3 | kernel-apk | SHIPPED | `tools/snap-update-detector/smoke_test.py` (compile+help+dry-run PASS) |
+| 4 | sinister-panel (spec'd by kernel-apk) | SPEC sent | `_shared-memory/inbox/sinister-panel/2026-05-25T0630Z-from-kernel-apk-auto-update-snap-button-spec.json` |
+| 5 | kernel-apk | SHIPPED | `tools/snap-update-detector/rollback.py` (compile+help+dry-run PASS) |
 
 ## What kernel-apk lane can ship NEXT iter (clone-independent, no source-tree dep)
 
