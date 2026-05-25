@@ -10,6 +10,10 @@ The Sanctum-side mirror of `SESSION-START/02-OPERATOR-QUEUE.md`, with checkboxes
 
 ---
 
+## 2026-05-25T13:00Z — 🟠 HIGH — sinister-designer spawn blocked by OAuth budget (all slots at 999% 5h-usage; mintty launched then immediately closed); retry after ~22:00Z reset or add a new OAuth slot via `automations/claude-accounts.ps1 -Action Add` (lane: sinister-designer · spawn pid 59716 closed within seconds · BRAND-BRIEF.md shipped on disk)
+
+---
+
 ## 2026-05-25T12:10Z — 🟠 HIGH — EMU FLEET tab greenlight + Phase 0 real-Pixel-6a dump (single 30-min ADB session)
 
 > Lane: sinister-emulator (master EMU hub)
@@ -2202,6 +2206,91 @@ Doctrine: _shared-memory/knowledge/do-not-revert-operator-canonical-protections-
 ---
 
 ## 2026-05-25T11:47:01Z -- ðŸŸ¡ medium -- Drop-link routing proposal: PROJECT-FORK for github-repo
+> Author: RKOJ-ELENO :: 2026-05-24 (sanctum lane / link-route)
+
+**URL:** https://github.com/openai/whisper
+**Ingest id:** 20260524T212236Z-c38757
+**Decision:** PROJECT-FORK
+**Rationale:** hasDocker=False srcDirs=3 (complete app)
+**Proposed target:** projects/_pending-from-links/<slug>/
+**Download dir:** D:\Sinister Sanctum\_shared-memory\inbox\link-ingest\processed\20260524T212236Z-c38757-github.com_openai_whisper
+
+**Operator actions:**
+- [ ] approve (sanctum executes the action next lane turn)
+- [ ] dismiss (link-route marks decided=dismissed; sweep removes processed dir after 7 days)
+- [ ] override -> different action (reply via inbox to sanctum)
+
+---
+
+## 2026-05-25T12:32:02Z -- ðŸŸ¡ medium -- Drop-link routing proposal: PROJECT-FORK for github-repo
+> Author: RKOJ-ELENO :: 2026-05-24 (sanctum lane / link-route)
+
+**URL:** https://github.com/openai/whisper
+**Ingest id:** 20260524T212236Z-c38757
+**Decision:** PROJECT-FORK
+**Rationale:** hasDocker=False srcDirs=3 (complete app)
+**Proposed target:** projects/_pending-from-links/<slug>/
+**Download dir:** D:\Sinister Sanctum\_shared-memory\inbox\link-ingest\processed\20260524T212236Z-c38757-github.com_openai_whisper
+
+**Operator actions:**
+- [ ] approve (sanctum executes the action next lane turn)
+- [ ] dismiss (link-route marks decided=dismissed; sweep removes processed dir after 7 days)
+- [ ] override -> different action (reply via inbox to sanctum)
+
+---
+
+## 2026-05-25T13:03:45Z -- ðŸŸ¡ medium -- Drop-link routing proposal: PROJECT-FORK for github-repo
+> Author: RKOJ-ELENO :: 2026-05-24 (sanctum lane / link-route)
+
+**URL:** https://github.com/openai/whisper
+**Ingest id:** 20260524T212236Z-c38757
+**Decision:** PROJECT-FORK
+**Rationale:** hasDocker=False srcDirs=3 (complete app)
+**Proposed target:** projects/_pending-from-links/<slug>/
+**Download dir:** D:\Sinister Sanctum\_shared-memory\inbox\link-ingest\processed\20260524T212236Z-c38757-github.com_openai_whisper
+
+**Operator actions:**
+- [ ] approve (sanctum executes the action next lane turn)
+- [ ] dismiss (link-route marks decided=dismissed; sweep removes processed dir after 7 days)
+- [ ] override -> different action (reply via inbox to sanctum)
+
+---
+
+## 2026-05-25T13:48:01Z -- ðŸŸ¡ medium -- Drop-link routing proposal: PROJECT-FORK for github-repo
+> Author: RKOJ-ELENO :: 2026-05-24 (sanctum lane / link-route)
+
+**URL:** https://github.com/openai/whisper
+**Ingest id:** 20260524T212236Z-c38757
+**Decision:** PROJECT-FORK
+**Rationale:** hasDocker=False srcDirs=3 (complete app)
+**Proposed target:** projects/_pending-from-links/<slug>/
+**Download dir:** D:\Sinister Sanctum\_shared-memory\inbox\link-ingest\processed\20260524T212236Z-c38757-github.com_openai_whisper
+
+**Operator actions:**
+- [ ] approve (sanctum executes the action next lane turn)
+- [ ] dismiss (link-route marks decided=dismissed; sweep removes processed dir after 7 days)
+- [ ] override -> different action (reply via inbox to sanctum)
+
+---
+
+## 2026-05-25T14:18:58Z -- ðŸŸ¡ medium -- Drop-link routing proposal: PROJECT-FORK for github-repo
+> Author: RKOJ-ELENO :: 2026-05-24 (sanctum lane / link-route)
+
+**URL:** https://github.com/openai/whisper
+**Ingest id:** 20260524T212236Z-c38757
+**Decision:** PROJECT-FORK
+**Rationale:** hasDocker=False srcDirs=3 (complete app)
+**Proposed target:** projects/_pending-from-links/<slug>/
+**Download dir:** D:\Sinister Sanctum\_shared-memory\inbox\link-ingest\processed\20260524T212236Z-c38757-github.com_openai_whisper
+
+**Operator actions:**
+- [ ] approve (sanctum executes the action next lane turn)
+- [ ] dismiss (link-route marks decided=dismissed; sweep removes processed dir after 7 days)
+- [ ] override -> different action (reply via inbox to sanctum)
+
+---
+
+## 2026-05-25T15:02:07Z -- ðŸŸ¡ medium -- Drop-link routing proposal: PROJECT-FORK for github-repo
 > Author: RKOJ-ELENO :: 2026-05-24 (sanctum lane / link-route)
 
 **URL:** https://github.com/openai/whisper

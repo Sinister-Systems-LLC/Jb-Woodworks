@@ -121,6 +121,21 @@ PROJECT_PALETTES: dict[str, Palette] = {
     "sinister-panel":     Palette(SINISTER_VIOLET, VERDANT_GREEN, COBALT_BLUE, rotation_period_s=11.5),
     "sinister-link":      Palette(VERDANT_GREEN, SINISTER_VIOLET, ROYAL_INDIGO, rotation_period_s=13.5),
     "sinister-os":        Palette(SINISTER_VIOLET, CRIMSON_RED, COBALT_BLUE, rotation_period_s=16.0),
+    # SA-PH7 (iter-48) — fill remaining 13 project entities so picker
+    # selections always resolve to a unique palette (no fallback collisions).
+    "sinister-emulator":  Palette(CRIMSON_RED, COBALT_BLUE, SINISTER_VIOLET, rotation_period_s=10.0),
+    "sinister-bus":       Palette(COBALT_BLUE, SINISTER_VIOLET, VERDANT_GREEN, rotation_period_s=13.7),
+    "sinister-designer":  Palette(SINISTER_VIOLET, CRIMSON_RED, ROYAL_INDIGO, rotation_period_s=12.3),
+    "sinister-sleight":   Palette(ROYAL_INDIGO, CRIMSON_RED, SINISTER_VIOLET, rotation_period_s=18.0),
+    "sinister-snap-emu":  Palette(VERDANT_GREEN, ROYAL_INDIGO, COBALT_BLUE, rotation_period_s=14.3),
+    "sinister-hieroglyphics": Palette(ROYAL_INDIGO, SINISTER_VIOLET, CRIMSON_RED, rotation_period_s=19.3),
+    "sinister-watcher":   Palette(VERDANT_GREEN, SINISTER_VIOLET, CRIMSON_RED, rotation_period_s=15.0),
+    "sinister-bumble":    Palette(VERDANT_GREEN, CRIMSON_RED, COBALT_BLUE, rotation_period_s=11.7),
+    "eve-exe":            Palette(SINISTER_VIOLET, COBALT_BLUE, VERDANT_GREEN, rotation_period_s=12.7),
+    "eve-compliance":     Palette(CRIMSON_RED, SINISTER_VIOLET, ROYAL_INDIGO, rotation_period_s=9.0),
+    "letstext":           Palette(COBALT_BLUE, VERDANT_GREEN, CRIMSON_RED, rotation_period_s=10.7),
+    "showmasters":        Palette(ROYAL_INDIGO, VERDANT_GREEN, COBALT_BLUE, rotation_period_s=16.3),
+    "jb-woodworks":       Palette(CRIMSON_RED, VERDANT_GREEN, ROYAL_INDIGO, rotation_period_s=14.7),
 }
 
 

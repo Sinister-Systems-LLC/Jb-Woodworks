@@ -17,19 +17,19 @@ from typing import Optional
 
 from term.commands import SANCTUM_ROOT, load_projects
 
+# RKOJ-ELENO :: 2026-05-25 :: migrated to term.cache shared primitive
+# (iter-47). Local _cached helper removed in favor of one source of truth +
+# stampede protection. Namespace = "status" so different modules can't
+# accidentally collide on key names.
+from term.cache import cached as _shared_cached
 
-_CACHE: dict[str, tuple[float, object]] = {}
+
 _TTL_SECONDS = 2.0  # refresh status pieces no more than twice a second
 
 
 def _cached(key: str, ttl: float, factory):
-    now = time.monotonic()
-    hit = _CACHE.get(key)
-    if hit and now - hit[0] < ttl:
-        return hit[1]
-    value = factory()
-    _CACHE[key] = (now, value)
-    return value
+    """Thin wrapper preserving the legacy signature; routes to term.cache."""
+    return _shared_cached("status", key, ttl, factory)
 
 
 def detect_project_for_cwd() -> Optional[str]:

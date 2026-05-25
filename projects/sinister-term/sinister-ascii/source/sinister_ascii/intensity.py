@@ -99,6 +99,20 @@ def _newest_claude_jsonl(claude_root: Path) -> Optional[Path]:
     return _cached(f"newest_jsonl:{claude_root}", _impl, ttl=CACHE_TTL_S)
 
 
+# RKOJ-ELENO :: 2026-05-25 :: migrated to term.cache shared primitive
+# (iter-47/48). Tries the sibling sinister-term cache; falls back to a
+# local helper if the import path isn't wired (e.g. running standalone).
+try:
+    from term.cache import cached as _shared_cached  # type: ignore
+
+    def _cached_via_shared(key, factory, ttl=CACHE_TTL_S):
+        return _shared_cached("ascii_intensity", key, ttl, factory)
+
+    _cached = _cached_via_shared  # noqa: F811 — intentional override
+except Exception:
+    pass  # keep the local _cached helper defined above
+
+
 # Track jsonl size at last sample so we can compute bytes/s growth
 _SIZE_HISTORY: dict[str, list[tuple[float, int]]] = {}
 

@@ -21,7 +21,10 @@ def test_cached_caches_within_ttl():
 
     # Use a unique cache key to avoid pollution from other tests
     key = "test_cached_caches_within_ttl_key"
-    status._CACHE.pop(key, None)
+    # iter-48 migration: status._cached now routes to term.cache (shared);
+    # invalidate via the shared API instead of touching the old _CACHE dict.
+    from term.cache import invalidate as _invalidate
+    _invalidate("status", key)
     a = status._cached(key, ttl=5.0, factory=factory)
     b = status._cached(key, ttl=5.0, factory=factory)
     assert a == "x" and b == "x"
@@ -38,7 +41,8 @@ def test_cached_refreshes_after_ttl():
         return calls["n"]
 
     key = "test_cached_refreshes_after_ttl_key"
-    status._CACHE.pop(key, None)
+    from term.cache import invalidate as _invalidate
+    _invalidate("status", key)
     a = status._cached(key, ttl=0.05, factory=factory)
     time.sleep(0.08)  # exceed ttl
     b = status._cached(key, ttl=0.05, factory=factory)
