@@ -1,0 +1,51 @@
+{
+  "schema_version": "sinister.resume-point.v1",
+  "ts_utc": "2026-05-25T09:30:00Z",
+  "project": "Kernel APK",
+  "agent_name": "kernel-apk",
+  "mode": "loop-dynamic",
+  "iter": 9,
+  "focus_intent": "iter-9: Phase 2 B.5 injection SHIPPED (att-sign-inject-daemon.py ptrace daemon + att-sign-broadcast.py both committed). Phase 1 C1 smoke PASS, C2 inbox committed. Phase 3 audit agent running. v0.97.49 pushed. Next: Phase 2 B.5-full (shadowhook entrypoint swap + hook_callback writing capture files) + Phase 3 continued from audit agent results.",
+  "loop_directive_verbatim": "create a plan to complete everything you need to do and keep testing",
+  "git": {
+    "source_v2_HEAD": "latest push (v0.97.49)",
+    "source_v2_origin": "https://github.com/Sinister-Systems-LLC/Sinister-APK.git",
+    "sanctum_branch": "agent/sinister-sanctum/iter23-eve-polish-icon-mintty-2026-05-25"
+  },
+  "phase_2_state": {
+    "B1": "DONE",
+    "B2": "DONE",
+    "B3": "DONE",
+    "B4": "DONE",
+    "B5_consumer": "DONE (SnapCaptureWatcher + file-drop + broadcast + ADB broadcast tool)",
+    "B5_injection": "DONE (att-sign-inject-daemon.py ptrace daemon; device-smoke pending)",
+    "B5_full": "NEXT — shadowhook entrypoint swap: att_sign_hook.cpp hook_callback that writes capture files + inject via daemon OR KSU module",
+    "B6": "AHEAD"
+  },
+  "phase_1_state": {
+    "C1_smoke": "PASS (smoke-test.py --dry-run exit 0 for Snap 13.93.0.51)",
+    "C2_panel_spec": "SHIPPED (beb1a8c — proxy-pool-empty banner spec to sinister-panel inbox)"
+  },
+  "phase_3_audit_agent": "Running (a96cda4ee41146ce5) — SharedPrefs security + intent injection + file path injection + log sensitive data. Will complete and commit findings.",
+  "loop_condition_status": {
+    "signal_1": "OPERATIONAL",
+    "signal_2": "UNBLOCKED + future-proofed",
+    "signal_3": "PARTIAL",
+    "signal_4": "B.5 injection daemon ships; B.5-full (hook_callback) is the remaining automated-capture gap. Manual capture via att-sign-broadcast.py or file-drop works TODAY.",
+    "signal_5": "HARNESS READY",
+    "all_5_satisfied": false
+  },
+  "next_iter_priority_queue": [
+    "Phase 2 B.5-full: add hook_callback() to att_sign_hook.cpp — writes JSON to /data/adb/sinister/attsign/capture-pending/ when AttestationHeadersCallback fires; update CMakeLists + rebuild. This completes the write side; the injection daemon handles the load side.",
+    "Phase 2 B.5-full: wire shadowhook (Prefab) in CMakeLists.txt + build.gradle.kts (prefab=true) so shadowhook_hook_func_addr() is available for B.5-full",
+    "Process Phase 3 audit agent findings when it completes",
+    "Phase 2 B.6: end-to-end verification spec (when B.5-full is ready)"
+  ],
+  "wakeup_disposition": "ScheduleWakeup 270s (cache-warm); continues /loop",
+  "compose_links": [
+    "_shared-memory/plans/kernel-apk-complete-and-harden-2026-05-25/plan.md",
+    "_shared-memory/plans/kernel-apk-complete-and-harden-2026-05-25/phase-2-att-sign-hook-impl.md",
+    "_shared-memory/audits/kernel-apk-leak-security-error-audit-2026-05-25.md",
+    "_shared-memory/inbox/sinister-kernel-apk/2026-05-25T0915Z-from-kernel-apk-B5-ksu-injection-spec.json"
+  ]
+}

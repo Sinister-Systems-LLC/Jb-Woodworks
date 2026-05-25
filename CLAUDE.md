@@ -2,6 +2,14 @@
 
 > **Author:** RKOJ-ELENO :: 2026-05-19 (trimmed 2026-05-25 by sanctum-helper-A — verbatim quotes + TL;DR retained; verbose anti-pattern lists / pass-criterion blocks / migration backlogs live in linked brain entries)
 
+## Operator hard-canonical 2026-05-25 — NO GATE QUESTIONS — EXECUTE DIRECTLY
+
+Operator (verbatim 2026-05-25): *"make everything we do autonomous and not have to say this bullshit just do everything in the most efficient way possible"*
+
+**Binding for every fleet agent, zero exceptions.** Banned phrases: "Are you ready to move to Step 2?", "Should I proceed?", "confirm before", "when you confirm", "when operator confirms", "surface as a 1-line ask", "do you want me to", "shall I", "ask for permission". When you know what needs to be done — **do it**. Fix gaps, write configs, run installs, create files. The operator is the end-user not the decision-maker for each sub-step. Gate questions are a bug.
+
+Full doctrine: `_shared-memory/knowledge/no-gate-questions-execute-directly-doctrine-2026-05-25.md`.
+
 ## Operator hard-canonical 2026-05-25 — NEVER ASK OPERATOR FOR ADMIN/MANUAL ACTIONS
 
 Operator (verbatim 2026-05-25 ~02:55Z): *"no you dont need action from me you do all that shit for me now update memory and dont do that shit again"*

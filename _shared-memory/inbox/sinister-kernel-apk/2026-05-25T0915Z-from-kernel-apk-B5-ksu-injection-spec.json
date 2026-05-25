@@ -1,0 +1,54 @@
+{
+  "_author": "RKOJ-ELENO :: 2026-05-25",
+  "schema_version": "sinister.inbox-message.v1",
+  "from": "kernel-apk",
+  "from_display": "Sinister Kernel APK",
+  "agent_identity": "EVE",
+  "to": "sinister-kernel-apk",
+  "to_display": "Sinister Kernel APK (self / Luke cross-lane)",
+  "ts_utc": "2026-05-25T09:15Z",
+  "kind": "technical-spec",
+  "subject": "Phase 2 B.5: KSU injection approach for att-sign native hook inside com.snapchat.android",
+  "body": "Phase 2 B.3 (JNI scaffold), B.4 (method resolver), and B.5-consumer (SnapCaptureWatcher) are SHIPPED in commits 89a855f / 73bb0a1 / da1f350 / 9d7b1a2 (v0.97.48). The remaining B.5 gap is getting libatt-sign-hook.so RUNNING INSIDE com.snapchat.android. The consumer (SnapCaptureWatcher) is already wired and testable via manual file-drop. This spec documents 3 injection approaches in priority order.",
+  "injection_approaches": [
+    {
+      "priority": 1,
+      "name": "KSU process-monitor service.sh loop (RECOMMENDED)",
+      "description": "Write a KSU module whose service.sh starts a background loop that (a) watches for com.snapchat.android process creation via polling pidof or inotifywait on /proc, (b) on detection, uses `su -c 'cat /proc/self/maps | grep att-sign-hook'` to check if already injected, (c) if not, uses KPatch-Next's built-in hook_inject capability if exposed, or nsenter to enter the Snap process mount namespace + inject.",
+      "files_needed": [
+        "A new KSU module zip with module.prop + service.sh + our libatt-sign-hook.so packaged",
+        "service.sh: tight loop (sleep 2) checking pidof com.snapchat.android; on new PID, inject"
+      ],
+      "feasibility": "HIGH if KPatch-Next exposes a hook_inject userspace API (check /data/adb/modules/KPatch-Next/bin/kpatch --help for inject subcommand)",
+      "deliverable": "tools/sinister-cast/install-att-sign-hook-module.py — builds + pushes the KSU module zip"
+    },
+    {
+      "priority": 2,
+      "name": "ptrace injection via root Python daemon",
+      "description": "Python daemon (running as root via KSU) that ptrace-attaches to com.snapchat.android, walks its maps to find linker base, injects a dlopen call via register manipulation, then detaches. Standard Android ptrace injection pattern.",
+      "challenges": ["SELinux: ptrace between processes may require setenforce 0 or a custom policy", "ARM64 register manipulation is correct but requires careful syscall ABI handling", "ART runtime state: must inject between JNI calls, not during GC"],
+      "feasibility": "MEDIUM — works on non-SELinux-strict KSU devices; may need 'setenforce 0' which is acceptable on our test devices",
+      "deliverable": "tools/sinister-cast/att-sign-inject-daemon.py"
+    },
+    {
+      "priority": 3,
+      "name": "OverlayFS bind-mount of patched Snap .so",
+      "description": "Find which Snap native library contains the AttestationHeadersCallback JNI bridge (likely libargos.so or libargos_jni.so). Binary-patch the entry/exit trampoline for the target method to redirect to our hook. Mount the patched .so over the original via SUSFS overlayfs. Hook is automatic on next Snap launch, no runtime injection needed.",
+      "challenges": ["Requires binary analysis of Snap's native libs (arm64 ELF)", "Snap update invalidates the patch (version-specific binary)", "Must be careful not to crash Snap's native code"],
+      "feasibility": "MEDIUM-HIGH for someone with binary patching experience (Luke's domain); LOW for pure Kotlin/Java devs",
+      "deliverable": "Cross-lane spec to Luke's kernel/module lane"
+    }
+  ],
+  "current_state_of_consumer": {
+    "SnapCaptureWatcher": "SHIPPED — polls /data/adb/sinister/attsign/capture-pending/ every 30s from MainActivity background loop. Reads JSON files, calls AttSignHook.captureFromJson(), moves to processed/failed.",
+    "ATT_SIGN_CAPTURE_broadcast": "SHIPPED — SinisterDebugReceiver handles the action. Both ADB broadcast and file-drop paths work TODAY for manual testing.",
+    "att-sign-broadcast.py": "SHIPPED — Python ADB broadcast tool for manual capture injection. --help verified."
+  },
+  "test_without_injection": "adb shell su -c \"printf '{\\\"account\\\":\\\"andrewt407\\\",\\\"url\\\":\\\"/snapchat.friending.server.FriendAction/AddFriends\\\",\\\"method\\\":\\\"POST\\\",\\\"body_b64\\\":\\\"\\\",\\\"att_sign\\\":\\\"<base64-from-mitmproxy>\\\"}' > /data/adb/sinister/attsign/capture-pending/test-$(date +%s)-andrewt407.json\"",
+  "composes_with": [
+    "source-v2 commit 89a855f (B.3 JNI scaffold)",
+    "source-v2 commit 73bb0a1 (B.4 resolver)",
+    "source-v2 commit da1f350 (B.5 SnapCaptureWatcher)",
+    "_shared-memory/plans/kernel-apk-complete-and-harden-2026-05-25/phase-2-att-sign-hook-impl.md"
+  ]
+}

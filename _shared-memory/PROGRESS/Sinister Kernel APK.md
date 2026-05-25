@@ -6,6 +6,34 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-25 ~09:30Z — iter-9 of /loop: Phase 2 B.5 injection daemon + att-sign-broadcast.py SHIPPED — v0.97.49; parallel agents returned (C1 PASS / C2 inbox / Phase 3 audit running)
+
+**Author:** RKOJ-ELENO :: 2026-05-25 (kernel-apk lane; /loop dynamic-mode iter-9; parallel execution active)
+
+### Shipped (verified, this iter)
+
+| # | Deliverable | Verification |
+|---|---|---|
+| 1 | `att-sign-inject-daemon.py`: root ptrace injection daemon — monitors Snap PID, injects libatt-sign-hook.so via ARM64 dlopen call | --help smoke PASS; committed + pushed |
+| 2 | `att-sign-broadcast.py`: manual ADB broadcast tool (referenced but previously missing) | --help smoke PASS; committed + pushed |
+| 3 | B.5 KSU injection spec: `_shared-memory/inbox/sinister-kernel-apk/2026-05-25T0915Z-from-kernel-apk-B5-ksu-injection-spec.json` | 3 injection approaches documented + test command |
+| 4 | Phase 1 C1 smoke PASS: `smoke-test.py --dry-run` exits 0 for Snap 13.93.0.51 hooks | C1/C2 agent confirmed |
+| 5 | Phase 1 C2: proxy-pool-empty banner spec committed to sinister-panel inbox at `beb1a8c` | C1/C2 agent confirmed |
+| 6 | Parallel execution: 2 background agents spawned (Phase 3 audit + C1/C2); both returned | Agents completed |
+| 7 | versionCode 244→245, versionName 0.97.48→0.97.49 | build.gradle.kts updated |
+
+### Phase 2 B state
+
+| Sub | Status |
+|---|---|
+| B.1-B.4 | DONE |
+| B.5 consumer (SnapCaptureWatcher + file-drop + broadcast paths) | DONE |
+| B.5 injection (att-sign-inject-daemon.py) | SHIPPED — requires device-side smoke (SELinux permissive + Python3 on device) |
+| B.5 full (shadowhook entrypoint swap inside Snap's JVM) | NEXT MAJOR STEP |
+| B.6 | AHEAD |
+
+---
+
 ## 2026-05-25 ~09:10Z — iter-8 of /loop: Phase 2 B.5 partial SHIPPED — SnapCaptureWatcher + MainActivity poll wired — commit da1f350 v0.97.48; parallel agents spawning
 
 **Author:** RKOJ-ELENO :: 2026-05-25 (kernel-apk lane; /loop dynamic-mode iter-8)
