@@ -1,0 +1,12 @@
+{
+    "expires_utc":  "2026-05-25T15:09:49Z",
+    "consumed_utc":  "",
+    "id":  "inv-20260525030949-022e5b",
+    "issued_utc":  "2026-05-25T07:09:49Z",
+    "peer_display":  "operator",
+    "peer_name":  "desktop-lto4lus",
+    "transport":  "git",
+    "psk_hash":  "d620c665a0705ce2d28b37d410d21321a5adc7131dc8dfffedc86c2c3a47dc2a",
+    "peer_tailscale_ip":  "",
+    "psk_mask":  "1Bu...g0"
+}
