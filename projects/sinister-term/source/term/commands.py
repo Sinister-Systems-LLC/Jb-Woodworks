@@ -20,6 +20,17 @@ from typing import Callable
 # RKOJ-ELENO :: 2026-05-23 :: alias builtin
 from term.aliases import load_aliases, save_aliases
 
+# iter-52: publish builtin-dispatch events to the cmux event_bus so future
+# Feed panel + crash replay can consume them. Best-effort import — older
+# installs without event_bus still boot.
+try:
+    from term.event_bus import publish as _bus_publish
+    _HAVE_BUS = True
+except Exception:
+    _HAVE_BUS = False
+    def _bus_publish(name, category, payload=None):  # noqa: E501
+        return None
+
 
 SANCTUM_ROOT = Path(os.environ.get("SANCTUM_ROOT") or "D:/Sinister Sanctum")
 PROJECTS_JSON = SANCTUM_ROOT / "automations" / "session-templates" / "projects.json"
@@ -476,6 +487,11 @@ def cmd_recall(args: list[str]) -> CommandResult:
     except OSError as e:
         return CommandResult(True, f"recall failed: {e}")
     if not matches:
+        try:
+            _bus_publish("recall", "agent",
+                         payload={"terms": list(args)[:8], "match_count": 0})
+        except Exception:
+            pass
         return CommandResult(True, f"(no matches for {' '.join(args)})")
     matches.sort(key=lambda x: (-x[0], x[1].name))
     top_n = matches[:8]
@@ -488,6 +504,12 @@ def cmd_recall(args: list[str]) -> CommandResult:
             rel = path
         lines.append(f"  [{score:>3}] {title}")
         lines.append(f"        {rel.as_posix()}")
+    try:
+        _bus_publish("recall", "agent",
+                     payload={"terms": list(args)[:8], "match_count": len(matches),
+                              "top_titles": [t for _, _, t in top_n[:3]]})
+    except Exception:
+        pass
     return CommandResult(True, "\n".join(lines))
 
 
@@ -515,6 +537,10 @@ def cmd_swarm(args: list[str]) -> CommandResult:
     rest = args[1:]
     if sub == "list":
         rows = _swarm_mod.list_agents()
+        try:
+            _bus_publish("swarm_list", "agent", payload={"agent_count": len(rows)})
+        except Exception:
+            pass
         if not rows:
             return CommandResult(True, "(no live agents)")
         lines = [f"Swarm: {len(rows)} agent{'s' if len(rows) != 1 else ''}"]
@@ -528,6 +554,11 @@ def cmd_swarm(args: list[str]) -> CommandResult:
         if not rest:
             return CommandResult(True, "usage: /swarm spawn <project-key>")
         rc = _swarm_mod.spawn(rest[0])
+        try:
+            _bus_publish("swarm_spawn", "agent",
+                         payload={"project_key": rest[0], "exit_code": int(rc)})
+        except Exception:
+            pass
         return CommandResult(True,
             f"spawn → exit {rc}" if rc != 0 else f"spawned: {rest[0]}")
     if sub == "dm":
@@ -536,13 +567,25 @@ def cmd_swarm(args: list[str]) -> CommandResult:
         target = rest[0]
         msg = " ".join(rest[1:])
         path = _swarm_mod.dm(target, msg)
+        try:
+            _bus_publish("swarm_dm", "agent",
+                         payload={"target": target, "msg_len": len(msg),
+                                  "delivered": path is not None})
+        except Exception:
+            pass
         if path is None:
             return CommandResult(True, f"unknown agent inbox: {target}")
         return CommandResult(True, f"[DM] → {path}")
     if sub == "broadcast":
         if not rest:
             return CommandResult(True, "usage: /swarm broadcast <message...>")
-        path = _swarm_mod.broadcast(" ".join(rest))
+        msg = " ".join(rest)
+        path = _swarm_mod.broadcast(msg)
+        try:
+            _bus_publish("swarm_broadcast", "agent",
+                         payload={"msg_len": len(msg), "path": str(path)})
+        except Exception:
+            pass
         return CommandResult(True, f"[BROADCAST] → {path}")
     return CommandResult(True,
         f"unknown swarm subcommand: {sub}. Try /swarm with no args for help.")
