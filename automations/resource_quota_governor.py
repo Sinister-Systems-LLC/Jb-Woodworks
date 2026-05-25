@@ -97,10 +97,15 @@ PROFILES = {
         "privileged_ram_mb": 4096,
     },
     "agents-first": {
-        "default_priority": "normal",
-        "privileged_priority": "above_normal",
-        "default_ram_mb": 8192,
-        "privileged_ram_mb": 12288,
+        # RKOJ-ELENO :: 2026-05-25 — operator "all agents need to use swarm mode
+        # and more hard ware and be better i need more power". Bumped priorities
+        # one notch + RAM caps significantly so agents have headroom for
+        # parallel work without throttling. Operator reserve (4 cores + 6GB)
+        # still inviolable per headroom invariant.
+        "default_priority": "above_normal",
+        "privileged_priority": "high",
+        "default_ram_mb": 12288,
+        "privileged_ram_mb": 20480,
     },
     "single-agent-focus": {
         "default_priority": "idle",
@@ -571,7 +576,7 @@ def cmd_install_schtask() -> int:
     python_exe = sys.executable
     script = str(SANCTUM_ROOT / "automations" / "resource_quota_governor.py")
     task_name = "SinisterResourceQuotaGovernor"
-    cmd_line = f'"{python_exe}" "{script}" --apply --profile balanced'
+    cmd_line = f'"{python_exe}" "{script}" --apply --profile agents-first'
     # Delete existing (idempotent)
     subprocess.run([schtasks, "/Delete", "/TN", task_name, "/F"], capture_output=True)
     # Create 60-second cadence
@@ -606,7 +611,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--status", action="store_true")
     p.add_argument("--apply", action="store_true")
     p.add_argument("--dry-run", action="store_true")
-    p.add_argument("--profile", default="balanced", choices=list(PROFILES.keys()))
+    p.add_argument("--profile", default="agents-first", choices=list(PROFILES.keys()))
     p.add_argument("--focus-slug", default=None)
     p.add_argument("--install-schtask", action="store_true")
     p.add_argument("--json", action="store_true")
