@@ -87,6 +87,7 @@ Sinister Term commands:
   /health                   Single-screen sterm dashboard (version/branch/agents/inbox/bridge/bus)
   /uptime                   Session duration + event count + ascii frames + cache size
   /branch                   Current branch + upstream + ahead/behind + dirty count + HEAD
+  /touch [status...]        Pulse sterm heartbeat NOW (+ optional status note)
   /alias [name=val|remove n] List aliases, define one, or remove one
   /clear                    Clear the screen
   /help                     This message
@@ -515,6 +516,66 @@ def cmd_recall(args: list[str]) -> CommandResult:
                               "top_titles": [t for _, _, t in top_n[:3]]})
     except Exception:
         pass
+    return CommandResult(True, "\n".join(lines))
+
+
+_HEARTBEAT_PATH = SANCTUM_ROOT / "_shared-memory" / "heartbeats" / f"{SELF_SLUG}.json"
+
+
+def cmd_touch(args: list[str]) -> CommandResult:
+    """iter-58: manually pulse the sinister-term heartbeat NOW.
+
+    Useful when the operator wants to confirm liveness without typing JSON,
+    or attach a status note ("paused waiting for review") that surfaces to
+    other agents via /swarm list / mesh-coordinator polls.
+
+    Usage:
+      /touch                          refresh heartbeat with default status
+      /touch <free-form status...>    attach a status note to the heartbeat
+    """
+    import time as _t
+    note = " ".join(args).strip() if args else None
+    payload = {
+        "agent": SELF_SLUG,
+        "ts_utc": _t.strftime("%Y-%m-%dT%H:%M:%SZ", _t.gmtime()),
+        "alive": True,
+        "via": "sterm /touch",
+        "cwd": str(Path.cwd()),
+    }
+    if note:
+        # Cap free-form note so a runaway paste doesn't bloat the heartbeat.
+        payload["status_note"] = note[:280]
+
+    # Read existing heartbeat (if any) so we don't blow away unrelated keys
+    # like mode / branch_intent / last_shipped that the spawner / loop wrote.
+    try:
+        if _HEARTBEAT_PATH.exists():
+            existing = json.loads(
+                _HEARTBEAT_PATH.read_text(encoding="utf-8", errors="replace")
+            )
+            if isinstance(existing, dict):
+                # Update existing in place so historical fields survive
+                existing.update(payload)
+                payload = existing
+    except Exception:
+        # Corrupted JSON — overwrite with the fresh payload
+        pass
+
+    try:
+        _HEARTBEAT_PATH.parent.mkdir(parents=True, exist_ok=True)
+        _HEARTBEAT_PATH.write_text(
+            json.dumps(payload, indent=2), encoding="utf-8"
+        )
+    except OSError as e:
+        return CommandResult(True, f"/touch failed: {e}")
+
+    lines = [
+        f"heartbeat pulsed: {_HEARTBEAT_PATH.name}",
+        f"  ts_utc:    {payload['ts_utc']}",
+        f"  cwd:       {payload['cwd']}",
+    ]
+    if note:
+        lines.append(f"  status:    {payload['status_note']}")
     return CommandResult(True, "\n".join(lines))
 
 
@@ -1062,6 +1123,7 @@ COMMANDS: dict[str, Callable[[list[str]], CommandResult]] = {
     "health": cmd_health,  # iter-55 — single-screen sterm dashboard
     "uptime": cmd_uptime,  # iter-56 — sterm session duration + activity counters
     "branch": cmd_branch,  # iter-57 — branch + ahead/behind + dirty count
+    "touch": cmd_touch,    # iter-58 — manually pulse sinister-term heartbeat
 }
 
 
