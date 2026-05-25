@@ -41,6 +41,30 @@ from term.status import (
 )
 from term.theme import SINISTER_STYLE, BANNER
 
+# RKOJ-ELENO :: 2026-05-25 :: integration — name pill + jcode popup +
+# concise logger + crash recovery. Best-effort imports so older installs
+# without the new modules still boot.
+try:
+    from term.name_pill import default_style as _pill_style, write_pill as _write_pill
+    _HAVE_PILL = True
+except Exception:
+    _HAVE_PILL = False
+try:
+    from term.jcode_popup import build_snapshot as _popup_snapshot, write_popup as _write_popup
+    _HAVE_POPUP = True
+except Exception:
+    _HAVE_POPUP = False
+try:
+    from term.concise_log import default as _log_default
+    _LOG = _log_default()
+except Exception:
+    _LOG = None
+try:
+    from term.crash_recovery import install_atexit_reset as _install_atexit, log_crash as _log_crash
+    _install_atexit()
+except Exception:
+    _log_crash = None
+
 
 HIST_DIR = SANCTUM_ROOT / "_shared-memory" / "sinister-term-history"
 HEARTBEAT = SANCTUM_ROOT / "_shared-memory" / "heartbeats" / "sinister-term.json"
@@ -159,9 +183,56 @@ def _run_shell_command(line: str, console: Console) -> None:
         console.print(f"[red]shell exec failed: {e}[/red]")
 
 
+def _emit_pill_and_popup_if_enabled() -> None:
+    """Best-effort: render the name pill + jcode popup overlay if enabled.
+
+    Operator feedback 2026-05-25T12:02:58Z: "this looks like shit and its
+    super laggy". Overlay is now default-OFF; set SINISTER_TERM_OVERLAY=on
+    to opt in. The minimal liquid-glass replacement lives in glass_overlay.py
+    and is invoked separately if SINISTER_TERM_GLASS=on.
+    """
+    if os.environ.get("SINISTER_TERM_OVERLAY", "off").lower() not in ("on", "1", "true"):
+        return
+    try:
+        project = detect_project_for_cwd() or "sinister-term"
+        project_key_map = {
+            "Sinister Sanctum": "sinister-sanctum",
+            "Sinister Term":    "sinister-term",
+            "Sinister Forge":   "sinister-forge",
+            "Sinister Mind":    "sinister-mind",
+            "Sinister Overseer": "sinister-overseer",
+            "Sinister Chatbot": "sinister-chatbot",
+            "Sinister Vault":   "sinister-vault",
+            "Sinister Memory":  "sinister-memory",
+            "Sinister Kernel APK": "sinister-kernel-apk",
+            "Sinister Panel":   "sinister-panel",
+            "Sinister Link":    "sinister-link",
+            "Sinister OS":      "sinister-os",
+            "Eve EXE":          "eve-exe",
+        }
+        pk = project_key_map.get(project, project if project.startswith("sinister-") else "sinister-term")
+        if _HAVE_PILL:
+            _write_pill(_pill_style(pk, mode="resume", loop=True, swarm=True, status="alive"))
+        if _HAVE_POPUP:
+            br = git_branch() or ""
+            _write_popup(_popup_snapshot(
+                current_task="active",
+                session_name=br or "sterm",
+                cwd=str(Path.cwd()),
+            ), corner="br", width=38)
+    except Exception as e:
+        if _log_crash is not None:
+            _log_crash("term.app._emit_pill_and_popup", e)
+
+
 def run() -> None:
     console = Console()
     console.print(BANNER)
+    if _LOG is not None:
+        try:
+            _LOG.info("STERM_BOOT", cwd=str(Path.cwd()))
+        except Exception:
+            pass
 
     HIST_DIR.mkdir(parents=True, exist_ok=True)
     hist_path = HIST_DIR / "history.jsonl"
@@ -186,6 +257,7 @@ def run() -> None:
 
     while True:
         _set_window_title()  # refresh on every prompt so cd changes show
+        _emit_pill_and_popup_if_enabled()  # name pill + jcode popup overlay
         try:
             line = session.prompt(_prompt_text())
         except KeyboardInterrupt:
