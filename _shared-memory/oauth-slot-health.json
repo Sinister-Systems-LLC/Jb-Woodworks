@@ -1,7 +1,7 @@
 ﻿{
-    "measured_at_utc":  "2026-05-25T08:26:00Z",
-    "fleet_usage_pct_5h":  999,
-    "next_up_slot":  "operator",
+    "measured_at_utc":  "2026-05-25T15:09:51Z",
+    "fleet_usage_pct_5h":  100,
+    "next_up_slot":  "operator-b",
     "slots":  [
                   {
                       "name":  "operator",
@@ -13,7 +13,22 @@
                       "weekly_reset_at_utc":  null,
                       "jwt_exp_utc":  null,
                       "jwt_expiring_soon":  false,
-                      "usage_pct_5h":  999,
+                      "usage_pct_5h":  100,
+                      "score":  15,
+                      "availability_score":  0.15,
+                      "has_credentials":  true
+                  },
+                  {
+                      "name":  "operator-b",
+                      "auth_mode":  "oauth",
+                      "enabled":  true,
+                      "rate_limited":  false,
+                      "weekly_capped":  false,
+                      "rate_limited_until_utc":  null,
+                      "weekly_reset_at_utc":  null,
+                      "jwt_exp_utc":  null,
+                      "jwt_expiring_soon":  false,
+                      "usage_pct_5h":  100,
                       "score":  15,
                       "availability_score":  0.15,
                       "has_credentials":  true
@@ -28,7 +43,7 @@
                       "weekly_reset_at_utc":  null,
                       "jwt_exp_utc":  null,
                       "jwt_expiring_soon":  false,
-                      "usage_pct_5h":  999,
+                      "usage_pct_5h":  100,
                       "score":  0,
                       "availability_score":  0,
                       "has_credentials":  true

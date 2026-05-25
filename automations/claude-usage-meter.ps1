@@ -151,10 +151,20 @@ $raw = $totals.input_tokens + $totals.cache_creation_input_tokens + $totals.cach
 
 $pctMsg = if ($msgCap -gt 0) { [int]([Math]::Round(100.0 * $totals.msg_count / $msgCap)) } else { 0 }
 if ($pctMsg -lt 0) { $pctMsg = 0 }
-if ($pctMsg -gt 999) { $pctMsg = 999 }
+# RKOJ-ELENO :: 2026-05-25 (eve-exe iter-5) :: clamp at 100, not 999.
+# Operator hard-canonical "leave out wrong info. like saying its 100%. its
+# fucking not". The 500-msg msgCap is a HARDCODED guess that doesn't match
+# any real Anthropic per-account cap (Max 20x is spawn-window based, not msg
+# count). With cap=500 and 5h-window msg_count routinely >4000, pctMsg blew
+# past 999 -> downstream (oauth-slot-health, sub-agents) misread as "fleet
+# hard-capped" + refused to spawn. Real quota signal comes from /oauth/usage
+# headers (eve.py:894 [MEASURED] tag). This meter is a PROXY; clamp at 100.
+$pctMsgUncapped = $pctMsg
+if ($pctMsg -gt 100) { $pctMsg = 100 }
 $pctTok = if ($tokenCap -gt 0) { [int]([Math]::Round(100.0 * $billableEq / $tokenCap)) } else { 0 }
 if ($pctTok -lt 0) { $pctTok = 0 }
-if ($pctTok -gt 999) { $pctTok = 999 }
+$pctTokUncapped = $pctTok
+if ($pctTok -gt 100) { $pctTok = 100 }
 
 if ($Mode -eq 'Text') {
     Write-Output ("usage: ${pctMsg}% msgs ($($totals.msg_count)/$msgCap)  ${pctTok}% tokens ($billableEq/$tokenCap)  raw=$raw  win=${WindowHours}h  tier=$PlanTier")
@@ -170,6 +180,9 @@ $out = @{
     pct_used = $pctMsg
     pct_msgs = $pctMsg
     pct_tokens = $pctTok
+    pct_msgs_uncapped = $pctMsgUncapped
+    pct_tokens_uncapped = $pctTokUncapped
+    proxy_note = "msg-count vs hardcoded 500-msg cap is a proxy; real quota = Anthropic /oauth/usage headers (eve.py [MEASURED] path)"
     token_cap = $tokenCap
     billable_eq_tokens = $billableEq
     raw_tokens = $raw
