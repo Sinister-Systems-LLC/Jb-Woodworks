@@ -34,14 +34,6 @@
                                                                                              "agent_name":  "eve-compliance",
                                                                                              "accent_color":  "purple"
                                                                                          },
-                                                                      "sinister-chatbot":  {
-                                                                                               "agent_name":  "sinister-chatbot",
-                                                                                               "accent_color":  "purple"
-                                                                                           },
-                                                                      "kernel-apk":  {
-                                                                                         "agent_name":  "kernel-apk",
-                                                                                         "accent_color":  "purple"
-                                                                                     },
                                                                       "sinister-panel":  {
                                                                                              "agent_name":  "sinister-panel",
                                                                                              "accent_color":  "purple"
@@ -65,10 +57,20 @@
                                                                                           "accent_color":  "purple",
                                                                                           "last_saved_at_utc":  "2026-05-25T03:46:41Z"
                                                                                       },
+                                                                      "kernel-apk":  {
+                                                                                         "agent_name":  "kernel-apk",
+                                                                                         "accent_color":  "purple",
+                                                                                         "last_saved_at_utc":  "2026-05-25T06:01:00Z"
+                                                                                     },
+                                                                      "sinister-chatbot":  {
+                                                                                               "agent_name":  "sinister-chatbot",
+                                                                                               "accent_color":  "purple",
+                                                                                               "last_saved_at_utc":  "2026-05-25T06:03:28Z"
+                                                                                           },
                                                                       "sanctum":  {
                                                                                       "agent_name":  "sanctum",
                                                                                       "accent_color":  "purple",
-                                                                                      "last_saved_at_utc":  "2026-05-25T05:48:50Z"
+                                                                                      "last_saved_at_utc":  "2026-05-25T06:03:50Z"
                                                                                   }
                                                                   }
                                                  }

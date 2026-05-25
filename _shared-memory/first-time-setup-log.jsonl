@@ -1,0 +1,16 @@
+{"ts": "2026-05-25T06:03:07Z", "step": "2_detect_repo", "status": "PASS", "repo": "D:\\Sinister Sanctum"}
+{"ts": "2026-05-25T06:03:08Z", "step": "3_python_deps", "status": "PASS", "results": {"requests": "already-present", "cryptography": "already-present", "psutil": "already-present", "watchdog": "already-present"}}
+{"ts": "2026-05-25T06:03:14Z", "step": "4_winget_deps", "status": "PASS", "results": {"Git.Git": "would-install", "Microsoft.PowerShell": "would-install", "Anthropic.Claude.Code": "would-install"}}
+{"ts": "2026-05-25T06:03:14Z", "step": "5_schtasks", "status": "PASS", "results": {"SinisterSanctumAutoPush": "would-create", "SinisterLoopRelentlessWatchdog": "would-create", "SinisterLinkPoller": "would-create"}}
+{"ts": "2026-05-25T06:03:15Z", "step": "6_claude_config", "status": "PASS", "results": {"settings.json": "merged-protections", "credentials": "present"}}
+{"ts": "2026-05-25T06:03:15Z", "step": "7_eve_mirror", "status": "PASS", "results": {"mirror": "would-copy D:\\Sinister Sanctum\\EVE.exe -> C:\\Users\\Zonia\\.eve\\EVE.exe", "shortcut": "would-create C:\\Users\\Zonia\\Desktop\\EVE.lnk"}}
+{"ts": "2026-05-25T06:03:15Z", "step": "8_first_launch", "status": "SKIP", "reason": "--no-launch"}
+{"ts": "2026-05-25T06:03:15Z", "step": "9_summary", "status": "PASS", "total_steps": 8}
+{"ts": "2026-05-25T06:03:31Z", "step": "2_detect_repo", "status": "PASS", "repo": "D:\\Sinister Sanctum"}
+{"ts": "2026-05-25T06:03:31Z", "step": "3_python_deps", "status": "PASS", "results": {"requests": "already-present", "cryptography": "already-present", "psutil": "already-present", "watchdog": "already-present"}}
+{"ts": "2026-05-25T06:03:35Z", "step": "4_winget_deps", "status": "PASS", "results": {"Git.Git": "would-install", "Microsoft.PowerShell": "would-install", "Anthropic.Claude.Code": "would-install"}}
+{"ts": "2026-05-25T06:03:35Z", "step": "5_schtasks", "status": "PASS", "results": {"SinisterSanctumAutoPush": "would-create", "SinisterLoopRelentlessWatchdog": "would-create", "SinisterLinkPoller": "would-create"}}
+{"ts": "2026-05-25T06:03:35Z", "step": "6_claude_config", "status": "PASS", "results": {"settings.json": "merged-protections", "credentials": "present"}}
+{"ts": "2026-05-25T06:03:35Z", "step": "7_eve_mirror", "status": "PASS", "results": {"mirror": "would-copy D:\\Sinister Sanctum\\EVE.exe -> C:\\Users\\Zonia\\.eve\\EVE.exe", "shortcut": "would-create C:\\Users\\Zonia\\Desktop\\EVE.lnk"}}
+{"ts": "2026-05-25T06:03:35Z", "step": "8_first_launch", "status": "SKIP", "reason": "--no-launch"}
+{"ts": "2026-05-25T06:03:35Z", "step": "9_summary", "status": "PASS", "total_steps": 8}

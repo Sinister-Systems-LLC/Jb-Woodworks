@@ -1,0 +1,68 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-25T05:56:54Z",
+    "project": "sanctum",
+    "agent_name": "sanctum",
+    "agent_display": "Sinister Sanctum",
+    "mode": "resume",
+    "loop_iter": 22,
+    "swarm_role": "consolidation orchestrator — git lock clearance + branch label fix + poke ack + utterance triage; queue 3-5 parallel sub-agents next iter",
+    "focus_intent": "Cold-start RESUME from iter-21 unfinished state: clear 4hr-stale git locks blocking push, cut policy-compliant branch from HEAD (e090b40 was on wrong-prefix agent/sinister-os/iter15 branch), ack 26 watchdog-pokes accumulated during sanctum stall window, ack 2 NEW operator utterances (push-policy RESOLVED + image-65-67 ACKNOWLEDGED partial-shipped), commit + push consolidation, write resume-point.",
+    "shipped_this_iter": [
+        "Removed .git/index.lock + .git/next-index-46660.lock (both stale, no live git process)",
+        "Cut agent/sinister-sanctum/iter22-consolidate-pokes-push-2026-05-25 from HEAD e090b40 (fixes push-policy convention violation; sinister-os-prefixed branch stays as label artifact)",
+        "Moved 26 loop-watchdog-poke files (sanctum/ + sanctum-mintty-fix/ + jb-woodworks/) to _acked/ subdirs",
+        "Acked operator-utterance 2026-05-25T00:58:47Z (push-policy) → RESOLVED with deliverable list",
+        "Acked operator-utterance 2026-05-25T01:25:35Z (image 65-67) → ACKNOWLEDGED partial-shipped (62/63/64 done iter-21; 61/65/66/67 + IMAGE-4 mintty-126 queued)",
+        "Heartbeat sanctum.json refreshed (iter=22, ts 2026-05-25T05:52:43Z, branch=correct)",
+        "PROGRESS/Sinister Sanctum.md iter-22 row appended",
+        "Commit 5f8f3d5 (129 files / +994 -56) → pushed to origin successfully"
+    ],
+    "open_for_next_iter": [
+        "(61) centered menu each EVE.exe page (UI uniformity doctrine)",
+        "(65) Enter binding fails + 'allow unlimited flows pages' + EVE.exe wont close",
+        "(66) more animations + live (jcode animation parity)",
+        "(67) '100% real' label cleanup if not real + jcode usage labeling accuracy",
+        "IMAGE-4: spawn-setup-wizard.ps1 lines 136+184 mintty exit 126 (literal scriptblock leak to bash)",
+        "Verify Sub-E iter-19 return (claude login flow + Enter-progress + EVE.exe close + animations)",
+        "Forever-improve Review on iter-22 (cold-start step 10)",
+        "Verify Sub-K iter-21 (Leo MCP+Docker+bots+autonomy extension) returned",
+        "Verify Sub-L iter-21 (Overseer first-fire audit of Sinister Term) returned",
+        "EVE.exe rebuild after open items land (verify-eve-features.ps1 -AutoRebuild -SyncMirror)",
+        "121 overseer-distribute messages remain (FYI auto-distributed fleet-update fan-outs; no per-row action — auto-handled by claude-accounts routing). Optional bulk-move to _acked/ next iter."
+    ],
+    "pre_warm_reads": [
+        "D:\\Sinister Sanctum\\CLAUDE.md (top hard-canonical blocks: no-action-from-operator + no-bat-no-ps1 + we-have-source + loop-relentless + single-repo-push-policy)",
+        "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Sinister Sanctum.md (iter-22 row top)",
+        "D:\\Sinister Sanctum\\_shared-memory\\plans\\sanctum-master-plan-finish-everything-2026-05-25T0150Z\\plan.md",
+        "D:\\Sinister Sanctum\\automations\\spawn-setup-wizard.ps1 (lines 136 + 184 for IMAGE-4 mintty exit 126 fix)",
+        "D:\\Sinister Sanctum\\projects\\sinister-os\\eve\\eve.py (centered-menu / Enter binding / accounts page polish)",
+        "D:\\Sinister Sanctum\\_shared-memory\\knowledge\\loop-relentless-pursuit-doctrine-2026-05-25.md",
+        "D:\\Sinister Sanctum\\_shared-memory\\knowledge\\eve-ui-uniformity-doctrine-2026-05-24.md"
+    ],
+    "git": {
+        "branch": "agent/sinister-sanctum/iter22-consolidate-pokes-push-2026-05-25",
+        "head": "5f8f3d563e08615257549f4041f8562f02491267",
+        "pushed_to_origin": true,
+        "policy_compliant_branch": true
+    },
+    "inbox_state": {
+        "watchdog_pokes_acked_this_turn": 26,
+        "overseer_distribute_fyi_remaining": 121,
+        "actionable_remaining": 0
+    },
+    "smoke_results_iter22": {
+        "git_lock_cleared": "PASS (ls .git/*.lock empty)",
+        "branch_policy_compliant": "PASS (agent/sinister-sanctum/ prefix)",
+        "commit_landed": "PASS (5f8f3d5)",
+        "push_to_origin": "PASS (set up tracking)",
+        "heartbeat_valid_json": "PASS",
+        "utterance_acks_persisted": "PASS (both rows verified)",
+        "poke_cleanup": "PASS (3 inbox dirs, 26 files moved to _acked/)"
+    },
+    "stop_conditions_state": {
+        "queue_lane_rows": "~10 (rolled forward from iter-21; pruned via this consolidation)",
+        "loop_iter": 22,
+        "loop_continue_or_pause": "continue — relentless mode active, queue NOT empty, image-65-67 items + IMAGE-4 mintty fix remain. Next iter: swarm-ship open items in parallel."
+    }
+}
