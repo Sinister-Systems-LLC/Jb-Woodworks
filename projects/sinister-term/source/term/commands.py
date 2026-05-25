@@ -89,6 +89,7 @@ Sinister Term commands:
   /branch                   Current branch + upstream + ahead/behind + dirty count + HEAD
   /touch [status...]        Pulse sterm heartbeat NOW (+ optional status note)
   /locks                    List active mesh-coordinator locks (owner / path / ttl / age)
+  /utterances [N] [--new --mine --search X]   Tail operator-utterances.jsonl (alias /utt)
   /alias [name=val|remove n] List aliases, define one, or remove one
   /clear                    Clear the screen
   /help                     This message
@@ -522,6 +523,114 @@ def cmd_recall(args: list[str]) -> CommandResult:
 
 _HEARTBEAT_PATH = SANCTUM_ROOT / "_shared-memory" / "heartbeats" / f"{SELF_SLUG}.json"
 _MESH_LOCKS_DIR = SANCTUM_ROOT / "_shared-memory" / "mesh-locks"
+_UTTERANCES_PATH = SANCTUM_ROOT / "_shared-memory" / "operator-utterances.jsonl"
+
+
+def cmd_utterances(args: list[str]) -> CommandResult:
+    """iter-60: tail recent operator utterances from operator-utterances.jsonl.
+
+    Operator hard-canonical 2026-05-24: *"make sure that everything i ever
+    say is tracked"* — every operator message is appended as one jsonl row
+    by `automations/log-operator-utterance.ps1`. This builtin lets us read
+    the tail from inside sterm without leaving the shell.
+
+    Usage:
+      /utterances             last 10 rows
+      /utt 20                 last 20 rows (alias)
+      /utterances --new       only status=new (unacked)
+      /utterances --mine      only session_slug=sinister-term
+      /utterances --search X  only rows where preview/message contains X
+    """
+    if not _UTTERANCES_PATH.exists():
+        try:
+            rel = _UTTERANCES_PATH.relative_to(SANCTUM_ROOT).as_posix()
+        except ValueError:
+            rel = str(_UTTERANCES_PATH)
+        return CommandResult(True, f"(no operator-utterances.jsonl at {rel})")
+    limit = 10
+    only_new = False
+    only_mine = False
+    search_term: str | None = None
+    i = 0
+    while i < len(args):
+        a = args[i]
+        if a == "--new":
+            only_new = True
+            i += 1
+            continue
+        if a == "--mine":
+            only_mine = True
+            i += 1
+            continue
+        if a == "--search" and i + 1 < len(args):
+            search_term = args[i + 1].lower()
+            i += 2
+            continue
+        try:
+            limit = max(1, min(500, int(a)))
+        except ValueError:
+            return CommandResult(True,
+                f"unknown arg: {a}. Try /utterances with no args for usage.")
+        i += 1
+
+    rows: list[dict] = []
+    try:
+        with _UTTERANCES_PATH.open("r", encoding="utf-8", errors="replace") as fh:
+            for ln in fh:
+                ln = ln.strip()
+                if not ln:
+                    continue
+                try:
+                    rows.append(json.loads(ln))
+                except Exception:
+                    continue
+    except OSError as e:
+        return CommandResult(True, f"/utterances failed: {e}")
+
+    if only_new:
+        rows = [r for r in rows if r.get("status") == "new"]
+    if only_mine:
+        rows = [r for r in rows if r.get("session_slug") == SELF_SLUG]
+    if search_term:
+        def _matches(r: dict) -> bool:
+            for k in ("preview", "message_full"):
+                v = r.get(k)
+                if isinstance(v, str) and search_term in v.lower():
+                    return True
+            return False
+        rows = [r for r in rows if _matches(r)]
+
+    if not rows:
+        flt = []
+        if only_new:
+            flt.append("--new")
+        if only_mine:
+            flt.append("--mine")
+        if search_term:
+            flt.append(f"--search {search_term}")
+        return CommandResult(True,
+            f"(no utterances{' (' + ' '.join(flt) + ')' if flt else ''})")
+
+    rows = rows[-limit:]
+    try:
+        rel = _UTTERANCES_PATH.relative_to(SANCTUM_ROOT).as_posix()
+    except ValueError:
+        rel = str(_UTTERANCES_PATH)
+    lines = [f"Utterances: {len(rows)} of {rel}"]
+    for r in rows:
+        ts = r.get("ts_utc", "?")[:19] + "Z"
+        slug = (r.get("session_slug") or "?")[:18]
+        status = r.get("status") or "?"
+        # Status badge: NEW=red-ish, acked=dim, resolved=ok
+        if status == "new":
+            badge = "[NEW]"
+        elif status == "resolved":
+            badge = "[res]"
+        else:
+            badge = "[ack]"
+        prev = (r.get("preview") or r.get("message_full") or "")[:80]
+        lines.append(f"  {ts}  {badge}  {slug:<18}  {prev}")
+    return CommandResult(True, "\n".join(lines))
 
 
 def cmd_locks(_args: list[str]) -> CommandResult:
@@ -1188,7 +1297,9 @@ COMMANDS: dict[str, Callable[[list[str]], CommandResult]] = {
     "uptime": cmd_uptime,  # iter-56 — sterm session duration + activity counters
     "branch": cmd_branch,  # iter-57 — branch + ahead/behind + dirty count
     "touch": cmd_touch,    # iter-58 — manually pulse sinister-term heartbeat
-    "locks": cmd_locks,    # iter-59 — mesh-coordinator lock state
+    "locks": cmd_locks,        # iter-59 — mesh-coordinator lock state
+    "utterances": cmd_utterances,  # iter-60 — recent operator utterances
+    "utt": cmd_utterances,         # short alias
 }
 
 
