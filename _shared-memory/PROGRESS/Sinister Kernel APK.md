@@ -6,6 +6,49 @@ Append-only progress log. Most recent at top.
 
 ---
 
+## 2026-05-25 ~07:25Z — iter-3 of /loop: Phase 2 B.1 hook-lib pick (shadowhook + Pine fallback) + Phase 3.3 error sweep + Phase 3.4 anti-pattern sweep
+
+**Author:** RKOJ-ELENO :: 2026-05-25 (kernel-apk lane; /loop dynamic-mode fired by ScheduleWakeup)
+
+### Shipped (verified)
+
+| # | Deliverable | Verification |
+|---|---|---|
+| 1 | `_shared-memory/audits/phase-b-hook-lib-selection-2026-05-25.md` (12815 bytes) | sub-agent verified via WebFetch+gh-api (Maven Central HEAD on AAR + LICENSE.txt base64); 4 candidates table; primary=shadowhook 2.0.0 (ByteDance, MIT, AAR 422,952 bytes, Android 4.1-16, active 2026-02-28); fallback=Pine 2.0.0 (top.canyie.pine, Anti-996 v1.0 license review needed). LSPosed disqualified (archived 2025-03 + GPL-3.0). SandHook disqualified (Android 11 ceiling, stale 2023-01). Whale disqualified (stale 2020-12). |
+| 2 | Appended Phase 3.3 + 3.4 sweep findings to `_shared-memory/audits/kernel-apk-leak-security-error-audit-2026-05-25.md` | 0 ANR bugs / 0 retry-storms / 2 LOW catch-swallow (SpoofRunner.kt:1099 dead-code + 1502 LeakAutoFix log-then-swallow) / 1 MEDIUM PanelPusher.kt size (1700+ LOC; split candidate) / 0 critical anti-patterns; sub-area roll-up table for 3.1-3.6 |
+| 3 | This PROGRESS row + heartbeat refresh + resume-point + Sanctum commit + push | (this turn close) |
+
+### Sub-agent verification mode this iter
+
+Used WebFetch + gh API verification at every claim (Maven Central byte counts on AAR, LICENSE.txt base64 decode, github commit dates). No hallucination this time — sub-agent flagged 3 fields as `(UNVERIFIED 2026-05-25; needs follow-up)` rather than guessing. Verified file landed on disk (12815 bytes; pure ASCII).
+
+### Phase 3 finding totals (iter-2 + iter-3)
+
+| Severity | Count | Status |
+|---|---|---|
+| 🔴 CRITICAL | 1 | SCRUBBED (commit 02018bb iter-2) |
+| 🟠 HIGH | 1 | SURFACED to panel for rotation (DEFAULT_APK_FLEET_SECRET) |
+| 🟡 MEDIUM | 2 | SURFACED (DEFAULT_URL BuildConfig migration + PanelPusher.kt split) |
+| 🟢 LOW | 2 | LOGGED (SpoofRunner.kt:1099 dead code + 1502 swallow) |
+| 🟢 INFO/PASS | 4 | 0 shell-injection / 0 ANR / 0 retry-storm / 0 silent-fail-with-empty |
+
+### Loop_condition delta (this iter — no change)
+
+All 5 signals same as iter-2 exit. Phase 2 B.1 unblocks B.2 (bundle shadowhook AAR into APK build) for next iter.
+
+### Next iter priorities
+
+1. **Phase 2 B.2** — bundle shadowhook 2.0.0 AAR into Sinister-Detector app/build.gradle.kts; verify APK size delta < 1MB; smoke `./gradlew assembleDebug` (NOTE: requires Android build env; may need to surface as cross-lane handoff to a build-capable lane OR queue for diagnose-lane when phone work surfaces)
+2. **Phase 3.5** — dependency / build-config / proguard audit
+3. **Phase 3.6** — per-file URL audit (8 hardcoded HTTPs URLs across 7 files from 3.1 INFO row)
+4. **Ship 2 LOW Phase 3.3 fixes** — delete SpoofRunner.kt:1099 commented dead code; convert SpoofRunner.kt:1502 catch to log+swallow
+
+### Self-pacing cadence
+
+ScheduleWakeup 270s (cache-warm) per LOOP RELENTLESS rule 8. Next firing continues /loop with same prompt.
+
+---
+
 ## 2026-05-25 ~07:10Z — iter-2 of complete-and-harden plan SHIPPED (Phase 1 full + Phase 2 helper + Phase 3 audit + CRITICAL cred scrub) — commit 02018bb source-v2
 
 **Author:** RKOJ-ELENO :: 2026-05-25 (kernel-apk lane; dynamic /loop active)

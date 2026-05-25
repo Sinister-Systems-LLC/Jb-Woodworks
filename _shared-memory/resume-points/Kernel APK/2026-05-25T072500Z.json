@@ -1,0 +1,50 @@
+{
+  "schema_version": "sinister.resume-point.v1",
+  "ts_utc": "2026-05-25T07:25:00Z",
+  "project": "Kernel APK",
+  "agent_name": "kernel-apk",
+  "mode": "loop-dynamic",
+  "iter": 3,
+  "focus_intent": "Phase 2 B.1 SHIPPED (hook lib pick: shadowhook 2.0.0 primary, Pine 2.0.0 fallback). Phase 3.3+3.4 sweeps SHIPPED (0 ANR / 0 retry-storm / 2 LOW catch-swallow / 1 MEDIUM PanelPusher.kt size). Next iter: B.2 bundle shadowhook AAR + Phase 3.5 dep/build-config + 2 LOW cleanup fixes.",
+  "loop_directive_verbatim": "create a plan to complete everything you need to do and keep testing",
+  "git": {
+    "sanctum_branch": "(varies per turn due to sibling churn; check `git branch --show-current` on resume)",
+    "kernel_apk_branch": "agent/sinister-kernel-apk/crispy-cosmos-resume",
+    "source_v2_HEAD": "02018bb (no changes this iter)",
+    "source_v2_origin": "https://github.com/Sinister-Systems-LLC/Sinister-APK.git"
+  },
+  "iter_3_deliverables": [
+    "_shared-memory/audits/phase-b-hook-lib-selection-2026-05-25.md (12815 bytes; shadowhook + Pine picks verified via WebFetch+gh-api)",
+    "Phase 3.3+3.4 sweep appended to kernel-apk-leak-security-error-audit-2026-05-25.md",
+    "PROGRESS row + heartbeat + this resume-point + Sanctum commit + push (in flight)"
+  ],
+  "phase_3_running_totals": {
+    "critical": 1,
+    "critical_scrubbed": 1,
+    "high": 1,
+    "medium": 2,
+    "low": 2,
+    "info_or_pass": 4
+  },
+  "loop_condition_status": {
+    "signal_1": "OPERATIONAL",
+    "signal_2": "UNBLOCKED",
+    "signal_3": "PARTIAL",
+    "signal_4": "BLOCKED on Phase B (B.1 done, B.2-B.6 ahead); manual-fill via att-sign-broadcast.py still works",
+    "signal_5": "HARNESS READY",
+    "all_5_satisfied": false
+  },
+  "next_iter_priority_queue": [
+    "Phase 2 B.2: bundle shadowhook 2.0.0 AAR into app/build.gradle.kts; APK size delta verify; gradle assembleDebug smoke (may need cross-lane handoff if no Android build env)",
+    "Phase 3.5: dependency / build-config / proguard audit",
+    "Phase 3.6: per-file URL audit (8 hardcoded HTTPs)",
+    "Ship 2 LOW Phase 3.3 fixes: delete SpoofRunner.kt:1099 dead code; log+swallow SpoofRunner.kt:1502"
+  ],
+  "wakeup_disposition": "ScheduleWakeup 270s (cache-warm); next firing continues /loop",
+  "compose_links": [
+    "_shared-memory/plans/kernel-apk-complete-and-harden-2026-05-25/plan.md",
+    "_shared-memory/plans/kernel-apk-complete-and-harden-2026-05-25/phase-2-att-sign-hook-impl.md",
+    "_shared-memory/audits/kernel-apk-leak-security-error-audit-2026-05-25.md (iter-2 + iter-3)",
+    "_shared-memory/audits/phase-b-hook-lib-selection-2026-05-25.md (NEW iter-3)"
+  ]
+}
