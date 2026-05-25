@@ -82,6 +82,7 @@ Sinister Term commands:
   /progress [add <msg>]     Show top 5 PROGRESS entries (or add a new one)
   /recall <term> [term2...]  Search the brain at _shared-memory/knowledge/*.md
   /swarm <sub> [args]       Fan-out: list / spawn / dm / broadcast (try /swarm)
+  /events [N] [--cat C] [--name N] [--disk]  Tail cmux event_bus (ring or jsonl)
   /alias [name=val|remove n] List aliases, define one, or remove one
   /clear                    Clear the screen
   /help                     This message
@@ -513,6 +514,108 @@ def cmd_recall(args: list[str]) -> CommandResult:
     return CommandResult(True, "\n".join(lines))
 
 
+def cmd_events(args: list[str]) -> CommandResult:
+    """iter-53: read recent cmux-bus events.
+
+    Lets the operator inspect what the bus has captured this session
+    without leaving sterm. The bus retains the last 4096 events
+    in-memory (cmux spec) and rotates jsonl at 512 KiB on disk.
+
+    Usage:
+      /events                 last 20 events
+      /events 50              last N events
+      /events --cat lifecycle filter by category (lifecycle / agent / terminal / ui / network)
+      /events --name dispatch filter by name (exact match)
+      /events --disk          tail the rotated jsonl on disk instead of ram
+    """
+    try:
+        from term.event_bus import default_bus
+    except Exception as e:
+        return CommandResult(True, f"event_bus unavailable: {e}")
+
+    limit = 20
+    cat_filter: str | None = None
+    name_filter: str | None = None
+    from_disk = False
+    i = 0
+    while i < len(args):
+        a = args[i]
+        if a == "--cat" and i + 1 < len(args):
+            cat_filter = args[i + 1]
+            i += 2
+            continue
+        if a == "--name" and i + 1 < len(args):
+            name_filter = args[i + 1]
+            i += 2
+            continue
+        if a == "--disk":
+            from_disk = True
+            i += 1
+            continue
+        try:
+            limit = max(1, min(500, int(a)))
+        except ValueError:
+            return CommandResult(True,
+                f"unknown arg: {a}. Try /events with no args for usage.")
+        i += 1
+
+    bus = default_bus()
+    if from_disk:
+        events_iter = bus.replay_from_disk(after_seq=0)
+    else:
+        # Subscribe with after_seq=0 = give everything in ring
+        events_iter = bus.subscribe(
+            after_seq=0,
+            names=[name_filter] if name_filter else None,
+            categories=[cat_filter] if cat_filter else None,
+        )
+    rows: list = []
+    for ev in events_iter:
+        if from_disk:
+            if cat_filter and ev.category != cat_filter:
+                continue
+            if name_filter and ev.name != name_filter:
+                continue
+        rows.append(ev)
+    if not rows:
+        scope = "disk" if from_disk else "ring"
+        flt = ""
+        if cat_filter:
+            flt += f" cat={cat_filter}"
+        if name_filter:
+            flt += f" name={name_filter}"
+        return CommandResult(True, f"(no events in {scope}{flt})")
+
+    rows = rows[-limit:]
+    src = "disk" if from_disk else "ring"
+    lines = [f"Events ({len(rows)} of bus.{src}, boot={bus.boot_id[:8]}):"]
+    for ev in rows:
+        # ts_ns → HH:MM:SS local-ish (use UTC for portability)
+        import time as _t
+        secs = ev.ts_ns / 1_000_000_000
+        hms = _t.strftime("%H:%M:%S", _t.gmtime(secs))
+        # Compact payload summary: first 4 keys
+        pl = ev.payload or {}
+        if isinstance(pl, dict):
+            kvs = ", ".join(f"{k}={_short(v)}" for k, v in list(pl.items())[:4])
+            if len(pl) > 4:
+                kvs += f", +{len(pl) - 4}"
+        else:
+            kvs = str(pl)[:60]
+        lines.append(
+            f"  #{ev.seq:>5} {hms}Z [{ev.category:<9}] {ev.name:<22} {kvs}"
+        )
+    return CommandResult(True, "\n".join(lines))
+
+
+def _short(v):
+    """Render a payload value compactly for /events output."""
+    s = str(v)
+    if len(s) > 40:
+        return s[:37] + "..."
+    return s
+
+
 def cmd_swarm(args: list[str]) -> CommandResult:
     """P2-3 (iter-51): wrap term.swarm.{spawn,list_agents,dm,broadcast} as
     a single /-prefix builtin so the operator can fan-out / coordinate from
@@ -617,6 +720,7 @@ COMMANDS: dict[str, Callable[[list[str]], CommandResult]] = {
     "alias": cmd_alias,
     "recall": cmd_recall,  # P2-1 iter-50
     "swarm": cmd_swarm,    # P2-3 iter-51
+    "events": cmd_events,  # iter-53 — read the cmux event_bus
 }
 
 
