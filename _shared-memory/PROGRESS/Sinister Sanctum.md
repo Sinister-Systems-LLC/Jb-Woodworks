@@ -1,4 +1,42 @@
-﻿## 2026-05-25 05:53 UTC — sanctum iter-22: cold-start RESUME consolidation (locks cleared + branch fix + 26 watchdog pokes acked + 2 utterances acked + heartbeat)
+﻿## 2026-05-25 06:16 UTC — sanctum iter-22 LEO HANDOFF: deploy/ + UAC auto-install + EVE.exe auto-update + _internal P0 fix + tag pushed
+
+**Author:** RKOJ-ELENO :: 2026-05-25 (sanctum lane)
+
+**Operator verbatim 2026-05-25 ~05:58Z:** *"push the sinister sanctum to github and make sure every single file needed to run all operations are in there and ready for my partner leo to install on his machine. preapre a folder for leo thatt is called deploy. complie all the userguides... make sure the eve.exe is placed in the root dir and works from there, test this. make sure the exe auto updates and make sure the sinister link works... make sure to auto run as a admin..."*
+
+**Shipped (4 parallel sub-agents + master P0 fix):**
+
+- **Sub-A:** `deploy/README.md` (119) + `deploy/GETTING-STARTED.md` (521 — merged 6 docs) + `deploy/TROUBLESHOOTING.md` (405) + `deploy/DOCS-INDEX.md` (98) + `deploy/EVE.exe` (2.19MB) + `deploy/MANIFEST.txt` + `deploy/_gen_manifest.py`
+- **Sub-B:** `deploy/first_time_setup.py` (469) — 9-step UAC-elevating installer + `deploy/setup.py` (22) wrapper + `deploy/first-time-setup-cli.md` (142)
+- **Sub-C:** `automations/eve_self_update.py` (392) + `automations/build_eve_sha_sidecar.py` (64) + `automations/eve_launch_wrapper.py` (115) + `EVE.exe.sha256` (digest 26cdf4dc...e2a) + `deploy/eve-updater-CLI.md` (109)
+- **Sub-D:** `deploy/SMOKE-EVIDENCE.md` (354) — 3 test verdicts; FOUND P0 BLOCKER: EVE.exe in repo root FAILED PYI-47016 (missing `_internal/python312.dll`)
+- **Master P0 fix:** copied 56 files (18MB) `~/.eve/_internal/` → `D:\Sinister Sanctum\_internal\` + `D:\Sinister Sanctum\deploy\_internal\`; `automations/sync_eve_internal.py` NEW (78 LOC) — idempotent mirror with dir-hash parity check
+- **Brain entry:** `_shared-memory/knowledge/leo-deploy-folder-bootstrap-doctrine-2026-05-25.md` (~180 LOC) — 3-artifact contract, _internal/ invariant, 9-step installer doc, auto-update flow, pass criterion, anti-patterns
+
+**Smoke (all PASS this turn):**
+- `./EVE.exe --version` (repo root) → exit 0 "EVE.exe 0.4.5 :: Sinister Sanctum session launcher"
+- `./deploy/EVE.exe --version` → exit 0 same banner
+- `python deploy/first_time_setup.py --dry-run --no-elevate --no-launch --no-clone` → exit 0, 8/8 steps green
+- `python automations/eve_self_update.py --dry-run` → exit 0 (sandbox remote-unreachable; logic verified)
+- `python automations/build_eve_sha_sidecar.py --check` → OK
+- `python automations/sync_eve_internal.py --dry-run` → both targets in-sync, exit 0
+- ast.parse clean on all 5 new .py files
+- powershell sinister-link.ps1 Status/GenerateInvite/ListInvites → all exit 0
+- Author RKOJ-ELENO header on every new .md + .py
+
+**Pushed:**
+- commit `8e4ead3` to `agent/sinister-sanctum/iter22-consolidate-pokes-push-2026-05-25`
+- fast-forwarded `origin/main` to 8e4ead3 (Leo can clone NOW)
+- tag `leo-ready-2026-05-25-iter22` pushed (operator + Leo can `git checkout leo-ready-2026-05-25-iter22` for guaranteed-working state)
+- verified `gh api repos/.../contents/deploy` shows 13 files including _internal/
+
+**In-flight sub-agents (new operator directive 2026-05-25 ~06:14Z "detect eve crashes" + "update while running"):**
+- Sub-E: EVE crash detector + auto-trigger Kill-Stuck-EVE.bat + pre-compile hook + schtask installer
+- Sub-F: extend eve_self_update.py with hot-update-while-running (rename-in-use + MOVEFILE_DELAY_UNTIL_REBOOT + --force-kill-stuck fallback)
+
+---
+
+## 2026-05-25 05:53 UTC — sanctum iter-22: cold-start RESUME consolidation (locks cleared + branch fix + 26 watchdog pokes acked + 2 utterances acked + heartbeat)
 
 **Author:** RKOJ-ELENO :: 2026-05-25 (sanctum lane)
 

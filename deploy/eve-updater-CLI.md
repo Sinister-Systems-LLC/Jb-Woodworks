@@ -87,6 +87,66 @@ Every check appends one JSON object per line to
 and the result is logged as `skipped: locked-eve-running` with exit 0 — the
 next launch will pick up the update once EVE.exe is closed.
 
+This path is the **legacy fallback** (`--no-hot-swap`). The default since
+2026-05-25 is the hot-swap path below.
+
+## Hot-swap (Sub-F extension, 2026-05-25)
+
+Operator hard-canonical 2026-05-25 ~06:14Z: *"you can still udpate while exe
+is running, we should have made this a feature."*
+
+The default updater path (`--allow-hot-swap`, ON by default) uses the
+**Windows rename-in-use trick** so EVE.exe can be updated WHILE running:
+
+1. Try `os.replace(tmp, final)` first — fast path when file is free.
+2. On `PermissionError`, `os.rename(final, final + '.old.<ts>.<pid>')`.
+   Windows ALLOWS renaming a file that is currently being executed: the
+   running process keeps its open handle (it executes from its own
+   pre-loaded image; the file-system name is decoupled), but the on-disk
+   path is now free.
+3. `os.replace(tmp, final)` — succeeds, new binary is live at the canonical
+   path. Next launch picks it up.
+4. `MoveFileExW(final.old, NULL, MOVEFILE_DELAY_UNTIL_REBOOT)` schedules
+   the `.old` for deletion on next reboot. Requires admin: silent failure
+   when non-admin (`lasterr=5` ERROR_ACCESS_DENIED). Stale `.old.*` files
+   are swept opportunistically on next non-dry update run.
+5. SHA-verify the new file on disk post-swap.
+
+If even the rename trick fails (rare — AV scanner holding an exclusive
+lock during a scan), `--force-kill-stuck` opts into invoking
+`C:\Users\Zonia\Desktop\Kill-Stuck-EVE.bat` to nuke the picker/launcher,
+then retries the swap. Without the flag, the result is logged as
+`would-require-kill` and the update exits gracefully (skipped, exit 0).
+
+### New CLI flags
+
+| Flag | Default | Effect |
+|---|---|---|
+| `--allow-hot-swap` | ON | Use rename-in-use trick when EVE.exe is running. |
+| `--no-hot-swap` | OFF | Disable hot-swap; use original retry-only `atomic_swap`. |
+| `--force-kill-stuck` | OFF | If hot-swap fails, invoke Kill-Stuck-EVE.bat and retry. |
+| `--kill-bat-path PATH` | `C:\Users\Zonia\Desktop\Kill-Stuck-EVE.bat` | Override the kill bat path. |
+| `--audit` | — | Print running EVE.exe processes + SHAs + would-be action. No writes. |
+
+### FAQ: my EVE.exe was running and got auto-updated — what happens to the running instance?
+
+**Nothing visible.** The running EVE.exe keeps its in-memory state and
+continues to execute from its already-loaded image (Windows keeps that
+backed by the page file, not by the on-disk file once the process is
+running). It exits normally when you close it. The **next launch** picks
+up the new EVE.exe at the canonical path. The renamed `.old.*` sibling
+disappears on the next reboot (admin) or on the next update run (sweep).
+
+### Audit invocation
+
+```
+python automations/eve_self_update.py --audit
+```
+
+Prints running EVE.exe processes by PID + local SHA per target + remote
+SHA + the action the updater WOULD take. Zero writes (other than one
+audit row in the log). Safe to wire into health checks.
+
 ## Defender + Program Files notes
 
 `defender_self_heal()` attempts `Add-MpPreference -ExclusionPath` against
