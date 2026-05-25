@@ -141,6 +141,30 @@ Sinister Term scaffolded + sinister-memory + sinister-term sessions launched + e
 | R46 | Sinister Looper + loop quality monitor (3rd Overseer sub-agent): contradict + expand + rehook | "i need loop system too that keeps contradicting and expand until quality demishes and rehooks a save point…project called sinister looper and make this work on every projct by default from eve" | ✅ DONE (projects/sinister-looper/ scaffolded + overseer_loop_quality_agent.py + SinisterOverseerLoopQuality schtask LIVE) |
 | R47 | Ruthless autonomy — kill wake/down-time (jcode patterns) | Image #11 "we have to get rid of these wake and down time shit. we need complete ruthless autonomous agents…review jcode" | 🔵 P0 next iter (design below) |
 | R48 | Hot-update for running agents (no restart) + always use ALL local tools | Image #12 "open and running agents need to auto update without having to restart" | 🔵 P0 next iter (design below) |
+| R49 | jcode integration audit — 6 artifacts to absorb in our own way + smoke test | "review these things add them to system if they will help us…in our own way of course and smoke test it" + 5 follow-up paths (OAUTH.md / terminal-capabilities.md / etc) | 🔵 R49a P0 (OAuth contract fix), R49b-d P1, R49e-f P2 — design below |
+| R50 | sinister-term-themes (Ancestral Remotion) owns ALL terminal work — match jcode + beyond | "i want the jcode terminal approach now. make sure sinster term project is setup and has resume in eve and get him to work on all terminal work so they are as efficent as j code and we have all features" | ✅ DONE (project already in picker pos 22; LAUNCHED with explicit jcode-mandate loop_condition; charter delegates all terminal-cap / hot-reload / ascii-art / header-bar work to that lane) |
+
+## R49 jcode integration audit (queued P0/P1 — multi-iter)
+
+Operator delivered 6 jcode artifacts mid-iter for review + integration "in our own way":
+
+| Artifact | Path | Value to Sanctum | Priority |
+|----------|------|------------------|----------|
+| optimization SKILL.md | `jcode-0.12.4/.jcode/skills/optimization/SKILL.md` | Adopt methodology as Sanctum optimization doctrine: define metrics → attribute bottlenecks → static analysis → macro before micro | P1 |
+| swarm benchmark | `jcode-0.12.4/scripts/benchmark_swarm.py` | Port to `automations/benchmark_swarm.py` — measures single-agent vs swarm wall-clock + token cost on a fixed task | P1 |
+| crates boundaries | `Desktop/crates/` (50+ crates) | Adopt `automations/_module_ownership.md` — split monolithic automations/ into domain modules with strict imports | P2 |
+| telemetry-worker | `jcode-0.12.4/telemetry-worker/` | Cloudflare D1 + Wrangler pattern for fleet observability. Adopt for our heartbeat/incident aggregation | P2 |
+| OAUTH.md | `jcode-0.12.4/OAUTH.md` | **CRITICAL for R10+R38** — explains Claude OAuth contract: must use `?beta=true` + `User-Agent: claude-cli/1.0.0` + `anthropic-beta: oauth-2025-04-20,claude-code-20250219` + tool name remap (bash→shell_exec / read→file_read / write→file_write / edit→file_edit / glob→file_glob / grep→file_grep / task→task_runner). Our claude-wrapper.ps1 likely fails because the OAuth contract isn't applied | **P0** |
+| terminal-capabilities.md | `jcode-0.12.4/terminal-capabilities.md` | Capability matrix for 14 terminal emulators + 5 rendering issue categories. Sinister Term must handle: BCE background bleeding / emoji double-width / resize artifacts / alt-screen transitions / cursor visibility. Operator: "make sure our term can do all this and more" | P1 |
+
+### R49 sub-issues to ship next iter
+
+- **R49a — OAuth contract patch** (P0): Apply jcode's tool-name remap + headers to `claude-wrapper.ps1`. Likely fixes the param-binding crash from Image #4.
+- **R49b — Sanctum optimization doctrine** (P1): Port SKILL.md to `_shared-memory/knowledge/sanctum-optimization-doctrine-2026-05-25.md`.
+- **R49c — Swarm benchmark port** (P1): `automations/benchmark_swarm.py` — measure 1 vs N agents on a fixed task.
+- **R49d — Terminal cap doctrine** (P1): `_shared-memory/knowledge/sinister-terminal-capabilities-doctrine-2026-05-25.md` enumerating must-handle rendering issues.
+- **R49e — Crate ownership** (P2): `_shared-memory/knowledge/automations-module-ownership-doctrine-2026-05-25.md`.
+- **R49f — Telemetry pattern** (P2): adopt Wrangler-style fleet aggregation later (after EVE-as-OS R16 lands).
 
 ## R47 jcode-style ruthless autonomy (queued P0 next iter)
 
