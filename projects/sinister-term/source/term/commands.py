@@ -70,6 +70,7 @@ Sinister Term commands:
   /ask <agent> <message>    Drop an [ASK] in another agent's inbox
   /progress [add <msg>]     Show top 5 PROGRESS entries (or add a new one)
   /recall <term> [term2...]  Search the brain at _shared-memory/knowledge/*.md
+  /swarm <sub> [args]       Fan-out: list / spawn / dm / broadcast (try /swarm)
   /alias [name=val|remove n] List aliases, define one, or remove one
   /clear                    Clear the screen
   /help                     This message
@@ -490,6 +491,63 @@ def cmd_recall(args: list[str]) -> CommandResult:
     return CommandResult(True, "\n".join(lines))
 
 
+def cmd_swarm(args: list[str]) -> CommandResult:
+    """P2-3 (iter-51): wrap term.swarm.{spawn,list_agents,dm,broadcast} as
+    a single /-prefix builtin so the operator can fan-out / coordinate from
+    inside sterm without dropping to the CLI.
+
+    Usage:
+      /swarm                              show subcommand usage
+      /swarm list                         list live agents from heartbeats/
+      /swarm spawn <project-key>          spawn a new agent via launcher
+      /swarm dm <agent-slug> <message>    drop [ASK] in target's inbox
+      /swarm broadcast <message>          write to _shared-memory/cross-agent/
+    """
+    from term import swarm as _swarm_mod  # local import keeps boot lean
+    if not args:
+        return CommandResult(True,
+            "usage: /swarm <subcommand>\n"
+            "  /swarm list                          live agents from heartbeats\n"
+            "  /swarm spawn <project-key>           spawn an agent via launcher\n"
+            "  /swarm dm <agent-slug> <message>     drop [ASK] in inbox\n"
+            "  /swarm broadcast <message>           write to cross-agent/")
+    sub = args[0].lower()
+    rest = args[1:]
+    if sub == "list":
+        rows = _swarm_mod.list_agents()
+        if not rows:
+            return CommandResult(True, "(no live agents)")
+        lines = [f"Swarm: {len(rows)} agent{'s' if len(rows) != 1 else ''}"]
+        for r in rows:
+            lines.append(
+                f"  {r.get('marker', '·')} {r.get('agent', '?'):<32}"
+                f"  {r.get('age_min', '?')}m ago  cwd={r.get('cwd', '?')}"
+            )
+        return CommandResult(True, "\n".join(lines))
+    if sub == "spawn":
+        if not rest:
+            return CommandResult(True, "usage: /swarm spawn <project-key>")
+        rc = _swarm_mod.spawn(rest[0])
+        return CommandResult(True,
+            f"spawn → exit {rc}" if rc != 0 else f"spawned: {rest[0]}")
+    if sub == "dm":
+        if len(rest) < 2:
+            return CommandResult(True, "usage: /swarm dm <agent-slug> <message...>")
+        target = rest[0]
+        msg = " ".join(rest[1:])
+        path = _swarm_mod.dm(target, msg)
+        if path is None:
+            return CommandResult(True, f"unknown agent inbox: {target}")
+        return CommandResult(True, f"[DM] → {path}")
+    if sub == "broadcast":
+        if not rest:
+            return CommandResult(True, "usage: /swarm broadcast <message...>")
+        path = _swarm_mod.broadcast(" ".join(rest))
+        return CommandResult(True, f"[BROADCAST] → {path}")
+    return CommandResult(True,
+        f"unknown swarm subcommand: {sub}. Try /swarm with no args for help.")
+
+
 COMMANDS: dict[str, Callable[[list[str]], CommandResult]] = {
     "help": cmd_help,
     "?": cmd_help,
@@ -515,6 +573,7 @@ COMMANDS: dict[str, Callable[[list[str]], CommandResult]] = {
     "progress": cmd_progress,
     "alias": cmd_alias,
     "recall": cmd_recall,  # P2-1 iter-50
+    "swarm": cmd_swarm,    # P2-3 iter-51
 }
 
 
