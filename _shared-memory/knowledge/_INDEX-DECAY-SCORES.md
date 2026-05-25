@@ -3,15 +3,16 @@
 
 # Sanctum brain :: decay scores (sidecar to _INDEX.md)
 
-**Generated:** 2026-05-24T21:47:28Z
-**Entries:** 201 total
-**Annotated:** 198 (98.5%)
+**Generated:** 2026-05-24T22:31:14Z
+**Entries:** 211 total
+**Annotated:** 211 (100%)
 
 Formula: `effective_confidence = confidence * exp(-(age/half_life) * ln(2)) * sqrt(reinforcements + 1)`
 Defaults for un-annotated: `category=fact, confidence=0.8, half_life=30d, reinforcements=0`
 
 | Slug | Cat | AgeD | HalfD | Conf | Reinf | EffConf | Annot | Superseded |
 |---|---|---:|---:|---:|---:|---:|---|---|
+| accessibility-services-only-for-snap-canonical-2026-05-25 | preference | -1 | 365 | 1 | 0 | 1.0019 | yes |  |
 | agent-autonomy-push-and-completion-2026-05-23 | preference | 1 | 365 | 1 | 0 | 0.9981 | yes |  |
 | agent-browser-bridge-pattern | fact | 0 | 180 | 0.85 | 0 | 0.85 | yes |  |
 | agent-continuity-no-long-naps-2026-05-24 | preference | 0 | 180 | 0.9 | 0 | 0.9 | yes |  |
@@ -27,6 +28,7 @@ Defaults for un-annotated: `category=fact, confidence=0.8, half_life=30d, reinfo
 | auto-brain-propagation-doctrine-2026-05-24 | fact | 0 | 180 | 0.85 | 0 | 0.85 | yes |  |
 | auto-mode-launcher-pattern | fact | 0 | 180 | 0.85 | 0 | 0.85 | yes |  |
 | best-agent-count-per-claude-plan-study-2026-05-24 | preference | 0 | 180 | 0.9 | 0 | 0.9 | yes |  |
+| bki-equivalent-app-hiding-via-5-17-stack-2026-05-25 | fact | -1 | 180 | 0.85 | 0 | 0.8533 | yes |  |
 | bot-fleet-quick-reference | fact | 1 | 180 | 0.85 | 0 | 0.8467 | yes |  |
 | brain-decay-implementation-schema-2026-05-25 | fact | 0 | 365 | 1 | 0 | 1 | yes |  |
 | branch-checkout-silently-undoes-doctrine-2026-05-23 | fact | 1 | 180 | 0.85 | 0 | 0.8467 | yes |  |
@@ -38,7 +40,7 @@ Defaults for un-annotated: `category=fact, confidence=0.8, half_life=30d, reinfo
 | console-phone-viewer-integration | fact | 0 | 180 | 0.85 | 0 | 0.85 | yes |  |
 | contradiction-engine-doctrine-2026-05-24 | preference | 0 | 365 | 0.9 | 0 | 0.9 | yes |  |
 | cross-agent-coordination | preference | 5 | 180 | 0.9 | 1 | 1.2485 | yes |  |
-| cross-machine-mesh-coord-2026-05-25 | fact | -1 | 30 | 0.8 | 0 | 0.8187 | - |  |
+| cross-machine-mesh-coord-2026-05-25 | fact | -1 | 180 | 0.9 | 0 | 0.9035 | yes |  |
 | cross-machine-non-interference-doctrine-2026-05-24 | fact | 0 | 180 | 0.85 | 0 | 0.85 | yes |  |
 | daemon-liveness-heartbeats | fact | 0 | 180 | 0.85 | 1 | 1.2021 | yes |  |
 | do-not-revert-operator-canonical-protections-2026-05-23 | correction | 1 | 365 | 1 | 0 | 0.9981 | yes |  |
@@ -58,7 +60,7 @@ Defaults for un-annotated: `category=fact, confidence=0.8, half_life=30d, reinfo
 | forever-improve-review-doctrine-2026-05-24 | preference | 0 | 180 | 1 | 0 | 1 | yes |  |
 | forge-bridge-rest-sse-pattern | fact | 0 | 180 | 0.85 | 1 | 1.2021 | yes |  |
 | forge-memory-usage-2026-05-23 | fact | 1 | 180 | 0.85 | 0 | 0.8467 | yes |  |
-| frequent-detailed-commits-per-agent-2026-05-25 | fact | -1 | 30 | 0.8 | 0 | 0.8187 | - |  |
+| frequent-detailed-commits-per-agent-2026-05-25 | preference | -1 | 365 | 1 | 0 | 1.0019 | yes |  |
 | gitea-self-host | fact | 0 | 180 | 0.85 | 0 | 0.85 | yes |  |
 | github-auth-workflow-scope | fact | 0 | 90 | 0.9 | 1 | 1.2728 | yes |  |
 | github-first-sourcing-doctrine-2026-05-24 | preference | 0 | 180 | 0.9 | 0 | 0.9 | yes |  |
@@ -72,13 +74,16 @@ Defaults for un-annotated: `category=fact, confidence=0.8, half_life=30d, reinfo
 | jcode-eve-exe-parity-audit-2026-05-24 | fact | 0 | 30 | 0.95 | 0 | 0.95 | yes |  |
 | jcode-feature-matrix | fact | 0 | 180 | 0.85 | 1 | 1.2021 | yes |  |
 | jcode-feature-parity-targets | fact | 0 | 180 | 0.85 | 1 | 1.2021 | yes |  |
+| jcode-full-audit-2026-05-25 | fact | -1 | 180 | 0.95 | 0 | 0.9537 | yes |  |
 | jcode-full-feature-audit-2026-05-24 | fact | 0 | 180 | 0.85 | 0 | 0.85 | yes |  |
 | jcode-memory-graph-visualization-pattern | fact | 0 | 90 | 0.85 | 0 | 0.85 | yes |  |
 | jcode-parity-gap-audit-2026-05-24-test-modes | fact | 0 | 90 | 0.85 | 0 | 0.85 | yes |  |
 | jcode-port-plan-eve-2026-05-24 | fact | 0 | 90 | 0.85 | 1 | 1.2021 | yes |  |
 | jcode-swarm-token-parity-audit-2026-05-23 | fact | 1 | 90 | 0.85 | 0 | 0.8435 | yes |  |
+| jcode-usage-tracking-pattern-2026-05-25 | fact | -1 | 90 | 0.85 | 0 | 0.8566 | yes |  |
 | junction-based-path-migration-pattern | fact | 0 | 90 | 0.85 | 0 | 0.85 | yes |  |
 | kernel-apk-session-2026-05-24-FULL-handoff | fact | 0 | 180 | 0.85 | 0 | 0.85 | yes |  |
+| keybox-bypass-crypto-infeasibility-2026-05-25 | doctrine | -1 | 365 | 0.95 | 0 | 0.9518 | yes |  |
 | ksu-manager-sister-app-pattern | fact | 0 | 180 | 0.85 | 0 | 0.85 | yes |  |
 | ksu-susfs-app-mount-namespace-isolation-2026-05-20 | preference | 4 | 180 | 0.9 | 0 | 0.8862 | yes |  |
 | launcher-mode-evolution | preference | 0 | 365 | 0.95 | 0 | 0.95 | yes |  |
@@ -87,6 +92,7 @@ Defaults for un-annotated: `category=fact, confidence=0.8, half_life=30d, reinfo
 | leo-auto-setup-doctrine-2026-05-25 | preference | -1 | 365 | 0.9 | 0 | 0.9017 | yes |  |
 | leo-first-run-issues-and-fixes-2026-05-25 | fact | -1 | 90 | 0.85 | 0 | 0.8566 | yes |  |
 | loop-driven-sessions-meta-lessons-2026-05-24 | preference | 0 | 90 | 0.9 | 0 | 0.9 | yes |  |
+| loop-relentless-pursuit-doctrine-2026-05-25 | preference | -1 | 365 | 1 | 0 | 1.0019 | yes |  |
 | lukeprivacy-kpm-at-rest-safe | fact | 0 | 180 | 0.85 | 0 | 0.85 | yes |  |
 | magic-number-audit-taxonomy-2026-05-21 | fact | 3 | 180 | 0.85 | 0 | 0.8402 | yes |  |
 | marketplace-plugin-purge | fact | 0 | 180 | 0.85 | 0 | 0.85 | yes |  |
@@ -103,12 +109,16 @@ Defaults for un-annotated: `category=fact, confidence=0.8, half_life=30d, reinfo
 | niri-scrollable-column-pattern | fact | 0 | 180 | 0.85 | 0 | 0.85 | yes |  |
 | no-bullshit-tested-before-claimed-doctrine-2026-05-23 | correction | 1 | 365 | 1 | 1 | 1.4115 | yes |  |
 | non-interactive-auth-doctrine-2026-05-23 | fact | 1 | 180 | 0.85 | 0 | 0.8467 | yes |  |
+| no-operator-pii-in-signup-canonical-2026-05-25 | preference | -1 | 365 | 1 | 0 | 1.0019 | yes |  |
+| no-visible-powershell-windows-doctrine-2026-05-25 | preference | -1 | 365 | 1 | 1 | 1.4169 | yes |  |
 | oauth-pivot-max-quota-pooling-2026-05-24 | fact | 0 | 180 | 0.85 | 0 | 0.85 | yes |  |
 | operator-full-audit-directive-no-questions-2026-05-25 | preference | -1 | 365 | 1 | 1 | 1.4169 | yes |  |
 | operator-iteration-loop-2026-05-21 | fact | 3 | 180 | 0.85 | 0 | 0.8402 | yes |  |
 | operator-paced-outage-discipline-2026-05-21 | fact | 3 | 180 | 0.85 | 0 | 0.8402 | yes |  |
 | operator-utterance-tracking-doctrine-2026-05-24 | preference | 0 | 365 | 0.95 | 0 | 0.95 | yes |  |
 | overseer-agent-doctrine-2026-05-24 | fact | 0 | 180 | 0.85 | 1 | 1.2021 | yes |  |
+| overseer-audit-sinister-term-2026-05-25 | fact | -1 | 90 | 0.9 | 0 | 0.907 | yes |  |
+| overseer-lessons-from-first-audit-2026-05-25 | fact | -1 | 180 | 0.85 | 0 | 0.8533 | yes |  |
 | overseer-token-efficiency-doctrine-2026-05-24 | fact | 0 | 180 | 0.85 | 0 | 0.85 | yes |  |
 | overseer-unified-improvement-engine-2026-05-24 | fact | 0 | 180 | 0.85 | 0 | 0.85 | yes |  |
 | panel-command-center-18-wave-sweep-2026-05-21 | fact | 3 | 30 | 0.8 | 0 | 0.7464 | yes | test-modes-5x-parallel-consolidated-status-2026-05-24 |
@@ -176,7 +186,7 @@ Defaults for un-annotated: `category=fact, confidence=0.8, half_life=30d, reinfo
 | sinister-cli-subcommand-pattern | fact | 0 | 180 | 0.85 | 0 | 0.85 | yes |  |
 | sinister-forge-harness-pattern | fact | 0 | 180 | 0.85 | 0 | 0.85 | yes |  |
 | sinister-freeze-project-doctrine | fact | 0 | 180 | 0.85 | 0 | 0.85 | yes |  |
-| sinister-link-doctrine-2026-05-25 | fact | -1 | 30 | 0.8 | 0 | 0.8187 | - |  |
+| sinister-link-doctrine-2026-05-25 | preference | -1 | 365 | 1 | 0 | 1.0019 | yes |  |
 | sinister-os-doctrine-2026-05-24 | fact | 0 | 180 | 0.85 | 0 | 0.85 | yes |  |
 | sinister-os-fleet-host-linkage-2026-05-24 | fact | 0 | 180 | 0.85 | 0 | 0.85 | yes |  |
 | sinister-os-mobile-doctrine-2026-05-24 | fact | 0 | 180 | 0.85 | 0 | 0.85 | yes |  |

@@ -1,4 +1,10 @@
 <!-- Author: RKOJ-ELENO :: 2026-05-25 -->
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 0
+  half_life_days: 180
+-->
 # Overseer lessons from first-fire audit (sinister-term, 2026-05-25)
 
 > Folded from `_shared-memory/knowledge/overseer-audit-sinister-term-2026-05-25.md`. These are the operating lessons the Overseer should carry into every subsequent audit.

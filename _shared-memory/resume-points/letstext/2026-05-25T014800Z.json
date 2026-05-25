@@ -1,0 +1,50 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-25T01:48:00Z",
+    "project": "letstext",
+    "agent_name": "letstext",
+    "mode": "resume",
+    "focus_intent": "R9 shipped 5/7 of operator's frontend punch-list (commit ff2dcad). R10 picks up the deferred bundle: /demo safe container + tour system install + dashboard screenshot, OR a fresh operator pivot.",
+    "git": {
+        "branch_origin": "agent/letstext/master-plan-resume-2026-05-24",
+        "tip": "ff2dcad feat(landing): R9 frontend pivot — kill AI-cliché 3-in-1, vary section headers, redo APPLY as private invitation, hero scroll-lock",
+        "note_local_wt": "Canonical WT at C:/Users/Zonia/Desktop/LetsText returned to agent/eve-compliance/cooldown-ui-2026-05-25 after branch-swap commit workflow. WT clean post-swap.",
+        "recent_commits_letstext": [
+            "ff2dcad R9 landing-page frontend pivot (NEW this turn)",
+            "0667618 R6 +43 tests strike/cooldown + text-moderation",
+            "5978cf8 R5 demo CTA + image-moderation showcase + lucide refactor",
+            "0c78029 R4 ENG-20 image-moderation pipeline",
+            "e591fd3 R4 2026-05-18 master plan + 945-line compliance schema"
+        ]
+    },
+    "progress_top3": [
+        "2026-05-25T01:48Z — R9 operator frontend pivot SHIPPED (5/7 punch-list, commit ff2dcad)",
+        "2026-05-25T01:24Z — R8 cold-start triage + broadcast ack + WT bleed flagged",
+        "2026-05-24T22:05Z — R7 cold-start triage + dashboard-skeleton inheritance audit"
+    ],
+    "punch_list_status": {
+        "splash_scroll_lock": "SHIPPED",
+        "highlights_redo": "SHIPPED (editorial header)",
+        "kill_3in1_ai_cliché": "SHIPPED",
+        "section_header_variety": "SHIPPED (motion entrance deferred)",
+        "dashboard_screenshot_demo_tour": "DEFERRED (multi-turn item)",
+        "faq_header_variety": "SHIPPED",
+        "apply_private_invitation": "SHIPPED (section + popups)"
+    },
+    "deferred_for_next_turn": [
+        "/demo route safe-container wrapper (lib/api.ts gate + URL-param enforcement)",
+        "Tour system: install Shepherd.js + per-page tour configs",
+        "Fresh dashboard screenshot at high-res for marketing",
+        "HIGHLIGHTS framer-motion entrance on editorial header",
+        "Demo-CTA trust-pill row (likely next operator catch)"
+    ],
+    "inbox_unread_count": 0,
+    "sibling_coordination": "Branch-swap workflow used after git worktree add failed at 68% (Windows IO). EVE Compliance WT restored clean. No commit on its branch, no in-flight work disrupted.",
+    "lane_carve_out_reminder": "letstext owns chat UI / payments / inbox routing / employee mgmt / marketing / design system / infra. Compliance + moderation + NCMEC + image-moderation pipeline routes to EVE Compliance lane.",
+    "pre_warm_reads": [
+        "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\letstext.md",
+        "D:\\Sinister Sanctum\\_shared-memory\\heartbeats\\letstext.json",
+        "C:\\Users\\Zonia\\Desktop\\LetsText\\dashboard\\app\\landing-page.tsx (commit ff2dcad)",
+        "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+    ]
+}

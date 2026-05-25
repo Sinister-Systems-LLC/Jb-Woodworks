@@ -1,3 +1,9 @@
+<!-- decay:
+  category: fact
+  confidence: 0.9
+  reinforcements: 0
+  half_life_days: 180
+-->
 # Cross-machine mesh coordination
 
 > Author: RKOJ-ELENO :: 2026-05-25

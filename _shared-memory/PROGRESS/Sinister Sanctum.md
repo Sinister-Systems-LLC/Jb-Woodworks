@@ -1,4 +1,46 @@
-﻿## 2026-05-25 02:05 UTC — sanctum iter-18: P0 mintty exit-126 root-cause FIXED + canonical-protections P14 added + 4 sub-agents swarm-spawned
+﻿## 2026-05-25 02:38 UTC — sanctum iter-19: RELENTLESS LOOP SYSTEM SHIPPED (operator 02:18Z "make it actually work aggressive")
+
+**Author:** RKOJ-ELENO :: 2026-05-25 (sanctum-mintty-fix lane)
+
+**Operator verbatim 2026-05-25T02:18Z:** *"make the loop system on our agents actually work. make it agressive and make it hafve agents relentless pursue goal within our guidelines using our tools iwhen on."*
+
+**Shipped (verified, foreground):**
+- `_shared-memory/knowledge/loop-relentless-pursuit-doctrine-2026-05-25.md` NEW (~135 LOC) — 4 sub-rules (8 RELENTLESS PURSUIT 7-step + 9 ANTI-STOP CHECKLIST 6 binary checks + 10 TOOL-REACH FIRST 12-tool table + 11 WATCHDOG POKE handling) + 6 anti-patterns + pass criterion + 9 compose-with entries. Decay preference/1.0/365.
+- `CLAUDE.md` new TOP hard-canonical block "LOOP MODE = RELENTLESS" — rules 8-11. SAFE-doctrine still binding (RELENTLESS does NOT override). Sibling added WE-HAVE-THE-SOURCE block above mine same iter — compose cleanly.
+- `_shared-memory/knowledge/_INDEX.md` new top row.
+- `_shared-memory/knowledge/_INDEX-DECAY-SCORES.md` regenerated 211/211 (100%).
+- HIGH-priority fleet-update push `fu-20260524223119-6fe036` (kind=doctrine).
+
+**Shipped via 3 parallel sub-agents:**
+- Sub-F: `automations/loop-relentless-watchdog.ps1` NEW (Scan/DryRun/Status/Reset; 3 stall signals; cap 5/run + queue surface) + `automations/install-loop-watchdog-task.ps1` NEW (schtask SinisterLoopRelentlessWatchdog 5min cadence). Real Scan run delivered 2 pokes (sanctum sibling 97.7min + sinister-chatbot 55.6min).
+- Sub-G: `automations/agent-poke.ps1` NEW (Poke/PokeAll/Status) + `C:\Users\Zonia\Desktop\Poke-All-Sinister-Agents.bat` Desktop one-click. Smoke 5/5 PASS.
+- Sub-H: `automations/start-sinister-session.ps1` Build-Phrase RELENTLESS phrase (104+118 chars within caps) + `automations/session-templates/projects.json` v9→v10 (27 projects loop_relentless=true). agent-prefs.json no-edit (schema mismatch).
+
+**Smoke evidence:**
+- watchdog DryRun + real Scan: PASS (2 real pokes delivered)
+- agent-poke 5/5 PASS (UTF-8 no-BOM verified)
+- launcher parse-clean post-edit
+- projects.json valid JSON post-edit
+- canonical-protections-check unchanged PASS=12 FAIL=2
+
+**Operator action (1 click):** `powershell -File "D:\Sinister Sanctum\automations\install-loop-watchdog-task.ps1"` (preview with `-DryRun`) to activate fleet-wide 5-min auto-poker.
+
+---
+
+## 2026-05-25 02:25 UTC — jcode animation "more live" iter (operator screenshot #66 verified)
+
+**Author:** RKOJ-ELENO :: 2026-05-25 (sanctum subagent)
+
+Operator screenshot #66 *"more animation and live here"* — verified prior subagent's edits land + rebuilt EVE.exe. Both files already implement the spec:
+
+- `tools/eve-picker/jcode_animation.py` — density 1-in-12 (was 1-in-30), palette drift `tick//4` (was `tick//8`), horizontal scroll `(tick//2)%width` ("river of stars"), pulsing `*`/`+` sparkle accents 1-in-160 cells with sine twinkle, palette/glow caps preserved (60% purples / 20% reds / 15% dark / 5% yellow). cp1252-safe glyphs only.
+- `tools/eve-picker/main_menu.py` — `EVE_LIVE_ANIM` default flipped to "1" (live), `_read_choice_animated_live` 5fps poll with EVE_LIVE_ANIM_FPS knob (1..10), `_partial_animation_redraw` repaints ONLY animation rows + accounts panel via `\033[<row>;1H\033[2K` cursor positioning + `\033[s/\033[u` save/restore so the input cursor and hero/menu stay put (no flicker).
+
+Smoke: rendered 5 frames width=60 — horizontal drift confirmed (tick0 `'*:*+.:*+'` → tick2 `':*+.:*+.'`), 40-frame loop ran clean, `_render()` row trackers set correctly (ANIM_START=17, ANIM_HEIGHT=6, ACCT_START=24), partial-redraw emits 7948 bytes vs 10132 full = 22% less data per tick. Rebuild: `dist/EVE/EVE.exe` 2.18 MB built 22:21 (fresh, contains new animation code via PyInstaller --hidden-import jcode_animation main_menu). Stable mirror at `%USERPROFILE%\.eve\EVE.exe` BLOCKED (operator has running EVE.exe holding the DLLs at 21:36 timestamp) — will auto-mirror on next EVE close, or operator can run `dist/EVE/EVE.exe` directly to see the live shimmer immediately.
+
+---
+
+## 2026-05-25 02:05 UTC — sanctum iter-18: P0 mintty exit-126 root-cause FIXED + canonical-protections P14 added + 4 sub-agents swarm-spawned
 
 **Author:** RKOJ-ELENO :: 2026-05-25 (sanctum lane, RESUME from iter-17)
 

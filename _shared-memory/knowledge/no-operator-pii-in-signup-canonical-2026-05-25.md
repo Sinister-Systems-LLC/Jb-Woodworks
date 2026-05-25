@@ -1,3 +1,9 @@
+<!-- decay:
+  category: preference
+  confidence: 1
+  reinforcements: 0
+  half_life_days: 365
+-->
 # no-operator-pii-in-signup-canonical
 
 > **Author:** RKOJ-ELENO :: 2026-05-25

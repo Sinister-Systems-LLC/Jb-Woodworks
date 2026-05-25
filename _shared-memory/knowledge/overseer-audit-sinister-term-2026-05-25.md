@@ -1,4 +1,10 @@
 <!-- Author: RKOJ-ELENO :: 2026-05-25 -->
+<!-- decay:
+  category: fact
+  confidence: 0.9
+  reinforcements: 0
+  half_life_days: 90
+-->
 # Overseer first-fire audit -- sinister-term lane
 
 > Audit performed: 2026-05-25 ~01:30Z--02:00Z by Sinister Overseer (sanctum-overseer-audit-sinister-term mesh-lock)

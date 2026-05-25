@@ -1,3 +1,9 @@
+<!-- decay:
+  category: fact
+  confidence: 0.85
+  reinforcements: 0
+  half_life_days: 90
+-->
 # jcode usage-tracking pattern (2026-05-25)
 
 > **Author:** RKOJ-ELENO :: 2026-05-25

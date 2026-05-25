@@ -1,0 +1,68 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-25T02:38Z",
+    "project": "sanctum",
+    "agent_name": "sanctum-mintty-fix",
+    "agent_display": "Sinister Sanctum",
+    "mode": "resume",
+    "loop_iter": 19,
+    "swarm_role": "RELENTLESS LOOP SYSTEM author + watchdog orchestrator + 3-parallel-sub-agents for tooling",
+    "focus_intent": "Operator 02:18Z 'make the loop system actually work aggressive relentless within guidelines using our tools'. SHIPPED: brain entry loop-relentless-pursuit-doctrine + CLAUDE.md TOP block rules 8-11 + watchdog.ps1 + install-watchdog-task.ps1 + agent-poke.ps1 + Desktop button + launcher Build-Phrase RELENTLESS phrase + projects.json v10 27 projects loop_relentless=true. Real watchdog Scan delivered 2 pokes to stalled siblings.",
+    "shipped_this_iter_foreground": [
+        "_shared-memory/knowledge/loop-relentless-pursuit-doctrine-2026-05-25.md NEW (4 sub-rules + 6 anti-patterns + pass criterion + decay preference/1.0/365)",
+        "CLAUDE.md new TOP hard-canonical block (rules 8-11 RELENTLESS) — composes with sibling WE-HAVE-THE-SOURCE block (added same iter at line 5)",
+        "_shared-memory/knowledge/_INDEX.md new top row",
+        "_shared-memory/knowledge/_INDEX-DECAY-SCORES.md regenerated 211/211 (100% annotated)",
+        "HIGH fleet-update fu-20260524223119-6fe036 push (every loop=on agent must read)",
+        "PROGRESS row appended (iter-19)",
+        "mesh-coord locks Register+Release on _INDEX.md + CLAUDE.md cleanly"
+    ],
+    "shipped_this_iter_via_sub_agents": [
+        "Sub-F (ae5671102e1785817): automations/loop-relentless-watchdog.ps1 + install-loop-watchdog-task.ps1 NEW; Scan/DryRun/Status/Reset actions; 3 stall signals; idempotent cycle-id dedup; cap 5 pokes/run + queue surfacing if exceeded; PS 5.1-safe + UTF-8 no-BOM; real Scan delivered 2 pokes (sanctum 97.7min + sinister-chatbot 55.6min)",
+        "Sub-G (a0bd9ca775292dd3b): automations/agent-poke.ps1 + Desktop Poke-All-Sinister-Agents.bat NEW; Poke/PokeAll/Status; sinister.cross-agent-msg.v1 schema parity; smoke 5/5 PASS",
+        "Sub-H (af8460c1685ebe913): start-sinister-session.ps1 Build-Phrase loop branch RELENTLESS phrase (104+118 chars within caps); projects.json v9->v10 with loop_relentless=true on all 27 projects; agent-prefs.json no-edit (per-user schema mismatch); parse-clean"
+    ],
+    "in_flight_from_iter_18": [
+        "Sub-E (a1547f68491fc8e23): claude login flow + Enter-progress + EVE.exe close + animations + FINAL verify-eve-features.ps1 -AutoRebuild -SyncMirror; will surface when returns"
+    ],
+    "open_for_next_iter": [
+        "OPERATOR ACTION 1-click: powershell -File 'D:\\Sinister Sanctum\\automations\\install-loop-watchdog-task.ps1' to activate 5min schtask (use -DryRun first to preview); fleet-wide RELENTLESS auto-poke once installed",
+        "When Sub-E returns: verify EVE.exe rebuild + smoke fresh launch + ack remaining 2 iter-18 utterances",
+        "Acked stalled siblings (sanctum + sinister-chatbot) via watchdog pokes — they should resume on their next iter",
+        "M2 (EffConf column in _INDEX.md per memory completion plan) — still deferred for urgent operator directives",
+        "Run forever-improve -Action Review on iter-19 work (per cold-start step 10)",
+        "Run quality-monotonic-loop check on iter-19 work"
+    ],
+    "pre_warm_reads": [
+        "D:\\Sinister Sanctum\\_shared-memory\\knowledge\\loop-relentless-pursuit-doctrine-2026-05-25.md",
+        "D:\\Sinister Sanctum\\automations\\loop-relentless-watchdog.ps1",
+        "D:\\Sinister Sanctum\\automations\\agent-poke.ps1",
+        "D:\\Sinister Sanctum\\automations\\install-loop-watchdog-task.ps1",
+        "D:\\Sinister Sanctum\\automations\\start-sinister-session.ps1 (Build-Phrase loop branch lines 1335-1351 post-Sub-H edits)",
+        "D:\\Sinister Sanctum\\CLAUDE.md (top 2 hard-canonical blocks: WE-HAVE-THE-SOURCE + LOOP-MODE-RELENTLESS)"
+    ],
+    "smoke_results_iter_19": {
+        "loop_relentless_watchdog_DryRun": "PASS (3 heartbeats scanned, 3 stalls detected before my heartbeat refresh)",
+        "loop_relentless_watchdog_Scan_real": "PASS (2 stalls delivered, my fresh heartbeat correctly excluded)",
+        "agent_poke_Poke_DryRun": "PASS (no file written, payload printed)",
+        "agent_poke_Poke_real": "PASS (UTF-8 no-BOM verified)",
+        "agent_poke_Status": "PASS (correctly grouped)",
+        "agent_poke_PokeAll_logic": "PASS (intersection of <60min heartbeats AND loop=true agent-modes)",
+        "install_loop_watchdog_task_DryRun": "PASS (correct schtasks command preview)",
+        "start_sinister_session_ps1_parse": "PASS (post-Build-Phrase edits)",
+        "projects_json_valid": "PASS (v10 with loop_relentless on 27 projects)",
+        "canonical_protections_check": "PASS=12 FAIL=2 (P14 still PASS; P12+P13 pre-existing)",
+        "brain_decay_export": "PASS (211/211 100% annotated)",
+        "fleet_update_push": "PASS (HIGH doctrine push)"
+    },
+    "stop_conditions_state": {
+        "queue_lane_rows": "~9 (carrying from iter-18)",
+        "tasks_completed_session_this_iter": 1,
+        "tasks_completed_session_total": 7,
+        "utterances_acked_this_session": 26,
+        "brain_rows": "211 (+1 this iter loop-relentless-pursuit; sibling added we-have-the-source same iter -- total +2 fleet-wide)",
+        "active_plans_lane": 1,
+        "loop_iter": 19,
+        "loop_continue_or_pause": "loop_condition (make loop system actually work) IS SATISFIED with smoke evidence: watchdog runs end-to-end + delivers real pokes + CLAUDE.md updated + doctrine shipped + launcher injects RELENTLESS + 27 projects flagged. End-of-turn checkpoint valid. Next iter pivots to: operator install of schtask OR Sub-E return OR queue work."
+    }
+}
