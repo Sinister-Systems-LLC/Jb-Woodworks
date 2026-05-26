@@ -61,6 +61,22 @@ def _load_projects() -> dict:
         return {}
 
 
+def _project_root_for_slug(slug: str) -> str | None:
+    """Read projects.json and return the repo-relative `root` for slug.
+    Used to checkpoint each agent's owned slice on every tick."""
+    d = _load_projects()
+    for p in d.get("projects", []):
+        if p.get("key") == slug:
+            root = p.get("root") or ""
+            # Convert absolute to sanctum-relative
+            try:
+                rel = Path(root).resolve().relative_to(SANCTUM.resolve())
+                return str(rel).replace("\\", "/")
+            except Exception:
+                return None
+    return None
+
+
 def list_live_agents() -> list[dict]:
     """Walk heartbeats dir, return list of dicts for agents whose
     heartbeat is fresher than FRESH_S seconds."""
@@ -177,10 +193,22 @@ def _next_iter_for_agent(slug: str) -> int:
     return n
 
 
-def tick(agents: list[dict], do_revert: bool = False, dry_run: bool = False) -> list[dict]:
-    """Run one looper tick across all live agents. Returns score rows."""
+def tick(agents: list[dict], do_revert: bool = False, dry_run: bool = False,
+         do_checkpoint: bool = True) -> list[dict]:
+    """Run one looper tick across all live agents. Returns score rows.
+
+    iter-24: now actually saves a checkpoint per agent each tick (using the
+    project's `root` path from projects.json). Revert (--revert) is still
+    opt-in. Per-agent run_id is stable across ticks of one daemon process
+    so restore-best can find the peak across the whole watch window."""
     results = []
-    run_id = time.strftime("oa-%Y%m%dT%H%M%SZ", time.gmtime())
+    # Stable run_id per process invocation (so consecutive ticks of one
+    # `--watch` daemon share a peak-tracker; one-shot calls still get a
+    # fresh run_id each invocation).
+    run_id = globals().setdefault(
+        "_RUN_ID",
+        time.strftime("oa-%Y%m%dT%H%M%SZ", time.gmtime())
+    )
     for ag in agents:
         slug = ag["slug"]; display = ag["display"]
         s = score_agent(slug, display)
@@ -194,12 +222,24 @@ def tick(agents: list[dict], do_revert: bool = False, dry_run: bool = False) -> 
             prev_best > float("-inf") and s["score"] < prev_best - 0.001
         )
         s["action"] = "ok"
+        # iter-24: SAVE a checkpoint of the agent's `root` path. This is the
+        # missing piece -- without it, restore-best has nothing to restore to.
+        root_rel = _project_root_for_slug(slug)
+        if do_checkpoint and root_rel and not dry_run:
+            sv = _ckpt(
+                "save", "--lane", slug, "--run-id", run_id,
+                "--iter", str(cur_iter), "--paths", root_rel,
+                "--sanctum-root", str(SANCTUM),
+            )
+            s["checkpoint_ok"] = sv.get("ok", False)
+            s["checkpoint_files"] = sv.get("files", 0)
+        else:
+            s["checkpoint_ok"] = False
         if s["regressed"]:
             s["action"] = "regress-warn"
             if do_revert and not dry_run:
                 rs = _ckpt(
-                    "restore-best", "--lane", slug,
-                    "--run-id", "current",  # placeholder; lanes use multi-run
+                    "restore-best", "--lane", slug, "--run-id", run_id,
                     "--sanctum-root", str(SANCTUM),
                 )
                 s["restore"] = rs
@@ -214,6 +254,7 @@ def tick(agents: list[dict], do_revert: bool = False, dry_run: bool = False) -> 
                 "best_iter": cur_iter if s["score"] > prev_best else prev_best_iter,
                 "run_id": run_id, "components": s["components"],
                 "action": s["action"],
+                "checkpoint_files": s.get("checkpoint_files", 0),
             }
             try:
                 with LOG_JSONL.open("a", encoding="utf-8") as fh:
@@ -230,21 +271,26 @@ def main() -> int:
     p.add_argument("--interval-s", type=int, default=600)
     p.add_argument("--revert", action="store_true")
     p.add_argument("--dry-run", action="store_true")
+    p.add_argument("--no-checkpoint", dest="no_checkpoint", action="store_true",
+                   help="skip the per-agent loop_checkpoint.save call")
     p.add_argument("--json", dest="json_out", action="store_true")
     args = p.parse_args()
 
     def _once():
         ags = list_live_agents()
+        do_ck = not args.no_checkpoint
         if args.json_out:
-            print(json.dumps({"live": len(ags), "results": tick(ags, args.revert, args.dry_run)},
+            print(json.dumps({"live": len(ags),
+                              "results": tick(ags, args.revert, args.dry_run, do_ck)},
                              indent=2))
         else:
             print(f"loop_open_agents tick @ {_utcnow_iso()} ({len(ags)} live)")
-            results = tick(ags, args.revert, args.dry_run)
+            results = tick(ags, args.revert, args.dry_run, do_ck)
             for r in results:
                 comp = r["components"]
                 tag = r["action"].upper()
-                print(f"  [{tag:14s}] {r['slug']:30s} score={r['score']:>8.2f}  "
+                ck = f"ck={r.get('checkpoint_files', 0)}f" if r.get("checkpoint_ok") else "ck=-"
+                print(f"  [{tag:14s}] {r['slug']:30s} score={r['score']:>8.2f}  {ck}  "
                       f"(progress_b={comp['progress_bytes']} commits_1h={comp['commits_1h']} "
                       f"fresh+{comp['fresh_bonus']} hb={r['heartbeat_age_s']}s)")
 
