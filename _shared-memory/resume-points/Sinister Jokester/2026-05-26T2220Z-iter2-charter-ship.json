@@ -1,0 +1,44 @@
+{
+  "slug": "sinister-jokester",
+  "display": "Sinister Jokester",
+  "ts_utc": "2026-05-26T22:20:00Z",
+  "iter": 2,
+  "mode": "resume",
+  "branch": "agent/sinister-jokester/charter-ship-2026-05-26",
+  "loop_condition": "Drain inbox + vault/intake/queue.jsonl. For each candidate: intake -> cross-reference -> verdict -> .md -> DB row -> peer-notify. Soft re-review on re-intake. Re-poll utterances each iter.",
+  "shipped_this_iter": [
+    "CLAUDE.md rewritten from placeholder to full charter (mission, scope, tech stack, project structure, milestones, verdict heuristic table, peer-notification doctrine, loop condition)",
+    "Vault dir tree: vault/{intake,decisions/{adopt,watch,reject},db}/ + SCHEMA.md + INDEX.md",
+    "SQLite DB: db/schema.sql + db/init_db.py + db/recall.py (list/search/stats/rebuild-index)",
+    "Intake adapters: intake/github.py (clone + gh metadata + UTF-8 encoding fix), intake/ig.py (stub-aware), intake/local.py (local path for desktop drops)",
+    "review/cross_reference.py: token overlap with stopwords, per-token cap, per-file distinct-token min/max, top-5 source-weighted hits (tools=2.0x, project CLAUDE=1.4x, inventions=1.0x, brain=0.3x), sqrt-damped /25",
+    "review/notify_peers.py: 17 fleet lanes routed (vault/memory/overseer/term/panel/snap{,-quantum}/tiktok/emulator-bundle [debuggers + RE tools] / kernel-apk / quantum / compliance / os / forge / claw / letstext)",
+    "review/decide.py: orchestrator with verdict heuristic + manual override + soft re-review path (no re-clone, appends addendum on material change, notifies only new peers)",
+    "review/templates/{adopt,watch,reject}.md.tmpl",
+    "jokester_cli.py top-level CLI: intake / recall / list / stats / reindex / drain-queue",
+    "vault/intake/queue.jsonl drop point + .gitignore (clones + sqlite gitignored)",
+    "projects.json v15 entry updated with real tag + session_start + focus",
+    "Heartbeat + PROGRESS + resume-point refreshed"
+  ],
+  "smoke_verified_this_iter": [
+    "python db/init_db.py --ensure -> ok",
+    "python jokester_cli.py intake https://github.com/charmbracelet/glow -> WATCH (novel, no peer match, 0 overlap)",
+    "python jokester_cli.py intake C:\\Users\\Zonia\\Desktop\\GitChain-main -> ADOPT, peer-notify=sinister-vault, overlap=0.538",
+    "soft re-review on GitChain (second intake) -> soft_reviewed=true, no double-notify, addendum appended to existing .md",
+    "stats / list / recall / reindex green",
+    "Peer inbox note landed at _shared-memory/inbox/sinister-vault/2026-05-26T2213Z-from-sinister-jokester-adopt-lp-gitchain-main-fe46022c.md"
+  ],
+  "in_flight": [],
+  "open_queued": [
+    "Operator to drop more GitHub URLs into vault/intake/queue.jsonl ('we have many github repos to start reviewing')",
+    "P1: Telegram bot listener (CLI only, no UI)",
+    "Deep-deepening enhancement: per-candidate dependency parsing (package.json / Cargo.toml / pyproject.toml) for stack-fit signal beyond keyword overlap"
+  ],
+  "next_iter_plan": [
+    "Commit + push detailed (Shipped/Smoke/Refs)",
+    "Re-poll _shared-memory/inbox/sinister-jokester/ for delegated candidates",
+    "Re-poll _shared-memory/operator-utterances.jsonl for new jokester-tagged URLs",
+    "Drain vault/intake/queue.jsonl if operator dropped anything",
+    "Re-write heartbeat + resume-point"
+  ]
+}

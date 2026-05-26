@@ -1,0 +1,13 @@
+# Cloned candidate repos can be GBs; rebuildable via re-intake.
+vault/intake/*/
+!vault/intake/.keep
+!vault/intake/queue.jsonl
+
+# SQLite is rebuildable from the .md decisions via `python jokester_cli.py reindex`.
+vault/db/*.sqlite
+vault/db/*.sqlite-journal
+
+# Python cruft
+__pycache__/
+*.pyc
+.pytest_cache/

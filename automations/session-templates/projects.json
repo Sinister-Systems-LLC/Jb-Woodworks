@@ -653,15 +653,15 @@
     {
       "key": "sinister-jokester",
       "display": "Sinister Jokester",
-      "tag": "P0 stub :: launch lane registered 2026-05-26 per operator directive 'add launch option for sinsiter jokester'. Scope TBD by operator; placeholder CLAUDE.md until scope brief lands.",
+      "tag": "Intake + triage lane. Operator drops GitHub URLs / IG audio / local paths; Jokester deep-reviews, cross-references fleet, verdicts ADOPT/WATCH/REJECT, writes per-candidate .md, indexes in SQLite, peer-notifies the lane that owns the capability (vault/memory/emulator/snap/tiktok/etc). CLI + .md + DB only — no UI per operator hard-canonical 2026-05-26.",
       "root": "D:\\Sinister Sanctum\\projects\\sinister-jokester",
       "lane_dir": "D:\\Sinister Sanctum\\projects\\sinister-jokester",
-      "session_start": "",
+      "session_start": "Drain operator-supplied intake (URLs/paths in vault/intake/queue.jsonl OR _shared-memory/inbox/sinister-jokester/). For each: python jokester_cli.py intake <thing>. Verdicts auto-write to vault/decisions/{adopt|watch|reject}/<id>.md and peer-notify the owning lane. Soft re-review on re-intake. Read CLAUDE.md for the full charter + verdict heuristic + peer-route table.",
       "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-jokester\\CLAUDE.md",
       "github": "Sinister-Sanctum",
       "branch_prefix": "agent/sinister-jokester/",
       "tier": 2,
-      "focus": "Project scope pending operator brief. Until then this lane scaffolds the dir + spawns into the placeholder CLAUDE.md so the launch entry works.",
+      "focus": "Intake + triage external candidates (GitHub repos, IG audio, local paths). Deep cross-reference vs fleet, verdict ADOPT/WATCH/REJECT, persist .md + SQLite, peer-notify owning lane. P0 (charter + pipeline + DB + smoke + peer-notify on GitChain → sinister-vault) shipped 2026-05-26.",
       "default_modes": {
         "swarm": true,
         "loop": "relentless",

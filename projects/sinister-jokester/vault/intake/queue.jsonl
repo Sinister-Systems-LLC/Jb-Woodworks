@@ -1,0 +1,7 @@
+# Sinister Jokester intake queue.
+# Operator drops one URL OR one JSON row per line:
+#   https://github.com/owner/repo
+#   {"url": "https://github.com/owner/repo", "reviewer": "operator"}
+#   C:\Users\Zonia\Desktop\SomeFolder
+# Drain with:  python jokester_cli.py drain-queue vault/intake/queue.jsonl
+# Lines starting with '#' are ignored.
