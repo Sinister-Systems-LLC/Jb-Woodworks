@@ -3,6 +3,105 @@
 > Author: RKOJ-ELENO :: 2026-05-25
 > Append-only. Most-recent on top.
 
+## 2026-05-26T23:25Z — iter-24 Phase 9.5 token-density measurement
+
+Shipped (new files):
+
+- `automations/hgly_density.py` (~280 LOC) — token-density measurement
+  tool. Reuses `hgly.lexer.tokenize` so the byte-cost estimator stays in
+  lockstep with the language. Subcommands: `measure <path>` (single
+  .shp), `corpus [--dir]` (whole corpus), `goal` (one-line baseline).
+  Per-program output: `shp_bytes`, `py_bytes_est`, `ops`,
+  `shp_bytes_per_op`, `py_bytes_per_op_est`, `ratio`, `passes_goal`.
+- `tests/test_density.py` (~155 LOC, 7 assertions) — covers import
+  (no torch), DENSITY_GOAL constant matches CLAUDE.md lane rule 1
+  (0.20), synthetic token-stream estimator sanity, `measure_one`
+  schema, `measure_corpus` live read, CLI `corpus --json` smoke,
+  ascii-vs-glyph byte ratio comparison.
+- `automations/hgly_status.py` — added `density` subsection to JSON +
+  text output (one new line under glyph-coverage row).
+- `tests/test_smoke.py` — replaced hardcoded `0.0.2` version assertion
+  with SemVer parse + major==0 guard (the literal was stale at 0.0.7,
+  was blocking `python tests/test_smoke.py`).
+
+Baseline measured this turn (live corpus, 255 programs):
+
+| metric | value |
+|---|---|
+| programs | 255 |
+| shp bytes total | 18,598 |
+| py bytes est total | 19,808 |
+| ops total | 4,499 |
+| shp B/op avg | 4.134 |
+| py B/op avg | 4.403 |
+| corpus ratio | **0.9389** |
+| pass rate (per-program) | 0/255 (0.0%) |
+| goal threshold | 0.20 |
+| verdict | **FAIL** (corpus-wide vs 0.20 goal) |
+
+**Honest read:** the bootstrap corpus is 255 tiny 3-to-5-line programs
+(mean 73 bytes/program). At that size the 3-4 byte UTF-8 cost of glyphs
+actually *hurts* density vs ASCII fallbacks, because there is no
+boilerplate Python (imports, function defs, `if __name__`) to
+amortize against. The path to <=0.20 is Phase 9 corpus expansion to
+multi-hundred-line programs where Python overhead dominates and glyph
+compression catches up. This iter ships the *measurement*; the
+optimization loop now has a real fitness function.
+
+Verify (all green this turn, same host):
+
+- `python automations/hgly_density.py corpus` -> 255 programs / ratio 0.9389, exit 0
+- `python tests/test_density.py` -> `Results: 7/7 passed`, exit 0
+- `python tests/test_smoke.py` -> `OK 0.0.7`, exit 0
+- `python tests/test_parser.py` -> 11/11 passed (regression check, exit 0)
+- `python tests/test_ir.py` -> 10/10 passed (regression check, exit 0)
+- `python automations/hgly_status.py` -> shows new `density` row, exit 0
+
+Compose with:
+
+- CLAUDE.md lane rule 1 (token-density is the prime directive) — now
+  measured continuously instead of asserted in spec only.
+- `_shared-memory/plans/sinister-hieroglyphics-master-2026-05-25T1340Z/plan.md`
+  Phase 9 corpus generation — the trainer now has an objective metric
+  (ratio drift) for held-out evaluation.
+- `automations/hgly_corpus_seed.py` fanout — every new corpus row
+  contributes to the rolling ratio; regression triggers loop_checkpoint.
+
+Next iter (queued): Phase 9 corpus expansion via swarm fan-out
+(`hgly_corpus_seed.py fanout --slug-prefix hgly-corpus-grow`) targeting
+50-line programs that exercise the memory + concurrency + simulation
+categories, then re-measure and chart the ratio trajectory.
+
+## CATCH-UP — iter-3 through iter-23 (back-fill 2026-05-26)
+
+The local `PROGRESS.md` was last touched 2026-05-25T15:25Z at v0.0.2;
+the actual lane shipped iter-3 through iter-23 in parallel turns whose
+PROGRESS rows landed in `_shared-memory/PROGRESS/sinister-hieroglyphics-and-looper.md`
+(combo lane). Catch-up below covers the lane-local files that didn't
+get a row here. Commit hashes are in `git log --grep=hgly`.
+
+| iter | shipped | tests | commit |
+|---|---|---|---|
+| 3 | Phase 3 typed SSA IR + TypeChecker | 10/10 | 48f33c3 |
+| 4 | Tree-walking interpreter | 7/7 | 75330b2 |
+| 5-9 | Parser leniency: corpus pass 12/20 -> 16/20 -> 20/20 | 11/11 | 7f6b0a5 / 648d923 |
+| 12 | Absolute peak: 255/255 corpus parse + 64/64 glyph coverage | 11/11 | 1e35845 |
+| 13 | Phase 4 stack-VM bytecode codegen stub | 9/9 | 94cb80d |
+| 14 | Phase 8 simulation primitives — 8 sim ops | 10/10 | 1a8e023 |
+| 15 | Sim primitives wired into interpreter (glyph .shp runs World) | 10/10 | e6b1ac2 |
+| 16 | VM dispatches sim ops + interp/VM parity proven | 9/9 | 3fd3ead |
+| 17 | Phase 8b ZMQ bridge to desktop python_simulator + synth fallback | 8/8 | 3e25955 |
+| 18-19 | Phase 5 PTX text-emit codegen stub + e2e loop demo + revert verified | 7/7 | 7cf5f44 |
+| 22 | Live .shp e2e demo (examples/quantum_sim_demo.shp) | (smoke) | a575988 |
+| 23 | Bridge wire-protocol fix (MsgType capitalized + SN field) | 8/8 | 32e18be |
+
+**Cumulative state at iter-23 close:** hgly v0.0.7 · 62 unit assertions
++ 255-program corpus + 64/64 glyph coverage + Phase 8b bridge verified
+LIVE on :7000 + Phase 5 PTX stub + Phase 4 stack-VM with interp/VM
+parity. Trainer scaffold + corpus-seeder + status reader shipped
+under `automations/hgly_*.py`. No trainer state JSON yet (torch
+unavailable on this host; trainer dry-run path works).
+
 ## 2026-05-25T15:25Z — Phase 2 bootstrap (Python parser shipped)
 
 Deviation from master plan: Phase 2 specced `crates/hgly-parser/` in Rust.

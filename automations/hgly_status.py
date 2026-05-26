@@ -33,6 +33,7 @@ CORPUS_DIR = SANCTUM / "_shared-memory" / "hgly-corpus"
 LOOP_LOG = SANCTUM / "_shared-memory" / "quality-loop-log.jsonl"
 TRAINER_STATE = SANCTUM / "_shared-memory" / "hgly-trainer-state.json"
 SEEDER = SANCTUM / "automations" / "hgly_corpus_seed.py"
+DENSITY = SANCTUM / "automations" / "hgly_density.py"
 
 _NO_WIN = 0x08000000 if os.name == "nt" else 0
 
@@ -83,6 +84,33 @@ def recent_hgly_commits(limit: int = 5) -> list[str]:
         return [l for l in r.stdout.splitlines() if l.strip()]
     except Exception:
         return []
+
+
+def corpus_density() -> dict:
+    """One-call density score via automations/hgly_density.py corpus --json."""
+    if not DENSITY.exists():
+        return {"available": False}
+    try:
+        r = subprocess.run(
+            [sys.executable, str(DENSITY), "corpus", "--json"],
+            capture_output=True, text=True, timeout=60,
+            creationflags=_NO_WIN,
+        )
+        if r.returncode != 0:
+            return {"available": False, "error": r.stderr[:200]}
+        d = json.loads(r.stdout)
+        return {
+            "available": True,
+            "programs": d.get("programs"),
+            "corpus_ratio": d.get("corpus_ratio"),
+            "goal_threshold": d.get("goal_threshold"),
+            "goal_met": d.get("goal_met_corpus_wide"),
+            "pass_rate": d.get("pass_rate"),
+            "shp_bytes_per_op_avg": d.get("shp_bytes_per_op_avg"),
+            "py_bytes_per_op_avg": d.get("py_bytes_per_op_avg"),
+        }
+    except Exception as e:
+        return {"available": False, "error": str(e)}
 
 
 def trainer_state() -> dict:
@@ -154,6 +182,7 @@ def collect() -> dict:
             "glyph_vocabulary_size": cs.get("glyph_vocabulary_size", 64),
             "coverage_pct": cs.get("coverage_pct", 0),
         },
+        "density": corpus_density(),
         "trainer": trainer_state(),
         "loop_ticks_recent": recent_loop_ticks(limit=5),
         "python_sim_live": python_sim_bridge_live(),
@@ -168,6 +197,12 @@ def render_text(d: dict) -> str:
     lines.append(f"  package        v{h['version']}  ({h['tests']['count']} test modules)")
     lines.append(f"  corpus         {c['file_count']} programs / {c['total_bytes']} bytes")
     lines.append(f"  glyph coverage {c['glyphs_covered']}/{c['glyph_vocabulary_size']} ({c['coverage_pct']}%)")
+    dn = d.get("density") or {}
+    if dn.get("available"):
+        lines.append(f"  density        ratio={dn.get('corpus_ratio')} "
+                     f"(goal<={dn.get('goal_threshold')}) "
+                     f"pass={int((dn.get('pass_rate') or 0) * 100)}% "
+                     f"corpus-wide-met={dn.get('goal_met')}")
     t = d["trainer"]
     if t.get("exists"):
         lines.append(f"  trainer        iter={t.get('iter', '?')} best={t.get('best_score', '?')}")
