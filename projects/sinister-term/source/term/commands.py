@@ -103,6 +103,7 @@ Sinister Term commands:
   /version                  Composite version dashboard (sterm/ascii/python/deps/git/modules)
   /man [name | -a]          Show full docstring for a builtin (or list all w/ summaries)
   /peer [slug | substring]  Read a peer agent's heartbeat in detail
+  /sysinfo                  OS / Python / SANCTUM_ROOT / env / disk diagnostic
   /alias [name=val|remove n] List aliases, define one, or remove one
   /clear                    Clear the screen
   /help                     This message
@@ -544,6 +545,114 @@ _CRASH_LOG_PATH = SANCTUM_ROOT / "_shared-memory" / "eve-crash-log.jsonl"
 
 _FLEET_UPDATES_PATH = SANCTUM_ROOT / "_shared-memory" / "fleet-updates.jsonl"
 _INCIDENTS_PATH = SANCTUM_ROOT / "_shared-memory" / "eve-incidents.jsonl"
+
+
+_STERM_ENV_VARS = (
+    "SINISTER_SANCTUM_ROOT",
+    "SANCTUM_ROOT",
+    "SINISTER_ASCII",
+    "SINISTER_TERM_OVERLAY",
+    "SINISTER_TERM_FAST_EXIT",
+    "SINISTER_TERM_VERBOSE",
+    "SINISTER_TERM_GLASS",
+    "SINISTER_LOOP_CONDITION",
+    "SINISTER_SLICE_ID",
+    "STERM_LOG_JSON",
+    "SINISTER_DEMO_PROJECT",
+    "SINISTER_DEMO_SECONDS",
+    "SINISTER_FIREFOX_BRIDGE_PATH",
+    "SINISTER_EVE_FAST_EXIT",
+    "TERM",
+    "TERM_PROGRAM",
+    "LC_TERMINAL",
+    "ANTHROPIC_API_KEY",
+    "OPENAI_API_KEY",
+)
+
+
+def cmd_sysinfo(_args: list[str]) -> CommandResult:
+    """iter-74: OS / Python / sterm-env diagnostic.
+
+    Shows the bits a sterm operator most often needs to debug:
+      - OS: platform name + release
+      - Python: executable path + version
+      - CWD: where we are
+      - SANCTUM_ROOT: resolved root + on-disk existence
+      - Terminal: TERM / TERM_PROGRAM env (Kitty/iTerm/etc detection)
+      - Sterm env: every SINISTER_* env var that's set (other vars hidden)
+      - Secrets: ANTHROPIC_API_KEY / OPENAI_API_KEY shown as [present] vs [unset]
+        (never the actual value)
+      - Disk: SANCTUM_ROOT free + total in GiB
+    """
+    import os as _os
+    import platform as _platform
+    import sys as _sys
+    import shutil as _shutil
+
+    lines = ["sysinfo:"]
+
+    # OS
+    try:
+        plat = f"{_platform.system()} {_platform.release()} ({_platform.machine()})"
+    except Exception:
+        plat = "?"
+    lines.append(f"  os:             {plat}")
+
+    # Python
+    lines.append(f"  python:         {_sys.version.splitlines()[0]}")
+    lines.append(f"  python_exe:     {_sys.executable}")
+
+    # CWD
+    lines.append(f"  cwd:            {Path.cwd()}")
+
+    # SANCTUM_ROOT
+    root_exists = SANCTUM_ROOT.exists()
+    lines.append(
+        f"  sanctum_root:   {SANCTUM_ROOT}  "
+        f"({'EXISTS' if root_exists else 'MISSING'})"
+    )
+
+    # Terminal env
+    term = _os.environ.get("TERM") or "(unset)"
+    term_program = _os.environ.get("TERM_PROGRAM") or "(unset)"
+    lc_terminal = _os.environ.get("LC_TERMINAL") or "(unset)"
+    lines.append(f"  TERM:           {term}")
+    lines.append(f"  TERM_PROGRAM:   {term_program}")
+    if lc_terminal != "(unset)":
+        lines.append(f"  LC_TERMINAL:    {lc_terminal}")
+
+    # Sterm SINISTER_* env vars (only the SET ones)
+    set_env = [(k, _os.environ.get(k)) for k in _STERM_ENV_VARS
+               if k.startswith("SINISTER_") or k.startswith("STERM_")]
+    set_env = [(k, v) for k, v in set_env if v is not None]
+    if set_env:
+        lines.append(f"  sterm env ({len(set_env)} set):")
+        for k, v in set_env:
+            shown_v = v if len(v) <= 60 else v[:57] + "..."
+            lines.append(f"    {k:<28} = {shown_v}")
+    else:
+        lines.append("  sterm env:      (no SINISTER_* / STERM_* env vars set)")
+
+    # Secret env presence (NEVER the value)
+    for k in ("ANTHROPIC_API_KEY", "OPENAI_API_KEY"):
+        v = _os.environ.get(k)
+        lines.append(
+            f"  {k:<15}: {'[present]' if v else '[unset]'}"
+        )
+
+    # Disk
+    if root_exists:
+        try:
+            usage = _shutil.disk_usage(str(SANCTUM_ROOT))
+            gib = 1024 ** 3
+            lines.append(
+                f"  disk:           "
+                f"free {usage.free / gib:.1f} GiB / total {usage.total / gib:.1f} GiB"
+            )
+        except OSError as e:
+            lines.append(f"  disk:           ? ({e})")
+
+    return CommandResult(True, "\n".join(lines))
 
 
 def cmd_peer(args: list[str]) -> CommandResult:
@@ -2581,6 +2690,7 @@ COMMANDS: dict[str, Callable[[list[str]], CommandResult]] = {
     "man": cmd_man,                      # iter-72 — show docstring for a single builtin
     "?": cmd_help,                       # already aliased; explicit for clarity
     "peer": cmd_peer,                    # iter-73 — read a peer agent's heartbeat
+    "sysinfo": cmd_sysinfo,              # iter-74 — OS/Python/env diagnostic
 }
 
 
