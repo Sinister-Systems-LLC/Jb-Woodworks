@@ -121,4 +121,92 @@ def consolidate(
     else:
         stats["verify"] = {"skipped": True}
 
+    # Step 6 (iter-8) :: rotate oversized PROGRESS files (R4).
+    # Keeps recall corpus lean. Runs even on dry_run (rotation itself preserves
+    # full history in _archive/, so it's reversible). Threshold 80 KB.
+    try:
+        # Import lazily so consolidate doesn't depend on the script package at
+        # import time. The rotation scripts live in projects/sinister-memory/scripts/,
+        # which is NOT on sys.path; load via runpy.
+        import runpy, sys
+        script_dir = Path(__file__).resolve().parents[2] / "scripts"
+        rotate_prog = script_dir / "rotate_progress.py"
+        rotate_fu = script_dir / "rotate_fleet_updates.py"
+        rot_stats: dict = {}
+        if rotate_prog.exists():
+            mod = runpy.run_path(str(rotate_prog), run_name="__sm_rotate_progress__")
+            progress_dir = root / "_shared-memory" / "PROGRESS"
+            rot_stats["progress"] = mod["rotate_all"](progress_dir, keep_kb=80, dry_run=dry_run)
+        else:
+            rot_stats["progress"] = {"error": f"script missing: {rotate_prog}"}
+        # Step 7 :: rotate fleet-updates.jsonl (R11) when oversized
+        if rotate_fu.exists():
+            mod = runpy.run_path(str(rotate_fu), run_name="__sm_rotate_fleet__")
+            fu_path = root / "_shared-memory" / "fleet-updates.jsonl"
+            # Iter-46 preventive fix: pass max_row_kb=100 so the ambient pass
+            # truncates oversized single-row payloads. Without this, iter-45's
+            # 485 MB regression (24 rows * 21 MB avg from agents broadcasting
+            # massive payloads) would silently recur every few hours.
+            rot_stats["fleet_updates"] = mod["rotate"](
+                fu_path, keep=1000, max_mb=100, dry_run=dry_run, max_row_kb=100,
+            )
+        else:
+            rot_stats["fleet_updates"] = {"error": f"script missing: {rotate_fu}"}
+        stats["rotate"] = rot_stats
+    except Exception as exc:  # noqa: BLE001
+        stats["rotate"] = {"error": f"{type(exc).__name__}: {exc}"}
+
+    # Step 8 (iter-18) :: regenerate per-lane briefings via R3 --lane recall slice.
+    # Briefings live at _shared-memory/audits/per-lane-briefings/<slug>.md and
+    # are what spawning agents `cat` to see their lane's status. Auto-runs in
+    # ambient pass so briefings are always fresh.
+    try:
+        import runpy
+        script_dir = Path(__file__).resolve().parents[2] / "scripts"
+        brief_script = script_dir / "generate_lane_briefings.py"
+        if brief_script.exists():
+            mod = runpy.run_path(str(brief_script), run_name="__sm_lane_briefings__")
+            projects_json = root / "automations" / "session-templates" / "projects.json"
+            out_dir = root / "_shared-memory" / "audits" / "per-lane-briefings"
+            out_dir.mkdir(parents=True, exist_ok=True)
+            projects = mod["_load_projects"](projects_json) if projects_json.exists() else []
+            n_written = 0
+            for proj in projects:
+                slug = proj["key"]
+                display = proj.get("display", slug)
+                try:
+                    top = mod["_top_recall"](slug, root, limit=5)
+                    saves = mod["_per_agent_files"](slug, root, limit=5)
+                    edges = mod["_supersede_edges"](slug, root, limit=5)
+                    md = mod["render"](slug, display, top, saves, edges)
+                    (out_dir / f"{slug}.md").write_text(md, encoding="utf-8")
+                    n_written += 1
+                except Exception:  # noqa: BLE001
+                    continue
+            stats["lane_briefings"] = {"written": n_written, "out_dir": str(out_dir)}
+        else:
+            stats["lane_briefings"] = {"error": f"script missing: {brief_script}"}
+    except Exception as exc:  # noqa: BLE001
+        stats["lane_briefings"] = {"error": f"{type(exc).__name__}: {exc}"}
+
+    # Step 9 (iter-47) :: adoption sweep -- write newest PROGRESS heading per
+    # lane into _shared-memory/sinister-memory/per-agent/<key>/ with v2
+    # frontmatter so the health.adoption sub-score climbs without per-lane
+    # manual saves. Idempotent: existing rows with same body are not rewritten.
+    # Runs even on dry_run because saves are non-destructive (new files only).
+    try:
+        from . import adoption_sweep
+
+        sweep_stats = adoption_sweep.sweep_progress_to_per_agent(root, dry_run=dry_run)
+        # Trim per-lane action lists to keep the consolidated stats dict lean.
+        stats["adoption_sweep"] = {
+            k: v for k, v in sweep_stats.items()
+            if k not in ("lanes", "errors")  # drop verbose arrays
+        }
+        stats["adoption_sweep"]["lane_count"] = len(sweep_stats.get("lanes", []))
+        if sweep_stats.get("errors"):
+            stats["adoption_sweep"]["error_count"] = len(sweep_stats["errors"])
+    except Exception as exc:  # noqa: BLE001
+        stats["adoption_sweep"] = {"error": f"{type(exc).__name__}: {exc}"}
+
     return stats

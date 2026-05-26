@@ -1,0 +1,44 @@
+{
+    "schema_version":  "sinister.resume-point.v1",
+    "ts_utc":  "2026-05-26T21:07:44.4186620Z",
+    "project":  "eve-exe",
+    "agent_name":  "eve-exe",
+    "mode":  "resume",
+    "focus_intent":  "",
+    "git":  {
+                "branch":  "agent/sinister-memory/adoption-sweep-2026-05-26",
+                "head":  "0ccbb69cb793db35471b9f4441d55d5fbeabbbd3",
+                "head_msg":  "sinister-term iter-75: /inbox-of (alias /io) peer-inbox triage + 16 tests (pytest 588-\u003e604)",
+                "recent_commits":  [
+                                       "0ccbb69 sinister-term iter-75: /inbox-of (alias /io) peer-inbox triage + 16 tests (pytest 588-\u003e604)",
+                                       "72db792 iter-31: looper skips ckpt when lane has no fresh activity (commits=0 AND progress=0)",
+                                       "ead9476 iter-30: bump _ckpt subprocess timeout 60s -\u003e 600s (sinister-os had ck=0 from timeout kill)",
+                                       "6cc358e eve-exe iter-29: 2x console window via Win32 API (operator screenshot \u0027window size 2x better\u0027)",
+                                       "5e93e3c sinister-term iter-74: /sysinfo OS+Python+env+disk diagnostic + secret-never-leaks test + 15 tests (pytest 573-\u003e588)",
+                                       "ab9893e iter-28: SESSION COMPLETION REPORT ΓÇö \u0027complete everything i said to do\u0027 Γ£ô",
+                                       "8b5c317 iter-27: loop_checkpoint os.walk prune + slug-prefix lookup ΓÇö sinister-os 0-\u003e4257 files",
+                                       "ef4f880 sinister-term iter-73: /peer drilldown for peer heartbeat + 15 tests (pytest 558-\u003e573)",
+                                       "1c593f6 sinister-term iter-72: /man drilldown for builtin docstrings + 13 tests (pytest 545-\u003e558)",
+                                       "85b8704 sinister-term iter-71: /version composite dashboard + 11 tests (pytest 534-\u003e545)"
+                                   ]
+            },
+    "progress_top3":  [
+
+                      ],
+    "latest_plan":  {
+                        "dir":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\eve-exe-master-2026-05-25T1315Z",
+                        "artifact":  "D:\\Sinister Sanctum\\_shared-memory\\plans\\eve-exe-master-2026-05-25T1315Z\\plan.md"
+                    },
+    "inbox_unread_count":  2,
+    "last_5_files_touched_24h":  [
+                                     "_shared-memory\\audits\\per-lane-briefings\\sinister-chatbot.md",
+                                     "_shared-memory\\quality-loop-log.jsonl",
+                                     "_shared-memory\\loop-checkpoints\\eve-exe\\oa-20260526T210700Z-iter0\\manifest.json",
+                                     "_shared-memory\\loop-quality-state.json",
+                                     "_shared-memory\\heartbeats\\sinister-vault.beat"
+                                 ],
+    "pre_warm_reads":  [
+                           "D:\\Sinister Sanctum\\_shared-memory\\plans\\eve-exe-master-2026-05-25T1315Z\\plan.md",
+                           "D:\\Sinister Sanctum\\automations\\session-contracts.md"
+                       ]
+}

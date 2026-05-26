@@ -38,10 +38,33 @@ if __package__ in (None, ""):  # direct invocation
     __package__ = "sinister_memory"  # noqa: A001
 
 
+def _normalize_path(raw) -> Path:
+    """Normalize bash-style drive paths (`/d/Sinister Sanctum`) to Windows
+    (`D:\\Sinister Sanctum`).
+
+    Why: passing `--root /d/Sinister Sanctum` from git-bash made argparse store
+    Path('/d/Sinister Sanctum') which is a RELATIVE path on Windows. The
+    indexer then wrote to `<cwd>\\d\\Sinister Sanctum\\_shared-memory\\...`
+    -- a phantom path. Recall from a normal Windows shell found nothing.
+    This caused fleet-wide silent memory loss for agents that called the CLI
+    via git-bash piping.
+
+    Operator 2026-05-25T~13:18Z (image): *"my agents have memory issues from
+    something done like few hours ago ... we need perfect memory and need to
+    expand it as much as we can"*.
+    """
+    if raw is None:
+        return None  # type: ignore[return-value]
+    s = str(raw).replace("\\", "/")
+    if os.name == "nt" and len(s) >= 3 and s[0] == "/" and s[2] == "/" and s[1].isalpha():
+        s = f"{s[1].upper()}:/{s[3:]}"
+    return Path(s)
+
+
 def _default_root() -> Path:
     env = os.environ.get("SINISTER_SANCTUM_ROOT")
     if env:
-        return Path(env)
+        return _normalize_path(env)
     win_default = Path(r"D:\Sinister Sanctum")
     if win_default.exists():
         return win_default
@@ -79,6 +102,8 @@ def build_parser() -> argparse.ArgumentParser:
         help="restrict to one or more layers (repeatable)",
     )
     p_recall.add_argument("--agent", help="restrict slug-scoped layers to this agent")
+    p_recall.add_argument("--lane", help="R3 (iter-6) :: restrict to a project lane (slug match OR per-agent/<lane>/ path OR brain)")
+    p_recall.add_argument("--no-rrf", action="store_true", help="R2 (iter-6) :: disable BM25+cosine RRF merge (BM25-only)")
 
     # save
     p_save = sub.add_parser("save", help="persist an iter-close memory")
@@ -89,6 +114,21 @@ def build_parser() -> argparse.ArgumentParser:
         "--reindex",
         action="store_true",
         help="run incremental indexer.build after save",
+    )
+    p_save.add_argument(
+        "--category",
+        choices=("correction", "preference", "procedure", "fact", "entity", "inferred"),
+        help="v2 frontmatter category (drives per-category decay half-life; iter-3 P4)",
+    )
+    p_save.add_argument(
+        "--confidence",
+        type=float,
+        help="v2 frontmatter confidence 0.0-1.0 (used by prune_low_confidence)",
+    )
+    p_save.add_argument(
+        "--trust",
+        choices=("low", "medium", "high"),
+        help="v2 frontmatter trust label",
     )
 
     # index
@@ -107,6 +147,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_inj.add_argument("agent_slug")
     p_inj.add_argument("--limit", type=int, default=5)
+    p_inj.add_argument(
+        "--include-health",
+        action="store_true",
+        help="iter-16 :: prepend SINISTER_MEMORY_HEALTH one-liner so spawned agent sees fleet memory status",
+    )
 
     # supersede
     p_sup = sub.add_parser("supersede", help="mark memory NEW as superseding OLD")
@@ -181,7 +226,14 @@ def build_parser() -> argparse.ArgumentParser:
         choices=("brain", "progress", "heartbeat", "per-agent"),
         help="restrict dedupe to one or more layers (default: progress + per-agent)",
     )
-    p_cd.add_argument("--dry-run", action="store_true")
+    p_cd.add_argument("--dry-run", action="store_true",
+                      help="don't write supersede edges; just report what WOULD be marked")
+    # Iter-33 fix: add --apply as no-op alias for UX consistency with prune/consolidate
+    # which use --apply (default dry-run). cluster-dedupe defaults to APPLY (a legacy
+    # P5 oversight); --apply is accepted as a no-op so callers can chain consistently
+    # without needing to remember which subcommand uses which flag.
+    p_cd.add_argument("--apply", action="store_true",
+                      help="no-op alias for UX consistency with prune/consolidate (cluster-dedupe defaults to apply; use --dry-run to NOT write edges)")
 
     # verify
     p_v = sub.add_parser("verify", help="grade a memory file against its source via Haiku/heuristic")
@@ -250,6 +302,59 @@ def build_parser() -> argparse.ArgumentParser:
         choices=("brain", "progress", "heartbeat", "per-agent"),
     )
 
+    # health (iter-13) :: composite 0-100 memory health score
+    p_he = sub.add_parser(
+        "health",
+        help="composite memory health score (0-100 + 7 sub-scores + letter grade)",
+    )
+    p_he.add_argument("--json", action="store_true")
+
+    # doctor (iter-15) :: pick ONE concrete remediation + emit the fix command
+    p_dr = sub.add_parser(
+        "doctor",
+        help="diagnose worst sub-score + emit the exact shell command to fix it",
+    )
+    p_dr.add_argument("--json", action="store_true")
+
+    # commit-isolated (iter-35) :: race-safe plumbing-based commit for shared monorepo
+    p_ci = sub.add_parser(
+        "commit-isolated",
+        help="race-safe git commit via isolated GIT_INDEX_FILE plumbing (codifies cross-agent-monorepo-branch-collision-recovery doctrine)",
+    )
+    p_ci.add_argument("--parent", required=True, help="parent commit SHA")
+    p_ci.add_argument("--branch", required=True, help="target branch name (e.g. agent/<lane>/<topic>-<utc>)")
+    p_ci.add_argument("--message-file", required=True, help="path to commit message file")
+    p_ci.add_argument("--files", nargs="+", required=True, help="repo-relative paths to stage")
+    p_ci.add_argument("--repo-root", default=None, help="repo root (default: --root)")
+    p_ci.add_argument("--push", action="store_true", help="push to remote after commit")
+    p_ci.add_argument("--remote", default="origin")
+    p_ci.add_argument("--json", action="store_true")
+
+    # wait-for-heartbeat (iter-28) :: poll target slug's heartbeat appearance + freshness
+    p_wh = sub.add_parser(
+        "wait-for-heartbeat",
+        help="poll for an agent's heartbeat appearance (chain after spawn to verify init)",
+    )
+    p_wh.add_argument("slug", help="target agent slug")
+    p_wh.add_argument("--timeout", type=float, default=30.0, help="max wait seconds (default 30)")
+    p_wh.add_argument("--poll", type=float, default=2.0, help="poll interval seconds (default 2)")
+    p_wh.add_argument("--freshness", type=float, default=120.0, help="max acceptable mtime age in seconds (default 120)")
+    p_wh.add_argument("--from-heartbeat", action="store_true",
+                      help="iter-40: read expected_interval_s from heartbeat JSON and use grace_multiplier*interval as freshness window (overrides --freshness if both set)")
+    p_wh.add_argument("--grace-multiplier", type=float, default=3.0,
+                      help="iter-42: multiplier applied to expected_interval_s when --from-heartbeat (default 3.0 = allow up to 3 missed heartbeats)")
+    p_wh.add_argument("--json", action="store_true")
+
+    # sweep-adoption (iter-47) :: write newest PROGRESS heading per lane to
+    # _shared-memory/sinister-memory/per-agent/<key>/ to close health.adoption gap
+    p_sa = sub.add_parser(
+        "sweep-adoption",
+        help="walk every lane's PROGRESS file; save newest heading to per-agent dir with v2 frontmatter (closes adoption gap)",
+    )
+    p_sa.add_argument("--dry-run", action="store_true", help="scan + plan but write nothing")
+    p_sa.add_argument("--max-per-lane", type=int, default=1, help="how many headings per lane (default 1 = newest only)")
+    p_sa.add_argument("--json", action="store_true", help="emit JSON stats instead of human summary")
+
     # version
     sub.add_parser("version", help="print version + exit")
 
@@ -257,11 +362,11 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def _resolve_root_and_db(args: argparse.Namespace) -> tuple[Path, Path]:
-    root = args.root or _default_root()
+    root = _normalize_path(args.root) if args.root else _default_root()
     # Local import keeps `--help` cheap when sqlite is locked
     from . import indexer
 
-    db = args.db or indexer.default_db_path(root)
+    db = _normalize_path(args.db) if args.db else indexer.default_db_path(root)
     return root, db
 
 
@@ -275,6 +380,8 @@ def cmd_recall(args: argparse.Namespace) -> int:
         limit=args.limit,
         layers=args.layer,
         agent=args.agent,
+        lane=getattr(args, "lane", None),
+        rrf=not getattr(args, "no_rrf", False),
     )
     print(format_hits_markdown(hits))
     return 0
@@ -296,6 +403,9 @@ def cmd_save(args: argparse.Namespace) -> int:
         summary=args.summary,
         root=root,
         do_reindex=args.reindex,
+        category=getattr(args, "category", None),
+        confidence=getattr(args, "confidence", None),
+        trust=getattr(args, "trust", None),
     )
     print(f"saved: {out}")
     return 0
@@ -315,7 +425,11 @@ def cmd_inject_spawn(args: argparse.Namespace) -> int:
     root, _db = _resolve_root_and_db(args)
     from .spawn_inject import inject_for_spawn
 
-    chunk = inject_for_spawn(args.agent_slug, root, limit=args.limit)
+    chunk = inject_for_spawn(
+        args.agent_slug, root,
+        limit=args.limit,
+        include_health=getattr(args, "include_health", False),
+    )
     print(chunk)
     return 0
 
@@ -516,8 +630,130 @@ def cmd_export_graph(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_health(args: argparse.Namespace) -> int:
+    root, _db = _resolve_root_and_db(args)
+    from . import health as _h
+    rep = _h.health(root)
+    if args.json:
+        import json as _json
+        print(_json.dumps(rep, indent=2))
+        return 0
+    grade = _h.health_grade(rep["score"])
+    print(f"# Sinister Memory health :: {rep['score']}/100 (grade {grade})  @ {rep['ts_utc']}")
+    print(f"  weight  score   sub-score")
+    print(f"  ------  ------  --------------------")
+    for name, sub in rep["sub_scores"].items():
+        print(f"  {sub['weight']:>4}    {sub['score']:>5.1f}  {name}")
+    return 0
+
+
+def cmd_doctor(args: argparse.Namespace) -> int:
+    root, _db = _resolve_root_and_db(args)
+    from . import doctor as _doc
+    rep = _doc.doctor(root)
+    if args.json:
+        import json as _json
+        print(_json.dumps(rep, indent=2))
+        return 0
+    print(f"# Sinister Memory doctor :: score={rep['score']}/100 (grade {rep['grade']})")
+    if rep.get("worst_sub") is None:
+        print(f"  {rep['diagnosis']}")
+        return 0
+    print(f"  worst sub-score: {rep['worst_sub']} ({rep['worst_sub_score']}/100, weight {rep['worst_sub_weight']}, lost {rep['lost_points']} pts)")
+    print(f"  diagnosis: {rep['diagnosis']}")
+    print(f"  recipe:")
+    for line in rep["recipe"].splitlines():
+        print(f"    {line}")
+    return 0
+
+
+def cmd_commit_isolated(args: argparse.Namespace) -> int:
+    from . import commit_isolated as _ci
+    repo_root = Path(args.repo_root) if args.repo_root else _resolve_root_and_db(args)[0]
+    msg_path = Path(args.message_file)
+    if not msg_path.exists():
+        print(f"[FAIL] message file not found: {msg_path}", file=sys.stderr)
+        return 2
+    message = msg_path.read_text(encoding="utf-8")
+    result = _ci.commit_isolated(
+        repo_root=repo_root,
+        parent_sha=args.parent,
+        branch_name=args.branch,
+        files=args.files,
+        message=message,
+        push=args.push,
+        remote=args.remote,
+    )
+    if args.json:
+        import json as _json
+        print(_json.dumps(result, indent=2))
+    else:
+        if result["ok"]:
+            print(f"[OK] commit-isolated: {result['commit_sha'][:10]} on {result['branch']} ({result['files_count']} files)")
+            if "push_result" in result and result["push_result"].get("ok"):
+                print(f"     pushed to {result['push_result']['remote']}")
+        else:
+            print(f"[FAIL] commit-isolated: {result.get('error', '?')}", file=sys.stderr)
+    return 0 if result["ok"] else 1
+
+
+def cmd_wait_for_heartbeat(args: argparse.Namespace) -> int:
+    root, _db = _resolve_root_and_db(args)
+    from . import heartbeat_wait
+    result = heartbeat_wait.wait_for_heartbeat(
+        slug=args.slug,
+        root=root,
+        timeout_s=args.timeout,
+        poll_interval_s=args.poll,
+        freshness_window_s=args.freshness,
+        from_heartbeat=getattr(args, "from_heartbeat", False),
+        grace_multiplier=getattr(args, "grace_multiplier", 3.0),
+    )
+    if args.json:
+        import json as _json
+        print(_json.dumps(result, indent=2))
+    else:
+        status = result["status"]
+        flag = "OK" if result["ok"] else "FAIL"
+        print(f"[{flag}] wait-for-heartbeat {args.slug}: {status} (elapsed {result['elapsed_s']}s)")
+        if "age_s" in result:
+            print(f"       hb_mtime={result.get('hb_mtime_iso')} age={result['age_s']}s")
+    return 0 if result["ok"] else 1
+
+
+def cmd_sweep_adoption(args: argparse.Namespace) -> int:
+    root, _db = _resolve_root_and_db(args)
+    from . import adoption_sweep
+
+    stats = adoption_sweep.sweep_progress_to_per_agent(
+        root,
+        dry_run=getattr(args, "dry_run", False),
+        max_per_lane=getattr(args, "max_per_lane", 1),
+    )
+    if getattr(args, "json", False):
+        import json as _json
+        print(_json.dumps(stats, indent=2))
+        return 0
+    mode = "DRY-RUN" if stats["dry_run"] else "APPLIED"
+    written = stats.get("written", 0)
+    updated = stats.get("updated", 0)
+    unchanged = stats.get("unchanged", 0)
+    print(
+        f"[{mode}] sweep-adoption: processed={stats['processed']} "
+        f"written={written} updated={updated} unchanged={unchanged} "
+        f"skipped_no_progress={stats['skipped_no_progress']} "
+        f"errors={len(stats.get('errors', []))}"
+    )
+    return 0
+
+
 DISPATCH = {
     "recall": cmd_recall,
+    "health": cmd_health,
+    "doctor": cmd_doctor,
+    "commit-isolated": cmd_commit_isolated,
+    "wait-for-heartbeat": cmd_wait_for_heartbeat,
+    "sweep-adoption": cmd_sweep_adoption,
     "save": cmd_save,
     "index": cmd_index,
     "inject-spawn-phrase": cmd_inject_spawn,
