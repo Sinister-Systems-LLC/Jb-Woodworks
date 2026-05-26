@@ -102,6 +102,7 @@ Sinister Term commands:
   /diff [--staged --unstaged --name-only] [path]   git diff --stat summary
   /version                  Composite version dashboard (sterm/ascii/python/deps/git/modules)
   /man [name | -a]          Show full docstring for a builtin (or list all w/ summaries)
+  /peer [slug | substring]  Read a peer agent's heartbeat in detail
   /alias [name=val|remove n] List aliases, define one, or remove one
   /clear                    Clear the screen
   /help                     This message
@@ -543,6 +544,110 @@ _CRASH_LOG_PATH = SANCTUM_ROOT / "_shared-memory" / "eve-crash-log.jsonl"
 
 _FLEET_UPDATES_PATH = SANCTUM_ROOT / "_shared-memory" / "fleet-updates.jsonl"
 _INCIDENTS_PATH = SANCTUM_ROOT / "_shared-memory" / "eve-incidents.jsonl"
+
+
+def cmd_peer(args: list[str]) -> CommandResult:
+    """iter-73: read a peer agent's heartbeat in detail.
+
+    Companion to /me (own heartbeat) and /agents (multi-agent summary).
+    Pure local read — no MCP, no network.
+
+    Usage:
+      /peer                        list available peer slugs
+      /peer <slug>                 drilldown into <slug>.json
+      /peer <substring>            if exactly one slug matches, drill into it
+    """
+    if not HEARTBEATS_DIR.exists():
+        return CommandResult(True, "(no heartbeats dir)")
+
+    try:
+        slugs = sorted([p.stem for p in HEARTBEATS_DIR.glob("*.json")])
+    except OSError as e:
+        return CommandResult(True, f"/peer failed: {e}")
+
+    if not slugs:
+        return CommandResult(True, "(no peer heartbeats found)")
+
+    if not args:
+        peers = [s for s in slugs if s != SELF_SLUG]
+        lines = [f"Peers ({len(peers)} other agents):"]
+        # 3-column grid
+        if peers:
+            col_w = max(len(s) for s in peers) + 2
+            cols = 3
+            rows = (len(peers) + cols - 1) // cols
+            for r in range(rows):
+                parts = []
+                for c in range(cols):
+                    idx = c * rows + r
+                    if idx < len(peers):
+                        parts.append(peers[idx].ljust(col_w))
+                lines.append("  " + "".join(parts).rstrip())
+        lines.append("")
+        lines.append("Try: /peer <slug>")
+        return CommandResult(True, "\n".join(lines))
+
+    query = args[0].lower()
+    # Exact match first; fall back to substring match if exactly one hit
+    if query in slugs:
+        target_slug = query
+    else:
+        candidates = [s for s in slugs if query in s.lower()]
+        if not candidates:
+            return CommandResult(True,
+                f"no peer matching: {query}\n  available: {', '.join(slugs[:10])}"
+                f"{'...' if len(slugs) > 10 else ''}")
+        if len(candidates) > 1:
+            return CommandResult(True,
+                f"ambiguous: {query} matches {len(candidates)}\n"
+                f"  candidates: {', '.join(candidates[:10])}")
+        target_slug = candidates[0]
+
+    target_path = HEARTBEATS_DIR / f"{target_slug}.json"
+    try:
+        text = target_path.read_text(encoding="utf-8", errors="replace")
+    except OSError as e:
+        return CommandResult(True, f"/peer read failed: {e}")
+
+    try:
+        data = json.loads(text)
+        if not isinstance(data, dict):
+            data = {"raw": str(data)[:200]}
+    except Exception as e:
+        return CommandResult(True,
+            f"/peer: heartbeat JSON corrupt ({e})\nraw: {text[:400]}")
+
+    import time as _t
+    try:
+        mtime = target_path.stat().st_mtime
+        age = _format_duration(max(0.0, _t.time() - mtime))
+    except OSError:
+        age = "?"
+
+    try:
+        rel = target_path.relative_to(SANCTUM_ROOT).as_posix()
+    except ValueError:
+        rel = str(target_path)
+
+    lines = [f"Peer: {target_slug} ({rel}, age {age}):"]
+    PREFERRED = ["agent", "ts_utc", "alive", "mode", "branch_intent",
+                 "status_note", "last_shipped", "cwd", "via"]
+    seen: set[str] = set()
+    for k in PREFERRED:
+        if k not in data:
+            continue
+        seen.add(k)
+        v = data[k]
+        if isinstance(v, str) and len(v) > 200:
+            v = v[:197] + "..."
+        lines.append(f"  {k:<16}: {v}")
+    for k, v in data.items():
+        if k in seen:
+            continue
+        if isinstance(v, str) and len(v) > 200:
+            v = v[:197] + "..."
+        lines.append(f"  {k:<16}: {v}")
+    return CommandResult(True, "\n".join(lines))
 
 
 def cmd_man(args: list[str]) -> CommandResult:
@@ -2475,6 +2580,7 @@ COMMANDS: dict[str, Callable[[list[str]], CommandResult]] = {
     "version": cmd_version,              # iter-71 — composite version dashboard
     "man": cmd_man,                      # iter-72 — show docstring for a single builtin
     "?": cmd_help,                       # already aliased; explicit for clarity
+    "peer": cmd_peer,                    # iter-73 — read a peer agent's heartbeat
 }
 
 
