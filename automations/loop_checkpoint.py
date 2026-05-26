@@ -71,7 +71,16 @@ def _sha256_file(p: pathlib.Path) -> str:
 
 
 def _iter_paths(root: pathlib.Path, rel_targets: list[str]):
-    """Yield (abs, rel) for each file under each target path. Skips SKIP_PARTS."""
+    """Yield (abs, rel) for each file under each target path. Skips SKIP_PARTS.
+
+    iter-27: switched from src.rglob('*') to os.walk so we can PRUNE
+    SKIP_PARTS directories before descending into them. Prior version
+    descended into `build/` (etc.) first and only filtered post-discovery,
+    which blew up on Windows when build/ contained Linux-side WSL
+    symlinks/junctions (sinister-os build/_work/.../airootfs/bin OSError
+    1920). Also tolerate per-file PermissionError so one bad symlink
+    doesn't kill the whole checkpoint."""
+    import os as _os
     for rel in rel_targets:
         src = root / rel
         if not src.exists():
@@ -79,16 +88,23 @@ def _iter_paths(root: pathlib.Path, rel_targets: list[str]):
         if src.is_file():
             yield src, pathlib.Path(rel)
             continue
-        for p in src.rglob("*"):
-            if not p.is_file():
-                continue
-            try:
-                rel_p = p.relative_to(root)
-            except ValueError:
-                continue
-            if any(part in SKIP_PARTS for part in rel_p.parts):
-                continue
-            yield p, rel_p
+        for dirpath, dirnames, filenames in _os.walk(str(src), followlinks=False):
+            # PRUNE: remove SKIP_PARTS subdirs from descent in-place
+            dirnames[:] = [d for d in dirnames if d not in SKIP_PARTS]
+            for fn in filenames:
+                p = pathlib.Path(dirpath) / fn
+                try:
+                    rel_p = p.relative_to(root)
+                except ValueError:
+                    continue
+                if any(part in SKIP_PARTS for part in rel_p.parts):
+                    continue
+                try:
+                    if not p.is_file():
+                        continue
+                except OSError:
+                    continue  # skip on permission/symlink issues
+                yield p, rel_p
 
 
 def save(lane: str, run_id: str, iter_n: int, paths: list[str], sanctum_root: str) -> dict:

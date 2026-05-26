@@ -63,18 +63,38 @@ def _load_projects() -> dict:
 
 def _project_root_for_slug(slug: str) -> str | None:
     """Read projects.json and return the repo-relative `root` for slug.
-    Used to checkpoint each agent's owned slice on every tick."""
+    Used to checkpoint each agent's owned slice on every tick.
+
+    iter-27: try exact slug match first, then prefix match (heartbeat
+    slugs like 'eve-compliance-train-loop' map to project key
+    'eve-compliance'), then fall back to projects/<slug>/ if the dir
+    exists -- so newly-spawned lanes get checkpointed even before
+    projects.json registers them."""
     d = _load_projects()
-    for p in d.get("projects", []):
+    projects = d.get("projects", [])
+    # exact
+    for p in projects:
         if p.get("key") == slug:
-            root = p.get("root") or ""
-            # Convert absolute to sanctum-relative
-            try:
-                rel = Path(root).resolve().relative_to(SANCTUM.resolve())
-                return str(rel).replace("\\", "/")
-            except Exception:
-                return None
+            return _rel(p.get("root"))
+    # prefix (heartbeat slug starts with project key + '-')
+    for p in projects:
+        k = p.get("key")
+        if k and slug.startswith(k + "-"):
+            return _rel(p.get("root"))
+    # directory probe fallback
+    guess = SANCTUM / "projects" / slug
+    if guess.exists() and guess.is_dir():
+        return f"projects/{slug}"
     return None
+
+
+def _rel(root: str | None) -> str | None:
+    if not root: return None
+    try:
+        rp = Path(root).resolve().relative_to(SANCTUM.resolve())
+        return str(rp).replace("\\", "/")
+    except Exception:
+        return None
 
 
 def list_live_agents() -> list[dict]:
