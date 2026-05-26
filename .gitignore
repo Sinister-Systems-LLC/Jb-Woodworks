@@ -350,3 +350,13 @@ _shared-memory/fleet-updates.jsonl
 _shared-memory/fleet-updates.jsonl.archive-*
 _shared-memory/fleet-updates.jsonl.gz
 *.jsonl.archive*
+
+# eve-compliance external research clones (10 OSS repos, 617MB; manifest at audits/MANIFEST-2026-05-26.md)
+projects/eve-compliance/external-research/repos/
+
+# eve-compliance training venv + checkpoints + working data (large, regenerable)
+projects/eve-compliance/training/.venv/
+projects/eve-compliance/training/checkpoints/
+projects/eve-compliance/training/adapters/
+projects/eve-compliance/training/data/
+projects/eve-compliance/training/logs/
