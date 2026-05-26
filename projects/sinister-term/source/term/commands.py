@@ -99,6 +99,7 @@ Sinister Term commands:
   /fu [N --priority --kind --mine --unacked]   Tail fleet-updates.jsonl (alias /fleet-updates)
   /incidents [N --severity --kind --agent]   Tail eve-incidents.jsonl (degraded states)
   /me                       Show our own heartbeat in detail (drilldown of /agents)
+  /diff [--staged --unstaged --name-only] [path]   git diff --stat summary
   /alias [name=val|remove n] List aliases, define one, or remove one
   /clear                    Clear the screen
   /help                     This message
@@ -540,6 +541,100 @@ _CRASH_LOG_PATH = SANCTUM_ROOT / "_shared-memory" / "eve-crash-log.jsonl"
 
 _FLEET_UPDATES_PATH = SANCTUM_ROOT / "_shared-memory" / "fleet-updates.jsonl"
 _INCIDENTS_PATH = SANCTUM_ROOT / "_shared-memory" / "eve-incidents.jsonl"
+
+
+def cmd_diff(args: list[str]) -> CommandResult:
+    """iter-70: git diff --stat for the current working tree.
+
+    Shows unstaged + staged changes as compact `path | +M -N` rows so the
+    operator can survey what's about to land before /branch + a commit.
+    No diff body — keep the line count sane. Composes with /branch (which
+    shows ahead/behind + dirty count).
+
+    Usage:
+      /diff                          unstaged + staged summary
+      /diff --staged                 only staged
+      /diff --unstaged               only unstaged
+      /diff <path>                   restrict diff to a path
+      /diff --name-only              just the changed file names
+    """
+    only_staged = False
+    only_unstaged = False
+    name_only = False
+    path_arg: str | None = None
+    i = 0
+    while i < len(args):
+        a = args[i]
+        if a == "--staged":
+            only_staged = True
+            i += 1
+            continue
+        if a == "--unstaged":
+            only_unstaged = True
+            i += 1
+            continue
+        if a == "--name-only":
+            name_only = True
+            i += 1
+            continue
+        if a.startswith("-"):
+            return CommandResult(True,
+                f"unknown flag: {a}. Try /diff with no args for usage.")
+        if path_arg is None:
+            path_arg = a
+        else:
+            return CommandResult(True,
+                f"unexpected arg: {a} (already have path {path_arg!r})")
+        i += 1
+
+    # Verify we're in a git repo
+    branch = _git_one(["rev-parse", "--abbrev-ref", "HEAD"])
+    if branch is None:
+        return CommandResult(True, "(not in a git repo)")
+
+    def _run_diff(staged: bool) -> str | None:
+        flags = ["diff", "--stat"] if not name_only else ["diff", "--name-only"]
+        if staged:
+            flags.append("--staged")
+        if path_arg:
+            flags.append("--")
+            flags.append(path_arg)
+        return _git_one(flags, timeout_s=4.0)
+
+    show_unstaged = not only_staged
+    show_staged = not only_unstaged
+    sections: list[tuple[str, str]] = []
+    if show_unstaged:
+        u = _run_diff(staged=False)
+        if u:
+            sections.append(("unstaged", u))
+    if show_staged:
+        s = _run_diff(staged=True)
+        if s:
+            sections.append(("staged", s))
+
+    if not sections:
+        return CommandResult(True, "(no changes)")
+
+    out: list[str] = []
+    out.append(f"Diff (branch={branch}):")
+    for label, body in sections:
+        out.append(f"  [{label}]")
+        # Indent each line + cap line count so massive diffs don't flood
+        body_lines = [l for l in body.splitlines() if l.strip()]
+        MAX_LINES = 40
+        truncated = ""
+        if len(body_lines) > MAX_LINES:
+            truncated = f"  ... ({len(body_lines) - MAX_LINES} more)"
+            body_lines = body_lines[:MAX_LINES]
+        for ln in body_lines:
+            # Truncate very long single lines too
+            if len(ln) > 110:
+                ln = ln[:107] + "..."
+            out.append(f"    {ln}")
+        if truncated:
+            out.append(truncated)
+    return CommandResult(True, "\n".join(out))
 
 
 def cmd_me(_args: list[str]) -> CommandResult:
@@ -2234,6 +2329,7 @@ COMMANDS: dict[str, Callable[[list[str]], CommandResult]] = {
     "fu": cmd_fleet_updates,             # short alias
     "incidents": cmd_incidents,          # iter-68 — read eve-incidents.jsonl
     "me": cmd_me,                        # iter-69 — show our own heartbeat in detail
+    "diff": cmd_diff,                    # iter-70 — git diff --stat for unstaged + staged
 }
 
 
