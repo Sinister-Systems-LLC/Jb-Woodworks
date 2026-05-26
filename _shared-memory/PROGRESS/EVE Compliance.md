@@ -6,6 +6,49 @@ Append-only, most-recent at top.
 
 ---
 
+## 2026-05-26T17:15Z — R10 SHIPPED: train-loop dedup hardening (singleton pidfile + 6h alert floor + self-test)
+
+**Mode:** resume / loop=relentless / swarm=off (single-file change) · **Driver:** branch `agent/eve-compliance/train-loop-dedup-2026-05-26` + operator complaint surface: 7 identical "precision degraded 0.83 sustained 3 cycles" inbox alerts in 7 hours (14:09Z–23:09Z on 2026-05-25).
+
+**Root cause (verified):**
+- `automations/eve_compliance_train_loop.py` runs as TWO concurrent processes: persistent daemon (PID 52580, started 2026-05-25 09:08) + scheduled task `SinisterEveComplianceTrainLoop` invoking `--once` every interval. Both write metrics + both can fire alerts.
+- Pre-R8 dedup (delta-only) re-fired alerts whenever `precision_failures>=3` rolled around with state stuck below threshold.
+
+**Shipped (verified — 14/14 self-test PASS, daemon health intact):**
+
+### Singleton PID-file guard
+- New `acquire_singleton_lock()` / `release_singleton_lock()` writing `_shared-memory/eve-training-loop.pid`.
+- Cross-platform `_pid_alive()`: `OpenProcess`+`GetExitCodeProcess` on Windows, `os.kill(pid, 0)` elsewhere.
+- Reclaims stale pidfiles (idempotent re-acquire by same PID; replaces dead-process pidfile).
+- Wired into `main()` before loop entry; released in `try/finally`. `--force` opt-out for ad-hoc debugging.
+- **Hot-protect of live daemon:** wrote `52580` to the pidfile by hand; verified `python ... --once` now logs `Singleton lock refused: pid 52580 already running — exiting cleanly` instead of running a parallel cycle.
+
+### 6-hour alert re-fire floor
+- New `ALERT_MIN_INTERVAL_SEC = 6 * 3600` enforced inside `should_re_alert()` via `_parse_iso_utc()` comparison against `last_alerted_ts_utc`.
+- Two-layer dedup: (1) hard time floor (operator anti-noise), (2) delta dedup (existing R8 logic) for `precision >= 0.05` divergence or `labeled >= 5` growth.
+- `now` injectable for tests.
+
+### `--self-test` mode (14 inline assertions)
+- 6 cases for `should_re_alert`: first-alert · within-floor-suppress · past-floor-identical-suppress · past-floor-diverge-fire · within-floor-diverge-still-suppress · past-floor-labeled-grew-fire.
+- 4 cases for pidfile: fresh-acquire · idempotent-re-acquire · stale-PID-reclaim · release-removes-file.
+- 1 case for alert-state round-trip · 3 cases for existing R9 metrics-row coalesce.
+- Runs in `tempfile.TemporaryDirectory()` — no global state pollution.
+
+### Inbox cleanup
+- Moved 7 duplicate `2026-05-25T*Z-from-train-loop-precision-degraded-0.83-sustained-3-cycles.md` to `_shared-memory/inbox/eve-compliance/_acked/`.
+
+**Smoke:**
+- `python automations/eve_compliance_train_loop.py --self-test` → 14/14 PASS.
+- `python automations/eve_compliance_train_loop.py --once` (post-pidfile-write) → `Singleton lock refused: pid 52580 already running — exiting cleanly`.
+- Daemon PID 52580 still alive + heartbeating; no behavior change for the live daemon (it'll pick up the singleton guard on its next natural restart, but the pidfile-pointing-at-52580 already blocks the schtask `--once` runs from racing it).
+
+**Refs:**
+- `automations/eve_compliance_train_loop.py` (+~190 LOC: `_pid_alive` · `acquire_singleton_lock` · `release_singleton_lock` · `run_self_test` · `_parse_iso_utc` · `should_re_alert` time-floor · CLI `--self-test` / `--force` flags · `try/finally` around `_run_loop`).
+- 7× inbox alerts → `_acked/`.
+- Pidfile written: `_shared-memory/eve-training-loop.pid`.
+
+---
+
 ## 2026-05-25T13:03Z — R6+R7 SHIPPED: hash-match short-circuit + autonomous localhost training panel
 
 **Mode:** resume / loop=relentless / swarm=on · **Driver:** open follow-up #3 PhotoDNA hash short-circuit + 4 operator directives (12:35Z localhost panel · 12:42Z terminal-lag-route · 12:44Z github prior-art · 12:48Z full autonomous compliance).

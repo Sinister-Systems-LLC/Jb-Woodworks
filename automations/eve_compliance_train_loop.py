@@ -589,6 +589,14 @@ def main(argv: list[str]) -> int:
 
     log.info(f"EVE Compliance train loop starting · interval={interval}s · max_cycles={max_cycles or 'forever'}")
 
+    try:
+        return _run_loop(interval, max_cycles)
+    finally:
+        if not args.force:
+            release_singleton_lock()
+
+
+def _run_loop(interval: int, max_cycles: int) -> int:
     cycle = 0
     backend_failures = 0
     precision_failures = 0

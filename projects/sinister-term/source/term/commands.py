@@ -105,6 +105,7 @@ Sinister Term commands:
   /peer [slug | substring]  Read a peer agent's heartbeat in detail
   /sysinfo                  OS / Python / SANCTUM_ROOT / env / disk diagnostic
   /inbox-of [slug] [N]      Peek at another agent's inbox (alias /io)
+  /progress-of [slug] [N]   Read another agent's PROGRESS log (alias /po)
   /alias [name=val|remove n] List aliases, define one, or remove one
   /clear                    Clear the screen
   /help                     This message
@@ -659,6 +660,133 @@ def cmd_inbox_of(args: list[str]) -> CommandResult:
             snippet = snippet[:57] + "..."
         out.append(f"  {age:>8} ago  {f.name[:48]:<48}  {snippet}")
     return CommandResult(True, "\n".join(out))
+
+
+PROGRESS_DIR = SANCTUM_ROOT / "_shared-memory" / "PROGRESS"
+
+# iter-76: filenames in PROGRESS/ that aren't agent logs.
+_PROGRESS_NON_AGENT_NAMES = {
+    "_TEMPLATE.md",
+    "README.md",
+}
+
+
+def _progress_agent_files() -> list[Path]:
+    """All PROGRESS/<Display>.md files that look like agent logs.
+
+    Excludes _TEMPLATE.md / README.md and anything that isn't a .md file
+    (the directory also has .log files at times).
+    """
+    if not PROGRESS_DIR.exists():
+        return []
+    try:
+        return sorted(
+            p for p in PROGRESS_DIR.glob("*.md")
+            if p.is_file() and p.name not in _PROGRESS_NON_AGENT_NAMES
+        )
+    except OSError:
+        return []
+
+
+def _progress_slug_for(p: Path) -> str:
+    """Lowercase kebab slug for a PROGRESS file (e.g. 'Sinister OS.md' -> 'sinister-os')."""
+    stem = p.stem.lower()
+    return stem.replace(" ", "-").replace("_", "-")
+
+
+def cmd_progress_of(args: list[str]) -> CommandResult:
+    """iter-76: read another agent's PROGRESS log (peer drilldown).
+
+    Companion to /progress (our own PROGRESS). Useful for catching up on
+    what other agents have shipped without leaving sterm.
+
+    Usage:
+      /progress-of                       list all agents with PROGRESS files
+      /progress-of <slug>                show top 5 entries of <slug>'s log
+      /progress-of <slug> N              show top N entries (1..50)
+      /po <slug>                         alias
+    """
+    files = _progress_agent_files()
+    if not files:
+        return CommandResult(True,
+            f"(no PROGRESS files at {PROGRESS_DIR})")
+
+    if not args:
+        import time as _t
+        now = _t.time()
+        rows = [f"PROGRESS logs ({len(files)} agents):"]
+        # newest first
+        files_with_mtime = []
+        for f in files:
+            try:
+                files_with_mtime.append((f.stat().st_mtime, f.stat().st_size, f))
+            except OSError:
+                files_with_mtime.append((0.0, 0, f))
+        files_with_mtime.sort(key=lambda r: -r[0])
+        for mtime, size, f in files_with_mtime:
+            slug = _progress_slug_for(f)
+            age = _format_duration(max(0.0, now - mtime)) if mtime > 0 else "?"
+            kib = size / 1024.0
+            rows.append(f"  {slug:<28}  {age:>9} ago  {kib:>6.1f} KiB")
+        rows.append("")
+        rows.append("Try: /progress-of <slug>")
+        return CommandResult(True, "\n".join(rows))
+
+    target = args[0].lower().lstrip("/")
+    limit = 5
+    if len(args) > 1:
+        try:
+            limit = max(1, min(50, int(args[1])))
+        except ValueError:
+            return CommandResult(True,
+                f"second arg must be an integer, got: {args[1]}")
+
+    slugs = {_progress_slug_for(f): f for f in files}
+    if target in slugs:
+        chosen = slugs[target]
+    else:
+        candidates = [s for s in slugs if target in s]
+        if not candidates:
+            preview = ", ".join(sorted(slugs)[:12])
+            more = "..." if len(slugs) > 12 else ""
+            return CommandResult(True,
+                f"no PROGRESS log matching: {target}\n"
+                f"  available: {preview}{more}")
+        if len(candidates) > 1:
+            return CommandResult(True,
+                f"ambiguous: {target} matches {len(candidates)}\n"
+                f"  candidates: {', '.join(sorted(candidates)[:10])}")
+        chosen = slugs[candidates[0]]
+
+    try:
+        text = chosen.read_text(encoding="utf-8", errors="replace")
+    except OSError as e:
+        return CommandResult(True, f"read failed: {e}")
+    if not text.strip():
+        return CommandResult(True, f"({chosen.name} is empty)")
+
+    # Same heading-split as cmd_progress.
+    blocks: list[str] = []
+    current: list[str] = []
+    for line in text.split("\n"):
+        if line.startswith("## "):
+            if current:
+                blocks.append("\n".join(current).rstrip())
+                if len(blocks) >= limit:
+                    break
+            current = [line]
+        elif current:
+            current.append(line)
+    if current and len(blocks) < limit:
+        blocks.append("\n".join(current).rstrip())
+
+    if not blocks:
+        return CommandResult(True,
+            f"({chosen.name} has no `## ` entries yet)")
+
+    header = (f"PROGRESS-of {_progress_slug_for(chosen)} "
+              f"({len(blocks)} of top {limit}, file={chosen.name}):")
+    return CommandResult(True, header + "\n\n" + "\n\n".join(blocks[:limit]))
 
 
 _STERM_ENV_VARS = (
@@ -2807,6 +2935,8 @@ COMMANDS: dict[str, Callable[[list[str]], CommandResult]] = {
     "sysinfo": cmd_sysinfo,              # iter-74 — OS/Python/env diagnostic
     "inbox-of": cmd_inbox_of,            # iter-75 — peek at another agent's inbox
     "io": cmd_inbox_of,                  # short alias
+    "progress-of": cmd_progress_of,      # iter-76 — read peer PROGRESS log
+    "po": cmd_progress_of,               # short alias
 }
 
 
