@@ -1,6 +1,23 @@
 @echo off
-REM Spawn Sanctum Agent :: 12-agent fleet launcher (v7, +4 lanes 2026-05-26)
+REM Spawn Sanctum Agent :: 20-agent fleet launcher (v9, +8 lanes 2026-05-26)
 REM Author: RKOJ-ELENO :: 2026-05-26
+REM
+REM v9 changes (operator 2026-05-26 verbatim image+text directive batch):
+REM   "i want session starts for sinsiter hieroglyphics, sinister sleight,
+REM    ancestral remotion, designer, panel, chatbot" (v8)
+REM   + "also add to bat file (for sanctum agent only) a way to start showmasters
+REM     and jbwoodworks projects, sinister api and kernel apk" (v9; sinister api +
+REM    kernel apk were already v7 lanes 11+12, so v9 adds the 2 missing: showmasters
+REM    + jb-woodworks)
+REM   Picker grew 12 -> 20 lanes:
+REM     +sinister-sleight (lane 13)
+REM     +sinister-term-themes [Ancestral Remotion] (lane 14)
+REM     +sinister-designer (lane 15)
+REM     +sinister-panel (lane 16)
+REM     +sinister-chatbot (lane 17)
+REM     +sinister-hieroglyphics (lane 18)
+REM     +showmasters (lane 19)
+REM     +jb-woodworks (lane 20)
 REM
 REM v7 changes (operator 2026-05-26 verbatim two-part directive):
 REM   1. "i need you to add launch option for sinsiter jokester here"
@@ -41,7 +58,7 @@ REM
 REM v5 features preserved: 8-lane picker, -All / -Lanes / -SoloSanctum /
 REM   -Repair flags, preflight checks, creds backup, fleet manifest.
 
-TITLE EVE :: Spawn Sanctum Fleet (v7)
+TITLE EVE :: Spawn Sanctum Fleet (v9)
 mode con: cols=140 lines=50 >nul 2>&1
 setlocal enableextensions enabledelayedexpansion
 
@@ -86,7 +103,7 @@ set "PROJECTS_JSON=%SANCTUM_ROOT%\automations\session-templates\projects.json"
 set "CREDS_LIVE=%USERPROFILE%\.claude\.credentials.json"
 
 REM ====================================================================
-REM SECTION 2 :: 12-lane fleet definition (canonical order)
+REM SECTION 2 :: 20-lane fleet definition (canonical order)
 REM ====================================================================
 REM Index | Key                       | Display
 REM   1   | sinister-memory           | Sinister Memory
@@ -101,6 +118,14 @@ REM   9   | sinister-jokester         | Sinister Jokester      (v7 addition)
 REM  10   | sinister-quantum          | Sinister Quantum       (v7 addition)
 REM  11   | sinister-snap-api-quantum | Sinister Snap API      (v7 addition)
 REM  12   | kernel-apk                | Kernel APK             (v7 addition)
+REM  13   | sinister-sleight          | Sinister Sleight       (v8 addition)
+REM  14   | sinister-term-themes      | Ancestral Remotion     (v8 addition)
+REM  15   | sinister-designer         | Sinister Designer      (v8 addition)
+REM  16   | sinister-panel            | Sinister Panel         (v8 addition)
+REM  17   | sinister-chatbot          | Sinister Chatbot       (v8 addition)
+REM  18   | sinister-hieroglyphics    | Sinister Hieroglyphics (v8 addition)
+REM  19   | showmasters               | Showmasters            (v9 addition)
+REM  20   | jb-woodworks              | JB Woodworks           (v9 addition)
 set "LANE_1=sinister-memory"
 set "LANE_2=sinister-os"
 set "LANE_3=eve-exe"
@@ -113,6 +138,14 @@ set "LANE_9=sinister-jokester"
 set "LANE_10=sinister-quantum"
 set "LANE_11=sinister-snap-api-quantum"
 set "LANE_12=kernel-apk"
+set "LANE_13=sinister-sleight"
+set "LANE_14=sinister-term-themes"
+set "LANE_15=sinister-designer"
+set "LANE_16=sinister-panel"
+set "LANE_17=sinister-chatbot"
+set "LANE_18=sinister-hieroglyphics"
+set "LANE_19=showmasters"
+set "LANE_20=jb-woodworks"
 set "LANE_NAME_1=Sinister Memory"
 set "LANE_NAME_2=Sinister OS"
 set "LANE_NAME_3=Eve EXE"
@@ -125,6 +158,14 @@ set "LANE_NAME_9=Sinister Jokester"
 set "LANE_NAME_10=Sinister Quantum"
 set "LANE_NAME_11=Sinister Snap API"
 set "LANE_NAME_12=Kernel APK"
+set "LANE_NAME_13=Sinister Sleight"
+set "LANE_NAME_14=Ancestral Remotion"
+set "LANE_NAME_15=Sinister Designer"
+set "LANE_NAME_16=Sinister Panel"
+set "LANE_NAME_17=Sinister Chatbot"
+set "LANE_NAME_18=Sinister Hieroglyphics"
+set "LANE_NAME_19=Showmasters"
+set "LANE_NAME_20=JB Woodworks"
 
 REM ====================================================================
 REM SECTION 3 :: Argument parsing
@@ -155,7 +196,7 @@ REM SECTION 4 :: Banner
 REM ====================================================================
 echo.
 echo  ============================================================
-echo   EVE :: Spawn Sanctum Fleet ^(v7 :: 12-lane picker + creds-sync^)
+echo   EVE :: Spawn Sanctum Fleet ^(v9 :: 20-lane picker + creds-sync^)
 echo  ============================================================
 echo   Sanctum root:   %SANCTUM_ROOT%
 echo   PS1 launcher:   %PS1_LAUNCHER%
@@ -291,8 +332,8 @@ if defined LANES_OVERRIDE (
 )
 
 if "%ALL_FLAG%"=="1" (
-    set "FLEET_KEYS=%LANE_1% %LANE_2% %LANE_3% %LANE_4% %LANE_5% %LANE_6% %LANE_7% %LANE_8% %LANE_9% %LANE_10% %LANE_11% %LANE_12%"
-    echo  [select]  -All :: launching all 12 lanes
+    set "FLEET_KEYS=%LANE_1% %LANE_2% %LANE_3% %LANE_4% %LANE_5% %LANE_6% %LANE_7% %LANE_8% %LANE_9% %LANE_10% %LANE_11% %LANE_12% %LANE_13% %LANE_14% %LANE_15% %LANE_16% %LANE_17% %LANE_18% %LANE_19% %LANE_20%"
+    echo  [select]  -All :: launching all 20 lanes
     goto :select_done
 )
 
@@ -318,19 +359,27 @@ echo     9^) %LANE_NAME_9%      ^(%LANE_9%^)
 echo    10^) %LANE_NAME_10%       ^(%LANE_10%^)
 echo    11^) %LANE_NAME_11%      ^(%LANE_11%^)
 echo    12^) %LANE_NAME_12%             ^(%LANE_12%^)
+echo    13^) %LANE_NAME_13%       ^(%LANE_13%^)
+echo    14^) %LANE_NAME_14%     ^(%LANE_14%^)
+echo    15^) %LANE_NAME_15%      ^(%LANE_15%^)
+echo    16^) %LANE_NAME_16%         ^(%LANE_16%^)
+echo    17^) %LANE_NAME_17%       ^(%LANE_17%^)
+echo    18^) %LANE_NAME_18% ^(%LANE_18%^)
+echo    19^) %LANE_NAME_19%            ^(%LANE_19%^)
+echo    20^) %LANE_NAME_20%           ^(%LANE_20%^)
 echo.
-echo    A^) ALL 12 lanes        ^(default -- press Enter^)
+echo    A^) ALL 20 lanes        ^(default -- press Enter^)
 echo    S^) Sanctum only        ^(solo^)
 echo    R^) Repair mode         ^(preflight only, no spawn^)
 echo    X^) Cancel
 echo.
-echo    Or enter comma-separated indices  e.g.  1,3,4,7,9,12
+echo    Or enter comma-separated indices  e.g.  1,3,4,7,9,12,15,19
 echo.
 set /p "PICK=  Selection: "
 
 if not defined PICK set "PICK=A"
-if /I "%PICK%"=="A"   (set "FLEET_KEYS=%LANE_1% %LANE_2% %LANE_3% %LANE_4% %LANE_5% %LANE_6% %LANE_7% %LANE_8% %LANE_9% %LANE_10% %LANE_11% %LANE_12%" & goto :select_done)
-if /I "%PICK%"=="ALL" (set "FLEET_KEYS=%LANE_1% %LANE_2% %LANE_3% %LANE_4% %LANE_5% %LANE_6% %LANE_7% %LANE_8% %LANE_9% %LANE_10% %LANE_11% %LANE_12%" & goto :select_done)
+if /I "%PICK%"=="A"   (set "FLEET_KEYS=%LANE_1% %LANE_2% %LANE_3% %LANE_4% %LANE_5% %LANE_6% %LANE_7% %LANE_8% %LANE_9% %LANE_10% %LANE_11% %LANE_12% %LANE_13% %LANE_14% %LANE_15% %LANE_16% %LANE_17% %LANE_18% %LANE_19% %LANE_20%" & goto :select_done)
+if /I "%PICK%"=="ALL" (set "FLEET_KEYS=%LANE_1% %LANE_2% %LANE_3% %LANE_4% %LANE_5% %LANE_6% %LANE_7% %LANE_8% %LANE_9% %LANE_10% %LANE_11% %LANE_12% %LANE_13% %LANE_14% %LANE_15% %LANE_16% %LANE_17% %LANE_18% %LANE_19% %LANE_20%" & goto :select_done)
 if /I "%PICK%"=="S"   (set "FLEET_KEYS=%LANE_4%" & goto :select_done)
 if /I "%PICK%"=="X"   (
     echo  [cancelled]

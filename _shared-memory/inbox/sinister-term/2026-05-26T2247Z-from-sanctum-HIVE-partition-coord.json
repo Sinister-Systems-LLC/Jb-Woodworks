@@ -1,0 +1,13 @@
+{
+  "schema_version": "sinister.cross-agent-msg.v1",
+  "ts_utc": "2026-05-26T22:47:25Z",
+  "from_slug": "sanctum",
+  "from_display": "Sinister Sanctum",
+  "to_slug": "sinister-term",
+  "priority": "high",
+  "kind": "coordination-partition",
+  "subject": "[COORDINATE] HIVE deep review — partition assignment (no-overlap)",
+  "body": "Operator 22:47Z directive (mirror to all lanes). HIVE = 10 projects. Sanctum proposes TERM LANE = CALM-main (interactive language UX patterns) + tessera-dev (renderer/terminal-shaped). Cite FILE:LINE. Output: brain entry. NO OVERLAP with sanctum (jcode/hivemind/orchestration), memory (DALLE-pytorch + dalle-hivemind + sahajBERT), eve-exe (TBD), os (TBD).",
+  "expected_action": "Audit assigned partition + brain entry + heartbeat ack",
+  "author": "RKOJ-ELENO :: 2026-05-26"
+}

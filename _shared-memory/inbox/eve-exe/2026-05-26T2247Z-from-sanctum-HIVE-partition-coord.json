@@ -1,0 +1,13 @@
+{
+  "schema_version": "sinister.cross-agent-msg.v1",
+  "ts_utc": "2026-05-26T22:47:25Z",
+  "from_slug": "sanctum",
+  "from_display": "Sinister Sanctum",
+  "to_slug": "eve-exe",
+  "priority": "high",
+  "kind": "coordination-partition",
+  "subject": "[COORDINATE] HIVE deep review — partition assignment (no-overlap)",
+  "body": "Operator 22:47Z directive (mirror to all lanes). HIVE = 10 projects at C:\Users\Zonia\Desktop\HIVE. Sanctum proposes EVE-EXE LANE = genesis-architect-main (architect/launcher patterns) + petals-main (distributed inference launcher / model partitioning UI). Cite FILE:LINE. Output: brain entry. NO OVERLAP with sanctum (jcode/hivemind/orchestration), memory (DALLE-pytorch + dalle-hivemind + sahajBERT), term (CALM + tessera), os (petals-infra + genesis-build).",
+  "expected_action": "Audit assigned partition + brain entry + heartbeat ack",
+  "author": "RKOJ-ELENO :: 2026-05-26"
+}
