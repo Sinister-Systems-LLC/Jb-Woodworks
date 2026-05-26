@@ -104,6 +104,7 @@ Sinister Term commands:
   /man [name | -a]          Show full docstring for a builtin (or list all w/ summaries)
   /peer [slug | substring]  Read a peer agent's heartbeat in detail
   /sysinfo                  OS / Python / SANCTUM_ROOT / env / disk diagnostic
+  /inbox-of [slug] [N]      Peek at another agent's inbox (alias /io)
   /alias [name=val|remove n] List aliases, define one, or remove one
   /clear                    Clear the screen
   /help                     This message
@@ -545,6 +546,119 @@ _CRASH_LOG_PATH = SANCTUM_ROOT / "_shared-memory" / "eve-crash-log.jsonl"
 
 _FLEET_UPDATES_PATH = SANCTUM_ROOT / "_shared-memory" / "fleet-updates.jsonl"
 _INCIDENTS_PATH = SANCTUM_ROOT / "_shared-memory" / "eve-incidents.jsonl"
+
+
+def cmd_inbox_of(args: list[str]) -> CommandResult:
+    """iter-75: peek at another agent's inbox.
+
+    Companion to /inbox (our own). Useful for triage: "what's piled up at
+    sanctum that I should ack?" without leaving sterm.
+
+    Usage:
+      /inbox-of                       list all agent slugs that have an inbox
+      /inbox-of <slug>                show last 10 messages in <slug>'s inbox
+      /inbox-of <slug> N              show last N messages
+      /io <slug>                      alias
+    """
+    if not INBOX_DIR.exists():
+        return CommandResult(True, "(no inbox dir)")
+    try:
+        slug_dirs = sorted([p for p in INBOX_DIR.iterdir() if p.is_dir()])
+    except OSError as e:
+        return CommandResult(True, f"/inbox-of failed: {e}")
+    if not slug_dirs:
+        return CommandResult(True, "(no agent inboxes found)")
+
+    if not args:
+        # List all slugs with counts
+        lines = [f"Inboxes ({len(slug_dirs)} agents):"]
+        for d in slug_dirs:
+            try:
+                n_json = sum(1 for _ in d.glob("*.json"))
+                n_md = sum(1 for _ in d.glob("*.md"))
+            except OSError:
+                n_json = n_md = 0
+            total = n_json + n_md
+            lines.append(f"  {d.name:<24}  {total:>3} msg")
+        lines.append("")
+        lines.append("Try: /inbox-of <slug>")
+        return CommandResult(True, "\n".join(lines))
+
+    target = args[0].lower()
+    limit = 10
+    if len(args) > 1:
+        try:
+            limit = max(1, min(200, int(args[1])))
+        except ValueError:
+            return CommandResult(True,
+                f"second arg must be an integer, got: {args[1]}")
+
+    # Exact match first; substring otherwise
+    slug_names = [d.name for d in slug_dirs]
+    if target in slug_names:
+        slug = target
+    else:
+        candidates = [n for n in slug_names if target in n.lower()]
+        if not candidates:
+            return CommandResult(True,
+                f"no inbox matching: {target}\n"
+                f"  available: {', '.join(slug_names[:12])}"
+                f"{'...' if len(slug_names) > 12 else ''}")
+        if len(candidates) > 1:
+            return CommandResult(True,
+                f"ambiguous: {target} matches {len(candidates)}\n"
+                f"  candidates: {', '.join(candidates[:10])}")
+        slug = candidates[0]
+
+    inbox = INBOX_DIR / slug
+    files: list[tuple[float, Path]] = []
+    try:
+        for ext in ("*.json", "*.md"):
+            for f in inbox.glob(ext):
+                try:
+                    files.append((f.stat().st_mtime, f))
+                except OSError:
+                    continue
+    except OSError as e:
+        return CommandResult(True, f"/inbox-of read failed: {e}")
+    if not files:
+        return CommandResult(True, f"({slug}'s inbox is empty)")
+    files.sort(key=lambda r: -r[0])
+    shown = files[:limit]
+
+    import time as _t
+    out = [f"Inbox-of {slug}: {len(shown)} of {len(files)} messages "
+           f"(newest first):"]
+    now = _t.time()
+    for mtime, f in shown:
+        age = _format_duration(max(0.0, now - mtime))
+        # Pull subject from .json subject field; for .md, just first heading
+        snippet = "?"
+        try:
+            text = f.read_text(encoding="utf-8", errors="replace")
+            if f.suffix == ".json":
+                try:
+                    obj = json.loads(text)
+                    if isinstance(obj, dict):
+                        snippet = (obj.get("subject")
+                                   or obj.get("title")
+                                   or obj.get("message", "")[:60]
+                                   or "?")
+                except Exception:
+                    snippet = text.strip().splitlines()[0][:60] if text.strip() else "?"
+            else:  # .md
+                for ln in text.splitlines():
+                    if ln.startswith("#"):
+                        snippet = ln.lstrip("# ").strip()[:60]
+                        break
+                else:
+                    snippet = text.strip().splitlines()[0][:60] if text.strip() else "?"
+        except OSError:
+            snippet = "(read failed)"
+        if len(snippet) > 60:
+            snippet = snippet[:57] + "..."
+        out.append(f"  {age:>8} ago  {f.name[:48]:<48}  {snippet}")
+    return CommandResult(True, "\n".join(out))
 
 
 _STERM_ENV_VARS = (
@@ -2691,6 +2805,8 @@ COMMANDS: dict[str, Callable[[list[str]], CommandResult]] = {
     "?": cmd_help,                       # already aliased; explicit for clarity
     "peer": cmd_peer,                    # iter-73 — read a peer agent's heartbeat
     "sysinfo": cmd_sysinfo,              # iter-74 — OS/Python/env diagnostic
+    "inbox-of": cmd_inbox_of,            # iter-75 — peek at another agent's inbox
+    "io": cmd_inbox_of,                  # short alias
 }
 
 
