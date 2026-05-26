@@ -1,0 +1,26 @@
+{
+  "name": "fortune-builtin",
+  "version": "0.1.0",
+  "description": "Adds /fortune slash-command returning a daily fortune cookie",
+  "author": "RKOJ-ELENO",
+  "lanes": ["sterm"],
+  "entry_points": {
+    "commands": ["cmd_fortune.py"]
+  },
+  "settings_schema": {
+    "fortune_source": {
+      "type": "enum",
+      "default": "builtin",
+      "enum_values": ["builtin", "online", "file"],
+      "description": "Where fortunes come from"
+    },
+    "fortune_file_path": {
+      "type": "string",
+      "default": "",
+      "description": "Path to a custom fortune file when source=file"
+    }
+  },
+  "features": {
+    "ascii_art": {"default": true, "description": "Render with figlet ASCII art"}
+  }
+}

@@ -2101,26 +2101,19 @@ def cmd_watch(args: list[str]) -> CommandResult:
         return CommandResult(True,
             f"(path is a directory: _shared-memory/{rel} — give a file)")
 
-    # Read last ~256 KiB tail for efficiency on big logs
+    # iter-78a: tail via the offset-index (cache-aware) helper.
+    # Falls back to a full bounded tail read on cache miss / rotation.
     try:
-        size = target.stat().st_size
-        with target.open("rb") as fh:
-            if size > 256 * 1024:
-                fh.seek(size - 256 * 1024)
-                _ = fh.readline()  # discard partial line
-            tail_bytes = fh.read()
+        from term import jsonl_index as _jidx
+        result = _jidx.tail_last_n(target, shared, limit=limit)
     except OSError as e:
         return CommandResult(True, f"/watch failed: {e}")
-    try:
-        text = tail_bytes.decode("utf-8", errors="replace")
-    except Exception as e:
-        return CommandResult(True, f"/watch decode failed: {e}")
-
-    lines = [ln for ln in text.splitlines() if ln.strip()]
-    if not lines:
+    if not result.lines:
         return CommandResult(True, f"(empty: _shared-memory/{rel})")
-    shown = lines[-limit:]
-    out = [f"Watch: {len(shown)} of {len(lines)} lines in _shared-memory/{rel}"]
+    shown = result.lines
+    out = [f"Watch: {len(shown)} of {result.total_lines_estimate} lines "
+           f"in _shared-memory/{rel}"
+           + (" [cached]" if result.cache_hit else "")]
     for ln in shown:
         # If it parses as JSON object, render compactly; otherwise raw
         try:
