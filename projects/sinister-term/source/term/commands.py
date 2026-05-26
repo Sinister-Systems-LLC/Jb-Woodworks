@@ -100,6 +100,7 @@ Sinister Term commands:
   /incidents [N --severity --kind --agent]   Tail eve-incidents.jsonl (degraded states)
   /me                       Show our own heartbeat in detail (drilldown of /agents)
   /diff [--staged --unstaged --name-only] [path]   git diff --stat summary
+  /version                  Composite version dashboard (sterm/ascii/python/deps/git/modules)
   /alias [name=val|remove n] List aliases, define one, or remove one
   /clear                    Clear the screen
   /help                     This message
@@ -541,6 +542,78 @@ _CRASH_LOG_PATH = SANCTUM_ROOT / "_shared-memory" / "eve-crash-log.jsonl"
 
 _FLEET_UPDATES_PATH = SANCTUM_ROOT / "_shared-memory" / "fleet-updates.jsonl"
 _INCIDENTS_PATH = SANCTUM_ROOT / "_shared-memory" / "eve-incidents.jsonl"
+
+
+def cmd_version(_args: list[str]) -> CommandResult:
+    """iter-71: composite version dashboard.
+
+    Shows: sinister-term version, sinister-ascii version (if importable),
+    Python version, prompt_toolkit version, rich version, pytest version,
+    git HEAD short-sha, term module count. Pure introspection; every probe
+    is try/except'd so missing-package paths don't break the panel.
+    """
+    import sys as _sys
+    lines = ["Version dashboard:"]
+
+    # sinister-term
+    try:
+        from term import __version__ as _v
+        lines.append(f"  sinister-term:  {_v}")
+    except Exception as e:
+        lines.append(f"  sinister-term:  ? ({e})")
+
+    # sinister-ascii
+    try:
+        from term.ascii_bridge import _ensure_ascii_on_path
+        if _ensure_ascii_on_path():
+            from sinister_ascii import __version__ as _va  # type: ignore
+            lines.append(f"  sinister-ascii: {_va}")
+        else:
+            lines.append("  sinister-ascii: (not importable)")
+    except Exception as e:
+        lines.append(f"  sinister-ascii: ? ({e})")
+
+    # Python + key deps
+    lines.append(
+        f"  python:         {_sys.version_info.major}.{_sys.version_info.minor}.{_sys.version_info.micro}"
+    )
+    for pkg in ("prompt_toolkit", "rich", "pytest"):
+        try:
+            mod = __import__(pkg)
+            ver = getattr(mod, "__version__", "?")
+            lines.append(f"  {pkg:<14}: {ver}")
+        except Exception:
+            lines.append(f"  {pkg:<14}: (not installed)")
+
+    # git HEAD short-sha
+    sha = _git_one(["rev-parse", "--short", "HEAD"])
+    if sha:
+        lines.append(f"  git HEAD:       {sha}")
+    else:
+        lines.append("  git HEAD:       (not in a git repo)")
+
+    # term module count (cheap glob — term/source/term/*.py)
+    try:
+        # __file__ = projects/sinister-term/source/term/commands.py
+        term_dir = Path(__file__).resolve().parent
+        modules = [p.name for p in term_dir.glob("*.py")
+                   if not p.name.startswith("__")]
+        lines.append(
+            f"  term modules:   {len(modules)} files in {term_dir.name}/"
+        )
+    except Exception as e:
+        lines.append(f"  term modules:   ? ({e})")
+
+    # builtin command count (introspection of COMMANDS dict)
+    try:
+        # COMMANDS is defined later in this same module; access via globals
+        cmds = globals().get("COMMANDS")
+        if isinstance(cmds, dict):
+            lines.append(f"  builtins:       {len(cmds)} commands registered")
+    except Exception:
+        pass
+
+    return CommandResult(True, "\n".join(lines))
 
 
 def cmd_diff(args: list[str]) -> CommandResult:
@@ -2330,6 +2403,7 @@ COMMANDS: dict[str, Callable[[list[str]], CommandResult]] = {
     "incidents": cmd_incidents,          # iter-68 — read eve-incidents.jsonl
     "me": cmd_me,                        # iter-69 — show our own heartbeat in detail
     "diff": cmd_diff,                    # iter-70 — git diff --stat for unstaged + staged
+    "version": cmd_version,              # iter-71 — composite version dashboard
 }
 
 
