@@ -3661,15 +3661,41 @@ def _profile_and_exit() -> int:
 def main(argv: list[str] | None = None) -> int:
     argv = argv if argv is not None else sys.argv[1:]
 
-    # RKOJ-ELENO :: 2026-05-25 — 2x WINDOW AT-LAUNCH (operator hard-canonical
-    # "even needs to open in the bigger 2x size window" + Image #14 "still
-    # needs to be 2x bigger"). When EVE.exe is double-clicked from Desktop,
-    # Sinister Start.bat's `mode con` doesn't run. Resize the console buffer
-    # + window directly via kernel32 so the 2x size happens regardless of
-    # launch path. Cheap (~3ms); silent fail on non-Windows / non-console.
+    # RKOJ-ELENO :: 2026-05-25 (iter-29) — 2x WINDOW AT-LAUNCH via Win32 API.
+    # Operator hard-canonical screenshot iter-29 "window size 2x better and
+    # keep working" — prior os.system('mode con: cols=220 lines=65') didn't
+    # take effect when EVE.exe was launched directly from Desktop (PyInstaller
+    # console has a fixed default from the exe header; `mode` runs in a child
+    # cmd, doesn't resize the parent's window). Switching to kernel32 direct:
+    # SetConsoleScreenBufferSize + SetConsoleWindowInfo on STD_OUTPUT_HANDLE.
+    # Target: 240 cols × 70 rows (2x the 120×30 default) with a 10k-line
+    # scrollback buffer. Cheap (~5ms). Silent fail on non-Windows / non-tty.
     if os.name == "nt":
         try:
-            os.system("mode con: cols=220 lines=65 >nul 2>&1")
+            import ctypes
+            from ctypes import wintypes
+            k32 = ctypes.windll.kernel32
+            STD_OUTPUT_HANDLE = -11
+            h = k32.GetStdHandle(STD_OUTPUT_HANDLE)
+            if h and h != ctypes.c_void_p(-1).value:
+                # Buffer MUST be at least as wide as the window. Set buffer
+                # first (large scrollback), then shrink window inside it.
+                class COORD(ctypes.Structure):
+                    _fields_ = [("X", ctypes.c_short), ("Y", ctypes.c_short)]
+                class SMALL_RECT(ctypes.Structure):
+                    _fields_ = [("Left", ctypes.c_short), ("Top", ctypes.c_short),
+                                ("Right", ctypes.c_short), ("Bottom", ctypes.c_short)]
+                # Step 1: shrink window to a 1x1 minimum so buffer-set succeeds
+                tiny = SMALL_RECT(0, 0, 0, 0)
+                k32.SetConsoleWindowInfo(h, True, ctypes.byref(tiny))
+                # Step 2: grow buffer to 240×10000 (cols × scrollback lines)
+                k32.SetConsoleScreenBufferSize(h, COORD(240, 10000))
+                # Step 3: grow window to 240×70 inside the bigger buffer
+                window = SMALL_RECT(0, 0, 239, 69)
+                k32.SetConsoleWindowInfo(h, True, ctypes.byref(window))
+            # Also issue mode con as a fallback for the cmd-wrapped launch
+            # path (Spawn Sanctum Agent.bat / Sinister Start.bat). Cheap.
+            os.system("mode con: cols=240 lines=70 >nul 2>&1")
         except Exception:
             pass
 
