@@ -101,6 +101,7 @@ Sinister Term commands:
   /me                       Show our own heartbeat in detail (drilldown of /agents)
   /diff [--staged --unstaged --name-only] [path]   git diff --stat summary
   /version                  Composite version dashboard (sterm/ascii/python/deps/git/modules)
+  /man [name | -a]          Show full docstring for a builtin (or list all w/ summaries)
   /alias [name=val|remove n] List aliases, define one, or remove one
   /clear                    Clear the screen
   /help                     This message
@@ -542,6 +543,74 @@ _CRASH_LOG_PATH = SANCTUM_ROOT / "_shared-memory" / "eve-crash-log.jsonl"
 
 _FLEET_UPDATES_PATH = SANCTUM_ROOT / "_shared-memory" / "fleet-updates.jsonl"
 _INCIDENTS_PATH = SANCTUM_ROOT / "_shared-memory" / "eve-incidents.jsonl"
+
+
+def cmd_man(args: list[str]) -> CommandResult:
+    """iter-72: show the detailed docstring for a single builtin.
+
+    The `/help` builtin is the one-line summary table. `/man <name>` is
+    the drilldown — looks up the handler in the COMMANDS dict and prints
+    its full docstring so the operator can see all flags + examples.
+
+    Usage:
+      /man              list all builtin names alphabetically
+      /man <name>       show full docstring for /<name>
+      /man -a           list with one-line summaries (first docstring line)
+    """
+    import inspect as _inspect
+    cmds = globals().get("COMMANDS")
+    if not isinstance(cmds, dict):
+        return CommandResult(True, "(no COMMANDS dict found)")
+
+    if not args:
+        names = sorted(cmds.keys())
+        lines = [f"Builtins ({len(names)} registered):"]
+        # Render in 4 columns
+        cols = 4
+        col_w = max(len(n) for n in names) + 2
+        rows = (len(names) + cols - 1) // cols
+        for r in range(rows):
+            parts = []
+            for c in range(cols):
+                idx = c * rows + r
+                if idx < len(names):
+                    parts.append(names[idx].ljust(col_w))
+            lines.append("  " + "".join(parts).rstrip())
+        lines.append("")
+        lines.append("Try: /man <name> for detailed docs")
+        return CommandResult(True, "\n".join(lines))
+
+    if args[0] == "-a":
+        # All builtins with first-line of docstring
+        names = sorted(cmds.keys())
+        out = [f"Builtins ({len(names)} with summaries):"]
+        for n in names:
+            fn = cmds[n]
+            doc = _inspect.getdoc(fn) or ""
+            first = doc.splitlines()[0] if doc else "(no doc)"
+            # Truncate to fit a 100-char terminal
+            if len(first) > 75:
+                first = first[:72] + "..."
+            out.append(f"  /{n:<18} {first}")
+        return CommandResult(True, "\n".join(out))
+
+    name = args[0].lstrip("/").lower()
+    fn = cmds.get(name)
+    if fn is None:
+        # Did you mean? — fuzzy suggestion
+        suggestions = [n for n in cmds if name in n or n.startswith(name[:3])][:5]
+        suffix = f"\n  did you mean: {', '.join('/' + s for s in suggestions)}" if suggestions else ""
+        return CommandResult(True, f"unknown builtin: /{name}{suffix}")
+
+    doc = _inspect.getdoc(fn) or "(no docstring)"
+    handler_name = getattr(fn, "__name__", str(fn))
+    out = [
+        f"/{name}  ({handler_name})",
+        f"{'─' * (len(name) + len(handler_name) + 5)}",
+    ]
+    for ln in doc.splitlines():
+        out.append(f"  {ln}")
+    return CommandResult(True, "\n".join(out))
 
 
 def cmd_version(_args: list[str]) -> CommandResult:
@@ -2404,6 +2473,8 @@ COMMANDS: dict[str, Callable[[list[str]], CommandResult]] = {
     "me": cmd_me,                        # iter-69 — show our own heartbeat in detail
     "diff": cmd_diff,                    # iter-70 — git diff --stat for unstaged + staged
     "version": cmd_version,              # iter-71 — composite version dashboard
+    "man": cmd_man,                      # iter-72 — show docstring for a single builtin
+    "?": cmd_help,                       # already aliased; explicit for clarity
 }
 
 
