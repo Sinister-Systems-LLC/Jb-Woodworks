@@ -1,6 +1,6 @@
 {
   "_comment": "Persistent project registry. v6 (2026-05-23): added picker block driving the launcher's concise 11-entry visible list + ordering. Non-launcher consumers (RKOJ Qt agents_tab, sinister-eve, forge picker) continue to iterate the full projects array. v7 (2026-05-23 evening): appended letstext lane (operator-private messaging-app venture at D:\\Personal\\LetsText; cyan accent per agent-prefs). v8 (2026-05-24T22:10Z): consolidated sinister-os-mobile into sinister-os per operator directive 'combine project sinister os and sinister os mobile' â€” mobile lane removed from picker + projects[]; mobile content now lives at projects/sinister-os/mobile/. v9 (2026-05-24T23:55Z): appended sinister-overseer lane (meta-agent / agent-of-agents; cyan accent; tier=3; P0 scaffolded by sanctum-overseer-scaffold per operator brief 2026-05-24 ~23:48Z). v10 (RKOJ-ELENO :: 2026-05-25T02:30Z): added default_modes.loop_relentless=true to every project with loop=true per operator 02:18Z 'make the loop system on our agents actually work. make it agressive and make it hafve agents relentless pursue goal' — relentless preset flips every loop spawn to in-turn next-iter + tool-reach + 270s wakeup cap (full doctrine: loop-relentless-pursuit-doctrine-2026-05-25). v11 (RKOJ-ELENO :: 2026-05-25T06:35Z): added default_modes.loop='relentless' (string) + default_modes.swarm=true to EVERY project per operator hard-canonical 'make sure loop and swarm mode come on by deafult for each agent'. loop_relentless boolean retained for backward-compat. rkoj swarm flipped false->true. Doctrine: loop-swarm-default-on-doctrine-2026-05-25.md. v12 (RKOJ-ELENO :: 2026-05-25T07:45Z by sanctum-sub-r): sinister-memory lane P0 scaffolded per operator 07:30Z 'add to eve exe a project start for Sinister Memroy and complie all thigsn he needs there to get started' — unified memory engine (brain + PROGRESS + heartbeats + Ruflo MCP) under one Python CLI + library + spawn-phrase injector. SQLite FTS5 + BM25, stdlib-only, 5/5 pytest PASS. claude_md repointed from CLAUDE.md to README.md (CLAUDE.md not yet authored at P0); github=Sinister-Sanctum per single-repo policy; tier=2; added to picker.visible_keys. v13 (RKOJ-ELENO :: 2026-05-25T11:45Z by sanctum-sub-b): added eve-exe lane per operator 11:38Z 'launch the following agents like eve exe would and create a project and add to eve called Eve EXE' — splits EVE.exe launcher work (UI/picker/build pipeline) out of sanctum-master into its own lane with dedicated PROGRESS file. github=Sinister-Sanctum per single-repo policy; tier=2; added to picker.visible_keys + Sanctum + Core category. v14 (RKOJ-ELENO :: 2026-05-25T13:45Z): added sinister-hieroglyphics lane per operator 13:30Z 'we may need to make our own coding language for our tools so we can make eevrything as efficent as possible ... i want this to be its own project in eve exe called Sinister Hieroglyphics. ... direct connect to the hardware, our OS and build hyper realistic simulations like the python simulator on the desktop' — Phase 0 scaffold (CLAUDE.md + README.md + PROGRESS.md + pyproject.toml + src/hgly/{__init__,cli}.py + docs/GLYPH-SYNTAX.md + corpus/ + tests/test_smoke.py). Master plan at _shared-memory/plans/sinister-hieroglyphics-master-2026-05-25T1340Z/plan.md. github=Sinister-Sanctum per single-repo policy; tier=2; branch_prefix=agent/sinister-hieroglyphics/; added to picker.visible_keys + new 'Languages' category.",
-  "version": 14,
+  "version": 15,
   "default": "sanctum",
   "picker": {
     "visible_keys": [
@@ -30,7 +30,8 @@
       "sinister-memory",
       "sinister-looper",
       "sinister-designer",
-      "sinister-hieroglyphics"
+      "sinister-hieroglyphics",
+      "sinister-jokester"
     ],
     "special_keys": [
       "general",
@@ -90,19 +91,15 @@
           "jkor",
           "sinister-os",
           "sinister-chatbot",
-          "sinister-looper"
+          "sinister-looper",
+          "sinister-hieroglyphics"
         ]
       },
       {
         "label": "Other",
         "keys": [
-          "sinister-designer"
-        ]
-      },
-      {
-        "label": "Languages",
-        "keys": [
-          "sinister-hieroglyphics"
+          "sinister-designer",
+          "sinister-jokester"
         ]
       }
     ]
@@ -647,6 +644,24 @@
       "branch_prefix": "agent/sinister-hieroglyphics/",
       "tier": 2,
       "focus": "Design + build a purpose-built, token-dense, hardware-aware programming language for the Sanctum fleet's internal tools. Phase 0 (scaffold) shipped 2026-05-25; Phase 1 (64-glyph syntax draft) next. Master plan: _shared-memory/plans/sinister-hieroglyphics-master-2026-05-25T1340Z/plan.md",
+      "default_modes": {
+        "swarm": true,
+        "loop": "relentless",
+        "loop_relentless": true
+      }
+    },
+    {
+      "key": "sinister-jokester",
+      "display": "Sinister Jokester",
+      "tag": "P0 stub :: launch lane registered 2026-05-26 per operator directive 'add launch option for sinsiter jokester'. Scope TBD by operator; placeholder CLAUDE.md until scope brief lands.",
+      "root": "D:\\Sinister Sanctum\\projects\\sinister-jokester",
+      "lane_dir": "D:\\Sinister Sanctum\\projects\\sinister-jokester",
+      "session_start": "",
+      "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-jokester\\CLAUDE.md",
+      "github": "Sinister-Sanctum",
+      "branch_prefix": "agent/sinister-jokester/",
+      "tier": 2,
+      "focus": "Project scope pending operator brief. Until then this lane scaffolds the dir + spawns into the placeholder CLAUDE.md so the launch entry works.",
       "default_modes": {
         "swarm": true,
         "loop": "relentless",
