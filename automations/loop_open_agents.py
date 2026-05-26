@@ -174,8 +174,12 @@ def score_agent(slug: str, display: str) -> dict:
 def _ckpt(*args: str) -> dict:
     cmd = [sys.executable, str(CKPT_PY), *args]
     try:
+        # iter-30 bump: 60s -> 600s. sinister-os has 4257 files which save
+        # in ~120s. Prior timeout killed the subprocess mid-copy => ck=0.
+        # 600s is generous enough for any lane (largest observed: sinister-
+        # os 4257 files / ~2 min).
         r = subprocess.run(
-            cmd, capture_output=True, text=True, timeout=60,
+            cmd, capture_output=True, text=True, timeout=600,
             creationflags=0x08000000 if os.name == "nt" else 0,
         )
         return json.loads(r.stdout) if r.stdout.strip() else {"ok": False}
