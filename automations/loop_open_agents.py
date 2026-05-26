@@ -248,8 +248,13 @@ def tick(agents: list[dict], do_revert: bool = False, dry_run: bool = False,
         s["action"] = "ok"
         # iter-24: SAVE a checkpoint of the agent's `root` path. This is the
         # missing piece -- without it, restore-best has nothing to restore to.
+        # iter-31: SKIP if no commits in last hour AND no progress delta. A
+        # static lane checkpoint is wasteful (re-copies thousands of files
+        # for nothing). Only ckpt when the lane has fresh activity.
         root_rel = _project_root_for_slug(slug)
-        if do_checkpoint and root_rel and not dry_run:
+        has_activity = (s["components"]["commits_1h"] > 0
+                        or s["components"]["progress_bytes"] > 0)
+        if do_checkpoint and root_rel and not dry_run and has_activity:
             sv = _ckpt(
                 "save", "--lane", slug, "--run-id", run_id,
                 "--iter", str(cur_iter), "--paths", root_rel,
@@ -259,6 +264,9 @@ def tick(agents: list[dict], do_revert: bool = False, dry_run: bool = False,
             s["checkpoint_files"] = sv.get("files", 0)
         else:
             s["checkpoint_ok"] = False
+            s["checkpoint_files"] = 0
+            if do_checkpoint and root_rel and not has_activity:
+                s["action_note"] = "ckpt-skipped-no-activity"
         if s["regressed"]:
             s["action"] = "regress-warn"
             if do_revert and not dry_run:
