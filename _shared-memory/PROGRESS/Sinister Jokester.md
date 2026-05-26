@@ -6,6 +6,25 @@ Newest entry at top. Append, do not rewrite.
 
 ---
 
+## 2026-05-26T22:51Z — iter-3 SHIPPED: commit pushed + HIVE candidates logged
+
+Branch: `agent/sinister-jokester/charter-ship-2026-05-26`.
+
+Shipped (verified):
+- Commit `7eb12dd`: P0 charter ship — cherry-picked file content from `5b255bd`'s wide-stage sweep (other lane swept my files in during the index-lock window) onto the correct lane branch for attribution. Original detailed Shipped/Smoke/Refs commit message preserved.
+- Pushed via `sanctum-auto-push.ps1 PushNow -Slug sinister-jokester`; remote tip confirmed = `6a433d1` (eve-compliance R12.3 piled on top, but my charter commit is on the remote at HEAD~1).
+- 9 HIVE sub-projects (`C:\Users\Zonia\Desktop\HIVE\{CALM,DALLE-pytorch,dalle-hivemind,genesis-architect,hivemind,jcode,petals,sahajBERT,tessera-dev}`) logged in `vault/intake/queue.jsonl` as `# CANDIDATE:`-prefixed rows (commented out — drain-queue skips `#` lines). Operator (2026-05-26T22:47:25Z) routed HIVE deep-review explicitly to sanctum + term + eve-exe + os + memory with "MAKE SURE parallel agents do not overlap work + double main agent" — so Jokester does NOT auto-drain. To enable: operator removes the `# CANDIDATE:` prefix and runs `python jokester_cli.py drain-queue vault/intake/queue.jsonl`.
+
+Cross-lane note (no-overlap discipline):
+- Fleet branch-sharing is causing wide-stage cross-contamination (my charter files briefly committed under eve-compliance attribution in `5b255bd`). Mitigated this iter; long-term fix (per-lane worktrees) is fleet-infra scope, already surfaced in sinister-memory's earlier `fu-20260525151200-progrot-and-systemic` for sanctum.
+
+Open / next iter:
+- Drain any URLs operator drops into `vault/intake/queue.jsonl` (when operator opts in).
+- P1 Telegram bot (CLI only, no UI).
+- P2 per-candidate dependency parsing for stack-fit signal beyond keyword overlap.
+
+---
+
 ## 2026-05-26T22:20Z — iter-2 SHIPPED: P0 charter end-to-end
 
 Operator scope brief landed mid-iter (2026-05-26T21:16Z + follow-ups):

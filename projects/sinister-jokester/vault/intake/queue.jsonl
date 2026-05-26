@@ -5,3 +5,21 @@
 #   C:\Users\Zonia\Desktop\SomeFolder
 # Drain with:  python jokester_cli.py drain-queue vault/intake/queue.jsonl
 # Lines starting with '#' are ignored.
+
+# --- HIVE folder candidates (logged 2026-05-26T22:50Z, NOT queued) ---
+# Operator utterance 2026-05-26T22:47:25Z routed HIVE deep-review explicitly to
+# sanctum + term + eve-exe + os + memory agents with "MAKE SURE parallel agents do
+# not overlap work + double main agent". Jokester's shallow triage would be
+# complementary (verdict + peer-route) but is NOT operator-requested. To enable
+# Jokester pre-triage, remove the `# CANDIDATE:` prefix on the rows below and run
+# `python jokester_cli.py drain-queue vault/intake/queue.jsonl`. Until then these
+# stay commented out (drain-queue skips `#` lines).
+# CANDIDATE: C:\Users\Zonia\Desktop\HIVE\CALM-main
+# CANDIDATE: C:\Users\Zonia\Desktop\HIVE\DALLE-pytorch-main
+# CANDIDATE: C:\Users\Zonia\Desktop\HIVE\dalle-hivemind-main
+# CANDIDATE: C:\Users\Zonia\Desktop\HIVE\genesis-architect-main
+# CANDIDATE: C:\Users\Zonia\Desktop\HIVE\hivemind-master
+# CANDIDATE: C:\Users\Zonia\Desktop\HIVE\jcode-master
+# CANDIDATE: C:\Users\Zonia\Desktop\HIVE\petals-main
+# CANDIDATE: C:\Users\Zonia\Desktop\HIVE\sahajBERT-master
+# CANDIDATE: C:\Users\Zonia\Desktop\HIVE\tessera-dev

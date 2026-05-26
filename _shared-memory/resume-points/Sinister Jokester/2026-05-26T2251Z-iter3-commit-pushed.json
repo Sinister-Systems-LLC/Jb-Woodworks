@@ -1,0 +1,36 @@
+{
+  "slug": "sinister-jokester",
+  "display": "Sinister Jokester",
+  "ts_utc": "2026-05-26T22:51:00Z",
+  "iter": 3,
+  "mode": "resume",
+  "branch": "agent/sinister-jokester/charter-ship-2026-05-26",
+  "loop_condition": "Drain inbox + vault/intake/queue.jsonl. For each candidate: intake -> cross-reference -> verdict -> .md -> DB row -> peer-notify. Soft re-review on re-intake. Re-poll utterances each iter.",
+  "shipped_this_iter": [
+    "Commit 7eb12dd: 'sinister-jokester iter-2: P0 charter ship — intake/cross-ref/decision/peer-notify pipeline' (cherry-picked file content from 5b255bd's wide-stage sweep onto correct lane branch for attribution).",
+    "Pushed to origin/agent/sinister-jokester/charter-ship-2026-05-26 via sanctum-auto-push.ps1 PushNow (sanctum origin policy verified).",
+    "Logged 9 HIVE sub-projects (CALM/DALLE-pytorch/dalle-hivemind/genesis-architect/hivemind/jcode/petals/sahajBERT/tessera-dev) in vault/intake/queue.jsonl as '# CANDIDATE:'-prefixed (opt-in only, NOT drained — operator 2026-05-26T22:47:25Z routed HIVE deep-review to sanctum+term+eve-exe+os+memory with 'MAKE SURE parallel agents do not overlap').",
+    "Heartbeat refreshed."
+  ],
+  "smoke_verified_this_iter": [
+    "git log shows 7eb12dd at HEAD~1 (eve-compliance R12.3 piled on as HEAD on the shared branch).",
+    "git ls-remote confirms origin tip = 6a433d1 (eve-compliance R12.3 on top of my 7eb12dd) — my charter commit IS on the remote.",
+    "No stale .git/index.lock."
+  ],
+  "out_of_lane_observations": [
+    "Other lanes share git branches and stage files in this single-checkout repo; my files briefly got wide-staged into eve-compliance's 5b255bd. Mitigated by cherry-picking the file content onto my own branch via `git checkout 5b255bd -- <paths>`. Long-term fix is fleet-level (per-lane worktrees) — not jokester scope, surfaced in sinister-memory's earlier fleet-update (fu-20260525151200-progrot-and-systemic) for sanctum to own.",
+    "Eve-compliance R12.3 commit (6a433d1) sits ON TOP of my charter commit on agent/sinister-jokester/charter-ship-2026-05-26 — branch is being shared. Not a blocker."
+  ],
+  "open_queued": [
+    "HIVE sub-projects (9) await operator opt-in to drain through Jokester. To enable: remove `# CANDIDATE:` prefix on rows in vault/intake/queue.jsonl + run drain-queue.",
+    "P1: Telegram bot listener (CLI only, no UI).",
+    "P2: per-candidate dependency parsing (package.json / Cargo.toml / pyproject.toml) for stack-fit signal beyond keyword overlap."
+  ],
+  "next_iter_plan": [
+    "Re-poll _shared-memory/inbox/sinister-jokester/ for delegated candidates.",
+    "Re-poll _shared-memory/operator-utterances.jsonl for jokester-tagged or jokester-routed URLs.",
+    "If operator opts in to HIVE pre-triage, uncomment + drain.",
+    "Re-write heartbeat + resume-point.",
+    "Commit + push any new deliverables."
+  ]
+}
