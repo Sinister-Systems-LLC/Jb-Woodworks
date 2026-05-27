@@ -23,6 +23,7 @@ Subcommands
   corpus [--dir]     score the whole corpus under _shared-memory/hgly-corpus/
   report --json      JSON pretty-print of corpus measurement
   goal               re-print the goal + current pass rate; exit 0 always
+  track [--dry-run]  measure corpus + append row to density trajectory JSONL
 
 Constraints (operator hard-canonical 2026-05-25):
   - Pure Python 3 stdlib + the in-tree hgly.lexer (no torch / no requests).
@@ -54,6 +55,7 @@ except Exception:
 SANCTUM = pathlib.Path(os.environ.get("SINISTER_SANCTUM_ROOT", r"D:\Sinister Sanctum"))
 HGLY_SRC = SANCTUM / "projects" / "sinister-hieroglyphics" / "src"
 CORPUS_DIR = SANCTUM / "_shared-memory" / "hgly-corpus"
+TRAJECTORY_PATH = SANCTUM / "_shared-memory" / "hgly-density-trajectory.jsonl"
 
 if str(HGLY_SRC) not in sys.path:
     sys.path.insert(0, str(HGLY_SRC))
@@ -276,6 +278,45 @@ def measure_corpus(corpus_dir: pathlib.Path) -> dict:
     }
 
 
+def _git_short_sha() -> Optional[str]:
+    try:
+        import subprocess
+        out = subprocess.run(
+            ["git", "-C", str(SANCTUM), "rev-parse", "--short", "HEAD"],
+            capture_output=True, text=True, timeout=5,
+        )
+        if out.returncode == 0:
+            sha = out.stdout.strip()
+            return sha or None
+    except Exception:
+        return None
+    return None
+
+
+def trajectory_row(d: dict, note: Optional[str] = None) -> dict:
+    """Project a corpus-measurement dict down to the trajectory schema."""
+    return {
+        "ts_utc": _dt.datetime.now(_dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "git_sha": _git_short_sha(),
+        "programs": d.get("programs"),
+        "shp_bytes_total": d.get("shp_bytes_total"),
+        "py_bytes_est_total": d.get("py_bytes_est_total"),
+        "ops_total": d.get("ops_total"),
+        "corpus_ratio": d.get("corpus_ratio"),
+        "ratio_median": d.get("ratio_median"),
+        "pass_rate": d.get("pass_rate"),
+        "goal_threshold": d.get("goal_threshold"),
+        "goal_met_corpus_wide": d.get("goal_met_corpus_wide"),
+        "note": note,
+    }
+
+
+def append_trajectory(row: dict, path: pathlib.Path = TRAJECTORY_PATH) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a", encoding="utf-8") as f:
+        f.write(json.dumps(row, ensure_ascii=False) + "\n")
+
+
 def render_text(d: dict) -> str:
     if "error" in d:
         return f"ERROR: {d['error']}"
@@ -310,6 +351,13 @@ def main() -> int:
 
     sub.add_parser("goal", help="print density goal + current pass-rate snapshot")
 
+    t = sub.add_parser("track", help="measure corpus + append trajectory row")
+    t.add_argument("--dir", default=str(CORPUS_DIR))
+    t.add_argument("--out", default=str(TRAJECTORY_PATH))
+    t.add_argument("--note", default=None, help="freeform note tagged on the row")
+    t.add_argument("--dry-run", action="store_true", help="print row, no JSONL append")
+    t.add_argument("--json", dest="json_out", action="store_true")
+
     args = p.parse_args()
 
     if args.cmd == "measure":
@@ -332,6 +380,20 @@ def main() -> int:
         print(f"density goal: shp_bytes / py_bytes_est <= {DENSITY_GOAL}")
         print(f"corpus ratio: {d.get('corpus_ratio')} ({d.get('programs', 0)} programs)")
         print(f"pass rate:    {d.get('pass_rate')}  (corpus-wide met={d.get('goal_met_corpus_wide')})")
+        return 0
+    if args.cmd == "track":
+        d = measure_corpus(pathlib.Path(args.dir))
+        row = trajectory_row(d, note=args.note)
+        if not args.dry_run:
+            append_trajectory(row, pathlib.Path(args.out))
+        if args.json_out:
+            print(json.dumps(row, indent=2, ensure_ascii=False))
+        else:
+            status = "dry-run" if args.dry_run else f"appended {args.out}"
+            print(f"density trajectory ({status}):")
+            for k in ("ts_utc", "git_sha", "programs", "corpus_ratio",
+                      "ratio_median", "pass_rate", "goal_met_corpus_wide", "note"):
+                print(f"  {k:<22} {row.get(k)}")
         return 0
     return 0
 

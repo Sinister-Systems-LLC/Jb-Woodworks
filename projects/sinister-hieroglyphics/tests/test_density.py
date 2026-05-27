@@ -178,11 +178,62 @@ def t_passing_shrinks_with_glyph_overhead() -> None:
         _fail("glyph-vs-ascii", json.dumps({"ascii": ra, "glyph": rg})[:200])
 
 
+def t_track_dry_run_schema() -> None:
+    """track --dry-run returns a row with the trajectory schema and does NOT
+    append to the JSONL trajectory file."""
+    import hgly_density
+    d = hgly_density.measure_corpus(CORPUS_DIR)
+    row = hgly_density.trajectory_row(d, note="unit-test")
+    needed = {"ts_utc", "git_sha", "programs", "corpus_ratio", "ratio_median",
+              "pass_rate", "goal_threshold", "goal_met_corpus_wide", "note"}
+    missing = needed - set(row)
+    if missing:
+        _fail("trajectory_row keys", f"missing {missing}")
+        return
+    if row["note"] != "unit-test":
+        _fail("trajectory_row.note", str(row.get("note")))
+        return
+    if row["programs"] != d.get("programs"):
+        _fail("trajectory_row.programs",
+              f"row={row['programs']} d={d.get('programs')}")
+        return
+    _ok(f"trajectory_row schema OK (programs={row['programs']}, "
+        f"ratio={row['corpus_ratio']})")
+
+
+def t_track_cli_dry_run() -> None:
+    """CLI invocation `hgly_density.py track --dry-run --json` returns valid
+    JSON with the trajectory schema and does NOT touch the live JSONL file."""
+    if not DENSITY_TOOL.exists():
+        _fail("track CLI present", f"missing {DENSITY_TOOL}")
+        return
+    r = subprocess.run(
+        [sys.executable, str(DENSITY_TOOL), "track", "--dry-run", "--json",
+         "--note", "cli-smoke"],
+        capture_output=True, text=True, timeout=60,
+    )
+    if r.returncode != 0:
+        _fail("track CLI rc", f"rc={r.returncode} stderr={r.stderr[:200]}")
+        return
+    try:
+        row = json.loads(r.stdout)
+    except Exception as e:
+        _fail("track CLI parse", repr(e))
+        return
+    if (row.get("programs", 0) > 0 and "corpus_ratio" in row
+            and row.get("note") == "cli-smoke"):
+        _ok(f"track CLI --dry-run --json -> programs={row['programs']} "
+            f"ratio={row['corpus_ratio']}")
+    else:
+        _fail("track CLI schema", json.dumps(row)[:200])
+
+
 def main() -> int:
     print("=== test_density ===")
     for fn in (t_import, t_goal_constant, t_estimate_synthetic,
                t_measure_one_synthetic, t_measure_corpus_live,
-               t_cli_corpus_json, t_passing_shrinks_with_glyph_overhead):
+               t_cli_corpus_json, t_passing_shrinks_with_glyph_overhead,
+               t_track_dry_run_schema, t_track_cli_dry_run):
         try:
             fn()
         except Exception as e:

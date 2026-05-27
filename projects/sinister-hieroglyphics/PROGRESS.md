@@ -3,6 +3,60 @@
 > Author: RKOJ-ELENO :: 2026-05-25
 > Append-only. Most-recent on top.
 
+## 2026-05-27T00:03Z — iter-25 Phase 9.5b density trajectory tracker
+
+Shipped:
+
+- `automations/hgly_density.py` — added `track` subcommand. Composes
+  `measure_corpus` -> `trajectory_row` projection (ts_utc + git_sha + 9
+  metric fields + freeform `note`) -> `append_trajectory` (JSONL row to
+  `_shared-memory/hgly-density-trajectory.jsonl`). `--dry-run` returns
+  the row without writing. `--json` flips human-readable text to JSON.
+- `_shared-memory/hgly-density-trajectory.jsonl` — seeded with first row:
+  ts=2026-05-27T00:02:50Z, sha=85bbbb7, ratio=0.9389. Append-only,
+  one JSON object per line.
+- `projects/sinister-hieroglyphics/tests/test_density.py` — +2 assertions:
+  `t_track_dry_run_schema` (validates trajectory_row keys) and
+  `t_track_cli_dry_run` (validates CLI invocation + JSON output schema).
+  Total assertions: 7 -> 9.
+
+**Why this and not the queued "Phase 9 corpus expansion" first:** the
+ratio trajectory needs a *measurement spine* before the corpus-growth
+loop can be evaluated quality-monotonically. Without the JSONL row each
+expansion iter would be an opinion ("did ratio improve?"); with it,
+loop_checkpoint can read the JSONL tail and detect regression
+quantitatively. This is rule-1 from `quality-monotonic-loop.ps1` /
+`no-bullshit-tested-before-claimed` — measure first, then expand.
+
+Composes with:
+
+- CLAUDE.md lane rule 1 — token-density is the prime directive; the
+  trajectory makes the directive *continuously observable*.
+- `loop_checkpoint.py` — next iter wires `hgly_density.py track` into the
+  per-iter checkpoint so any ratio regression triggers revert.
+- `_shared-memory/plans/sinister-hieroglyphics-master-2026-05-25T1340Z/plan.md`
+  Phase 9 — corpus-grow loop now has a fitness function it can chart.
+
+Verify (this turn, all green, same host):
+
+- `python automations/hgly_density.py track --dry-run` -> schema dump, exit 0
+- `python automations/hgly_density.py track --note "..."` -> appended JSONL row, exit 0
+- `python projects/sinister-hieroglyphics/tests/test_density.py` -> 9/9 passed, exit 0
+- `python projects/sinister-hieroglyphics/tests/test_parser.py` -> 11/11 (regression), exit 0
+- `python projects/sinister-hieroglyphics/tests/test_ir.py` -> 10/10 (regression), exit 0
+- `python projects/sinister-hieroglyphics/tests/test_smoke.py` -> OK 0.0.7, exit 0
+
+Next iter (queued):
+
+1. Wire `hgly_density.py track` into `automations/loop_checkpoint.py` post-iter
+   hook so every kernel-loop completion appends a trajectory row tagged with
+   the iter id (becomes the quality-monotonic input for the trainer).
+2. Phase 9 corpus expansion proper — extend `hgly_corpus_seed.py` with
+   `--big` templates (50+ line programs combining memory + concurrency +
+   simulation glyphs) since current templates max out around 12 lines.
+3. After (2), re-`track` and compare; expect ratio improvement as glyph
+   bytes get amortized over larger op counts.
+
 ## 2026-05-26T23:25Z — iter-24 Phase 9.5 token-density measurement
 
 Shipped (new files):
