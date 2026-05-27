@@ -1,0 +1,38 @@
+{
+  "slug": "sinister-looper",
+  "iter": 24,
+  "ts_utc": "2026-05-26T23:50:00Z",
+  "branch": "agent/sinister-hieroglyphics/iter24-token-density-measure-2026-05-26",
+  "shipped_this_iter": [
+    "automations/sinister_loop_core.py (~470 LOC, 7 primitives, stdlib only)",
+    "_shared-memory/knowledge/sinister-loop-core-unified-primitive-2026-05-26.md (brain entry)",
+    "_shared-memory/PROGRESS/sinister-hieroglyphics-and-looper.md (iter-24 section)",
+    "_shared-memory/heartbeats/sinister-looper.json"
+  ],
+  "smoke_results": {
+    "smoke_subcommand": "PASS — AdaptiveScheduler + BackoffHelper + UsageLog + HeartbeatProbe + OperatorActive + LoopGuard all green",
+    "demo_subcommand": "PASS — adaptive backoff verified (2.0s base -> 4.0s on rate-limit hit -> 2.0s on success reset)",
+    "probe_subcommand": "PASS — sanctum slug shows age=1735.0s alive=True",
+    "operator_subcommand": "PASS — fail-open ACTIVE when marker missing (correct behavior)"
+  },
+  "sub_agents_run": [
+    {"id": "SUB-A", "scope": "Github Input audit (10+ repos)", "top_finding": "openhuman useDaemonLifecycle.ts:60-62 exp backoff -> adopted into BackoffHelper"},
+    {"id": "SUB-B", "scope": "jcode loop parity (scheduler.rs/runner.rs/compaction.rs/response_recovery.rs)", "top_finding": "scheduler.rs:188-247 AdaptiveScheduler PORTED + scheduler.rs:260 rate-limit backoff PORTED"},
+    {"id": "SUB-C", "scope": "current 12-file Sinister looper stack audit", "top_finding": "Duplicate heartbeat readers across 3 files unified into HeartbeatProbe (30-min fresh standard)"}
+  ],
+  "next_iter_p0_queue": [
+    "checkpoint_manager.py — unify 3 checkpoint/revert paths SUB-C flagged",
+    "sinister_watchdog.py — port loop-relentless-watchdog.ps1 (437 LOC) using sinister_loop_core.HeartbeatProbe",
+    "response_recovery primitive — port jcode response_recovery.rs:56-80 text-wrapped tool-call recovery",
+    "jittered schtask wrapper — fix the 60s-cadence-violates-270s-cache issue (apply 0-60s offset)",
+    "operator heartbeat writer — wire start-sinister-session.ps1 to write _shared-memory/heartbeats/sinister-operator.json every 30s"
+  ],
+  "composes_with": [
+    "loop-relentless-pursuit-2026-05-25",
+    "jcode-parity-loop-swarm-upgrades-2026-05-26",
+    "we-have-the-source-read-it-doctrine-2026-05-25",
+    "no-bat-no-ps1-do-it-for-me-doctrine-2026-05-25",
+    "safe-quality-loops-doctrine-2026-05-24",
+    "full-relentless-swarm-fanout-mindset-doctrine-2026-05-25"
+  ]
+}

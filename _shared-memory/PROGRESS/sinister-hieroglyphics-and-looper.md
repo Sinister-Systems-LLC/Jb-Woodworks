@@ -3,6 +3,27 @@
 > Author: RKOJ-ELENO :: 2026-05-25
 > Lane: `eve-exe` master (multi-iter)
 
+## Looper iter-24 (2026-05-26) — `sinister_loop_core.py` unified primitive
+
+Operator directive (verbatim): *"C:\Users\Zonia\Desktop\Github Input review this
+and how jcode does looping and make the best fastest and most efficient looper
+we can"*.
+
+Shipped: `automations/sinister_loop_core.py` — 7 primitives (AdaptiveScheduler,
+BackoffHelper, UsageLog, HeartbeatProbe, OperatorActive, LoopGuard, swarm_fanout)
+in single file, stdlib-only. Smoke PASS via `python automations/sinister_loop_core.py smoke`.
+Demo PASS — adaptive backoff verified (2.0s → 4.0s → 2.0s on rate-limit + reset).
+
+Process: 3 parallel Explore sub-agents (full-relentless swarm fan-out) audited
+`C:\Users\Zonia\Desktop\Github Input` (10+ repos), jcode `scheduler.rs/runner.rs/swarm.rs/compaction.rs/response_recovery.rs`
+(FILE:LINE cited per `we-have-the-source-read-it-doctrine`), and our current 12-file
+looper stack. Sub-agent reports synthesized into one file + brain entry
+`sinister-loop-core-unified-primitive-2026-05-26.md`.
+
+Iter-25 P0 queue documented in brain entry: checkpoint_manager.py +
+sinister_watchdog.py + response_recovery + jittered schtask wrapper + operator
+heartbeat writer.
+
 ## Looper status (iter-25 verified)
 
 `SinisterLoopOpenAgents` schtask: **Ready** · Next: every 15 min ·
