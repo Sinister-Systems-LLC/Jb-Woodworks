@@ -144,6 +144,11 @@ class RmuxSession:
     last_tool_ts: float = 0.0
     file_size: int = 0
     parse_error: str = ""
+    # iter-80: cross-reference with sinister fleet heartbeats. Populated by
+    # scan_sessions() after parsing. Empty when no matching heartbeat is found
+    # (e.g. session belongs to a project not yet onboarded into the fleet).
+    fleet_slug: str = ""
+    fleet_heartbeat_age_sec: float = 0.0  # heartbeat freshness (0 = unknown)
 
     @property
     def age_seconds(self) -> float:
@@ -354,14 +359,132 @@ def discover_sessions(root: Path | None = None,
     return [p for _, p in out[:max_files]]
 
 
+def _build_fleet_cwd_index() -> dict[str, tuple[str, float]]:
+    """Return cwd→(slug, age_sec) map from _shared-memory/heartbeats/*.json.
+
+    Multiple sessions may live in the same cwd; we keep the most recent
+    heartbeat. Path normalization: lowercased + forward slashes so that
+    Windows-style `D:\\foo\\bar` matches JSONL-style `D:/foo/bar` matches
+    heartbeat `D:\\\\foo\\\\bar`.
+    """
+    sanctum = Path(os.environ.get("SANCTUM_ROOT") or "D:/Sinister Sanctum")
+    hb_dir = sanctum / "_shared-memory" / "heartbeats"
+    out: dict[str, tuple[str, float]] = {}
+    if not hb_dir.is_dir():
+        return out
+    try:
+        files = list(hb_dir.iterdir())
+    except OSError:
+        return out
+    for hb in files:
+        if hb.suffix != ".json":
+            continue
+        try:
+            data = json.loads(hb.read_text(encoding="utf-8", errors="replace"))
+        except Exception:
+            continue
+        if not isinstance(data, dict):
+            continue
+        cwd = data.get("cwd") or ""
+        if not cwd:
+            continue
+        norm = _norm_cwd(cwd)
+        slug = data.get("agent") or hb.stem
+        try:
+            age = max(0.0, time.time() - hb.stat().st_mtime)
+        except OSError:
+            age = 0.0
+        # keep freshest
+        existing = out.get(norm)
+        if existing is None or age < existing[1]:
+            out[norm] = (slug, age)
+    return out
+
+
+def _norm_cwd(p: str) -> str:
+    """Normalize path-string for cross-reference comparisons."""
+    if not p:
+        return ""
+    s = p.strip().lower().replace("\\", "/")
+    # collapse trailing slash
+    while s.endswith("/") and len(s) > 3:
+        s = s[:-1]
+    return s
+
+
 def scan_sessions(root: Path | None = None,
                   max_files: int = 200,
-                  since_seconds: float | None = None) -> list[RmuxSession]:
-    """Discover + parse JSONL files; return RmuxSession list newest-first."""
+                  since_seconds: float | None = None,
+                  *, attach_fleet_slugs: bool = True) -> list[RmuxSession]:
+    """Discover + parse JSONL files; return RmuxSession list newest-first.
+
+    `attach_fleet_slugs=True` (default) cross-references each session's `cwd`
+    against the sinister fleet heartbeats so every row can be tagged with
+    the slug (`Sinister Kernel APK`, `Sinister OS`, etc.) that owns it.
+    """
     paths = discover_sessions(root, max_files=max_files, since_seconds=since_seconds)
     out: list[RmuxSession] = []
     for p in paths:
         out.append(parse_jsonl_session(p))
+    if attach_fleet_slugs and out:
+        cwd_index = _build_fleet_cwd_index()
+        # Secondary index: agent-slug → heartbeat age. Most peer heartbeats
+        # don't carry a `cwd` field today, so we fall back to matching the
+        # JSONL `project_dir` shorthand (the trailing `-projects-<key>` chunk)
+        # against existing heartbeat filenames.
+        slug_age_index = _build_fleet_slug_age_index()
+        for s in out:
+            # primary: cwd match (most reliable)
+            norm = _norm_cwd(s.cwd)
+            if norm and norm in cwd_index:
+                slug, age = cwd_index[norm]
+                s.fleet_slug = slug
+                s.fleet_heartbeat_age_sec = age
+                continue
+            # secondary: project_dir → known fleet slug
+            pd = (s.project_dir or "").lower()
+            if not pd:
+                continue
+            # exact slug match
+            if pd in slug_age_index:
+                s.fleet_slug = pd
+                s.fleet_heartbeat_age_sec = slug_age_index[pd]
+                continue
+            # fleet sometimes uses a shorter or longer slug than the JSONL
+            # project_dir. Try both directions:
+            #   project_dir=kernel-apk    + heartbeat=sinister-kernel-apk
+            #   project_dir=sinister-kernel-apk + heartbeat=kernel-apk
+            longer = f"sinister-{pd}"
+            if longer in slug_age_index:
+                s.fleet_slug = longer
+                s.fleet_heartbeat_age_sec = slug_age_index[longer]
+                continue
+            if pd.startswith("sinister-"):
+                shorter = pd[len("sinister-"):]
+                if shorter in slug_age_index:
+                    s.fleet_slug = shorter
+                    s.fleet_heartbeat_age_sec = slug_age_index[shorter]
+    return out
+
+
+def _build_fleet_slug_age_index() -> dict[str, float]:
+    """Return slug → heartbeat age_sec for every heartbeat file."""
+    sanctum = Path(os.environ.get("SANCTUM_ROOT") or "D:/Sinister Sanctum")
+    hb_dir = sanctum / "_shared-memory" / "heartbeats"
+    out: dict[str, float] = {}
+    if not hb_dir.is_dir():
+        return out
+    try:
+        for p in hb_dir.iterdir():
+            if p.suffix != ".json":
+                continue
+            try:
+                age = max(0.0, time.time() - p.stat().st_mtime)
+            except OSError:
+                continue
+            out[p.stem.lower()] = age
+    except OSError:
+        return out
     return out
 
 
@@ -435,17 +558,27 @@ def format_table(sessions: Iterable[RmuxSession],
     items = sort_sessions(items, sort)[:max(1, min(limit, 500))]
     if not items:
         return "(no sessions)"
-    # Column widths — tuned for 120-col terminals
+    # Column widths — tuned for 120-col terminals. iter-80 adds `fleet`
+    # column showing the sinister slug (if heartbeat is attached); when
+    # no row carries a slug the column is auto-suppressed.
+    has_fleet = any(s.fleet_slug for s in items)
     rows: list[list[str]] = []
-    header = ["live", "project", "model", "age", "ctx%", "in", "out", "cache-r", "cost",
-              "turns", "top-tool"]
+    header = ["live", "project"]
+    if has_fleet:
+        header.append("fleet")
+    header += ["model", "age", "ctx%", "in", "out", "cache-r", "cost",
+               "turns", "top-tool"]
     if show_path:
         header.append("session")
     rows.append(header)
     for s in items:
-        rows.append([
+        row = [
             "●" if s.is_live else "○",
             _truncate(s.project_dir or "?", 18),
+        ]
+        if has_fleet:
+            row.append(_truncate(s.fleet_slug or "-", 22))
+        row += [
             _truncate(s.model, 22),
             _fmt_age(s.age_seconds),
             _fmt_pct(s.ctx_pct),
@@ -455,14 +588,20 @@ def format_table(sessions: Iterable[RmuxSession],
             _fmt_cost(s.cost_usd),
             str(s.turn_count),
             _truncate(s.top_tool or "-", 14),
-        ] + ([_truncate(s.session_id, 36)] if show_path else []))
-    # auto-fit each column to widest cell
+        ]
+        if show_path:
+            row.append(_truncate(s.session_id, 36))
+        rows.append(row)
+    # auto-fit each column to widest cell. Right-justify the numeric columns
+    # by NAME (so insertion of `fleet` column doesn't break alignment).
+    _RIGHT = {"age", "ctx%", "in", "out", "cache-r", "cost", "turns"}
+    right_idxs = {i for i, name in enumerate(header) if name in _RIGHT}
     widths = [max(len(r[i]) for r in rows) for i in range(len(header))]
     out_lines: list[str] = []
     for ri, row in enumerate(rows):
         parts = []
         for i, cell in enumerate(row):
-            if i in (3, 4, 5, 6, 7, 8, 9):
+            if i in right_idxs:
                 parts.append(cell.rjust(widths[i]))
             else:
                 parts.append(cell.ljust(widths[i]))
@@ -489,6 +628,9 @@ def format_session_detail(session: RmuxSession) -> str:
     lines = [
         f"Session  {session.session_id}",
         f"Project  {session.project_dir}",
+        f"Fleet    {session.fleet_slug or '(no matching heartbeat)'}"
+        + (f"  (heartbeat age {_fmt_age(session.fleet_heartbeat_age_sec)})"
+           if session.fleet_slug else ""),
         f"CWD      {session.cwd or '?'}",
         f"Branch   {session.git_branch or '?'}",
         f"CC ver   {session.cc_version or '?'}",
@@ -561,6 +703,8 @@ def _session_to_dict(s: RmuxSession) -> dict:
         "last_tool_ts":        s.last_tool_ts,
         "file_size":           s.file_size,
         "parse_error":         s.parse_error,
+        "fleet_slug":          s.fleet_slug,
+        "fleet_heartbeat_age_sec": s.fleet_heartbeat_age_sec,
     }
 
 

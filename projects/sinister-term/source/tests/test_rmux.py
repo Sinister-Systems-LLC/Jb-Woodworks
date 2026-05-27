@@ -686,3 +686,249 @@ def test_build_argparser_registers_all_flags():
     for k in ("watch", "json", "limit", "live", "sort", "project",
               "detail", "since_hours", "max_files", "show_path", "no_clear"):
         assert k in actions
+
+
+# ---------------------------------------------------------------------------
+# iter-80 — fleet-slug cross-reference
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture
+def fleet_root(tmp_path: Path, monkeypatch):
+    """SANCTUM_ROOT pointed at tmp_path with a heartbeats dir prepared."""
+    monkeypatch.setenv("SANCTUM_ROOT", str(tmp_path))
+    (tmp_path / "_shared-memory" / "heartbeats").mkdir(parents=True)
+    return tmp_path
+
+
+def _write_hb(root: Path, slug: str, **extra):
+    p = root / "_shared-memory" / "heartbeats" / f"{slug}.json"
+    data = {"agent": slug, "ts_utc": "2026-05-27T00:00:00Z", "alive": True}
+    data.update(extra)
+    p.write_text(json.dumps(data), encoding="utf-8")
+    return p
+
+
+def test_norm_cwd_normalizes_slashes():
+    assert rmux._norm_cwd("D:\\Sinister Sanctum\\foo") == "d:/sinister sanctum/foo"
+
+
+def test_norm_cwd_lowercases():
+    assert rmux._norm_cwd("D:/Foo/Bar") == "d:/foo/bar"
+
+
+def test_norm_cwd_strips_trailing_slash():
+    assert rmux._norm_cwd("D:/foo/") == "d:/foo"
+
+
+def test_norm_cwd_empty():
+    assert rmux._norm_cwd("") == ""
+
+
+def test_build_fleet_cwd_index_collects_entries(fleet_root):
+    _write_hb(fleet_root, "sinister-term",
+              cwd="D:/Sinister Sanctum/projects/sinister-term")
+    idx = rmux._build_fleet_cwd_index()
+    assert "d:/sinister sanctum/projects/sinister-term" in idx
+    slug, age = idx["d:/sinister sanctum/projects/sinister-term"]
+    assert slug == "sinister-term"
+    assert age >= 0
+
+
+def test_build_fleet_cwd_index_skips_no_cwd(fleet_root):
+    _write_hb(fleet_root, "agent-without-cwd")
+    idx = rmux._build_fleet_cwd_index()
+    assert idx == {}
+
+
+def test_build_fleet_cwd_index_missing_dir(monkeypatch, tmp_path):
+    monkeypatch.setenv("SANCTUM_ROOT", str(tmp_path / "nope"))
+    assert rmux._build_fleet_cwd_index() == {}
+
+
+def test_build_fleet_slug_age_index_lists_all(fleet_root):
+    _write_hb(fleet_root, "sinister-term")
+    _write_hb(fleet_root, "eve-exe")
+    _write_hb(fleet_root, "kernel-apk")
+    idx = rmux._build_fleet_slug_age_index()
+    assert {"sinister-term", "eve-exe", "kernel-apk"} <= set(idx.keys())
+    for v in idx.values():
+        assert v >= 0
+
+
+def test_build_fleet_slug_age_index_missing_dir(monkeypatch, tmp_path):
+    monkeypatch.setenv("SANCTUM_ROOT", str(tmp_path / "nope"))
+    assert rmux._build_fleet_slug_age_index() == {}
+
+
+def test_scan_sessions_attaches_fleet_slug_via_cwd(fleet_root):
+    # write a session in tmp/projects-folder/file.jsonl + a matching heartbeat
+    proj = fleet_root / "fakehome" / ".claude" / "projects" / "D--Sinister-Sanctum-projects-sinister-term"
+    proj.mkdir(parents=True)
+    jsonl = proj / "s1.jsonl"
+    jsonl.write_text(
+        json.dumps({
+            "type": "assistant",
+            "timestamp": "2026-05-27T00:00:00Z",
+            "cwd": "D:/Sinister Sanctum/projects/sinister-term",
+            "message": {
+                "model": "claude-opus-4-7",
+                "usage": {"input_tokens": 100, "output_tokens": 50,
+                          "cache_creation_input_tokens": 0,
+                          "cache_read_input_tokens": 0},
+                "content": [{"type": "tool_use", "name": "Bash"}],
+            },
+        }),
+        encoding="utf-8",
+    )
+    _write_hb(fleet_root, "sinister-term",
+              cwd="D:/Sinister Sanctum/projects/sinister-term")
+    sessions = rmux.scan_sessions(root=fleet_root / "fakehome" / ".claude" / "projects")
+    assert len(sessions) == 1
+    assert sessions[0].fleet_slug == "sinister-term"
+    assert sessions[0].fleet_heartbeat_age_sec >= 0
+
+
+def test_scan_sessions_attaches_fleet_slug_via_project_dir(fleet_root):
+    # heartbeat exists for `eve-exe` (short slug); JSONL project_dir == eve-exe.
+    proj = fleet_root / "fakehome" / ".claude" / "projects" / "D--Sinister-Sanctum-projects-eve-exe"
+    proj.mkdir(parents=True)
+    jsonl = proj / "s1.jsonl"
+    jsonl.write_text(
+        json.dumps({
+            "type": "assistant", "timestamp": "2026-05-27T00:00:00Z",
+            "cwd": "",  # heartbeat doesn't have cwd to match either
+            "message": {"model": "claude-opus-4-7",
+                        "usage": {"input_tokens": 1, "output_tokens": 1,
+                                  "cache_creation_input_tokens": 0,
+                                  "cache_read_input_tokens": 0},
+                        "content": []},
+        }),
+        encoding="utf-8",
+    )
+    _write_hb(fleet_root, "eve-exe")
+    sessions = rmux.scan_sessions(root=fleet_root / "fakehome" / ".claude" / "projects")
+    assert sessions[0].fleet_slug == "eve-exe"
+
+
+def test_scan_sessions_shorter_slug_fallback(fleet_root):
+    # heartbeat = `kernel-apk`; JSONL project_dir = `sinister-kernel-apk`
+    proj = fleet_root / "fakehome" / ".claude" / "projects" / "D--Sinister-Sanctum-projects-sinister-kernel-apk"
+    proj.mkdir(parents=True)
+    (proj / "s.jsonl").write_text(
+        json.dumps({
+            "type": "assistant", "timestamp": "2026-05-27T00:00:00Z", "cwd": "",
+            "message": {"model": "claude-opus-4-7",
+                        "usage": {"input_tokens": 1, "output_tokens": 1,
+                                  "cache_creation_input_tokens": 0,
+                                  "cache_read_input_tokens": 0},
+                        "content": []},
+        }), encoding="utf-8",
+    )
+    _write_hb(fleet_root, "kernel-apk")
+    sessions = rmux.scan_sessions(root=fleet_root / "fakehome" / ".claude" / "projects")
+    assert sessions[0].fleet_slug == "kernel-apk"
+
+
+def test_scan_sessions_longer_slug_fallback(fleet_root):
+    # heartbeat = `sinister-os`; JSONL project_dir = `os`
+    proj = fleet_root / "fakehome" / ".claude" / "projects" / "D--Sinister-Sanctum-projects-os"
+    proj.mkdir(parents=True)
+    (proj / "s.jsonl").write_text(
+        json.dumps({
+            "type": "assistant", "timestamp": "2026-05-27T00:00:00Z", "cwd": "",
+            "message": {"model": "claude-opus-4-7",
+                        "usage": {"input_tokens": 1, "output_tokens": 1,
+                                  "cache_creation_input_tokens": 0,
+                                  "cache_read_input_tokens": 0},
+                        "content": []},
+        }), encoding="utf-8",
+    )
+    _write_hb(fleet_root, "sinister-os")
+    sessions = rmux.scan_sessions(root=fleet_root / "fakehome" / ".claude" / "projects")
+    assert sessions[0].fleet_slug == "sinister-os"
+
+
+def test_scan_sessions_no_match_leaves_slug_empty(fleet_root):
+    proj = fleet_root / "fakehome" / ".claude" / "projects" / "D--Sinister-Sanctum-projects-orphan"
+    proj.mkdir(parents=True)
+    (proj / "s.jsonl").write_text(
+        json.dumps({
+            "type": "assistant", "timestamp": "2026-05-27T00:00:00Z", "cwd": "",
+            "message": {"model": "claude-opus-4-7",
+                        "usage": {"input_tokens": 1, "output_tokens": 1,
+                                  "cache_creation_input_tokens": 0,
+                                  "cache_read_input_tokens": 0},
+                        "content": []},
+        }), encoding="utf-8",
+    )
+    # no matching heartbeat
+    sessions = rmux.scan_sessions(root=fleet_root / "fakehome" / ".claude" / "projects")
+    assert sessions[0].fleet_slug == ""
+    assert sessions[0].fleet_heartbeat_age_sec == 0.0
+
+
+def test_scan_sessions_attach_fleet_slugs_disabled(fleet_root):
+    proj = fleet_root / "fakehome" / ".claude" / "projects" / "D--Sinister-Sanctum-projects-sinister-term"
+    proj.mkdir(parents=True)
+    (proj / "s.jsonl").write_text(
+        json.dumps({
+            "type": "assistant", "timestamp": "2026-05-27T00:00:00Z",
+            "cwd": "D:/Sinister Sanctum/projects/sinister-term",
+            "message": {"model": "claude-opus-4-7",
+                        "usage": {"input_tokens": 1, "output_tokens": 1,
+                                  "cache_creation_input_tokens": 0,
+                                  "cache_read_input_tokens": 0},
+                        "content": []},
+        }), encoding="utf-8",
+    )
+    _write_hb(fleet_root, "sinister-term",
+              cwd="D:/Sinister Sanctum/projects/sinister-term")
+    sessions = rmux.scan_sessions(
+        root=fleet_root / "fakehome" / ".claude" / "projects",
+        attach_fleet_slugs=False,
+    )
+    assert sessions[0].fleet_slug == ""
+
+
+def test_format_table_shows_fleet_column_when_any_set():
+    import time
+    s = _mk_sess(project_dir="foo", model="claude-opus-4-7",
+                 last_active=time.time(), fleet_slug="sinister-foo")
+    out = rmux.format_table([s])
+    assert "fleet" in out
+    assert "sinister-foo" in out
+
+
+def test_format_table_omits_fleet_column_when_none():
+    import time
+    s = _mk_sess(project_dir="foo", model="claude-opus-4-7",
+                 last_active=time.time(), fleet_slug="")
+    out = rmux.format_table([s])
+    # fleet column is auto-suppressed when no row carries a slug
+    assert "fleet" not in out.split("\n")[0]
+
+
+def test_format_session_detail_includes_fleet_row():
+    s = _mk_sess(session_id="x", project_dir="foo", model="claude-opus-4-7",
+                 fleet_slug="sinister-foo", fleet_heartbeat_age_sec=120.0)
+    out = rmux.format_session_detail(s)
+    assert "Fleet" in out
+    assert "sinister-foo" in out
+    assert "heartbeat age" in out
+
+
+def test_format_session_detail_handles_missing_fleet():
+    s = _mk_sess(session_id="x", project_dir="foo", model="claude-opus-4-7",
+                 fleet_slug="")
+    out = rmux.format_session_detail(s)
+    assert "Fleet" in out
+    assert "no matching heartbeat" in out
+
+
+def test_session_to_dict_includes_fleet_fields():
+    s = _mk_sess(session_id="x", model="claude-opus-4-7",
+                 fleet_slug="sinister-foo", fleet_heartbeat_age_sec=42.0)
+    d = rmux._session_to_dict(s)
+    assert d["fleet_slug"] == "sinister-foo"
+    assert d["fleet_heartbeat_age_sec"] == 42.0
