@@ -13,12 +13,18 @@ import { Icon } from "@/components/ui/icon";
 import { services, portfolio } from "@/lib/content";
 
 export default function Home() {
-  // Avoid duplication: CommercialFeature already showcases the New Balance +
-  // SKU Snipers commercial work. The "Recent builds, up close" preview pulls
-  // from non-commercial items so visitors see a fresh slice on the main page.
-  const previewItems = portfolio
-    .filter((p) => p.category !== "Commercial & Event Fabrication")
-    .slice(0, 4);
+  // Recent work preview: lead with the New Balance × Foot Locker reveal (per
+  // operator, the headline brand build belongs in Recent work, not buried in
+  // the Commercial section), then alternate with high-impact residential
+  // builds so the editorial cadence stays varied. Falls back gracefully if the
+  // NB entry is ever renamed/removed.
+  const newBalance = portfolio.find((p) => p.slug === "new-balance-reveal");
+  const residential = portfolio.filter(
+    (p) => p.category !== "Commercial & Event Fabrication"
+  );
+  const previewItems = (
+    newBalance ? [newBalance, ...residential] : residential
+  ).slice(0, 4);
 
   return (
     <>
