@@ -135,7 +135,36 @@ def save(lane: str, run_id: str, iter_n: int, paths: list[str], sanctum_root: st
             continue
         manifest["files"].append({"path": str(rel).replace("\\", "/"), "sha256": sha, "bytes": sz})
     (ckpt_root / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+    _hgly_density_hook(lane=lane, run_id=run_id, iter_n=iter_n, sanctum_root=root)
     return {"ok": True, "checkpoint": str(ckpt_root), "files": len(manifest["files"])}
+
+
+_HGLY_LANES = {"sinister-hieroglyphics", "Sinister Hieroglyphics", "hgly"}
+
+
+def _hgly_density_hook(lane: str, run_id: str, iter_n: int, sanctum_root: pathlib.Path) -> None:
+    """Fire-and-forget per-iter density measurement for the hgly lane.
+
+    Appends one JSONL row to _shared-memory/hgly-density-trajectory.jsonl
+    via `automations/hgly_density.py track --note "loop-checkpoint ..."`.
+    Never blocks the checkpoint write (timeout 30s, check=False, swallow
+    any exception). Honors `SINISTER_HGLY_TRACK_DRY_RUN=1` for test mode.
+    """
+    if lane not in _HGLY_LANES:
+        return
+    density_tool = sanctum_root / "automations" / "hgly_density.py"
+    if not density_tool.exists():
+        return
+    note = f"loop-checkpoint lane={lane} run={run_id} iter={iter_n}"
+    cmd = [sys.executable, str(density_tool), "track", "--note", note]
+    if os.environ.get("SINISTER_HGLY_TRACK_DRY_RUN") == "1":
+        cmd.append("--dry-run")
+    try:
+        import subprocess
+        subprocess.run(cmd, check=False, timeout=30,
+                       capture_output=True, text=True)
+    except Exception:
+        pass
 
 
 def _read_log_best(log_path: pathlib.Path, lane: str, run_id: str) -> tuple[int, float]:

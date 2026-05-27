@@ -3,6 +3,54 @@
 > Author: RKOJ-ELENO :: 2026-05-25
 > Append-only. Most-recent on top.
 
+## 2026-05-27T00:47Z — iter-26 loop_checkpoint -> density trajectory hook
+
+Shipped:
+
+- `automations/loop_checkpoint.py` — `save()` end-of-write now calls
+  `_hgly_density_hook(lane, run_id, iter_n, sanctum_root)`. The hook
+  is fire-and-forget (timeout 30s, swallow all exceptions, capture
+  output). Allowlist: `{sinister-hieroglyphics, Sinister Hieroglyphics,
+  hgly}` — any other lane is a no-op. Honors
+  `SINISTER_HGLY_TRACK_DRY_RUN=1` for test mode.
+- `projects/sinister-hieroglyphics/tests/test_loop_checkpoint_hgly.py`
+  (~165 LOC, 4 assertions): `t_hook_constants_match_doctrine` (allowlist
+  has slug + display + alias), `t_hook_skips_non_hgly_lane` (non-hgly
+  lane is no-op), `t_hook_dry_run_does_not_append` (dry-run passes
+  through), `t_save_smoke_with_dry_run_env` (end-to-end CLI invocation
+  with dry-run env).
+- `_shared-memory/hgly-density-trajectory.jsonl` — auto-grew from 1
+  to 2 rows during live smoke (run_id=rtest-live, iter=0, sha=64c1a65).
+
+Verify (this turn, all green):
+
+- `python projects/sinister-hieroglyphics/tests/test_loop_checkpoint_hgly.py` -> 4/4 passed, exit 0
+- `python projects/sinister-hieroglyphics/tests/test_density.py` -> 9/9 (regression)
+- `python projects/sinister-hieroglyphics/tests/test_parser.py` -> 11/11 (regression)
+- `python projects/sinister-hieroglyphics/tests/test_ir.py` -> 10/10 (regression)
+- `python projects/sinister-hieroglyphics/tests/test_smoke.py` -> OK 0.0.7 (regression)
+- Live e2e: `loop_checkpoint.py save --lane sinister-hieroglyphics ...`
+  appended one trajectory row with the `loop-checkpoint lane=... run=...
+  iter=...` note format.
+
+The trajectory now grows ONE row per kernel-loop close on the hgly
+lane. Quality-monotonic loop can read the JSONL tail and detect ratio
+regression quantitatively (per master plan Phase 9.7 + safe-quality-
+loops-doctrine-2026-05-24 guardrail #4).
+
+Composes with:
+
+- `_shared-memory/plans/sinister-hieroglyphics-iter25-completion-2026-05-27/plan.md`
+  iter-26 row (this is the shipping of that row).
+- `_shared-memory/knowledge/safe-quality-loops-doctrine-2026-05-24.md`
+  guardrail #4 (revert on regression) now has its measurement signal.
+- `_shared-memory/knowledge/loop-relentless-pursuit-doctrine-2026-05-25.md`
+  — relentless pursuit toward 0.20 ratio goal now has a fitness scoreboard.
+
+Next iter (queued in plan, iter-27): `_tpl_big_*` templates ×5 in
+`hgly_corpus_seed.py` (memory + concurrency + simulation + matrix + io,
+each 50-150 LOC) — first real corpus-size lever after measurement spine.
+
 ## 2026-05-27T00:03Z — iter-25 Phase 9.5b density trajectory tracker
 
 Shipped:
