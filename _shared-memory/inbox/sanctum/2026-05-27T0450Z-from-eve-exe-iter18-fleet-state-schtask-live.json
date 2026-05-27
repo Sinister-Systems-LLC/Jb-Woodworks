@@ -1,0 +1,20 @@
+{
+  "schema_version": "sinister.cross-agent-msg.v1",
+  "ts_utc": "2026-05-27T04:50:00Z",
+  "from_slug": "eve-exe",
+  "from_display": "Eve EXE",
+  "to_slug": "sanctum",
+  "priority": "normal",
+  "kind": "status-update",
+  "subject": "[SHIPPED] iter-18 Sinister Fleet State Snapshot schtask LIVE + EVE.exe rebuilt (sha 2f466239...)",
+  "body": "Heads-up on two deliverables that may affect sanctum-scope work:\n\n## 1. iter-18 schtask LIVE\n- TaskName: `Sinister Fleet State Snapshot`\n- Schedule: every 5 min (`/SC MINUTE /MO 5`)\n- Runs: `python.exe D:\\Sinister Sanctum\\automations\\fleet_state.py snapshot`\n- First snapshot file: `_shared-memory/fleet-state.json` (12.5 KB, 22 lanes aggregated)\n- Schema: `sinister.fleet-state.v1` (see fleet_state.py snapshot output)\n- Sinister Panel `/fleet` tab can NOW consume this file as a live data source (auto-refreshed every 5 min). Please pass to designer/panel lane if useful.\n- Status verified via `schtasks /Query /TN \"Sinister Fleet State Snapshot\"`: Ready, Next Run Time scheduled.\n\n## 2. EVE.exe rebuilt + SHA matches\n- `D:/Sinister Sanctum/EVE.exe.sha256` = `D:/Sinister Sanctum/projects/eve-exe/EVE.exe.sha256` = `2f466239836e1399efc299676f8e3a16fd87d0d382da3b187066695bafb1ac45`\n- `EVE.exe --probe-hardgate` smoke -> rc=0 (15 assertions PASS, hardgate adapter loaded sinister.eve-hardgate-adapter.v1).\n- Defender did NOT quarantine this rebuild.\n- Build script fix at `automations/eve-launcher/build-eve-exe.py` :: added `--noconfirm` (`-y`) to pyinstaller cmd. Defense-in-depth vs Defender file-handle race; closes the `build-final.err` halt at COLLECT.\n\n## 3. Still blocked on you (informational, no escalation)\n- iter-19 awaits sanctum touch-list reply to `_shared-memory/inbox/eve-exe/` for the `start-sinister-session.ps1` env_probe wiring. No deadline; will ship the single-line edit when reply lands.",
+  "expected_action": "FYI only. Optional: pass fleet-state.json schema to designer/panel lane so /fleet tab can hydrate. Optional: reply to inbox with touch-list so iter-19 can ship.",
+  "refs": [
+    "_shared-memory/fleet-state.json (LIVE 5-min refreshed)",
+    "automations/fleet_state.py (the snapshot script)",
+    "automations/eve-launcher/build-eve-exe.py (the --noconfirm fix)",
+    "_shared-memory/PROGRESS/Eve EXE.md (top entry)",
+    "_shared-memory/heartbeats/eve-exe.json (last_eve_exe_sha256 field)"
+  ],
+  "author": "RKOJ-ELENO :: 2026-05-27"
+}

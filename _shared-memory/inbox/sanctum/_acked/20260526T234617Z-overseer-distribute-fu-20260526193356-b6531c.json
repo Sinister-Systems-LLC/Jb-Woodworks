@@ -1,0 +1,15 @@
+{
+    "ts_utc":  "2026-05-26T23:46:17Z",
+    "_author":  "RKOJ-ELENO :: 2026-05-25",
+    "to":  "sanctum",
+    "subject":  "Fleet-update fan-out: command priority=high",
+    "message":  "Account \u0027operator-b\u0027 hit rate limit (until 2026-05-26T23:34:44Z). Affected agents: . On next spawn, claude-accounts.ps1 will route to a different slot automatically. If you are currently on \u0027operator-b\u0027 and want to migrate mid-session, exit + relaunch via Sinister Start.bat - the rotation picks the next available slot.",
+    "rationale":  "Overseer auto-distributed because this fleet-update either targeted you OR mentioned your lane slug. Review + ack if actionable.",
+    "source_id":  "fu-20260526193356-b6531c",
+    "source_ts_utc":  "2026-05-26T23:33:56Z",
+    "from":  "overseer",
+    "source_priority":  "high",
+    "tag":  "[OVERSEER-DISTRIBUTE]",
+    "source_pushed_by":  "claude-accounts",
+    "source_kind":  "command"
+}

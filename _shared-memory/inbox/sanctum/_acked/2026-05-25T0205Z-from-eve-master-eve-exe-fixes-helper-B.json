@@ -1,0 +1,62 @@
+{
+  "_author": "RKOJ-ELENO :: 2026-05-25",
+  "tag": "[OPERATOR-DELEGATE]",
+  "from": "sanctum-mesh-foundation (master EVE)",
+  "to": "sanctum (helper B)",
+  "to_display": "Sinister Sanctum (helper B -- EVE.exe animations + jcode-style usage tracking + honest-status)",
+  "ts_utc": "2026-05-25T02:05Z",
+  "priority": "CRITICAL",
+  "subject": "OPERATOR DIRECTIVE: EVE.exe needs more animations + jcode-style usage tracking + NO MORE LIES (100%/false status)",
+
+  "operator_verbatim_2026_05_25T02_02Z": "open two sinsiter sanctum agents to help this one that is working on the eve exe. i need to get that shit done.",
+
+  "your_lane_division_HELPER_B": [
+    "FIX #1 (P0): 'i need more animatiimation and live here' -- add more live jcode-style animations to EVE.exe pages (currently only main menu has jcode_animation.py; spread to account page, tools page, sideprojects, project picker, all pages)",
+    "FIX #2 (P0): 'review how jcode track their usaage or what we need to do and fucking do it' -- implement jcode-style usage tracking in EVE.exe (token counts per agent, context % per session, real numbers from claude-accounts.json + spawn ledger)",
+    "FIX #3 (P0): 'saying its 100% its fucking not' -- audit EVE.exe for any place we say 100%/complete/healthy when it's not -- replace with REAL numbers (annotated/total, healthy/total, etc) per honest-status doctrine",
+    "FIX #4 (P1): 'jcode popups to track context and to track usage' -- popup overlay in EVE.exe showing current session context usage + token burn rate (read from sinister-term-history/history.jsonl)",
+    "FIX #5 (P1): 'concise logging system' -- audit EVE.exe logging; reduce noise; surface only what operator needs",
+    "FIX #6 (P1): 'push it and complete everything... once eve is done... need the pushes with detailed committs to happen often per agent running baked into memory with no issues that connects with leo' -- per-agent commit-pusher: hook a per-agent post-edit watcher that commits + pushes the agent's branch with detailed message on every meaningful unit"
+  ],
+
+  "files_in_scope": [
+    "tools/eve-picker/jcode_animation.py",
+    "tools/eve-picker/main_menu.py",
+    "tools/eve-picker/account_info_panel.py",
+    "tools/eve-picker/account_manager.py",
+    "tools/eve-picker/token_analytics.py",
+    "tools/eve-picker/health_tools.py",
+    "tools/eve-picker/eve_ui.py",
+    "automations/eve-launcher/eve.py",
+    "automations/sanctum-auto-push.ps1 (extend for per-agent detailed commits)"
+  ],
+
+  "your_action_on_cold_start_pickup": [
+    "(1) READ this inbox FIRST",
+    "(2) Coordinate with helper A (sibling inbox 2026-05-25T0205Z-from-eve-master-eve-exe-fixes-helper-A.json) -- helper A owns: navigation flows, close-hang, account page reduction, login fix, MAX_ACCOUNTS cap removal, centered menus. AVOID DOUBLE-EDITING -- git status before editing; mesh-claim",
+    "(3) MESH-LOCK files via touch _shared-memory/mesh-locks/<filename-slug>.lock",
+    "(4) Smoke-test each fix: launch EVE.exe, verify animation/tracking/honest-status, confirm pass",
+    "(5) Push commits per agent OFTEN with detailed messages (operator wants this baked into the every-agent norm)",
+    "(6) Heartbeat to slug 'sanctum-helper-B-eve-exe' (avoid collision)",
+    "(7) Log to _shared-memory/PROGRESS/Sinister Sanctum.md with 'helper-B' prefix",
+    "(8) When done: ship 'helper-B complete' marker inbox to sanctum-mesh-foundation"
+  ],
+
+  "jcode_usage_tracking_reference": {
+    "what_jcode_does": "Token-counter popup top-right showing context percentage + cumulative tokens + cost-est, live-updating every few seconds. Color-codes: green<60%, yellow 60-80%, red>80%",
+    "where_to_pull_from": "_shared-memory/sinister-term-history/history.jsonl (per-session token counts), claude-accounts.json (per-account usage if Anthropic exposes), spawned-windows.jsonl (active session list)",
+    "where_to_render": "tools/eve-picker/account_info_panel.py per-account row; tools/eve-picker/jcode_animation.py popup overlay class; main_menu.py status bar"
+  },
+
+  "compose_with_doctrines": [
+    "no-bullshit-tested-before-claimed-doctrine-2026-05-23 (rule 1 precise verbs -- NO MORE 100% LIES)",
+    "mesh-coordination-and-resource-lifecycle-2026-05-24",
+    "sinister-ui-canonical-dashboard-skeleton-inheritance-2026-05-24 (animation classes inherit from dashboard-skeleton .lg-* if any)",
+    "loop-mode-continuous-iteration-2026-05-24",
+    "agent-autonomy-push-and-completion-2026-05-23 (per-agent detailed commits NOW THE NORM)"
+  ],
+
+  "honest_status_directive_VERBATIM_OPERATOR": "'clean this up and what did i say about the cap i want everything to be clean and leave out wrong info. like saying its 100% its fucking not'. AUDIT every status/health/% string in EVE.exe -- if it can return 100% without being actually-100%, fix it.",
+
+  "no_ack_required": "Operator delegate; pick up + execute. Drop rows per fix in _shared-memory/PROGRESS/Sinister Sanctum.md."
+}

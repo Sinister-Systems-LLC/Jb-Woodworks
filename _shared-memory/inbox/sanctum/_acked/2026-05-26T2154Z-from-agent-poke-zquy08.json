@@ -1,0 +1,12 @@
+{
+    "schema_version":  "sinister.cross-agent-msg.v1",
+    "ts_utc":  "2026-05-26T21:54:13Z",
+    "from_slug":  "agent-poke",
+    "from_display":  "Agent Poke (manual)",
+    "to_slug":  "sanctum",
+    "priority":  "high",
+    "kind":  "loop-poke",
+    "subject":  "KEEP GOING -- operator-requested poke",
+    "body":  "iter-23 ships: pull from origin/agent/sinister-sanctum/iter23-* branches to get new loop+swarm primitives; smoke them; ack via fleet-update\n\nOperator hard-canonical 2026-05-25T02:18Z \u0027make agents relentlessly pursue goal\u0027. Pick next queue item, ship it, loop. If genuinely blocked: 1-line block reason to OPERATOR-ACTION-QUEUE.md AND ScheduleWakeup \u003c=270s. DO NOT just end turn.",
+    "expected_action":  "resume iteration OR address utterance OR write block + ScheduleWakeup \u003c=270s"
+}

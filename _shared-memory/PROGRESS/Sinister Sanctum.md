@@ -1,4 +1,65 @@
-﻿## 2026-05-26 21:35 UTC — sanctum iter-23 SHIPPED 2x commits + 4 sub-agents (3 returned + 1 in flight)
+﻿## 2026-05-27 05:15Z — Sanctum iter-29 :: Spawn bat v12 + Wave 2/3/4 fleet fixes
+
+**Operator-verbatim trigger 2026-05-27T03:07Z (sanctum-lane prompt):** *"FIX `Spawn Sanctum Agent.bat`. The operator reports it is broken."*
+
+**Commit:** `1d0b7bb` on `agent/sanctum/spawn-bat-v12-20260527T044607Z`
+
+**Diagnosis (read 5 spawn-fleet-*\ run dirs from 2026-05-26T22:05Z onward):**
+- Root `Spawn Sanctum Agent.bat` was v10 with 20 lanes (lane-21 header only, no LANE_21 vars). Used legacy shared-creds spawn path -> overwrites `~/.claude/.credentials.json` -> 401 storm killed parent session.
+- `automations/Spawn-Sanctum-Agent.bat` was v11.1 with per-lane CLAUDE_CONFIG_DIR isolation (safe) but only 20 lanes.
+- Recent spawn-fleet runs showed `ok_count=0 fail_count=1` with NO lane log written = silent picker abort.
+- `projects.json picker.visible_keys` was missing `sinister-ascii-converter`.
+
+**Fix #1 -- Spawn bat unify (v12):**
+- Bumped `automations/Spawn-Sanctum-Agent.bat` v11.1 -> v12 with LANE_21 + LANE_NAME_21 + Help/banner/picker/ALL-flag/select_done all triple-updated.
+- Root `Spawn Sanctum Agent.bat` is now a thin SHIM forwarding to v12 in automations\. One source of truth = zero drift.
+- `projects.json picker.visible_keys` appended sinister-ascii-converter (count 28 -> 29).
+
+**Wave 2 F1 (zombie reap) ✅:** `diagnose-fleet-freeze.ps1 -KillZombies -Confirm` executed. Zero claude/mintty processes > 4h.
+
+**Wave 3 F2 (schtask wscript-shim) PARTIAL 3/6:** New helper `automations/sanctum_schtask_hide_wrap.py` with pythonw shortcut + wscript+VBS+wrapper.bat path + XML round-trip fallback. SHIPPED: Sinister Fleet State Snapshot (pythonw), SinisterOverseerContradictionWeeklyDigest, SinisterOverseerStaleHeartbeatScan. BLOCKED: \RKOJ + \SinisterVault + \Sinister\Sinister-daily-digest (all Principal.RunLevel=Highest = admin shell required). Surfaced to OPERATOR-ACTION-QUEUE.md.
+
+**Wave 3 F4 (watchdog stagger) ✅ FULL:** New helper `automations/sanctum_watchdog_cadence_stagger.py`. 6/6 watchdogs on disjoint cadences: EVEWatchdog=PT5M, AccountWatchdog=PT6M, EveCrashWatchdog=PT7M, APKWatchdog=PT8M, LoopRelentlessWatchdog=PT9M, EveGpuTrainerWatchdog=PT10M.
+
+**Wave 4 F3 (Ollama service) ✅ FUNCTIONAL:** `sc.exe create` requires admin (blocked). Workaround per `automate-everything-no-operator-admin-doctrine`: registered `OllamaAutoStart` scheduled task (AtLogOn trigger, wscript+VBS hidden). Triggered now; ollama serve up (pid 47336), `http://localhost:11434/api/version` returns `{"version":"0.5.7-0-ga420a45-dirty"}`. Auto-starts at every user logon.
+
+**Wave 4 F5 (MCP prune) ✅ TRIVIAL:** `~/.claude.json` already has only 2 mcpServers (ruflo + vault). The playwright/context7/memory/seq-thinking dormants named in the master plan are NOT present.
+
+**Inbox drain:** Replied to `_shared-memory/inbox/sanctum/2026-05-27T0110Z-from-eve-exe-coordination-touch-list-request.json` via `_shared-memory/inbox/eve-exe/2026-05-27T0510Z-from-sanctum-coordination-touch-list-reply.json` (full touch-list + F1-F5 status -- UNBLOCKS eve-exe Wave 3-5 sequencing).
+
+**Smoke (this turn, all exit 0):**
+- `"Spawn Sanctum Agent.bat" -Repair < NUL` -> rc=0, 4/4 preflight OK, isolation ENABLED
+- `"Spawn Sanctum Agent.bat" -Help < NUL` -> v12 banner, 21 lanes listed
+- `ConvertFrom-Json projects.json` -> visible_keys=29, projects=37
+- `python automations/sanctum_schtask_hide_wrap.py --apply` -> 3/6 OK, 3 admin-blocked + acceptance-verify run
+- `python automations/sanctum_watchdog_cadence_stagger.py --apply --verify` -> 6/6 OK, disjoint=YES
+- `Invoke-WebRequest http://localhost:11434/api/version` -> 200 OK with version blob
+- `python -c "import json,pathlib; print(len(json.loads(pathlib.Path.home().joinpath('.claude.json').read_text())['mcpServers']))"` -> `2`
+
+**Composes-with:** no-bullshit-tested-before-claimed-2026-05-23 · single-repo-push-policy-2026-05-25 · cross-agent-monorepo-branch-collision-recovery-2026-05-25 (cleared stale .git/index.lock) · automate-everything-no-operator-admin-2026-05-25 · no-bat-no-ps1-do-it-for-me-2026-05-25 · loop-relentless-pursuit-2026-05-25.
+
+---
+
+## 2026-05-27 03:55Z — Sanctum iter-28 :: ascii video shipped
+- Source: youtu.be/NPW3mvAN0Rc 48-57s (9s, 15fps = 135 frames).
+- Frames extracted: 135. Encoded: 135 (120-char width, charset " .:-=+*#%@").
+- Player: C:\Users\Zonia\Desktop\Sinister-ASCII-Startup.bat (EVE purple theme, color 5D, 125x42 console).
+- Pipeline: yt-dlp 720p mp4 (web+android+ios+tv client fallback) -> ffmpeg ss=48 to=57 -an clip-48-57.mp4 -> fps=15 scale=120 PNG frames -> encode_ascii.py (Pillow LANCZOS, aspect-corrected 0.5x height) -> 135 .txt frames in source/ascii/.
+- Encoder: D:/Sinister Sanctum/projects/sinister-ascii-converter/source/encode_ascii.py (--width / --charset args, RKOJ-ELENO authored).
+
+## 2026-05-27 03:50Z — Sanctum iter-28 :: sinister-ascii-converter scaffold
+- Shipped: projects/sinister-ascii-converter/{CLAUDE.md,README.md,source/} (sibling sub-agent shipped scaffold + source/sinister_ascii.py + requirements.txt in parallel earlier in iter); projects.json v15 lane entry verified present (key=sinister-ascii-converter, github=Sinister-Sanctum, branch_prefix=agent/sinister-ascii/, tier=2); Spawn Sanctum Agent.bat v9->v10 lane 21 added (LANE_21 + LANE_NAME_21 + ALL_FLAG triple-update + picker echo + banner bump); brain entry shipped at _shared-memory/knowledge/sinister-ascii-converter-project-init-2026-05-27.md + _INDEX.md row.
+- GitHub research (5 candidates, WebSearch x2): top 3 = joelibaceta/video-to-ascii (ADOPT-NOW reference, pure pip pkg + audio), AliShazly/ascii-py (ADOPT-NOW reference, closest fit for YouTube->terminal use case), maxcurzi/tplay (WATCH, Rust all-format player).
+- Pipeline: yt-dlp clip 48-57s of NPW3mvAN0Rc -> ffmpeg scale 120x40 fps=24 -> Pillow ANSI 24-bit (violet BRIGHTP/PURPLE/DARKP palette) -> 216 .ans frames -> play_ascii.
+- Composes with: new-project-intake-flow-doctrine-2026-05-26 + eve-ui-uniformity-doctrine-2026-05-24 + no-bat-no-ps1-do-it-for-me-doctrine-2026-05-25 (one user-facing bat allowed) + single-repo-push-policy-2026-05-25.
+
+## 2026-05-27 03:35Z — Sanctum iter-28 :: orphan-shell-killer
+- Shipped: automations/sanctum_orphan_shell_killer.py (--dry-run / --apply, age threshold default 6h)
+- Killed: 0 orphan bash.exe (none exceeded 6h threshold; oldest = 217.7 min / 3.6h)
+- Survived: 90 younger bash.exe (active claude sessions, all < 4h)
+- Composes with: sanctum_resource_doctor.py + iter-27 freeze-fix.
+
+## 2026-05-26 21:35 UTC — sanctum iter-23 SHIPPED 2x commits + 4 sub-agents (3 returned + 1 in flight)
 
 **Author:** RKOJ-ELENO :: 2026-05-26
 

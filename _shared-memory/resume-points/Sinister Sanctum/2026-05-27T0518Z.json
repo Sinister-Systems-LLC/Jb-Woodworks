@@ -1,0 +1,43 @@
+{
+    "schema_version": "sinister.resume-point.v1",
+    "ts_utc": "2026-05-27T05:18:00Z",
+    "project": "sanctum",
+    "agent_name": "sanctum",
+    "mode": "resume",
+    "focus_intent": "iter-29 just shipped: Spawn bat v12 unify + Wave 2 F1 + Wave 3 F2 partial + Wave 3 F4 + Wave 4 F3/F5 + eve-exe touch-list reply. Next iter: drain remaining inbox + 5-repo P0 items.",
+    "git": {
+        "branch": "agent/sanctum/spawn-bat-v12-20260527T044607Z",
+        "head": "1d0b7bb",
+        "head_msg": "sanctum iter-29: Spawn Sanctum Agent.bat v12 unified + lane 21 ASCII",
+        "recent_commits": [
+            "1d0b7bb sanctum iter-29: Spawn Sanctum Agent.bat v12 unified + lane 21 ASCII",
+            "28f6fef sinister-looper iter-24: sinister_loop_core.py unified primitive",
+            "648ebfe hgly iter-28: corpus regen with BIG templates (255 -> 286 progs); ratio 0.9389 -> 0.9218",
+            "0266302 sinister-term iter-80: rmux fleet-slug cross-reference",
+            "1455132 eve-compliance R19+R21: GPU trainer watchdog (Phase 2 activation)"
+        ]
+    },
+    "shipped_this_iter": {
+        "fix_1_spawn_bat": "v10/v11 fork resolved -> v12 unified (one source of truth at automations/Spawn-Sanctum-Agent.bat; root bat is shim). +LANE_21 sinister-ascii-converter. projects.json visible_keys updated.",
+        "wave_2_f1_zombie_reap": "shipped (0 claude/mintty >4h)",
+        "wave_3_f2_schtask_wrap": "3/6 shipped via pythonw + wscript+VBS+wrapper.bat. 3 admin-blocked tasks surfaced to OPERATOR-ACTION-QUEUE.md (RunLevel=Highest).",
+        "wave_3_f4_watchdog_stagger": "6/6 shipped disjoint PT5/6/7/8/9/10M cadences",
+        "wave_4_f3_ollama_service": "shipped functional (OllamaAutoStart schtask at-logon; sc.exe create needs admin; ollama serve up, HTTP 200)",
+        "wave_4_f5_mcp_prune": "trivial (~/.claude.json already only ruflo+vault)",
+        "inbox_reply": "eve-exe touch-list request acked + replied (unblocks their Wave 3-5 sequencing)"
+    },
+    "blocked": [
+        "F2 last 3 schtasks (RunLevel=Highest) -> queued under OPERATOR-ACTION-QUEUE.md 2026-05-27T05:05Z row. One-click fix in elevated PS: python automations/sanctum_schtask_hide_wrap.py --apply"
+    ],
+    "next_iter_queue": [
+        "iter-30: drain remaining sanctum/ inbox (still ~30+ rows incl. overseer-distribute backlog)",
+        "iter-31: 5-repo integration P0-1 wait_for_sentinel + P0-2 wait_mode + P0-3 heartbeat revision",
+        "iter-32: 2 brain entry docs (schtask-hide-wrap-doctrine-2026-05-27 + watchdog-cadence-stagger-doctrine-2026-05-27) + _INDEX.md updates"
+    ],
+    "pre_warm_reads": [
+        "D:\\Sinister Sanctum\\_shared-memory\\PROGRESS\\Sinister Sanctum.md",
+        "D:\\Sinister Sanctum\\_shared-memory\\plans\\fleet-master-complete-everything-2026-05-27\\plan.md",
+        "D:\\Sinister Sanctum\\_shared-memory\\plans\\sanctum-5-repo-integration-master-2026-05-26T2155Z\\plan.md",
+        "D:\\Sinister Sanctum\\_shared-memory\\OPERATOR-ACTION-QUEUE.md"
+    ]
+}

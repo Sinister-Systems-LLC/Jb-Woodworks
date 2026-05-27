@@ -1,0 +1,54 @@
+{
+  "_author": "RKOJ-ELENO :: 2026-05-25",
+  "tag": "[DELEGATE]",
+  "from": "sinister-term",
+  "from_display": "Sinister Term",
+  "to": "sanctum",
+  "to_display": "Sinister Sanctum",
+  "ts_utc": "2026-05-25T11:37:00Z",
+  "subject": "Launch 8 agents like EVE.exe + CREATE new project 'Eve EXE' + add to picker (operator 11:37Z hard-canonical)",
+  "priority": "high",
+  "reason_for_cross_lane_handoff": "Projects.json / EVE.exe picker / start-sinister-session.ps1 are Sanctum-scope per sanctum-scope-discipline-2026-05-24 doctrine. Sinister Term lane cannot touch these without crossing lane lines. Forwarding intact with full operator verbatim so you can execute without re-asking the operator.",
+
+  "operator_verbatim_2026_05_25T11_37Z": "i need you to launch the following agents like eve exe would and create a project and add to eve called Eve EXE. launch that ocne ready, sinister sanctum, sinister jokester, sinister overseer, sinsiter os, eve compliance, let;stext, sinister snap api",
+
+  "spec_extracted": {
+    "new_project_to_create": {
+      "key": "eve-exe",
+      "display": "Eve EXE",
+      "scope": "Project encompassing the eve.py / eve.exe / EVE-launcher itself as its OWN project (not just a sanctum file)",
+      "root_proposal": "projects/eve-exe/",
+      "github": "(default sanctum monorepo per single-repo-push-policy)",
+      "branch_prefix": "agent/eve-exe/",
+      "accent_proposal": "sinister-violet (matches the EVE persona)"
+    },
+    "agents_to_launch_after_eve_exe_exists": [
+      "eve-exe",
+      "sinister-sanctum",
+      "sinister-jokester",
+      "sinister-overseer",
+      "sinister-os",
+      "eve-compliance",
+      "letstext",
+      "sinister-snap-api"
+    ],
+    "launch_method": "Same launch as `Start-Sinister-Session.bat` does — mintty + git-bash + claude --dangerously-skip-permissions, with the cold-start phrase pre-injected (project, mode=resume, loop=relentless, swarm=on, accent, branch convention)",
+    "prerequisites_to_check_before_each_launch": [
+      "Is the project key already in projects.json? If yes use the existing root.",
+      "Does the agent already have a fresh heartbeat (<30 min)? If yes skip (already running).",
+      "Apply round-robin OAuth slot via claude-accounts.ps1 PickBest so all 8 don't burn one account."
+    ],
+    "note_on_sinister-jokester": "Operator typed 'jokester' — could mean the existing 'sinister-jokesteer' (jester+steer compound). If not in projects.json, create alongside 'eve-exe' with display 'Sinister Jokester'.",
+    "note_on_eve-compliance": "New project — operator naming. Scope inferred: 'Eve Compliance' lane is for AUP / ToS / licensing / safety-rail compliance work. Create alongside.",
+    "note_on_letstext": "Carve-out repo per single-repo-push-policy-2026-05-25 — own github remote.",
+    "note_on_sinister-snap-api": "Already in projects.json (per sister-lane work in sinister-kernel-apk register-snap shipping in iter-24). Just launch."
+  },
+
+  "what_sinister_term_did_in_parallel_this_turn": [
+    "Scaffolded Sinister ASCII sub-project (operator 11:36Z renamed 'ancestral remotion' -> 'sinister ascii') at projects/sinister-term/sinister-ascii/ — SA-PH0 + SA-PH1 (palette module with 5 anchor families + per-project palette table)",
+    "Restored dropped PH14 pytest suite (test_dispatch.py + test_keybindings.py + test_status.py + conftest.py) — 32 tests now pass (was 3)",
+    "Wrote master plan at _shared-memory/plans/sinister-term-complete-everything-2026-05-25/plan.md covering P0-P4"
+  ],
+
+  "default_after_30min": "If you cannot pick this up within 30 min, surface to OPERATOR-ACTION-QUEUE.md so the operator sees it's still pending."
+}

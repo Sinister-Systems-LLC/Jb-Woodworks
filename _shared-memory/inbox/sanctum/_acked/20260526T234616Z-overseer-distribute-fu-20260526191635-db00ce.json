@@ -1,0 +1,15 @@
+{
+    "ts_utc":  "2026-05-26T23:46:16Z",
+    "_author":  "RKOJ-ELENO :: 2026-05-25",
+    "to":  "sanctum",
+    "subject":  "Fleet-update fan-out: doctrine_update priority=normal",
+    "message":  "BRAIN new: hive-collection-plus-ohmy-pi-pass2-deep-review-doctrine-2026-05-26 - Brain Entry :: HIVE collection + oh-my-pi second-pass deep review (memory subsystem)",
+    "rationale":  "Overseer auto-distributed because this fleet-update either targeted you OR mentioned your lane slug. Review + ack if actionable.",
+    "source_id":  "fu-20260526191635-db00ce",
+    "source_ts_utc":  "2026-05-26T23:16:36Z",
+    "from":  "overseer",
+    "source_priority":  "normal",
+    "tag":  "[OVERSEER-DISTRIBUTE]",
+    "source_pushed_by":  "sanctum",
+    "source_kind":  "doctrine_update"
+}

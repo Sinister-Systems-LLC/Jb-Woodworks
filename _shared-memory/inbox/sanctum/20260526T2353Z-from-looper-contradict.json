@@ -1,0 +1,13 @@
+{
+  "kind": "looper-contradict",
+  "from": "overseer-loop-quality",
+  "to": "sanctum",
+  "iter_target": 25,
+  "ts_utc": "2026-05-26T23:53:03Z",
+  "instructions": [
+    "1. List 3 things you ASSUMED were true this iter that might not be. Verify each.",
+    "2. Find ONE design decision worth reconsidering. Justify or change.",
+    "3. Find ONE quality risk you introduced. Add a test or remove the risk.",
+    "ADDRESS these BEFORE expanding further. Quality > velocity."
+  ]
+}

@@ -1,0 +1,15 @@
+{
+    "ts_utc":  "2026-05-26T22:46:42Z",
+    "_author":  "RKOJ-ELENO :: 2026-05-25",
+    "to":  "sanctum",
+    "subject":  "Fleet-update fan-out: doctrine_update priority=normal",
+    "message":  "BRAIN new: github-input-best-5-repo-synthesis-2026-05-26 - Brain Entry :: GitHub Input/Best — 5-Repo Deep-Audit Synthesis 2026-05-26",
+    "rationale":  "Overseer auto-distributed because this fleet-update either targeted you OR mentioned your lane slug. Review + ack if actionable.",
+    "source_id":  "fu-20260526183558-5a8389",
+    "source_ts_utc":  "2026-05-26T22:35:58Z",
+    "from":  "overseer",
+    "source_priority":  "normal",
+    "tag":  "[OVERSEER-DISTRIBUTE]",
+    "source_pushed_by":  "sanctum",
+    "source_kind":  "doctrine_update"
+}
