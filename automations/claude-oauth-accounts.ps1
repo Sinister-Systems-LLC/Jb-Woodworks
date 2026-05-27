@@ -412,11 +412,23 @@ function Invoke-OAuthLoginScaffold {
 function Invoke-OAuthUse {
     # Swap a slot's credentials into ~/.claude/.credentials.json atomically.
     # Backs up the previously-active file to ~/.claude/.credentials.json.<prev>.bak
-    # WHERE <prev> = the slot whose hash matches the current active file, or 'unknown'.
     [CmdletBinding()]
     param([Parameter(Mandatory=$true)][string]$Name)
     _Import-AccountsLib
-    $slotCreds = _Slot-CredentialsPath -Name $Name
+    # v10b 2026-05-26 (operator screenshot 'opened on wrong account'):
+    # the name-based lookup `credentials.<name>.json` is wrong when
+    # accounts.json has an explicit credentials_file that doesn't match the
+    # naming convention (e.g. name=operator-b, credentials_file=credentials.slot3.json).
+    # Prefer the account.credentials_file when present + valid.
+    $slotCreds = $null
+    try {
+        $cfg = Get-AccountsConfig
+        $acct = $cfg.accounts | Where-Object { $_.name -eq $Name } | Select-Object -First 1
+        if ($acct -and $acct.PSObject.Properties.Name -contains 'credentials_file' -and $acct.credentials_file -and (Test-Path $acct.credentials_file)) {
+            $slotCreds = $acct.credentials_file
+        }
+    } catch {}
+    if (-not $slotCreds) { $slotCreds = _Slot-CredentialsPath -Name $Name }
     if (-not (Test-Path $slotCreds)) {
         Write-Host "[oauth-use] FAIL slot '$Name' has no credentials file at $slotCreds. Run Login first." -ForegroundColor Red
         Write-OAuthLog "Invoke-OAuthUse: slot=$Name MISSING $slotCreds" 'ERROR'
@@ -566,6 +578,10 @@ function Invoke-OAuthWhoAmI {
 function Invoke-OAuthRotateToNext {
     # Pick the next enabled non-rate-limited OAuth slot, call Use on it, return its name.
     # Round-robin uses claude-accounts.json `last_rotation_index`.
+    # v10b 2026-05-26 (operator screenshot: bat picked rate-limited slot ->
+    # spawned agent hit "You've hit your limit" wall). ALSO consult
+    # oauth-slot-health.json's usage_pct_5h: skip any slot >= 95% even if
+    # rate_limited_until_utc has passed.
     [CmdletBinding()]
     param()
     _Import-AccountsLib
@@ -579,6 +595,16 @@ function Invoke-OAuthRotateToNext {
         Write-Host '[oauth-rotate] no OAuth slots available (have you run Login on at least one?).' -ForegroundColor Yellow
         return $null
     }
+    # Load oauth-slot-health.json for live usage_pct (refreshed by oauth-health-poller).
+    $healthMap = @{}
+    $healthFile = Join-Path $script:SanctumRoot '_shared-memory\oauth-slot-health.json'
+    if (Test-Path $healthFile) {
+        try {
+            $raw = Get-Content -Path $healthFile -Raw -ErrorAction Stop
+            $hj  = $raw | ConvertFrom-Json -ErrorAction Stop
+            foreach ($s in $hj.slots) { $healthMap[$s.name] = $s }
+        } catch {}
+    }
     $now = (Get-Date).ToUniversalTime()
     $eligible = @($oauths | Where-Object {
         $rl = $_.rate_limited_until_utc
@@ -589,6 +615,12 @@ function Invoke-OAuthRotateToNext {
         }
         if ($wk) {
             try { if (([datetime]::Parse($wk)).ToUniversalTime() -gt $now) { $ok = $false } } catch {}
+        }
+        # v10b: live health check — skip if usage >= 95% OR poller-marked rate_limited.
+        if ($ok -and $healthMap.ContainsKey($_.name)) {
+            $h = $healthMap[$_.name]
+            if ($h.PSObject.Properties.Name -contains 'rate_limited' -and $h.rate_limited) { $ok = $false }
+            if ($h.PSObject.Properties.Name -contains 'usage_pct_5h' -and [int]$h.usage_pct_5h -ge 95) { $ok = $false }
         }
         $ok
     })
