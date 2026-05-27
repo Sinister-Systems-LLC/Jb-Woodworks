@@ -8,6 +8,22 @@ Append-only; most-recent at top.
 
 ---
 
+## 2026-05-26T23:50Z — iter-8 HIVE partition audit (genesis-architect + petals) SHIPPED
+
+Branch: `agent/eve-exe/hive-genesis-petals-audit-2026-05-26`. Operator directive via inbox 22:47Z from sanctum: eve-exe lane owns audit of `genesis-architect-main` + `petals-main` (no overlap with sanctum/memory/term/os lanes).
+
+- **Swarm fan-out:** 2 parallel `Explore` sub-agents (one per repo, very-thorough). All claims cited FILE:LINE.
+- **genesis-architect-main verdict:** research-first lifecycle scaffolding skill (not a TUI). 5 portable patterns: G1 phase-state checkpoint+resume, G2 env-probe→cached-JSON, G3 hard-gate A/B/C/D menu, G4 vault-first knowledge lookup, G5 evidence-pack+mitigation-enforcer.
+- **petals-main verdict:** distributed-inference engine with `configargparse` multi-mode CLI (no TUI; external monitor lives at health.petals.dev). 5 portable patterns: P1 multi-mode CLI+YAML-fallback, P2 throughput calibration+ETA UX, P3 ServerState 3-state enum+daemon announcer, P4 humanfriendly multiaddr/IP shortcuts, P5 humanfriendly units+quant presets.
+- **Top-5 ranked for next-iter port:** P3 fleet-state.json (unifies heartbeats + Sinister Panel `/fleet`), G3 A/B/C/D menus (eve.py picker), P1 multi-mode CLI+YAML (collapses `.bat`), G2 env-probe (replaces brittle PS env-detect), P2 throughput calibration (spawn ETA UX). 5 deferred until concretely needed (G4/G5/P4/P5/G1).
+- **Anti-overlap call-outs:** flagged but did NOT claim — sanctum (jcode/hivemind/orchestration), os (petals-infra DHT/libp2p), memory (model arch / vault internals route to memory for verdict), term (CALM/tessera).
+- **Shipped artifacts:** brain entry `_shared-memory/knowledge/hive-eve-exe-genesis-petals-audit-2026-05-26.md` + `_INDEX.md` row + inbox msg moved to `_acked/` + heartbeat updated to iter-8.
+- **Status:** `triage-shipped, no-code-this-iter, 10-port-candidates-ranked` (per `no-bullshit-tested-before-claimed` rule 8 — no port claimed shipped without smoke-test).
+
+Composes with: `we-have-the-source-read-it-doctrine-2026-05-25` (read source, no RE), `full-relentless-swarm-fanout-mindset-doctrine-2026-05-25` (2 parallel Explore agents), `sanctum-scope-discipline-doctrine-2026-05-24` (anti-overlap flagged, not claimed).
+
+---
+
 ## 2026-05-26T20:45Z — iter-7 R9 train-loop dedup SHIPPED (smoke-tested)
 
 Branch: `agent/eve-compliance/train-loop-dedup-2026-05-26`. Single-file change to `automations/eve_compliance_train_loop.py`:
