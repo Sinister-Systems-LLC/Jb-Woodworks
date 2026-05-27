@@ -1,3 +1,41 @@
+## 2026-05-27 06:10 - /loop iter-8: bats/Snap-Start-Stack.bat shipped + LIVE smoke-tested (meta-launcher; pi-relay :59460 cold-start LIVE; RKA :59450 re-confirm OK)
+
+Resumed snap-emulator-api lane at 2026-05-27T05:40Z (stale 50h) on branch `agent/snap-emulator-api/resume-20260527T054000Z` per cross-agent monorepo branch-collision-recovery doctrine (30+ concurrent git processes confirmed). Picked next-iter target from iter-7 heartbeat: meta-launcher. Sibling-detect: Lane L (`sinister-snap-api-quantum`) on freeze-trend + agent-dashboards web skeleton -- ZERO overlap with bats/*.bat surface.
+
+### Shipped this iter
+
+`bats/Snap-Start-Stack.bat` (`projects/sinister-snap-emu/source/bats/Snap-Start-Stack.bat`, 168 lines, source repo sha `490a09f`) -- meta-launcher chaining 5 steps in one click:
+
+1. **RKA** :59450 via existing `Snap-Start-Local-RKA.bat --no-pause` (iter-7)
+2. **PI-Relay** :59460 via INLINE replication of `Snap-Start-PI-Relay-Local.bat`'s load-bearing steps (idempotent port check, python locate, server.py existence, `start "Snap PI-Relay :59460" cmd /k python server.py`, Invoke-RestMethod /health probe). Inlined instead of calling the legacy bat because its trailing `pause` cannot be cleanly bypassed via `<NUL` when the path has spaces (tried; broke cmd parser). Inline path uses absolute `%SystemRoot%\System32\timeout.exe` to dodge GNU coreutils-timeout shadowing under PowerShell-inherited PATH, with `ping -n 4 127.0.0.1` fallback.
+3. **WSL** Ubuntu-22.04 idempotent start (skip if already running)
+4. **adb-forward** host :9999 -> cvd-1 :27042 (frida); idempotent; skipped cleanly when cvd-1 adb-state != device
+5. **Final status** via existing `Snap-Stack-Status.bat --no-pause` (iter-6 read-only 7-section probe)
+
+Flags: `--no-pause` / `-q` (script-callable), `--skip-wsl` (Windows-daemons-only path).
+
+### Smoke evidence (live, this turn)
+
+Ran `Snap-Start-Stack.bat --no-pause --skip-wsl` via cmd.exe wrapper. Output captured to `C:\Users\Zonia\AppData\Local\Temp\stack5_out.txt`:
+
+- **Step 1 RKA** exit=0; `:59450 already listening -- skipping re-launch.` `PROBE-OK: tcp/59450 accepting connections`
+- **Step 2 PI-Relay** exit=0; pi-relay daemon COLD-LAUNCHED this turn; first probe: `/health = {"ok":true,"uptime_seconds":3.755,...}`
+- **Step 5 Status** confirmed end-state: :59450 LISTENING, :59460 LISTENING + /health uptime 14.068s, keybox sha256 = 58243fe6... matches canonical
+- Final line: `Stack-start complete.  RKA=0  RELAY=0  WSL=  FWD=`
+
+### Hit + fixed during smoke
+
+v1 attempt routed pi-relay through `call ... <NUL` -- broke parser (`'-Local.bat' is not recognized`, comment-block bleed). Rewrote step 2 as inline replication of the launcher core steps. PASS on retry.
+
+### Next-iter targets
+
+1. Once cvd-1 returns: `python3 scripts/dlopen_intercept_libscplugin_simple.py --hold 300`
+2. Apply phone_fetcher.js Fix 1+3 at next attested-device pair event (deferred)
+3. End-to-end smoke of `Snap-Start-Stack.bat` WITHOUT `--skip-wsl` once WSL is up
+4. `bats/Snap-Stop-Stack.bat` complement (graceful daemon shutdown)
+
+---
+
 ## 2026-05-25 02:13 - shipped: keybox-bypass crypto-infeasibility doctrine (in-flight response to operator TEE/brute directive)
 
 /loop dynamic iter 6.5 (parallel to iter-6 wrap). Operator directive 2026-05-25T02:13Z: *"in parallel continue work on the TEE system I said to make about making or brute forcing keyboxes and see if that is going to be possible or if we can spoof it somehow with our rka server so that we don't have need to keybox's anymore and having to get a private one. Use the sinister quantum if needed."*
