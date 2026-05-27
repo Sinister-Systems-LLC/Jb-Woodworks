@@ -35,7 +35,7 @@ export function ScrollToTop() {
           transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
           whileHover={reduced ? undefined : { y: -3, scale: 1.05 }}
           whileTap={reduced ? undefined : { scale: 0.96 }}
-          className="fixed z-[1000] bottom-7 right-7 w-12 h-12 rounded-full bg-ink/85 backdrop-blur-md border border-gold/40 grid place-items-center text-gold shadow-[0_8px_30px_-10px_rgba(0,0,0,0.7)] hover:bg-gold hover:text-ink hover:border-gold transition-colors duration-300 jbw-pulse-ring"
+          className="lg-fab fixed z-[1000] bottom-7 right-7 w-12 h-12 grid place-items-center duration-300 jbw-pulse-ring"
         >
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
             <path d="M8 13V3M3 8l5-5 5 5" />

@@ -1,4 +1,4 @@
-// Author: RKOJ-ELENO :: 2026-05-23
+﻿// Author: RKOJ-ELENO :: 2026-05-23
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import Link from "next/link";
@@ -19,16 +19,16 @@ type Props = { searchParams: Promise<{ category?: string }> };
 export default async function PortfolioPage({ searchParams }: Props) {
   const { category } = await searchParams;
 
-  // Stats for the eyebrow strip — derived from real content, not hand-typed.
+  // Stats for the eyebrow strip â€” derived from real content, not hand-typed.
   const projectCount = portfolio.length;
   const categoryCount = new Set(portfolio.map((p) => p.category)).size;
 
   return (
     <>
-      {/* Editorial header — vertical chapter rail, atmospheric backdrop, 2-column
+      {/* Editorial header â€” vertical chapter rail, atmospheric backdrop, 2-column
           headline + featured bento. Replaces the flat left-aligned block. */}
       <section className="relative overflow-hidden bg-ink border-b border-line">
-        {/* Atmospheric backdrop — walnut grain at low opacity, right-edge-anchored
+        {/* Atmospheric backdrop â€” walnut grain at low opacity, right-edge-anchored
             so the headline column stays legible on the left. */}
         <div
           aria-hidden
@@ -37,9 +37,9 @@ export default async function PortfolioPage({ searchParams }: Props) {
         />
         <div aria-hidden className="absolute inset-y-0 right-0 w-[55%] pointer-events-none" style={{ background: "linear-gradient(90deg, #080808 0%, rgba(8,8,8,0.55) 35%, rgba(8,8,8,0.85) 100%)" }} />
         <div aria-hidden className="absolute inset-0 pointer-events-none mix-blend-overlay" style={{ backgroundImage: "url(/img/generated/grain-texture.png)", backgroundSize: "cover", opacity: 0.05 }} />
-        <div aria-hidden className="absolute -top-24 -right-24 w-[500px] h-[500px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(201,168,76,0.10), transparent 70%)" }} />
+        <div aria-hidden className="absolute -top-24 -right-24 w-[500px] h-[500px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(var(--accent-rgb),0.10), transparent 70%)" }} />
 
-        {/* Vertical chapter rail — matches the home services Chapter 02 detail */}
+        {/* Vertical chapter rail â€” matches the home services Chapter 02 detail */}
         <div className="hidden md:flex absolute top-0 left-7 bottom-0 items-start pt-40 pointer-events-none">
           <div className="flex items-baseline gap-3 -rotate-90 origin-top-left translate-x-2 mt-16 whitespace-nowrap">
             <span className="font-mono text-[0.6rem] tracking-[0.45em] uppercase text-gold/60">Chapter 03</span>
@@ -53,11 +53,11 @@ export default async function PortfolioPage({ searchParams }: Props) {
 
           {/* Editorial 2-column: headline left, bento right (desktop) */}
           <div className="grid lg:grid-cols-[1.15fr_1fr] gap-12 lg:gap-16 items-start">
-            {/* Left column — headline + manifesto */}
+            {/* Left column â€” headline + manifesto */}
             <div>
               <p className="font-mono text-[0.65rem] tracking-[0.42em] uppercase text-gold mb-7">
                 <span className="tabular-nums">{String(projectCount).padStart(2, "0")}</span>
-                <span className="mx-3 text-cream-30">·</span>
+                <span className="mx-3 text-cream-30">Â·</span>
                 <span>Your eyes here</span>
               </p>
 
@@ -70,11 +70,11 @@ export default async function PortfolioPage({ searchParams }: Props) {
               <div className="mt-8 max-w-[520px]">
                 <p className="text-cream-50 text-[1.05rem] leading-[1.75]">
                   Pergolas, docks, pool tables, decks, commercial fit-outs, custom furniture.
-                  Every tile opens the full gallery — video, raw photography, project notes.
+                  Every tile opens the full gallery â€” video, raw photography, project notes.
                 </p>
               </div>
 
-              {/* Stats strip — real numbers from real content */}
+              {/* Stats strip â€” real numbers from real content */}
               <dl className="mt-10 grid grid-cols-3 gap-4 max-w-[480px]">
                 <div className="border-l-2 border-gold/40 pl-4">
                   <dt className="text-cream-30 font-mono text-[0.55rem] tracking-[0.3em] uppercase mb-1">Projects</dt>
@@ -91,7 +91,7 @@ export default async function PortfolioPage({ searchParams }: Props) {
               </dl>
             </div>
 
-            {/* Right column — bento of 3 feature images. Hidden on mobile to keep
+            {/* Right column â€” bento of 3 feature images. Hidden on mobile to keep
                 hero short, restored at lg. */}
             <div className="hidden lg:grid grid-cols-2 gap-3 self-stretch">
               {portfolio.slice(0, 3).map((p, idx) => {
@@ -123,7 +123,7 @@ export default async function PortfolioPage({ searchParams }: Props) {
           </div>
         </div>
 
-        {/* Bottom rule — separates header from filter section */}
+        {/* Bottom rule â€” separates header from filter section */}
         <div className="container-site relative">
           <div className="h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
         </div>
@@ -131,21 +131,21 @@ export default async function PortfolioPage({ searchParams }: Props) {
 
       <section className="py-24">
         <div className="container-site">
-          <Suspense fallback={<div className="text-cream-30 text-[0.8rem] tracking-[0.22em] uppercase">Loading portfolio…</div>}>
+          <Suspense fallback={<div className="text-cream-30 text-[0.8rem] tracking-[0.22em] uppercase">Loading portfolioâ€¦</div>}>
             <PortfolioFilter items={portfolio} initialFilter={category ?? "all"} />
           </Suspense>
         </div>
       </section>
 
-      {/* Bottom CTA band — Get Free Quote + Contact Us */}
+      {/* Bottom CTA band â€” Get Free Quote + Contact Us */}
       <section className="py-20 sm:py-24 bg-ink-2 border-t border-line relative overflow-hidden">
-        <div aria-hidden className="absolute -bottom-24 -left-24 w-[400px] h-[400px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(201,168,76,0.08), transparent 70%)" }} />
-        <div aria-hidden className="absolute -top-24 -right-24 w-[400px] h-[400px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(201,168,76,0.08), transparent 70%)" }} />
+        <div aria-hidden className="absolute -bottom-24 -left-24 w-[400px] h-[400px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(var(--accent-rgb),0.08), transparent 70%)" }} />
+        <div aria-hidden className="absolute -top-24 -right-24 w-[400px] h-[400px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(var(--accent-rgb),0.08), transparent 70%)" }} />
         <div className="container-site relative text-center">
           <span className="section-tag mx-auto inline-block">Like what you see</span>
           <h2 className="mt-2 mb-5">Let&apos;s build<br /><em>something next.</em></h2>
           <p className="text-cream-50 text-[1rem] max-w-[560px] mx-auto mb-10">
-            Free estimates. Honest pricing. Same-day response on weekdays. Tell us what you have in mind — we will reply with a real range before we even visit.
+            Free estimates. Honest pricing. Same-day response on weekdays. Tell us what you have in mind â€” we will reply with a real range before we even visit.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4">
             <Link href="/contact" className="btn btn-primary btn-large jbw-magnetic">Get a Free Quote</Link>

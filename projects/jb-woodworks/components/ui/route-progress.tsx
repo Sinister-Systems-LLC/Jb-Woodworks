@@ -59,7 +59,7 @@ export function RouteProgress() {
         >
           <motion.div
             className="h-[2px] origin-left"
-            style={{ background: "linear-gradient(90deg, transparent, #c9a84c 25%, #e2c47a 50%, #c9a84c 75%, transparent)" }}
+            style={{ background: "linear-gradient(90deg, transparent, var(--accent) 25%, var(--accent-light) 50%, var(--accent) 75%, transparent)" }}
             initial={{ scaleX: 0 }}
             animate={{ scaleX: 0.92 }}
             exit={{ scaleX: 1 }}

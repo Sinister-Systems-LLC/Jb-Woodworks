@@ -56,7 +56,7 @@ function FeatureRow({ item, index, reverse }: { item: PortfolioItem; index: numb
           <span aria-hidden className="absolute bottom-4 right-4 w-8 h-8 border-b-2 border-r-2 border-gold/70 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         </Link>
         {/* Index plate */}
-        <div aria-hidden className="absolute top-4 right-4 px-3 py-1.5 bg-ink/80 backdrop-blur-sm text-gold font-mono text-[0.7rem] tracking-widest font-semibold rounded">
+        <div aria-hidden className="lg-tag absolute top-4 right-4 px-3 py-1.5 font-mono text-[0.7rem] tracking-widest font-semibold">
           {String(index + 1).padStart(2, "0")} / {item.category.toUpperCase()}
         </div>
       </div>

@@ -1,4 +1,4 @@
-// Author: RKOJ-ELENO :: 2026-05-23
+﻿// Author: RKOJ-ELENO :: 2026-05-23
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { ContactForm } from "@/components/sections/contact-form";
@@ -13,14 +13,14 @@ export default function ContactPage() {
   return (
     <>
       <section className="pt-40 pb-16 bg-gradient-to-b from-ink-2 to-ink border-b border-line relative overflow-hidden">
-        {/* Nano Banana atmospheric backdrop — single chisel on walnut, cool window light. Sets a tone of careful craft. */}
+        {/* Nano Banana atmospheric backdrop â€” single chisel on walnut, cool window light. Sets a tone of careful craft. */}
         <div
           aria-hidden
           className="absolute inset-0 pointer-events-none bg-cover bg-center"
           style={{ backgroundImage: "url(/img/generated/contact-tools.png)", opacity: 0.22 }}
         />
         <div aria-hidden className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(180deg, rgba(8,8,8,0.5) 0%, rgba(8,8,8,0.75) 60%, #080808 100%)" }} />
-        <div aria-hidden className="absolute -top-24 -right-24 w-[400px] h-[400px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(201,168,76,0.12), transparent 70%)" }} />
+        <div aria-hidden className="absolute -top-24 -right-24 w-[400px] h-[400px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(var(--accent-rgb),0.12), transparent 70%)" }} />
         <div aria-hidden className="absolute inset-0 pointer-events-none mix-blend-overlay" style={{ backgroundImage: "url(/img/generated/grain-texture.png)", backgroundSize: "cover", opacity: 0.06 }} />
         <div className="container-site relative">
           <span className="section-tag">Contact</span>

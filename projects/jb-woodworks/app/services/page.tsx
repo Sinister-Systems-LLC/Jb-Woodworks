@@ -14,7 +14,7 @@ export default function ServicesPage() {
   return (
     <>
       <section className="pt-40 pb-16 bg-gradient-to-b from-ink-2 to-ink border-b border-line relative overflow-hidden">
-        <div aria-hidden className="absolute -top-24 -right-24 w-[400px] h-[400px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(201,168,76,0.10), transparent 70%)" }} />
+        <div aria-hidden className="absolute -top-24 -right-24 w-[400px] h-[400px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(var(--accent-rgb),0.10), transparent 70%)" }} />
         <div className="container-site relative">
           <span className="section-tag">Services</span>
           <h1 className="mb-5">What we<br /><em>build.</em></h1>
@@ -47,7 +47,7 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      <section className="py-20 relative overflow-hidden" style={{ background: "linear-gradient(135deg, #c9a84c, #a8842f)" }}>
+      <section className="py-20 relative overflow-hidden" style={{ background: "linear-gradient(135deg, var(--accent), var(--accent-deep))" }}>
         <div className="container-site flex items-center justify-between gap-8 flex-wrap relative">
           <div>
             <h2 className="text-ink">Not sure where your project fits?</h2>

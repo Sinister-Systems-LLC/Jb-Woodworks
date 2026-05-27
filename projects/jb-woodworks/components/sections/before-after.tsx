@@ -1,4 +1,4 @@
-// Author: RKOJ-ELENO :: 2026-05-23
+﻿// Author: RKOJ-ELENO :: 2026-05-23
 // Interactive before / after image comparison slider. Drag the gold divider to
 // reveal the "after" build. Supports mouse, touch, and keyboard (focus + arrow
 // keys / Home / End). Snaps to 50% on prefers-reduced-motion (no animation).
@@ -162,10 +162,10 @@ export function BeforeAfter({
       </div>
 
       {/* Corner labels */}
-      <span className="absolute top-3 left-3 px-2.5 py-1 bg-ink/85 backdrop-blur-sm text-gold text-[0.62rem] font-bold tracking-[0.22em] uppercase rounded">
+      <span className="lg-tag absolute top-3 left-3 px-2.5 py-1 text-[0.62rem] font-bold tracking-[0.22em] uppercase">
         {beforeLabel}
       </span>
-      <span className="absolute top-3 right-3 px-2.5 py-1 bg-ink/85 backdrop-blur-sm text-gold text-[0.62rem] font-bold tracking-[0.22em] uppercase rounded">
+      <span className="lg-tag absolute top-3 right-3 px-2.5 py-1 text-[0.62rem] font-bold tracking-[0.22em] uppercase">
         {afterLabel}
       </span>
 
@@ -175,7 +175,7 @@ export function BeforeAfter({
         className="absolute top-0 bottom-0 pointer-events-none"
         style={{ left: `${percent}%`, transform: "translateX(-50%)" }}
       >
-        <div className="w-px h-full mx-auto bg-gradient-to-b from-gold/0 via-gold to-gold/0 shadow-[0_0_12px_rgba(201,168,76,0.55)]" />
+        <div className="w-px h-full mx-auto bg-gradient-to-b from-gold/0 via-gold to-gold/0 shadow-[0_0_12px_rgba(var(--accent-rgb),0.55)]" />
       </div>
       <div
         role="slider"
@@ -186,10 +186,10 @@ export function BeforeAfter({
         tabIndex={0}
         onKeyDown={onKeyDown}
         onFocus={() => { /* style only via :focus-visible */ }}
-        className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-11 h-11 rounded-full bg-ink/90 border-2 border-gold backdrop-blur-sm flex items-center justify-center cursor-grab active:cursor-grabbing focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/70 focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
+        className="lg-fab absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-11 h-11 flex items-center justify-center cursor-grab active:cursor-grabbing focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/70 focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
         style={{ left: `${percent}%` }}
       >
-        <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#c9a84c" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="7 5 3 10 7 15" />
           <polyline points="13 5 17 10 13 15" />
         </svg>

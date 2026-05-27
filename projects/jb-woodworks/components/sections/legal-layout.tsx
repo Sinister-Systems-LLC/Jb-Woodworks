@@ -1,4 +1,4 @@
-// Author: RKOJ-ELENO :: 2026-05-23
+﻿// Author: RKOJ-ELENO :: 2026-05-23
 // Shared shell for /legal/* pages. Matches site theme + reusable hero band.
 import Link from "next/link";
 import type { ReactNode } from "react";
@@ -27,7 +27,7 @@ export function LegalLayout({
   return (
     <>
       <section className="pt-40 pb-12 bg-gradient-to-b from-ink-2 to-ink border-b border-line relative overflow-hidden">
-        <div aria-hidden className="absolute -top-24 -right-24 w-[400px] h-[400px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(201,168,76,0.10), transparent 70%)" }} />
+        <div aria-hidden className="absolute -top-24 -right-24 w-[400px] h-[400px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(var(--accent-rgb),0.10), transparent 70%)" }} />
         <div aria-hidden className="absolute inset-y-0 right-0 w-[35%] pointer-events-none bg-cover bg-center mix-blend-screen" style={{ backgroundImage: "url(/img/generated/grain-texture.png)", opacity: 0.07 }} />
         <div className="container-site relative">
           <span className="section-tag">{tag}</span>

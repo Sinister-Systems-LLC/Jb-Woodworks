@@ -108,7 +108,7 @@ export default async function BlogPostPage({ params }: Props) {
             />
           )}
           <div aria-hidden className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(180deg, rgba(8,8,8,0.55) 0%, rgba(8,8,8,0.85) 70%, #080808 100%)" }} />
-          <div aria-hidden className="absolute -top-24 -right-24 w-[400px] h-[400px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(201,168,76,0.10), transparent 70%)" }} />
+          <div aria-hidden className="absolute -top-24 -right-24 w-[400px] h-[400px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(var(--accent-rgb),0.10), transparent 70%)" }} />
 
           <div className="container-site relative max-w-[840px]">
             <BackLink href="/blog" label="Back to Field Notes" section={post.category} />
@@ -183,7 +183,7 @@ export default async function BlogPostPage({ params }: Props) {
 
       {/* Bottom CTA — Get Free Quote + Contact us */}
       <section className="py-20 sm:py-24 bg-ink-2 border-t border-line relative overflow-hidden">
-        <div aria-hidden className="absolute -top-24 -right-24 w-[400px] h-[400px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(201,168,76,0.08), transparent 70%)" }} />
+        <div aria-hidden className="absolute -top-24 -right-24 w-[400px] h-[400px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(var(--accent-rgb),0.08), transparent 70%)" }} />
         <div className="container-site relative text-center">
           <span className="section-tag mx-auto inline-block">Ready to build</span>
           <h2 className="mt-2 mb-5">Want one of these?<br /><em>Tell us about it.</em></h2>

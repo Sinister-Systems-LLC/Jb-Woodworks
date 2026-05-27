@@ -56,7 +56,7 @@ export default function AboutPage() {
           style={{ backgroundImage: "url(/img/generated/about-workshop.png)", opacity: 0.22 }}
         />
         <div aria-hidden className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(180deg, rgba(8,8,8,0.55) 0%, rgba(8,8,8,0.85) 80%, #080808 100%)" }} />
-        <div aria-hidden className="absolute -top-24 -right-24 w-[400px] h-[400px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(201,168,76,0.10), transparent 70%)" }} />
+        <div aria-hidden className="absolute -top-24 -right-24 w-[400px] h-[400px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(var(--accent-rgb),0.10), transparent 70%)" }} />
         <div className="container-site relative">
           <span className="section-tag">About</span>
           <h1 className="mb-5">Built in<br /><em>Orlando, Florida.</em></h1>
@@ -78,8 +78,8 @@ export default function AboutPage() {
       </section>
 
       <section id="faq" className="py-24 sm:py-28 bg-ink-2 relative overflow-hidden">
-        <div aria-hidden className="absolute -top-32 -left-32 w-[420px] h-[420px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(201,168,76,0.08), transparent 70%)" }} />
-        <div aria-hidden className="absolute -bottom-32 -right-32 w-[420px] h-[420px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(201,168,76,0.06), transparent 70%)" }} />
+        <div aria-hidden className="absolute -top-32 -left-32 w-[420px] h-[420px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(var(--accent-rgb),0.08), transparent 70%)" }} />
+        <div aria-hidden className="absolute -bottom-32 -right-32 w-[420px] h-[420px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(var(--accent-rgb),0.06), transparent 70%)" }} />
         <div className="container-site relative max-w-[920px]">
           <div className="text-center mb-12">
             <p className="font-display italic text-gold text-[1rem] mb-3">Common questions</p>
@@ -92,7 +92,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="py-20 relative overflow-hidden" style={{ background: "linear-gradient(135deg, #c9a84c, #a8842f)" }}>
+      <section className="py-20 relative overflow-hidden" style={{ background: "linear-gradient(135deg, var(--accent), var(--accent-deep))" }}>
         <div className="container-site flex items-center justify-between gap-8 flex-wrap relative">
           <div>
             <h2 className="text-ink">Have a project in mind?</h2>

@@ -66,7 +66,7 @@ export function Splash() {
           transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
         >
           {/* Radial gold glow accent */}
-          <div aria-hidden className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(circle at 50% 45%, rgba(201,168,76,0.10), transparent 55%)" }} />
+          <div aria-hidden className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(circle at 50% 45%, rgba(var(--accent-rgb),0.10), transparent 55%)" }} />
           {/* Grain backdrop, very faint */}
           <div aria-hidden className="absolute inset-0 pointer-events-none bg-cover bg-center" style={{ backgroundImage: "url(/img/generated/grain-texture.png)", opacity: 0.06, mixBlendMode: "screen" }} />
 
@@ -99,7 +99,7 @@ export function Splash() {
                 <motion.div
                   aria-hidden
                   className="absolute inset-0 origin-left"
-                  style={{ background: "linear-gradient(90deg, transparent, #e2c47a, transparent)" }}
+                  style={{ background: "linear-gradient(90deg, transparent, var(--accent-light), transparent)" }}
                   initial={{ x: "-100%" }}
                   animate={{ x: "100%" }}
                   transition={{ duration: 1.4, repeat: Infinity, ease: "linear", delay: 0.6 }}

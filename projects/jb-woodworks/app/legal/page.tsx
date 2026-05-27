@@ -1,4 +1,4 @@
-// Author: RKOJ-ELENO :: 2026-05-23
+﻿// Author: RKOJ-ELENO :: 2026-05-23
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LEGAL } from "@/lib/legal";
@@ -19,7 +19,7 @@ export default function LegalIndex() {
   return (
     <>
       <section className="pt-40 pb-12 bg-gradient-to-b from-ink-2 to-ink border-b border-line relative overflow-hidden">
-        <div aria-hidden className="absolute -top-24 -right-24 w-[400px] h-[400px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(201,168,76,0.10), transparent 70%)" }} />
+        <div aria-hidden className="absolute -top-24 -right-24 w-[400px] h-[400px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(var(--accent-rgb),0.10), transparent 70%)" }} />
         <div className="container-site relative">
           <span className="section-tag">Legal</span>
           <h1 className="mb-5">House<br /><em>policies.</em></h1>

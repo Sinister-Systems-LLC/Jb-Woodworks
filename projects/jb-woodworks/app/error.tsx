@@ -1,4 +1,4 @@
-// Author: RKOJ-ELENO :: 2026-05-23
+﻿// Author: RKOJ-ELENO :: 2026-05-23
 // App-router error boundary. Themed to match 404 + brand voice.
 "use client";
 
@@ -20,7 +20,7 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
         style={{ backgroundImage: "url(/img/generated/error-quiet-shop.png)", opacity: 0.28 }}
       />
       <div aria-hidden className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse at center, rgba(8,8,8,0.55) 0%, rgba(8,8,8,0.95) 70%, #080808 100%)" }} />
-      <div aria-hidden className="absolute -top-24 -right-24 w-[500px] h-[500px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(201,168,76,0.10), transparent 70%)" }} />
+      <div aria-hidden className="absolute -top-24 -right-24 w-[500px] h-[500px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(var(--accent-rgb),0.10), transparent 70%)" }} />
 
       <div className="container-site relative">
         <span className="section-tag">Something broke</span>

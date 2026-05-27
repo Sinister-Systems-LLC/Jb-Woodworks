@@ -1,4 +1,4 @@
-// Author: RKOJ-ELENO :: 2026-05-23
+﻿// Author: RKOJ-ELENO :: 2026-05-23
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
 export default function BlogIndex() {
   const posts = blogPostsByDate();
 
-  // ItemList schema for the blog index — surfaces all posts to crawlers.
+  // ItemList schema for the blog index â€” surfaces all posts to crawlers.
   const ld = {
     "@context": "https://schema.org",
     "@type": "Blog",
@@ -68,7 +68,7 @@ export default function BlogIndex() {
           style={{ backgroundImage: "url(/img/generated/process-bench.png)", opacity: 0.18 }}
         />
         <div aria-hidden className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(180deg, rgba(8,8,8,0.45) 0%, rgba(8,8,8,0.75) 60%, #080808 100%)" }} />
-        <div aria-hidden className="absolute -top-24 -right-24 w-[400px] h-[400px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(201,168,76,0.10), transparent 70%)" }} />
+        <div aria-hidden className="absolute -top-24 -right-24 w-[400px] h-[400px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(var(--accent-rgb),0.10), transparent 70%)" }} />
 
         <div className="container-site relative">
           <BackLink href="/" label="Back to home" section="Field Notes" />
@@ -130,14 +130,14 @@ export default function BlogIndex() {
         </div>
       </section>
 
-      {/* Bottom CTA — Get Free Quote + Contact us */}
+      {/* Bottom CTA â€” Get Free Quote + Contact us */}
       <section className="py-20 sm:py-24 bg-ink-2 border-t border-line relative overflow-hidden">
-        <div aria-hidden className="absolute -top-24 -right-24 w-[400px] h-[400px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(201,168,76,0.08), transparent 70%)" }} />
+        <div aria-hidden className="absolute -top-24 -right-24 w-[400px] h-[400px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(var(--accent-rgb),0.08), transparent 70%)" }} />
         <div className="container-site relative text-center">
           <span className="section-tag mx-auto inline-block">Ready to build</span>
           <h2 className="mt-2 mb-5">Stop reading,<br /><em>start building.</em></h2>
           <p className="text-cream-50 text-[1rem] max-w-[560px] mx-auto mb-10">
-            The blog is here for context — the real conversation starts when you tell us about your space.
+            The blog is here for context â€” the real conversation starts when you tell us about your space.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4">
             <Link href="/contact" className="btn btn-primary btn-large jbw-magnetic">Get a Free Quote</Link>

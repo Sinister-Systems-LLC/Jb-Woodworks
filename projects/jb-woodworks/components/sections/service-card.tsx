@@ -1,4 +1,4 @@
-// Author: RKOJ-ELENO :: 2026-05-23
+﻿// Author: RKOJ-ELENO :: 2026-05-23
 "use client";
 import { motion, useReducedMotion } from "framer-motion";
 import { Icon } from "@/components/ui/icon";
@@ -20,7 +20,7 @@ export function ServiceCard({ service, index }: { service: Service; index: numbe
 
       {/* Gold gradient border ring */}
       <span aria-hidden className="absolute -inset-px rounded-xl p-px opacity-0 transition-opacity duration-300 group-hover:opacity-100" style={{
-        background: "linear-gradient(135deg, transparent, rgba(201,168,76,0.35), transparent)",
+        background: "linear-gradient(135deg, transparent, rgba(var(--accent-rgb),0.35), transparent)",
         WebkitMask: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
         WebkitMaskComposite: "xor",
         maskComposite: "exclude"

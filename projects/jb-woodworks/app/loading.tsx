@@ -20,7 +20,7 @@ export default function Loading() {
             <div
               aria-hidden
               className="absolute inset-y-0 w-1/2 jbw-loading-shimmer"
-              style={{ background: "linear-gradient(90deg, transparent, #e2c47a, transparent)" }}
+              style={{ background: "linear-gradient(90deg, transparent, var(--accent-light), transparent)" }}
             />
           </div>
 
@@ -34,7 +34,7 @@ export default function Loading() {
           <p className="text-cream-30 text-[0.6rem] tracking-[0.36em] uppercase font-semibold">Loading</p>
         </div>
 
-        <div aria-hidden className="absolute -top-24 -right-24 w-[400px] h-[400px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(201,168,76,0.06), transparent 70%)" }} />
+        <div aria-hidden className="absolute -top-24 -right-24 w-[400px] h-[400px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(var(--accent-rgb),0.06), transparent 70%)" }} />
       </div>
     </div>
   );

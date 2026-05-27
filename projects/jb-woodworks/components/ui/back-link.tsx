@@ -19,7 +19,7 @@ export function BackLink({
   return (
     <Link
       href={href}
-      className="group inline-flex items-center gap-3 mb-10 px-4 py-2.5 rounded-full border border-gold/30 bg-ink-3/50 backdrop-blur-sm text-gold text-[0.8rem] font-bold tracking-[0.18em] uppercase hover:border-gold hover:bg-ink-3 hover:text-gold-light transition-colors duration-200"
+      className="lg-pill group inline-flex items-center gap-3 mb-10 px-4 py-2.5 text-[0.8rem] font-bold tracking-[0.18em] uppercase"
     >
       <Icon
         name="arrow-right"

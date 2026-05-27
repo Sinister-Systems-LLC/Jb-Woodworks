@@ -51,7 +51,7 @@ export default async function PortfolioItemPage({ params }: Props) {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} />
       <section className="pt-40 pb-16 bg-gradient-to-b from-ink-2 to-ink border-b border-line relative overflow-hidden">
-        <div aria-hidden className="absolute -top-24 -right-24 w-[400px] h-[400px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(201,168,76,0.10), transparent 70%)" }} />
+        <div aria-hidden className="absolute -top-24 -right-24 w-[400px] h-[400px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(var(--accent-rgb),0.10), transparent 70%)" }} />
         <div className="container-site relative">
           <BackLink href="/portfolio" label="Back to portfolio" section={item.category} />
           <span className="section-tag">
@@ -121,8 +121,8 @@ export default async function PortfolioItemPage({ params }: Props) {
 
       {/* Bottom CTAs — Get Free Quote + Contact us (per operator: all portfolio pages need both) */}
       <section className="py-24 bg-ink-2 border-t border-line relative overflow-hidden">
-        <div aria-hidden className="absolute -top-32 -right-24 w-[420px] h-[420px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(201,168,76,0.10), transparent 70%)" }} />
-        <div aria-hidden className="absolute -bottom-32 -left-24 w-[420px] h-[420px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(201,168,76,0.06), transparent 70%)" }} />
+        <div aria-hidden className="absolute -top-32 -right-24 w-[420px] h-[420px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(var(--accent-rgb),0.10), transparent 70%)" }} />
+        <div aria-hidden className="absolute -bottom-32 -left-24 w-[420px] h-[420px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(var(--accent-rgb),0.06), transparent 70%)" }} />
         <div className="container-site relative text-center">
           <span className="section-tag mx-auto inline-block">Want one like this?</span>
           <h2 className="mt-2 mb-5">Free estimate.<br /><em>Honest pricing.</em></h2>
@@ -136,7 +136,7 @@ export default async function PortfolioItemPage({ params }: Props) {
         </div>
       </section>
 
-      <section className="py-16 relative overflow-hidden" style={{ background: "linear-gradient(135deg, #c9a84c, #a8842f)" }}>
+      <section className="py-16 relative overflow-hidden" style={{ background: "linear-gradient(135deg, var(--accent), var(--accent-deep))" }}>
         <div aria-hidden className="absolute inset-0 pointer-events-none bg-cover bg-center mix-blend-multiply" style={{ backgroundImage: "url(/img/generated/cta-shavings.png)", opacity: 0.30 }} />
         <div className="container-site flex items-center justify-between gap-8 flex-wrap relative">
           <div>

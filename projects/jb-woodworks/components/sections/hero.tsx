@@ -84,7 +84,7 @@ export function Hero() {
         <motion.div
           aria-hidden="true"
           className="absolute left-0 right-0 z-[3] h-px"
-          style={{ top: 82, background: "linear-gradient(90deg, transparent, #c9a84c, transparent)" }}
+          style={{ top: 82, background: "linear-gradient(90deg, transparent, var(--accent), transparent)" }}
           initial={{ scaleX: 0, opacity: 0 }}
           animate={{ scaleX: 1, opacity: 0.45 }}
           transition={{ duration: 1.4, delay: 1.1, ease: [0.16, 1, 0.3, 1] }}
@@ -174,7 +174,7 @@ export function Hero() {
             <span
               aria-hidden
               className="absolute inset-y-0 w-1/2 jbw-rule-shimmer"
-              style={{ background: "linear-gradient(90deg, transparent, #e2c47a, transparent)" }}
+              style={{ background: "linear-gradient(90deg, transparent, var(--accent-light), transparent)" }}
             />
           )}
         </motion.div>

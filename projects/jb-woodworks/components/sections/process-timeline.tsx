@@ -1,4 +1,4 @@
-// Author: RKOJ-ELENO :: 2026-05-23
+﻿// Author: RKOJ-ELENO :: 2026-05-23
 "use client";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { useRef } from "react";
@@ -45,22 +45,22 @@ export function ProcessTimeline() {
 
   return (
     <section className="py-24 sm:py-32 relative overflow-hidden" style={{ background: "radial-gradient(120% 80% at 80% 20%, #1a1208 0%, #0a0a0a 55%, #050505 100%)" }}>
-      {/* New background — operator asked for a fresh look. Drops the workshop
+      {/* New background â€” operator asked for a fresh look. Drops the workshop
           bench image entirely. Now a warm, deep radial that pulls toward the
           gold corner + slow drifting parallel beams + faint grain. Different
           from every other section's flat ink + grain pattern. */}
       <div aria-hidden className="absolute inset-0 pointer-events-none jbw-beams" />
-      <div aria-hidden className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(circle at 88% 18%, rgba(201,168,76,0.22), transparent 38%)" }} />
+      <div aria-hidden className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(circle at 88% 18%, rgba(var(--accent-rgb),0.22), transparent 38%)" }} />
       <div aria-hidden className="absolute inset-0 pointer-events-none mix-blend-overlay" style={{ backgroundImage: "url(/img/generated/grain-texture.png)", backgroundSize: "cover", opacity: 0.07 }} />
-      {/* Corner hairlines + gold seed dot — visual anchor in the upper right */}
-      <div aria-hidden className="absolute top-12 right-12 w-2 h-2 rounded-full bg-gold shadow-[0_0_22px_8px_rgba(201,168,76,0.45)]" />
+      {/* Corner hairlines + gold seed dot â€” visual anchor in the upper right */}
+      <div aria-hidden className="absolute top-12 right-12 w-2 h-2 rounded-full bg-gold shadow-[0_0_22px_8px_rgba(var(--accent-rgb),0.45)]" />
       <div aria-hidden className="absolute top-14 right-16 left-1/2 h-px bg-gradient-to-r from-transparent via-gold-dim/60 to-gold/80" />
       <div aria-hidden className="absolute top-10 right-10 w-px h-40 bg-gradient-to-b from-gold to-transparent" />
       <div aria-hidden className="absolute bottom-10 left-10 w-px h-40 bg-gradient-to-t from-gold-dim to-transparent" />
       <div className="container-site relative">
-        {/* Editorial header — different from every other section. Mono kicker on
+        {/* Editorial header â€” different from every other section. Mono kicker on
             the left of a 2-col split, oversized number + headline on the right.
-            Breaks the eyebrow → headline → subhead pattern operator flagged. */}
+            Breaks the eyebrow â†’ headline â†’ subhead pattern operator flagged. */}
         <div className="grid grid-cols-1 md:grid-cols-[140px_1fr] gap-x-10 gap-y-3 mb-14 items-end">
           <div className="flex flex-col gap-2">
             <span className="font-mono text-[0.58rem] tracking-[0.45em] uppercase text-gold/80">Process</span>

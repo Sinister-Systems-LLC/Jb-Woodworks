@@ -1,7 +1,7 @@
-// Author: RKOJ-ELENO :: 2026-05-24
+﻿// Author: RKOJ-ELENO :: 2026-05-24
 // Tabbed FAQ section. Pill bar of categories across the top, accordion list
 // below. Each tab swap resets which item is open. Keyboard a11y: arrow keys
-// cycle tabs (role=tablist), Tab → focuses questions, Enter/Space toggles,
+// cycle tabs (role=tablist), Tab â†’ focuses questions, Enter/Space toggles,
 // reduced-motion users get instant open/close.
 "use client";
 
@@ -48,7 +48,7 @@ export function FaqTabs({
 
   return (
     <div>
-      {/* ── Pill bar ── */}
+      {/* â”€â”€ Pill bar â”€â”€ */}
       <div
         role="tablist"
         aria-label="FAQ categories"
@@ -78,7 +78,7 @@ export function FaqTabs({
                 {isActive && (
                   <motion.span
                     layoutId="faq-pill"
-                    className="absolute inset-0 bg-gold rounded-xl shadow-[0_0_18px_rgba(201,168,76,0.22)]"
+                    className="absolute inset-0 bg-gold rounded-xl shadow-[0_0_18px_rgba(var(--accent-rgb),0.22)]"
                     transition={{ type: "spring", stiffness: 380, damping: 30 }}
                   />
                 )}
@@ -103,7 +103,7 @@ export function FaqTabs({
         </div>
       </div>
 
-      {/* ── Accordion list ── */}
+      {/* â”€â”€ Accordion list â”€â”€ */}
       <ul
         id={`faq-panel-${active.id}`}
         role="tabpanel"
