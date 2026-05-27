@@ -1,0 +1,13 @@
+{
+  "slug": "sinister-chatbot",
+  "display": "Sinister Chatbot",
+  "ts_utc": "2026-05-27T06:25:00Z",
+  "mode": "resume-loop",
+  "focus": "P0 SHIPPED — sinister-serper project scaffold (Python skeleton + 3/3 smoke + master plan + sanctum delegate inbox) + /chatter/serper-search consumer stub on Sinister-Panel (overseer-signals 31/31 PASS). P0 from sanctum inbox (cmd-spam + bat + kernel-apk) was out-of-lane — routed to sanctum at T0210Z, sanctum acked + shipped.",
+  "last_commit_panel": "61a6cdf",
+  "last_commit_sanctum": "263603e",
+  "branch_panel": "agent/sinister-chatbot/resume-20260527T0615Z",
+  "branch_sanctum": "agent/sinister-chatbot/serper-scaffold-20260527T0620Z",
+  "loop": "relentless",
+  "swarm": "on"
+}

@@ -5,6 +5,47 @@
 
 Append-only. Most-recent at top.
 
+## 2026-05-27T06:25Z — SHIPPED: sinister-serper P0 scaffold + /chatter/serper-search consumer stub (operator directive 2026-05-27T03:34:17Z)
+
+**Loop resume.** Operator utterance at `2026-05-27T03:34:17Z` (slug=sinister-chatbot, status=new) requested a new `sinister-serper` project wrapping Serper.dev free-tier credits + email-gen rotation + wire into the chatbot. Plus "parallel + fully autonomous". Scope split per `sanctum-scope-discipline-2026-05-24`: chatbot lane owns the Python skeleton + chatter consumer stub + master plan + cross-lane delegate; sanctum lane owns projects.json registration + shared email-gen library + schtask install + serper lane spawn.
+
+**P0 from sanctum inbox** (cmd-spam + bat launcher + kernel-apk anthropic-block): VERDICT = out-of-lane for chatbot (verified). Already routed at T0210Z via `_shared-memory/inbox/sanctum/20260527T0210Z-from-sinister-chatbot-P0-out-of-lane-route.md`. Sanctum's heartbeat (T0518Z) confirms iter-29 SHIPPED with watchdog stagger / wscript-shim / zombie-kill fixes addressing the cmd-spam root cause. No further chatbot-lane action required.
+
+**Shipped (verified this turn) — chatbot lane scope, 2 commits across 2 repos:**
+
+### Sinister-Panel repo (chatter consumer stub) — commit `61a6cdf`
+
+- `leo_dev/backend/src/routes/sinister.ts` — POST `/chatter/serper-search` inserted at sales/* boundary:
+  - Accepts `{q, kind?}` (kind = search/news/images/places, defaults search)
+  - Returns `{ok,_stub,q,kind,results:[],note,panel_event_id}` on success; `{ok:false,error,panel_event_id}` on 400/500
+  - `panel_event_id` via `randomUUID()` on EVERY response shape per sinister-os bridge protocol (parity with `/chatter/test` + `/chatter/tweak`)
+  - TODO comments point at the Python client + plan + delegate
+
+### Sinister-Sanctum repo (scaffold + plan + delegate) — commit `263603e`
+
+- `projects/sinister-serper/` Python scaffold: `__init__.py` (v0.0.1-scaffold) + `client.py` (SerperClient stub) + `keypool.py` (round-robin + retire_below) + `rotator.py` (stub with explicit missing-dep surface) + `tests/test_smoke.py` (3 tests) + `_vault-stub/keys.example.json` + `.gitignore` + `README.md`
+- `_shared-memory/plans/sinister-serper-master-20260527T0611Z/plan.md` — P0/P0-B/P1/P1-B/P2/P2-B/P2-C slicing with lane assignments + ASCII architecture + risks + verify gates
+- `_shared-memory/inbox/sanctum/20260527T0611Z-from-sinister-chatbot-sinister-serper-scaffolded-needs-email-gen-and-projects-json.md` — 4 sanctum actions: projects.json registration + shared email-gen library + schtask install + serper lane spawn (per auto-start-if-no-agent doctrine)
+
+**Smoke (same-turn):**
+
+- `python -m sinister_serper.client --smoke` -> `SMOKE PASS`
+- `python -m sinister_serper.keypool smoke` -> `SMOKE PASS`
+- `PYTHONPATH=. python tests/test_smoke.py` -> `ALL SMOKE PASS` (3/3)
+- `node leo_dev/backend/scripts/smoke-overseer-signals.mjs` -> `31/31 PASS . 0 FAIL` post-edit
+- Push success: `agent/sinister-chatbot/resume-20260527T0615Z` (Sinister-Panel) + `agent/sinister-chatbot/serper-scaffold-20260527T0620Z` (Sinister-Sanctum)
+
+**Branch hygiene note:** the auto branch-router on the Panel repo briefly swapped checkout to a stale `agent/letstext/orb-alive-*` branch mid-iter (cross-lane spillover). Recovered via `git reset --hard origin/<chatbot-branch>` then explicit `git push origin <branch>:<branch>` to bypass tracking-name routing. Lesson: under multi-lane parallel sessions, always use explicit `git push origin HEAD:<branch>` form when the tracking name differs.
+
+**Open (queued for next iter):**
+
+1. Real Serper HTTP in `sinister_serper.client.{search,news,images,places}` once sanctum unblocks email-gen library (per delegate inbox msg).
+2. Overseer chunk-3 (proposals + fixes panes from observation_check) — pending Overseer lane slice-5 ship.
+3. Phase 2 step 2+ of CHATBOT-DIRECTION-2026-05-24.md (DPO pair-builder beyond existing miner).
+4. Phase 5 per-persona triad selection via `seraphim find-qbc` wired into `/chatter/test` entropy seeding.
+
+---
+
 ## 2026-05-25T07:38Z — Chunk-2 first slice SHIPPED: HUMANLIKE_BASELINE injection (EVE-the-LLM voice)
 
 **Loop iter 4.** Continued relentlessly from iter-3. Picked smallest-risk highest-value chunk-2 item: humanlike_baseline block prepended to safe-mode `buildChatterSystemPrompt`. 26 LOC insertion, 3 LOC deletion. Smoke re-verified, committed `f05b265`, pushed.

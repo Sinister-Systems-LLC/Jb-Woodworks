@@ -1,0 +1,45 @@
+{
+  "schema_version": "sinister.resume-point.v1",
+  "ts_utc": "2026-05-27T06:25:00Z",
+  "project": "sinister-chatbot",
+  "agent_name": "sinister-chatbot",
+  "mode": "resume",
+  "focus_intent": "Iter shipped sinister-serper P0 scaffold per operator directive 2026-05-27T03:34:17Z (slug=sinister-chatbot). Scope split per sanctum-scope-discipline: chatbot lane owned the Python skeleton + master plan + chatter consumer stub + delegate to sanctum; sanctum lane owns projects.json registration + shared email-gen library + schtask install + lane spawn. Next iter (when sanctum unblocks email-gen): wire real Serper HTTP in sinister_serper.client.search/news/images/places, swap the /chatter/serper-search stub to spawn the Python client (or Node port), add keypool credit-deduction. Until then, queued backlog: (1) Overseer chunk-3 (proposals + fixes panes from observation_check) pending Overseer lane slice-5 ship; (2) Phase 2 step 2+ of CHATBOT-DIRECTION-2026-05-24.md (DPO pair-builder beyond existing miner); (3) Phase 5 per-persona triad selection via seraphim find-qbc wired into /chatter/test entropy seeding.",
+  "git": {
+    "branch_panel": "agent/sinister-chatbot/resume-20260527T0615Z",
+    "head_panel": "61a6cdf",
+    "head_msg_panel": "chatter: /chatter/serper-search consumer stub for sinister-serper project",
+    "branch_sanctum": "agent/sinister-chatbot/serper-scaffold-20260527T0620Z",
+    "head_sanctum": "263603e",
+    "head_msg_sanctum": "chatter: P0 scaffold sinister-serper project + plan + sanctum delegate",
+    "recent_commits_panel": [
+      "61a6cdf chatter: /chatter/serper-search consumer stub for sinister-serper project",
+      "a860c95 chatter: doctrine sync — NSFW default model = sao10k/l3-lunaris-8b",
+      "bc1c1dc chatter: chunk-2 close — LogsTab unified feed + Tweak Anthropic-call wiring",
+      "54fc616 chatter: panel_event_id on /chatter/test (sinister-os bridge ask #1)",
+      "bc822d2 chatter: persona-corpora panel in OverseerTab"
+    ]
+  },
+  "progress_top3": [
+    "2026-05-27T06:25Z - SHIPPED: sinister-serper P0 scaffold + chatter consumer stub (3/3 python smoke + 31/31 overseer smoke; commits 61a6cdf on Sinister-Panel + 263603e on Sinister-Sanctum)",
+    "2026-05-27T03:20Z - SHIPPED: NSFW default-model doctrine drift resolved (CLAUDE.md + brain entry sync to code reality sao10k/l3-lunaris-8b)",
+    "2026-05-27T02:18Z - SHIPPED: chunk-2 close (LogsTab unified feed + Tweak Anthropic-call wiring) — 31/31 smoke + bc1c1dc"
+  ],
+  "latest_plan": {
+    "dir": "_shared-memory/plans/sinister-serper-master-20260527T0611Z/",
+    "artifact": "plan.md"
+  },
+  "inbox_unread_count": 7,
+  "last_5_files_touched_24h": [
+    "projects/sinister-serper/sinister_serper/client.py",
+    "projects/sinister-serper/sinister_serper/keypool.py",
+    "projects/sinister-chatbot/leo_dev/backend/src/routes/sinister.ts",
+    "_shared-memory/plans/sinister-serper-master-20260527T0611Z/plan.md",
+    "_shared-memory/inbox/sanctum/20260527T0611Z-from-sinister-chatbot-sinister-serper-scaffolded-needs-email-gen-and-projects-json.md"
+  ],
+  "pre_warm_reads": [
+    "D:/Sinister Sanctum/projects/sinister-chatbot/CLAUDE.md",
+    "D:/Sinister Sanctum/projects/sinister-serper/README.md",
+    "D:/Sinister Sanctum/_shared-memory/plans/sinister-serper-master-20260527T0611Z/plan.md"
+  ]
+}
