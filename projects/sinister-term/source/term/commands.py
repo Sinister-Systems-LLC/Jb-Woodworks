@@ -106,6 +106,7 @@ Sinister Term commands:
   /sysinfo                  OS / Python / SANCTUM_ROOT / env / disk diagnostic
   /inbox-of [slug] [N]      Peek at another agent's inbox (alias /io)
   /progress-of [slug] [N]   Read another agent's PROGRESS log (alias /po)
+  /rmux [N | live | sort=X | project=X | detail <id>]   htop-style fleet monitor (alias /agtop)
   /alias [name=val|remove n] List aliases, define one, or remove one
   /clear                    Clear the screen
   /help                     This message
@@ -2796,6 +2797,107 @@ def _short(v):
     return s
 
 
+def cmd_rmux(args: list[str]) -> CommandResult:
+    """Sinister rmux — htop-style fleet monitor (port of agtop).
+
+    Lists every Claude Code session under `~/.claude/projects/<proj>/*.jsonl`
+    with model, age, CTX%, tokens, cost, top tool. Useful for "what is my whole
+    fleet doing right now."
+
+    Forms:
+      /rmux                       — top 15, newest-first
+      /rmux N                     — top N (1..100)
+      /rmux live                  — only sessions active in the last 5 minutes
+      /rmux sort=cost             — re-sort: age|cost|ctx|tokens|turns|model|project
+      /rmux project=<substring>   — filter by project shorthand (substring)
+      /rmux detail <session-id>   — drilldown view (tools, tokens, branch, …)
+      /rmux help                  — this text
+    """
+    try:
+        from term import rmux as _rmux
+    except Exception as e:
+        return CommandResult(True, f"rmux unavailable: {e}")
+
+    # parse args
+    limit = 15
+    live_only = False
+    sort_key = "age"
+    project_filter = ""
+    detail_id = ""
+    show_help = False
+    for a in args:
+        a_low = a.lower()
+        if a_low in ("help", "--help", "-h", "?"):
+            show_help = True
+        elif a_low == "live":
+            live_only = True
+        elif a_low == "detail":
+            detail_id = "__next__"
+        elif detail_id == "__next__":
+            detail_id = a
+        elif a_low.startswith("sort="):
+            sort_key = a_low.split("=", 1)[1]
+        elif a_low.startswith("project="):
+            project_filter = a.split("=", 1)[1]
+        elif a.isdigit():
+            try:
+                limit = max(1, min(100, int(a)))
+            except Exception:
+                pass
+        else:
+            return CommandResult(True,
+                f"unknown rmux arg: {a}. Try /rmux help.")
+
+    if show_help:
+        return CommandResult(True, cmd_rmux.__doc__ or "/rmux usage")
+
+    if sort_key not in _rmux.SORT_KEYS:
+        return CommandResult(True,
+            f"unknown sort key: {sort_key}. Valid: " + ", ".join(sorted(_rmux.SORT_KEYS)))
+
+    # scan: cap at 200 files + last 7 days by default for speed
+    sessions = _rmux.scan_sessions(max_files=200, since_seconds=86400 * 7)
+
+    if detail_id and detail_id != "__next__":
+        # try exact id, then substring of session_id, then substring of project_dir
+        hit = next((s for s in sessions if s.session_id == detail_id), None)
+        if hit is None:
+            cand = [s for s in sessions if detail_id.lower() in s.session_id.lower()]
+            if len(cand) == 1:
+                hit = cand[0]
+            elif len(cand) > 1:
+                return CommandResult(True,
+                    f"ambiguous: {len(cand)} sessions match '{detail_id}'. "
+                    f"Try a longer prefix: "
+                    + ", ".join(c.session_id[:8] for c in cand[:8]))
+        if hit is None:
+            cand = [s for s in sessions if detail_id.lower() in (s.project_dir or "").lower()]
+            if len(cand) == 1:
+                hit = cand[0]
+        if hit is None:
+            return CommandResult(True, f"no session matches '{detail_id}'.")
+        try:
+            _bus_publish("rmux_detail", "agent",
+                         {"session_id": hit.session_id, "project": hit.project_dir})
+        except Exception:
+            pass
+        return CommandResult(True, _rmux.format_session_detail(hit))
+
+    if project_filter:
+        pf_low = project_filter.lower()
+        sessions = [s for s in sessions if pf_low in (s.project_dir or "").lower()]
+
+    out = _rmux.format_table(sessions, limit=limit, live_only=live_only, sort=sort_key)
+    try:
+        _bus_publish("rmux_list", "agent", {
+            "limit": limit, "live_only": live_only, "sort": sort_key,
+            "filter": project_filter, "count": len(sessions),
+        })
+    except Exception:
+        pass
+    return CommandResult(True, out)
+
+
 def cmd_swarm(args: list[str]) -> CommandResult:
     """P2-3 (iter-51): wrap term.swarm.{spawn,list_agents,dm,broadcast} as
     a single /-prefix builtin so the operator can fan-out / coordinate from
@@ -2930,6 +3032,8 @@ COMMANDS: dict[str, Callable[[list[str]], CommandResult]] = {
     "io": cmd_inbox_of,                  # short alias
     "progress-of": cmd_progress_of,      # iter-76 — read peer PROGRESS log
     "po": cmd_progress_of,               # short alias
+    "rmux": cmd_rmux,                    # iter-77 — htop-style fleet monitor (agtop port)
+    "agtop": cmd_rmux,                   # alias for muscle memory from agtop
 }
 
 
