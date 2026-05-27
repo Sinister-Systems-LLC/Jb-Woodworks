@@ -3,6 +3,64 @@
 > Author: RKOJ-ELENO :: 2026-05-25
 > Append-only. Most-recent on top.
 
+## 2026-05-27T01:01Z — iter-27 BIG templates (5 multi-category 50-150 LOC) + plan-B race-resilience doctrine
+
+Shipped:
+
+- `automations/hgly_corpus_seed.py` — 5 new templates appended to
+  `TEMPLATES` list AFTER the iter-11 boosters: `big-memory-pool`
+  (cat-4+3+1+2), `big-concurrent-counter` (cat-5+4+1+2+3),
+  `big-sim-pipeline` (cat-8+3+1+2), `big-matrix-multiply` (cat-1+2+3
+  pure), `big-io-pump` (cat-7+4+1+2+3). Each template returns
+  (glyph_src, ascii_src, python_ref) where `ascii_src == glyph_src`
+  for now (the lex_to_glyph pass downstream applies the glyph swap on
+  ingest). All targets 22-30 LOC of hgly source vs 30-80+ LOC of
+  authentic Python boilerplate.
+- `_shared-memory/plans/sinister-hieroglyphics-iter25-completion-2026-05-27/plan-B.md`
+  (~155 LOC) — race-resilient variant of plan.md acknowledging the
+  cross-agent git contention observed this lane. Documents
+  idempotent commit script + file-system-first durability + recovery
+  patterns from the 65f1cda -> 64c1a65 cherry-pick chain.
+
+Per-template ratio (measured immediately after template write):
+
+| name | hgly bytes | py bytes | ratio |
+|---|---|---|---|
+| big-memory-pool | 521 | 667 | 0.7811 |
+| big-concurrent-counter | 547 | 725 | 0.7545 |
+| big-sim-pipeline | 495 | 992 | **0.4990** |
+| big-matrix-multiply | 465 | 321 | 1.4486 |
+| big-io-pump | 471 | 522 | 0.9023 |
+| **average** | 500 | 645 | **0.8771** |
+
+Honest read: big-sim-pipeline at 0.50 is the headline proof that the
+right program shape moves the ratio sub-1. big-matrix-multiply at
+1.45 is a counterexample — pure arithmetic on linear algebra is
+already tight in Python with list comprehensions, so glyph overhead
+hurts. The fleet now has BOTH ends of the curve in the corpus, which
+is what the trainer needs to learn the discriminator.
+
+Verify (this turn, all green):
+
+- `python -c "import hgly_corpus_seed; ..."` -> 5 templates load + return non-empty triples
+- `python -c "from hgly.parser import parse; ..."` -> 5/5 parse OK (zero ParseErrors)
+- `python projects/sinister-hieroglyphics/tests/test_parser.py` -> 11/11 (regression)
+- `python projects/sinister-hieroglyphics/tests/test_density.py` -> 9/9 (regression)
+- `python projects/sinister-hieroglyphics/tests/test_loop_checkpoint_hgly.py` -> 4/4 (regression)
+
+Composes with:
+
+- `_shared-memory/plans/sinister-hieroglyphics-iter25-completion-2026-05-27/plan.md` iter-27 row (now shipped)
+- `_shared-memory/plans/sinister-hieroglyphics-iter25-completion-2026-05-27/plan-B.md` (race-resilience companion)
+- CLAUDE.md lane rule 1 (token-density prime directive) — the fleet
+  now has multi-category big-programs proving ratio asymmetry holds
+  (sim glyphs compress; matrix arith does not).
+
+Next iter (queued): iter-28 — regenerate corpus with new templates in
+rotation (`hgly_corpus_seed.py gen --count 50 --kind ascii`) then
+`hgly_density.py track --note "iter-28 post big-template ingest"` and
+document the corpus-wide ratio shift.
+
 ## 2026-05-27T00:47Z — iter-26 loop_checkpoint -> density trajectory hook
 
 Shipped:
