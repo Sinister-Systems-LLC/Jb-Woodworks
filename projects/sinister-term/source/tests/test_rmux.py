@@ -460,3 +460,229 @@ def test_fmt_cost_thresholds():
     assert rmux._fmt_cost(0.0001) == "$0.0001"
     assert rmux._fmt_cost(0.50) == "$0.500"
     assert rmux._fmt_cost(15.0) == "$15.00"
+
+
+# ---------------------------------------------------------------------------
+# iter-78 — CLI / watch mode
+# ---------------------------------------------------------------------------
+
+
+def _stub_scan(monkeypatch, sessions):
+    """Make scan_sessions return a fixed list (bypass filesystem)."""
+    monkeypatch.setattr(rmux, "scan_sessions",
+                        lambda *a, **kw: list(sessions))
+
+
+def test_render_snapshot_returns_table(monkeypatch):
+    import time
+    s = _mk_sess(project_dir="myproj", last_active=time.time(),
+                 model="claude-opus-4-7", input_tokens=1000, turn_count=2)
+    _stub_scan(monkeypatch, [s])
+    out = rmux.render_snapshot()
+    assert "myproj" in out
+    assert "claude-opus-4-7" in out
+
+
+def test_render_snapshot_project_filter(monkeypatch):
+    import time
+    a = _mk_sess(project_dir="alpha-lane", last_active=time.time())
+    b = _mk_sess(project_dir="bravo-lane", last_active=time.time())
+    _stub_scan(monkeypatch, [a, b])
+    out = rmux.render_snapshot(project="bravo")
+    assert "bravo" in out
+    assert "alpha" not in out
+
+
+def test_render_json_emits_valid_json(monkeypatch):
+    import time
+    s = _mk_sess(session_id="abc", project_dir="p", model="claude-opus-4-7",
+                 last_active=time.time(), input_tokens=1000,
+                 output_tokens=500, turn_count=3)
+    _stub_scan(monkeypatch, [s])
+    out = rmux.render_json()
+    payload = json.loads(out)
+    assert payload["schema"] == "sinister.rmux.snapshot.v1"
+    assert payload["session_count"] == 1
+    assert payload["sessions"][0]["session_id"] == "abc"
+    assert "ctx_pct" in payload["sessions"][0]
+    assert "tool_counts" in payload["sessions"][0]
+
+
+def test_render_json_aggregates_totals(monkeypatch):
+    a = _mk_sess(input_tokens=1_000_000, output_tokens=0, model="claude-opus-4-7")
+    b = _mk_sess(input_tokens=0, output_tokens=1_000_000, model="claude-opus-4-7")
+    _stub_scan(monkeypatch, [a, b])
+    out = rmux.render_json()
+    payload = json.loads(out)
+    # a contributes $5 (1M input * $5/M), b contributes $25 (1M output * $25/M)
+    assert payload["total_cost_usd"] == pytest.approx(30.0, abs=0.01)
+    assert payload["total_input_tokens"] == 1_000_000
+    assert payload["total_output_tokens"] == 1_000_000
+
+
+def test_render_detail_exact_match(monkeypatch):
+    s = _mk_sess(session_id="xyz123abc", project_dir="p", model="claude-opus-4-7")
+    _stub_scan(monkeypatch, [s])
+    out = rmux.render_detail("xyz123abc")
+    assert "Session  xyz123abc" in out
+
+
+def test_render_detail_substring_unique(monkeypatch):
+    s = _mk_sess(session_id="xyz123abc", project_dir="p", model="claude-opus-4-7")
+    _stub_scan(monkeypatch, [s])
+    out = rmux.render_detail("xyz12")
+    assert "Session  xyz123abc" in out
+
+
+def test_render_detail_ambiguous(monkeypatch):
+    a = _mk_sess(session_id="abc111111", model="claude-opus-4-7")
+    b = _mk_sess(session_id="abc222222", model="claude-opus-4-7")
+    _stub_scan(monkeypatch, [a, b])
+    out = rmux.render_detail("abc")
+    assert "ambiguous" in out.lower()
+    assert "abc11111" in out and "abc22222" in out
+
+
+def test_render_detail_no_match(monkeypatch):
+    _stub_scan(monkeypatch, [])
+    out = rmux.render_detail("nothing")
+    assert "no session matches" in out
+
+
+def test_session_to_dict_includes_derived_fields():
+    import time
+    s = _mk_sess(session_id="t", model="claude-opus-4-7",
+                 last_active=time.time(), input_tokens=1000)
+    d = rmux._session_to_dict(s)
+    for key in ("session_id", "model", "ctx_pct", "cost_usd", "is_live",
+                "age_seconds", "top_tool", "tool_counts"):
+        assert key in d
+
+
+def test_watch_loop_runs_fixed_iterations(monkeypatch):
+    """watch_loop returns after `iterations` renders without sleeping forever."""
+    sleeps: list[float] = []
+    writes: list[str] = []
+    monkeypatch.setattr(rmux, "scan_sessions", lambda *a, **kw: [])
+    n = rmux.watch_loop(interval=1.0, iterations=3, clear=False,
+                        sleep_fn=lambda s: sleeps.append(s),
+                        write_fn=lambda x: writes.append(x),
+                        flush_fn=lambda: None)
+    assert n == 3
+    # sleep is skipped after the final render (loop returns first), so we
+    # expect iterations-1 sleep calls
+    assert len(sleeps) == 2
+    body = "".join(writes)
+    assert "(no sessions)" in body
+    assert "rmux watch" in body
+
+
+def test_watch_loop_clear_screen_when_enabled(monkeypatch):
+    writes: list[str] = []
+    monkeypatch.setattr(rmux, "scan_sessions", lambda *a, **kw: [])
+    rmux.watch_loop(interval=0.5, iterations=1, clear=True,
+                    sleep_fn=lambda s: None,
+                    write_fn=lambda x: writes.append(x),
+                    flush_fn=lambda: None)
+    assert rmux._CLEAR in writes
+
+
+def test_watch_loop_no_clear_when_disabled(monkeypatch):
+    writes: list[str] = []
+    monkeypatch.setattr(rmux, "scan_sessions", lambda *a, **kw: [])
+    rmux.watch_loop(interval=0.5, iterations=1, clear=False,
+                    sleep_fn=lambda s: None,
+                    write_fn=lambda x: writes.append(x),
+                    flush_fn=lambda: None)
+    assert rmux._CLEAR not in writes
+
+
+def test_watch_loop_handles_keyboard_interrupt(monkeypatch):
+    def boom(_s):
+        raise KeyboardInterrupt
+    writes: list[str] = []
+    monkeypatch.setattr(rmux, "scan_sessions", lambda *a, **kw: [])
+    n = rmux.watch_loop(interval=0.5, iterations=10, clear=False,
+                        sleep_fn=boom,
+                        write_fn=lambda x: writes.append(x),
+                        flush_fn=lambda: None)
+    assert n == 1
+
+
+def test_main_json_returns_zero(monkeypatch, capsys):
+    monkeypatch.setattr(rmux, "scan_sessions", lambda *a, **kw: [])
+    rc = rmux.main(["--json"])
+    out = capsys.readouterr().out
+    assert rc == 0
+    payload = json.loads(out)
+    assert payload["schema"] == "sinister.rmux.snapshot.v1"
+    assert payload["session_count"] == 0
+
+
+def test_main_default_snapshot_returns_zero(monkeypatch, capsys):
+    monkeypatch.setattr(rmux, "scan_sessions", lambda *a, **kw: [])
+    rc = rmux.main([])
+    out = capsys.readouterr().out
+    assert rc == 0
+    assert "(no sessions)" in out
+
+
+def test_main_detail_returns_zero(monkeypatch, capsys):
+    monkeypatch.setattr(rmux, "scan_sessions", lambda *a, **kw: [])
+    rc = rmux.main(["--detail", "anything"])
+    out = capsys.readouterr().out
+    assert rc == 0
+    assert "no session matches" in out
+
+
+def test_main_unknown_sort_rejected(monkeypatch, capsys):
+    with pytest.raises(SystemExit):
+        rmux.main(["--sort", "totally-bogus"])
+
+
+def test_main_watch_calls_loop_with_args(monkeypatch):
+    captured = {}
+
+    def fake_loop(**kw):
+        captured.update(kw)
+        return 1
+
+    monkeypatch.setattr(rmux, "watch_loop", fake_loop)
+    rc = rmux.main(["--watch", "0.25", "--sort", "cost", "--live", "--limit", "5"])
+    assert rc == 0
+    assert captured["interval"] == 0.25
+    assert captured["sort"] == "cost"
+    assert captured["live_only"] is True
+    assert captured["limit"] == 5
+
+
+def test_main_watch_no_arg_uses_default_interval(monkeypatch):
+    captured = {}
+
+    def fake_loop(**kw):
+        captured.update(kw)
+        return 1
+
+    monkeypatch.setattr(rmux, "watch_loop", fake_loop)
+    rmux.main(["--watch"])
+    assert captured["interval"] == rmux._DEFAULT_WATCH_INTERVAL
+
+
+def test_main_watch_clamps_too_small_interval(monkeypatch):
+    captured = {}
+
+    def fake_loop(**kw):
+        captured.update(kw)
+        return 1
+
+    monkeypatch.setattr(rmux, "watch_loop", fake_loop)
+    rmux.main(["--watch", "0.001"])
+    assert captured["interval"] >= 0.25
+
+
+def test_build_argparser_registers_all_flags():
+    p = rmux.build_argparser()
+    actions = {a.dest for a in p._actions}
+    for k in ("watch", "json", "limit", "live", "sort", "project",
+              "detail", "since_hours", "max_files", "show_path", "no_clear"):
+        assert k in actions

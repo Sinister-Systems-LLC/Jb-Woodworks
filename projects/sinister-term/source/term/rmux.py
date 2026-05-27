@@ -515,3 +515,256 @@ def format_session_detail(session: RmuxSession) -> str:
     if session.parse_error:
         lines.append(f"parse-error: {session.parse_error}")
     return "\n".join(lines)
+
+
+# ---------------------------------------------------------------------------
+# CLI entry point — `python -m term.rmux ...`
+# ---------------------------------------------------------------------------
+
+# ANSI clear-screen + cursor home; works in mintty, Windows Terminal, and any
+# VT-100 capable shell. cmd.exe before WT may need `colorama.init()` (we don't
+# import it to keep zero deps).
+_CLEAR = "\x1b[2J\x1b[H"
+
+# Default refresh interval matches agtop (`-d 2` from agtop README).
+_DEFAULT_WATCH_INTERVAL = 2.0
+
+
+def _session_to_dict(s: RmuxSession) -> dict:
+    """Serializable dict for --json. Stable schema for downstream scripts."""
+    return {
+        "session_id":          s.session_id,
+        "path":                str(s.path),
+        "project_dir":         s.project_dir,
+        "model":               s.model,
+        "raw_model":           s.raw_model,
+        "cwd":                 s.cwd,
+        "git_branch":          s.git_branch,
+        "cc_version":          s.cc_version,
+        "started_at":          s.started_at,
+        "last_active":         s.last_active,
+        "age_seconds":         s.age_seconds,
+        "is_live":             s.is_live,
+        "turn_count":          s.turn_count,
+        "input_tokens":        s.input_tokens,
+        "output_tokens":       s.output_tokens,
+        "cache_creation_tokens": s.cache_creation_tokens,
+        "cache_write_5m_tokens": s.cache_write_5m_tokens,
+        "cache_write_1h_tokens": s.cache_write_1h_tokens,
+        "cache_read_tokens":   s.cache_read_tokens,
+        "last_ctx_tokens":     s.last_ctx_tokens,
+        "ctx_pct":             s.ctx_pct,
+        "cost_usd":            s.cost_usd,
+        "tool_counts":         dict(s.tool_counts),
+        "top_tool":            s.top_tool,
+        "last_tool":           s.last_tool,
+        "last_tool_ts":        s.last_tool_ts,
+        "file_size":           s.file_size,
+        "parse_error":         s.parse_error,
+    }
+
+
+def render_snapshot(*, limit: int = 30, live_only: bool = False,
+                    sort: str = "age", project: str = "",
+                    since_hours: float = 168.0,
+                    max_files: int = 200,
+                    show_path: bool = False) -> str:
+    """One-shot table render. Pure function for testability."""
+    since_seconds = since_hours * 3600 if since_hours > 0 else None
+    sessions = scan_sessions(max_files=max_files, since_seconds=since_seconds)
+    if project:
+        pf = project.lower()
+        sessions = [s for s in sessions if pf in (s.project_dir or "").lower()]
+    return format_table(sessions, limit=limit, live_only=live_only,
+                        sort=sort, show_path=show_path)
+
+
+def render_json(*, limit: int = 200, live_only: bool = False,
+                sort: str = "age", project: str = "",
+                since_hours: float = 168.0,
+                max_files: int = 500) -> str:
+    """Full dump as a JSON list of session dicts. Mirrors `agtop -j`."""
+    since_seconds = since_hours * 3600 if since_hours > 0 else None
+    sessions = scan_sessions(max_files=max_files, since_seconds=since_seconds)
+    if project:
+        pf = project.lower()
+        sessions = [s for s in sessions if pf in (s.project_dir or "").lower()]
+    if live_only:
+        sessions = [s for s in sessions if s.is_live]
+    sessions = sort_sessions(sessions, sort)[: max(1, min(limit, 5000))]
+    payload = {
+        "schema": "sinister.rmux.snapshot.v1",
+        "ts_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "session_count": len(sessions),
+        "total_cost_usd": round(sum(s.cost_usd for s in sessions), 4),
+        "total_input_tokens": sum(s.input_tokens for s in sessions),
+        "total_output_tokens": sum(s.output_tokens for s in sessions),
+        "live_count": sum(1 for s in sessions if s.is_live),
+        "sessions": [_session_to_dict(s) for s in sessions],
+    }
+    import json as _j
+    return _j.dumps(payload, indent=2, sort_keys=False, default=str)
+
+
+def render_detail(session_id: str, *, since_hours: float = 168.0,
+                  max_files: int = 500) -> str:
+    """Drilldown for one session id (exact or substring)."""
+    since_seconds = since_hours * 3600 if since_hours > 0 else None
+    sessions = scan_sessions(max_files=max_files, since_seconds=since_seconds)
+    hit = next((s for s in sessions if s.session_id == session_id), None)
+    if hit is None:
+        cand = [s for s in sessions if session_id.lower() in s.session_id.lower()]
+        if len(cand) == 1:
+            hit = cand[0]
+        elif len(cand) > 1:
+            return (f"ambiguous: {len(cand)} sessions match '{session_id}'. "
+                    f"Try a longer prefix: "
+                    + ", ".join(c.session_id[:8] for c in cand[:8]))
+    if hit is None:
+        return f"no session matches '{session_id}'."
+    return format_session_detail(hit)
+
+
+def watch_loop(*, interval: float = _DEFAULT_WATCH_INTERVAL,
+               limit: int = 30, live_only: bool = False,
+               sort: str = "age", project: str = "",
+               since_hours: float = 168.0,
+               max_files: int = 200,
+               iterations: int | None = None,
+               clear: bool = True,
+               sleep_fn=time.sleep,
+               write_fn=None,
+               flush_fn=None) -> int:
+    """Live refresh loop. Returns the iteration count actually run.
+
+    `iterations=None` means loop forever (Ctrl+C exits).
+    `iterations=N` runs exactly N renders then returns (for tests).
+    `sleep_fn` / `write_fn` / `flush_fn` are injectable for testing.
+    """
+    import sys as _sys
+    write = write_fn or _sys.stdout.write
+    flush = flush_fn or _sys.stdout.flush
+    n_done = 0
+    try:
+        while True:
+            snap = render_snapshot(
+                limit=limit, live_only=live_only, sort=sort,
+                project=project, since_hours=since_hours, max_files=max_files,
+            )
+            if clear:
+                write(_CLEAR)
+            write(snap)
+            footer = (
+                f"\n\nrmux watch — refresh every {interval:.1f}s · "
+                f"sort={sort} live={live_only} limit={limit} · "
+                "Ctrl+C to exit\n"
+            )
+            write(footer)
+            flush()
+            n_done += 1
+            if iterations is not None and n_done >= iterations:
+                return n_done
+            sleep_fn(interval)
+    except KeyboardInterrupt:
+        # graceful exit; carriage return so any trailing ^C lives on its own line
+        try:
+            write("\n")
+            flush()
+        except Exception:
+            pass
+        return n_done
+
+
+def build_argparser():
+    import argparse
+    p = argparse.ArgumentParser(
+        prog="python -m term.rmux",
+        description="Sinister rmux — htop-style fleet monitor for Claude Code sessions "
+                    "(port of agtop, https://github.com/ldegio/agtop, GPL-2.0). "
+                    "Reads ~/.claude/projects/<proj>/*.jsonl, scores each session, renders a table.",
+    )
+    p.add_argument("--watch", "-w", nargs="?", const=_DEFAULT_WATCH_INTERVAL,
+                   type=float, default=None,
+                   help=f"Live refresh every N seconds (default {_DEFAULT_WATCH_INTERVAL}s). "
+                        "Ctrl+C exits.")
+    p.add_argument("--json", "-j", action="store_true",
+                   help="Dump full session data as JSON and exit (no table).")
+    p.add_argument("--limit", "-n", type=int, default=30,
+                   help="Max rows to render (default 30; capped 1..500).")
+    p.add_argument("--live", "-L", action="store_true",
+                   help="Only sessions active in the last 5 minutes.")
+    p.add_argument("--sort", "-s", default="age",
+                   choices=sorted(SORT_KEYS.keys()),
+                   help="Sort key (default: age).")
+    p.add_argument("--project", "-p", default="",
+                   help="Filter project_dir by substring (case-insensitive).")
+    p.add_argument("--detail", "-D", default="",
+                   help="Drilldown view for one session id (exact or substring).")
+    p.add_argument("--since-hours", type=float, default=168.0,
+                   help="Skip sessions whose JSONL mtime is older than N hours (default 168 = 7d).")
+    p.add_argument("--max-files", type=int, default=200,
+                   help="Cap on number of JSONL files scanned (default 200).")
+    p.add_argument("--show-path", action="store_true",
+                   help="Add session-id column to the table.")
+    p.add_argument("--no-clear", action="store_true",
+                   help="In --watch mode, don't issue the clear-screen ANSI (useful for logs).")
+    return p
+
+
+def main(argv: list[str] | None = None) -> int:
+    import sys as _sys
+    if argv is None:
+        argv = list(_sys.argv[1:])
+    else:
+        argv = list(argv)
+    # Verb-first dispatch: `python -m term.rmux <verb> [args]` routes to
+    # term.rmux_verbs (iter-79: spawn / stop / kill / focus / attach / logs /
+    # projects / help / ls / watch / json / detail). If the first arg is a
+    # non-flag word matching a known verb we hand off the whole tail;
+    # otherwise we fall through to the legacy --flag argparse path so back-
+    # compat callers (--watch / --json / --detail) keep working.
+    if argv and not argv[0].startswith("-"):
+        try:
+            from term import rmux_verbs as _verbs
+        except Exception as e:
+            print(f"verb dispatcher unavailable: {e}")
+            return 2
+        if _verbs.is_verb(argv[0]):
+            result = _verbs.dispatch_verb(argv[0], argv[1:])
+            if result.text:
+                print(result.text)
+            return 0 if result.ok else 1
+        # unknown first-arg word — let argparse error helpfully
+    parser = build_argparser()
+    args = parser.parse_args(argv)
+    # exclusive: detail wins, then json, then watch, then snapshot
+    if args.detail:
+        out = render_detail(args.detail,
+                            since_hours=args.since_hours,
+                            max_files=max(args.max_files, 500))
+        print(out)
+        return 0
+    if args.json:
+        out = render_json(limit=args.limit, live_only=args.live, sort=args.sort,
+                          project=args.project, since_hours=args.since_hours,
+                          max_files=max(args.max_files, 500))
+        print(out)
+        return 0
+    if args.watch is not None:
+        watch_loop(interval=max(0.25, args.watch),
+                   limit=args.limit, live_only=args.live, sort=args.sort,
+                   project=args.project, since_hours=args.since_hours,
+                   max_files=args.max_files,
+                   clear=not args.no_clear)
+        return 0
+    # default: one-shot snapshot
+    out = render_snapshot(limit=args.limit, live_only=args.live, sort=args.sort,
+                          project=args.project, since_hours=args.since_hours,
+                          max_files=args.max_files, show_path=args.show_path)
+    print(out)
+    return 0
+
+
+if __name__ == "__main__":  # pragma: no cover
+    import sys as _sys
+    raise SystemExit(main(_sys.argv[1:]))
