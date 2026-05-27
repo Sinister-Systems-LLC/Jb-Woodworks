@@ -1,0 +1,28 @@
+cst SLAB_COUNT 4
+cst POOL_BYTES 8192
+let pool (mmp POOL_BYTES)
+let slab_sz (/ POOL_BYTES SLAB_COUNT)
+fn slab_addr (base i) {
+  ret + base (* i slab_sz)
+}
+fn slab_walk (base count) {
+  let total 0
+  for i 0 + count 0 {
+    let a (slab_addr base i)
+    let v (* a)
+    let c (cst! v)
+    let total + total c
+    wr 1 c 4
+  }
+  ret total
+}
+fn pool_zero (base count) {
+  for i 0 + count 0 {
+    let a (slab_addr base i)
+    let _ (siz a)
+  }
+}
+pool_zero pool SLAB_COUNT
+let sum (slab_walk pool SLAB_COUNT)
+wr 1 sum 4
+umm pool

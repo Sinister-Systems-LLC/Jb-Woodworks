@@ -1,0 +1,27 @@
+cst CHUNK 8192
+cst SOCK_PATH "/tmp/in.sock"
+cst OUT_PATH "/tmp/out.bin"
+fn pump (src dst buf chunk) {
+  let total 0
+  let done 0
+  for i 0 + 1000 0 {
+    if done { ret total }
+    let n (rcv src buf chunk)
+    if (== n 0) {
+      let done 1
+    }
+    if (> n 0) {
+      let _ (wr dst buf n)
+      let total + total n
+    }
+  }
+  ret total
+}
+let s (opn SOCK_PATH R)
+let f (opn OUT_PATH W)
+let buf (alc CHUNK)
+let total (pump s f buf CHUNK)
+wr 1 total 8
+fre buf
+cls s
+cls f

@@ -1,0 +1,29 @@
+cst N 5
+fn mat_get (m row col) {
+  ret + (* row N) col
+}
+fn mat_set (m row col v) {
+  let idx (mat_get m row col)
+  let _ (* idx v)
+}
+fn matmul (a b c) {
+  for i 0 + N 0 {
+    for j 0 + N 0 {
+      let acc 0
+      for k 0 + N 0 {
+        let ai (mat_get a i k)
+        let bi (mat_get b k j)
+        let prod (* ai bi)
+        let acc + acc prod
+      }
+      mat_set c i j acc
+    }
+  }
+}
+let a (alc 64)
+let b (alc 64)
+let c (alc 64)
+matmul a b c
+fre a
+fre b
+fre c

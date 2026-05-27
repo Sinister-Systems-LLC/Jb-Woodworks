@@ -1,0 +1,28 @@
+cst STEPS 60
+cst BRANCHES 4
+cst DT 0.001
+fn run_branch (s0 dt steps eps) {
+  let s s0
+  for i 0 + steps 0 {
+    let s (stp s dt)
+  }
+  let bs (brn s)
+  prt bs eps
+  ret bs
+}
+fn pipeline (steps branches dt) {
+  let s0 (snp 0)
+  let acc s0
+  for b 0 + branches 0 {
+    let eps (* DT b)
+    let branch (run_branch s0 dt steps eps)
+    let acc (mrg acc branch)
+    let o (obs branch)
+    wr 1 o 8
+  }
+  rwd acc s0
+  let out (mat acc)
+  ret out
+}
+let result (pipeline STEPS BRANCHES DT)
+wr 1 result 8

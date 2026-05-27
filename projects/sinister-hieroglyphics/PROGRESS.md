@@ -3,6 +3,57 @@
 > Author: RKOJ-ELENO :: 2026-05-25
 > Append-only. Most-recent on top.
 
+## 2026-05-27T01:08Z — iter-28 corpus regen + ratio measurement (255 -> 286 programs)
+
+Shipped:
+
+- `_shared-memory/hgly-corpus/big-templates-2026-05-27/` — 31 newly
+  generated `.shp` programs (one per template including the 5 BIG
+  templates from iter-27). Generated via
+  `python automations/hgly_corpus_seed.py gen --count 31 --kind ascii
+  --run-id big-templates-2026-05-27`.
+- `_shared-memory/hgly-density-trajectory.jsonl` — appended iter-28
+  row via `hgly_density.py track --note "iter-28 post big-template
+  ingest (286 progs corpus-wide)"`.
+
+Corpus-wide ratio movement:
+
+| metric | iter-25 (255 progs) | iter-28 (286 progs) | delta |
+|---|---|---|---|
+| programs | 255 | 286 | +31 |
+| shp bytes total | 18,598 | 22,847 | +4,249 |
+| py bytes (est) | 19,808 | 24,785 | +4,977 |
+| ops total | 4,499 | 5,482 | +983 |
+| shp/op avg | 4.134 B | 4.168 B | +0.034 |
+| py/op avg | 4.403 B | 4.521 B | +0.118 |
+| **corpus ratio** | **0.9389** | **0.9218** | **-0.0171 (-1.8%)** |
+| ratio median | 0.9583 | 0.9149 | -0.0434 (-4.5%) |
+| ratio max | 1.34 | 1.34 | unchanged |
+| pass rate | 0/255 | 0/286 | unchanged |
+
+Honest read: the 5 BIG templates moved corpus-wide ratio by 1.8% on
+average and median by 4.5%. That's directional proof but the
+absolute gap to 0.20 remains massive. The asymptote is closer to
+~0.7-0.8 for the current corpus shape — to get sub-0.4 we'd need
+either: (a) MUCH bigger programs (200+ LOC each with significant
+Python boilerplate to amortize against), (b) corpus weighted toward
+sim-pipeline-shape templates (which hit 0.50 individually), or
+(c) honest acceptance that the metric needs rebasing for short
+programs (e.g. ratio computed on programs > N bytes only).
+
+The pipeline now has rows iter-25 -> iter-28 in the trajectory JSONL.
+Next iter (iter-29) per plan: add `--by-category` flag to
+`hgly_density.py corpus` so we can see which glyph category compresses
+best and target template authoring accordingly.
+
+Verify (this turn):
+
+- `python automations/hgly_corpus_seed.py gen --count 31 --kind ascii ...` -> 31 files written
+- `ls _shared-memory/hgly-corpus/big-templates-2026-05-27/` -> 5 big-* files + 26 others
+- `python automations/hgly_density.py corpus` -> 286 programs / ratio 0.9218 / exit 0
+- `python automations/hgly_density.py track --note ...` -> appended JSONL row, exit 0
+- Tail of trajectory shows iter-25 (0.9389) + iter-26 hook live (0.9389) + iter-28 (0.9218) — 3 rows total
+
 ## 2026-05-27T01:01Z — iter-27 BIG templates (5 multi-category 50-150 LOC) + plan-B race-resilience doctrine
 
 Shipped:

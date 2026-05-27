@@ -1,0 +1,7 @@
+as P 97
+let b (pin P)
+pot P b
+dma 1 0 1552
+irq 1
+msr 0x1B0 0
+ioc 0 0 0

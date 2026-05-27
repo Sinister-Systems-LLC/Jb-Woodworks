@@ -1,0 +1,30 @@
+cst THREAD_COUNT 9
+cst INCREMENTS 1000
+let counter (atm 0)
+let lock (syn 1)
+fn cas_inc (ctr) {
+  let old (* ctr)
+  let new + old 1
+  let ok (cas ctr old new)
+  ret ok
+}
+fn worker (ctr lk count) {
+  for i 0 + count 0 {
+    let attempt (cas_inc ctr)
+    if (! attempt) {
+      lck lk
+      let _ (cas_inc ctr)
+      ulk lk
+    }
+  }
+  fnc SEQ
+}
+fn spawn_workers (n ctr lk count) {
+  for i 0 + n 0 {
+    let t (spn (lam () { worker ctr lk count }))
+    awt t
+  }
+}
+spawn_workers THREAD_COUNT counter lock INCREMENTS
+let final (* counter)
+wr 1 final 8

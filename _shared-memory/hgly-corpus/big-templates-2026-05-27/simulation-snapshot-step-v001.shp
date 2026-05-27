@@ -1,0 +1,3 @@
+let w0 (snp world)
+let w1 (stp w0 0.032)
+obs w1 pos

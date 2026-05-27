@@ -1,0 +1,7 @@
+cst N 8192
+let p (mmp N)
+let sz (siz p)
+let ap (& p)
+let v (* ap)
+let c (cst! v)
+umm p

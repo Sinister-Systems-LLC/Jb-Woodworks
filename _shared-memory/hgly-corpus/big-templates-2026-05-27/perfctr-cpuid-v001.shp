@@ -1,0 +1,3 @@
+let feat (cpf 1)
+let ctr (prf 1)
+wr 1 ctr 8
