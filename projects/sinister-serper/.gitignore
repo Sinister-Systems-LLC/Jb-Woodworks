@@ -1,0 +1,8 @@
+# Author: RKOJ-ELENO :: 2026-05-27
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+# Never commit real keys
+_vault-stub/keys.json
+keys.json
