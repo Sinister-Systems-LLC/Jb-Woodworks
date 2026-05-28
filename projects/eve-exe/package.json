@@ -1,0 +1,31 @@
+{
+  "name": "eve-exe",
+  "version": "1.0.0",
+  "description": "EVE \u2014 Sinister Sanctum agent workstation. Unified MX-EVE-MERGE ship.",
+  "private": false,
+  "license": "Apache-2.0",
+  "author": "Sinister Sanctum :: andrew.viperrr@gmail.com",
+  "main": "src/main/main-updater-wiring.ts",
+  "scripts": {
+    "build": "echo 'eve-exe is a lane-coordination scaffold; canonical build lives at C:/dev/eve4-mvp via electron:build:win'",
+    "release:publish": "python ../../automations/eve_release_publish.py --no-build"
+  },
+  "build": {
+    "appId": "com.sinister.eve",
+    "productName": "EVE",
+    "win": {
+      "target": "portable",
+      "icon": "build/icon.ico"
+    }
+  },
+  "_authored_by": "MX-EVE-MERGE integrator 2026-05-27",
+  "_lanes_integrated": [
+    "MX-EVE-FULL (Electron + tabs \u2014 artifact via Lane FA, SHA 47F3963F...)",
+    "MX-EVE-INTEGRATE (src/integration/*.ts \u2014 claude-auth, mcp, mesh, swarm)",
+    "MX-EVE-ICON-BORDERLESS (build/icon.png + icon.ico)",
+    "MX-EVE-UPDATER (src/main/updater.ts + src/shared/version.ts + automations/eve_release_publish.py)",
+    "MX-VOICE-CORTANA-LLM (voice/clips/welcome-andrew.{wav,mp3})"
+  ],
+  "_lane_status_ascii_video": "no markers found in 30min poll window \u2014 proceeded without",
+  "_canonical_artifact": "C:/Users/Zonia/Desktop/EVE.exe (111 MB, SHA256 47F3963F1C0936A861FE10713991BADE82B24B9FD4F4263A74912B740080507E)"
+}

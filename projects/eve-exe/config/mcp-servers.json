@@ -1,0 +1,39 @@
+{
+  "_schema_version": 1,
+  "_doc": "Standalone MCP server registry (also referenced from runtime-integration.json#mcp.config_file). Edit this file to add/disable an MCP without touching runtime-integration.json.",
+  "servers": [
+    {
+      "id": "vault",
+      "enabled": true,
+      "transport": "stdio",
+      "cwd": "D:/Sinister Sanctum/projects/sinister-eve-workstation/_vault-client",
+      "command": "node",
+      "args": ["index.js"],
+      "env": {},
+      "tools_prefix": "mcp__vault__",
+      "health_check": "list"
+    },
+    {
+      "id": "sinister-mcp",
+      "enabled": true,
+      "transport": "stdio",
+      "cwd": "D:/Sinister Sanctum/projects/sinister-mcp",
+      "command": "python",
+      "args": ["-m", "sinister_mcp"],
+      "env": {},
+      "tools_prefix": "mcp__sinister__",
+      "health_check": "list"
+    },
+    {
+      "id": "ruflo",
+      "enabled": true,
+      "transport": "stdio",
+      "command": "ruflo",
+      "args": ["mcp", "start"],
+      "env": {},
+      "tools_prefix": "mcp__ruflo__",
+      "optional": true,
+      "health_check": "list"
+    }
+  ]
+}

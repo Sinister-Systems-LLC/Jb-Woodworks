@@ -1,0 +1,184 @@
+{
+  "_schema_version": 1,
+  "_authored_by": "Lane MX-EVE-INTEGRATE",
+  "_authored_at_utc": "2026-05-27T00:00:00Z",
+  "_doc": "Canonical runtime config consumed by EVE.exe on startup. Pure plumbing — credentials live in the canonical files referenced below; never inline them here.",
+  "_doc_load_order": [
+    "1. Electron main reads this JSON before BrowserWindow.show()",
+    "2. Spawns local supporting processes per `services` (MCP, mesh subscriber)",
+    "3. Exposes per-feature state to renderer via IPC channels listed in `ipc.channels`",
+    "4. Each renderer integration module (src/integration/*) bootstraps from its `paths` entry"
+  ],
+
+  "claude_auth": {
+    "enabled": true,
+    "canonical_accounts_file": "D:/Sinister Sanctum/_shared-memory/claude-accounts.json",
+    "canonical_health_file": "D:/Sinister Sanctum/_shared-memory/oauth-slot-health.json",
+    "active_workers_file": "D:/Sinister Sanctum/_shared-memory/active-claude-workers.json",
+    "default_slot": "operator",
+    "fallback_order": ["operator", "slot2", "leo"],
+    "env_var_for_cli": "CLAUDE_OAUTH_TOKEN_FILE",
+    "config_dir_env_var": "CLAUDE_CONFIG_DIR",
+    "slot_credentials_dir_template": "C:/Users/Zonia/.claude-{slot}",
+    "slot_credentials_file_template": "C:/Users/Zonia/.claude-{slot}/.credentials.json",
+    "operator_credentials_dir": "C:/Users/Zonia/.claude",
+    "health_poll_ms": 10000,
+    "ipc_channel_set_default_slot": "SET_DEFAULT_SLOT",
+    "ipc_channel_request_status": "GET_SLOT_HEALTH",
+    "_safety": "Never write to credentials files. Only resolve filenames and emit env vars to child claude CLI invocations."
+  },
+
+  "mcp": {
+    "enabled": true,
+    "config_file": "D:/Sinister Sanctum/projects/eve-exe/config/mcp-servers.json",
+    "auto_launch_on_eve_start": true,
+    "connect_timeout_ms": 10000,
+    "log_file": "D:/Sinister Sanctum/_shared-memory/build-logs/eve-mcp.log",
+    "servers": [
+      {
+        "id": "vault",
+        "enabled": true,
+        "transport": "stdio",
+        "cwd": "D:/Sinister Sanctum/projects/sinister-eve-workstation/_vault-client",
+        "command": "node",
+        "args": ["index.js"],
+        "tools_prefix": "mcp__vault__"
+      },
+      {
+        "id": "sinister-mcp",
+        "enabled": true,
+        "transport": "stdio",
+        "cwd": "D:/Sinister Sanctum/projects/sinister-mcp",
+        "command": "python",
+        "args": ["-m", "sinister_mcp"],
+        "tools_prefix": "mcp__sinister__"
+      },
+      {
+        "id": "ruflo",
+        "enabled": true,
+        "transport": "stdio",
+        "command": "ruflo",
+        "args": ["mcp", "start"],
+        "tools_prefix": "mcp__ruflo__",
+        "_note": "Only attempted if `ruflo` is on PATH; failure is non-fatal."
+      }
+    ]
+  },
+
+  "mesh": {
+    "enabled": true,
+    "nats_url": "nats://localhost:4222",
+    "client_name": "eve-exe",
+    "connect_timeout_ms": 5000,
+    "reconnect_attempts": -1,
+    "reconnect_time_wait_ms": 2000,
+    "subscribe_topics": [
+      "sinister.fleet.>",
+      "sinister.spawn.>",
+      "sinister.acquire.>"
+    ],
+    "publish_subject_prefix": "sinister.eve.",
+    "panel_http_url": "http://localhost:3081",
+    "panel_endpoints": {
+      "spawn_bot": "/api/spawn",
+      "wake_bot": "/api/bots/wake",
+      "fleet_status": "/api/fleet/status"
+    },
+    "_safety": "Do NOT change panel port (3081) or NATS port (4222) — both pinned by upstream verification."
+  },
+
+  "swarm": {
+    "enabled": true,
+    "mode": "read_only",
+    "shared_memory_root": "D:/Sinister Sanctum/_shared-memory",
+    "paths": {
+      "tasks": "D:/Sinister Sanctum/_shared-memory/tasks",
+      "tasks_fallback_glob": "D:/Sinister Sanctum/_shared-memory/dispatcher/*.json",
+      "heartbeats": "D:/Sinister Sanctum/_shared-memory/heartbeats",
+      "operator_alerts": "D:/Sinister Sanctum/_shared-memory/operator-alerts/queue.jsonl",
+      "active_workers": "D:/Sinister Sanctum/_shared-memory/active-claude-workers.json",
+      "progress_root": "D:/Sinister Sanctum/_shared-memory/PROGRESS"
+    },
+    "poll_ms": 5000,
+    "tab_id": "swarm",
+    "tab_label": "Swarm",
+    "tab_position": "after:plans",
+    "phase2_actions_enabled": false
+  },
+
+  "ipc": {
+    "channels": {
+      "claude_set_default_slot": "SET_DEFAULT_SLOT",
+      "claude_get_health": "GET_SLOT_HEALTH",
+      "mcp_list_servers": "MCP_LIST",
+      "mcp_server_status": "MCP_STATUS",
+      "mesh_publish": "MESH_PUBLISH",
+      "mesh_subscribe": "MESH_SUBSCRIBE",
+      "mesh_status": "MESH_STATUS",
+      "swarm_read_tasks": "SWARM_TASKS",
+      "swarm_read_heartbeats": "SWARM_HEARTBEATS",
+      "swarm_read_alerts": "SWARM_ALERTS",
+      "welcome_get_context": "GET_WELCOME_CONTEXT",
+      "welcome_play_voice": "PLAY_WELCOME_VOICE",
+      "version_get": "GET_VERSION",
+      "updater_update_ready": "UPDATE_READY",
+      "updater_apply": "APPLY_UPDATE"
+    }
+  },
+
+  "welcome": {
+    "_authored_by": "Lane MX-LEO-WELCOME-BANNER",
+    "_doc": "Per-boot welcome banner. Distinct from MX-EVE-UPDATER (which owns UPDATE_READY) and from MX-ASCII-VIDEO startup (which owns the pre-window animation). This banner shows AFTER BrowserWindow.show() on every boot.",
+    "enabled": true,
+    "state_file": "~/.eve/last-session.json",
+    "state_schema": {
+      "user": "string",
+      "version": "string",
+      "last_boot_utc": "string (ISO-8601 UTC)",
+      "boot_count": "number"
+    },
+    "auto_dismiss_ms": 5000,
+    "voice_clips_dir": "voice/clips",
+    "voice_clips_by_user": {
+      "Andrew": ["welcome-andrew.mp3", "welcome-andrew.wav"],
+      "Leo": ["welcome-leo.mp3", "welcome-leo.wav"]
+    },
+    "release_notes_url_template": "https://github.com/sinister-sanctum/eve-exe/releases/tag/v{version}",
+    "top_banner_slot_owner": "src/renderer/App.tsx :: TopBannerSlot",
+    "_safety": "Display name only (Andrew/Leo/friend). Never persist credentials or raw env to last-session.json."
+  },
+
+  "startup": {
+    "_authored_by": "Lane MX-ASCII-VIDEO",
+    "_doc": "Startup animation + welcome voice. Main reads this BEFORE BrowserWindow.show() and loads src/renderer/startup/startup.html with `window.eveStartupConfig` injected.",
+    "enabled": true,
+    "active_video": "ascii",
+    "videos": {
+      "ascii": "D:/Sinister Sanctum/projects/sinister-ascii-converter/output/eve-startup-ascii.mp4",
+      "source": "D:/Sinister Sanctum/projects/sinister-ascii-converter/output/eve-startup-source.mp4",
+      "bundled": "D:/Sinister Sanctum/projects/eve-exe/build/assets/startup.mp4"
+    },
+    "fallback_video_order": ["ascii", "bundled", "source"],
+    "voice": {
+      "enabled": true,
+      "clips_dir": "D:/Sinister Sanctum/projects/eve-exe/voice/clips",
+      "clip_template": "welcome-{username}.wav",
+      "_handshake_with": "MX-VOICE-CORTANA-LLM",
+      "_safety": "If clip missing, startup silently skips audio — never blocks."
+    },
+    "fallback_timeout_ms": 8000,
+    "main_app_url_env_var": "EVE_MAIN_APP_URL"
+  },
+
+  "binary": {
+    "canonical_path": "C:/Users/Zonia/Desktop/EVE.exe",
+    "backup_path": "C:/Users/Zonia/Desktop/EVE.exe.bak-pre-integrate",
+    "checksum_path": "C:/Users/Zonia/Desktop/EVE.exe.sha256",
+    "disallowed_duplicates_glob": [
+      "C:/Users/Zonia/Desktop/EVE2.exe",
+      "C:/Users/Zonia/Desktop/EVE3.exe",
+      "C:/Users/Zonia/Desktop/EVE4.exe",
+      "C:/Users/Zonia/Desktop/EVE-Old.exe"
+    ]
+  }
+}

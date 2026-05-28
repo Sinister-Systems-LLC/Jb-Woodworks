@@ -1,0 +1,17 @@
+{
+  "appId": "com.sinistersanctum.eve",
+  "productName": "EVE",
+  "directories": {
+    "buildResources": "build"
+  },
+  "win": {
+    "icon": "build/icon.ico",
+    "target": ["portable"]
+  },
+  "linux": {
+    "icon": "build/icon.png"
+  },
+  "mac": {
+    "icon": "build/icon.png"
+  }
+}

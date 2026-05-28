@@ -1,0 +1,48 @@
+<!--
+  EVE.exe startup screen — Lane MX-ASCII-VIDEO :: 2026-05-27
+  Plays the configured startup video full-bleed, then routes to main app.
+  Config-driven via window.eveStartupConfig (injected by main process).
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EVE</title>
+  <style>
+    /* Full-bleed black canvas — no flicker, no padding */
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #000;
+      overflow: hidden;
+      cursor: none;
+    }
+    .startup-video {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      background: #000;
+    }
+    .skip-hint {
+      position: fixed;
+      bottom: 16px;
+      right: 20px;
+      font: 11px/1 ui-monospace, Consolas, monospace;
+      color: rgba(192, 132, 252, 0.45);
+      pointer-events: none;
+      user-select: none;
+      letter-spacing: 0.06em;
+    }
+  </style>
+</head>
+<body>
+  <video id="startup" class="startup-video" autoplay muted playsinline preload="auto"></video>
+  <div class="skip-hint">PRESS ANY KEY TO SKIP</div>
+  <script type="module" src="./startup.js"></script>
+</body>
+</html>
