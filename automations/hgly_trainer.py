@@ -515,12 +515,135 @@ def _score_placeholder(eval_set: dict[str, Any]) -> float:
     return round((int(h[:6], 16) % 5001) / 100.0 + 25.0, 2)  # 25.00 - 75.00
 
 
+# iter-31 (2026-05-27): Phase 9.6 trainer-input projection — read the
+# per-category density tool output as the trainer's primary fitness signal.
+# Composes with automations/hgly_density.py (--by-category) +
+# CLAUDE.md lane rule 1 (token-density prime directive).
+#
+# Honest design (per PROGRESS row iter-29/30):
+#   - corpus-wide ratio is asymptotic ~0.90 because the "other" bucket
+#     (plain identifiers + numbers + strings, 73% of tokens) is structurally
+#     incompressible.
+#   - the REAL signal is the GLYPH-BEARING categories: sim / io / mem / hw /
+#     ctrl / conc / arith / bind. iter-29 proved sim + io already hit
+#     <= 0.20 PER-CATEGORY. The trainer should optimize the glyph categories
+#     INDEPENDENTLY (multi-objective), not chase a single corpus-wide ratio.
+GLYPH_CATEGORIES = ("bind", "ctrl", "arith", "mem", "io", "conc", "hw", "sim")
+DENSITY_GOAL = 0.20  # mirrors hgly_density.DENSITY_GOAL + CLAUDE.md rule 1
+
+
+def _density_signal(corpus_dir: pathlib.Path) -> dict[str, Any]:
+    """Read per-category density via the hgly_density CLI subprocess.
+
+    Composes with `automations/hgly_density.py corpus --by-category --json` (the
+    iter-29 surface that exposed per-category ratios). Subprocess composition
+    keeps the trainer resilient to working-tree races (cross-agent-monorepo-
+    branch-collision-recovery-2026-05-25): we never reach into another lane's
+    module state, we only consume its CLI contract.
+
+    Returns a dict with the per-category table plus a composite multi-objective
+    score in [0, 100]. The score is:
+
+        100 * mean(min(1, DENSITY_GOAL / ratio_c) for c in GLYPH_CATEGORIES if ratio_c is not None)
+
+    Each glyph category contributes 100 if ratio <= 0.20 (perfect), and
+    proportionally less as ratio rises (so a category at 0.40 contributes 50,
+    0.60 contributes 33, etc.). The "other" bucket is intentionally excluded —
+    it tracks identifier/literal noise, not glyph efficiency. This is the
+    iter-29 "honest reframe": optimize the glyph categories independently,
+    not the corpus-wide ratio.
+
+    On failure (CLI missing / corpus dir missing / --by-category flag not yet
+    landed) returns {"available": False, "error": ...} and the trainer falls
+    back to the placeholder score.
+    """
+    if not corpus_dir.exists():
+        return {"available": False, "error": f"corpus dir missing: {corpus_dir}"}
+
+    density_cli = pathlib.Path(__file__).parent / "hgly_density.py"
+    if not density_cli.exists():
+        return {"available": False, "error": f"density CLI missing: {density_cli}"}
+
+    try:
+        import subprocess  # local import keeps the module import-light
+        proc = subprocess.run(
+            [sys.executable, str(density_cli), "corpus", "--by-category", "--json",
+             "--dir", str(corpus_dir)],
+            capture_output=True, text=True, timeout=60,
+        )
+    except Exception as exc:
+        return {"available": False, "error": f"subprocess failed: {type(exc).__name__}: {exc}"}
+
+    if proc.returncode != 0:
+        # graceful fallback when the --by-category flag has not yet landed in
+        # the on-disk hgly_density.py (cross-agent working-tree race).
+        return {
+            "available": False,
+            "error": f"density CLI exit {proc.returncode}",
+            "stderr_tail": (proc.stderr or "")[-400:],
+        }
+
+    try:
+        payload = json.loads(proc.stdout)
+    except Exception as exc:
+        return {
+            "available": False,
+            "error": f"density CLI returned non-JSON: {type(exc).__name__}: {exc}",
+            "stdout_tail": (proc.stdout or "")[-400:],
+        }
+
+    # Two possible JSON shapes from the CLI:
+    #   (a) when `corpus --by-category --json` embeds a `by_category` key
+    #       alongside the normal corpus stats (iter-29 surface);
+    #   (b) when the CLI returns a {"categories": {...}} payload directly.
+    cats = payload.get("by_category") or payload.get("categories") or {}
+    programs = int(payload.get("programs") or 0)
+    errors = int(payload.get("errors") or 0)
+
+    per_cat: dict[str, Any] = {}
+    contributions: list[float] = []
+    pass_count = 0
+    for c in GLYPH_CATEGORIES:
+        row = cats.get(c, {}) or {}
+        ratio = row.get("ratio")
+        tokens = int(row.get("tokens", 0) or 0)
+        if ratio is None or tokens == 0:
+            per_cat[c] = {"ratio": None, "tokens": tokens, "passes": None, "contribution": None}
+            continue
+        passes = bool(float(ratio) <= DENSITY_GOAL)
+        if passes:
+            pass_count += 1
+        contribution = round(100.0 * min(1.0, DENSITY_GOAL / max(float(ratio), 1e-9)), 2)
+        per_cat[c] = {
+            "ratio": float(ratio),
+            "tokens": tokens,
+            "passes": passes,
+            "contribution": contribution,
+        }
+        contributions.append(contribution)
+
+    composite = round(sum(contributions) / len(contributions), 2) if contributions else 0.0
+    return {
+        "available": True,
+        "corpus_dir": str(corpus_dir),
+        "programs": programs,
+        "errors": errors,
+        "per_category": per_cat,
+        "scored_categories": len(contributions),
+        "passing_categories": pass_count,
+        "composite_score": composite,  # [0, 100], higher = denser glyphs
+        "density_goal": DENSITY_GOAL,
+    }
+
+
 def cmd_eval(args: argparse.Namespace) -> int:
     eset = _ensure_eval_set()
     eval_set = json.loads(_eval_set_path().read_text(encoding="utf-8"))
     state = _read_state()
     run_id = args.run_id or state.get("run_id") or _new_run_id()
     iter_n = int(state.get("iter") or 0)
+
+    use_multi_obj = bool(getattr(args, "multi_objective", False))
 
     result: dict[str, Any] = {
         "subcommand": "eval",
@@ -531,22 +654,40 @@ def cmd_eval(args: argparse.Namespace) -> int:
         "iter": iter_n,
         "eval_set": eset,
         "adapter_path": state.get("adapter_path"),
+        "multi_objective": use_multi_obj,
     }
 
+    # iter-31: multi-objective signal — read per-category density as the
+    # PRIMARY trainer fitness signal when --multi-objective is set. Falls
+    # back to placeholder hash score if the signal is unavailable (lexer
+    # missing / corpus empty / hgly_density import error).
+    mo_signal: Optional[dict[str, Any]] = None
+    if use_multi_obj:
+        mo_signal = _density_signal(_corpus_dir())
+        result["density_signal"] = mo_signal
+
     if args.dry_run:
-        score = _score_placeholder(eval_set)
+        if use_multi_obj and mo_signal and mo_signal.get("available"):
+            score = float(mo_signal["composite_score"])
+            mode = "multi-objective-dry-run"
+        else:
+            score = _score_placeholder(eval_set)
+            mode = "placeholder-dry-run" if not use_multi_obj else "placeholder-fallback-dry-run"
         result["score"] = score
-        result["mode"] = "placeholder"
+        result["mode"] = mode
         result["status"] = "dry-run"
-        _append_quality_log({
+        log_row: dict[str, Any] = {
             "ts": _utc_now_iso(),
             "kind": "hgly-eval",
             "lane": LANE,
             "run_id": run_id,
             "iter": iter_n,
             "score": score,
-            "mode": "placeholder-dry-run",
-        })
+            "mode": mode,
+        }
+        if mo_signal is not None:
+            log_row["density_signal"] = mo_signal
+        _append_quality_log(log_row)
         _emit(result)
         return 0
 
@@ -561,19 +702,32 @@ def cmd_eval(args: argparse.Namespace) -> int:
 
     # Phase 0: emit a placeholder score even in non-dry mode so loop testing works
     # before adapters exist. Phase 9 replaces with real adapter-load + generate + score.
-    score = _score_placeholder(eval_set)
+    # iter-31: when --multi-objective is set + signal is available, use the
+    # composite density score as the eval signal (the quality-monotonic loop
+    # then reverts on density regression).
+    if use_multi_obj and mo_signal and mo_signal.get("available"):
+        score = float(mo_signal["composite_score"])
+        mode = "multi-objective-non-dry"
+        status = "multi-objective-live"
+    else:
+        score = _score_placeholder(eval_set)
+        mode = "placeholder-non-dry" if not use_multi_obj else "placeholder-fallback-non-dry"
+        status = "scaffold-only"
     result["score"] = score
-    result["mode"] = "placeholder-non-dry"
-    result["status"] = "scaffold-only"
-    _append_quality_log({
+    result["mode"] = mode
+    result["status"] = status
+    log_row = {
         "ts": _utc_now_iso(),
         "kind": "hgly-eval",
         "lane": LANE,
         "run_id": run_id,
         "iter": iter_n,
         "score": score,
-        "mode": "placeholder-non-dry",
-    })
+        "mode": mode,
+    }
+    if mo_signal is not None:
+        log_row["density_signal"] = mo_signal
+    _append_quality_log(log_row)
     _emit(result)
     return 0
 
@@ -634,8 +788,13 @@ def cmd_loop(args: argparse.Namespace) -> int:
             sys.stdout = prev_stdout
         iter_entry["train_rc"] = train_rc
 
-        # Step 2: eval
-        eval_args = argparse.Namespace(dry_run=args.dry_run, run_id=run_id)
+        # Step 2: eval (iter-31: propagate --multi-objective into the eval step
+        # so the per-iter quality-loop row carries the per-category density signal)
+        eval_args = argparse.Namespace(
+            dry_run=args.dry_run,
+            run_id=run_id,
+            multi_objective=bool(getattr(args, "multi_objective", False)),
+        )
         prev_stdout = sys.stdout
         try:
             sys.stdout = open(os.devnull, "w")
@@ -751,6 +910,12 @@ def build_parser() -> argparse.ArgumentParser:
     p_eval = sub.add_parser("eval", help="load latest adapter + score against eval set")
     _add_common(p_eval)
     p_eval.add_argument("--run-id", default=None)
+    p_eval.add_argument(
+        "--multi-objective",
+        action="store_true",
+        help="iter-31: use hgly_density --by-category composite as the eval signal "
+             "(per-glyph-category fitness, not corpus-wide ratio)",
+    )
 
     p_loop = sub.add_parser("loop", help="train-once + eval + revert-to-peak on regression, every interval")
     _add_common(p_loop)
@@ -760,6 +925,11 @@ def build_parser() -> argparse.ArgumentParser:
     p_loop.add_argument("--interval-seconds", type=int, default=DEFAULT_LOOP_INTERVAL_SECONDS)
     p_loop.add_argument("--max-iters", type=int, default=None)
     p_loop.add_argument("--run-id", default=None)
+    p_loop.add_argument(
+        "--multi-objective",
+        action="store_true",
+        help="iter-31: propagate --multi-objective to the per-iter eval step",
+    )
 
     p_status = sub.add_parser("status", help="emit JSON status snapshot")
     _add_common(p_status)

@@ -278,6 +278,128 @@ def measure_corpus(corpus_dir: pathlib.Path) -> dict:
     }
 
 
+# ---------------------------------------------------------------------------
+# iter-29 + iter-31 restoration (2026-05-27): per-category density surface.
+#
+# Categories mirror hgly_corpus_seed.GLYPHS (8 glyph buckets + "other" for
+# plain identifiers / numbers / strings that are structurally incompressible).
+# The motivating finding from iter-29 PROGRESS row: corpus-wide ratio is
+# asymptotic ~0.90 because "other" dominates token counts, but the
+# GLYPH-BEARING categories (sim, io, mem, ctrl, conc, hw, arith, bind) can
+# and DO hit the <= 0.20 goal independently. The trainer (iter-31) consumes
+# this breakdown as a multi-objective fitness signal.
+# ---------------------------------------------------------------------------
+
+# Token kind -> category. Bind/scope, control, arithmetic, delimiters all
+# resolve via kind alone. The IDENT lexemes that map to specific glyph
+# operations route through _LEXEME_CATEGORY below.
+_KIND_CATEGORY: dict[str, str] = {
+    # bind / scope
+    "LET": "bind", "CST": "bind", "FN": "bind", "RET": "bind",
+    "LAM": "bind", "AS": "bind", "LBRACE": "bind", "RBRACE": "bind",
+    # control
+    "IF": "ctrl", "EL": "ctrl", "MATCH": "ctrl", "LOOP": "ctrl",
+    "BREAK": "ctrl", "CONT": "ctrl", "YIELD": "ctrl", "FOR": "ctrl",
+    # arith / logic
+    "PLUS": "arith", "MINUS": "arith", "STAR": "arith", "SLASH": "arith",
+    "PERCENT": "arith", "AND": "arith", "OR": "arith", "NOT": "arith",
+    "EQ": "arith", "NEQ": "arith", "LT": "arith", "GT": "arith",
+    "LE": "arith", "GE": "arith", "ASSIGN": "arith",
+    # literals / delimiters route to "other"; left out so default applies
+}
+
+# IDENT lexeme -> category. Mirrors hgly_corpus_seed.GLYPHS categories 4-8.
+_LEXEME_CATEGORY: dict[str, str] = {
+    # Category 4 — Memory
+    "alc": "mem", "fre": "mem", "mmp": "mem", "umm": "mem",
+    "ldb": "mem", "stb": "mem", "mst": "mem", "mcp": "mem",
+    # Category 5 — Concurrency
+    "cas": "conc", "tsk": "conc", "syn": "conc", "chn": "conc",
+    "snd": "conc", "rcv": "conc", "spn": "conc", "jn": "conc",
+    # Category 6 — Hardware
+    "irq": "hw", "io": "hw", "gpu": "hw", "ker": "hw",
+    "dev": "hw", "mmio": "hw", "fnc": "hw", "evt": "hw",
+    # Category 7 — IO
+    "opn": "io", "cls": "io", "rd": "io", "wr": "io",
+    "skl": "io", "snk": "io", "lsn": "io", "acc": "io",
+    # Category 8 — Simulation
+    "snp": "sim", "stp": "sim", "brn": "sim", "mrg": "sim",
+    "prt": "sim", "obs": "sim", "mat": "sim", "rwd": "sim",
+}
+
+CATEGORIES = ("bind", "ctrl", "arith", "mem", "io", "conc", "hw", "sim", "other")
+
+
+def categorize(t: "Token") -> str:
+    if t.kind in _KIND_CATEGORY:
+        return _KIND_CATEGORY[t.kind]
+    if t.kind == "IDENT" and t.lexeme.lower() in _LEXEME_CATEGORY:
+        return _LEXEME_CATEGORY[t.lexeme.lower()]
+    return "other"
+
+
+def measure_by_category(toks: Iterable["Token"]) -> dict:
+    """Per-category {shp_bytes, py_bytes_est, tokens, ratio} aggregator."""
+    out = {c: {"shp_bytes": 0, "py_bytes_est": 0, "tokens": 0}
+           for c in CATEGORIES}
+    for t in toks:
+        c = categorize(t)
+        out[c]["tokens"] += 1
+        out[c]["shp_bytes"] += max(1, len(t.lexeme.encode("utf-8")))
+        if t.kind in KIND_PY_BYTES:
+            out[c]["py_bytes_est"] += KIND_PY_BYTES[t.kind]
+        elif t.kind == "IDENT":
+            lex_lower = t.lexeme.lower()
+            if lex_lower in GLYPH_LEXEME_PY_BYTES:
+                out[c]["py_bytes_est"] += GLYPH_LEXEME_PY_BYTES[lex_lower]
+            else:
+                out[c]["py_bytes_est"] += max(1, len(t.lexeme.encode("utf-8")))
+        elif t.kind == "NUMBER":
+            out[c]["py_bytes_est"] += max(1, len(t.lexeme.encode("utf-8")))
+        elif t.kind == "STRING":
+            out[c]["py_bytes_est"] += max(2, len(t.lexeme.encode("utf-8")) + 2)
+        else:
+            out[c]["py_bytes_est"] += max(1, len(t.lexeme.encode("utf-8")))
+    for c, d in out.items():
+        py = d["py_bytes_est"]
+        d["ratio"] = round(d["shp_bytes"] / py, 4) if py > 0 else None
+    return out
+
+
+def measure_corpus_by_category(corpus_dir: pathlib.Path) -> dict:
+    """Aggregate per-category metrics across the entire corpus."""
+    if not corpus_dir.exists():
+        return {"error": f"corpus dir missing: {corpus_dir}"}
+    if not _HAS_LEXER:
+        return {"error": f"lexer unavailable: {_LEXER_ERR}"}
+    totals = {c: {"shp_bytes": 0, "py_bytes_est": 0, "tokens": 0}
+              for c in CATEGORIES}
+    n_progs = 0
+    n_errors = 0
+    for p in sorted(corpus_dir.rglob("*.shp")):
+        try:
+            src = p.read_text(encoding="utf-8")
+            toks = tokenize(src)
+        except Exception:
+            n_errors += 1
+            continue
+        n_progs += 1
+        per = measure_by_category(toks)
+        for c in CATEGORIES:
+            totals[c]["shp_bytes"] += per[c]["shp_bytes"]
+            totals[c]["py_bytes_est"] += per[c]["py_bytes_est"]
+            totals[c]["tokens"] += per[c]["tokens"]
+    for c, d in totals.items():
+        py = d["py_bytes_est"]
+        d["ratio"] = round(d["shp_bytes"] / py, 4) if py > 0 else None
+    return {
+        "corpus_dir": str(corpus_dir),
+        "programs": n_progs,
+        "errors": n_errors,
+        "categories": totals,
+    }
+
+
 def _git_short_sha() -> Optional[str]:
     try:
         import subprocess
@@ -348,6 +470,11 @@ def main() -> int:
     c = sub.add_parser("corpus", help="score the corpus")
     c.add_argument("--dir", default=str(CORPUS_DIR))
     c.add_argument("--json", dest="json_out", action="store_true")
+    c.add_argument(
+        "--by-category",
+        action="store_true",
+        help="iter-29: also emit per-category (sim/io/mem/...) ratio breakdown",
+    )
 
     sub.add_parser("goal", help="print density goal + current pass-rate snapshot")
 
@@ -370,10 +497,24 @@ def main() -> int:
         return 0
     if args.cmd == "corpus":
         d = measure_corpus(pathlib.Path(args.dir))
+        if args.by_category:
+            bc = measure_corpus_by_category(pathlib.Path(args.dir))
+            if "error" not in bc:
+                d["by_category"] = bc.get("categories", {})
         if args.json_out:
             print(json.dumps(d, indent=2, ensure_ascii=False))
         else:
             print(render_text(d))
+            if args.by_category and "by_category" in d:
+                print()
+                print("  --- per-category ratio breakdown ---")
+                print(f"  {'cat':<8} {'ratio':<8} {'shp B':<8} {'py B':<8} {'tokens':<8}")
+                for cat in ("sim", "io", "mem", "ctrl", "conc", "hw", "arith", "bind", "other"):
+                    row = d["by_category"].get(cat, {})
+                    ratio = row.get("ratio")
+                    ratio_s = f"{ratio:.4f}" if ratio is not None else "-"
+                    print(f"  {cat:<8} {ratio_s:<8} {row.get('shp_bytes', 0):<8} "
+                          f"{row.get('py_bytes_est', 0):<8} {row.get('tokens', 0):<8}")
         return 0
     if args.cmd == "goal":
         d = measure_corpus(CORPUS_DIR)
