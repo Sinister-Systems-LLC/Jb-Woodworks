@@ -1,0 +1,44 @@
+# Author: RKOJ-ELENO :: 2026-05-28
+# Local dev stack for jb-woodworks: Next.js app + Postgres + (optional) mailcatcher.
+# Production deploys go through Railway; this is for offline iteration only.
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: jbw-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: jbw
+      POSTGRES_PASSWORD: jbw_local_dev
+      POSTGRES_DB: jbw_dev
+    ports:
+      - "5433:5432"
+    volumes:
+      - jbw_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U jbw -d jbw_dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    image: node:20-alpine
+    container_name: jbw-app
+    working_dir: /app
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: "postgresql://jbw:jbw_local_dev@db:5432/jbw_dev?schema=public"
+      NEXT_TELEMETRY_DISABLED: "1"
+      NODE_ENV: development
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - jbw_node_modules:/app/node_modules
+    command: sh -c "npm install --no-audit --no-fund && npx prisma generate && npx prisma db push && npm run dev -- -H 0.0.0.0"
+
+volumes:
+  jbw_pg_data:
+  jbw_node_modules:
