@@ -25,6 +25,7 @@ export function PortfolioFilter({
   const [filter, setFilter] = useState<string>(
     validSlugs.has(initialFilter) ? initialFilter : "all"
   );
+  const [query, setQuery] = useState<string>("");
 
   // Keep state in sync with the URL when the user nav's via back/forward or
   // when a service-card link drops them on /portfolio?category=docks.
@@ -52,7 +53,16 @@ export function PortfolioFilter({
     }))
   ];
 
-  const visible = items.filter((i) => filter === "all" || categorySlug(i.category) === filter);
+  const q = query.trim().toLowerCase();
+  const visible = items
+    .filter((i) => filter === "all" || categorySlug(i.category) === filter)
+    .filter((i) => {
+      if (!q) return true;
+      const hay = [i.title, i.category, i.blurb ?? "", i.meta?.location ?? "", i.meta?.materials ?? ""]
+        .join(" ")
+        .toLowerCase();
+      return hay.includes(q);
+    });
 
   return (
     <LayoutGroup>
@@ -106,6 +116,27 @@ export function PortfolioFilter({
             </button>
           );
         })}
+      </div>
+
+      <div className="flex justify-center mb-7">
+        <label className="relative block w-full max-w-md">
+          <span className="sr-only">Search portfolio</span>
+          <input
+            type="search"
+            inputMode="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search projects, materials, locations..."
+            className="w-full bg-ink-3 border border-line rounded-full pl-12 pr-4 py-3 text-[0.92rem] text-white placeholder:text-cream-30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
+            aria-label="Search portfolio by title, material, or location"
+          />
+          <span aria-hidden className="absolute left-4 top-1/2 -translate-y-1/2 text-cream-30 select-none">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="7" />
+              <line x1="21" y1="21" x2="16.5" y2="16.5" />
+            </svg>
+          </span>
+        </label>
       </div>
 
       <motion.div

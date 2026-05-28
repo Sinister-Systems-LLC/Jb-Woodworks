@@ -3,6 +3,7 @@
 import { useState, useEffect, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
+import { Turnstile } from "@/components/ui/turnstile";
 
 type State = "idle" | "submitting" | "success" | "error";
 
@@ -53,7 +54,7 @@ export function ContactForm() {
       <Field label="Phone number" name="phone" type="tel" autoComplete="tel" />
       <div className="flex flex-col gap-2">
         <label htmlFor="service" className="text-[0.78rem] font-semibold tracking-wider uppercase text-cream-50">Project type</label>
-        <select id="service" name="service" defaultValue={serviceHint ? params.get("service") || "" : ""} className="bg-white/5 border border-line-strong rounded-md px-4 py-3.5 text-white text-[0.95rem] focus:outline-none focus:border-gold focus:ring-4 focus:ring-gold/10 transition">
+        <select id="service" name="service" defaultValue={serviceHint ? params.get("service") || "" : ""} className="lg-input">
           <option value="">- Select -</option>
           <option value="docks">Docks</option>
           <option value="custom-decks">Custom Decks</option>
@@ -73,11 +74,13 @@ export function ContactForm() {
           required
           defaultValue={serviceHint ? `I'm interested in: ${serviceHint}.\n\n` : ""}
           placeholder="Describe your project, timeline, etc."
-          className="bg-white/5 border border-line-strong rounded-md px-4 py-3.5 text-white text-[0.95rem] font-sans resize-y min-h-[130px] focus:outline-none focus:border-gold focus:ring-4 focus:ring-gold/10 transition"
+          className="lg-input font-sans resize-y min-h-[130px]"
         />
       </div>
       {/* honeypot */}
       <input type="text" name="_honey" tabIndex={-1} autoComplete="off" className="hidden" />
+
+      <Turnstile size="invisible" />
 
       {state === "error" && (
         <p className="text-[#ff7a59] text-[0.85rem]">Send failed: {errMsg}. You can also call {`(407) 561-1453`}.</p>
@@ -101,7 +104,7 @@ function Field({ label, name, type = "text", required, autoComplete }: { label: 
         type={type}
         required={required}
         autoComplete={autoComplete}
-        className="bg-white/5 border border-line-strong rounded-md px-4 py-3.5 text-white text-[0.95rem] focus:outline-none focus:border-gold focus:ring-4 focus:ring-gold/10 transition"
+        className="lg-input"
       />
     </div>
   );

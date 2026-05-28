@@ -7,6 +7,7 @@ import { Footer } from "@/components/sections/footer";
 import { Splash } from "@/components/ui/splash";
 import { RouteProgress } from "@/components/ui/route-progress";
 import { ScrollToTop } from "@/components/ui/scroll-to-top";
+import { PageTransition } from "@/components/ui/page-transition";
 import { SITE } from "@/lib/site";
 
 const inter = Inter({ subsets: ["latin"], weight: ["300", "400", "500", "600", "700", "800", "900"], variable: "--font-sans", display: "swap" });
@@ -73,7 +74,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Splash />
         <RouteProgress />
         <Nav />
-        <main id="main">{children}</main>
+        <main id="main">
+          <PageTransition>{children}</PageTransition>
+        </main>
         <Footer />
         <ScrollToTop />
         {/* Sitewide subtle film grain — fixed overlay, very low opacity */}
