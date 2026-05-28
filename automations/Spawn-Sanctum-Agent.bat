@@ -477,8 +477,13 @@ if defined LANES_OVERRIDE (
 )
 
 if "%ALL_FLAG%"=="1" (
-    set "FLEET_KEYS=%LANE_1% %LANE_2% %LANE_3% %LANE_4% %LANE_5% %LANE_6% %LANE_7% %LANE_8% %LANE_9% %LANE_10% %LANE_11% %LANE_12% %LANE_13% %LANE_14% %LANE_15% %LANE_16% %LANE_17% %LANE_18% %LANE_19% %LANE_20% %LANE_21% %LANE_22%"
-    echo  [select]  -All :: launching all 22 lanes
+    REM Operator hard-canonical 2026-05-28: "you spawned too many sanctum agents
+    REM dont worry about the master agent in the bat file just launch projects".
+    REM -All previously included LANE_4=sanctum (the master). It's now SKIPPED;
+    REM operator is already running a sanctum master separately. -SoloSanctum
+    REM is still available if a sanctum spawn is explicitly wanted.
+    set "FLEET_KEYS=%LANE_1% %LANE_2% %LANE_3% %LANE_5% %LANE_6% %LANE_7% %LANE_8% %LANE_9% %LANE_10% %LANE_11% %LANE_12% %LANE_13% %LANE_14% %LANE_15% %LANE_16% %LANE_17% %LANE_18% %LANE_19% %LANE_20% %LANE_21% %LANE_22%"
+    echo  [select]  -All :: launching 21 project lanes ^(sanctum-master excluded per 2026-05-28 directive^)
     goto :select_done
 )
 

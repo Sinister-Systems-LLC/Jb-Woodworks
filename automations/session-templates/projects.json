@@ -1,38 +1,33 @@
 {
-  "_comment": "Persistent project registry. v6 (2026-05-23): added picker block driving the launcher's concise 11-entry visible list + ordering. Non-launcher consumers (RKOJ Qt agents_tab, sinister-eve, forge picker) continue to iterate the full projects array. v7 (2026-05-23 evening): appended letstext lane (operator-private messaging-app venture at D:\\Personal\\LetsText; cyan accent per agent-prefs). v8 (2026-05-24T22:10Z): consolidated sinister-os-mobile into sinister-os per operator directive 'combine project sinister os and sinister os mobile' â€” mobile lane removed from picker + projects[]; mobile content now lives at projects/sinister-os/mobile/. v9 (2026-05-24T23:55Z): appended sinister-overseer lane (meta-agent / agent-of-agents; cyan accent; tier=3; P0 scaffolded by sanctum-overseer-scaffold per operator brief 2026-05-24 ~23:48Z). v10 (RKOJ-ELENO :: 2026-05-25T02:30Z): added default_modes.loop_relentless=true to every project with loop=true per operator 02:18Z 'make the loop system on our agents actually work. make it agressive and make it hafve agents relentless pursue goal' — relentless preset flips every loop spawn to in-turn next-iter + tool-reach + 270s wakeup cap (full doctrine: loop-relentless-pursuit-doctrine-2026-05-25). v11 (RKOJ-ELENO :: 2026-05-25T06:35Z): added default_modes.loop='relentless' (string) + default_modes.swarm=true to EVERY project per operator hard-canonical 'make sure loop and swarm mode come on by deafult for each agent'. loop_relentless boolean retained for backward-compat. rkoj swarm flipped false->true. Doctrine: loop-swarm-default-on-doctrine-2026-05-25.md. v12 (RKOJ-ELENO :: 2026-05-25T07:45Z by sanctum-sub-r): sinister-memory lane P0 scaffolded per operator 07:30Z 'add to eve exe a project start for Sinister Memroy and complie all thigsn he needs there to get started' — unified memory engine (brain + PROGRESS + heartbeats + Ruflo MCP) under one Python CLI + library + spawn-phrase injector. SQLite FTS5 + BM25, stdlib-only, 5/5 pytest PASS. claude_md repointed from CLAUDE.md to README.md (CLAUDE.md not yet authored at P0); github=Sinister-Sanctum per single-repo policy; tier=2; added to picker.visible_keys. v13 (RKOJ-ELENO :: 2026-05-25T11:45Z by sanctum-sub-b): added eve-exe lane per operator 11:38Z 'launch the following agents like eve exe would and create a project and add to eve called Eve EXE' — splits EVE.exe launcher work (UI/picker/build pipeline) out of sanctum-master into its own lane with dedicated PROGRESS file. github=Sinister-Sanctum per single-repo policy; tier=2; added to picker.visible_keys + Sanctum + Core category. v14 (RKOJ-ELENO :: 2026-05-25T13:45Z): added sinister-hieroglyphics lane per operator 13:30Z 'we may need to make our own coding language for our tools so we can make eevrything as efficent as possible ... i want this to be its own project in eve exe called Sinister Hieroglyphics. ... direct connect to the hardware, our OS and build hyper realistic simulations like the python simulator on the desktop' — Phase 0 scaffold (CLAUDE.md + README.md + PROGRESS.md + pyproject.toml + src/hgly/{__init__,cli}.py + docs/GLYPH-SYNTAX.md + corpus/ + tests/test_smoke.py). Master plan at _shared-memory/plans/sinister-hieroglyphics-master-2026-05-25T1340Z/plan.md. github=Sinister-Sanctum per single-repo policy; tier=2; branch_prefix=agent/sinister-hieroglyphics/; added to picker.visible_keys + new 'Languages' category.",
-  "version": 15,
+  "_comment": "Persistent project registry. v6 (2026-05-23): added picker block driving the launcher's concise 11-entry visible list + ordering. Non-launcher consumers (RKOJ Qt agents_tab, sinister-eve, forge picker) continue to iterate the full projects array. v7 (2026-05-23 evening): appended letstext lane (operator-private messaging-app venture at D:\\Personal\\LetsText; cyan accent per agent-prefs). v8 (2026-05-24T22:10Z): consolidated sinister-os-mobile into sinister-os per operator directive 'combine project sinister os and sinister os mobile' â€” mobile lane removed from picker + projects[]; mobile content now lives at projects/sinister-os/mobile/. v9 (2026-05-24T23:55Z): appended sinister-overseer lane (meta-agent / agent-of-agents; cyan accent; tier=3; P0 scaffolded by sanctum-overseer-scaffold per operator brief 2026-05-24 ~23:48Z). v10 (RKOJ-ELENO :: 2026-05-25T02:30Z): added default_modes.loop_relentless=true to every project with loop=true per operator 02:18Z 'make the loop system on our agents actually work. make it agressive and make it hafve agents relentless pursue goal' — relentless preset flips every loop spawn to in-turn next-iter + tool-reach + 270s wakeup cap (full doctrine: loop-relentless-pursuit-doctrine-2026-05-25). v11 (RKOJ-ELENO :: 2026-05-25T06:35Z): added default_modes.loop='relentless' (string) + default_modes.swarm=true to EVERY project per operator hard-canonical 'make sure loop and swarm mode come on by deafult for each agent'. loop_relentless boolean retained for backward-compat. rkoj swarm flipped false->true. Doctrine: loop-swarm-default-on-doctrine-2026-05-25.md. v12 (RKOJ-ELENO :: 2026-05-25T07:45Z by sanctum-sub-r): sinister-memory lane P0 scaffolded per operator 07:30Z 'add to eve exe a project start for Sinister Memroy and complie all thigsn he needs there to get started' — unified memory engine (brain + PROGRESS + heartbeats + Ruflo MCP) under one Python CLI + library + spawn-phrase injector. SQLite FTS5 + BM25, stdlib-only, 5/5 pytest PASS. claude_md repointed from CLAUDE.md to README.md (CLAUDE.md not yet authored at P0); github=Sinister-Sanctum per single-repo policy; tier=2; added to picker.visible_keys. v13 (RKOJ-ELENO :: 2026-05-25T11:45Z by sanctum-sub-b): added eve-exe lane per operator 11:38Z 'launch the following agents like eve exe would and create a project and add to eve called Eve EXE' — splits EVE.exe launcher work (UI/picker/build pipeline) out of sanctum-master into its own lane with dedicated PROGRESS file. github=Sinister-Sanctum per single-repo policy; tier=2; added to picker.visible_keys + Sanctum + Core category. v14 (RKOJ-ELENO :: 2026-05-25T13:45Z): added sinister-hieroglyphics lane per operator 13:30Z 'we may need to make our own coding language for our tools so we can make eevrything as efficent as possible ... i want this to be its own project in eve exe called Sinister Hieroglyphics. ... direct connect to the hardware, our OS and build hyper realistic simulations like the python simulator on the desktop' — Phase 0 scaffold (CLAUDE.md + README.md + PROGRESS.md + pyproject.toml + src/hgly/{__init__,cli}.py + docs/GLYPH-SYNTAX.md + corpus/ + tests/test_smoke.py). Master plan at _shared-memory/plans/sinister-hieroglyphics-master-2026-05-25T1340Z/plan.md. github=Sinister-Sanctum per single-repo policy; tier=2; branch_prefix=agent/sinister-hieroglyphics/; added to picker.visible_keys + new 'Languages' category. v16 (sinister-eve-consolidation :: 2026-05-27T09:05Z): historical note — the 'sinister-eve' name mentioned in v6 above as a 'non-launcher consumer' refers to the integration-spec lane at projects/sinister-eve/ which has now been consolidated to _archive/sinister-eve-consolidated-2026-05-27/. The integration vision (51-tool MCP for memory/schedule/watch/alerts across home/car/drone/phone bodies) was migrated to projects/sinister-mcp/docs/eve-mcp-integration-spec.md. The launcher binary lane (eve-exe) is unrelated and untouched. No projects[] entry existed for sinister-eve, so no structural delta — this comment is the audit trail. v17 (RKOJ-ELENO :: 2026-05-28 by sanctum-condense-picker): CONDENSED visible_keys 48 -> 20 + RE-BUCKETED into 5 operator-mandated categories per operator hard-canonical 2026-05-28 Image #14: 'condense this to have the real projects. like sinister tee is apart of emulator. eve workstation is eve etc. i need these organized by catgory and shit too'. Rules applied: (a) keep ONLY active real projects in visible_keys (sub-lanes covered by their parent are hidden); (b) every visible_key belongs to EXACTLY ONE of the 5 categories: Sanctum + Core / Tooling + API / Client Sites / Compliance + Ops / Experimental + Creative; (c) picker special_keys (general/__autoresume__/__newproject__) MUST NOT appear in visible_keys; (d) all projects[] entries preserved untouched (only visible_keys + categories arrays rewritten). Parent-mapping table (HIDDEN -> PARENT or REASON): sinister-tee -> sinister-emulator (TEE is emulator sub-component); sinister-eve-workstation -> eve-exe (workstation = EVE.exe lane sibling); sinister-term-themes -> sinister-term (theme layer of the terminal); sinister-tiktok-apk -> kernel-apk (TikTok-flavor APK uses same kernel pipeline); sinister-forge / sinister-mind / sinister-claw / rkoj-workstation -> rkoj (already _subsumed_by=rkoj in projects[]); sinister-image -> sinister-generator (image-gen capability); sinister-jokr -> sinister-jokester (intake/triage dup); sinister-rka -> rkoj (operator-workstation sibling); sinister-dashboard-skeleton -> hidden (UI base library expanded by every UI surface, not a standalone lane); sinister-tg -> dormant; sinister-cell-network -> dormant; sinister-freeze -> hidden (paused car-sales suite; not a daily lane); sinister-hieroglyphics -> hidden (Phase 0 scaffold, no active iter); sinister-quantum -> hidden (research-only, no daily iter); general -> moved to special_keys only.",
+  "version": 17,
   "default": "sanctum",
   "picker": {
     "visible_keys": [
       "sanctum",
       "eve-exe",
+      "sinister-memory",
+      "sinister-overseer",
+      "sinister-os",
+      "sinister-term",
       "sinister-chatbot",
       "sinister-panel",
-      "kernel-apk",
       "sinister-emulator",
-      "rkoj",
+      "kernel-apk",
       "snap-emulator-api",
       "tiktok-emulator-api",
       "bumble-emulator-api",
-      "sinister-freeze",
+      "sinister-serper",
+      "rkoj",
+      "sinister-mcp",
       "jb-woodworks",
       "showmasters",
       "letstext",
       "eve-compliance",
-      "sinister-generator",
-      "jkor",
-      "sinister-snap-api-quantum",
-      "sinister-os",
-      "sinister-imessage-bridge",
-      "sinister-sleight",
-      "sinister-overseer",
-      "sinister-term-themes",
-      "sinister-memory",
       "sinister-looper",
-      "sinister-designer",
-      "sinister-hieroglyphics",
       "sinister-jokester",
-      "sinister-ascii-converter"
+      "sinister-sleight",
+      "sinister-generator"
     ],
     "special_keys": [
       "general",
@@ -45,21 +40,25 @@
         "keys": [
           "sanctum",
           "eve-exe",
-          "sinister-imessage-bridge",
-          "sinister-sleight",
           "sinister-memory",
-          "sinister-jokester"
+          "sinister-overseer",
+          "sinister-os",
+          "sinister-term",
+          "sinister-chatbot",
+          "sinister-panel"
         ]
       },
       {
         "label": "Tooling + API",
         "keys": [
           "sinister-emulator",
-          "rkoj",
+          "kernel-apk",
           "snap-emulator-api",
           "tiktok-emulator-api",
           "bumble-emulator-api",
-          "sinister-snap-api-quantum"
+          "sinister-serper",
+          "rkoj",
+          "sinister-mcp"
         ]
       },
       {
@@ -67,41 +66,22 @@
         "keys": [
           "jb-woodworks",
           "showmasters",
-          "letstext",
-          "eve-compliance"
+          "letstext"
         ]
       },
       {
-        "label": "Sinister Term",
+        "label": "Compliance + Ops",
         "keys": [
-          "sinister-term-themes"
-        ]
-      },
-      {
-        "label": "Overseer",
-        "keys": [
-          "sinister-overseer"
-        ]
-      },
-      {
-        "label": "Sinister Systems",
-        "keys": [
-          "sinister-panel",
-          "kernel-apk",
-          "sinister-freeze",
-          "sinister-generator",
-          "jkor",
-          "sinister-os",
-          "sinister-chatbot",
+          "eve-compliance",
           "sinister-looper",
-          "sinister-hieroglyphics"
+          "sinister-jokester"
         ]
       },
       {
-        "label": "Other",
+        "label": "Experimental + Creative",
         "keys": [
-          "sinister-designer",
-          "sinister-ascii-converter"
+          "sinister-sleight",
+          "sinister-generator"
         ]
       }
     ]
@@ -688,6 +668,124 @@
         "swarm": true,
         "loop": "relentless",
         "loop_relentless": true
+      }
+    },
+    {
+      "key": "sinister-serper",
+      "display": "Sinister Serper",
+      "tag": "Google-search-API gateway. Wraps Serper.dev free-tier (2500 credits/account), rotates accounts via sinister_email_gen → unlimited fleet web-search. Consumed by /chatter on Sinister Panel.",
+      "root": "D:\\Sinister Sanctum\\projects\\sinister-serper",
+      "lane_dir": "D:\\Sinister Sanctum\\projects\\sinister-serper",
+      "session_start": "",
+      "claude_md": "D:\\Sinister Sanctum\\projects\\sinister-serper\\CLAUDE.md",
+      "github": "Sinister-Sanctum",
+      "branch_prefix": "agent/sinister-serper/",
+      "tier": 2,
+      "focus": "P0 scaffold shipped 2026-05-27 by sinister-chatbot lane (client + keypool + rotator skeletons + smoke 3/3 PASS). Next: P1 real Serper HTTP client + headless signup automation, then P2 sanctum-owned schtask rotator on PT30M cadence. Master plan: _shared-memory/plans/sinister-serper-master-20260527T0611Z/plan.md.",
+      "default_modes": {
+        "swarm": true,
+        "loop": "relentless",
+        "loop_relentless": true
+      }
+    },
+    {
+      "key": "sinister-cell-network",
+      "label": "Sinister Cell Network (Dormant)",
+      "slug": "sinister-cell-network",
+      "project_root": "D:/Sinister Sanctum/projects/sinister-cell-network",
+      "default_modes": {
+        "swarm": "on",
+        "loop": "off"
+      }
+    },
+    {
+      "key": "sinister-chess",
+      "label": "Sinister Chess",
+      "slug": "sinister-chess",
+      "project_root": "D:/Sinister Sanctum/projects/sinister-chess",
+      "default_modes": {
+        "swarm": "on",
+        "loop": "off"
+      }
+    },
+    {
+      "key": "sinister-dashboard-skeleton",
+      "label": "Sinister Dashboard Skeleton",
+      "slug": "sinister-dashboard-skeleton",
+      "project_root": "D:/Sinister Sanctum/projects/sinister-dashboard-skeleton",
+      "default_modes": {
+        "swarm": "on",
+        "loop": "off"
+      }
+    },
+    {
+      "key": "sinister-eve-workstation",
+      "label": "EVE Workstation",
+      "slug": "sinister-eve-workstation",
+      "project_root": "D:/Sinister Sanctum/projects/sinister-eve-workstation",
+      "default_modes": {
+        "swarm": "on",
+        "loop": "off"
+      }
+    },
+    {
+      "key": "sinister-image",
+      "label": "Sinister Image",
+      "slug": "sinister-image",
+      "project_root": "D:/Sinister Sanctum/projects/sinister-image",
+      "default_modes": {
+        "swarm": "on",
+        "loop": "off"
+      }
+    },
+    {
+      "key": "sinister-jokr",
+      "label": "Sinister JOKR",
+      "slug": "sinister-jokr",
+      "project_root": "D:/Sinister Sanctum/projects/sinister-jokr",
+      "default_modes": {
+        "swarm": "on",
+        "loop": "off"
+      }
+    },
+    {
+      "key": "sinister-rka",
+      "label": "Sinister RKA",
+      "slug": "sinister-rka",
+      "project_root": "D:/Sinister Sanctum/projects/sinister-rka",
+      "default_modes": {
+        "swarm": "on",
+        "loop": "off"
+      }
+    },
+    {
+      "key": "sinister-tee",
+      "label": "Sinister TEE",
+      "slug": "sinister-tee",
+      "project_root": "D:/Sinister Sanctum/projects/sinister-tee",
+      "default_modes": {
+        "swarm": "on",
+        "loop": "off"
+      }
+    },
+    {
+      "key": "sinister-tg",
+      "label": "Sinister TG (Dormant)",
+      "slug": "sinister-tg",
+      "project_root": "D:/Sinister Sanctum/projects/sinister-tg",
+      "default_modes": {
+        "swarm": "on",
+        "loop": "off"
+      }
+    },
+    {
+      "key": "sinister-tiktok-apk",
+      "label": "Sinister TikTok APK",
+      "slug": "sinister-tiktok-apk",
+      "project_root": "D:/Sinister Sanctum/projects/sinister-tiktok-apk",
+      "default_modes": {
+        "swarm": "on",
+        "loop": "off"
       }
     }
   ]
