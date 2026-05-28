@@ -58,6 +58,23 @@ export function Footer() {
         </div>
       </div>
 
+      {/* Footer wordmark blowout — full-bleed closing signature. Aria-hidden
+       *  because the visible nav above already conveys the brand identity. */}
+      <div
+        aria-hidden
+        className="mt-16 -mb-4 select-none overflow-hidden text-center font-display italic leading-[0.85] text-transparent pointer-events-none"
+        style={{
+          fontSize: "clamp(4.5rem, 18vw, 18rem)",
+          backgroundImage:
+            "linear-gradient(180deg, color-mix(in oklab, var(--accent) 22%, transparent), transparent 78%)",
+          WebkitBackgroundClip: "text",
+          backgroundClip: "text",
+          letterSpacing: "-0.03em"
+        }}
+      >
+        JB WOODWORKS
+      </div>
+
       <div className="mt-10 pt-5 mx-auto max-w-site px-7 border-t border-line text-center text-[0.78rem] text-cream-30">
         (C) {year} {SITE.name}. Built in Orlando, FL.
       </div>

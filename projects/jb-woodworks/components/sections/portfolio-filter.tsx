@@ -61,17 +61,33 @@ export function PortfolioFilter({
         aria-label="Filter portfolio by project type"
         className="flex flex-wrap justify-center gap-2 mb-9 p-2 bg-ink-3 border border-line rounded-full max-w-max mx-auto"
       >
-        {chips.map((chip) => {
+        {chips.map((chip, idx) => {
           const active = filter === chip.id;
+          const onKey = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+            let next = -1;
+            if (e.key === "ArrowRight") next = (idx + 1) % chips.length;
+            else if (e.key === "ArrowLeft") next = (idx - 1 + chips.length) % chips.length;
+            else if (e.key === "Home") next = 0;
+            else if (e.key === "End") next = chips.length - 1;
+            if (next === -1) return;
+            e.preventDefault();
+            selectFilter(chips[next]!.id);
+            // Move focus to the new chip so keyboard users see the change.
+            const el = document.getElementById(`pf-chip-${chips[next]!.id}`);
+            el?.focus();
+          };
           return (
             <button
               key={chip.id}
+              id={`pf-chip-${chip.id}`}
               type="button"
               role="tab"
               aria-selected={active}
+              tabIndex={active ? 0 : -1}
               onClick={() => selectFilter(chip.id)}
+              onKeyDown={onKey}
               className={cn(
-                "relative inline-flex items-center gap-2.5 px-4 py-2.5 rounded-full text-[0.78rem] font-semibold tracking-wide uppercase transition-colors duration-200",
+                "relative inline-flex items-center gap-2.5 px-4 py-2.5 rounded-full text-[0.78rem] font-semibold tracking-wide uppercase transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-ink",
                 active ? "text-ink" : "text-cream-50 hover:text-white"
               )}
             >

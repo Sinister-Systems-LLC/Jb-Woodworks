@@ -18,6 +18,7 @@ export function Hero() {
   const slides = hero;
   const [active, setActive] = useState(0);
   const [readyMap, setReadyMap] = useState<Record<number, boolean>>({});
+  const [paused, setPaused] = useState(false);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const reduced = useReducedMotion();
 
@@ -27,7 +28,7 @@ export function Hero() {
     slides.forEach((s, i) => {
       const v = videoRefs.current[i];
       if (!v) return;
-      if (i === active) {
+      if (i === active && !paused) {
         v.preload = "auto";
         try { v.currentTime = 0; v.play().catch(() => {}); } catch {}
       } else {
@@ -37,14 +38,14 @@ export function Hero() {
     const nextIdx = (active + 1) % slides.length;
     const nextV = videoRefs.current[nextIdx];
     if (nextV && nextV.preload !== "auto") { nextV.preload = "auto"; nextV.load(); }
-  }, [active, slides]);
+  }, [active, slides, paused]);
 
   useEffect(() => {
-    if (reduced || slides.length <= 1) return;
+    if (reduced || paused || slides.length <= 1) return;
     const dur = slides[active]?.duration_ms ?? 7000;
     const t = setTimeout(() => setActive((a) => (a + 1) % slides.length), dur);
     return () => clearTimeout(t);
-  }, [active, slides, reduced]);
+  }, [active, slides, reduced, paused]);
 
   const currentLabel = labelFor(slides[active]);
 
@@ -84,7 +85,7 @@ export function Hero() {
         <motion.div
           aria-hidden="true"
           className="absolute left-0 right-0 z-[3] h-px"
-          style={{ top: 82, background: "linear-gradient(90deg, transparent, #c9a84c, transparent)" }}
+          style={{ top: 82, background: "linear-gradient(90deg, transparent, var(--accent), transparent)" }}
           initial={{ scaleX: 0, opacity: 0 }}
           animate={{ scaleX: 1, opacity: 0.45 }}
           transition={{ duration: 1.4, delay: 1.1, ease: [0.16, 1, 0.3, 1] }}
@@ -122,8 +123,30 @@ export function Hero() {
         </motion.span>
       </div>
 
-      {/* Slide dots */}
-      <div className="absolute bottom-7 left-1/2 -translate-x-1/2 z-[3] hidden sm:flex gap-2">
+      {/* Slide dots + pause/resume — paired so the cluster reads as one
+       *  control. Pause respects users who find the auto-cycle distracting
+       *  (WCAG 2.2.2 — auto-updating moving content). */}
+      <div className="absolute bottom-7 left-1/2 -translate-x-1/2 z-[3] hidden sm:flex items-center gap-3">
+        {slides.length > 1 && !reduced && (
+          <button
+            type="button"
+            onClick={() => setPaused((p) => !p)}
+            aria-label={paused ? "Resume hero slideshow" : "Pause hero slideshow"}
+            aria-pressed={paused}
+            className="w-7 h-7 mr-1 grid place-items-center rounded-full text-cream-50 hover:text-gold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
+          >
+            <svg width="11" height="11" viewBox="0 0 12 12" fill="currentColor" aria-hidden>
+              {paused ? (
+                <path d="M3 1.5v9l7-4.5z" />
+              ) : (
+                <>
+                  <rect x="2.5" y="1.5" width="2.5" height="9" rx="0.4" />
+                  <rect x="7" y="1.5" width="2.5" height="9" rx="0.4" />
+                </>
+              )}
+            </svg>
+          </button>
+        )}
         {slides.map((_, i) => (
           <button
             key={i}
@@ -157,8 +180,8 @@ export function Hero() {
             width={971}
             height={733}
             priority
-            sizes="(max-width: 640px) 88vw, (max-width: 1024px) 70vw, 720px"
-            className="h-auto w-[min(88vw,720px)] drop-shadow-[0_18px_46px_rgba(0,0,0,0.55)]"
+            sizes="(max-width: 640px) 64vw, (max-width: 1024px) 48vw, 480px"
+            className="h-auto w-[min(64vw,480px)] drop-shadow-[0_18px_46px_rgba(0,0,0,0.55)]"
           />
         </motion.div>
 
@@ -174,7 +197,7 @@ export function Hero() {
             <span
               aria-hidden
               className="absolute inset-y-0 w-1/2 jbw-rule-shimmer"
-              style={{ background: "linear-gradient(90deg, transparent, #e2c47a, transparent)" }}
+              style={{ background: "linear-gradient(90deg, transparent, var(--accent-light), transparent)" }}
             />
           )}
         </motion.div>

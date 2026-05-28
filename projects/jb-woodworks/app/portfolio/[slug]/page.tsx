@@ -34,7 +34,7 @@ export default async function PortfolioItemPage({ params }: Props) {
   // Per-project JSON-LD (CreativeWork) — improves rich-result eligibility for
   // each portfolio detail page (parent layout already emits LocalBusiness).
   const coverSrc = item.is_raw_cover ? `/img/projects/${item.cover}` : `/media/${item.cover}`;
-  const ld = {
+  const work: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "CreativeWork",
     "@id": `${SITE.url}/portfolio/${item.slug}`,
@@ -46,12 +46,34 @@ export default async function PortfolioItemPage({ params }: Props) {
     inLanguage: "en-US",
     url: `${SITE.url}/portfolio/${item.slug}`
   };
+  if (item.meta?.year) work.dateCreated = item.meta.year;
+  if (item.meta?.materials) work.material = item.meta.materials;
+  if (item.meta?.location) work.contentLocation = item.meta.location;
+
+  // BreadcrumbList JSON-LD — Home > Portfolio > {Title}. Google uses this to
+  // render the breadcrumb hierarchy in search results.
+  const crumbs = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: `${SITE.url}/` },
+      { "@type": "ListItem", position: 2, name: "Portfolio", item: `${SITE.url}/portfolio` },
+      { "@type": "ListItem", position: 3, name: item.title, item: `${SITE.url}/portfolio/${item.slug}` }
+    ]
+  };
+
+  const metaEntries: { label: string; value: string }[] = [];
+  if (item.meta?.year) metaEntries.push({ label: "Year", value: item.meta.year });
+  if (item.meta?.location) metaEntries.push({ label: "Location", value: item.meta.location });
+  if (item.meta?.materials) metaEntries.push({ label: "Materials", value: item.meta.materials });
+  if (item.meta?.duration) metaEntries.push({ label: "Build time", value: item.meta.duration });
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(work) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(crumbs) }} />
       <section className="pt-40 pb-16 bg-gradient-to-b from-ink-2 to-ink border-b border-line relative overflow-hidden">
-        <div aria-hidden className="absolute -top-24 -right-24 w-[400px] h-[400px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(201,168,76,0.10), transparent 70%)" }} />
+        <div aria-hidden className="absolute -top-24 -right-24 w-[400px] h-[400px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(var(--accent-rgb),0.10), transparent 70%)" }} />
         <div className="container-site relative">
           <BackLink href="/portfolio" label="Back to portfolio" section={item.category} />
           <span className="section-tag">
@@ -65,6 +87,16 @@ export default async function PortfolioItemPage({ params }: Props) {
           </span>
           <h1 className="mb-5"><em>{item.title}.</em></h1>
           <p className="section-subheadline">{item.blurb}</p>
+          {metaEntries.length > 0 && (
+            <dl className="mt-8 grid gap-x-9 gap-y-3 sm:grid-cols-2 lg:grid-cols-4 max-w-[760px]">
+              {metaEntries.map((m) => (
+                <div key={m.label} className="border-t border-line/70 pt-3">
+                  <dt className="text-[0.62rem] font-bold tracking-[0.22em] uppercase text-gold">{m.label}</dt>
+                  <dd className="mt-1 text-cream-50 text-[0.95rem]">{m.value}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
         </div>
       </section>
 
@@ -121,8 +153,8 @@ export default async function PortfolioItemPage({ params }: Props) {
 
       {/* Bottom CTAs — Get Free Quote + Contact us (per operator: all portfolio pages need both) */}
       <section className="py-24 bg-ink-2 border-t border-line relative overflow-hidden">
-        <div aria-hidden className="absolute -top-32 -right-24 w-[420px] h-[420px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(201,168,76,0.10), transparent 70%)" }} />
-        <div aria-hidden className="absolute -bottom-32 -left-24 w-[420px] h-[420px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(201,168,76,0.06), transparent 70%)" }} />
+        <div aria-hidden className="absolute -top-32 -right-24 w-[420px] h-[420px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(var(--accent-rgb),0.10), transparent 70%)" }} />
+        <div aria-hidden className="absolute -bottom-32 -left-24 w-[420px] h-[420px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(var(--accent-rgb),0.06), transparent 70%)" }} />
         <div className="container-site relative text-center">
           <span className="section-tag mx-auto inline-block">Want one like this?</span>
           <h2 className="mt-2 mb-5">Free estimate.<br /><em>Honest pricing.</em></h2>
@@ -136,7 +168,7 @@ export default async function PortfolioItemPage({ params }: Props) {
         </div>
       </section>
 
-      <section className="py-16 relative overflow-hidden" style={{ background: "linear-gradient(135deg, #c9a84c, #a8842f)" }}>
+      <section className="py-16 relative overflow-hidden" style={{ background: "linear-gradient(135deg, var(--accent), var(--accent-deep))" }}>
         <div aria-hidden className="absolute inset-0 pointer-events-none bg-cover bg-center mix-blend-multiply" style={{ backgroundImage: "url(/img/generated/cta-shavings.png)", opacity: 0.30 }} />
         <div className="container-site flex items-center justify-between gap-8 flex-wrap relative">
           <div>

@@ -4,8 +4,14 @@
 // Mirrors the LetsText pattern of layered email + DB.
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { rateLimitWithSweep } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
+
+// 5 submissions per IP per hour. Same shape as the LetsText limiter so ops
+// muscle-memory carries between the two sites.
+const CONTACT_LIMIT = 5;
+const CONTACT_WINDOW_MS = 60 * 60 * 1000;
 
 const schema = z.object({
   name: z.string().min(1).max(200),
@@ -17,6 +23,30 @@ const schema = z.object({
 });
 
 export async function POST(req: NextRequest) {
+  const ip = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || null;
+  const userAgent = req.headers.get("user-agent") || null;
+
+  const limiterKey = `contact:${(ip || "unknown").split(",")[0]!.trim()}`;
+  const rl = rateLimitWithSweep(limiterKey, {
+    limit: CONTACT_LIMIT,
+    windowMs: CONTACT_WINDOW_MS
+  });
+  if (!rl.allowed) {
+    const retryAfter = Math.max(1, Math.ceil((rl.resetAt - Date.now()) / 1000));
+    return NextResponse.json(
+      { ok: false, error: "Too many submissions. Please try again later." },
+      {
+        status: 429,
+        headers: {
+          "Retry-After": String(retryAfter),
+          "X-RateLimit-Limit": String(CONTACT_LIMIT),
+          "X-RateLimit-Remaining": "0",
+          "X-RateLimit-Reset": String(Math.ceil(rl.resetAt / 1000))
+        }
+      }
+    );
+  }
+
   const form = await req.formData();
   const raw = Object.fromEntries(form.entries());
   const parsed = schema.safeParse(raw);
@@ -30,9 +60,6 @@ export async function POST(req: NextRequest) {
     // honeypot tripped - silently accept
     return NextResponse.json({ ok: true, accepted: false });
   }
-
-  const ip = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || null;
-  const userAgent = req.headers.get("user-agent") || null;
 
   // ---- 1) Persist to Postgres if Prisma is wired ----
   let dbId: string | null = null;

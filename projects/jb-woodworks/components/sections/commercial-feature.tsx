@@ -1,7 +1,7 @@
-// Author: RKOJ-ELENO :: 2026-05-23
+﻿// Author: RKOJ-ELENO :: 2026-05-23
 // "Commercial Builds" feature section. Anchored on a real retail display
-// build (New Balance × Foot Locker) and dressed so the image feels native
-// to the dashboard — multi-stop radial + linear gradients fade the edges
+// build (New Balance Ã— Foot Locker) and dressed so the image feels native
+// to the dashboard â€” multi-stop radial + linear gradients fade the edges
 // into the ink-2 surface, slow Ken-Burns zoom on the image, parallax pull
 // on scroll, plus a slim gold rule + cinematic film-grain accent.
 "use client";
@@ -18,7 +18,7 @@ export function CommercialFeature() {
     target: ref,
     offset: ["start end", "end start"]
   });
-  // Slow vertical parallax on the image (8% travel) — subtle, not distracting.
+  // Slow vertical parallax on the image (8% travel) â€” subtle, not distracting.
   const yParallax = useTransform(scrollYProgress, [0, 1], reduced ? ["0%", "0%"] : ["-4%", "4%"]);
   // Headline slides in from below as section enters
   const headlineY = useTransform(scrollYProgress, [0, 0.4, 0.6, 1], reduced ? ["0%", "0%", "0%", "0%"] : ["8%", "0%", "0%", "-2%"]);
@@ -31,7 +31,7 @@ export function CommercialFeature() {
       aria-label="Commercial builds"
       className="relative overflow-hidden bg-ink-2 isolate"
     >
-      {/* Container — tall hero feel */}
+      {/* Container â€” tall hero feel */}
       <div className="relative min-h-[680px] sm:min-h-[760px] flex items-center">
         {/* Image layer with parallax + Ken-Burns zoom */}
         <motion.div
@@ -42,7 +42,7 @@ export function CommercialFeature() {
           <div className={`absolute inset-0 ${reduced ? "" : "jbw-ken-burns"}`}>
             <Image
               src="/img/featured/new-balance-reveal.jpg"
-              alt="JB Woodworks commercial retail display build for New Balance and Foot Locker — five custom wood cubbies with branded reveal panels"
+              alt="JB Woodworks commercial retail display build for New Balance and Foot Locker â€” five custom wood cubbies with branded reveal panels"
               fill
               sizes="100vw"
               priority={false}
@@ -53,7 +53,7 @@ export function CommercialFeature() {
           </div>
         </motion.div>
 
-        {/* Multi-stop fade overlays — image melts into the dashboard */}
+        {/* Multi-stop fade overlays â€” image melts into the dashboard */}
         {/* Top + bottom dark falloff */}
         <div aria-hidden className="absolute inset-0 pointer-events-none" style={{
           background:
@@ -74,7 +74,7 @@ export function CommercialFeature() {
           background:
             "radial-gradient(ellipse at center, transparent 0%, rgba(8,8,8,0.18) 60%, rgba(8,8,8,0.55) 100%)"
         }} />
-        {/* Subtle gold sheen — top + bottom hairlines */}
+        {/* Subtle gold sheen â€” top + bottom hairlines */}
         <div aria-hidden className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold-dim to-transparent opacity-70" />
         <div aria-hidden className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold-dim to-transparent opacity-70" />
         {/* Film grain overlay */}
@@ -85,10 +85,10 @@ export function CommercialFeature() {
         }} />
         {/* Gold radial accent in corner */}
         <div aria-hidden className="absolute -top-24 -right-24 w-[500px] h-[500px] pointer-events-none" style={{
-          background: "radial-gradient(circle, rgba(201,168,76,0.16), transparent 70%)"
+          background: "radial-gradient(circle, rgba(var(--accent-rgb),0.16), transparent 70%)"
         }} />
 
-        {/* Foreground content — limited to left column so the build photo reads */}
+        {/* Foreground content â€” limited to left column so the build photo reads */}
         <motion.div
           style={{ y: headlineY, opacity: headlineOpacity }}
           className="container-site relative z-[2] py-20 sm:py-24"
@@ -123,9 +123,27 @@ export function CommercialFeature() {
               </motion.em>
             </motion.h2>
 
-            <p className="text-cream-50 text-[1.1rem] leading-[1.7] max-w-[520px] mb-9 font-display italic">
+            <p className="text-cream-50 text-[1.1rem] leading-[1.7] max-w-[520px] mb-7 font-display italic">
               Custom fabrication, branded displays, retail installations, event builds, feature walls &mdash; designed and built in-house, photographable from day one.
             </p>
+
+            {/* Featured build chip — explicit link to the New Balance × Foot
+             *  Locker reveal so the section names a real, navigable project
+             *  instead of only the category bucket. Operator hard-canonical
+             *  2026-05-28: "add new balance build back to the built for
+             *  brands section". */}
+            <div className="mb-8 inline-flex items-center gap-3 rounded-full border border-gold/40 bg-ink-3/70 backdrop-blur-md pl-2.5 pr-4 py-1.5 max-w-full">
+              <span className="inline-block h-1.5 w-1.5 rounded-full bg-gold" aria-hidden />
+              <span className="text-[0.62rem] font-bold tracking-[0.22em] uppercase text-gold whitespace-nowrap">Featured Build</span>
+              <span className="text-cream-30" aria-hidden>·</span>
+              <Link
+                href="/portfolio/new-balance-reveal"
+                className="text-[0.85rem] text-white hover:text-gold transition-colors font-display italic whitespace-nowrap"
+              >
+                New Balance × Foot Locker reveal
+                <span aria-hidden className="ml-2 text-gold">→</span>
+              </Link>
+            </div>
 
             <div className="flex flex-wrap items-center gap-6">
               <Link
