@@ -46,6 +46,11 @@ param(
     [switch]$Quiet
 )
 
+# 2026-05-28 SAFETY: operator hard-canonical "stop github popups".
+# This script now pushes to 'sinister' (vault) remote only.
+# To re-enable github push, set $env:SANCTUM_ALLOW_GITHUB_PUSH='1'.
+if ($env:SANCTUM_ALLOW_GITHUB_PUSH -ne '1') { $Remote = 'sinister' }
+
 $ErrorActionPreference = 'Continue'
 $logDir = Join-Path $RepoRoot '_shared-memory\sinister-term-history'
 $logJsonl = Join-Path $logDir 'push-all-agent-branches.jsonl'
@@ -82,7 +87,14 @@ if (-not $Quiet) { Write-Host "[*] fetching all + prune..." }
 # while origin (GitHub) is fine. The actual push step is what matters for
 # the operator's "agents push to GitHub for Leo sync" goal. Pushes use their
 # own per-remote auth; a failed fetch doesn't gate them.
-$fetch = _git @('fetch','--all','--prune')
+# 2026-05-28 SAFETY: 'git fetch --all' hits github -> creds popup.
+# Default to fetching ONLY the active remote ($Remote, which is forced to
+# 'sinister' unless SANCTUM_ALLOW_GITHUB_PUSH=1). Pass --all only when gated env is set.
+if ($env:SANCTUM_ALLOW_GITHUB_PUSH -eq '1') {
+    $fetch = _git @('fetch','--all','--prune')
+} else {
+    $fetch = _git @('fetch',$Remote,'--prune')
+}
 $fetchPartial = ($fetch.rc -ne 0)
 if ($fetchPartial) {
     Write-LogRow @{

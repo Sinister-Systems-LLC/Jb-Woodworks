@@ -189,8 +189,14 @@ function Cmd-Release($projPath, $semver) {
         if ($DryRun) { Out-Step 'release' $true "would tag $semver"; return 0 }
         $null = cmd /c "git tag $semver"
         if ($LASTEXITCODE -ne 0) { Out-Step 'tag' $false 'tag failed'; return 1 }
-        $null = cmd /c "git push origin $semver >NUL 2>NUL"
-        Out-Step 'release' ($LASTEXITCODE -eq 0) "tag $semver pushed"
+        # 2026-05-28 SAFETY: operator hard-canonical "stop github popups".
+        # Tag push is gated behind SANCTUM_ALLOW_GITHUB_PUSH=1.
+        if ($env:SANCTUM_ALLOW_GITHUB_PUSH -eq '1') {
+            $null = cmd /c "git push origin $semver >NUL 2>NUL"
+            Out-Step 'release' ($LASTEXITCODE -eq 0) "tag $semver pushed"
+        } else {
+            Out-Step 'release' $true "tag $semver created (github push gated; set SANCTUM_ALLOW_GITHUB_PUSH=1 to enable)"
+        }
     } finally { Pop-Location }
     return 0
 }

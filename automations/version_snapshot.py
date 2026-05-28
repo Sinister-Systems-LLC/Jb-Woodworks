@@ -162,6 +162,10 @@ def cmd_create(args: argparse.Namespace) -> int:
         zpath = _make_zip(version)
         print(f"snapshot zip -> {zpath.relative_to(REPO)}")
     if args.push:
+        # 2026-05-28: respect SANCTUM_ALLOW_GITHUB_PUSH operator-gate
+        if os.environ.get('SANCTUM_ALLOW_GITHUB_PUSH') != '1':
+            print('[version_snapshot] github push gated; set SANCTUM_ALLOW_GITHUB_PUSH=1 to enable', file=sys.stderr)
+            return 1
         _run(["git", "push", "origin", version], check=False)
     print(f"OK: created {version} @ {sha}")
     return 0

@@ -1801,7 +1801,7 @@ function Ensure-ProjectSource($projRec) {
     }
 }
 
-function Launch-Session($projRec, $agentName, $accent, $phrase, $modes = $null) {
+function Launch-Session($projRec, $agentName, $accent, $phrase, $modes = $null, $LaunchMode = '') {
     # RKOJ-ELENO :: 2026-05-25 :: pre-spawn branch-router. Enforces the canonical
     # convention agent/<project-key>/<topic>-<utc-date> per docs/BRANCH-CONVENTION.md.
     # Skippable via SINISTER_SKIP_BRANCH_ROUTER=1 for cases where the operator
@@ -2163,12 +2163,98 @@ function Launch-Session($projRec, $agentName, $accent, $phrase, $modes = $null) 
         } catch { $_iterNum = 1 }
     }
     $projectLabelForTitle = if ($projRec.display) { $projRec.display } else { $projRec.key }
-    # RKOJ-ELENO :: 2026-05-28 :: new operator-canonical title format. Format:
-    #   "Sinister :: <project-label>  ::  slot=<slot>  ::  iter=<n>"
-    # Operator wants to scan taskbar by project + which slot + how many iters deep.
-    # Old swarm/loop/T-tier info preserved in $windowTitleLegacy for diagnostic header.
-    $windowTitle       = "Sinister :: $projectLabelForTitle  ::  slot=$accountForTitle  ::  iter=$_iterNum"
+    # RKOJ-ELENO :: 2026-05-28 :: operator hard-canonical 2026-05-28 (Image #11/#12)
+    # verbatim *"i need the fucking naming like this:"* pointing at example title:
+    #   "Resume Sanctum iter-34 OAuth diagnosis"
+    # Format: "<ModeWord> <Display> iter-<N> <Topic>"
+    #   - ModeWord  derived from $LaunchMode (resume/autoresume/autoresume-fresh ->
+    #     "Resume"; newproject -> "New"; scaffold -> "Scaffold"; headless/project ->
+    #     "Launch"). Capitalized first letter; ASCII only.
+    #   - Display   projects.json `display` field (e.g. "Sanctum", "Eve EXE"). Fallback
+    #     to title-cased slug.
+    #   - N         heartbeat .iter (per-project lane counter); falls back to em-dash.
+    #   - Topic     first 25 chars of latest resume-point .summary; falls back to
+    #     $focus_intent from resume row; else empty string.
+    # Backwards-compat: old "Sinister :: <label> :: slot=... :: iter=..." retained in
+    # $windowTitleLegacy for any header/diagnostic surface still wanting the long form.
+    # NOTE 2026-05-28: 'headless' + 'project' both call Build-Phrase with mode='resume'
+    # (lines 3020 + 3140); only 'newproject' is the truly-new scaffold path. So both map
+    # to "Resume" in operator-facing title text (matches the verbatim example
+    # "Resume Sanctum iter-34 OAuth diagnosis").
+    $titleModeMap = @{
+        'headless'         = 'Resume'
+        'autoresume'       = 'Resume'
+        'autoresume-fresh' = 'Resume'
+        'newproject'       = 'New'
+        'project'          = 'Resume'
+        'resume'           = 'Resume'
+        'scaffold'         = 'Scaffold'
+        'audit'            = 'Audit'
+    }
+    $titleModeWord = 'Launch'
+    if ($LaunchMode -and $titleModeMap.ContainsKey($LaunchMode.ToLower())) {
+        $titleModeWord = $titleModeMap[$LaunchMode.ToLower()]
+    } elseif ($LaunchMode) {
+        $lc = $LaunchMode.ToLower()
+        $titleModeWord = ($lc.Substring(0,1).ToUpper() + $lc.Substring(1))
+    }
+    # Pull .iter from the heartbeat file (per-lane counter, owned by the bot loop).
+    $titleIter = $null
+    try {
+        $_hbPath = Join-Path $SanctumRoot ('_shared-memory\heartbeats\' + $projRec.key + '.json')
+        if (Test-Path $_hbPath) {
+            $_hbJson = Get-Content $_hbPath -Raw -Encoding UTF8 | ConvertFrom-Json
+            if ($_hbJson -and $_hbJson.PSObject.Properties.Name -contains 'iter') {
+                $_iterCandidate = [string]$_hbJson.iter
+                if ($_iterCandidate -ne '') { $titleIter = $_iterCandidate }
+            }
+        }
+    } catch { $titleIter = $null }
+    if (-not $titleIter) { $titleIter = '-' }
+    # Topic from latest resume-point file. Display-name folder e.g. _shared-memory/
+    # resume-points/Sanctum/<utc>-<topic>.json -> .summary (first 25 chars).
+    $titleTopic = ''
+    try {
+        $_rpDir = Join-Path $SanctumRoot ('_shared-memory\resume-points\' + $projectLabelForTitle)
+        if (Test-Path $_rpDir) {
+            $_rpFile = Get-ChildItem -Path $_rpDir -Filter '*.json' -File -ErrorAction SilentlyContinue | Sort-Object LastWriteTimeUtc -Descending | Select-Object -First 1
+            if ($_rpFile) {
+                $_rpJson = Get-Content $_rpFile.FullName -Raw -Encoding UTF8 | ConvertFrom-Json
+                if ($_rpJson) {
+                    if ($_rpJson.PSObject.Properties.Name -contains 'summary' -and $_rpJson.summary) {
+                        $titleTopic = [string]$_rpJson.summary
+                    } elseif ($_rpJson.PSObject.Properties.Name -contains 'focus_intent' -and $_rpJson.focus_intent) {
+                        $titleTopic = [string]$_rpJson.focus_intent
+                    }
+                }
+            }
+        }
+    } catch { $titleTopic = '' }
+    # Env-fallback for callers that pre-set the topic explicitly (e.g. bot-loop spawn).
+    if (-not $titleTopic -and $env:SINISTER_SPAWN_TOPIC) { $titleTopic = [string]$env:SINISTER_SPAWN_TOPIC }
+    # Strip mintty-hostile chars (quotes/backticks/control) before truncation.
+    if ($titleTopic) {
+        # Strip leading "iter-N:" / "iter-N " duplication with our iter- prefix.
+        $titleTopic = $titleTopic -replace '^[Ii]ter[-_ ]?\d+\s*[:.\-]?\s*', ''
+        $titleTopic = $titleTopic -replace "[`"`'``]", ''
+        $titleTopic = $titleTopic -replace '\s+', ' '
+        $titleTopic = $titleTopic.Trim()
+        if ($titleTopic.Length -gt 25) { $titleTopic = $titleTopic.Substring(0, 25).TrimEnd() }
+    }
+    # Compose the new title; total cap 80 chars.
+    try {
+        $_newTitle = "$titleModeWord $projectLabelForTitle iter-$titleIter"
+        if ($titleTopic) { $_newTitle = $_newTitle + ' ' + $titleTopic }
+        $_newTitle = $_newTitle -replace "[`"`'``]", ''
+        if ($_newTitle.Length -gt 80) { $_newTitle = $_newTitle.Substring(0, 80).TrimEnd() }
+        $windowTitle = $_newTitle
+    } catch {
+        # Defensive fallback to the prior format if anything blew up.
+        $windowTitle = "Sinister :: $projectLabelForTitle  ::  slot=$accountForTitle  ::  iter=$_iterNum"
+    }
     $windowTitleLegacy = "Sinister $agentName $diamond swarm=$swarmTag $diamond loop=$loopTag $diamond acct=$accountForTitle $diamond T$_titleTier"
+    # Diagnostic echo so operators / smoke tests can see the constructed title.
+    try { Write-Host "    [windowTitle] $windowTitle" -ForegroundColor $C.Dim } catch {}
     # mintty `-t` arg ASCII-safe variant (Win32 CreateProcess arg encoding can mangle
     # multi-byte unicode; bash OSC inside the spawned shell handles ◆ correctly). The
     # two converge once bash printf fires on line 1907 -- `-t` just bridges the cold
@@ -2188,7 +2274,17 @@ function Launch-Session($projRec, $agentName, $accent, $phrase, $modes = $null) 
     # title format. Dashes instead of `::` separators so PS 5.1 Start-Process
     # -ArgumentList quotes it as a single argv element to mintty `-t`.
     $_projectSlugForTitle = ($projectLabelForTitle -replace '[^A-Za-z0-9._-]', '-') -replace '-+', '-'
-    $windowTitleAscii = "Sinister-${_projectSlugForTitle}-slot=${accountForTitle}-iter=${_iterNum}"
+    # RKOJ-ELENO :: 2026-05-28 :: ASCII-safe variant of the new mode-word title format.
+    # Same shape as $windowTitle but dashes only (no spaces/colons) so PS 5.1
+    # Start-Process -ArgumentList quotes it as a single argv token for mintty `-t`.
+    $_topicSlugForTitle = ''
+    if ($titleTopic) {
+        $_topicSlugForTitle = ($titleTopic -replace '[^A-Za-z0-9._-]', '-') -replace '-+', '-'
+        $_topicSlugForTitle = $_topicSlugForTitle.Trim('-')
+    }
+    $windowTitleAscii = "${titleModeWord}-${_projectSlugForTitle}-iter-${titleIter}"
+    if ($_topicSlugForTitle) { $windowTitleAscii = $windowTitleAscii + '-' + $_topicSlugForTitle }
+    if ($windowTitleAscii.Length -gt 80) { $windowTitleAscii = $windowTitleAscii.Substring(0, 80).TrimEnd('-') }
 
     # RKOJ-ELENO :: 2026-05-23 :: Phase 1/2 — account name resolved earlier (above
     # the colormap block). $selectedAccountName + $selectedApiKey already set there.
@@ -2711,7 +2807,18 @@ fi
                 # visible trace. --hold error keeps the window open on non-zero bash exit so
                 # operator sees the failure + can copy the trace. Successful exit still closes.
                 '--hold', 'error',
-                '-t', $windowTitleAscii,
+                # RKOJ-ELENO :: 2026-05-28 :: operator hard-canonical Image #14 -- the
+                # spawned mintty PROCESS-level title must NOT be set via `-t` (which
+                # mintty treats as immutable for the lifetime of the window AND can
+                # crash spawn when title contains `::` / spaces / non-ASCII per
+                # earlier 21:55Z incident). Canonical fix: OSC printf inside bash at
+                # line 2333 sets the title to $windowTitle (full operator-canonical
+                # "<Mode> <Display> iter-<N> <Topic>" format) ~50ms after window
+                # opens. mintty's getopt_long does support `-T TITLE` (capital T) for
+                # a SETTABLE initial title that OSC printf can later override, but
+                # we don't need it -- the OSC printf fires fast enough that the
+                # default "MINGW64:..." flash is invisible. Keeping the line REMOVED
+                # is the canonical path per the comment block lines 2712-2717.
                 '-o', "ForegroundColour=$fgRgb",
                 '-o', "BackgroundColour=$bgRgb",
                 '-o', "CursorColour=$curRgb",
@@ -3018,7 +3125,7 @@ if ($Project) {
     # register. RKOJ-ELENO 2026-05-24.
     $modes = Prompt-AgentModes -ProjectRec $projRec
     $phrase = Build-Phrase $projRec $resolvedAgent 'resume' $isGeneral $false $modes
-    if (-not $NoLaunch) { Launch-Session $projRec $resolvedAgent $resolvedAccent $phrase $modes }
+    if (-not $NoLaunch) { Launch-Session $projRec $resolvedAgent $resolvedAccent $phrase $modes 'headless' }
     Write-RunLog $Project $resolvedAgent $resolvedAccent 'headless' $modes
     exit 0
 }
@@ -3083,7 +3190,7 @@ do {
                     $isGeneral = ($targetKey -eq 'general')
                     $modes = Prompt-AgentModes -ProjectRec $projRec
                     $phrase = Build-Phrase $projRec $resolvedAgent 'resume' $isGeneral $false $modes
-                    if (-not $NoLaunch) { Launch-Session $projRec $resolvedAgent $accentVal $phrase $modes }
+                    if (-not $NoLaunch) { Launch-Session $projRec $resolvedAgent $accentVal $phrase $modes 'autoresume-fresh' }
                     Write-RunLog $targetKey $resolvedAgent $accentVal 'autoresume-fresh' $modes
                 } else {
                     Write-Host "  [FAIL] project not found: $targetKey" -ForegroundColor $C.Fail
@@ -3101,7 +3208,7 @@ do {
                 $accentVal = $confirmed.accent
                 $modes = Prompt-AgentModes -ProjectRec $projRec
                 $phrase = Build-Phrase $projRec $resolvedAgent 'resume' ($targetKey -eq 'general') $false $modes
-                if (-not $NoLaunch) { Launch-Session $projRec $resolvedAgent $accentVal $phrase $modes }
+                if (-not $NoLaunch) { Launch-Session $projRec $resolvedAgent $accentVal $phrase $modes 'autoresume' }
                 Write-RunLog $targetKey $resolvedAgent $accentVal 'autoresume' $modes
             }
         }
@@ -3121,7 +3228,7 @@ do {
                 $prefs = Persist-AgentPref $new.key $resolvedAgent 'purple' $prefs
                 $modes = Prompt-AgentModes -ProjectRec $projRec
                 $phrase = Build-Phrase $projRec $resolvedAgent 'scaffold' $false $true $modes
-                if (-not $NoLaunch) { Launch-Session $projRec $resolvedAgent 'purple' $phrase $modes }
+                if (-not $NoLaunch) { Launch-Session $projRec $resolvedAgent 'purple' $phrase $modes 'newproject' }
                 Write-RunLog $new.key $resolvedAgent 'purple' 'newproject' $modes
                 $projectsJson = ReadProjectsJson
                 $visible = Get-VisibleProjects $projectsJson
@@ -3138,7 +3245,7 @@ do {
                 $isGeneral = ($targetKey -eq 'general')
                 $modes = Prompt-AgentModes -ProjectRec $projRec
                 $phrase = Build-Phrase $projRec $resolvedAgent 'resume' $isGeneral $false $modes
-                if (-not $NoLaunch) { Launch-Session $projRec $resolvedAgent $accentVal $phrase $modes }
+                if (-not $NoLaunch) { Launch-Session $projRec $resolvedAgent $accentVal $phrase $modes 'project' }
                 Write-RunLog $targetKey $resolvedAgent $accentVal 'project' $modes
             } else {
                 Write-Host "  [FAIL] project not found: $targetKey" -ForegroundColor $C.Fail

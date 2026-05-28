@@ -617,7 +617,10 @@ for %%K in (%FLEET_KEYS%) do (
         REM PickBestSlot writes the chosen slot name to stdout and exits 1
         REM if no eligible slot. Diagnostics go to stderr; we discard them
         REM here to keep the for /F capture clean.
-        for /F "usebackq tokens=* delims=" %%S in (`powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%OAUTH_PS1%" -Action PickBestSlot 2^>nul`) do (
+        REM 2026-05-28: Action name is "PickBest" not "PickBestSlot" -- the latter
+        REM was erroring "unknown -Action" and breaking every lane spawn. Fixed
+        REM concurrent with operator's quota-cleanup (sinister-gmail only slot).
+        for /F "usebackq tokens=* delims=" %%S in (`powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%OAUTH_PS1%" -Action PickBest 2^>nul`) do (
             if not defined LANE_SLOT set "LANE_SLOT=%%S"
         )
         if not defined LANE_SLOT (
