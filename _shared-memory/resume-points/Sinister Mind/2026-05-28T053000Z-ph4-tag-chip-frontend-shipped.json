@@ -1,0 +1,38 @@
+{
+  "schema_version": "sinister.resume-point.v1",
+  "ts_utc": "2026-05-28T05:30:00Z",
+  "project": "sinister-mind",
+  "agent_name": "sinister-mind",
+  "mode": "iter-shipped",
+  "iter_label": "PH4 slice-2 (frontend half) tag-chip click filter v0.6.0",
+  "verdict": "SHIPPED-GREEN",
+  "parent_resume_point": "2026-05-28T034730Z-ph4-tag-filter-shipped.json",
+  "iter_summary": "Rewired mind/static/mind.js so tag-chip clicks fetch /api/graph?tag=<csv> server-side and redraw the D3 graph (no more CSS dimming for tag filter). Introduced baseGraph (unfiltered, drives sidebar pills + tag-cloud) vs currentGraph (rendered, may be filtered). applyTagFilter is async, short-circuits to baseGraph when activeTags is empty. SSE graph-change reload re-fetches both base + filtered slice so active filter survives a _shared-memory/ change. Stats badge shows [filter: <tags>]; title-status flips to 'filtered'. Bumped __version__ 0.5.0 -> 0.6.0 + pyproject.toml + description.",
+  "tests": {
+    "framework": "pytest + node syntax check + Flask test_client",
+    "pytest_full_suite": "12/12 PASS in 22.17s (5 graph_cache + 7 tag_filter)",
+    "node_syntax_check": "new Function(mind.js) OK, 12401 bytes",
+    "http_e2e": "/api/graph 727n/265e; /api/graph?tag=$5-per-day-cap 2n/0e; CSV ?tag=a,b honored; empty ?tag= falls through to identity"
+  },
+  "source_health": {
+    "endpoints": ["/api/graph", "/api/graph?tag=", "/api/projects", "/api/search", "/api/path", "/api/stream", "/api/diagrams", "/api/diagrams/<stem>", "/api/health"],
+    "version": "0.6.0",
+    "graph_cache_ttl_s": 5.0,
+    "frontend_split": "baseGraph (unfiltered for sidebar) + currentGraph (rendered, possibly filtered)"
+  },
+  "next_iter_for_mind_agent": [
+    "PH5 shortest-path UI polish: highlight path-edges with auto-zoom to both endpoints (existing /api/path endpoint is sufficient).",
+    "PH6 Ruflo agentdb semantic-similarity edges (graceful fallback to tag overlap when MCP not loaded, per CLAUDE.md).",
+    "PH4 polish: 'clear all chips' button next to the tag-cloud header (currently operator must toggle each chip off).",
+    "Consider exposing /api/health graph cache stats in the sidebar as a tiny perf badge (hits/misses)."
+  ],
+  "branch": "agent/sinister-mind/ph4-tag-chip-frontend-20260528T0530Z",
+  "files_touched": [
+    "projects/sinister-mind/source/mind/static/mind.js (chip-click rewired to fetch+redraw; baseGraph/currentGraph split)",
+    "projects/sinister-mind/source/mind/__init__.py (__version__ 0.5.0 -> 0.6.0)",
+    "projects/sinister-mind/source/pyproject.toml (version 0.5.0 -> 0.6.0 + description updated)",
+    "_shared-memory/PROGRESS/Sinister Mind.md (top-row append)",
+    "_shared-memory/heartbeats/sinister-mind.json (refresh)",
+    "_shared-memory/resume-points/Sinister Mind/2026-05-28T053000Z-ph4-tag-chip-frontend-shipped.json (NEW, this file)"
+  ]
+}

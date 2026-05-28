@@ -1,4 +1,4 @@
-// Sinister Mind :: mind.js (v2 - tag chips + SSE live reload)
+// Sinister Mind :: mind.js (v3 - server-side tag filter via /api/graph?tag=)
 // Author: RKOJ-ELENO :: 2026-05-21
 // License: AGPL-3.0-or-later
 
@@ -11,32 +11,50 @@
     return { w: m.width, h: m.height };
   }
 
+  // baseGraph = unfiltered (drives sidebar tag-cloud + project pills so the
+  // operator can keep toggling chips on/off without losing the universe).
+  // currentGraph = what D3 is actually rendering (may be the server-filtered
+  // subset when activeTags is non-empty).
+  let baseGraph = null;
   let currentGraph = null;
   let activeTags = new Set();
 
-  async function loadGraph() {
-    const resp = await fetch("/api/graph");
+  async function loadGraph(tags) {
+    const norm = (tags || []).filter(t => t && t.trim());
+    const url = norm.length
+      ? `/api/graph?tag=${encodeURIComponent(norm.join(","))}`
+      : "/api/graph";
+    const resp = await fetch(url);
     return await resp.json();
   }
 
   async function render() {
-    const graph = await loadGraph();
-    currentGraph = graph;
-    drawGraph(graph);
-    renderSidebar(graph);
+    baseGraph = await loadGraph([]);
+    // Refetch the filtered slice on full reload so activeTags survives SSE.
+    currentGraph = activeTags.size
+      ? await loadGraph(Array.from(activeTags))
+      : baseGraph;
+    drawGraph(currentGraph);
+    renderSidebar(baseGraph, currentGraph);
   }
 
-  function renderSidebar(graph) {
-    const stats = graph.counts || {};
+  function renderSidebar(base, current) {
+    // counts reflect what's on screen (current); tag-cloud + project pills
+    // come from base so chips don't vanish after a filter removes their nodes.
+    const stats = (current || base).counts || {};
+    const filteredBadge = stats.filtered_by_tags && stats.filtered_by_tags.length
+      ? ` <span style="color:var(--purple-bright)">[filter: ${stats.filtered_by_tags.join(", ")}]</span>`
+      : "";
     document.getElementById("stats").innerHTML = `
-      <b>${stats.total_nodes}</b> nodes &middot; <b>${stats.total_edges}</b> edges<br>
+      <b>${stats.total_nodes}</b> nodes &middot; <b>${stats.total_edges}</b> edges${filteredBadge}<br>
       projects <b>${stats.projects}</b> &middot; brain <b>${stats.brain}</b><br>
       plans <b>${stats.plans}</b> &middot; PROGRESS <b>${stats.progress}</b><br>
       cross-agent <b>${stats.cross_agent}</b> &middot; resume-pts <b>${stats.resume_pts}</b>
     `;
-    document.getElementById("title-status").textContent = "brain loaded";
+    document.getElementById("title-status").textContent = activeTags.size ? "filtered" : "brain loaded";
     document.getElementById("title-counts").textContent = `${stats.total_nodes} nodes / ${stats.total_edges} edges`;
 
+    const graph = base;
     // Project filter + pills
     const projects = graph.nodes.filter(n => n.type === "project");
     const projSelect = document.getElementById("project-filter");
@@ -79,11 +97,10 @@
       chip.textContent = `${tag} (${count})`;
       chip.title = `${count} nodes tagged "${tag}"`;
       if (activeTags.has(tag)) chip.classList.add("active");
-      chip.addEventListener("click", () => {
+      chip.addEventListener("click", async () => {
         if (activeTags.has(tag)) activeTags.delete(tag);
         else activeTags.add(tag);
-        applyTagFilter();
-        renderSidebar(currentGraph);
+        await applyTagFilter();
       });
       tagCloud.appendChild(chip);
     });
@@ -175,24 +192,23 @@
     });
   }
 
-  function applyTagFilter() {
-    if (!nodeSel) return;
+  async function applyTagFilter() {
+    // Server-side filter via /api/graph?tag=<csv>. baseGraph stays intact so
+    // the tag-cloud + project pills keep showing the full universe and the
+    // operator can toggle chips on/off without losing context.
+    const status = document.getElementById("live-status");
     if (activeTags.size === 0) {
-      nodeSel.classed("dimmed", false);
-      linkSel.classed("dimmed", false);
-      return;
+      currentGraph = baseGraph;
+    } else {
+      if (status) status.textContent = "filtering";
+      currentGraph = await loadGraph(Array.from(activeTags));
     }
-    nodeSel.classed("dimmed", d => {
-      if (!d.tags || !d.tags.length) return true;
-      return !d.tags.some(t => activeTags.has(t));
-    });
-    linkSel.classed("dimmed", d => {
-      const src = typeof d.source === "object" ? d.source : currentGraph.nodes.find(n => n.id === d.source);
-      const tgt = typeof d.target === "object" ? d.target : currentGraph.nodes.find(n => n.id === d.target);
-      const srcM = src && src.tags && src.tags.some(t => activeTags.has(t));
-      const tgtM = tgt && tgt.tags && tgt.tags.some(t => activeTags.has(t));
-      return !(srcM && tgtM);
-    });
+    drawGraph(currentGraph);
+    renderSidebar(baseGraph, currentGraph);
+    // Re-apply project dim if a pill was active (drawGraph rebuilds DOM).
+    const activePill = document.querySelector(".project-pill.active");
+    if (activePill) applyProjectFilter(activePill.dataset.key);
+    if (status) status.textContent = activeTags.size ? "filtered" : "live";
   }
 
   // Wire interactions

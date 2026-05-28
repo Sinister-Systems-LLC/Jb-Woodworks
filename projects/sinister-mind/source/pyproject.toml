@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sinister-mind"
-version = "0.4.0"
-description = "Sinister-branded visual mind-graph for the Sanctum brain. Flask + D3.js. Plus /diagrams memory-graph viewer consuming forge-memory/mermaid-renders/. v0.4.0 adopts BOM-tolerant _read_text per the powershell-out-file-bom-bites-python-readers doctrine."
+version = "0.6.0"
+description = "Sinister-branded visual mind-graph for the Sanctum brain. Flask + D3.js. Plus /diagrams memory-graph viewer consuming forge-memory/mermaid-renders/. v0.6.0 wires the sidebar tag-chip click to /api/graph?tag=<csv> for server-side filtering + D3 re-render; baseGraph stays cached so chips persist and toggle. v0.5.0 added an in-process TTL cache (5s) for build_graph() shared by /api/graph, /api/search, /api/path; watcher thread invalidates on every _shared-memory/ change so freshness is preserved while burst requests are served from RAM."
 readme = "README.md"
 license = { text = "AGPL-3.0-or-later" }
 authors = [{ name = "RKOJ-ELENO", email = "andrew.viperrr@gmail.com" }]
