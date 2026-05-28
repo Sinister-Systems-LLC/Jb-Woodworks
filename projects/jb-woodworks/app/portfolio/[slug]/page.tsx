@@ -1,11 +1,11 @@
 // Author: RKOJ-ELENO :: 2026-05-23
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Reveal } from "@/components/ui/reveal";
 import { Icon } from "@/components/ui/icon";
 import { BackLink } from "@/components/ui/back-link";
+import { LightboxImage } from "@/components/ui/lightbox";
 import { BeforeAfter } from "@/components/sections/before-after";
 import { getPortfolioItem, portfolio } from "@/lib/content";
 import { SITE } from "@/lib/site";
@@ -132,17 +132,13 @@ export default async function PortfolioItemPage({ params }: Props) {
                     )}
                   </figure>
                 ) : (
-                  <Image
+                  <LightboxImage
                     src={`/img/projects/${m.src}`}
                     alt={item.title}
                     width={1600}
                     height={1200}
                     sizes="(max-width: 960px) 100vw, 960px"
-                    loading={i === 0 ? undefined : "lazy"}
                     priority={i === 0}
-                    quality={92}
-                    style={{ width: "100%", height: "auto" }}
-                    className="block cinematic-image"
                   />
                 )}
               </Reveal>

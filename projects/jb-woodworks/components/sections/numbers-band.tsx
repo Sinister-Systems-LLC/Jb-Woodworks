@@ -49,14 +49,17 @@ export function NumbersBand() {
           {STATS.map((s, i) => (
             <motion.div
               key={i}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 24, rotateX: -8 }}
+              whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+              whileHover={{ y: -4, scale: 1.015 }}
               viewport={{ once: true, amount: 0.4 }}
-              transition={{ duration: 0.6, delay: i * 0.08, ease: [0.16, 1, 0.3, 1] }}
-              className="relative pl-6"
+              transition={{ duration: 0.7, delay: i * 0.09, ease: [0.16, 1, 0.3, 1] }}
+              style={{ transformPerspective: 900 }}
+              className="relative pl-6 group"
             >
               <span aria-hidden className="absolute left-0 top-1 bottom-2 w-px bg-gradient-to-b from-gold via-gold-dim to-transparent" />
-              <p className="font-display text-[clamp(3rem,6vw,4.5rem)] leading-none text-white">
+              <span aria-hidden className="absolute -left-0.5 top-1 h-3 w-3 rounded-full bg-gold/0 group-hover:bg-gold transition-colors duration-300" />
+              <p className="font-display text-[clamp(3rem,6vw,4.5rem)] leading-none text-white drop-shadow-[0_2px_24px_rgba(201,168,76,0.10)]">
                 <Counter to={s.value} suffix={s.suffix} />
               </p>
               <p className="mt-3 text-[0.78rem] font-bold tracking-[0.18em] uppercase text-gold">{s.label}</p>

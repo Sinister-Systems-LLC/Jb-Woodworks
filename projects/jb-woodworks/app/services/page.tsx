@@ -45,8 +45,16 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      <section className="py-24">
-        <div className="container-site">
+      <section className="py-24 relative">
+        <div aria-hidden className="hidden lg:block sticky top-24 z-10 pointer-events-none">
+          <div className="container-site">
+            <div className="flex justify-between items-baseline px-1 pb-2 border-b border-line/40">
+              <span className="text-[0.62rem] font-bold tracking-[0.22em] uppercase text-gold">Services index</span>
+              <span className="text-[0.62rem] tracking-[0.18em] uppercase text-cream-30">{services.length} lanes</span>
+            </div>
+          </div>
+        </div>
+        <div className="container-site -mt-9 lg:-mt-12 relative">
           <div className="flex flex-col gap-6 max-w-[920px] mx-auto">
             {services.map((s, i) => (
               <Reveal key={s.slug} as="article" delay={i * 80} className="bg-ink-3 border border-line p-9 sm:p-10 rounded-xl transition-all hover:border-gold-dim hover:translate-x-1">
