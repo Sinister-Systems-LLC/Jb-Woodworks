@@ -316,6 +316,26 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_dr.add_argument("--json", action="store_true")
 
+    # verify-brain-refs (iter-64) :: scan files/dirs for `_shared-memory/knowledge/<name>.md`
+    # references and report which resolve to real files. Generalizes the
+    # iter-63 doctor.py lint pattern. Lane-internal but adoptable fleet-wide.
+    p_vb = sub.add_parser(
+        "verify-brain-refs",
+        help="scan targets for `_shared-memory/knowledge/*.md` references; report broken/present",
+    )
+    p_vb.add_argument(
+        "paths",
+        nargs="+",
+        help="files or directories to scan (recursive on dirs)",
+    )
+    p_vb.add_argument("--json", action="store_true")
+    p_vb.add_argument(
+        "--knowledge-dir",
+        type=Path,
+        default=None,
+        help="override knowledge dir (default: <root>/_shared-memory/knowledge)",
+    )
+
     # commit-isolated (iter-35) :: race-safe plumbing-based commit for shared monorepo
     p_ci = sub.add_parser(
         "commit-isolated",
@@ -354,6 +374,14 @@ def build_parser() -> argparse.ArgumentParser:
     p_sa.add_argument("--dry-run", action="store_true", help="scan + plan but write nothing")
     p_sa.add_argument("--max-per-lane", type=int, default=1, help="how many headings per lane (default 1 = newest only)")
     p_sa.add_argument("--json", action="store_true", help="emit JSON stats instead of human summary")
+
+    # sweep-heartbeats (iter-56) :: heartbeat-fallback for lanes lacking PROGRESS
+    p_sh = sub.add_parser(
+        "sweep-heartbeats",
+        help="for lanes with no PROGRESS file, derive a per-agent row from heartbeats/<slug>.json (composes after sweep-adoption)",
+    )
+    p_sh.add_argument("--dry-run", action="store_true", help="scan + plan but write nothing")
+    p_sh.add_argument("--json", action="store_true", help="emit JSON stats instead of human summary")
 
     # version
     sub.add_parser("version", help="print version + exit")
@@ -667,6 +695,35 @@ def cmd_doctor(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_verify_brain_refs(args: argparse.Namespace) -> int:
+    root, _db = _resolve_root_and_db(args)
+    from . import verify_brain_refs as _vb
+    targets = [Path(p) for p in args.paths]
+    report = _vb.scan_paths(
+        root=root,
+        targets=targets,
+        knowledge_dir=args.knowledge_dir,
+    )
+    if args.json:
+        import json as _json
+        print(_json.dumps(report, indent=2))
+    else:
+        print(
+            f"# verify-brain-refs :: scanned={report['scanned_files']} "
+            f"files-with-refs={report['files_with_refs']} "
+            f"refs={report['total_refs']} "
+            f"present={report['present_count']} "
+            f"missing={report['missing_count']}"
+        )
+        if report["missing"]:
+            print("  MISSING (broken brain-refs):")
+            for row in report["missing"]:
+                print(f"    {row['file']}:{row['line']}  -> {row['ref']}")
+        else:
+            print("  All brain-refs resolve to verified-present files.")
+    return 1 if report["missing_count"] else 0
+
+
 def cmd_commit_isolated(args: argparse.Namespace) -> int:
     from . import commit_isolated as _ci
     repo_root = Path(args.repo_root) if args.repo_root else _resolve_root_and_db(args)[0]
@@ -747,13 +804,39 @@ def cmd_sweep_adoption(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_sweep_heartbeats(args: argparse.Namespace) -> int:
+    root, _db = _resolve_root_and_db(args)
+    from . import heartbeat_fallback
+
+    stats = heartbeat_fallback.heartbeat_fallback_sweep(
+        root,
+        dry_run=getattr(args, "dry_run", False),
+    )
+    if getattr(args, "json", False):
+        import json as _json
+        print(_json.dumps(stats, indent=2))
+        return 0
+    mode = "DRY-RUN" if stats["dry_run"] else "APPLIED"
+    print(
+        f"[{mode}] sweep-heartbeats: processed={stats['processed']} "
+        f"written={stats.get('written', 0)} updated={stats.get('updated', 0)} "
+        f"unchanged={stats.get('unchanged', 0)} "
+        f"skipped_has_progress={stats['skipped_has_progress']} "
+        f"skipped_no_heartbeat={stats['skipped_no_heartbeat']} "
+        f"errors={len(stats.get('errors', []))}"
+    )
+    return 0
+
+
 DISPATCH = {
     "recall": cmd_recall,
     "health": cmd_health,
     "doctor": cmd_doctor,
+    "verify-brain-refs": cmd_verify_brain_refs,
     "commit-isolated": cmd_commit_isolated,
     "wait-for-heartbeat": cmd_wait_for_heartbeat,
     "sweep-adoption": cmd_sweep_adoption,
+    "sweep-heartbeats": cmd_sweep_heartbeats,
     "save": cmd_save,
     "index": cmd_index,
     "inject-spawn-phrase": cmd_inject_spawn,
