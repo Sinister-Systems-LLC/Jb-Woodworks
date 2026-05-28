@@ -1,0 +1,41 @@
+{
+  "schema": "sinister.resume-point.v1",
+  "project_key": "sanctum",
+  "agent_name": "sanctum",
+  "mode": "resume",
+  "ts_utc": "2026-05-28T07:10:00Z",
+  "branch": "agent/sanctum/spawn-pipeline-fix-2026-05-28",
+  "operator_trigger": "complete what this agent was working on (screenshot: SMOKE TEST exit 1 picker -> session-start spawn) + the bat file and everything we need to do there so that i can get my other projects up and active + the eve exe is not working etiher",
+  "summary": "iter-31: spawn pipeline unblocked. SINISTER_AUTO_ACCEPT=1 now bypasses Read-Host in start-sinister-session.ps1 (was: only SINISTER_QUICK*). ListBars dispatched to extensions.ps1 in Spawn-Sanctum-Agent.bat. Mark-AccountSpawned Add-Member-guards prevent property crashes. iter-32: eve_oauth_reconcile.py + finalize_oauth_paste_relay.py atomic_write_json via _lib/_json_safe. iter-33: 68 stale inbox rows -> _acked, 11 -> _unacked-high, 4 actionable left. EVE.exe 401 root cause = all 3 OAuth slots at 100% 5h usage (vault + gateway healthy); operator-action surfaced in queue.",
+  "iter": 31,
+  "last_shipped_commit": "30b9705",
+  "shipped_this_turn": [
+    "automations/start-sinister-session.ps1 line 1541: SINISTER_AUTO_ACCEPT=1 honored",
+    "automations/Spawn-Sanctum-Agent.bat lines 424-431 + 909-913: ListBars -> claude-oauth-extensions.ps1 with fallback to main -Action List",
+    "automations/claude-accounts.ps1 lines 443-451: current_sessions + successful_spawns_today Add-Member guards",
+    "automations/eve_oauth_reconcile.py + finalize_oauth_paste_relay.py: atomic_write_json (closes iter-32)",
+    "_shared-memory/inbox/sanctum/: 68 -> _acked, 11 -> _unacked-high, 4 actionable surfaced (closes iter-33)",
+    "_shared-memory/OPERATOR-ACTION-QUEUE.md: CRITICAL row for OAuth slot3 add (EVE.exe unblock)",
+    "Branch agent/sanctum/spawn-pipeline-fix-2026-05-28 pushed to origin"
+  ],
+  "smoke_evidence": [
+    "python automations/_lib/_json_safe.py -> '_json_safe: smoke OK' rc=0",
+    "powershell start-sinister-session.ps1 -Project sanctum -Fast -DryRun with SINISTER_AUTO_ACCEPT=1 -> [DRY-RUN] would spawn 'sanctum' slot='slot2' rc=0",
+    "cmd /c Spawn-Sanctum-Agent.bat -Repair < nul -> preflight 4/4 OK + isolation ENABLED + ListBars shows usage bars rc=0",
+    "python -c ast.parse on both modified python files -> PARSE_OK both",
+    "git push -u origin agent/sanctum/spawn-pipeline-fix-2026-05-28 -> new branch tracked"
+  ],
+  "next_iter_queue": [
+    "iter-32 (next): wait for operator to add slot3 OAuth -> EVE.exe + sub-agents unblock; then re-test EVE.exe Main Chat",
+    "iter-33 (next): review 11 _unacked-high inbox rows + bulk-ack since all are stale 2026-05-26 broadcasts",
+    "iter-34: action the 4 inbox rows left in place (eve-exe-wave2 F1 diagnose, sinister-term rmux propagation, eve-accounts-pane audit follow-up, chatbot P0 route)",
+    "iter-35: brain entry for sinister_email_gen library + atomic_write_json doctrine (from iter-30 queue, deferred)",
+    "iter-36: schtask SinisterSerperRotator install once serper lane's rotator hits real-HTTP parity"
+  ],
+  "swarm": "on",
+  "loop": "relentless",
+  "operator_actions_open": [
+    "Add slot3 OAuth: powershell -File automations/claude-accounts.ps1 -Action Add -Name slot3 (browser-OAuth required, sanctioned per automate-everything-no-operator-admin doctrine)"
+  ],
+  "revision": 1
+}
