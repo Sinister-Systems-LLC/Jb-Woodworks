@@ -1538,7 +1538,7 @@ function Prompt-AgentModes {
     # efficent with the quickest way to open my termionials". Picker passes
     # SINISTER_QUICK_LAUNCH=1 when operator hits Q at the picker; we then skip ALL
     # prompts and return defaults. Also: env override SINISTER_QUICK=1 for headless.
-    if ($env:SINISTER_QUICK_LAUNCH -eq '1' -or $env:SINISTER_QUICK -eq '1') {
+    if ($env:SINISTER_QUICK_LAUNCH -eq '1' -or $env:SINISTER_QUICK -eq '1' -or $env:SINISTER_AUTO_ACCEPT -eq '1') {
         $defPri = 3
         if ($ProjectRec -and $ProjectRec.PSObject.Properties.Name -contains 'tier' -and $ProjectRec.tier) {
             try { $defPri = [int]$ProjectRec.tier } catch { $defPri = 3 }
@@ -1975,8 +1975,33 @@ function Launch-Session($projRec, $agentName, $accent, $phrase, $modes = $null) 
                 # only — the REAL gate is Anthropic's server-side 429. Local bookkeeping must
                 # NEVER block a spawn. Pick the first enabled account regardless of cap state
                 # and proceed. If Anthropic rate-limits us, the spawned process surfaces it.
+                #
+                # safe-claude-account-add :: 2026-05-27 :: prefer a NON-default slot in the
+                # fallback when the default ('operator') is at >=95% usage_pct_5h per
+                # oauth-slot-health.json. Operator directive 2026-05-27: "i need you to be
+                # able to use many claude accounts in the round robin. like this are going
+                # way too slow". Prior behavior silently picked the first enabled slot which
+                # is always 'operator' -- so even when operator was saturated and slot2 was
+                # idle, the fallback re-bound to operator and stalled.
                 $cfgFull = Get-AccountsConfig
-                $fallback = @($cfgFull.accounts | Where-Object { $_.enabled -ne $false }) | Select-Object -First 1
+                $enabledList = @($cfgFull.accounts | Where-Object { $_.enabled -ne $false -and ($_.linked -ne $false) })
+                $fallback = $null
+                try {
+                    $healthFile2 = Join-Path $SanctumRoot '_shared-memory\oauth-slot-health.json'
+                    if ((Test-Path $healthFile2) -and $enabledList.Count -gt 1) {
+                        $hh = (Get-Content -LiteralPath $healthFile2 -Raw -Encoding UTF8 | ConvertFrom-Json).slots
+                        $hot = @{}
+                        foreach ($s in $hh) {
+                            if ($s.PSObject.Properties.Name -contains 'usage_pct_5h' -and [int]$s.usage_pct_5h -ge 95) { $hot[$s.name] = $true }
+                            elseif ($s.PSObject.Properties.Name -contains 'rate_limited' -and $s.rate_limited) { $hot[$s.name] = $true }
+                        }
+                        $cool = @($enabledList | Where-Object { -not $hot.ContainsKey($_.name) })
+                        if ($cool.Count -gt 0) { $fallback = $cool[0] }
+                    }
+                } catch {}
+                if (-not $fallback) {
+                    $fallback = $enabledList | Select-Object -First 1
+                }
                 if (-not $fallback) {
                     # Last-resort: pick first account even if disabled (operator wants spawns).
                     $fallback = @($cfgFull.accounts) | Select-Object -First 1
@@ -2059,14 +2084,30 @@ function Launch-Session($projRec, $agentName, $accent, $phrase, $modes = $null) 
         Write-Host "  [warn] account rotation init failed ($($_.Exception.Message)); continuing without rotation" -ForegroundColor $C.Dim
     }
 
-    # Color map for terminal (always purple unless overridden)
+    # RKOJ-ELENO :: 2026-05-28 :: ANCESTRAL-REMOTION palette swap. Operator
+    # hard-canonical 2026-05-27/28: every Sinister Term window must ship with
+    # the Ancestral Remotion theme + proper header. Source of truth for the
+    # palette below:
+    #   D:\Sinister Sanctum\projects\sinister-eve-workstation\
+    #     _ancestral-remotion-theme\ancestral-remotion.json   (canonical)
+    #     _ancestral-remotion-theme\ancestral-remotion.css    (--ar-* tokens)
+    #     _ancestral-remotion-theme\ancestral-remotion.tcss   (Textual variant)
+    # Doctrine: ancestral-remotion-artistic-doctrine-2026-05-25
+    #           sinister-ui-canonical-dashboard-skeleton-inheritance-2026-05-24
+    # Keys map to:
+    #   purple  -> violet-core idle (default for every project)
+    #   magenta -> violet-core-burning (burn-secondary as fg accent)
+    #   cyan    -> tarot-cyan (sleight token)
+    #   green   -> soft mint accent (not in sleight; harmonized w/ violet bg)
+    #   yellow  -> crown-gold (sleight token, used for hot/warning lanes)
+    #   white   -> fg highlight on darkest violet
     $colorMap = @{
-        purple  = @{ fg = '#E8D6FF'; bg = '#15131A'; cur = '#A06EFF' }
-        magenta = @{ fg = '#FFD6F0'; bg = '#1A1318'; cur = '#FF6EE8' }
-        cyan    = @{ fg = '#D6F4FF'; bg = '#0E1A1F'; cur = '#6EE8FF' }
-        green   = @{ fg = '#D6FFE0'; bg = '#0E1A14'; cur = '#6EFFA0' }
-        yellow  = @{ fg = '#FFF4D6'; bg = '#1A1810'; cur = '#FFD66E' }
-        white   = @{ fg = '#EEEEEE'; bg = '#0A0A0F'; cur = '#FFFFFF' }
+        purple  = @{ fg = '#F5F3FF'; bg = '#0A0014'; cur = '#D787FF' }  # violet-core idle (canonical)
+        magenta = @{ fg = '#F0ABFC'; bg = '#15052B'; cur = '#FF00FF' }  # burning / neon-magenta
+        cyan    = @{ fg = '#5FFFFF'; bg = '#0A0014'; cur = '#5FFFFF' }  # tarot-cyan
+        green   = @{ fg = '#C0FFD8'; bg = '#0A0014'; cur = '#9FFFC0' }  # mint accent
+        yellow  = @{ fg = '#FFD700'; bg = '#0A0014'; cur = '#FFD700' }  # crown-gold
+        white   = @{ fg = '#F5F3FF'; bg = '#0A0014'; cur = '#F5F3FF' }  # fg highlight
     }
     # RKOJ-ELENO :: 2026-05-24 :: case-insensitive accent lookup. Operator 20:30Z:
     # "rename and color settings on the agents we open still dont work fix that".
@@ -2110,11 +2151,24 @@ function Launch-Session($projRec, $agentName, $accent, $phrase, $modes = $null) 
     }
     $diamond = [char]0x25C6  # ◆ -- Unicode bullet works inside bash OSC printf
     $accountForTitle = if ($selectedAccountName) { $selectedAccountName } elseif ($env:SINISTER_ACCOUNT) { $env:SINISTER_ACCOUNT } else { 'operator' }
-    # Bash-side title (printf inside launch.sh) -- full Sinister format with ◆ separators.
-    # RKOJ-ELENO :: 2026-05-25T07:19Z :: operator hard-canonical "make the names work".
-    # Title now LEADS with "Sinister $agentName" so the lane is obvious in the alt-tab
-    # carousel + taskbar (Image 8: "Sinister Sanctum" was the operator's expected format).
-    $windowTitle = "Sinister $agentName $diamond swarm=$swarmTag $diamond loop=$loopTag $diamond acct=$accountForTitle $diamond T$_titleTier"
+    # RKOJ-ELENO :: 2026-05-28 :: per-project ITER counter for the taskbar title.
+    # Operator hard-canonical 2026-05-27/28: "Sinister :: <project-label> :: slot=<slot> :: iter=<n>".
+    # Count = N+1 where N = prior spawn rows for this projKey in spawned-windows.jsonl.
+    # Best-effort: if the file is missing / unparseable, fall back to iter=1.
+    $_spawnLogPath = Join-Path $SanctumRoot '_shared-memory\spawned-windows.jsonl'
+    $_iterNum = 1
+    if (Test-Path $_spawnLogPath) {
+        try {
+            $_iterNum = (Select-String -Path $_spawnLogPath -SimpleMatch -Pattern ('"project_key":"' + $projRec.key + '"') -ErrorAction SilentlyContinue | Measure-Object).Count + 1
+        } catch { $_iterNum = 1 }
+    }
+    $projectLabelForTitle = if ($projRec.display) { $projRec.display } else { $projRec.key }
+    # RKOJ-ELENO :: 2026-05-28 :: new operator-canonical title format. Format:
+    #   "Sinister :: <project-label>  ::  slot=<slot>  ::  iter=<n>"
+    # Operator wants to scan taskbar by project + which slot + how many iters deep.
+    # Old swarm/loop/T-tier info preserved in $windowTitleLegacy for diagnostic header.
+    $windowTitle       = "Sinister :: $projectLabelForTitle  ::  slot=$accountForTitle  ::  iter=$_iterNum"
+    $windowTitleLegacy = "Sinister $agentName $diamond swarm=$swarmTag $diamond loop=$loopTag $diamond acct=$accountForTitle $diamond T$_titleTier"
     # mintty `-t` arg ASCII-safe variant (Win32 CreateProcess arg encoding can mangle
     # multi-byte unicode; bash OSC inside the spawned shell handles ◆ correctly). The
     # two converge once bash printf fires on line 1907 -- `-t` just bridges the cold
@@ -2130,7 +2184,11 @@ function Launch-Session($projRec, $agentName, $accent, $phrase, $modes = $null) 
     # RKOJ-ELENO :: 2026-05-25T07:19Z :: lane prefix also added to ASCII fallback so the
     # cold-open window title (visible for ~50ms before OSC printf fires) ALSO reads as
     # "Sinister-<lane>-...". Operator hard-canonical "make the names work and set here".
-    $windowTitleAscii = "Sinister-${agentName}-swarm=${swarmTag}-loop=${loopTag}-acct=${accountForTitle}-T${_titleTier}"
+    # RKOJ-ELENO :: 2026-05-28 :: ASCII-safe variant of the new operator-canonical
+    # title format. Dashes instead of `::` separators so PS 5.1 Start-Process
+    # -ArgumentList quotes it as a single argv element to mintty `-t`.
+    $_projectSlugForTitle = ($projectLabelForTitle -replace '[^A-Za-z0-9._-]', '-') -replace '-+', '-'
+    $windowTitleAscii = "Sinister-${_projectSlugForTitle}-slot=${accountForTitle}-iter=${_iterNum}"
 
     # RKOJ-ELENO :: 2026-05-23 :: Phase 1/2 — account name resolved earlier (above
     # the colormap block). $selectedAccountName + $selectedApiKey already set there.
@@ -2191,6 +2249,10 @@ export SINISTER_LOOP_CONDITION='$loopCondEnv'
 # RKOJ-ELENO :: 2026-05-24 :: operator 19:55Z tier system. T1=critical
 # (reserves operator slot), T2=high, T3=normal (default), T4=background.
 export SINISTER_TIER='$projTier'
+# RKOJ-ELENO :: 2026-05-28 :: per-project iteration counter, surfaced for downstream
+# tooling (heartbeat, resume-point, banner). Read at spawn-time from spawned-windows.jsonl.
+export SINISTER_ITER='$_iterNum'
+export SINISTER_PROJECT_LABEL='$($projectLabelForTitle -replace "'", "'\''")'
 # RKOJ-ELENO :: 2026-05-23 :: Phase 1/2 — multi-account rotation. PS1 resolved the
 # next available account; the .sh uses this name to mark rate-limits + release.
 _account_name='$bashAccountName'
@@ -2206,6 +2268,20 @@ if [ -n '$bashApiKey' ] && [ "`$SINISTER_AUTH_MODE" != "oauth" ]; then
 fi
 clear 2>/dev/null || printf '\033c'
 printf '\n'
+# RKOJ-ELENO :: 2026-05-28 :: ANCESTRAL-REMOTION header. Operator hard-canonical
+# 2026-05-27/28: "it needs the popups we have worked on. headers, naming all that
+# shit, ancestral remotion look as well". The themed ASCII header (project name,
+# branch, slot, iter, mode, vault status, lane peers) must be the FIRST thing
+# rendered in every Sinister Term window. Synchronous (NOT backgrounded) so the
+# operator always sees the header BEFORE claude starts spitting tokens. Bypass
+# via SINISTER_SKIP_ANCESTRAL=1 (also honored if -SkipAncestralBanner is wired
+# in a future call site). Path uses SanctumRoot Windows form so powershell.exe
+# resolves it on any operator's clone (matches the pattern used for
+# claude-accounts-status.ps1 below).
+_ancestral_banner_ps1='$SanctumRoot\automations\sinister-terminal-ancestral-banner.ps1'
+if [ "`${SINISTER_SKIP_ANCESTRAL:-0}" != "1" ]; then
+    powershell.exe -NoProfile -ExecutionPolicy Bypass -File "`$_ancestral_banner_ps1" -Project "$projKey" -ProjectLabel "$projDisplay" -Slot "`$_account_name" -Iter "`$SINISTER_ITER" -Branch "agent/`$_account_name/$projKey" -Mode "`$SINISTER_MODE" -NoBar 2>/dev/null || printf '  > [warn] ancestral banner unavailable; continuing\n'
+fi
 # Animated jcode-style ASCII C banner (operator 2026-05-23 image #3).
 # RKOJ-ELENO :: 2026-05-23 :: SPEED FIX — was blocking ~0.56s before claude
 # (worst-case 8s if `sleep` fallback triggered). Now backgrounded so claude
@@ -2639,24 +2715,34 @@ fi
                 '-o', 'Term=xterm-256color',
                 '-o', 'Transparency=low',
                 '-o', 'OpaqueWhenFocused=yes',
-                # Sinister-branded ANSI palette (16 colors). Purple-forward; bright variants
-                # for bold text. Names mirror mintty's documented BoldColor + standard ANSI.
-                '-o', 'Black=16,8,32',
-                '-o', 'Red=255,90,110',
-                '-o', 'Green=152,255,180',
-                '-o', 'Yellow=255,210,140',
-                '-o', 'Blue=140,180,255',
-                '-o', 'Magenta=192,132,252',
-                '-o', 'Cyan=140,230,255',
-                '-o', 'White=232,214,255',
-                '-o', 'BoldBlack=58,40,76',
-                '-o', 'BoldRed=255,140,160',
+                # RKOJ-ELENO :: 2026-05-28 :: ANCESTRAL-REMOTION 16-color ANSI palette.
+                # Direct mapping from ancestral-remotion.json sleight tokens + violet-core
+                # roles. Names mirror mintty's documented BoldColor + standard ANSI.
+                #   Black   = bg #0A0014 (deepest violet-black)
+                #   Red     = burn-secondary #EC4899 (pink-magenta on errors)
+                #   Green   = mint accent #9FFFC0 (success in violet world)
+                #   Yellow  = crown-gold #FFD700 (sleight token, warnings/highlight)
+                #   Blue    = primary #6366F1 (indigo violet-core)
+                #   Magenta = neon-magenta #FF00FF (sleight token, glow)
+                #   Cyan    = tarot-cyan #5FFFFF (sleight token, card-swirl)
+                #   White   = fg highlight #F5F3FF
+                # Bold variants brightened/saturated toward jester-purple + crown-gold.
+                '-o', 'Black=10,0,20',
+                '-o', 'Red=236,72,153',
+                '-o', 'Green=159,255,192',
+                '-o', 'Yellow=255,215,0',
+                '-o', 'Blue=99,102,241',
+                '-o', 'Magenta=255,0,255',
+                '-o', 'Cyan=95,255,255',
+                '-o', 'White=245,243,255',
+                '-o', 'BoldBlack=48,15,90',
+                '-o', 'BoldRed=240,171,252',
                 '-o', 'BoldGreen=200,255,220',
-                '-o', 'BoldYellow=255,230,180',
-                '-o', 'BoldBlue=180,210,255',
-                '-o', 'BoldMagenta=216,180,254',
-                '-o', 'BoldCyan=190,245,255',
-                '-o', 'BoldWhite=248,240,255'
+                '-o', 'BoldYellow=251,191,36',
+                '-o', 'BoldBlue=135,95,255',
+                '-o', 'BoldMagenta=255,95,175',
+                '-o', 'BoldCyan=215,135,255',
+                '-o', 'BoldWhite=248,246,255'
             ) + $minttyExtraArgs + @('--', '/bin/bash', $launchShBash)
             $spawnAttemptLog += "mintty.exe : $minttyExe"
             $spawnedProcess = Start-Process -FilePath $minttyExe -ArgumentList $minttyArgs -PassThru -ErrorAction Stop

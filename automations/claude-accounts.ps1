@@ -46,6 +46,56 @@ function Write-AccountsLog {
     } catch {}
 }
 
+function Write-JsonAtomic {
+    # RKOJ-ELENO :: 2026-05-27 :: canonical PS1 atomic-write helper.
+    # Pattern: write to per-invocation tmp file (guid suffix prevents parallel
+    # writers from racing on the same .tmp path), then Move-Item -Force which
+    # is a single NTFS rename syscall on the same volume (atomic).
+    # Retries 3x with 200ms backoff on IOException (D: drive unplug + brief
+    # network-path-reconnect handling per d-drive-unplug-resilience doctrine).
+    #
+    # Use for ANY JSON write inside this module. The Save-AccountsConfig +
+    # round-robin-strict paths already use this pattern inline; this helper is
+    # for the OTHER write sites (credentials file persist, account_email cache,
+    # ResolveEmails) that previously called Set-Content directly.
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true)][string]$Path,
+        [Parameter(Mandatory=$true)][string]$Json,
+        [int]$Retries = 3,
+        [int]$BackoffMs = 200
+    )
+    $destDir = Split-Path -Parent $Path
+    if ($destDir -and -not (Test-Path $destDir)) {
+        New-Item -ItemType Directory -Path $destDir -Force | Out-Null
+    }
+    $tmp = "$Path.tmp.$([guid]::NewGuid().Guid.Substring(0,8))"
+    try {
+        [System.IO.File]::WriteAllText($tmp, $Json, [System.Text.UTF8Encoding]::new($false))
+    } catch {
+        if (Test-Path -LiteralPath $tmp) { Remove-Item -LiteralPath $tmp -Force -ErrorAction SilentlyContinue }
+        throw
+    }
+    for ($attempt = 0; $attempt -le $Retries; $attempt++) {
+        try {
+            Move-Item -LiteralPath $tmp -Destination $Path -Force -ErrorAction Stop
+            return
+        } catch [System.IO.IOException] {
+            if ($attempt -ge $Retries) {
+                if (Test-Path -LiteralPath $tmp) { Remove-Item -LiteralPath $tmp -Force -ErrorAction SilentlyContinue }
+                throw
+            }
+            Start-Sleep -Milliseconds ($BackoffMs * (1 + $attempt))
+        } catch [System.UnauthorizedAccessException] {
+            if ($attempt -ge $Retries) {
+                if (Test-Path -LiteralPath $tmp) { Remove-Item -LiteralPath $tmp -Force -ErrorAction SilentlyContinue }
+                throw
+            }
+            Start-Sleep -Milliseconds ($BackoffMs * (1 + $attempt))
+        }
+    }
+}
+
 function _Get-DefaultAccountsConfig {
     [CmdletBinding()]
     param()
@@ -134,10 +184,14 @@ function Save-AccountsConfig {
         return $false
     }
     try {
-        $tmpFile = "$($script:AccountsFile).tmp"
+        # RKOJ-ELENO :: 2026-05-27 :: route through Write-JsonAtomic helper.
+        # safe-claude-account-add agent :: 2026-05-27 :: per-invocation guid
+        # suffix on the tmp filename so two concurrent writers won't collide on
+        # the tmp path itself (the prior fixed ".tmp" suffix could race even
+        # though the Move-Item itself is NTFS-atomic). Helper also retries 3x
+        # with 200ms backoff on IOException for D:-drive resilience.
         $json = $Config | ConvertTo-Json -Depth 12
-        [System.IO.File]::WriteAllText($tmpFile, $json, [System.Text.UTF8Encoding]::new($false))
-        Move-Item -Path $tmpFile -Destination $script:AccountsFile -Force
+        Write-JsonAtomic -Path $script:AccountsFile -Json $json
         return $true
     } catch {
         Write-AccountsLog "Save-AccountsConfig: write failed ($_)" 'ERROR'
@@ -223,6 +277,29 @@ function _Is-AccountAvailable {
             if ($until -gt $now) { return $false }
         } catch {}
     }
+    # safe-claude-account-add :: 2026-05-27 :: consult oauth-slot-health.json for
+    # live usage_pct_5h. Operator directive 2026-05-27: "i need you to be able to
+    # use many claude accounts in the round robin. like this are going way too
+    # slow". Before this gate, a slot at 100% usage_pct_5h was still 'available'
+    # because max_sessions_concurrent=999 -- the looper kept binding to the
+    # saturated slot and stalling on rate-limit errors mid-turn. Match the v10b
+    # threshold used by Invoke-OAuthPickBest / Invoke-OAuthRotateToNext (>=95).
+    # Read inline (no helper invocation) to keep this hot-path cheap.
+    try {
+        $healthFile = Join-Path $script:SanctumRoot '_shared-memory\oauth-slot-health.json'
+        if (Test-Path $healthFile) {
+            $hraw = Get-Content -LiteralPath $healthFile -Raw -ErrorAction Stop
+            $hj = $hraw | ConvertFrom-Json -ErrorAction Stop
+            if ($hj.slots) {
+                $row = $hj.slots | Where-Object { $_.name -eq $Account.name } | Select-Object -First 1
+                if ($row) {
+                    if ($row.PSObject.Properties.Name -contains 'rate_limited' -and $row.rate_limited) { return $false }
+                    if ($row.PSObject.Properties.Name -contains 'weekly_capped' -and $row.weekly_capped) { return $false }
+                    if ($row.PSObject.Properties.Name -contains 'usage_pct_5h' -and [int]$row.usage_pct_5h -ge 95) { return $false }
+                }
+            }
+        }
+    } catch {}
     return $true
 }
 
@@ -327,11 +404,11 @@ function Get-NextAvailableAccount {
                         $cfgLive.last_rotation_index = ($idx + 1) % $n
                         # Atomic write inside the SAME lock (do not call Save-AccountsConfig
                         # which would attempt to re-acquire). RKOJ-ELENO 2026-05-24.
+                        # RKOJ-ELENO :: 2026-05-27 :: route through Write-JsonAtomic helper
+                        # (guid-suffixed tmp + retry on IOException; tmp scrub is handled inside).
                         try {
-                            $tmpFile = "$($script:AccountsFile).tmp"
                             $json = $cfgLive | ConvertTo-Json -Depth 12
-                            [System.IO.File]::WriteAllText($tmpFile, $json, [System.Text.UTF8Encoding]::new($false))
-                            Move-Item -Path $tmpFile -Destination $script:AccountsFile -Force
+                            Write-JsonAtomic -Path $script:AccountsFile -Json $json
                         } catch {
                             Write-AccountsLog "round-robin-strict: atomic write failed ($_)" 'ERROR'
                         }
@@ -363,8 +440,16 @@ function Mark-AccountSpawned {
     $cfg = Get-AccountsConfig
     $acct = _Find-Account -Config $cfg -Name $Name
     if (-not $acct) { Write-AccountsLog "Mark-AccountSpawned: account '$Name' not found" 'ERROR'; return $false }
-    $acct.current_sessions = [int]$acct.current_sessions + 1
-    $acct.successful_spawns_today = [int]$acct.successful_spawns_today + 1
+    if ($acct.PSObject.Properties.Name -contains 'current_sessions') {
+        $acct.current_sessions = [int]$acct.current_sessions + 1
+    } else {
+        $acct | Add-Member -MemberType NoteProperty -Name 'current_sessions' -Value 1 -Force
+    }
+    if ($acct.PSObject.Properties.Name -contains 'successful_spawns_today') {
+        $acct.successful_spawns_today = [int]$acct.successful_spawns_today + 1
+    } else {
+        $acct | Add-Member -MemberType NoteProperty -Name 'successful_spawns_today' -Value 1 -Force
+    }
     $nowIso = (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ')
     if ($acct.PSObject.Properties.Name -contains 'last_spawn_at_utc') {
         $acct.last_spawn_at_utc = $nowIso
@@ -718,7 +803,9 @@ function Invoke-AccountSetKey {
         '_comment' = "Sinister Sanctum :: claude-accounts slot '$Name'. RKOJ-ELENO :: $((Get-Date).ToString('yyyy-MM-dd')). Operator-private; not committed."
         api_key    = $ApiKey
     } | ConvertTo-Json -Depth 3
-    Set-Content -Path $credsPath -Value $payload -Encoding UTF8
+    # RKOJ-ELENO :: 2026-05-27 :: route through atomic helper (was Set-Content,
+    # which leaves partial files on concurrent writers).
+    Write-JsonAtomic -Path $credsPath -Json $payload
     # RKOJ-ELENO :: 2026-05-24 :: operator 21:25Z "name the claude accounmt based on their email."
     # Auto-resolve email from the freshly-written key so the label is set BEFORE we hand off to
     # the operator. -Label still wins if explicitly passed; otherwise the email becomes the label.
@@ -735,7 +822,8 @@ function Invoke-AccountSetKey {
             $raw2 = Get-Content -Path $credsPath -Raw -ErrorAction Stop
             $obj2 = $raw2 | ConvertFrom-Json -ErrorAction Stop
             $obj2 | Add-Member -MemberType NoteProperty -Name 'account_email' -Value $resolvedEmail -Force
-            Set-Content -Path $credsPath -Value ($obj2 | ConvertTo-Json -Depth 5) -Encoding UTF8
+            # RKOJ-ELENO :: 2026-05-27 :: atomic write (was Set-Content).
+            Write-JsonAtomic -Path $credsPath -Json ($obj2 | ConvertTo-Json -Depth 5)
         } catch {}
     }
     if ($acct.PSObject.Properties.Name -contains 'enabled') { $acct.enabled = $true }
@@ -981,7 +1069,8 @@ function Invoke-AccountResolveEmails {
                         if ($obj.PSObject.Properties.Name -contains 'account_email') { $obj.account_email = $res.email }
                         else { $obj | Add-Member -MemberType NoteProperty -Name 'account_email' -Value $res.email -Force }
                         $newJson = $obj | ConvertTo-Json -Depth 5
-                        Set-Content -Path $res.key_path -Value $newJson -Encoding UTF8
+                        # RKOJ-ELENO :: 2026-05-27 :: atomic write (was Set-Content).
+                        Write-JsonAtomic -Path $res.key_path -Json $newJson
                     }
                 }
             } catch {}

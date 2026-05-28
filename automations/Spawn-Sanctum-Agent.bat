@@ -1,6 +1,14 @@
 @echo off
-REM Spawn Sanctum Agent :: 21-agent fleet launcher (v12, +lane 21 ascii + root-bat unify 2026-05-27)
+REM Spawn Sanctum Agent :: 22-agent fleet launcher (v13, +lane 22 sinister-serper 2026-05-27)
 REM Author: RKOJ-ELENO :: 2026-05-27
+REM
+REM v13 changes (sanctum lane resume 2026-05-27 -- chatbot delegate inbox
+REM   handoff at _shared-memory/inbox/sanctum/20260527T0611Z-...):
+REM   1. Added LANE_22=sinister-serper + LANE_NAME_22="Sinister Serper"
+REM      (parity with projects.json v17 + Spawn Sanctum Agent.bat -All flag).
+REM   2. Picker echo + ALL-flag triple + select_done triple all bumped 21 -> 22.
+REM   3. Banner + TITLE bumped to v13.
+REM
 REM
 REM v12 changes (sanctum lane operator-verbatim 2026-05-27T03:07Z trigger:
 REM   "The operator reports it is broken... diagnose by [-Repair] / lane log
@@ -23,7 +31,7 @@ REM        Converter" (parity with root bat v10 + projects.json entry that alrea
 REM        exists). Picker echo + ALL-flag triple + select_done triple all bumped.
 REM     2. Root "Spawn Sanctum Agent.bat" is now a SHIM that forwards to
 REM        automations\Spawn-Sanctum-Agent.bat -- no duplicate spec, no drift.
-REM     3. Repair-mode dry-run smoke now lists all 21 lanes (was 20).
+REM     3. Repair-mode dry-run smoke now lists all 22 lanes (was 20).
 REM     4. Bumped banner to v12 + TITLE to v12.
 REM
 REM v11 changes (operator hard-canonical 2026-05-26: "i ran the bat file and it
@@ -160,7 +168,7 @@ set "PROJECTS_JSON=%SANCTUM_ROOT%\automations\session-templates\projects.json"
 set "CREDS_LIVE=%USERPROFILE%\.claude\.credentials.json"
 
 REM ====================================================================
-REM SECTION 2 :: 21-lane fleet definition (canonical order)
+REM SECTION 2 :: 22-lane fleet definition (canonical order)
 REM ====================================================================
 REM Index | Key                       | Display
 REM   1   | sinister-memory           | Sinister Memory
@@ -184,6 +192,7 @@ REM  18   | sinister-hieroglyphics    | Sinister Hieroglyphics (v8 addition)
 REM  19   | showmasters               | Showmasters            (v9 addition)
 REM  20   | jb-woodworks              | JB Woodworks           (v9 addition)
 REM  21   | sinister-ascii-converter  | Sinister ASCII Converter (v12 addition)
+REM  22   | sinister-serper           | Sinister Serper        (v13 addition)
 set "LANE_1=sinister-memory"
 set "LANE_2=sinister-os"
 set "LANE_3=eve-exe"
@@ -205,6 +214,7 @@ set "LANE_18=sinister-hieroglyphics"
 set "LANE_19=showmasters"
 set "LANE_20=jb-woodworks"
 set "LANE_21=sinister-ascii-converter"
+set "LANE_22=sinister-serper"
 set "LANE_NAME_1=Sinister Memory"
 set "LANE_NAME_2=Sinister OS"
 set "LANE_NAME_3=Eve EXE"
@@ -226,6 +236,7 @@ set "LANE_NAME_18=Sinister Hieroglyphics"
 set "LANE_NAME_19=Showmasters"
 set "LANE_NAME_20=JB Woodworks"
 set "LANE_NAME_21=Sinister ASCII Converter"
+set "LANE_NAME_22=Sinister Serper"
 
 REM ====================================================================
 REM SECTION 3 :: Argument parsing
@@ -262,13 +273,13 @@ goto :argloop
 REM Help mode: print flags + exit 0 (no preflight, no spawn).
 if "%HELP_MODE%"=="1" (
     echo.
-    echo  Spawn-Sanctum-Agent.bat v12 :: 21-agent fleet launcher
+    echo  Spawn-Sanctum-Agent.bat v12 :: 22-agent fleet launcher
     echo  Author: RKOJ-ELENO :: 2026-05-27
     echo.
     echo  USAGE: Spawn-Sanctum-Agent.bat [flags]
     echo.
     echo  FLAGS:
-    echo    -All           launch all 21 lanes
+    echo    -All           launch all 22 lanes
     echo    -SoloSanctum   launch only sanctum lane
     echo    -Lanes a,b,c   launch specific lane keys ^(comma-separated^)
     echo    -Repair        run preflight only, no spawn
@@ -279,14 +290,14 @@ if "%HELP_MODE%"=="1" (
     echo    -Help / -?     this message
     echo.
     echo  INTERACTIVE PICKER OPTIONS:
-    echo    A / Enter      launch all 21 lanes
+    echo    A / Enter      launch all 22 lanes
     echo    S              sanctum only
     echo    M              manage accounts ^(add/remove/list, no spawn^)
     echo    R              repair mode ^(preflight only^)
     echo    X              cancel
     echo    1,3,4...       comma-separated lane indices
     echo.
-    echo  LANES ^(1-21^):
+    echo  LANES ^(1-22^):
     echo    sinister-memory  sinister-os  eve-exe  sanctum  sinister-term
     echo    eve-compliance   sinister-overseer  letstext  sinister-jokester
     echo    sinister-quantum sinister-snap-api-quantum  kernel-apk
@@ -396,6 +407,7 @@ for %%A in (%EXTRA_ARGS%) do (
     if /I "%%~A"=="/NoRotate" set "ROTATE_DISABLED=1"
 )
 set "OAUTH_PS1=%SANCTUM_ROOT%\automations\claude-oauth-accounts.ps1"
+set "OAUTH_EXT_PS1=%SANCTUM_ROOT%\automations\claude-oauth-extensions.ps1"
 if not exist "%OAUTH_PS1%" (
     echo  [isolation]     WARN :: claude-oauth-accounts.ps1 missing -- per-lane isolation disabled
     set "ISOLATION_DISABLED=1"
@@ -410,7 +422,13 @@ if "%ISOLATION_DISABLED%"=="1" (
     REM Print current slot status (with 5h-usage bars + dup-account detection)
     REM so operator sees eligible accounts BEFORE picking. v11 swapped List
     REM for ListBars per operator hard-canonical 2026-05-26.
-    powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%OAUTH_PS1%" -Action ListBars 2>nul
+    REM ListBars lives in claude-oauth-extensions.ps1 (sibling file, survives
+    REM sister-agent reverts of main file). Fallback to main -Action List if missing.
+    if exist "%OAUTH_EXT_PS1%" (
+        powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%OAUTH_EXT_PS1%" -Action ListBars 2>nul
+    ) else (
+        powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%OAUTH_PS1%" -Action List 2>nul
+    )
 )
 
 REM ====================================================================
@@ -453,8 +471,8 @@ if defined LANES_OVERRIDE (
 )
 
 if "%ALL_FLAG%"=="1" (
-    set "FLEET_KEYS=%LANE_1% %LANE_2% %LANE_3% %LANE_4% %LANE_5% %LANE_6% %LANE_7% %LANE_8% %LANE_9% %LANE_10% %LANE_11% %LANE_12% %LANE_13% %LANE_14% %LANE_15% %LANE_16% %LANE_17% %LANE_18% %LANE_19% %LANE_20% %LANE_21%"
-    echo  [select]  -All :: launching all 21 lanes
+    set "FLEET_KEYS=%LANE_1% %LANE_2% %LANE_3% %LANE_4% %LANE_5% %LANE_6% %LANE_7% %LANE_8% %LANE_9% %LANE_10% %LANE_11% %LANE_12% %LANE_13% %LANE_14% %LANE_15% %LANE_16% %LANE_17% %LANE_18% %LANE_19% %LANE_20% %LANE_21% %LANE_22%"
+    echo  [select]  -All :: launching all 22 lanes
     goto :select_done
 )
 
@@ -490,8 +508,9 @@ echo    18^) %LANE_NAME_18% ^(%LANE_18%^)
 echo    19^) %LANE_NAME_19%            ^(%LANE_19%^)
 echo    20^) %LANE_NAME_20%           ^(%LANE_20%^)
 echo    21^) %LANE_NAME_21% ^(%LANE_21%^)
+echo    22^) %LANE_NAME_22%        ^(%LANE_22%^)
 echo.
-echo    A^) ALL 21 lanes        ^(default -- press Enter^)
+echo    A^) ALL 22 lanes        ^(default -- press Enter^)
 echo    S^) Sanctum only        ^(solo^)
 echo    M^) Manage accounts     ^(add/remove/list -- no spawn^)
 echo    R^) Repair mode         ^(preflight only, no spawn^)
@@ -502,8 +521,8 @@ echo.
 set /p "PICK=  Selection: "
 
 if not defined PICK set "PICK=A"
-if /I "%PICK%"=="A"   (set "FLEET_KEYS=%LANE_1% %LANE_2% %LANE_3% %LANE_4% %LANE_5% %LANE_6% %LANE_7% %LANE_8% %LANE_9% %LANE_10% %LANE_11% %LANE_12% %LANE_13% %LANE_14% %LANE_15% %LANE_16% %LANE_17% %LANE_18% %LANE_19% %LANE_20% %LANE_21%" & goto :select_done)
-if /I "%PICK%"=="ALL" (set "FLEET_KEYS=%LANE_1% %LANE_2% %LANE_3% %LANE_4% %LANE_5% %LANE_6% %LANE_7% %LANE_8% %LANE_9% %LANE_10% %LANE_11% %LANE_12% %LANE_13% %LANE_14% %LANE_15% %LANE_16% %LANE_17% %LANE_18% %LANE_19% %LANE_20% %LANE_21%" & goto :select_done)
+if /I "%PICK%"=="A"   (set "FLEET_KEYS=%LANE_1% %LANE_2% %LANE_3% %LANE_4% %LANE_5% %LANE_6% %LANE_7% %LANE_8% %LANE_9% %LANE_10% %LANE_11% %LANE_12% %LANE_13% %LANE_14% %LANE_15% %LANE_16% %LANE_17% %LANE_18% %LANE_19% %LANE_20% %LANE_21% %LANE_22%" & goto :select_done)
+if /I "%PICK%"=="ALL" (set "FLEET_KEYS=%LANE_1% %LANE_2% %LANE_3% %LANE_4% %LANE_5% %LANE_6% %LANE_7% %LANE_8% %LANE_9% %LANE_10% %LANE_11% %LANE_12% %LANE_13% %LANE_14% %LANE_15% %LANE_16% %LANE_17% %LANE_18% %LANE_19% %LANE_20% %LANE_21% %LANE_22%" & goto :select_done)
 if /I "%PICK%"=="S"   (set "FLEET_KEYS=%LANE_4%" & goto :select_done)
 if /I "%PICK%"=="M"   (call :manage_accounts & goto :picker)
 if /I "%PICK%"=="X"   (
@@ -887,7 +906,11 @@ if /I "%MPICK%"=="1" (
 )
 if /I "%MPICK%"=="2" (
     echo.
-    powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%OAUTH_PS1%" -Action ListBars
+    if exist "%OAUTH_EXT_PS1%" (
+        powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%OAUTH_EXT_PS1%" -Action ListBars
+    ) else (
+        powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%OAUTH_PS1%" -Action List
+    )
     echo.
     pause
     goto :manage_loop

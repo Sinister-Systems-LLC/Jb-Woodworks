@@ -47,6 +47,9 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent / "_lib"))
+from _json_safe import atomic_write_json
+
 VERSION = "1.0.0"
 SANCTUM_ROOT = Path(r"D:\Sinister Sanctum")
 ACCOUNTS_JSON = SANCTUM_ROOT / "_shared-memory" / "claude-accounts.json"
@@ -178,10 +181,8 @@ def _upsert_account_row(slot: str, label: str, creds_path: Path,
     if dry_run:
         print(f"[finalize] DRY: would {action} slot '{slot}' in {ACCOUNTS_JSON.name}")
         return True
-    # Atomic write (write to .tmp + rename).
-    tmp = ACCOUNTS_JSON.with_suffix(".json.tmp")
-    tmp.write_text(json.dumps(data, indent=4), encoding="utf-8")
-    tmp.replace(ACCOUNTS_JSON)
+    # Atomic write (unique-tmp + os.replace via _json_safe helper).
+    atomic_write_json(ACCOUNTS_JSON, data, indent=4)
     print(f"[finalize] {action} slot '{slot}' in {ACCOUNTS_JSON.name}")
     return True
 
