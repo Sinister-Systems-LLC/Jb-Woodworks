@@ -432,14 +432,20 @@ if "%ISOLATION_DISABLED%"=="1" (
 )
 
 REM ====================================================================
-REM SECTION 7 :: Pre-warm claude-icon cache (no-space path)
+REM SECTION 7 :: Pre-warm EVE icon cache (no-space path)
 REM ====================================================================
+REM 2026-05-28 operator hard-canonical: "use the correct logo we use for eve
+REM exe on the terminals. you are using a picture of the fucking image."
+REM Swapped claude-icon.ico -> eve-icon.ico (EVE-branded, 104 KB) per
+REM agent-identity-eve doctrine. claude-icon.ico still copied as a fallback
+REM so any pre-existing reference resolves cleanly.
+set "EVE_ICON_SRC=%SANCTUM_ROOT%\automations\eve-launcher\assets\eve-icon.ico"
+set "EVE_ICON_DST=%USERPROFILE%\.eve\eve-icon.ico"
 set "ICON_SRC=%SANCTUM_ROOT%\automations\eve-launcher\assets\claude-icon.ico"
 set "ICON_DST=%USERPROFILE%\.eve\claude-icon.ico"
-if exist "%ICON_SRC%" (
-    if not exist "%USERPROFILE%\.eve" mkdir "%USERPROFILE%\.eve" >nul 2>&1
-    copy /Y "%ICON_SRC%" "%ICON_DST%" >nul 2>&1
-)
+if not exist "%USERPROFILE%\.eve" mkdir "%USERPROFILE%\.eve" >nul 2>&1
+if exist "%EVE_ICON_SRC%" copy /Y "%EVE_ICON_SRC%" "%EVE_ICON_DST%" >nul 2>&1
+if exist "%ICON_SRC%" copy /Y "%ICON_SRC%" "%ICON_DST%" >nul 2>&1
 
 REM ====================================================================
 REM SECTION 8 :: Repair mode early-exit

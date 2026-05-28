@@ -2681,10 +2681,23 @@ fi
             # the no-space copy at $env:USERPROFILE\.eve\claude-icon.ico which the bat's
             # SECTION 7 (icon pre-warm cache) copies on every spawn. Fall back to the
             # Sanctum path only if the bat pre-warm hasn't run yet (degraded mode).
+            # RKOJ-ELENO :: 2026-05-28 :: operator hard-canonical "use the
+            # correct logo we use for eve exe on the terminals. you are using a
+            # picture of the fucking image." Swap claude-icon.ico -> eve-icon.ico.
+            # eve-icon.ico (104 KB, EVE-branded) supersedes the old claude-icon.ico
+            # (82 KB, claude-only branding) per agent-identity-eve doctrine (2026-05-21).
+            # Same no-space-path resolution pattern as before (USERPROFILE\.eve\
+            # eve-icon.ico) to dodge mintty's argv-split-on-space bug.
             $_minttyIconArgs = @()
+            $_eveIconNoSpace = Join-Path $env:USERPROFILE '.eve\eve-icon.ico'
+            $_eveIcon = Join-Path $SanctumRoot 'automations\eve-launcher\assets\eve-icon.ico'
             $_claudeIconNoSpace = Join-Path $env:USERPROFILE '.eve\claude-icon.ico'
             $_claudeIcon = Join-Path $SanctumRoot 'automations\eve-launcher\assets\claude-icon.ico'
-            if (Test-Path $_claudeIconNoSpace) {
+            if (Test-Path $_eveIconNoSpace) {
+                $_minttyIconArgs = @("--icon=$_eveIconNoSpace")
+            } elseif (Test-Path $_eveIcon) {
+                $_minttyIconArgs = @("--icon=$_eveIcon")
+            } elseif (Test-Path $_claudeIconNoSpace) {
                 $_minttyIconArgs = @("--icon=$_claudeIconNoSpace")
             } elseif (Test-Path $_claudeIcon) {
                 # Last-resort fallback: this may fail under PS 5.1 if SANCTUM_ROOT has a

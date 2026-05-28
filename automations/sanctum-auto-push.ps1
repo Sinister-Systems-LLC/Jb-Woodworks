@@ -35,7 +35,13 @@
 param(
     [string]$RepoRoot   = 'D:\Sinister Sanctum',
     [string]$Branch     = '',
-    [string]$Remote     = 'origin',
+    # RKOJ-ELENO :: 2026-05-28 :: operator hard-canonical "stop these fucking
+    # git windows that keep pulling up we are no long using github for the
+    # sanctum". Default flipped from 'origin' (github.com) to 'sinister' (vault
+    # bare repo at file:///D:/sinister-vault/repos/...). letstext/showmasters/
+    # jb-woodworks lanes keep their own origins per single-repo-push-policy.
+    # Doctrine: _shared-memory/knowledge/vault-as-primary-remote-2026-05-28.md
+    [string]$Remote     = 'sinister',
     [int]$LogRotateMB   = 2,
     [switch]$DryRun,
     # RKOJ-ELENO :: 2026-05-25 -- on-demand push hook per
