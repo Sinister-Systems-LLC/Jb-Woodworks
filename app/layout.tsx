@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   title: { default: `${SITE.name} - Custom Woodworking and Construction`, template: `%s - ${SITE.name}` },
   description: `${SITE.tagline} Custom woodworking and commercial fabrication in Orlando, FL: decks, docks, pergolas, furniture, branded displays.`,
   applicationName: SITE.name,
-  authors: [{ name: "RKOJ-ELENO" }],
+  authors: [{ name: SITE.name }],
   openGraph: {
     type: "website",
     locale: "en_US",
