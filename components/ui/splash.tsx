@@ -9,8 +9,8 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 
-const MIN_MS = 2600;
-const MAX_MS = 5000;
+const MIN_MS = 600;
+const MAX_MS = 1500;
 
 export function Splash() {
   const reduced = useReducedMotion();
@@ -30,7 +30,7 @@ export function Splash() {
       exitTimer = setTimeout(() => {
         setPhase("exit");
         // Remove from DOM after exit anim completes
-        setTimeout(() => setPhase("gone"), 800);
+        setTimeout(() => setPhase("gone"), 320);
       }, wait);
     };
 
@@ -63,7 +63,7 @@ export function Splash() {
           initial={{ opacity: 1 }}
           animate={{ opacity: phase === "exit" ? 0 : 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
         >
           {/* Radial gold glow accent */}
           <div aria-hidden className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(circle at 50% 45%, rgba(201,168,76,0.10), transparent 55%)" }} />
@@ -75,7 +75,7 @@ export function Splash() {
             <motion.div
               initial={reduced ? false : { opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] }}
               className="text-center"
             >
               <Image
@@ -92,7 +92,7 @@ export function Splash() {
             <motion.div
               initial={reduced ? false : { scaleX: 0 }}
               animate={{ scaleX: 1 }}
-              transition={{ duration: 0.9, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.42, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
               className="relative h-px w-[clamp(140px,22vw,260px)] origin-left bg-gold-dim"
             >
               {!reduced && (
@@ -102,7 +102,7 @@ export function Splash() {
                   style={{ background: "linear-gradient(90deg, transparent, #e2c47a, transparent)" }}
                   initial={{ x: "-100%" }}
                   animate={{ x: "100%" }}
-                  transition={{ duration: 1.4, repeat: Infinity, ease: "linear", delay: 0.6 }}
+                  transition={{ duration: 0.9, repeat: Infinity, ease: "linear", delay: 0.6 }}
                 />
               )}
             </motion.div>
@@ -126,7 +126,7 @@ export function Splash() {
                     className="w-1.5 h-1.5 rounded-full bg-gold"
                     initial={{ opacity: 0.2 }}
                     animate={{ opacity: [0.2, 1, 0.2] }}
-                    transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.18, ease: "easeInOut" }}
+                    transition={{ duration: 0.7, repeat: Infinity, delay: i * 0.1, ease: "easeInOut" }}
                   />
                 ))}
               </div>
