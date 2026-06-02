@@ -1,16 +1,13 @@
 // Author: RKOJ-ELENO :: 2026-05-23
-// Long brand splash on every hard refresh / cold load. Honors min 2600ms so the
-// wordmark + tagline + shimmer rule actually get seen, capped at 5000ms so the
-// site is never blocked for longer than that even on slow networks. Fires on
-// EVERY page load (sessionStorage gate removed per operator direction).
+// Short brand splash on hard refresh/cold load. 0.6-1.5s quick-fire.
 "use client";
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 
-const MIN_MS = 2600;
-const MAX_MS = 5000;
+const MIN_MS = 600;
+const MAX_MS = 1500;
 
 export function Splash() {
   const reduced = useReducedMotion();

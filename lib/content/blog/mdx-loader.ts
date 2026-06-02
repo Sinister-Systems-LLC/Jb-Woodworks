@@ -5,7 +5,14 @@
 
 import fs from "fs";
 import path from "path";
-import type { BlogPost } from "./posts";
+
+// Inline BlogPost shape to avoid circular dep with posts.ts
+type BlogPost = {
+  slug: string; title: string; description: string; excerpt: string;
+  category: string; tags: readonly string[]; publishedAt: string;
+  updatedAt?: string; author: string; cover?: string; ogImage?: string;
+  readingTimeMinutes: number; bodyHtml: string;
+};
 
 // ---------------------------------------------------------------------------
 // Frontmatter parser

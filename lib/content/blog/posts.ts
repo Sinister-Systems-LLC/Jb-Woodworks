@@ -2,6 +2,7 @@
 // Static posts live here as pre-rendered HTML. Posts in content/blog/*.mdx
 // are loaded at build time by mdx-loader.ts and merged via allPosts().
 // Body HTML uses Tailwind utility classes (text-cream-50, text-gold, etc.).
+import { loadMdxBlogPosts } from "./mdx-loader";
 
 export type BlogPost = {
   slug: string;
@@ -799,18 +800,12 @@ export const blogPosts: readonly BlogPost[] = [
 ] as const;
 
 // Merge static posts with MDX-sourced posts (MDX wins on slug collision).
-// loadMdxBlogPosts is imported lazily via a helper to keep this module
-// importable in any context; the fs read only runs when allPosts() is called.
 function allPosts(): BlogPost[] {
   let mdx: BlogPost[] = [];
   try {
-    // This require is intentional — keeps fs out of the module-level scope
-    // so Next.js can import this file in any runtime context without errors.
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const mod = require("./mdx-loader") as { loadMdxBlogPosts: () => BlogPost[] };
-    mdx = mod.loadMdxBlogPosts();
+    mdx = loadMdxBlogPosts();
   } catch {
-    // Edge runtime or test env — fall back to static posts only
+    // Defensive: fall back to static posts if loader errors out
   }
 
   const seen = new Set<string>();
