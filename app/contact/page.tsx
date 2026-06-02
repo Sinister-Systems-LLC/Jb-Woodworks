@@ -1,7 +1,7 @@
-// Author: RKOJ-ELENO :: 2026-05-23
+// Author: RKOJ-ELENO :: 2026-05-23 (v2 form swap 2026-06-01 — project type + zip + timeline + budget)
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { ContactForm } from "@/components/sections/contact-form";
+import { ContactFormV2 as ContactForm } from "@/components/sections/contact-form-v2";
 import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {

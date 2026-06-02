@@ -12,6 +12,10 @@ const schema = z.object({
   email: z.string().email().max(300),
   phone: z.string().max(50).optional().or(z.literal("")),
   service: z.string().max(80).optional().or(z.literal("")),
+  // v2 (2026-06-01) — additional qualification fields. Optional so they don't break legacy form.
+  zip: z.string().max(10).optional().or(z.literal("")),
+  timeline: z.string().max(40).optional().or(z.literal("")),
+  budget: z.string().max(40).optional().or(z.literal("")),
   message: z.string().min(1).max(5000),
   _honey: z.string().optional()
 });
@@ -25,7 +29,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: "Invalid form fields." }, { status: 400 });
   }
 
-  const { name, email, phone, service, message, _honey } = parsed.data;
+  const { name, email, phone, service, zip, timeline, budget, message, _honey } = parsed.data;
   if (_honey) {
     // honeypot tripped - silently accept
     return NextResponse.json({ ok: true, accepted: false });
@@ -68,12 +72,15 @@ export async function POST(req: NextRequest) {
         replyTo: email,
         subject: `New project inquiry from ${name}`,
         text: [
-          `Name:    ${name}`,
-          `Email:   ${email}`,
-          `Phone:   ${phone || "-"}`,
-          `Service: ${service || "-"}`,
-          `IP:      ${ip || "-"}`,
-          `UA:      ${userAgent || "-"}`,
+          `Name:     ${name}`,
+          `Email:    ${email}`,
+          `Phone:    ${phone || "-"}`,
+          `Service:  ${service || "-"}`,
+          `Zip:      ${zip || "-"}`,
+          `Timeline: ${timeline || "-"}`,
+          `Budget:   ${budget || "-"}`,
+          `IP:       ${ip || "-"}`,
+          `UA:       ${userAgent || "-"}`,
           "",
           "Message:",
           message
@@ -101,6 +108,9 @@ export async function POST(req: NextRequest) {
       fwd.set("Email", email);
       if (phone) fwd.set("Phone", phone);
       if (service) fwd.set("Service", service);
+      if (zip) fwd.set("Zip", zip);
+      if (timeline) fwd.set("Timeline", timeline);
+      if (budget) fwd.set("Budget", budget);
       fwd.set("Project Details", message);
       fwd.set("_subject", `New project inquiry - JB Woodworks (${name})`);
       fwd.set("_captcha", "false");
