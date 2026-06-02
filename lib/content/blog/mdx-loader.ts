@@ -230,7 +230,7 @@ export function loadMdxBlogPosts(): BlogPost[] {
       const { fm, body } = parseFrontmatter(raw);
 
       const slug = fm.slug ?? file.replace(/\.(mdx|md)$/, "");
-      const publishedAt = fm.publishedAt ?? (fm as Record<string, unknown>).date as string ?? "2026-01-01";
+      const publishedAt = fm.publishedAt ?? fm.date ?? "2026-01-01";
       const author = fm.author === "RKOJ-ELENO" ? "JB Woodworks" : (fm.author ?? "JB Woodworks");
       const description = fm.description ?? fm.title ?? "";
       const bodyHtml = mdToHtml(body.trim());
