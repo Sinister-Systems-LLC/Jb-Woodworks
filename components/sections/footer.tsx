@@ -58,8 +58,19 @@ export function Footer() {
         </div>
       </div>
 
-      <div className="mt-10 pt-5 mx-auto max-w-site px-7 border-t border-line text-center text-[0.78rem] text-cream-30">
-        (C) {year} {SITE.name}. Built in Orlando, FL.
+      <div className="mt-10 pt-5 mx-auto max-w-site px-7 border-t border-line flex flex-col sm:flex-row items-center justify-between gap-3 text-[0.78rem] text-cream-30">
+        <span>(C) {year} {SITE.name}. Built in Orlando, FL.</span>
+        {/* v2 (2026-06-01): Powered by Eve. Operator brief item 14. */}
+        <a
+          href="https://eve.dev"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 text-cream-30 hover:text-coastal-light transition-colors"
+          aria-label="Powered by Eve"
+        >
+          <span>Powered by</span>
+          <span className="font-semibold tracking-[0.16em] uppercase text-gold">Eve</span>
+        </a>
       </div>
     </footer>
   );

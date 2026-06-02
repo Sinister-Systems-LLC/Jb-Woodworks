@@ -24,6 +24,10 @@ export default function NotFound() {
           <Link href="/portfolio" className="btn btn-ghost btn-large">See the work</Link>
           <Link href="/contact" className="btn btn-ghost btn-large">Get a quote</Link>
         </div>
+        {/* v2 (2026-06-01): hidden easter egg trail — /dont-click */}
+        <p className="mt-10 text-cream-30 text-[0.75rem]">
+          Or, if you&apos;re bored: <Link href="/dont-click" className="underline underline-offset-4 hover:text-coastal-light transition-colors">do not click here</Link>.
+        </p>
       </div>
     </section>
   );
