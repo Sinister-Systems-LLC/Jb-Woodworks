@@ -3,23 +3,17 @@
 // The long brand splash (components/ui/splash.tsx) is reserved for cold load /
 // hard refresh; this is the quick "we are pulling the next page" indicator
 // that appears between routes.
-import Image from "next/image";
-
 export default function Loading() {
   return (
     <div role="status" aria-label="Loading" className="pt-40 pb-24 min-h-[60vh]">
       <div className="container-site relative">
-        {/* Quick centered emblem: monogram + gold rule + pulse dots. No
+        {/* Quick centered emblem: gold rule + tiny wordmark + pulse dots. No
             long skeleton bars; that read as "broken page" between routes. */}
         <div className="flex flex-col items-center justify-center gap-5 mt-12">
-          <Image
-            src="/img/branding/jbw-monogram.png"
-            alt="JB Woodworks"
-            width={687}
-            height={585}
-            priority
-            className="h-10 w-auto opacity-90"
-          />
+          <div className="text-center select-none">
+            <div className="font-sans text-[1.5rem] font-black tracking-[0.22em] text-white/90 leading-none">JB</div>
+            <div className="mt-1.5 text-[0.55rem] tracking-[0.55em] text-gold font-bold uppercase">Woodworks</div>
+          </div>
 
           {/* Shimmer rule */}
           <div className="relative h-px w-32 bg-gold-dim overflow-hidden rounded-full">

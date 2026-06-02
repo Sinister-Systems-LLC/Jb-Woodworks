@@ -1,0 +1,110 @@
+---
+title: "Workshop Dust Collection Systems: From Single Tool to Central Shop"
+slug: workshop-dust-collection-systems
+description: "Cyclone separators, single-stage collectors, central systems, ductwork design, and filter ratings — how to spec and build a dust collection system for a woodworking shop."
+date: 2026-06-02
+author: JB Woodworks Research
+category: Shop Safety
+tags: [dust-collection, workshop, safety, cyclone, dust-collector, ductwork, air-filtration, HEPA]
+readingTimeMinutes: 10
+---
+
+Dust collection is the most health-critical system in a woodworking shop, and it is consistently under-invested relative to machine tools. Shops that spend $15,000 on a tablesaw and $500 on dust collection are not making a rational investment decision. The long-term health consequences of inadequate wood dust control — occupational asthma, sinonasal cancer, chronic rhinitis — represent a lifetime cost that dwarfs any machine purchase.
+
+This guide covers the engineering of effective dust collection: how to size a system, the different collector types and what each does, ductwork design, filter ratings and what they mean, and the full-system approach that includes both source capture and ambient filtration.
+
+## The Physics of Dust Collection
+
+Effective dust collection requires moving enough air volume (CFM — cubic feet per minute) at enough velocity (FPM — feet per minute) to capture dust at the source and transport it to the collector without settling in the ductwork.
+
+**Two critical numbers:**
+
+1. **Capture velocity:** The minimum air velocity at the tool opening required to entrain dust particles. For heavy chips (tablesaw blade discharge): 500–1,000 FPM. For fine sanding dust: 200–400 FPM at the collector hood. For router table dust: 1,000–2,000 FPM.
+
+2. **Transport velocity:** The minimum duct velocity to keep dust airborne in the ductwork (prevents settling and buildup). For wood chips: 3,500–4,000 FPM. For fine dust: 2,800–3,500 FPM.
+
+The ductwork must be sized so the air velocity through the main duct stays above transport velocity while providing adequate volume at each tool branch.
+
+**Simplified sizing rule:** A 4-inch duct branch for one tool requires approximately 350 CFM at 4,000 FPM. A 6-inch duct requires approximately 800 CFM at the same velocity. Main trunk lines must handle the combined flow of all open branches (using blast gates to close unused branches).
+
+## Collector Types
+
+### Shop Vacuums
+
+Shop vacuums (wet-dry vacs) are not dust collectors. They are emergency cleanup tools. A typical 2-gallon shop vacuum collects 35–60 CFM — adequate to clean up a pile of sawdust from the floor; inadequate to capture dust from a spinning tablesaw blade.
+
+The exception: Festool CT HEPA extractors and equivalent high-end dust extractors (Mirka, Mafell) are purpose-built for direct connection to random orbit sanders and trim routers. They move 100–170 CFM through 27mm or 36mm hoses and capture fine sanding dust effectively at the tool. They are a supplement to a dust collection system, not a substitute.
+
+### Single-Stage Dust Collectors
+
+Single-stage collectors pull air through a single filter system — typically bag-over-bag where the lower bag collects chips and the upper bag is the filter. The entire airstream, including chips, passes through the impeller before separation.
+
+**Advantages:** Simple, low cost, wide availability.
+**Disadvantages:** Chips pass through the impeller (impeller damage, reduced efficiency); filter bags require frequent shaking or replacement; standard 30-micron bags pass fine dust into the shop air.
+
+**Key specification: the 1-micron filter.** A standard 30-micron felt filter bag captures chips and coarse dust but passes the fine dust below 10 microns — the most dangerous fraction for respiratory health. Replacing standard bags with 1-micron felt bags (Wynn Environmental, Clean Air Industries, or OEM for your collector brand) is the single most impactful upgrade for single-stage collectors.
+
+**Recommended single-stage collectors:** Jet DC-1100VX-CK ($550, includes 1-micron bag), Powermatic PM1300TX-CK ($700, includes 1-micron bag). Both move 1,300–1,500 CFM and are sized for a 2–3 machine shop.
+
+### Two-Stage Cyclone Separators
+
+A cyclone separator adds a pre-separation stage before the filter. Air enters the cyclone tangentially, spinning chips and heavy particles out of the airstream (they fall into a collection bin) before the air reaches the impeller and filter. The result: the impeller sees clean air, chip collection requires no disturbing the filter, and filter life is dramatically extended.
+
+**Stand-alone cyclones:** Units like the Oneida Vortex Dust Deputy, JET AFS-1000B-specific cyclone, and Clear Vue CV1800 add cyclone separation to any single-stage collector or shop vacuum. The Dust Deputy Mini ($40–$80) adds cyclone pre-separation to any shop vacuum. These are affordable upgrades that capture 95%+ of chips before they reach the collector.
+
+**Integrated cyclone collectors:** Oneida Air Systems Supercell, Clear Vue CV1800, JET Cyclone DC-2300CK. These are purpose-built cyclone-first systems with the motor and filter integrated into one unit. They are the current professional standard for small to mid-size shops ($900–$3,500 range).
+
+**Key advantage of cyclone systems:** The filter handles only fine dust, not chips. Filter life extends dramatically. The collection bin can be emptied without disturbing the filter or losing suction.
+
+### Central Duct Systems
+
+For shops with 4+ machines or where multiple machines run simultaneously, a central duct system is more efficient than individual portable collectors at each tool:
+
+- **Single large collector** (3,000–5,000 CFM, $2,000–$8,000) at a fixed location
+- **Ductwork** (metal round duct, spiral or friction-lock) branched to each tool
+- **Blast gates** at each branch (manual or automatic) to direct suction only where needed
+- **Flexible hose** final connection from duct to each tool
+
+**Ductwork materials:** Galvanized steel sheet metal duct (6", 5", 4", and 3" round) is the standard for permanent installations. Spiral duct with friction-lock connections is the commercial standard. PVC pipe is not appropriate for wood dust collection — PVC builds static charge from wood dust airflow and creates explosion risk. If PVC must be used (rare), it requires grounding straps and bonding wire throughout.
+
+**Static pressure loss in ductwork:** Every elbow, branch, and length of duct adds static pressure loss. The main trunk must be sized for the velocity range that handles the worst-case flow (all gates open) without dropping below transport velocity. For a 4-machine shop collecting to a central 3,000 CFM collector, the main trunk is typically 7–8 inch diameter, branching to 5-inch sub-mains and 4-inch branches.
+
+### Ambient Air Filtration Units
+
+Ceiling-mounted ambient filtration units (AAFs) filter the fine dust that escapes source capture and hangs in the shop air. They are not a substitute for source capture — they are a complement.
+
+**Sizing:** For a shop of volume V (cubic feet), a target of 6–8 air changes per hour requires a filtration unit rated at V × 7 ÷ 60 CFM. For a 1,200 sq ft shop at 10-foot ceilings (12,000 cubic feet): 12,000 × 7 ÷ 60 = 1,400 CFM unit minimum.
+
+**Filter media:** Minimum 1-micron filter; HEPA (99.97% at 0.3 microns) for maximum protection. The difference matters: at 5 microns and above, most particles are captured by the nasal passage. Below 5 microns, particles reach the bronchi and alveoli. Below 2.5 microns (PM2.5), particles penetrate deeply into lung tissue.
+
+**Recommended units:** JET AFS-2000B (1,700 CFM, $250–$350), Oneida Air Systems ambient filtration units, Wynn Environmental ceiling units.
+
+## System Design for a 3-Machine Shop
+
+For a shop with tablesaw, jointer, and planer operating individually (not simultaneously):
+
+**Minimum effective system:**
+- 2-stage cyclone collector, 1,500 CFM, 1-micron final filter ($900–$1,500)
+- 6-inch main duct, 4-inch branches to each machine, 6 linear feet per branch
+- Manual blast gates at each branch
+- 6-inch to 4-inch reducers at each machine port (most machines use 4-inch ports)
+- Ceiling-mounted ambient filtration unit, 1,400+ CFM ($250–$350)
+
+**Total system cost:** $1,150–$1,850
+
+This system captures 95%+ of chip mass at source, filters to sub-1-micron, and provides 6+ air changes per hour ambient filtration. It satisfies OSHA PEL requirements for wood dust and positions the shop below the NIOSH REL of 1 mg/m³ in normal production conditions.
+
+## Maintenance Schedule
+
+- **Weekly:** Check collection bin, empty when 2/3 full (never overfill — airflow restriction above 2/3 capacity)
+- **Monthly:** Inspect filter bags or cartridges; pulse or shake to dislodge dust cake; replace if pressure drop across filter exceeds specification
+- **Quarterly:** Inspect all duct connections for looseness; check blast gate seals; verify grounding connection if PVC duct is in system
+- **Annually:** Replace filter bags regardless of appearance (fine particles invisible to eye accumulate in filter media); inspect impeller for chip damage
+
+## The Health Return on Investment
+
+Proper dust collection for a solo operator shop costs $1,150–$1,850 installed. The NIOSH economic analysis of occupational lung disease in woodworkers estimates a lifetime earnings and medical cost impact of $125,000–$400,000 per case of severe occupational asthma or sinonasal cancer attributed to wood dust exposure. The return on the ventilation investment is not a close call.
+
+The conversation with a client about a $5,000 table is often easier than the conversation a woodworker has with a pulmonologist at 55. The $1,500 dust collection system is the more important purchase.
+
+*References: NIOSH Hazard Review: Occupational Exposure to Wood Dust (Publication 2015-184). OSHA 29 CFR 1910.1000 Table Z-1. ACGIH 2024 TLVs for Wood Dust. Oneida Air Systems engineering specifications and system design guides (2025). Clear Vue Cyclones published performance data (2025). Wynn Environmental filter specifications (2025). American Lung Association, Occupational Lung Hazards (2024). IARC Monographs Volume 100C (2012).*

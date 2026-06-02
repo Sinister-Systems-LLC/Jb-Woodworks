@@ -3,28 +3,21 @@
 import { motion } from "framer-motion";
 
 const ITEMS = [
-  "DECKS",
   "DOCKS",
+  "CUSTOM DECKS",
   "PERGOLAS",
-  "OUTDOOR LIVING",
+  "POOL TABLES",
   "CUSTOM FURNITURE",
-  "MILLWORK",
-  "CABINETRY",
-  "BUILT-INS",
-  "TRIM CARPENTRY",
-  "HARDWOOD FLOORS",
-  "COMMERCIAL FABRICATION",
-  "BRANDED DISPLAYS",
-  "EVENT BUILDS",
-  "FEATURE WALLS"
+  "INTERIOR TRIM",
+  "TREX DECKS",
+  "BOAT DOCKS",
+  "OUTDOOR LIVING"
 ];
 
 export function Marquee() {
   const loop = [...ITEMS, ...ITEMS, ...ITEMS];
   return (
-    <div className="relative bg-ink-2 border-t border-line pt-6 pb-3 overflow-hidden">
-      {/* Top hairline accent so the band reads as one with whatever sits above */}
-      <div aria-hidden className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold-dim/60 to-transparent" />
+    <div className="relative bg-ink-2 border-y border-line py-7 overflow-hidden">
       <div aria-hidden className="absolute inset-y-0 left-0 w-32 z-10 bg-gradient-to-r from-ink-2 to-transparent" />
       <div aria-hidden className="absolute inset-y-0 right-0 w-32 z-10 bg-gradient-to-l from-ink-2 to-transparent" />
 

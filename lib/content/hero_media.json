@@ -1,8 +1,7 @@
 [
-  {"type": "video", "src": "Pergola/IMG_0047.mp4",                "poster": "Pergola/IMG_0047.jpg",                "duration_ms": 11000},
-  {"type": "image", "src": "SKU Snipers/IMG_1324.jpg",            "duration_ms": 7000},
-  {"type": "video", "src": "Trex Deck/I like.mp4",                "poster": "Trex Deck/I like.jpg",                "duration_ms": 6000},
-  {"type": "video", "src": "Deck/My Movie 2.mp4",                 "poster": "Deck/My Movie 2.jpg",                 "duration_ms": 9000},
-  {"type": "video", "src": "Pergola/IMG_0050.mp4",                "poster": "Pergola/IMG_0050.jpg",                "duration_ms": 9000},
-  {"type": "image", "src": "Commercial Reveal/new-balance-reveal.jpg", "duration_ms": 7000}
+  {"type": "video", "src": "Deck/My Movie 2.mp4",       "poster": "Deck/My Movie 2.jpg",       "duration_ms": 8500},
+  {"type": "video", "src": "Deck/IMG_1558.mp4",         "poster": "Deck/IMG_1558.jpg",         "duration_ms": 7500},
+  {"type": "video", "src": "Pergola/IMG_0050.mp4",      "poster": "Pergola/IMG_0050.jpg",      "duration_ms": 8500},
+  {"type": "video", "src": "Pergola/IMG_1866.mp4",      "poster": "Pergola/IMG_1866.jpg",      "duration_ms": 8000},
+  {"type": "video", "src": "Trex Deck/I like.mp4",      "poster": "Trex Deck/I like.jpg",      "duration_ms": 7000}
 ]

@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { hero, type HeroSlide } from "@/lib/content";
-import { SITE } from "@/lib/site";
 
 const stagger = {
   hidden: { opacity: 0, y: 28 },
@@ -95,7 +94,7 @@ export function Hero() {
       {/* Vertical metadata strip - left edge, editorial detail */}
       <div className="hidden md:block absolute top-1/2 -translate-y-1/2 left-7 z-[3] writing-vertical text-cream-30 text-[0.65rem] tracking-[0.4em] uppercase font-semibold">
         <div className="space-y-8" style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
-          <span>EST. 2025  /  ORLANDO FL</span>
+          <span>EST. 2019  /  ORLANDO FL</span>
           <span>CUSTOM WOODWORKING</span>
         </div>
       </div>
@@ -139,26 +138,57 @@ export function Hero() {
       {/* Content - centered editorial layout */}
       <div className="container-site relative z-[3] h-full flex flex-col items-center justify-center text-center pt-[82px] pb-24">
         <motion.p custom={0} variants={stagger} initial={reduced ? false : "hidden"} animate="show" className="eyebrow !mb-7">
-          <span className="eyebrow-dot" /> ORLANDO, FLORIDA <span className="eyebrow-dot" /> EST. 2025 <span className="eyebrow-dot" />
+          <span className="eyebrow-dot" /> ORLANDO, FLORIDA <span className="eyebrow-dot" /> EST. 2019 <span className="eyebrow-dot" />
         </motion.p>
 
-        {/* Lead lockup - owner's stacked JBW wordmark, centered, sole hero focus */}
+        {/* Logo — stacked wordmark, dead center, oversized. Replaces the
+            old "JB / Woodworks" text + the "Premium Craftsmanship" tagline +
+            the two CTAs. Just the mark, just the desc. Operator-canonical. */}
         <motion.div
           custom={1}
           variants={stagger}
           initial={reduced ? false : "hidden"}
           animate="show"
-          className="select-none"
+          className="select-none flex justify-center"
         >
           <Image
             src="/img/branding/jbw-wordmark-stacked.png"
-            alt="JB Woodworks - Construction & Fabrication"
+            alt="JB Woodworks — Construction & Fabrication"
             width={971}
             height={733}
             priority
-            className="h-[clamp(8rem,22vw,15rem)] w-auto mx-auto drop-shadow-[0_4px_28px_rgba(0,0,0,0.55)]"
+            sizes="(max-width: 640px) 88vw, (max-width: 1024px) 70vw, 720px"
+            className="h-auto w-[min(88vw,720px)] drop-shadow-[0_18px_46px_rgba(0,0,0,0.55)]"
           />
         </motion.div>
+
+        {/* Animated gold rule with shimmer */}
+        <motion.div
+          custom={2}
+          variants={stagger}
+          initial={reduced ? false : "hidden"}
+          animate="show"
+          className="relative h-px w-[clamp(160px,26vw,320px)] bg-gold-dim mt-10 mb-7 overflow-hidden origin-center"
+        >
+          {!reduced && (
+            <span
+              aria-hidden
+              className="absolute inset-y-0 w-1/2 jbw-rule-shimmer"
+              style={{ background: "linear-gradient(90deg, transparent, #e2c47a, transparent)" }}
+            />
+          )}
+        </motion.div>
+
+        {/* Short description — kept per operator. */}
+        <motion.p
+          custom={3}
+          variants={stagger}
+          initial={reduced ? false : "hidden"}
+          animate="show"
+          className="text-[1.05rem] text-cream-50 max-w-[560px] leading-[1.7]"
+        >
+          Custom decks, docks, furniture, and outdoor builds — designed and built in Orlando, FL.
+        </motion.p>
       </div>
 
       {/* Scroll indicator */}

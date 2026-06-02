@@ -44,28 +44,35 @@ export function ProcessTimeline() {
   const railHeight = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
 
   return (
-    <section className="py-24 sm:py-32 bg-ink relative overflow-hidden">
-      {/* In-theme Nano Banana atmospheric — workshop bench at end-of-day. Subtle
-        right-edge backdrop with multi-stop fade so the timeline text reads clean. */}
-      <div
-        aria-hidden
-        className="absolute inset-y-0 right-0 w-[55%] pointer-events-none bg-cover bg-center"
-        style={{ backgroundImage: "url(/img/generated/process-bench.png)", opacity: 0.55 }}
-      />
-      <div aria-hidden className="absolute inset-y-0 right-0 w-[55%] pointer-events-none" style={{ background: "linear-gradient(90deg, #080808 0%, rgba(8,8,8,0.85) 20%, rgba(8,8,8,0.55) 50%, rgba(8,8,8,0.4) 80%, rgba(8,8,8,0.85) 100%)" }} />
-      <div aria-hidden className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse at 80% 50%, rgba(201,168,76,0.06), transparent 60%)" }} />
-      {/* Light grain texture overlay */}
-      <div
-        aria-hidden
-        className="absolute inset-0 pointer-events-none mix-blend-overlay"
-        style={{ backgroundImage: "url(/img/generated/grain-texture.png)", backgroundSize: "cover", opacity: 0.08 }}
-      />
-      <div aria-hidden className="absolute top-10 right-10 w-px h-40 bg-gradient-to-b from-gold-dim to-transparent" />
+    <section className="py-24 sm:py-32 relative overflow-hidden" style={{ background: "radial-gradient(120% 80% at 80% 20%, #1a1208 0%, #0a0a0a 55%, #050505 100%)" }}>
+      {/* New background — operator asked for a fresh look. Drops the workshop
+          bench image entirely. Now a warm, deep radial that pulls toward the
+          gold corner + slow drifting parallel beams + faint grain. Different
+          from every other section's flat ink + grain pattern. */}
+      <div aria-hidden className="absolute inset-0 pointer-events-none jbw-beams" />
+      <div aria-hidden className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(circle at 88% 18%, rgba(201,168,76,0.22), transparent 38%)" }} />
+      <div aria-hidden className="absolute inset-0 pointer-events-none mix-blend-overlay" style={{ backgroundImage: "url(/img/generated/grain-texture.png)", backgroundSize: "cover", opacity: 0.07 }} />
+      {/* Corner hairlines + gold seed dot — visual anchor in the upper right */}
+      <div aria-hidden className="absolute top-12 right-12 w-2 h-2 rounded-full bg-gold shadow-[0_0_22px_8px_rgba(201,168,76,0.45)]" />
+      <div aria-hidden className="absolute top-14 right-16 left-1/2 h-px bg-gradient-to-r from-transparent via-gold-dim/60 to-gold/80" />
+      <div aria-hidden className="absolute top-10 right-10 w-px h-40 bg-gradient-to-b from-gold to-transparent" />
       <div aria-hidden className="absolute bottom-10 left-10 w-px h-40 bg-gradient-to-t from-gold-dim to-transparent" />
       <div className="container-site relative">
-        <span className="section-tag">How it works</span>
-        <h2 className="mb-3">From handshake<br /><em>to walk-through.</em></h2>
-        <p className="section-subheadline">Five steps. No surprises in between.</p>
+        {/* Editorial header — different from every other section. Mono kicker on
+            the left of a 2-col split, oversized number + headline on the right.
+            Breaks the eyebrow → headline → subhead pattern operator flagged. */}
+        <div className="grid grid-cols-1 md:grid-cols-[140px_1fr] gap-x-10 gap-y-3 mb-14 items-end">
+          <div className="flex flex-col gap-2">
+            <span className="font-mono text-[0.58rem] tracking-[0.45em] uppercase text-gold/80">Process</span>
+            <span className="font-display text-[3rem] leading-none text-gold/30 tabular-nums">/05</span>
+          </div>
+          <div>
+            <h2 className="m-0 font-display text-[clamp(2.4rem,5.6vw,4.6rem)] leading-[0.95] text-white">
+              From handshake <em className="text-gold">to walk-through.</em>
+            </h2>
+            <p className="mt-4 text-cream-50 max-w-[520px] text-[0.95rem] leading-[1.7]">Five steps. No surprises in between.</p>
+          </div>
+        </div>
 
         <div ref={ref} className="relative pl-6 sm:pl-10">
           {/* Vertical rail */}

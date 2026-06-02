@@ -8,6 +8,7 @@ import { Icon } from "@/components/ui/icon";
 import { BackLink } from "@/components/ui/back-link";
 import { BeforeAfter } from "@/components/sections/before-after";
 import { getPortfolioItem, portfolio } from "@/lib/content";
+import { SITE } from "@/lib/site";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -30,8 +31,25 @@ export default async function PortfolioItemPage({ params }: Props) {
   const item = getPortfolioItem(slug);
   if (!item) notFound();
 
+  // Per-project JSON-LD (CreativeWork) — improves rich-result eligibility for
+  // each portfolio detail page (parent layout already emits LocalBusiness).
+  const coverSrc = item.is_raw_cover ? `/img/projects/${item.cover}` : `/media/${item.cover}`;
+  const ld = {
+    "@context": "https://schema.org",
+    "@type": "CreativeWork",
+    "@id": `${SITE.url}/portfolio/${item.slug}`,
+    name: item.title,
+    description: item.blurb,
+    image: `${SITE.url}${encodeURI(coverSrc)}`,
+    genre: item.category,
+    creator: { "@type": "LocalBusiness", "@id": `${SITE.url}/#business`, name: SITE.name },
+    inLanguage: "en-US",
+    url: `${SITE.url}/portfolio/${item.slug}`
+  };
+
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} />
       <section className="pt-40 pb-16 bg-gradient-to-b from-ink-2 to-ink border-b border-line relative overflow-hidden">
         <div aria-hidden className="absolute -top-24 -right-24 w-[400px] h-[400px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(201,168,76,0.10), transparent 70%)" }} />
         <div className="container-site relative">

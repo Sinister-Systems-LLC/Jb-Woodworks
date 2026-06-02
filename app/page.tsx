@@ -7,23 +7,39 @@ import { NumbersBand } from "@/components/sections/numbers-band";
 import { ProcessTimeline } from "@/components/sections/process-timeline";
 import { PortfolioFeature } from "@/components/sections/portfolio-feature";
 import { CommercialFeature } from "@/components/sections/commercial-feature";
-import { FaqAccordion } from "@/components/sections/faq-accordion";
 import { FaqTabs } from "@/components/sections/faq-tabs";
+// D-series Lane F mirror — cycling banner + JP-aesthetic separators (brand gold).
+import { CyclingBanner } from "@/components/sections/CyclingBanner";
+import { SectionSeparator } from "@/components/landing/SectionSeparator";
 import { faqCategorized } from "@/lib/content/faq-categorized";
 import { Icon } from "@/components/ui/icon";
-import { services, portfolio, faq } from "@/lib/content";
+import { services, portfolio } from "@/lib/content";
 
 export default function Home() {
-  // Avoid duplication: CommercialFeature already showcases the New Balance +
-  // SKU Snipers commercial work. The "Recent builds, up close" preview pulls
-  // from non-commercial items so visitors see a fresh slice on the main page.
-  const previewItems = portfolio
-    .filter((p) => p.category !== "Commercial & Event Fabrication")
-    .slice(0, 4);
+  // Recent work preview: lead with the New Balance × Foot Locker reveal (per
+  // operator, the headline brand build belongs in Recent work, not buried in
+  // the Commercial section), then alternate with high-impact residential
+  // builds so the editorial cadence stays varied. Falls back gracefully if the
+  // NB entry is ever renamed/removed.
+  const newBalance = portfolio.find((p) => p.slug === "new-balance-reveal");
+  const residential = portfolio.filter(
+    (p) => p.category !== "Commercial & Event Fabrication"
+  );
+  const previewItems = (
+    newBalance ? [newBalance, ...residential] : residential
+  ).slice(0, 4);
 
   return (
     <>
       <Hero />
+
+      {/* landonorris-style half-stripe — single thin horizontal accent in brand gold. */}
+      <div aria-hidden className="relative h-[2px] w-full overflow-hidden bg-ink">
+        <div className="absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r from-transparent via-gold/70 to-gold" />
+      </div>
+
+      {/* D-series D5 mirror — cycling banner between Hero and Marquee. */}
+      <CyclingBanner />
 
       <Marquee />
 
@@ -63,13 +79,20 @@ export default function Home() {
               <span className="tabular-nums">{String(services.length).padStart(2, "0")}</span>
               <span className="mx-3 text-cream-30">·</span>
               <span>What we build</span>
+              <span className="mx-3 text-cream-30">·</span>
+              <span className="text-cream-30">Custom-focused</span>
             </p>
-            <h2 className="font-display text-[clamp(2.4rem,5.5vw,4.4rem)] leading-[1.05] text-white m-0 max-w-[820px]">
-              Residential and commercial &mdash; <em className="text-gold">all built in-house.</em>
+            <h2 className="font-display text-[clamp(2.4rem,5.5vw,4.4rem)] leading-[1.05] text-white m-0 max-w-[920px]">
+              Residential craftsmanship and commercial fabrication &mdash; <em className="text-gold">all built custom, in-house.</em>
             </h2>
-            <p className="mt-8 max-w-[640px] text-cream-50 text-[1rem] leading-[1.75]">
-              Decks, docks, pergolas, custom furniture &mdash; plus <em className="text-gold not-italic font-semibold">branded displays, event builds, and specialty fabrication</em> for brands.
-            </p>
+            <div className="mt-8 flex flex-col sm:flex-row gap-4 sm:gap-12 items-start max-w-[820px] text-cream-50 text-[0.95rem] leading-[1.8]">
+              <p className="flex-1">
+                Decks, docks, pergolas, outdoor living, hardwoods, and custom furniture &mdash; plus <em className="text-gold not-italic font-semibold">custom fabrication, branded displays, commercial &amp; event builds, and specialty installations</em> for brands and retailers.
+              </p>
+              <p className="flex-1 italic font-display">
+                Premium. Modern. Made for your space &mdash; not pulled from a catalog.
+              </p>
+            </div>
           </div>
 
           <div className="mt-16">
@@ -78,38 +101,42 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Portfolio feature - editorial gallery. Different header treatment:
-        right-aligned with a thin rule, the title small + the link big. */}
+      {/* Portfolio feature — operator asked for a redo. Header now sits on a
+          single editorial baseline: massive serif "Recent work." running left,
+          a thin gold seam, and the small archive link tucked on the right. No
+          number badge, no two-column eyebrow + sub-paragraph. */}
       <section id="portfolio-preview" className="py-24 sm:py-32 bg-ink relative overflow-hidden">
         <div aria-hidden className="absolute top-0 left-0 right-0 h-24 pointer-events-none" style={{ background: "linear-gradient(180deg, #0f0f0f, transparent)" }} />
         <div className="container-site relative">
-          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8 mb-16 border-b border-line pb-10">
-            <div className="lg:max-w-[420px]">
-              <span className="font-mono text-[0.62rem] tracking-[0.42em] uppercase text-cream-30 block mb-3">
-                <span className="tabular-nums">04</span> · Selected work · Portfolio
-              </span>
-              <p className="text-cream-50 text-[1rem] leading-[1.7]">
-                A handful of recent builds, photographed in the field. Hover any card with a video for a quick preview.
-              </p>
-            </div>
-            <div className="lg:text-right">
-              <h2 className="font-display text-[clamp(2.6rem,6.2vw,5rem)] leading-[1] text-white m-0">
-                <em className="not-italic text-gold">/</em>Recent.
-              </h2>
-              <Link href="/portfolio" className="link-arrow mt-4 inline-flex">
-                See the full archive
-                <Icon name="arrow-right" size={14} />
-              </Link>
-            </div>
+          <div className="mb-14 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+            <h2 className="m-0 font-display text-[clamp(2.6rem,7vw,5.4rem)] leading-[0.9] text-white">
+              Recent <em className="text-gold">work.</em>
+            </h2>
+            <Link
+              href="/portfolio"
+              className="self-start sm:self-end inline-flex items-center gap-2 text-[0.72rem] tracking-[0.3em] uppercase font-semibold text-cream-50 hover:text-gold transition-colors"
+            >
+              Open the archive
+              <Icon name="arrow-right" size={14} />
+            </Link>
           </div>
+          <div aria-hidden className="h-px w-full mb-16 bg-gradient-to-r from-transparent via-gold-dim/60 to-transparent" />
 
           <PortfolioFeature items={previewItems} />
 
           <div className="text-center mt-20">
-            <Link href="/portfolio" className="btn btn-primary btn-large jbw-magnetic">View Full Portfolio</Link>
+            <Link href="/portfolio" className="link-arrow text-[0.78rem] tracking-[0.3em] uppercase text-cream-50 hover:text-gold transition-colors inline-flex items-center gap-2">
+              View full portfolio
+              <Icon name="arrow-right" size={14} />
+            </Link>
           </div>
         </div>
       </section>
+
+      {/* D-series D8 mirror — JP-aesthetic separator (asanoha, brand gold). */}
+      <div className="bg-ink">
+        <SectionSeparator variant="asanoha" label="process" />
+      </div>
 
       {/* Process timeline */}
       <ProcessTimeline />
@@ -122,48 +149,51 @@ export default function Home() {
         <div aria-hidden className="absolute -bottom-32 -right-32 w-[420px] h-[420px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(201,168,76,0.06), transparent 70%)" }} />
         <div className="container-site relative max-w-[920px]">
           <div className="text-center mb-12">
-            <p className="font-display italic text-gold text-[1rem] mb-3">Common questions</p>
-            <h2 className="font-display text-[clamp(2.2rem,4.6vw,3.4rem)] leading-[1.05] m-0 text-white tracking-[0.18em] uppercase">
+            <h2 className="font-display text-[clamp(2.4rem,5.2vw,3.8rem)] leading-[1.05] m-0 text-white tracking-[0.16em] uppercase">
               FAQ
             </h2>
             <span aria-hidden className="block h-px w-16 mx-auto mt-5 bg-gradient-to-r from-transparent via-gold to-transparent" />
-            <p className="mt-7 text-cream-50 text-[0.98rem] max-w-[540px] mx-auto leading-[1.75]">
-              Pick a category. Anything we missed — <a href="tel:4075611453" className="text-gold underline underline-offset-4 hover:text-gold-light">call (407) 561-1453</a>.
-            </p>
           </div>
 
           <FaqTabs categories={faqCategorized} initialTab="general" initialOpen={0} />
         </div>
       </section>
 
-      {/* Big CTA band - asymmetric layout, NB cinematic shavings overlay */}
-      <section className="py-24 sm:py-32 relative overflow-hidden" style={{ background: "linear-gradient(135deg, #c9a84c, #a8842f)" }}>
-        {/* Nano Banana atmospheric — golden shavings mid-fall against black */}
-        <div
-          aria-hidden
-          className="absolute inset-0 pointer-events-none bg-cover bg-center mix-blend-multiply"
-          style={{ backgroundImage: "url(/img/generated/cta-shavings.png)", opacity: 0.35 }}
-        />
-        <div aria-hidden className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(circle at 20% 50%, rgba(8,8,8,0.18), transparent 45%)" }} />
-        <div aria-hidden className="absolute inset-0 pointer-events-none mix-blend-overlay" style={{ backgroundImage: "url(/img/generated/grain-texture.png)", backgroundSize: "cover", opacity: 0.10 }} />
-        <div aria-hidden className="absolute top-0 left-0 right-0 h-px bg-ink/20" />
-        <div aria-hidden className="absolute bottom-0 left-0 right-0 h-px bg-ink/20" />
+      {/* D-series D8 mirror — JP-aesthetic separator (torii, brand gold) before CTA. */}
+      <div className="bg-ink-2">
+        <SectionSeparator variant="torii" label="contact" />
+      </div>
+
+      {/* Closing CTA — operator asked for a fresh background. Drops the bright
+          gold gradient + shavings overlay; goes inverse instead: deep ink with
+          a single warm spotlight pulled to the lower-right and an animated gold
+          underline rule under the headline. Reads quieter, feels more cinematic. */}
+      <section className="py-24 sm:py-32 relative overflow-hidden bg-[#080808]">
+        <div aria-hidden className="absolute inset-0 pointer-events-none" style={{
+          background: "radial-gradient(120% 80% at 78% 90%, rgba(201,168,76,0.30), rgba(201,168,76,0.06) 30%, transparent 60%)"
+        }} />
+        <div aria-hidden className="absolute inset-0 pointer-events-none" style={{
+          background: "linear-gradient(180deg, rgba(8,8,8,0.95) 0%, transparent 25%, transparent 75%, rgba(8,8,8,0.95) 100%)"
+        }} />
+        <div aria-hidden className="absolute inset-0 pointer-events-none mix-blend-overlay" style={{ backgroundImage: "url(/img/generated/grain-texture.png)", backgroundSize: "cover", opacity: 0.08 }} />
+        <div aria-hidden className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold-dim/60 to-transparent" />
+        <div aria-hidden className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold-dim/40 to-transparent" />
         <div className="container-site relative">
-          {/* Single-line manifesto across the band — different from the "first line. italic second." pattern */}
-          <p className="font-mono text-[0.65rem] tracking-[0.42em] uppercase text-ink/60 mb-6 text-center">
-            <span aria-hidden className="inline-block h-px w-10 bg-ink/40 align-middle mr-3" />
+          <p className="font-mono text-[0.62rem] tracking-[0.45em] uppercase text-cream-30 mb-6 text-center">
+            <span aria-hidden className="inline-block h-px w-10 bg-gold-dim/50 align-middle mr-3" />
             One number · One shop · No salespeople
-            <span aria-hidden className="inline-block h-px w-10 bg-ink/40 align-middle ml-3" />
+            <span aria-hidden className="inline-block h-px w-10 bg-gold-dim/50 align-middle ml-3" />
           </p>
-          <h2 className="text-ink text-center font-display text-[clamp(2.4rem,7vw,5.6rem)] leading-[0.95] m-0 max-w-[940px] mx-auto">
-            Send us the space, get a number back the same day.
+          <h2 className="text-white text-center font-display text-[clamp(2.4rem,7vw,5.6rem)] leading-[0.95] m-0 max-w-[940px] mx-auto">
+            Send us the space, get a number back <em className="text-gold">the same day.</em>
           </h2>
+          <div aria-hidden className="mx-auto mt-8 h-px w-32 bg-gradient-to-r from-transparent via-gold to-transparent" />
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-            <Link href="/contact" className="btn btn-large bg-ink text-white hover:bg-ink-3 transition-colors !px-12 jbw-magnetic">
+            <Link href="/contact" className="btn btn-large bg-gold text-ink hover:bg-gold-light transition-colors !px-12 jbw-magnetic">
               Start the quote
               <Icon name="arrow-right" size={16} className="ml-2" />
             </Link>
-            <a href="tel:4075611453" className="inline-flex items-center gap-2 px-7 py-[15px] bg-transparent border border-ink/40 text-ink rounded-md font-bold text-[0.82rem] tracking-[0.08em] uppercase hover:bg-ink hover:text-white transition-colors jbw-magnetic">
+            <a href="tel:4075611453" className="inline-flex items-center gap-2 px-7 py-[15px] bg-transparent border border-cream-30/50 text-cream-50 rounded-md font-bold text-[0.82rem] tracking-[0.08em] uppercase hover:border-gold hover:text-gold transition-colors jbw-magnetic">
               <Icon name="phone" size={15} />
               (407) 561-1453
             </a>

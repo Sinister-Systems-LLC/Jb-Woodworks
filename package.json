@@ -13,7 +13,9 @@
     "start": "next start -p ${PORT:-3000}",
     "lint": "next lint",
     "db:push": "prisma db push",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "media:optimize": "python _legacy-flask/scripts/optimize_media.py",
+    "media:favicons": "python _legacy-flask/scripts/make_favicons.py"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
@@ -21,7 +23,6 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.4.0",
-    "lucide-react": "^0.460.0",
     "next": "^15.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

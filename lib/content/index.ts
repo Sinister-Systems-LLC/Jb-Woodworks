@@ -58,18 +58,6 @@ export type PortfolioItem = {
   cover: string;
   is_raw_cover?: boolean;
   media: PortfolioMedia[];
-  /** Optional editorial metadata rendered on the detail page + folded into the
-   *  per-project CreativeWork JSON-LD. All fields optional. */
-  meta?: {
-    /** Build year as a 4-digit string ("2024"). */
-    year?: string;
-    /** Headline materials, comma-separated for a single line ("Ipe + 316 stainless"). */
-    materials?: string;
-    /** Job site shorthand ("Lake Nona, FL"). */
-    location?: string;
-    /** Build duration ("3 weeks"). */
-    duration?: string;
-  };
 };
 
 export type Faq = { q: string; a: string };

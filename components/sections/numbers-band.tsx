@@ -1,26 +1,51 @@
-// Author: RKOJ-ELENO :: 2026-05-24
+// Author: RKOJ-ELENO :: 2026-05-23
 "use client";
-import { motion } from "framer-motion";
-import { Icon } from "@/components/ui/icon";
-import type { IconName } from "@/components/ui/icon";
+import { useEffect, useRef, useState } from "react";
+import { motion, useInView, useReducedMotion } from "framer-motion";
 
-type Stat = { icon: IconName; headline: string; label: string };
+type Stat = { value: number; suffix?: string; label: string; sublabel?: string };
 
 const STATS: Stat[] = [
-  { icon: "anvil",   headline: "In-house",   label: "Designed + built by us, never subbed out" },
-  { icon: "ruler",   headline: "Custom",     label: "Drawn to your space, not pulled from a catalog" },
-  { icon: "leaf",    headline: "Orlando, FL", label: "Greater Orlando + Central Florida coast" },
-  { icon: "compass", headline: "Est. 2025",  label: "Custom woodworking + commercial fabrication" }
+  { value: 1, label: "Free estimate", sublabel: "phone, email, or site visit" },
+  { value: 6, label: "Project lanes", sublabel: "docks, decks, pergolas, tables, trim, repair" },
+  { value: 24, suffix: "h", label: "Reply target", sublabel: "weekdays, usually same business day" },
+  { value: 2019, label: "Established", sublabel: "Orlando, Florida" }
 ];
+
+function Counter({ to, suffix, duration = 1400 }: { to: number; suffix?: string; duration?: number }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, amount: 0.5 });
+  const reduced = useReducedMotion();
+  const [n, setN] = useState(reduced ? to : 0);
+
+  useEffect(() => {
+    if (!inView || reduced) return;
+    const start = performance.now();
+    let raf = 0;
+    const step = (now: number) => {
+      const t = Math.min(1, (now - start) / duration);
+      // ease-out cubic
+      const eased = 1 - Math.pow(1 - t, 3);
+      setN(Math.round(to * eased));
+      if (t < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [inView, to, duration, reduced]);
+
+  return (
+    <span ref={ref} className="tabular-nums">
+      {n}
+      {suffix}
+    </span>
+  );
+}
 
 export function NumbersBand() {
   return (
-    <section className="relative pt-10 pb-16 bg-ink-2 border-b border-line">
-      {/* Soft fade IN from marquee above so the join reads as one continuous
-          band, not two stacked boxes with hard borders between them. */}
-      <div aria-hidden className="absolute top-0 inset-x-0 h-12 pointer-events-none bg-gradient-to-b from-ink-2/80 to-transparent" />
-      <div className="container-site relative">
-        <div className="grid gap-y-10 gap-x-8 sm:gap-x-12 sm:grid-cols-2 lg:grid-cols-4">
+    <section className="py-20 bg-ink-2 border-y border-line">
+      <div className="container-site">
+        <div className="grid gap-8 sm:gap-12 sm:grid-cols-2 lg:grid-cols-4">
           {STATS.map((s, i) => (
             <motion.div
               key={i}
@@ -28,16 +53,14 @@ export function NumbersBand() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.4 }}
               transition={{ duration: 0.6, delay: i * 0.08, ease: [0.16, 1, 0.3, 1] }}
-              className="relative pl-7"
+              className="relative pl-6"
             >
-              {/* Vertical thread - now starts above the icon so it visually
-                  carries down from the marquee's gold hairline above. */}
-              <span aria-hidden className="absolute left-0 -top-4 bottom-2 w-px bg-gradient-to-b from-gold/60 via-gold-dim to-transparent" />
-              <Icon name={s.icon} size={36} className="text-gold mb-4" />
-              <p className="font-display text-[clamp(1.9rem,3.4vw,2.6rem)] leading-none text-white">
-                {s.headline}
+              <span aria-hidden className="absolute left-0 top-1 bottom-2 w-px bg-gradient-to-b from-gold via-gold-dim to-transparent" />
+              <p className="font-display text-[clamp(3rem,6vw,4.5rem)] leading-none text-white">
+                <Counter to={s.value} suffix={s.suffix} />
               </p>
-              <p className="mt-3 text-[0.85rem] text-cream-50 leading-snug max-w-[220px]">{s.label}</p>
+              <p className="mt-3 text-[0.78rem] font-bold tracking-[0.18em] uppercase text-gold">{s.label}</p>
+              {s.sublabel && <p className="mt-1 text-[0.85rem] text-cream-50">{s.sublabel}</p>}
             </motion.div>
           ))}
         </div>

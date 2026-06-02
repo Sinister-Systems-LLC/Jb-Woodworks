@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { blogPosts, getBlogPost } from "@/lib/content/blog/posts";
+import { allBlogSlugs, getBlogPost } from "@/lib/content/blog/posts";
 import { SITE } from "@/lib/site";
 import { Icon } from "@/components/ui/icon";
 import { BackLink } from "@/components/ui/back-link";
@@ -11,7 +11,7 @@ import { BackLink } from "@/components/ui/back-link";
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateStaticParams() {
-  return blogPosts.map((p) => ({ slug: p.slug }));
+  return allBlogSlugs().map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

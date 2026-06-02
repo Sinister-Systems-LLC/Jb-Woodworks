@@ -1,8 +1,7 @@
-// Author: RKOJ-ELENO :: 2026-05-23
-// JB Woodworks blog posts — zero-dep, pre-rendered HTML so we never need a
-// markdown library in the runtime. Add a new post by appending to the array.
-// Body HTML uses the same Tailwind utility classes that style the rest of
-// the site (text-cream-50, em → gold italic, h2/h3 → display).
+// Author: RKOJ-ELENO :: 2026-05-23 (MDX pipeline 2026-06-02)
+// Static posts live here as pre-rendered HTML. Posts in content/blog/*.mdx
+// are loaded at build time by mdx-loader.ts and merged via allPosts().
+// Body HTML uses Tailwind utility classes (text-cream-50, text-gold, etc.).
 
 export type BlogPost = {
   slug: string;
@@ -756,14 +755,91 @@ export const blogPosts: readonly BlogPost[] = [
 
 <p class="mt-8 text-cream-30 italic">Thinking about a custom table? Tell us the room dimensions and the look you want — oak vs. walnut vs. cherry, leather pockets or shield, traditional or art-deco rails. We can usually give you a real number within a day.</p>
 `.trim()
-  }
+  },
+  // D-series Lane F mirror: 20 stub entries added 2026-05-31. Drafts only — see
+  // master plan D1 scientific-citation standard. Tagged `lane-f-stub` so they
+  // can be filtered out of the public feed until promoted.
+  ...((): readonly BlogPost[] => {
+    const STUB_BODY = `<p class="lead">Draft pending &mdash; see master plan D1 scientific-citation standard.</p>`;
+    const stubs: Array<{ slug: string; title: string; date: string; abstract: string; category: string }> = [
+      { slug: "ipe-vs-cumaru-tropical-hardwood-decks-orlando", title: "Ipe vs Cumaru: which tropical hardwood for an Orlando deck?", date: "2026-04-28", abstract: "Density, oil content, fastener tolerance, and 25-year cost — head-to-head on the two hardwoods we install most.", category: "Materials" },
+      { slug: "outdoor-kitchen-cabinet-materials-marine-grade", title: "Outdoor kitchen cabinets: marine-grade polymer vs stainless vs teak", date: "2026-04-21", abstract: "What survives a Florida summer untouched, and what looks tired after one season.", category: "Outdoor Living" },
+      { slug: "pergola-rafter-tail-profiles-style-guide", title: "Pergola rafter-tail profiles — a visual style guide", date: "2026-04-14", abstract: "Cloud-lift, arrow, ogee, plumb-cut — the small detail that decides the whole pergola.", category: "Design" },
+      { slug: "deck-screws-vs-hidden-fasteners-when-each-wins", title: "Deck screws vs hidden fasteners — when each one wins", date: "2026-04-07", abstract: "Cost delta, refinish-friendliness, expansion gaps, and how the board profile drives the decision.", category: "Materials" },
+      { slug: "live-edge-slab-stabilization-butterfly-keys", title: "Live-edge slab stabilization: butterfly keys, epoxy, and waiting", date: "2026-03-31", abstract: "Why a beautiful slab cracks two years later, and the four-step prep that prevents it.", category: "Furniture" },
+      { slug: "deck-board-spacing-florida-humidity-math", title: "Deck-board spacing in Florida humidity — the actual math", date: "2026-03-24", abstract: "Tangential shrinkage by species, install-day moisture content, and what 3/16\" really buys you.", category: "Decks" },
+      { slug: "boat-lift-canopy-frame-wood-vs-aluminum", title: "Boat-lift canopy frames: wood vs aluminum vs hybrid", date: "2026-03-17", abstract: "Salt-air corrosion, span-to-weight, and the only configuration we still recommend for residential lifts.", category: "Docks" },
+      { slug: "stairs-stringer-cut-vs-housed-when-to-spend-up", title: "Stair stringers: cut vs housed — when to spend up", date: "2026-03-10", abstract: "Where housed stringers pay back inside ten years, and where cut stringers are honestly fine.", category: "Construction" },
+      { slug: "japandi-furniture-orlando-clients-2026", title: "Why so many Orlando clients are asking for Japandi furniture in 2026", date: "2026-03-03", abstract: "Joinery patterns, wood pairings (walnut + white oak), and the brief we hear most often.", category: "Design" },
+      { slug: "deck-substructure-spans-deflection-targets", title: "Deck substructure: span tables, deflection targets, and code minimums", date: "2026-02-24", abstract: "Why L/360 reads bouncy under furniture and what L/480 actually feels like underfoot.", category: "Engineering" },
+      { slug: "white-oak-vs-red-oak-built-ins-grain-tone", title: "White oak vs red oak built-ins — grain, tone, finishing", date: "2026-02-17", abstract: "How each species takes a fumed finish, ages over a decade, and matches existing trim.", category: "Cabinetry" },
+      { slug: "exterior-stains-orlando-uv-rebuild-cycle", title: "Exterior stains in Orlando: the UV rebuild cycle nobody warns you about", date: "2026-02-10", abstract: "Penetrating oils vs film-builders, the 18-month tell-tale, and the maintenance schedule that holds.", category: "Finishing" },
+      { slug: "retail-display-fabrication-brand-builds-process", title: "Retail display fabrication: how a brand build actually moves through the shop", date: "2026-02-03", abstract: "Renderings to drawings to CNC to hand finish — and where the timeline almost always slips.", category: "Commercial" },
+      { slug: "custom-front-door-walnut-mahogany-builds", title: "Custom front doors: walnut, mahogany, and what makes one last 40 years", date: "2026-01-27", abstract: "Stave-core construction, weather seals, and the one mistake that warps even high-end slabs.", category: "Doors" },
+      { slug: "deck-railing-cable-vs-glass-vs-aluminum-cost", title: "Deck railings: cable vs glass vs aluminum picket — true installed cost", date: "2026-01-20", abstract: "Code, view, maintenance, and a transparent per-foot comparison for a typical Orlando deck.", category: "Decks" },
+      { slug: "wood-species-for-saunas-cedar-hemlock-aspen", title: "Sauna wood species: western red cedar, hemlock, aspen — pros and cons", date: "2026-01-13", abstract: "Heat tolerance, resin content, fragrance, and which species reads cleanest as the room ages.", category: "Specialty" },
+      { slug: "shou-sugi-ban-exterior-cladding-florida", title: "Shou Sugi Ban exterior cladding in Florida — yes, it works", date: "2026-01-06", abstract: "Heat treatment depth, finishing oils, and the maintenance interval that surprises people.", category: "Cladding" },
+      { slug: "custom-bar-builds-poured-epoxy-vs-solid-wood-tops", title: "Custom bar builds: poured-epoxy tops vs solid-wood tops", date: "2025-12-30", abstract: "Heat tolerance, glass-ring resilience, and the look each delivers after five years of parties.", category: "Furniture" },
+      { slug: "dock-pile-wraps-marine-borers-prevention", title: "Dock pile wraps and marine-borer prevention — what we install and why", date: "2025-12-23", abstract: "HDPE vs concrete jacket vs copper-treated wraps for brackish-water docks.", category: "Docks" },
+      { slug: "shop-tour-jb-woodworks-2026-equipment-flow", title: "Shop tour: our 2026 equipment layout and work-flow stations", date: "2025-12-16", abstract: "Walk-through of the mill, glue-up, finishing booth, and the order projects move in.", category: "Inside the Shop" },
+    ];
+    return stubs.map(s => ({
+      slug: s.slug,
+      title: s.title,
+      description: s.abstract,
+      excerpt: s.abstract,
+      category: s.category,
+      tags: ["lane-f-stub", "draft"] as const,
+      publishedAt: s.date,
+      author: "JB Woodworks",
+      readingTimeMinutes: 4,
+      bodyHtml: STUB_BODY,
+    }));
+  })()
 ] as const;
 
-export function getBlogPost(slug: string): BlogPost | undefined {
-  return blogPosts.find((p) => p.slug === slug);
+// Merge static posts with MDX-sourced posts (MDX wins on slug collision).
+// loadMdxBlogPosts is imported lazily via a helper to keep this module
+// importable in any context; the fs read only runs when allPosts() is called.
+function allPosts(): BlogPost[] {
+  let mdx: BlogPost[] = [];
+  try {
+    // This require is intentional — keeps fs out of the module-level scope
+    // so Next.js can import this file in any runtime context without errors.
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const mod = require("./mdx-loader") as { loadMdxBlogPosts: () => BlogPost[] };
+    mdx = mod.loadMdxBlogPosts();
+  } catch {
+    // Edge runtime or test env — fall back to static posts only
+  }
+
+  const seen = new Set<string>();
+  const merged: BlogPost[] = [];
+
+  // MDX first (higher priority on slug collision)
+  for (const p of mdx) {
+    if (!seen.has(p.slug)) { seen.add(p.slug); merged.push(p); }
+  }
+  // Static posts — skip drafts and stubs when MDX equivalent exists
+  for (const p of blogPosts) {
+    if (!seen.has(p.slug)) { seen.add(p.slug); merged.push(p as BlogPost); }
+  }
+
+  return merged;
 }
 
-/** Ordered most-recent first */
+export function getBlogPost(slug: string): BlogPost | undefined {
+  return allPosts().find((p) => p.slug === slug);
+}
+
+/** Ordered most-recent first; excludes stub-only (lane-f-stub) entries */
 export function blogPostsByDate(): BlogPost[] {
-  return [...blogPosts].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
+  return allPosts()
+    .filter((p) => !(p.tags as readonly string[]).includes("lane-f-stub"))
+    .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
+}
+
+/** All slugs including stubs — for generateStaticParams */
+export function allBlogSlugs(): string[] {
+  return allPosts().map((p) => p.slug);
 }

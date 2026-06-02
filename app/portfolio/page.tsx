@@ -86,7 +86,7 @@ export default async function PortfolioPage({ searchParams }: Props) {
                 </div>
                 <div className="border-l-2 border-gold/40 pl-4">
                   <dt className="text-cream-30 font-mono text-[0.55rem] tracking-[0.3em] uppercase mb-1">Since</dt>
-                  <dd className="font-display text-[2rem] text-white leading-none tabular-nums">2025</dd>
+                  <dd className="font-display text-[2rem] text-white leading-none tabular-nums">2019</dd>
                 </div>
               </dl>
             </div>
