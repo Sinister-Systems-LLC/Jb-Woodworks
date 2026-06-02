@@ -238,6 +238,14 @@ export function loadMdxBlogPosts(): BlogPost[] {
       // Extract first sentence of body as excerpt if no dedicated field
       const excerpt = description;
 
+      // Atmospheric fallbacks rotate by slug so different posts get variety
+      const atmos = [
+        "/img/generated/about-workshop.png",
+        "/img/generated/services-accent.png",
+        "/img/generated/process-bench.png",
+      ];
+      const fallbackCover = atmos[slug.charCodeAt(0) % atmos.length];
+
       posts.push({
         slug,
         title: fm.title ?? slug,
@@ -247,8 +255,8 @@ export function loadMdxBlogPosts(): BlogPost[] {
         tags: (fm.tags ?? []) as readonly string[],
         publishedAt,
         author,
-        cover: fm.cover,
-        ogImage: fm.ogImage,
+        cover: fm.cover ?? fallbackCover,
+        ogImage: fm.ogImage ?? fallbackCover,
         readingTimeMinutes: fm.readingTimeMinutes ?? 6,
         bodyHtml,
       });
