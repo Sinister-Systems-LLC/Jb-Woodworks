@@ -1,4 +1,4 @@
-// Author: RKOJ-ELENO :: 2026-05-23
+// Author: RKOJ-ELENO :: 2026-05-23 (v2 revamp 2026-06-01 — features-tabs + cycling banner + coastal separators + social strip)
 import Link from "next/link";
 import { Hero } from "@/components/sections/hero";
 import { Marquee } from "@/components/sections/marquee";
@@ -9,6 +9,10 @@ import { PortfolioFeature } from "@/components/sections/portfolio-feature";
 import { CommercialFeature } from "@/components/sections/commercial-feature";
 import { FaqAccordion } from "@/components/sections/faq-accordion";
 import { FaqTabs } from "@/components/sections/faq-tabs";
+import { FeaturesTabs } from "@/components/sections/features-tabs";
+import { CyclingBanner } from "@/components/sections/cycling-banner";
+import { SocialStrip } from "@/components/sections/social-strip";
+import { CoastalSeparator } from "@/components/ui/coastal-separator";
 import { faqCategorized } from "@/lib/content/faq-categorized";
 import { Icon } from "@/components/ui/icon";
 import { services, portfolio, faq } from "@/lib/content";
@@ -27,7 +31,15 @@ export default function Home() {
 
       <Marquee />
 
+      {/* v2 (2026-06-01): cycling credibility banner */}
+      <CyclingBanner />
+
       <NumbersBand />
+
+      <CoastalSeparator variant="wave-line" />
+
+      {/* v2 (2026-06-01): 5-tab features — decks/docks/pergolas/furniture/restoration */}
+      <FeaturesTabs />
 
       {/* Commercial builds — moved above What We Do per operator. Anchored on a real retail display project. */}
       <CommercialFeature />
@@ -110,6 +122,13 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <CoastalSeparator variant="driftwood" />
+
+      {/* v2 (2026-06-01): social strip — IG / TikTok / YouTube / FB / LinkedIn */}
+      <SocialStrip />
+
+      <CoastalSeparator variant="seafoam-glow" />
 
       {/* Process timeline */}
       <ProcessTimeline />

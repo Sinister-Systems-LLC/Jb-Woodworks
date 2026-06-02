@@ -29,6 +29,15 @@ const config: Config = {
         line: {
           DEFAULT: "rgba(255,255,255,0.07)",
           strong: "rgba(255,255,255,0.12)"
+        },
+        // v2 (2026-06-01): FL-coastal blue accent. Pairs with wood-tone gold —
+        // gold stays primary brand, coastal-blue used for subtle flow/glow/contrast.
+        coastal: {
+          DEFAULT: "#3a7ca5",      // muted Atlantic blue
+          light:   "#7aa9c7",      // sun-bleached seafoam-blue
+          deep:    "#1f4f78",      // dock-shadow deep
+          glow:    "rgba(58,124,165,0.25)",
+          dim:     "rgba(58,124,165,0.10)"
         }
       },
       fontFamily: {
