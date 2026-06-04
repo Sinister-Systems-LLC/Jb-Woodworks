@@ -9,7 +9,7 @@ const STATS: Stat[] = [
   { value: 1, label: "Free estimate", sublabel: "phone, email, or site visit" },
   { value: 6, label: "Project lanes", sublabel: "docks, decks, pergolas, tables, trim, repair" },
   { value: 24, suffix: "h", label: "Reply target", sublabel: "weekdays, usually same business day" },
-  { value: 2019, label: "Established", sublabel: "Orlando, Florida" }
+  { value: 2025, label: "Established", sublabel: "Orlando, Florida" }
 ];
 
 function Counter({ to, suffix, duration = 1400 }: { to: number; suffix?: string; duration?: number }) {

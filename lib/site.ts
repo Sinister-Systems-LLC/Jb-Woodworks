@@ -3,7 +3,7 @@
 
 export const SITE = {
   name: "JB Woodworks",
-  tagline: "Custom decks, docks, furniture, and outdoor builds — Orlando, FL since 2019.",
+  tagline: "Custom decks, docks, furniture, and outdoor builds — Orlando, FL since 2025.",
   subtagline:
     "Residential craftsmanship and commercial fabrication, all built custom in-house: decks, docks, pergolas, outdoor living, hardwoods, custom furniture, plus branded displays and event builds.",
   phone: "(407) 561-1453",

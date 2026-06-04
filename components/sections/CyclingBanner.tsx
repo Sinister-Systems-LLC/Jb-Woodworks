@@ -5,12 +5,12 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 
 const MESSAGES = [
-  { headline: "Licensed & Insured", detail: "Florida State Certified" },
   { headline: "Free Estimates", detail: "Same-day response, weekdays" },
   { headline: "Custom Builds Only", detail: "No catalog pieces, ever" },
-  { headline: "Est. 2019", detail: "Serving Orlando & Central FL" },
+  { headline: "Est. 2025", detail: "Serving Orlando & Central FL" },
   { headline: "6 Service Lines", detail: "Docks · Decks · Furniture · More" },
   { headline: "Residential & Commercial", detail: "From pool decks to branded displays" },
+  { headline: "Built In-House", detail: "No subcontracted crews, ever" },
 ];
 
 const INTERVAL_MS = 3500;

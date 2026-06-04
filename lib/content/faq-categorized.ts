@@ -41,7 +41,7 @@ export const faqCategorized: FaqCategory[] = [
       },
       {
         q: "How long have you been doing this?",
-        a: "JB Woodworks has been in business since 2019, building decks, docks, pergolas, custom furniture, and commercial fabrication out of Orlando. Every project is designed and built in-house — no subcontracted crews, no shortcuts on materials, no surprises mid-build."
+        a: "JB Woodworks has been in business since 2025, building decks, docks, pergolas, custom furniture, and commercial fabrication out of Orlando. Every project is designed and built in-house — no subcontracted crews, no shortcuts on materials, no surprises mid-build."
       }
     ]
   },

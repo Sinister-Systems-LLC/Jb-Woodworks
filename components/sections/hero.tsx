@@ -94,7 +94,7 @@ export function Hero() {
       {/* Vertical metadata strip - left edge, editorial detail */}
       <div className="hidden md:block absolute top-1/2 -translate-y-1/2 left-7 z-[3] writing-vertical text-cream-30 text-[0.65rem] tracking-[0.4em] uppercase font-semibold">
         <div className="space-y-8" style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
-          <span>EST. 2019  /  ORLANDO FL</span>
+          <span>EST. 2025  /  ORLANDO FL</span>
           <span>CUSTOM WOODWORKING</span>
         </div>
       </div>
@@ -138,7 +138,7 @@ export function Hero() {
       {/* Content - centered editorial layout */}
       <div className="container-site relative z-[3] h-full flex flex-col items-center justify-center text-center pt-[82px] pb-24">
         <motion.p custom={0} variants={stagger} initial={reduced ? false : "hidden"} animate="show" className="eyebrow !mb-7">
-          <span className="eyebrow-dot" /> ORLANDO, FLORIDA <span className="eyebrow-dot" /> EST. 2019 <span className="eyebrow-dot" />
+          <span className="eyebrow-dot" /> ORLANDO, FLORIDA <span className="eyebrow-dot" /> EST. 2025 <span className="eyebrow-dot" />
         </motion.p>
 
         {/* Logo — stacked wordmark, dead center, oversized. Replaces the

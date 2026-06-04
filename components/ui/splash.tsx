@@ -122,7 +122,7 @@ export function Splash() {
 
           {/* Corner micro-metadata */}
           <div aria-hidden className="absolute bottom-6 left-0 right-0 text-center text-[0.6rem] tracking-[0.4em] text-cream-30 uppercase">
-            Orlando &middot; FL &middot; Est. 2019
+            Orlando &middot; FL &middot; Est. 2025
           </div>
         </motion.div>
       )}
